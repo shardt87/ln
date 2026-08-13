@@ -90,3 +90,22 @@ the deck itself as evidence.
   install required): **Marketing**, **Sales**, **Design**, **Canva**, **Figma** — the Sales
   plugin's `account-research` / `call-prep` skills would pair well with this teaser for NRG
   meeting prep.
+
+---
+
+## Addendum — Rev 09 review and consolidated Rev 10 (2026-08-13)
+
+The user-supplied `Southwire_NRG_Protecting_Time_to_Power_Rev09.pptx` supersedes Rev 08 on facts
+(NRG 2Q26 figures: 1.5 GW TEF / 5.4 GW newbuild runway / 25.8 GW fleet / ~1-2 GW upgrades),
+governance (decision-rights appendix), and positioning discipline (benchmark release gate,
+"do not sum these figures" sourcing rules). It dropped four assets worth keeping, so
+**Rev 10 = Rev 09 + three appendices in its native design system:**
+
+- **A6 · Owner's Math** — the LCOE/IRR levers slide for capital audiences (from VP deck / Rev 08).
+- **A7 · Site-Model Basis** — the routed Rev 89 quantities (96 records, 1,784 circuits,
+  1,136,255 ft, 563,091 lb Cu) restored; internal model outputs, no permission constraint.
+- **A8 · SK-120 Reference** — the full plant-zones poster as a reference page and
+  34-inch site-walk leave-behind.
+
+Slides 1-14 of Rev 09 are byte-identical apart from a namespace declaration fix in
+`presentation.xml`. Rev 10 is the deck to use; Rev 08 remains as the earlier standalone teaser.
