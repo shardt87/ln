@@ -109,3 +109,13 @@ governance (decision-rights appendix), and positioning discipline (benchmark rel
 
 Slides 1-14 of Rev 09 are byte-identical apart from a namespace declaration fix in
 `presentation.xml`. Rev 10 is the deck to use; Rev 08 remains as the earlier standalone teaser.
+
+### A9 · Project of Interest — Cedar Bayou 5 (added 2026-08-13)
+
+From `PowerGen_Project_Template_Cedar_Bayou_5_v2.docx`, internet-validated Aug 2026. The slide
+carries public-record facts (721 MW CCGT brownfield, $562M TEF loan at 3% / 20-year = 60% of the
+$936M cost, mid-2028 COD target, TIC/Kiewit EPC, GE Vernova H-class) and neutral technical scope
+selections only. Corrections vs. the internal template: county is Chambers, not Harris; COD target
+is mid-2028, not 2029; total project cost $936M. Internal commercial content (addressable W&C
+estimates, win probability, competitors, named contacts) deliberately excluded from the
+NRG-facing page; it remains in the source template and slide notes reference the validation.
