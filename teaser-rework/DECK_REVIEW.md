@@ -132,3 +132,15 @@ classification/depreciation, EPDs, Scope 3 carbon data for hyperscaler offtakers
 domestic-content records) — became Appendix A10. The source's "ITC/PTC qualification" claim was
 deliberately softened to "tax treatment confirmed per project" (ITC/PTC has limited applicability
 to gas CCGT).
+
+### A11 · Cable Platform + A12 · Operating Fleet (added 2026-08-13)
+
+Reviewed five further attachments. IPP Cable Catalogue (8 pp) and Packaged Power e-Catalogue
+(8 pp) → consolidated into **A11 · Cable Platform** (HVUD 69-400 kV ladder, MV-105 NL-EPR,
+LV/I&C/conductor/grounding; 8 packaged-power application families, SIMpull/kitting) with both
+catalogues flagged as leave-behinds. Rejuvenation/Brownfield 2-pager → **A12 · Operating Fleet**
+(six service areas aimed at NRG's 25.8 GW acquired fleet; 60-90 min engagement mirrors the
+one-hour ask). Integrated Power Infrastructure ECatalog (11 pp) duplicated A10/slides 4-5 — not
+re-added. **IPP Financing Structures NGCC Briefing (5-slide pptx) deliberately not ported**:
+internal enablement for sponsor/lender conversations; lecturing NRG on their own capital stack
+would undercut the deck's posture. Slide notes on A12 record this.
