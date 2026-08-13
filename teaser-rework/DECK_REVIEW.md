@@ -119,3 +119,16 @@ selections only. Corrections vs. the internal template: county is Chambers, not 
 is mid-2028, not 2029; total project cost $936M. Internal commercial content (addressable W&C
 estimates, win probability, competitors, named contacts) deliberately excluded from the
 NRG-facing page; it remains in the source template and slide notes reference the validation.
+
+### A10 · Finance + ESG (added 2026-08-13)
+
+Reviewed four one-page positioning PDFs (Power Generation Catalog, Infrastructure Offering,
+Financial/ESG Integration, Integrated Power Infrastructure) plus a re-upload of the Cedar Bayou
+template (byte-identical to the A9 source — no changes). Facility-scope and delivery-chain content
+duplicated A3 / slides 4-5 and was not re-added. The genuinely new block — pre-EPC offerings
+(master-planning workshop, spine architecture, procurement risk register, hedging support,
+domestic supply strategy) and finance/ESG documentation (BOM transparency for asset
+classification/depreciation, EPDs, Scope 3 carbon data for hyperscaler offtakers,
+domestic-content records) — became Appendix A10. The source's "ITC/PTC qualification" claim was
+deliberately softened to "tax treatment confirmed per project" (ITC/PTC has limited applicability
+to gas CCGT).
