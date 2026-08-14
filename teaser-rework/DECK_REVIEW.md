@@ -156,3 +156,23 @@ deliberately anonymized** ("one site-built spine in an adjacent market, May 2026
 requires external-use permission before a named reference travels. Also excluded from the same
 source deck: named utility pilots, portfolio initiative counts, Class 4 launch status and the
 800VDC data-center roadmap — internal roadmap material, not NRG-facing.
+
+### A14 · Modular Economics (added 2026-08-13)
+
+From photos of the prefab / advanced-conductor example set. Added the **50 MW distribution-skid
+deployment block** case (8-12 wks -> 2-4 wks; 15 electricians x 10 wks, ~$1.1-1.5M field labor;
+6-8 wks faster to energization, $500-800K gross savings) as a second, independent data point
+behind A13 — different scale, different market, same mechanism. Source math verified internally
+(6,000 hrs x $180/hr = ~$1.08M; savings = 40-60%).
+
+**Cross-case rate discrepancy handled explicitly on the slide**: A13 uses $95/hr fully burdened
+(industrial electrician, two-shift), A14 uses $180/hr loaded (multi-trade, data-center market).
+Both gross. Left unexplained, an estimator reads this as sloppiness.
+
+**Excluded:** (1) the modular-cooling OEM case — names Vertiv as a "partner archetype"
+(permission risk) and cooling-vendor schedule is not NRG's buying decision; (2) the **C7
+advanced-conductor corridor economics** (~$57.5M capital avoided, 6 yrs faster, +450 MVA on a
+25-mile corridor) — well built and internally consistent, but it sells to **transmission
+utilities**; in ERCOT the TDUs own transmission, not the IPP. The one narrow C7 angle for NRG is
+gen-tie thermal limits on the ~1-2 GW uprate program — a verbal point, not a slide; (3) the
+"Advanced Conductor Value Prop Project" planning page — internal project plan.
