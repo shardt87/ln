@@ -440,8 +440,130 @@ def p7_value(c):
     tracked(c, PW - M, 26, '07', 'Helvetica-Bold', 6.5, 1.2, COPPER_LT, align='right')
 
 
-def p8_who(c):
-    light_frame(c, 'WHO WE ARE', '08', band=True)
+def p8_econ(c):
+    light_frame(c, 'OWNER ECONOMICS', '08', band=True)
+    y = PH - 122
+    c.setFillColor(INK)
+    c.setFont('Helvetica-Bold', 26)
+    c.drawString(M, y, 'Cable is a small cost category with')
+    c.drawString(M, y - 32, 'outsized execution consequences.')
+    c.setFillColor(GRAY)
+    c.setFont('Helvetica', 10.5)
+    c.drawString(M, y - 62, 'The owner lens is how electrical decisions influence COD readiness, installed effort, capital')
+    c.drawString(M, y - 77, 'certainty and lifecycle continuity \u2014 not unit price alone.')
+
+    quads = [
+        ('01', 'COD / REVENUE START & ENERGY DELIVERED',
+         'Capacity visibility, delivered power, release timing and installation readiness can influence energization milestones.'),
+        ('02', 'INSTALLED COST',
+         'Routes, reels, cuts, pulls, congestion and rework often matter more than purchase price alone.'),
+        ('03', 'CAPITAL CERTAINTY',
+         'Earlier scope visibility supports commodity planning, material allocation and contingency discipline.'),
+        ('04', 'AVAILABILITY / LIFECYCLE',
+         'Turnover records, spares, condition screens and replacement planning support long-term continuity.'),
+    ]
+    colw = (PW - 2 * M - 44) / 2
+    for i, (num, label, desc) in enumerate(quads):
+        x = M + (i % 2) * (colw + 44)
+        yy = 372 - (i // 2) * 128
+        tracked(c, x, yy, num, 'Helvetica-Bold', 17, 1.5, COPPER)
+        c.setStrokeColor(COPPER)
+        c.setLineWidth(1.4)
+        c.line(x + 1, yy - 13, x + 27, yy - 13)
+        tracked(c, x, yy - 32, label, 'Helvetica-Bold', 8.5, 1.0, INK)
+        para(c, x, yy - 50, desc, 'Helvetica', 9.5, 13.5, colw - 16, GRAY)
+
+    dark_band(c, 76)
+    tracked(c, M, 44, 'LOW CAPEX SHARE. HIGH SCHEDULE AND COMMISSIONING LEVERAGE.',
+            'Helvetica-Bold', 10, 1.8, COPPER_LT)
+    band_footer(c, '08')
+
+
+def p9_zones(c):
+    light_frame(c, 'PLANT-WIDE COVERAGE', '09', band=True)
+    y = PH - 116
+    c.setFillColor(INK)
+    c.setFont('Helvetica-Bold', 26)
+    c.drawString(M, y, 'Six clusters map a routed 3\u00d71 electrical')
+    c.drawString(M, y - 32, 'reference model.')
+
+    clusters = [
+        ('GRID + SITE BACKBONE', 'Switchyard, GSU/grid tie and MV corridors',
+         'HV/EHV \u00b7 MV \u00b7 protection/control \u00b7 fiber \u00b7 grounding'),
+        ('GENERATION ISLAND + BOP', 'HRSG, turbine hall and GT inlet',
+         'MV/LV/VFD \u00b7 I&C \u00b7 F&G/ESD \u00b7 CEMS \u00b7 heat trace'),
+        ('MODULAR + PACKAGED SYSTEMS', 'BESS, reel staging, prefab/skids and modular power',
+         'DC/MV/LV \u00b7 controls \u00b7 fiber \u00b7 engineered sets'),
+        ('HEAT REJECTION + WATER + BOP', 'ACC, cooling and water/wastewater',
+         'Repeated fan/pump power \u00b7 VFD \u00b7 controls \u00b7 wet runs'),
+        ('BUILDINGS + DISTRIBUTION + BOP', 'Control building, e-house and MCC/VFD/UPS',
+         'MV/LV/VFD \u00b7 essential AC/DC \u00b7 life safety \u00b7 BAS/data'),
+        ('OPTIONAL + AUXILIARY + BOP', 'Carbon capture and gas metering',
+         'Classified power/control \u00b7 instrumentation \u00b7 F&G \u00b7 fiber'),
+    ]
+    colw = (PW - 2 * M - 2 * 34) / 3
+    for i, (name, scope, classes) in enumerate(clusters):
+        x = M + (i % 3) * (colw + 34)
+        yy = 408 - (i // 3) * 138
+        c.setStrokeColor(COPPER)
+        c.setLineWidth(1.4)
+        c.line(x + 1, yy + 14, x + 27, yy + 14)
+        ny = para(c, x, yy, name, 'Helvetica-Bold', 8.5, 12, colw - 10, INK)
+        para(c, x, yy - 26, scope, 'Helvetica', 9, 12.5, colw - 12, GRAY)
+        para(c, x, yy - 62, classes, 'Helvetica', 7.5, 10.5, colw - 12, COPPER_DP)
+
+    dark_band(c, 84)
+    tracked(c, M, 56, 'CABLE CLASSES \u2014 HV/EHV \u00b7 MV 5\u201335 kV \u00b7 LV 600 V \u00b7 VFD \u00b7 ESSENTIAL AC/DC \u00b7 I&C \u00b7 FIBER/NETWORK \u00b7 LIFE SAFETY \u00b7 GROUNDING',
+            'Helvetica-Bold', 7.5, 1.4, COPPER_LT)
+    c.setFillColor(Color(150/255, 148/255, 144/255))
+    c.setFont('Helvetica', 7)
+    c.drawString(M, 36, 'Illustrative \u2014 not NRG/IFC. Excludes generator-output bus, OEM wiring and contractor methods.')
+    band_footer(c, '09')
+
+
+def p10_rights(c):
+    light_frame(c, 'GOVERNANCE', '10', band=True)
+    y = PH - 116
+    c.setFillColor(INK)
+    c.setFont('Helvetica-Bold', 26)
+    c.drawString(M, y, 'Clear decision rights preserve existing')
+    c.drawString(M, y - 32, 'project accountability.')
+
+    rows = [
+        ('NRG + UTILITY INTERFACE',
+         'Owner priorities, portfolio standards, risk tolerances, acceptance criteria and investment decisions.', False),
+        ('EPC & OE/EOR',
+         'Design authority, calculations, specifications, routing basis and approved technical design.', False),
+        ('OEM & INTEGRATORS / PACKAGERS',
+         'Equipment-package interfaces, internal wiring, approved terminations and warranty boundaries.', False),
+        ('ELECTRICAL CONTRACTOR \u00b7 CHANNEL',
+         'Installation means and methods, pull planning, workface execution, testing support and field feedback.', False),
+        ('SOUTHWIRE',
+         'Application support, material and capacity visibility, engineered cable and reel strategy, sequenced delivery and selected field support.', True),
+    ]
+    ry = y - 78
+    xr = M + 230
+    for label, desc, hl in rows:
+        if hl:
+            c.setFillColor(C('F0E4D6'))
+            c.rect(M - 10, ry - 30, PW - 2 * M + 20, 46, fill=1, stroke=0)
+        tracked(c, M, ry, label, 'Helvetica-Bold', 8, 1.0, COPPER_DP if hl else INK)
+        para(c, xr, ry, desc, 'Helvetica', 9.5, 13, PW - M - xr, C('3A3C42') if hl else GRAY)
+        c.setStrokeColor(C('D8D2C8'))
+        c.setLineWidth(0.6)
+        c.line(M, ry - 32, PW - M, ry - 32)
+        ry -= 52
+
+    dark_band(c, 76)
+    c.setFillColor(WHITE)
+    c.setFont('Helvetica-Bold', 11)
+    c.drawString(M, 44, 'Southwire connects selected decisions \u2014 it does not replace owner, EPC, OEM, Contractor')
+    c.drawString(M, 29, 'or Channel accountability or preference.')
+    band_footer(c, '10')
+
+
+def p11_who(c):
+    light_frame(c, 'WHO WE ARE', '11', band=True)
     y = PH - 112
     c.setFillColor(INK)
     c.setFont('Helvetica-Bold', 25)
@@ -491,10 +613,10 @@ def p8_who(c):
     c.setFillColor(GRAY_LT)
     c.setFont('Helvetica', 6.5)
     c.drawString(M, 20, FOOTER)
-    tracked(c, PW - M, 20, '08', 'Helvetica-Bold', 6.5, 1.2, COPPER, align='right')
+    tracked(c, PW - M, 20, '11', 'Helvetica-Bold', 6.5, 1.2, COPPER, align='right')
 
 
-def p9_ask(c):
+def p12_ask(c):
     c.setFillColor(GRAPHITE)
     c.rect(0, 0, PW, PH, fill=1, stroke=0)
     sw = PH * 548 / 2640
@@ -569,7 +691,7 @@ def build(path='Southwire_PowerGen_Brochure_NRG_Rev01.pdf'):
     c.setAuthor('Stephan Hardt')
     c.setTitle('Accelerating Time to Power — NRG | Southwire Power Generation Solutions')
     c.setSubject('SWR-PG-BROCHURE-NRG Rev 01')
-    for draw in [p1_cover_hex, p2_why_now, p3_thesis, p4_risks, p5_system, p6_valueprop, p7_value, p8_who, p9_ask]:
+    for draw in [p1_cover_hex, p2_why_now, p3_thesis, p4_risks, p5_system, p6_valueprop, p7_value, p8_econ, p9_zones, p10_rights, p11_who, p12_ask]:
         draw(c)
         c.setTrimBox([BLEED, BLEED, PW - BLEED, PH - BLEED])
         c.setCropBox([0, 0, PW, PH])

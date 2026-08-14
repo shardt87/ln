@@ -1,0 +1,755 @@
+ ACCELERATING
+ TIME TO POWER
+Accelerating & Protecting Power Readiness
+Across NRG’s Gas Power Generation Buildout.
+Combined Cycle, Simple Cyle/Peakers, Modular Power, Black Start,
+Fuel Cells, Coal/Gas Repower, Greenfield & Brownfield
+
+PRESERVE UPSTREAM CERTAINTY THROUGH
+THE ELECTRICAL DELIVERY CHAIN.
+
+
+
+
+Stephan Hardt | Director, Power Generation Solutions | www.southwire.com
+                                                                                                                            NRG'S AMBITION         02
+
+
+
+
+WHY NOW
+
+
+
+NRG's growth agenda creates three distinct electrical-delivery
+environments & power demand.
+
+1.5 GW                                         5.4 GW                                          25.8 GW
+TEF PORTFOLIO                                  NEWBUILD DEVELOPMENT                            OPERATING FLEET
+
+
+One project operating; two targeting           Turbine and EPC access supports a               Approximately 1-2 GW of upgrades
+mid-2028.                                      runway through 2032.                            under evaluation.
+
+
+
+
+DIFFERENT ASSET STATES. ONE REQUIREMENT.
+
+
+
+Preserve schedule certainty through energization.
+Specifications, capacity, metals hedging, releases, reels, package interfaces and field readiness still have to converge on COD.
+
+                                                                                                                        Source: NRG 2Q26, Aug. 4, 2026
+                                                                                                                           THE EXECUTION CHALLENGE   03
+
+
+
+
+THREE RISKS
+
+
+Three execution risks can erode certainty between design and
+energization.
+
+01                                         02                                                           03
+
+
+
+
+LABOR & DEMAND PRESSURE                    MATERIAL + INSTALLATION FIT                                  FRAGMENTED COORDINATION
+
+AI & Electrification Power Demands, Long   Ratings, routes, reel lengths,                               Civil, electrical, OEM and contractor
+pulls, dense terminations and compressed   accessories and releases must match                          decisions can converge after routing
+turnover windows concentrate labor when
+flexibility is lowest.
+                                           the workface, not only the BOM.                              and procurement choices are locked.
+
+
+
+
+                            LATE HANDOFFS BECOME SCHEDULE AND COMMISSIONING EXPOSURE.
+
+
+                                            Labor availability | material readiness | decision timing
+TIME TO POWER IS AN ELECTRICAL EXECUTION PROBLEM BEFORE IT IS A
+CABLE-BUYING PROBLEM.
+-Interfaces cross packages, zones, POI, contractors and turnover paths.
+
+-Late material decisions return as handling, rework and commissioning exposure.
+
+-Managing the workstream as a system can protect schedule better than isolated purchase-order optimization.
+Southwire is the plant-wide electrical-delivery    …Unlike a transactional cable supplier, Southwire
+partner that makes cable scope ready for the       connects application engineering, manufacturing
+.
+workface, not merely available at the             visibility, engineered cable & assemblies and field
+warehouse….                                              support from planning through energization.
+                                                                                                                                                                 PLANT-WIDE COVERAGE           05
+
+
+
+
+PLANT-ZONE COVERAGE
+
+
+
+Six clusters map a routed 3×1x1 electrical reference model.
+    1, 16                                                                                                                                           6, 7, 8
+
+
+GRID + SITE BACKBONE                                                                                                                            GENERATION ISLAN + BOP
+
+Switchyard, GSU/grid tie and MV corridors                                                                                                       HRSG, turbine hall and GT inlet
+HV/EHV · MV · protection/control · fiber ·                                                                                                      MV/LV/VFD · I&C · F&G/ESD · CEMS · heat
+grounding                                                                                                                                       trace
+
+
+   2, 3, 10                                                                                                                                        11, 12, 13
+
+
+MODULAR + PACKAGED SYSTEMS                                                                                                                      HEAT REJECTION + WATER + BOP
+
+BESS, reel staging, prefab/skids and modular                                                                                                    ACC, cooling and water/wastewater
+power                                                                                                                                           Repeated fan/pump power · VFD · controls ·
+DC/MV/LV · controls · fiber · engineered sets                                                                                                   wet runs
+
+
+    4, 5, 9                                                                                                                                         14, 15
+
+BUILDINGS + DISTRIBUTION + BOP                                                                                                                  OPTIONAL + AUXILIARY +BOP
+
+Control building, e-house and MCC/VFD/UPS                                                                                                       Carbon capture and gas metering
+MV/LV/VFD · essential AC/DC · life safety ·                                                                                                     Classified power/control · instrumentation ·
+BAS/data                                                                                                                                        F&G · fiber
+
+
+
+
+   CABLE CLASSES             HV/EHV | MV 5-35 kV | LV 600 V | VFD | essential AC/DC | I&C | fiber/network | life safety | grounding
+                                                  Illustrative—not NRG/IFC. Excludes generator-output bus, OEM wiring and contractor methods.
+                                                                                                                         INTEGRATED ELECTRICAL DELIVERY   06
+
+
+
+
+ ONE COORDINATED FLOW
+
+
+ A coordinated electrical delivery system aligns decisions from planning
+ through turnover.
+ Southwire connects application support, material planning, sequenced logistics and field readiness—without changing project accountability.
+
+
+
+
+        1                           2                            3                         4                         5                               6
+
+PLAN + FORECAST          APPLICATION ALIGNMENT           MATERIAL + REEL          RELEASE + LOGISTICS     INSTALLATION READINESS             FIELD SUPPORT +
+                                                           STRATEGY                                                                             TURNOVER
+
+Scope and capacity      Codes, duty and alternates   Routes, cuts and reel plan   Sequence by zone and      Labels, kits and pull         Feedback, testing and
+     visibility                                                                        milestone                 planning                       records
+
+
+
+
+                                        FIELD-ENGINEER WHAT IS UNIQUE. PREFABRICATE WHAT REPEATS.
+                                                                                                         VALUE TO NRG   07
+
+
+
+
+THE OUTCOME
+
+
+
+The value to NRG is fewer execution surprises—not more supplier services.
+Three owner lenses matter: schedule exposure, installed effort and lifecycle continuity.
+
+
+ALIGN APPLICATIONS + INTERFACES EARLY                   Fewer late changes and handoff failures
+
+
+GATE CAPACITY + RELEASES                                More predictable material availability and sequencing
+
+PLAN REELS + REPEATABLE SETS TO THE
+WORKFACE                                                Less handling and avoidable rework
+
+
+CARRY FIELD RECORDS THROUGH TURNOVER                    Cleaner commissioning and lifecycle continuity
+
+
+                                        OUTCOME HYPOTHESES TO VALIDATE ON ONE LIVE NRG SCOPE.
+                                                                                                                                                            OWNER VALUE LEVERS       08
+
+
+
+
+OWNER ECONOMICS
+
+
+
+Cable is a small cost category with outsized execution consequences.
+(Low Capex %, High Coefficient Multiplier)
+The owner it is how electrical decisions influence COD readiness, installed effort, capital certainty and lifecycle continuity (Not unit price alone)
+
+
+
+    01         COD / REVENUE START & ENERGY DELIVERED                                                 02         INSTALLED COST
+
+    Capacity visibility, Delivered Power, release timing and installation readiness                   Routes, reels, cuts, pulls, congestion and rework often matter more than
+    can influence energization milestones.                                                            purchase price alone.
+
+
+
+
+    03         CAPITAL CERTAINTY                                                                      04         AVAILABILITY / LIFECYCLE
+
+    Earlier scope visibility supports commodity planning, material allocation and                     Turnover records, spares, condition screens and replacement planning support
+    contingency discipline.                                                                           long-term continuity.
+                                                                                                                                           ADJACENT EXPERIENCE   09
+
+
+
+
+ILLUSTRATIVE ADJACENT-MARKET BENCHMARK | NOT AN NRG RESULT
+
+
+
+Adjacent experience indicates where to test—not what NRG will save.
+Field hours per electrical spine in one repetitive modular-generation scope
+
+
+
+
+               4,400                                                                                                          ~880
+              OBSERVED FIELD HOURS                                                                                        MODELED FIELD HOURS
+               SITE-BUILT BASELINE                                                                                    WITH FACTORY-BUILT ASSEMBLY
+
+
+
+
+   WHAT IT SUGGESTS                                                                    WHAT IT DOES NOT PROVE
+
+
+   Stable, repeatable interfaces may be candidates                                     Net NRG savings, schedule reduction or critical-path
+   for offsite work.                                                                   removal.
+
+
+
+
+                                          Rebuild the case with NRG scope, labor rates, schedule logic and acceptance criteria.
+                                                                                                                                     VALIDATION PATH     10
+
+
+
+
+ONE LIVE SCOPE
+
+
+One live scope can prove—or disprove—the case before NRG expands
+it.
+NRG selects the starting scope: one live package, conversion/uprate screen or planned-outage replacement.
+
+
+
+
+                 01                                   02                                              03                                04
+
+
+
+        SELECT SCOPE                        WALK THE WORK                                     MAP THE RISK                          DECIDE
+
+  One active electrical package        People closest to execution                  Interfaces, releases, constraints +     Stop, standardize or pilot
+                                                                                                 repetition
+
+
+
+
+                                                                                                                                 STOP
+   WRITTEN READ-BACK              Milestone exposure                             Repeatable-interface candidates              STANDARDIZE
+                                                                                                                                 PILOT
+                                  Route, reel + release constraints              Decision gaps + recommendation
+
+
+
+
+                                      No presumption that the answer is prefab—or that Southwire belongs in the solution.
+THE ASK
+
+
+
+
+ONE SITE WALK.
+ONE HOUR.
+NO SALES PRESENTATION.
+
+
+Choose one live electrical scope and bring the people closest to execution.
+
+
+INPUT                      One live scope
+
+
+OUTPUT                     Written execution-risk read-back
+
+
+DECISION                   Stop, standardize or define a bounded pilot
+
+
+NO PRICING EXERCISE. NO BROAD COMMERCIAL COMMITMENT.
+
+Stephan Hardt | Director, Power Generation Solutions | Southwire   stephan.hardt@southwire.com | +1 470-439-8488
+                                                                                                                                                                                   APPENDIX A1 · WHO WE ARE            12
+
+
+
+
+SOUTHWIRE AT A GLANCE · PUBLISHED FIGURES · 2025 REVENUE PER FORBES 2026
+
+
+
+A family-held American manufacturer, founded in 1950.
+Roy Richards founded Southwire after the poles his crews built stood wireless for months after World War II. Starting with 12 employees and three secondhand machines in Carrollton, Georgia,
+Southwire remains family-held and vertically integrated — from copper rod through finished cable.
+
+
+
+
+   1950                                        9,000+                                     $13 B                                            12                                        7
+   FOUNDED · CARROLLTON, GA                    EMPLOYEES WORLDWIDE                        2025 REVENUE · FORBES EST.                       INDUSTRIES SERVED                         COPPER MARK SITES
+
+
+
+
+WHAT WE MAKE                                                                                                                                         WHAT WE DO
+
+High voltage underground — 69–500 kV cable, accessories,             Medium & low voltage — 5–35 kV EPR/XLPE; 600 V power                            HV underground transmission         Cable rejuvenation
+installation engineering and field testing.                          and control; tray-rated TC-ER.
+                                                                                                                                                     Contractor solutions                Speed to Power services
+
+Instrumentation & comms — shielded pairs and triads,                 Overhead conductors — C7 composite-core, ACSS/TW,
+                                                                                                                                                     Project services                    Storm activation team
+thermocouple, industrial Ethernet and fiber.                         vibration-resistant, high-emissivity.
+                                                                                                                                                     Field assessment services           Reel tracking system
+Classified & circuit integrity — MC-HL, two-hour-rated cable         Modular & factory-built power — fine-strand flexible, VFD and
+and splice kits.                                                     tray cable; whips and job kits.                                                 CableTechSupport                    Solutions University
+
+                                                                                                                                                     Utility services                    Grid resiliency assessments
+Data center assemblies — UL-listed, built, labeled, tested,          Accessories & raceway — lugs, grounding, duct-bank
+drum-packed to schedule.                                             accessories and pulling gear.
+
+
+INDEPENDENT COVERAGE — FORBES, JUL 5, 2026: “AI Data Centers Are Set To Electrify This $13 Billion Family’s 76-Year-Old Company” READ ON FORBES
+
+
+  COPPER TECHNOLOGY                                                   U.S. POWER GRID                                                            AMERICAN HOMES
+
+  Half of the world's copper rod passes through a Southwire SCR®      We produce half of the wire and cable that moves U.S. electricity.         Half of American homes contain wiring produced by Southwire.
+  system.
+                                                                                                                                                                       APPENDIX A12 · FINANCE + ESG          23
+
+
+
+
+EARLY ENGAGEMENT, UNDERWRITING-GRADE DOCUMENTATION
+
+
+
+What early engagement includes and what finance gets out of it.
+
+Technical readiness converts into underwriting inputs: cost, schedule, sourcing and carbon visibility before the EPC bid hardens contingency.
+
+PRE-EPC OFFERINGS                                                                                                DOCUMENTATION FOR FINANCE + ESG
+
+
+    Master planning workshop, conceptual design and interface mapping for                                             Transparent BOMs and cost-allocation records supporting asset classification and
+    complex sites                                                                                                     depreciation , tax treatment confirmed per project
+
+
+    Conceptual cable solution design and electrical spine architecture                                                Verified EPDs for low-embodied-carbon procurement
+
+
+
+    Procurement risk register and schedule visibility                                                                 Scope 3 cradle-to-gate carbon data for ESG-linked financing and hyperscaler offtaker
+                                                                                                                      requirements
+
+
+    Capacity allocation and commodity (Cu/Al) exposure hedging support                                                Recycled-content integration and optimized logistics (circular economy)
+
+
+
+    Domestic supply strategy , U.S.-made resilience for TEF and local-content                                         Auditable domestic-content documentation for TEF and investor reporting
+    goals
+
+
+Conceptual commercial positioning — offerings, documentation and tax applicability are scoped and confirmed per project.
+
+
+                                      COST, SCHEDULE, SOURCING AND CARBON VISIBILITY — BEFORE THE EPC BID PRICES THE UNCERTAINTY AS CONTINGENCY.
+                                                                                                                                                   APPENDIX A12 · CABLE PLATFORM                23
+
+
+
+
+ONE PLATFORM — PLANT SCOPE AND PACKAGED SCOPE
+
+
+
+One platform from generator to grid and inside every package.
+
+Every run in the plant-zone map resolves to a named product family — one supplier, one spec basis, domestic manufacture.
+
+PLANT SCOPE — GENERATOR TO GRID                                                            PACKAGED & MODULAR SCOPE — 8 APPLICATION FAMILIES
+
+
+HVUD HIGH-VOLTAGE UNDERGROUND · 69–400 kV                                                  2.4–35 kV AND 600 V–2 kV · BUY AMERICA
+
+XLPE underground interconnect; HVUD3 (138 kV) and HVUD4 (230 kV) carry gen-tie,            Every wire and cable application that lives inside — or connects — factory-built power packages,
+behind-the-meter and bulk interconnect duty.                                               kitted to build sequence.
+MV-105 · NL-EPR · 5–35 kV                                                                  E-HOUSES · CONTAINERIZED SUBSTATIONS · SWITCHGEAR
+
+The plant collection and auxiliary backbone — 105°C rated, low-friction jacket, tray and   Power control rooms, MV switchgear lineups, LV switchboard and MCC packages.
+duct-bank installation economics.
+LV 600 V POWER, CONTROL & BUILDING WIRE                                                    TRANSFORMER · BESS · GENSET · PROCESS SKIDS
+
+Feeders, motor circuits and unit auxiliary distribution across the plant.                  Transformer packages, BESS containers, generator packages and process / pump skids.
+
+
+I&C, COMMS & TRANSMISSION CONDUCTOR                                                        SIMPULL, PRE-CUTS & KITTING
+
+DCS, protection and metering cable; industrial Ethernet and fiber; ACSR / ACSS / OPGW      Low-friction pulling technology, cut-to-length labeled reels and staged kits — energization-ready,
+where overhead is the route.                                                               less field labor.
+GROUNDING & BONDING                                                                        ONE SUPPLIER, WHOLE PACKAGE
+
+Bare copper and bonding conductor — the grid that ties the whole electrical system to      MV, LV, control, VFD, grounding, data and DC from a single domestic source — one procurement
+earth.                                                                                     line item per package.
+
+
+                            TWO LEAVE-BEHIND CATALOGUES ACCOMPANY THIS DECK — IPP CABLE CATALOGUE (PLANT) · PACKAGED POWER E-CATALOGUE (SKIDS).
+                                                                                                                                                                      APPENDIX A13 · OPERATING FLEET         24
+
+
+
+
+REJUVENATION, BROWNFIELD & SERVICE — FOR THE 25.8 GW FLEET
+
+
+
+Extend asset life without a greenfield rebuild.
+
+Aging cable systems, upgrades and modular additions across an operating fleet — planned around outage schedules, while the plant stays available.
+
+
+    ELECTRICAL SPINE REJUVENATION                                                                                     CABLE REPLACEMENT PROGRAMS
+
+    Assessment, planning and phased replacement of aging MV / LV cable, grounding, tray                               Fast-track domestic supply of power, control and instrumentation cable for planned
+    and fiber — while the plant remains operational.                                                                  outages or emergency replacement.
+
+
+
+
+    BROWNFIELD UPGRADES & REPOWER                                                                                     MODULAR POWER ADDITIONS
+
+    Electrical scope for turbine upgrades, generator replacements, emissions retrofits and                            E-houses, skids, switchgear, UPS and black-start capability — auxiliary loads or new
+    balance-of-plant modernization.                                                                                   behind-the-meter offtakers.
+
+
+
+
+    RELIABILITY & CONDITION SUPPORT                                                                                   SERVICE & LONG-TERM AGREEMENTS
+
+    System assessments, thermal-imaging coordination, failure analysis and prioritized                                Support contracts, inventory programs and rapid-response replacement capability for
+    replacement planning.                                                                                             operating fleets.
+
+
+Engagements begin with one focused 60–90 minute session across the fleet, then tailored proposals per plant — phased to outage schedules.
+
+
+                                 MINIMIZED DOWNTIME · EXTENDED ASSET LIFE · LOWER TOTAL COST THAN FULL REPLACEMENT — PHASED TO OUTAGE SCHEDULES.
+                                                                                                                   APPENDIX A1 · NRG CONTEXT   12
+
+
+
+
+SOURCE DISCIPLINE
+
+
+
+NRG context is current, attributed and non-additive.
+
+1.5 GW TEF PORTFOLIO                   One operating project and two projects targeting mid-2028. Do not describe the entire portfolio
+                                       as under construction.
+
+
+
+5.4 GW NEWBUILD DEVELOPMENT            Turbine and EPC access supports a runway through 2032. Do not call all 5.4 GW committed or
+                                       under construction.
+
+
+
+25.8 GW OPERATING FLEET                NRG's reported operating-generation fleet after the LS Power acquisition.
+
+
+
+
+~1-2 GW UPGRADE POTENTIAL              CT-to-CCGT conversions and traditional uprates are under evaluation, not a committed pipeline.
+
+
+
+
+                    DO NOT SUM THESE FIGURES: THEY REPRESENT DIFFERENT ASSET STATES AND OVERLAP CONCEPTUALLY.
+                                                                                                                                                                   APPENDIX A10 · PROJECT OF INTEREST           21
+
+
+
+
+CEDAR BAYOU UNIT 5 · BAYTOWN, TEXAS (CHAMBERS COUNTY)
+
+
+
+Cedar Bayou Unit 5 is one potential live-scope candidate.
+A 721 MW combined-cycle brownfield expansion at NRG's existing Cedar Bayou station — the anchor TEF unit in the NRG / GE Vernova / Kiewit framework, in active construction
+toward a mid-2028 COD.
+
+
+PROJECT FACTS — VALIDATED AUG 2026                                                                          SCOPE THAT WOULD BE IN PLAY
+
+
+721 MW CCGT · BROWNFIELD                                                                                        HV generator leads and brownfield 345 kV switchyard tie-in for the H-class train
+GE Vernova H-class train at the existing station; ERCOT Houston Load Zone; existing
+345 kV switchyard, cooling water and site infrastructure.
+                                                                                                                MV plant auxiliary distribution, 5–35 kV, across the new unit and interfaces
+
+$562M TEF LOAN · 3% · 20-YEAR
+                                                                                                                LV 600 V power and control — turbine hall, HRSG and balance of plant
+Signed September 2025 — 60% of the $936M project cost; part of $1.15B TEF financing
+plus $66M tax abatements across the three-unit program.
+                                                                                                                I&C, DCS and fiber — integration with the existing station and ERCOT SCADA
+COD TARGET MID-2028
+
+First TEF unit to advance construction; T.H. Wharton (415 MW) completes mid-2026,                               Grounding-grid extension into the heritage plant grid
+Greens Bayou 6 follows in 2028.
+
+                                                                                                                Sequenced reels, cut lengths and kits against 2026–2028 procurement windows
+EPC: TIC / KIEWIT · OEM: GE VERNOVA
+
+Delivered under the 5.4 GW development framework — 1.2 GW in service by 2029, 1.2
+GW by 2030, 3 GW more through 2032.                                                                             Post-COD continuity — records, spares and MRO carried into the operating fleet
+
+Validated against public sources, Aug 2026: PUCT / Texas Energy Fund announcements, Utility Dive, NRG investor materials. Capacity reported 689–721 MW across sources; 721 MW per the PUCT loan announcement.
+
+
+                                                                  ILLUSTRATIVE CANDIDATE ONLY — NRG SELECTS THE STARTING SCOPE.
+                                                                                                                             APPENDIX A9 · DEPLOYMENT MODES         20
+
+
+
+
+ONE SYSTEM · THREE ASSET STATES
+
+
+
+The governance model stays constant; the deployment path
+changes by asset state.
+NEW BUILD                                Standardize package interfaces, reserve capacity and sequence releases by workface.
+
+
+
+
+CONVERSION / UPRATE                      Revalidate duty, routes and terminals; map brownfield interfaces; stage work around outage constraints.
+
+
+
+
+OPERATING FLEET / OUTAGE                 Screen condition and criticality; evaluate replacement, eligible rejuvenation or outage spares; align material to outage
+                                         windows.
+
+
+
+COMMON GOVERNANCE RAIL                   Owner priorities, EPC/EOR design authority, OEM interfaces and contractor means and methods remain intact.
+
+
+
+
+                                  SAME COORDINATION RAIL. DIFFERENT ENGINEERING BASIS, RISK GATES AND OWNERS.
+                                                                                                                          APPENDIX A2 · GOVERNANCE   13
+
+
+
+
+DECISION RIGHTS
+
+
+
+Clear decision rights preserve existing project accountability.
+                                   Owner priorities, portfolio standards, risk tolerances, acceptance criteria and investment decisions.
+NRG + UTILITY INTERFACE
+
+
+
+                                   Design authority, calculations, specifications, routing basis and approved technical design.
+EPC & OE/EOR
+
+
+
+                                   Equipment-package interfaces, internal wiring, approved terminations and warranty boundaries.
+OEM & INTEGRATORS/PACKAGERS
+
+
+
+ELECTRICAL CONTRACTOR              Installation means and methods, pull planning, workface execution, testing support and field feedback.
+CHANNEL/DISTRIBUTION
+
+
+
+                                   Application support, material and capacity visibility, engineered cable/reel selections strategy, sequenced
+SOUTHWIRE
+                                   delivery and selected field support.
+
+
+
+           Southwire connects selected decisions; it does not replace owner, EPC, OEM ,Contractor or Channel accountability nor preference.
+                                                                                                                                                                APPENDIX A3 · SOUTHWIRE SUPPORT      14
+
+
+
+
+DEFINED SUPPORT
+
+
+
+Southwire can support selected delivery stages without taking
+design authority.
+ALIGN                                                                 COORDINATE                                                                PREPARE + SUPPORT
+
+Application and BOM review                                            Project cable management                                                  Cut-to-length, striping and labeling
+
+
+Alternative-construction evaluation                                   Inventory and release coordination                                        Kitting by package or work sequence
+
+
+Multidisciplinary cable support                                       Reel, cut and sequence planning                                           Selected cable-in-conduit, pulling + field support
+
+
+
+
+                                                                 Product-level EPDs and responsible-production evidence can support procurement where applicable to the selected
+     PROCUREMENT + SUSTAINABILITY SUPPORT
+                                                                 product and manufacturing site.
+
+
+                                      Capability does not equal outcome. Availability, geography, contractual scope and technical fit must be confirmed for each project.
+                                                                                                                                      APPENDIX A6 · SK-120 REFERENCE   17
+
+
+
+
+SK-120 · 3×1 NGCC · Rev 89 site model · 16 zones with per-zone cable applications · concept, not for construction · print at 34″ for site-walk use.
+                                                                                                                                            APPENDIX A7 · SKID SCENARIO   18
+
+
+
+
+INTERNAL ILLUSTRATIVE MODEL | NOT A CUSTOMER OR NRG RESULT
+
+
+Repeatable skid interfaces are a prefabrication candidate—not a promised
+result.
+Supplied 50 MW power-distribution skid scenario | timing is directional and unvalidated
+
+
+
+
+        8–12 wks                                                                                                          2–4 wks
+           SUPPLIED FIELD-BUILD MODEL                                                                                         SUPPLIED PREFAB MODEL
+              INSTALL + COMMISSION                                                                                             INSTALL + COMMISSION
+
+
+
+
+   WHAT IT SUGGESTS                                                                       WHAT IT DOES NOT PROVE
+
+
+   Pretested, prelabeled harnesses may reduce                                             Net savings, a six-to-eight-week gain or lower
+   onsite interfaces and congestion.                                                      commissioning risk.
+
+
+
+
+                                        Validate scope, crew plan, factory cost, freight, work rules, commissioning and schedule logic.
+                                                                                                                                               APPENDIX A8 · ADVANCED CONDUCTOR   19
+
+
+
+
+PUBLISHED ADJACENT CASE | ANONYMOUS UTILITY | NOT AN NRG RESULT
+
+
+A 138-kV crossing case shows where a conductor screen can change the
+rebuild question.
+Published Southwire river-crossing comparison under specific engineering assumptions
+
+
+
+
+                730 A                                                                                                         1,050 A
+          EXISTING 795 KCMIL DRAKE ACSR                                                                                         477 KCMIL C7 SOLUTION
+           98.0 FT CALCULATED FINAL SAG                                                                                     33.5 FT CALCULATED FINAL SAG
+
+
+
+
+   WHAT IT SUGGESTS                                                                          WHAT IT DOES NOT PROVE
+
+
+   Advanced conductor may avoid a full rebuild                                               NRG transfer capability, corridor fit, cost or schedule.
+   where line conditions permit.
+
+
+       WHY AN IPP CARES: GENERATOR-FUNDED NETWORK UPGRADES · THE GEN-TIE THE GENERATOR OWNS · UPRATE THERMAL LIMITS · IN-SERVICE CORRIDOR HEADROOM VS. A NEW QUEUE POSITION.
+
+                                        Require transmission-owner power-flow, structure, clearance, terminal, outage and permit validation.
+                                                                                                                                                               APPENDIX A14 · BENCHMARK MATH             25
+
+
+
+
+GROSS FIELD-LABOR MATH — PER CENTRAL SPINE
+
+
+
+What the 4,400 → 880 hours are worth, before net.
+The arithmetic behind slide 9, at a $95/hr fully burdened field-labor rate. This is the template A4 requires to be rebuilt with NRG inputs — not a result.
+
+
+
+
+    TODAY · FIELD-BUILT                                                   WITH CONNECTORIZED ASSEMBLY                                            GROSS DELTA PER SPINE
+
+
+
+
+    $418,000                                                              $83,600                                                                $334K
+    field labor per spine                                                 field labor per spine                                                  ~80% of field-labor cost
+
+                                                                                                                                                 IF IT REPEATS (GROSS, ILLUSTRATIVE)
+    4,400 man-hours × $95/hr                                              ~880 man-hours × $95/hr
+
+    27 installers × 2 shifts × 2 weeks                                    ~6 installers × 1 shift × ~3 days                                      10 spines → $3.3M
+                                                                                                                                                 50 spines → $16.7M
+    High variability, rework risk                                         Factory-validated, plug-and-play
+                                                                                                                                                 100 spines → $33.4M
+
+
+ASSUMPTIONS · $95/hr fully burdened (wage + benefits + overtime + supervision) · 4,400 hours observed on one site-built spine in an adjacent market, May 2026 · ~80% field-labor reduction typical for
+prefabricated interconnect · one spine = one central electrical spine serving repeated generation modules.
+
+
+NOT NET. Subtract the assembly premium, engineering, factory labor, freight, factory acceptance and commissioning and prefabrication does not automatically remove an activity
+from the critical path.
+
+
+                                    GROSS TEMPLATE ONLY — REBUILD WITH NRG SCOPE, LABOR RATES AND SCHEDULE LOGIC BEFORE ANY CLAIM (SEE A4).
+

@@ -36,6 +36,26 @@ the $13B figure — none of which appear in the brochure).
   page, the founding story, and the three Southwire proof points. Fact-hygiene
   gates remain hard gates.
 
+## Rev 6 — back of book strengthened from Teaser_3
+
+Three new pages added after the outcome page, extracted from the original
+Teaser_3 deck (corrected wording applied per §4):
+
+- **08 Owner economics** — "Cable is a small cost category with outsized
+  execution consequences" + the four owner lenses (COD/revenue start, installed
+  cost, capital certainty, availability/lifecycle).
+- **09 Plant-wide coverage** — "Six clusters map a routed 3×1 electrical
+  reference model" (corrected from 3×1x1) with the six cluster scopes, cable
+  classes band and the illustrative disclaimer. "GENERATION ISLAND + BOP"
+  spelled correctly.
+- **10 Governance / decision rights** — the five-party accountability table with
+  Southwire's row highlighted, closing with the corrected line "Southwire
+  connects selected decisions — it does not replace owner, EPC, OEM, Contractor
+  or Channel accountability or preference."
+
+Now 12 pages (saddle-stitch friendly). QA gates updated; the ISLAN gate now
+matches the source typo only ("ISLAN ") so the corrected ISLAND spelling passes.
+
 ## Rev 5 — Rev 4 reverted at Stephan's direction
 
 Stephan reviewed the anti-pitch pass against the prior version and preferred the
