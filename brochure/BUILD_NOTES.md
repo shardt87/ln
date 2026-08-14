@@ -36,6 +36,18 @@ the $13B figure — none of which appear in the brochure).
   page, the founding story, and the three Southwire proof points. Fact-hygiene
   gates remain hard gates.
 
+## Rev 8 — outcome page unified as a dark spread; hypothesis boxes removed
+
+Stephan asked what the two bordered statements were for without numbers or a
+model behind them. Root cause: the source deck's honesty statements referred to
+the 4,400→880 field-hour benchmark, which §4 of the brief bans from the brochure
+("a brochure travels"). Without that evidence the boxes read as empty caveats.
+Resolution: page 7 is now a single dark spread — levers → outcomes down the
+left, the tray & cable x-ray blended seamlessly into a matching dark field at
+right (no panel edges), and the honesty message compressed to two small copper
+lines. If Stephan ever wants the benchmark numbers back, that is a §4 override
+he can make deliberately — a one-line change.
+
 ## Rev 7 — outcome page recomposed
 
 Page 7 rebuilt as a two-column architecture after Stephan flagged it as unclear:

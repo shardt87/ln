@@ -381,72 +381,55 @@ def p6_valueprop(c):
 
 
 def p7_value(c):
-    light_frame(c, 'THE OUTCOME', '07')
-    y = PH - 116
-    c.setFillColor(INK)
-    c.setFont('Helvetica-Bold', 24)
-    c.drawString(M, y, 'The value to NRG is fewer execution')
-    c.drawString(M, y - 30, 'surprises \u2014 not more supplier services.')
-
-    # right: dark blueprint sidebar carrying the routed tray & cable model
-    sx, sw_col = 452, PW - 452
     TEAL = Color(26/255, 39/255, 47/255)
     c.setFillColor(TEAL)
-    c.rect(sx, 0, sw_col, 432, fill=1, stroke=0)
-    iw = 332
+    c.rect(0, 0, PW, PH, fill=1, stroke=0)
+
+    tracked(c, M, PH - 64, 'THE OUTCOME', 'Helvetica-Bold', 7.5, 1.6, COPPER_LT)
+    c.setFillColor(WHITE)
+    c.setFont('Helvetica-Bold', 24)
+    c.drawString(M, PH - 96, 'The value to NRG is fewer execution')
+    c.drawString(M, PH - 126, 'surprises \u2014 not more supplier services.')
+
+    iw = 384
     ih = iw * 730 / 1600
-    ix = sx + (sw_col - 9 - iw) / 2
-    c.drawImage(IMG['xray_feather'], ix, 240, width=iw, height=ih, mask='auto')
-    tracked(c, sx + 26, 196, 'THE ROUTED MODEL', 'Helvetica-Bold', 7.5, 1.6, COPPER_LT)
+    ix = PW - iw - 9
+    c.drawImage(IMG['xray_feather'], ix, 244, width=iw, height=ih, mask='auto')
+    tracked(c, ix + 14, 212, 'THE ROUTED MODEL', 'Helvetica-Bold', 7.5, 1.6, COPPER_LT)
     c.setFillColor(OFFWHITE)
     c.setFont('Helvetica', 8.5)
-    c.drawString(sx + 26, 174, 'One electrical system \u2014 trays, routes and cable')
-    c.drawString(sx + 26, 161, 'planned plant-wide before material is released.')
-    c.setFillColor(Color(150/255, 160/255, 166/255))
+    c.drawString(ix + 14, 191, 'One electrical system \u2014 trays, routes and cable')
+    c.drawString(ix + 14, 178, 'planned plant-wide before material is released.')
+    c.setFillColor(Color(140/255, 152/255, 158/255))
     c.setFont('Helvetica', 6)
-    c.drawString(sx + 26, 138, 'CCGT tray & cable x-ray \u00b7 conceptual \u2014 not for construction')
-    tracked(c, PW - M, 20, '07', 'Helvetica-Bold', 6.5, 1.2, COPPER_LT, align='right')
+    c.drawString(ix + 14, 156, 'CCGT tray & cable x-ray \u00b7 conceptual \u2014 not for construction')
 
-    # left: levers -> outcomes, then the honest hypotheses
     rows = [
         ('ALIGN APPLICATIONS + INTERFACES EARLY', 'Fewer late changes and handoff failures'),
         ('GATE CAPACITY + RELEASES', 'More predictable material availability and sequencing'),
         ('PLAN REELS + REPEATABLE SETS TO THE WORKFACE', 'Less handling and avoidable rework'),
         ('CARRY FIELD RECORDS THROUGH TURNOVER', 'Cleaner commissioning and lifecycle continuity'),
     ]
-    lw_col = 376
     ry = 430
     for label, outcome in rows:
-        tracked(c, M, ry, label, 'Helvetica-Bold', 7.5, 0.8, INK)
-        c.setFillColor(GRAY)
+        tracked(c, M, ry, label, 'Helvetica-Bold', 8, 0.8, WHITE)
+        c.setFillColor(Color(178/255, 182/255, 184/255))
         c.setFont('Helvetica', 9)
-        c.drawString(M, ry - 14, outcome)
-        c.setStrokeColor(C('D8D2C8'))
+        c.drawString(M, ry - 15, outcome)
+        c.setStrokeColor(Color(52/255, 66/255, 74/255))
         c.setLineWidth(0.6)
-        c.line(M, ry - 25, M + lw_col, ry - 25)
-        ry -= 47
+        c.line(M, ry - 27, M + 340, ry - 27)
+        ry -= 52
 
-    tracked(c, M, 252, 'OUTCOME HYPOTHESES \u2014 TO VALIDATE ON ONE LIVE NRG SCOPE',
-            'Helvetica-Bold', 7, 1.0, COPPER_DP)
-    boxes = [
-        'Adjacent experience indicates where to test \u2014 not what NRG will save.',
-        'No presumption that the answer is prefab \u2014 or that Southwire belongs in the solution.',
-    ]
-    byt = 234
-    for txt in boxes:
-        bh = 58
-        c.setStrokeColor(COPPER)
-        c.setLineWidth(0.9)
-        c.rect(M, byt - bh, lw_col, bh, fill=0, stroke=1)
-        lines = wrap(c, txt, 'Helvetica', 9.5, lw_col - 30)
-        ty = byt - bh/2 + (len(lines) - 1) * 13.5 / 2 - 3
-        c.setFillColor(INK)
-        c.setFont('Helvetica', 9.5)
-        for ln in lines:
-            c.drawCentredString(M + lw_col/2, ty, ln)
-            ty -= 13.5
-        byt -= bh + 12
+    tracked(c, M, 118, 'OUTCOME HYPOTHESES \u2014 VALIDATED OR DISPROVED ON ONE LIVE NRG SCOPE.',
+            'Helvetica-Bold', 7.5, 1.2, COPPER_LT)
+    tracked(c, M, 102, 'NO PRESUMPTION THAT THE ANSWER IS PREFAB \u2014 OR THAT SOUTHWIRE BELONGS IN THE SOLUTION.',
+            'Helvetica-Bold', 7.5, 1.2, COPPER_LT)
 
+    c.setFillColor(Color(150/255, 155/255, 158/255))
+    c.setFont('Helvetica', 6.5)
+    c.drawString(M, 24, FOOTER)
+    tracked(c, PW - M, 24, '07', 'Helvetica-Bold', 6.5, 1.2, COPPER_LT, align='right')
 
 
 def p8_econ(c):
