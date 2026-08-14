@@ -38,6 +38,11 @@ IMG = {k: ImageReader(A + f) for k, f in {
     'lockup_dark': 'lockup_dark_keyed.png',       # white nrg | Southwire PGS on graphite
     'lockup_light': 'lockup_light.png',     # nrg | Southwire PGS on warm white
     'hero': 'hero_sky.jpg',                 # 3840x2987 sky-extended plant render
+    'cover_strip': 'cover_strip.png',       # peaker plant, warm-tinted, canvas-extended
+    'hero_iso': 'hero_iso_full.jpg',        # 5120px whole-plant isometric, full-bleed crop
+    'interior': 'interior_full.jpg',        # 8K turbine-hall interior w/ reel worker, scrimmed
+    'xray': 'xray.png',                     # CCGT tray & cable x-ray, title block cropped
+    'yard_strip': 'yard_strip.png',         # staging yard + Southwire reels band
 }.items()}
 
 FOOTER = 'Stephan Hardt   |   Power Generation Solutions'
@@ -126,6 +131,40 @@ def band_footer(c, folio):
 
 # ---------------------------------------------------------------- pages
 def p1_cover(c):
+    c.setFillColor(WARM)
+    c.rect(0, 0, PW, PH, fill=1, stroke=0)
+    c.setFillColor(COPPER)
+    c.rect(0, PH - 4, PW, 4, fill=1, stroke=0)
+
+    lh = 30
+    c.drawImage(IMG['lockup_light'], PW/2 - img_w('lockup_light', lh)/2, PH - 64 - lh,
+                width=img_w('lockup_light', lh), height=lh, mask='auto')
+
+    tracked(c, PW/2, 470, 'ACCELERATING', 'Helvetica-Bold', 42, 5, INK, align='center')
+    tracked(c, PW/2, 416, 'TIME TO POWER', 'Helvetica-BoldOblique', 42, 5, COPPER_DP, align='center')
+    c.setStrokeColor(COPPER)
+    c.setLineWidth(1.2)
+    c.line(PW/2 - 62, 390, PW/2 + 62, 390)
+
+    c.setFillColor(GRAY)
+    c.setFont('Helvetica', 11)
+    c.drawCentredString(PW/2, 358, "Accelerating & protecting power readiness across NRG's gas power generation buildout.")
+    tracked(c, PW/2, 334,
+            'COMBINED CYCLE  \u00b7  SIMPLE CYCLE & PEAKERS  \u00b7  MODULAR POWER  \u00b7  BLACK START  \u00b7  COAL/GAS REPOWER  \u00b7  GREENFIELD & BROWNFIELD',
+            'Helvetica', 6.8, 1.1, GRAY_LT, align='center')
+
+    tracked(c, PW/2, 266, 'PRESERVE SCHEDULE CERTAINTY THROUGH ENERGIZATION.',
+            'Helvetica-Bold', 8.5, 2.2, COPPER_DP, align='center')
+
+    c.drawImage(IMG['cover_strip'], 0, 0, width=PW, height=227)
+
+    c.setFillColor(Color(90/255, 88/255, 84/255))
+    c.setFont('Helvetica', 7.5)
+    c.drawString(M, 24, 'Stephan Hardt   |   Director, Power Generation Solutions   |   www.southwire.com')
+
+
+def p1_cover_hex(c):
+    """Original dark hexagon cover — switch build() to use this for the dark variant."""
     c.setFillColor(GRAPHITE)
     c.rect(0, 0, PW, PH, fill=1, stroke=0)
     th = PW * 785 / 4752
@@ -203,7 +242,7 @@ def p2_why_now(c):
 
 
 def p3_thesis(c):
-    c.drawImage(IMG['hero'], 0, 0, width=PW, height=PH)
+    c.drawImage(IMG['hero_iso'], 0, 0, width=PW, height=PH)
     tracked(c, M, PH - 62, 'THE THESIS', 'Helvetica-Bold', 7.5, 1.6, COPPER_DP)
     c.setFillColor(INK)
     c.setFont('Helvetica-Bold', 23)
@@ -271,62 +310,61 @@ def p4_risks(c):
 
 
 def p5_system(c):
-    light_frame(c, 'THE SYSTEM', '05', band=True)
-    y = PH - 122
-    c.setFillColor(INK)
-    c.setFont('Helvetica-Bold', 27)
-    c.drawString(M, y, 'One coordinated flow aligns decisions')
-    c.drawString(M, y - 33, 'from planning through turnover.')
-    c.setFillColor(GRAY)
-    c.setFont('Helvetica', 10.5)
-    c.drawString(M, y - 64, 'Southwire connects application support, material planning, sequenced logistics and field')
-    c.drawString(M, y - 79, 'readiness — without changing project accountability.')
+    c.drawImage(IMG['interior'], 0, 0, width=PW, height=PH)
+    tracked(c, M, PH - 56, 'THE SYSTEM', 'Helvetica-Bold', 7.5, 1.6, COPPER_LT)
+    c.setFillColor(WHITE)
+    c.setFont('Helvetica-Bold', 24)
+    c.drawString(M, PH - 88, 'One coordinated flow aligns decisions')
+    c.drawString(M, PH - 117, 'from planning through turnover.')
+    c.setFillColor(OFFWHITE)
+    c.setFont('Helvetica-Bold', 9.5)
+    c.drawString(M, PH - 141, 'Southwire connects application support, material planning, sequenced logistics')
+    c.drawString(M, PH - 156, 'and field readiness \u2014 without changing project accountability.')
+
+    bh = 140
+    c.setFillColor(GRAPHITE)
+    c.rect(0, 0, PW, bh, fill=1, stroke=0)
 
     steps = [
-        ('1', 'PLAN + FORECAST', 'Scope and capacity visibility'),
-        ('2', 'APPLICATION ALIGNMENT', 'Codes, duty and alternates'),
-        ('3', 'MATERIAL + REEL STRATEGY', 'Routes, cuts and reel plan'),
-        ('4', 'RELEASE + LOGISTICS', 'Sequence by zone and milestone'),
-        ('5', 'INSTALLATION READINESS', 'Labels, kits and pull planning'),
-        ('6', 'FIELD SUPPORT + TURNOVER', 'Feedback, testing and records'),
+        ('1', 'PLAN + FORECAST'),
+        ('2', 'APPLICATION ALIGNMENT'),
+        ('3', 'MATERIAL + REEL STRATEGY'),
+        ('4', 'RELEASE + LOGISTICS'),
+        ('5', 'INSTALLATION READINESS'),
+        ('6', 'FIELD SUPPORT + TURNOVER'),
     ]
-    x0, x1 = M + 40, PW - M - 40
-    ny = 292
+    x0, x1 = M + 36, PW - M - 36
+    ny = 100
     c.setStrokeColor(COPPER)
     c.setLineWidth(1)
     c.line(x0, ny, x1, ny)
     n = len(steps)
-    for i, (num, name, desc) in enumerate(steps):
+    for i, (num, name) in enumerate(steps):
         x = x0 + i * (x1 - x0) / (n - 1)
-        r = 13.5
-        c.setFillColor(GRAPHITE if i < n - 1 else COPPER_DP)
-        c.circle(x, ny, r, fill=1, stroke=0)
+        c.setFillColor(Color(50/255, 53/255, 58/255) if i < n - 1 else COPPER_DP)
+        c.circle(x, ny, 11.5, fill=1, stroke=0)
         c.setFillColor(WHITE)
-        c.setFont('Helvetica-Bold', 10.5)
-        c.drawCentredString(x, ny - 3.5, num)
-        yy = ny - 34
-        for ln in wrap(c, name, 'Helvetica-Bold', 8, 90):
-            tracked(c, x, yy, ln, 'Helvetica-Bold', 8, 0.8, INK, align='center')
-            yy -= 11.5
-        yy -= 3
-        c.setFillColor(GRAY)
-        c.setFont('Helvetica', 7.5)
-        for ln in wrap(c, desc, 'Helvetica', 7.5, 88):
-            c.drawCentredString(x, yy, ln)
+        c.setFont('Helvetica-Bold', 9.5)
+        c.drawCentredString(x, ny - 3.2, num)
+        yy = ny - 28
+        for ln in wrap(c, name, 'Helvetica-Bold', 7, 88):
+            tracked(c, x, yy, ln, 'Helvetica-Bold', 7, 0.8, OFFWHITE, align='center')
             yy -= 10
 
-    dark_band(c, 84)
-    tracked(c, PW/2, 40, 'FIELD-ENGINEER WHAT IS UNIQUE. PREFABRICATE WHAT REPEATS.',
-            'Helvetica-Bold', 10, 1.8, COPPER_LT, align='center')
-    band_footer(c, '05')
+    tracked(c, PW/2, 30, 'FIELD-ENGINEER WHAT IS UNIQUE. PREFABRICATE WHAT REPEATS.',
+            'Helvetica-Bold', 8.5, 1.6, COPPER_LT, align='center')
+    c.setFillColor(Color(140/255, 138/255, 134/255))
+    c.setFont('Helvetica', 6)
+    c.drawString(M, 12, FOOTER)
+    tracked(c, PW - M, 12, '05', 'Helvetica-Bold', 6, 1.2, COPPER_LT, align='right')
 
 
 def p6_value(c):
-    light_frame(c, 'THE OUTCOME  ·  AN HONEST BASIS', '06')
+    light_frame(c, 'THE OUTCOME  \u00b7  AN HONEST BASIS', '06')
     y = PH - 116
     c.setFillColor(INK)
     c.setFont('Helvetica-Bold', 24)
-    c.drawString(M, y, 'The value to NRG is fewer execution surprises —')
+    c.drawString(M, y, 'The value to NRG is fewer execution surprises \u2014')
     c.drawString(M, y - 30, 'not more supplier services.')
 
     rows = [
@@ -352,62 +390,70 @@ def p6_value(c):
         c.line(M, ry - 11, PW - M, ry - 11)
         ry -= 32
 
-    tracked(c, PW/2, 262, 'OUTCOME HYPOTHESES — TO VALIDATE ON ONE LIVE NRG SCOPE',
-            'Helvetica-Bold', 8, 1.8, COPPER_DP, align='center')
+    tracked(c, M, 268, 'OUTCOME HYPOTHESES \u2014 TO VALIDATE ON ONE LIVE NRG SCOPE',
+            'Helvetica-Bold', 7.5, 1.2, COPPER_DP)
     boxes = [
-        'Adjacent experience indicates where to test — not what NRG will save.',
-        'No presumption that the answer is prefab — or that Southwire belongs in the solution.',
+        'Adjacent experience indicates where to test \u2014 not what NRG will save.',
+        'No presumption that the answer is prefab \u2014 or that Southwire belongs in the solution.',
     ]
-    bw, bh, gap = (PW - 2 * M - 28) / 2, 84, 28
-    for i, txt in enumerate(boxes):
-        bx = M + i * (bw + gap)
-        byt = 236
+    bw, bh = 336, 76
+    byt = 250
+    for txt in boxes:
         c.setStrokeColor(COPPER)
         c.setLineWidth(0.9)
-        c.rect(bx, byt - bh, bw, bh, fill=0, stroke=1)
-        lines = wrap(c, txt, 'Helvetica', 11.5, bw - 44)
-        ty = byt - bh/2 + (len(lines) - 1) * 16 / 2 - 4
+        c.rect(M, byt - bh, bw, bh, fill=0, stroke=1)
+        lines = wrap(c, txt, 'Helvetica', 10.5, bw - 36)
+        ty = byt - bh/2 + (len(lines) - 1) * 15 / 2 - 3.5
         c.setFillColor(INK)
-        c.setFont('Helvetica', 11.5)
+        c.setFont('Helvetica', 10.5)
         for ln in lines:
-            c.drawCentredString(bx + bw/2, ty, ln)
-            ty -= 16
+            c.drawCentredString(M + bw/2, ty, ln)
+            ty -= 15
+        byt -= bh + 14
+
+    pw_img = 384
+    ph_img = pw_img * 730 / 1600
+    px = PW - pw_img
+    c.drawImage(IMG['xray'], px, 0, width=pw_img, height=ph_img)
+    tracked(c, px + 10, 10, 'CCGT BLACK-START TRAY & CABLE X-RAY  \u00b7  CONCEPTUAL \u2014 NOT FOR CONSTRUCTION',
+            'Helvetica', 5.5, 0.8, Color(200/255, 205/255, 210/255))
+    tracked(c, PW - M, 26, '06', 'Helvetica-Bold', 6.5, 1.2, COPPER_LT, align='right')
 
 
 def p7_who(c):
-    light_frame(c, 'WHO WE ARE', '07')
-    y = PH - 116
+    light_frame(c, 'WHO WE ARE', '07', band=True)
+    y = PH - 112
     c.setFillColor(INK)
     c.setFont('Helvetica-Bold', 25)
-    c.drawString(M, y, 'A family-held American manufacturer —')
+    c.drawString(M, y, 'A family-held American manufacturer \u2014')
     c.drawString(M, y - 31, 'from copper rod to finished cable since 1950.')
     c.setFillColor(GRAY)
     c.setFont('Helvetica', 10)
-    c.drawString(M, y - 62, 'Roy Richards founded Southwire after the poles his crews built stood wireless for months after World War II.')
-    c.drawString(M, y - 77, 'From 12 employees and three secondhand machines in Carrollton, Georgia, Southwire remains family-held')
-    c.drawString(M, y - 92, 'and vertically integrated — from copper rod through finished cable.')
+    c.drawString(M, y - 60, 'Roy Richards founded Southwire after the poles his crews built stood wireless for months after World War II.')
+    c.drawString(M, y - 75, 'From 12 employees and three secondhand machines in Carrollton, Georgia, Southwire remains family-held')
+    c.drawString(M, y - 90, 'and vertically integrated \u2014 from copper rod through finished cable.')
 
     stats = [
         ('1950', 'FOUNDED', INK),
         ('9,000+', 'EMPLOYEES WORLDWIDE', INK),
-        ('$9.7B', '2025 REVENUE · FORBES', COPPER_DP),
+        ('$9.7B', '2025 REVENUE \u00b7 FORBES', COPPER_DP),
         ('12', 'INDUSTRIES SERVED', INK),
         ('7', 'COPPER MARK SITES', INK),
     ]
     c.setStrokeColor(C('D8D2C8'))
     c.setLineWidth(0.75)
-    c.line(M, 356, PW - M, 356)
+    c.line(M, 384, PW - M, 384)
     coln = len(stats)
     colw = (PW - 2 * M) / coln
     for i, (val, label, col) in enumerate(stats):
         x = M + i * colw
         c.setFillColor(col)
-        c.setFont('Helvetica-Bold', 27)
-        c.drawString(x, 306, val)
-        tracked(c, x, 284, label, 'Helvetica-Bold', 6.5, 1.1, GRAY)
+        c.setFont('Helvetica-Bold', 26)
+        c.drawString(x, 338, val)
+        tracked(c, x, 316, label, 'Helvetica-Bold', 6.5, 1.1, GRAY)
 
     proofs = [
-        ('COPPER TECHNOLOGY', 'Half of the world’s copper rod passes through a Southwire SCR® system.'),
+        ('COPPER TECHNOLOGY', 'Half of the world\u2019s copper rod passes through a Southwire SCR\u00ae system.'),
         ('U.S. POWER GRID', 'We produce half of the wire and cable that moves U.S. electricity.'),
         ('AMERICAN HOMES', 'Half of American homes contain wiring produced by Southwire.'),
     ]
@@ -416,13 +462,16 @@ def p7_who(c):
         x = M + i * (colw3 + 36)
         c.setStrokeColor(COPPER)
         c.setLineWidth(1.4)
-        c.line(x + 1, 226, x + 27, 226)
-        tracked(c, x, 204, label, 'Helvetica-Bold', 8, 1.5, COPPER_DP)
-        para(c, x, 182, txt, 'Helvetica', 9.5, 13.5, colw3 - 12, GRAY)
+        c.line(x + 1, 276, x + 27, 276)
+        tracked(c, x, 256, label, 'Helvetica-Bold', 8, 1.5, COPPER_DP)
+        para(c, x, 234, txt, 'Helvetica', 9.5, 13.5, colw3 - 12, GRAY)
 
+    sh = PW * 670 / 3840
+    c.drawImage(IMG['yard_strip'], 0, 42, width=PW, height=sh)
     c.setFillColor(GRAY_LT)
-    c.setFont('Helvetica', 8.5)
-    c.drawString(M, 108, 'HV underground  ·  MV & LV power  ·  I&C, comms and fiber  ·  classified & circuit integrity  ·  modular & factory-built power  ·  accessories & raceway')
+    c.setFont('Helvetica', 6.5)
+    c.drawString(M, 20, FOOTER)
+    tracked(c, PW - M, 20, '07', 'Helvetica-Bold', 6.5, 1.2, COPPER, align='right')
 
 
 def p8_ask(c):

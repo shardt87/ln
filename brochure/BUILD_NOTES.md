@@ -36,7 +36,24 @@ the $13B figure — none of which appear in the brochure).
   page, the founding story, and the three Southwire proof points. Fact-hygiene
   gates remain hard gates.
 
-## Assets — all from the source PDF, no AI imagery
+## Rev 2 imagery — four supplied render shots placed by resolution budget
+
+- **Cover**: peaker-plant shot (1672px) as a warm-tinted, canvas-extended bottom strip
+  anchored right — at 1672px it holds ~5.6 in at 300 ppi, so it cannot carry a
+  full-bleed cover; the extension keeps the plant at native resolution. A dark
+  hexagon cover variant is preserved in code (`p1_cover_hex`).
+- **P3 hero**: whole-plant isometric (5120×2880) full-bleed at 455 ppi, beige sky
+  extended upward for a clean text zone (tower melted with a wide-blur smear).
+- **P5**: 8K turbine-hall interior (7680×4146) full-bleed at 474 ppi with a baked
+  top scrim; the 6-step flow moved into the bottom graphite band. The Southwire
+  reel + worker are kept in frame at lower left.
+- **P6**: CCGT tray-and-cable X-ray (1600px) as a 300 ppi partial-bleed panel,
+  bottom-right. The burned-in title block was cropped off because it contains
+  fuel-cell naming (§4 exclusion) and a non-brand company name; caption re-set.
+- **P7**: staging-yard band with Southwire reels, cropped from the original
+  teaser isometric (3840px → 341 ppi full-width).
+
+## Assets — all remaining art from the source PDF, no AI imagery
 
 - Hero (p3): the plant isometric on Teaser_4 p5 ships sliced into eight 3840×242
   JPEG strips; reassembled to 3840×1933, sky extended upward with a gradient sampled

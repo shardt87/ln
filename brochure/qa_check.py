@@ -42,7 +42,7 @@ words = sum(len(p.split()) for p in pages_text)
 print('WORD COUNT:', words, '(informational)')
 txt2 = subprocess.run(['pdftotext', PDF, '-'], capture_output=True, text=True).stdout
 banned = ['13 B', '13B', '$13', '4,400', '880', '334', '418', '83.6', '33.4M',
-          '3x1x1', '3×1x1', 'Cyle', 'ISLAN', 'Cedar Bayou', 'Bloom']
+          '3x1x1', '3×1x1', 'Cyle', 'ISLAN', 'Cedar Bayou', 'Bloom', 'Fuel Cell', 'Caller']
 fails = [b for b in banned if b in txt or b in txt2.replace(' ', '')]
 print('BANNED STRINGS FOUND:', fails if fails else 'none')
 credit = sum(1 for pg in pages_text if 'Stephan Hardt' in pg)
