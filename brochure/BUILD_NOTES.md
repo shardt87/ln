@@ -36,7 +36,17 @@ the $13B figure — none of which appear in the brochure).
   page, the founding story, and the three Southwire proof points. Fact-hygiene
   gates remain hard gates.
 
-## Rev 4 — "anti-pitch" pass (responding to executive review feedback)
+## Rev 5 — Rev 4 reverted at Stephan's direction
+
+Stephan reviewed the anti-pitch pass against the prior version and preferred the
+prior version outright. The brochure is restored to Rev 3 exactly (verified
+text-identical to the reference PDF he attached): hexagon cover, NRG | Southwire
+lockups, full "Who We Are" page, value proposition on the whole-plant isometric.
+The Rev 4 changes (iso cover, Southwire-only headers, framed gate-render plate,
+demoted corporate page) remain in git history at commit be794de if any single
+element is ever wanted back.
+
+## Rev 4 (reverted) — "anti-pitch" pass (responding to executive review feedback)
 
 - **Cover**: hexagon texture retired; the cover is now the full-bleed 3D whole-plant
   isometric with the title set in its sky — leading with build-environment fluency,

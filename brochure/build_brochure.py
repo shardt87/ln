@@ -43,11 +43,7 @@ IMG = {k: ImageReader(A + f) for k, f in {
     'interior': 'interior_full.jpg',        # 8K turbine-hall interior w/ reel worker, scrimmed
     'xray': 'xray.png',                     # CCGT tray & cable x-ray, title block cropped
     'yard_strip': 'yard_strip.png',
-    'peaker': 'peaker_warm.png',        # peaker plant, warm-tinted, native res
-    'gate_plate': 'gate_plate.png',     # plant-gate render w/ Southwire reel, framed plate
-    'sw_light': 'sw_light.png',         # Southwire-only lockup, light pages
-    'sw_dark': 'sw_dark.png',           # Southwire-only lockup, dark pages
-    'sw_cover': 'sw_cover.png',         # Southwire lockup tinted to iso cover background        # peaker plant, warm-tinted, native res         # staging yard + Southwire reels band
+    'peaker': 'peaker_warm.png',        # peaker plant, warm-tinted, native res         # staging yard + Southwire reels band
 }.items()}
 
 FOOTER = 'Stephan Hardt   |   Power Generation Solutions'
@@ -110,8 +106,8 @@ def light_frame(c, kicker, folio, band=False):
     c.rect(0, 0, PW, PH, fill=1, stroke=0)
     c.setFillColor(COPPER)
     c.rect(0, PH - 3.5, PW, 3.5, fill=1, stroke=0)
-    lh = 21
-    c.drawImage(IMG['sw_light'], M, PH - 30 - lh, width=img_w('sw_light', lh),
+    lh = 23
+    c.drawImage(IMG['lockup_light'], M, PH - 30 - lh, width=img_w('lockup_light', lh),
                 height=lh, mask='auto')
     tracked(c, PW - M, PH - 30 - 13, kicker, 'Helvetica-Bold', 7.5, 1.6, COPPER, align='right')
     if not band:
@@ -136,24 +132,36 @@ def band_footer(c, folio):
 
 # ---------------------------------------------------------------- pages
 def p1_cover(c):
-    c.drawImage(IMG['hero_iso'], 0, 0, width=PW, height=PH)
+    c.setFillColor(WARM)
+    c.rect(0, 0, PW, PH, fill=1, stroke=0)
     c.setFillColor(COPPER)
     c.rect(0, PH - 4, PW, 4, fill=1, stroke=0)
-    lh = 26
-    c.drawImage(IMG['sw_cover'], M, PH - 46 - lh, width=img_w('sw_cover', lh),
-                height=lh, mask='auto')
 
-    tracked(c, M, PH - 122, 'ACCELERATING', 'Helvetica-Bold', 38, 4, INK)
-    tracked(c, M, PH - 170, 'TIME TO POWER', 'Helvetica-BoldOblique', 38, 4, COPPER_DP)
+    lh = 30
+    c.drawImage(IMG['lockup_light'], PW/2 - img_w('lockup_light', lh)/2, PH - 64 - lh,
+                width=img_w('lockup_light', lh), height=lh, mask='auto')
+
+    tracked(c, PW/2, 470, 'ACCELERATING', 'Helvetica-Bold', 42, 5, INK, align='center')
+    tracked(c, PW/2, 416, 'TIME TO POWER', 'Helvetica-BoldOblique', 42, 5, COPPER_DP, align='center')
     c.setStrokeColor(COPPER)
     c.setLineWidth(1.2)
-    c.line(M + 2, PH - 190, M + 126, PH - 190)
-    tracked(c, M, PH - 210, 'PRESERVE SCHEDULE CERTAINTY THROUGH ENERGIZATION.',
-            'Helvetica-Bold', 8.5, 2.0, C('4A4C50'))
+    c.line(PW/2 - 62, 390, PW/2 + 62, 390)
 
-    c.setFillColor(C('5A5C60'))
+    c.setFillColor(GRAY)
+    c.setFont('Helvetica', 11)
+    c.drawCentredString(PW/2, 358, "Accelerating & protecting power readiness across NRG's gas power generation buildout.")
+    tracked(c, PW/2, 334,
+            'COMBINED CYCLE  \u00b7  SIMPLE CYCLE & PEAKERS  \u00b7  MODULAR POWER  \u00b7  BLACK START  \u00b7  COAL/GAS REPOWER  \u00b7  GREENFIELD & BROWNFIELD',
+            'Helvetica', 6.8, 1.1, GRAY_LT, align='center')
+
+    tracked(c, PW/2, 266, 'PRESERVE SCHEDULE CERTAINTY THROUGH ENERGIZATION.',
+            'Helvetica-Bold', 8.5, 2.2, COPPER_DP, align='center')
+
+    c.drawImage(IMG['cover_strip'], 0, 0, width=PW, height=227)
+
+    c.setFillColor(Color(90/255, 88/255, 84/255))
     c.setFont('Helvetica', 7.5)
-    c.drawString(M, 24, 'Prepared for NRG   |   Stephan Hardt   |   Director, Power Generation Solutions   |   www.southwire.com')
+    c.drawString(M, 24, 'Stephan Hardt   |   Director, Power Generation Solutions   |   www.southwire.com')
 
 
 def p1_cover_hex(c):
@@ -280,7 +288,7 @@ def p4_risks(c):
 
     cols = [
         ('01', 'LABOR & DEMAND PRESSURE',
-         'Long pulls, dense terminations and compressed turnover windows concentrate labor when flexibility is lowest.'),
+         'AI and electrification power demand collide with long pulls, dense terminations and compressed turnover windows — concentrating labor exactly when flexibility is lowest.'),
         ('02', 'MATERIAL + INSTALLATION FIT',
          'Ratings, routes, reel lengths, accessories and releases must match the workface, not only the BOM — or material arrives right and installs wrong.'),
         ('03', 'FRAGMENTED COORDINATION',
@@ -356,20 +364,19 @@ def p5_system(c):
 
 
 def p6_valueprop(c):
-    light_frame(c, 'THE VALUE PROPOSITION', '06')
+    c.drawImage(IMG['hero_iso'], 0, 0, width=PW, height=PH)
+    tracked(c, M, PH - 62, 'THE VALUE PROPOSITION', 'Helvetica-Bold', 7.5, 1.6, COPPER_DP)
     c.setFillColor(INK)
-    c.setFont('Helvetica-Bold', 34)
-    c.drawString(M, 452, 'Southwire helps IPPs')
-    c.setFillColor(COPPER_DP)
-    c.drawString(M, 408, 'accelerate time to power.')
-    c.setStrokeColor(COPPER)
-    c.setLineWidth(1.2)
-    c.line(M + 2, 378, M + 126, 378)
+    c.setFont('Helvetica-Bold', 25)
+    c.drawString(M, PH - 96, 'Southwire helps IPPs accelerate time to power.')
     c.setFillColor(C('4A4C50'))
-    c.setFont('Helvetica', 13)
-    c.drawString(M, 330, 'By transforming fragmented plant-wide cable procurement into a coordinated,')
-    c.drawString(M, 308, 'workface-ready electrical delivery system \u2014 reducing schedule risk, installed effort,')
-    c.drawString(M, 286, 'and commissioning exposure from planning through energization.')
+    c.setFont('Helvetica', 11)
+    c.drawString(M, PH - 126, 'By transforming fragmented plant-wide cable procurement into a coordinated, workface-ready')
+    c.drawString(M, PH - 142, 'electrical delivery system \u2014 reducing schedule risk, installed effort, and commissioning')
+    c.drawString(M, PH - 158, 'exposure from planning through energization.')
+    c.setFillColor(GRAY)
+    c.setFont('Helvetica', 6.5)
+    c.drawRightString(PW - M, PH - 62, FOOTER + '   \u00b7   06')
 
 
 def p7_value(c):
@@ -434,32 +441,57 @@ def p7_value(c):
 
 
 def p8_who(c):
-    light_frame(c, 'PLANT-WIDE DELIVERY', '08', band=True)
-    y = PH - 122
+    light_frame(c, 'WHO WE ARE', '08', band=True)
+    y = PH - 112
     c.setFillColor(INK)
     c.setFont('Helvetica-Bold', 25)
-    c.drawString(M, y, 'One accountable partner \u2014 from the switchyard')
-    c.drawString(M, y - 31, 'to the last termination.')
+    c.drawString(M, y, 'A family-held American manufacturer \u2014')
+    c.drawString(M, y - 31, 'from copper rod to finished cable since 1950.')
     c.setFillColor(GRAY)
-    c.setFont('Helvetica', 10.5)
-    c.drawString(M, y - 62, 'Cable, accessories and engineered assemblies planned, packaged and staged to arrive ready')
-    c.drawString(M, y - 77, 'for the crew that installs them.')
+    c.setFont('Helvetica', 10)
+    c.drawString(M, y - 60, 'Roy Richards founded Southwire after the poles his crews built stood wireless for months after World War II.')
+    c.drawString(M, y - 75, 'From 12 employees and three secondhand machines in Carrollton, Georgia, Southwire remains family-held')
+    c.drawString(M, y - 90, 'and vertically integrated \u2014 from copper rod through finished cable.')
 
-    pw_img, ph_img = 369, 207.6
-    px = (PW - pw_img) / 2
-    py = 118
-    c.drawImage(IMG['gate_plate'], px, py, width=pw_img, height=ph_img)
+    stats = [
+        ('1950', 'FOUNDED', INK),
+        ('9,000+', 'EMPLOYEES WORLDWIDE', INK),
+        ('$9.7B', '2025 REVENUE \u00b7 FORBES', COPPER_DP),
+        ('12', 'INDUSTRIES SERVED', INK),
+        ('7', 'COPPER MARK SITES', INK),
+    ]
     c.setStrokeColor(C('D8D2C8'))
     c.setLineWidth(0.75)
-    c.rect(px, py, pw_img, ph_img, fill=0, stroke=1)
-    tracked(c, PW/2, 98, 'CONCEPTUAL PLANT VISUALIZATION \u2014 CABLE, ACCESSORIES AND ASSEMBLIES STAGED TO THE GATE',
-            'Helvetica', 6.5, 1.2, GRAY_LT, align='center')
+    c.line(M, 384, PW - M, 384)
+    coln = len(stats)
+    colw = (PW - 2 * M) / coln
+    for i, (val, label, col) in enumerate(stats):
+        x = M + i * colw
+        c.setFillColor(col)
+        c.setFont('Helvetica-Bold', 26)
+        c.drawString(x, 338, val)
+        tracked(c, x, 316, label, 'Helvetica-Bold', 6.5, 1.1, GRAY)
 
-    dark_band(c, 48)
-    c.setFillColor(Color(150/255, 148/255, 144/255))
-    c.setFont('Helvetica', 7)
-    c.drawString(M, 30, 'Southwire  \u00b7  family-held since 1950  \u00b7  $9.7B 2025 revenue (Forbes)  \u00b7  vertically integrated \u2014 copper rod to finished cable')
-    band_footer(c, '08')
+    proofs = [
+        ('COPPER TECHNOLOGY', 'Half of the world\u2019s copper rod passes through a Southwire SCR\u00ae system.'),
+        ('U.S. POWER GRID', 'We produce half of the wire and cable that moves U.S. electricity.'),
+        ('AMERICAN HOMES', 'Half of American homes contain wiring produced by Southwire.'),
+    ]
+    colw3 = (PW - 2 * M - 2 * 36) / 3
+    for i, (label, txt) in enumerate(proofs):
+        x = M + i * (colw3 + 36)
+        c.setStrokeColor(COPPER)
+        c.setLineWidth(1.4)
+        c.line(x + 1, 276, x + 27, 276)
+        tracked(c, x, 256, label, 'Helvetica-Bold', 8, 1.5, COPPER_DP)
+        para(c, x, 234, txt, 'Helvetica', 9.5, 13.5, colw3 - 12, GRAY)
+
+    sh = PW * 670 / 3840
+    c.drawImage(IMG['yard_strip'], 0, 42, width=PW, height=sh)
+    c.setFillColor(GRAY_LT)
+    c.setFont('Helvetica', 6.5)
+    c.drawString(M, 20, FOOTER)
+    tracked(c, PW - M, 20, '08', 'Helvetica-Bold', 6.5, 1.2, COPPER, align='right')
 
 
 def p9_ask(c):
@@ -471,9 +503,9 @@ def p9_ask(c):
     c.setLineWidth(1.4)
     c.line(sw + 4, 0, sw + 4, PH)
 
-    lw = 118
-    lh = lw * 202 / 578
-    c.drawImage(IMG['sw_dark'], PW - M - lw, PH - 48 - lh, width=lw, height=lh, mask='auto')
+    lw = 168
+    lh = lw * 202 / 943
+    c.drawImage(IMG['lockup_dark'], PW - M - lw, PH - 48 - lh, width=lw, height=lh, mask='auto')
 
     x0 = sw + 56
     tracked(c, x0, PH - 88, 'THE ASK', 'Helvetica-Bold', 7.5, 1.6, COPPER_LT)
@@ -537,7 +569,7 @@ def build(path='Southwire_PowerGen_Brochure_NRG_Rev01.pdf'):
     c.setAuthor('Stephan Hardt')
     c.setTitle('Accelerating Time to Power — NRG | Southwire Power Generation Solutions')
     c.setSubject('SWR-PG-BROCHURE-NRG Rev 01')
-    for draw in [p1_cover, p2_why_now, p3_thesis, p4_risks, p5_system, p6_valueprop, p7_value, p8_who, p9_ask]:
+    for draw in [p1_cover_hex, p2_why_now, p3_thesis, p4_risks, p5_system, p6_valueprop, p7_value, p8_who, p9_ask]:
         draw(c)
         c.setTrimBox([BLEED, BLEED, PW - BLEED, PH - BLEED])
         c.setCropBox([0, 0, PW, PH])
