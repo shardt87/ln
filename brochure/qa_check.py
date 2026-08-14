@@ -18,14 +18,16 @@ for i, page in enumerate(pdf):
     files.append(f)
 print('rasterized', len(files), 'pages at 150dpi', img.size)
 
-# proof sheet 4x2
+# proof sheet grid
 imgs = [Image.open(f) for f in files]
 w, h = imgs[0].size
 sw, sh = w // 2, h // 2
-sheet = Image.new('RGB', (4 * sw + 5 * 12, 2 * sh + 3 * 12), (220, 218, 214))
+cols = 3 if len(imgs) > 8 else 4
+rows = (len(imgs) + cols - 1) // cols
+sheet = Image.new('RGB', (cols * sw + (cols + 1) * 12, rows * sh + (rows + 1) * 12), (220, 218, 214))
 for i, im in enumerate(imgs):
-    x = 12 + (i % 4) * (sw + 12)
-    y = 12 + (i // 4) * (sh + 12)
+    x = 12 + (i % cols) * (sw + 12)
+    y = 12 + (i // cols) * (sh + 12)
     sheet.paste(im.resize((sw, sh), Image.LANCZOS), (x, y))
 sheet.save('proof_sheet.png')
 print('proof_sheet.png', sheet.size)
@@ -46,5 +48,5 @@ banned = ['13 B', '13B', '$13', '4,400', '880', '334', '418', '83.6', '33.4M',
 fails = [b for b in banned if b in txt or b in txt2.replace(' ', '')]
 print('BANNED STRINGS FOUND:', fails if fails else 'none')
 credit = sum(1 for pg in pages_text if 'Stephan Hardt' in pg)
-print('PAGES WITH CREDIT:', credit, '/ 8')
+print('PAGES WITH CREDIT:', credit, '/ 9')
 sys.exit(1 if fails else 0)

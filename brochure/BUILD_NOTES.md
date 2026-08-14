@@ -36,22 +36,21 @@ the $13B figure — none of which appear in the brochure).
   page, the founding story, and the three Southwire proof points. Fact-hygiene
   gates remain hard gates.
 
-## Rev 2 imagery — four supplied render shots placed by resolution budget
+## Rev 3 — nine pages, renders placed per Stephan's direction
 
-- **Cover**: peaker-plant shot (1672px) as a warm-tinted, canvas-extended bottom strip
-  anchored right — at 1672px it holds ~5.6 in at 300 ppi, so it cannot carry a
-  full-bleed cover; the extension keeps the plant at native resolution. A dark
-  hexagon cover variant is preserved in code (`p1_cover_hex`).
-- **P3 hero**: whole-plant isometric (5120×2880) full-bleed at 455 ppi, beige sky
-  extended upward for a clean text zone (tower melted with a wide-blur smear).
-- **P5**: 8K turbine-hall interior (7680×4146) full-bleed at 474 ppi with a baked
-  top scrim; the 6-step flow moved into the bottom graphite band. The Southwire
-  reel + worker are kept in frame at lower left.
-- **P6**: CCGT tray-and-cable X-ray (1600px) as a 300 ppi partial-bleed panel,
-  bottom-right. The burned-in title block was cropped off because it contains
-  fuel-cell naming (§4 exclusion) and a non-brand company name; caption re-set.
-- **P7**: staging-yard band with Southwire reels, cropped from the original
-  teaser isometric (3840px → 341 ppi full-width).
+Structure: 1 cover (dark hexagon, restored per feedback) · 2 why now (+ peaker
+panel) · 3 thesis (original staging-yard hero, restored per feedback) · 4 risks ·
+5 the system (8K turbine-hall interior, full-bleed) · 6 **value proposition** (new
+section, Stephan's copy verbatim, whole-plant isometric full-bleed at 455 ppi) ·
+7 outcome/honesty (+ tray & cable X-ray panel) · 8 who we are (+ staging-yard reel
+band) · 9 the ask (dark).
+
+- The canvas-extension cover treatment was dropped (read as smearing); the light
+  render cover remains in code as `p1_cover` if ever wanted.
+- Peaker shot (1672px) sits on "Why now" as a native-resolution panel flush on the
+  band, bleeding right (~320 ppi) — thematically the newbuild/peaker story.
+- X-ray panel: burned-in title block cropped off because it contains fuel-cell
+  naming (§4 exclusion) and a non-brand company name; caption re-set in type.
 
 ## Assets — all remaining art from the source PDF, no AI imagery
 

@@ -42,7 +42,8 @@ IMG = {k: ImageReader(A + f) for k, f in {
     'hero_iso': 'hero_iso_full.jpg',        # 5120px whole-plant isometric, full-bleed crop
     'interior': 'interior_full.jpg',        # 8K turbine-hall interior w/ reel worker, scrimmed
     'xray': 'xray.png',                     # CCGT tray & cable x-ray, title block cropped
-    'yard_strip': 'yard_strip.png',         # staging yard + Southwire reels band
+    'yard_strip': 'yard_strip.png',
+    'peaker': 'peaker_warm.png',        # peaker plant, warm-tinted, native res         # staging yard + Southwire reels band
 }.items()}
 
 FOOTER = 'Stephan Hardt   |   Power Generation Solutions'
@@ -210,7 +211,7 @@ def p2_why_now(c):
         ('5.4 GW', 'NEWBUILD DEVELOPMENT',
          'Turbine and EPC access supports a development runway through 2032.'),
         ('25.8 GW', 'OPERATING FLEET',
-         'Reported operating fleet after the LS Power acquisition; ~1–2 GW of upgrades under evaluation.'),
+         'Reported after the LS Power acquisition; ~1–2 GW of upgrades under evaluation.'),
     ]
     colw = (PW - 2 * M - 2 * 36) / 3
     for i, (num, label, desc) in enumerate(cols):
@@ -228,9 +229,12 @@ def p2_why_now(c):
     c.setFont('Helvetica', 10)
     c.drawString(M, 204, 'Specifications, capacity, metals hedging, releases, reels, package interfaces and field')
     c.drawString(M, 190, 'readiness still have to converge on COD.  Do not sum the figures — asset states overlap.')
+    ph_img = 196
+    pw_img = ph_img * 1672 / 941
+    c.drawImage(IMG['peaker'], PW - pw_img, 84, width=pw_img, height=ph_img)
     c.setFillColor(GRAY_LT)
     c.setFont('Helvetica', 6)
-    c.drawRightString(PW - M, 100, 'Source: NRG 2Q26, Aug. 4, 2026')
+    c.drawString(M, 100, 'Source: NRG 2Q26, Aug. 4, 2026')
 
     dark_band(c, 84)
     tracked(c, M, 56, 'DIFFERENT ASSET STATES. ONE REQUIREMENT.',
@@ -242,7 +246,7 @@ def p2_why_now(c):
 
 
 def p3_thesis(c):
-    c.drawImage(IMG['hero_iso'], 0, 0, width=PW, height=PH)
+    c.drawImage(IMG['hero'], 0, 0, width=PW, height=PH)
     tracked(c, M, PH - 62, 'THE THESIS', 'Helvetica-Bold', 7.5, 1.6, COPPER_DP)
     c.setFillColor(INK)
     c.setFont('Helvetica-Bold', 23)
@@ -359,8 +363,24 @@ def p5_system(c):
     tracked(c, PW - M, 12, '05', 'Helvetica-Bold', 6, 1.2, COPPER_LT, align='right')
 
 
-def p6_value(c):
-    light_frame(c, 'THE OUTCOME  \u00b7  AN HONEST BASIS', '06')
+def p6_valueprop(c):
+    c.drawImage(IMG['hero_iso'], 0, 0, width=PW, height=PH)
+    tracked(c, M, PH - 62, 'THE VALUE PROPOSITION', 'Helvetica-Bold', 7.5, 1.6, COPPER_DP)
+    c.setFillColor(INK)
+    c.setFont('Helvetica-Bold', 25)
+    c.drawString(M, PH - 96, 'Southwire helps IPPs accelerate time to power.')
+    c.setFillColor(C('4A4C50'))
+    c.setFont('Helvetica', 11)
+    c.drawString(M, PH - 126, 'By transforming fragmented plant-wide cable procurement into a coordinated, workface-ready')
+    c.drawString(M, PH - 142, 'electrical delivery system \u2014 reducing schedule risk, installed effort, and commissioning')
+    c.drawString(M, PH - 158, 'exposure from planning through energization.')
+    c.setFillColor(GRAY)
+    c.setFont('Helvetica', 6.5)
+    c.drawRightString(PW - M, PH - 62, FOOTER + '   \u00b7   06')
+
+
+def p7_value(c):
+    light_frame(c, 'THE OUTCOME  \u00b7  AN HONEST BASIS', '07')
     y = PH - 116
     c.setFillColor(INK)
     c.setFont('Helvetica-Bold', 24)
@@ -417,11 +437,11 @@ def p6_value(c):
     c.drawImage(IMG['xray'], px, 0, width=pw_img, height=ph_img)
     tracked(c, px + 10, 10, 'CCGT BLACK-START TRAY & CABLE X-RAY  \u00b7  CONCEPTUAL \u2014 NOT FOR CONSTRUCTION',
             'Helvetica', 5.5, 0.8, Color(200/255, 205/255, 210/255))
-    tracked(c, PW - M, 26, '06', 'Helvetica-Bold', 6.5, 1.2, COPPER_LT, align='right')
+    tracked(c, PW - M, 26, '07', 'Helvetica-Bold', 6.5, 1.2, COPPER_LT, align='right')
 
 
-def p7_who(c):
-    light_frame(c, 'WHO WE ARE', '07', band=True)
+def p8_who(c):
+    light_frame(c, 'WHO WE ARE', '08', band=True)
     y = PH - 112
     c.setFillColor(INK)
     c.setFont('Helvetica-Bold', 25)
@@ -471,10 +491,10 @@ def p7_who(c):
     c.setFillColor(GRAY_LT)
     c.setFont('Helvetica', 6.5)
     c.drawString(M, 20, FOOTER)
-    tracked(c, PW - M, 20, '07', 'Helvetica-Bold', 6.5, 1.2, COPPER, align='right')
+    tracked(c, PW - M, 20, '08', 'Helvetica-Bold', 6.5, 1.2, COPPER, align='right')
 
 
-def p8_ask(c):
+def p9_ask(c):
     c.setFillColor(GRAPHITE)
     c.rect(0, 0, PW, PH, fill=1, stroke=0)
     sw = PH * 548 / 2640
@@ -549,7 +569,7 @@ def build(path='Southwire_PowerGen_Brochure_NRG_Rev01.pdf'):
     c.setAuthor('Stephan Hardt')
     c.setTitle('Accelerating Time to Power — NRG | Southwire Power Generation Solutions')
     c.setSubject('SWR-PG-BROCHURE-NRG Rev 01')
-    for draw in [p1_cover, p2_why_now, p3_thesis, p4_risks, p5_system, p6_value, p7_who, p8_ask]:
+    for draw in [p1_cover_hex, p2_why_now, p3_thesis, p4_risks, p5_system, p6_valueprop, p7_value, p8_who, p9_ask]:
         draw(c)
         c.setTrimBox([BLEED, BLEED, PW - BLEED, PH - BLEED])
         c.setCropBox([0, 0, PW, PH])
