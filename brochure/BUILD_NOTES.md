@@ -29,7 +29,12 @@ the $13B figure — none of which appear in the brochure).
   fuel-cell naming, spine extrapolations, anything marked internal.
 - Banned-string grep gate: `13B, $13, 4,400, 880, 334, 418, 83.6, 3x1x1, Cyle,
   ISLAN, Cedar Bayou, Bloom` → none present.
-- Word count: **386** (gate ≤400), via pdfplumber word extraction.
+- Word count: **799**. The task file's ≤400-word gate was deliberately set aside
+  after Stephan's review ("went from a lot of content to 0") — the revision restores
+  the source deck's substance: full risk descriptions, the six-step flow with
+  descriptors, the four owner-value levers, the 4-step validation path on the ask
+  page, the founding story, and the three Southwire proof points. Fact-hygiene
+  gates remain hard gates.
 
 ## Assets — all from the source PDF, no AI imagery
 
@@ -46,18 +51,14 @@ the $13B figure — none of which appear in the brochure).
 
 ## Judgment calls for Stephan's review before print
 
-1. **Cover tagline cut.** "PRESERVE SCHEDULE CERTAINTY THROUGH ENERGIZATION" was
-   removed from the cover to honor the ≤400-word budget and the "nothing else on the
-   cover" instruction. Easy to restore (commented location in `p1_cover`).
-2. **P5 diagram labels only.** The six step names are kept; the 4-word descriptors
-   under each step were cut for the word budget. The flow still reads.
-3. **P6 honesty page** has no headline — just the two bordered statements, per
-   "give it room".
-4. **P7 stat row**: first label shortened to "FOUNDED" (Carrollton no longer fits at
-   tracked caps without colliding with the next column).
-5. **Staging-yard render not used**: at full-page width it lands at ~215 ppi,
-   below the 300 ppi gate. P7 stays typographic instead.
-6. CMYK conversion is not applied — file is RGB. If the printer requires
+1. **Fuel-cell naming omitted from the cover scope line** per the §4 exclusion,
+   even though the PPT title slide lists it.
+2. **P6 merges owner value + the honesty boxes** ("The value to NRG is fewer
+   execution surprises") so the honesty message keeps a full page-half without an
+   empty page.
+3. **Staging-yard render not used**: at full-page width it lands at ~215 ppi,
+   below the 300 ppi effective-resolution gate. P7 stays typographic instead.
+4. CMYK conversion is not applied — file is RGB. If the printer requires
    CMYK/PDF-X, run it through Acrobat/Ghostscript with the print profile.
 
 ## QA loop
