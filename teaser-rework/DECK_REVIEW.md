@@ -236,3 +236,14 @@ benchmark math) plus A8's dark layout cloned from the adjacent-experience templa
 orphaned raster images removed; only genuine content images remain (cover art, plant model,
 SK-120 poster). 2.2 MB PPTX, every text run editable. Exports regenerated. Rev 16 supersedes
 Rev 15.
+
+### Rev 17 — mobile-friendly typography (2026-08-13)
+
+Root cause of the "disconfigured" mobile rendering: 1,158 text runs in Arial Narrow, which
+mobile PowerPoint (iOS/Android) does not ship — it substitutes a ~18% wider font and every
+tight label overflows its box. Fix: all Narrow runs converted to plain Arial at 0.84x size
+(width-compensated), preserving layout geometry on every platform. True licensed brand fonts
+cannot be used here — PPTX font embedding is ignored by mobile PowerPoint — so Arial, the
+system base of Southwire's grotesque look, is the brand-safe choice; hierarchy carried by
+weight, caps and color instead of condensation. All 25 pages re-rendered and verified.
+Rev 17 supersedes Rev 16.
