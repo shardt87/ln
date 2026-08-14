@@ -144,3 +144,15 @@ one-hour ask). Integrated Power Infrastructure ECatalog (11 pp) duplicated A10/s
 re-added. **IPP Financing Structures NGCC Briefing (5-slide pptx) deliberately not ported**:
 internal enablement for sponsor/lender conversations; lecturing NRG on their own capital stack
 would undercut the deck's posture. Slide notes on A12 record this.
+
+### A13 · Benchmark Math (added 2026-08-13)
+
+From photos of the internal "BDM Technical Solution Innovation Update" (Aug 2026). The one thing
+the deck was missing: the dollar template behind slide 7's hours — $418,000 (4,400 hrs x $95/hr,
+27 installers x 2 shifts x 2 weeks) vs $83,600 (~880 hrs, ~6 installers x 1 shift x ~3 days),
+~$334K gross delta per spine, with repeat-scale figures. Framed as gross template, not result;
+"NOT NET" warning and an explicit pointer back to A5's release gate. **Counterparty and site
+deliberately anonymized** ("one site-built spine in an adjacent market, May 2026") because A5
+requires external-use permission before a named reference travels. Also excluded from the same
+source deck: named utility pilots, portfolio initiative counts, Class 4 launch status and the
+800VDC data-center roadmap — internal roadmap material, not NRG-facing.
