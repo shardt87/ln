@@ -1,4 +1,8 @@
 qa/
 teaser4_text.txt
+teaser3_text.txt
 Teaser_4.pdf
 Teaser.pptx
+node_modules/
+slide-*.jpg
+*.pdf.txt
