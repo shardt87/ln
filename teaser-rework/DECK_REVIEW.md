@@ -176,3 +176,20 @@ advanced-conductor corridor economics** (~$57.5M capital avoided, 6 yrs faster, 
 utilities**; in ERCOT the TDUs own transmission, not the IPP. The one narrow C7 angle for NRG is
 gen-tie thermal limits on the ~1-2 GW uprate program — a verbal point, not a slide; (3) the
 "Advanced Conductor Value Prop Project" planning page — internal project plan.
+
+### A15 · Interconnection Timing (added 2026-08-13) — corrects the A14 exclusion
+
+The A14 note excluded the C7 advanced-conductor case as "utility-only." **That was too
+categorical.** An IPP can use reconductoring to get ahead of interconnection timing, through four
+real paths: (1) generator-funded network upgrades — standard in PJM, where the interconnection
+customer pays for them; (2) the gen-tie, which the generator owns outright; (3) uprates that push
+an existing gen-tie past its thermal limit; (4) capacity from an in-service corridor instead of a
+new queue position.
+
+A15 therefore carries the case, **re-pointed from utility capital to IPP schedule**: the headline
+is time-to-COD, tied back to A6's IRR lever, with the $57.5M reframed as assigned upgrade cost
+rather than corridor capital. The slide states the mechanism honestly — the IPP cannot
+unilaterally reconductor a TO-owned line; it is proposed and funded through the interconnection
+study process with TO and ISO agreement. Notes flag that ERCOT's queue binds less than PJM's, so
+the argument is strongest against NRG's PJM exposure and the mid-Atlantic half of the 5.4 GW
+framework, and that the source baseline is a traditional **new build**, not a rebuild in place.
