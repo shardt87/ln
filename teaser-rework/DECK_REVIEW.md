@@ -258,3 +258,15 @@ what-we-do columns, Forbes Jul 5 2026 coverage line, and the three market-scale 
 bottom band. Appendices A1-A14 shifted to A2-A15 with page numbers and cross-references
 (benchmark math's "SEE A4" -> "SEE A5") updated. Deck now 26 slides; executive send-ahead now
 15 pages (core 11 + who-we-are + context + governance + evidence discipline).
+
+### Forbes link + References appendix A16 (2026-08-13)
+
+A1's Forbes coverage line is now a live hyperlink (underlined title + "READ ON FORBES" both
+clickable). New **A16 · Resources** (slide 27) closes the deck: left column lists the six
+leave-behind documents (IPP Cable Catalogue, Packaged Power e-Catalogue, Rejuvenation/Brownfield
+offering, Integrated Power Infrastructure e-Catalog, SK-120 poster, Cedar Bayou reference) each
+mapped to the appendix it backs; right column carries clickable southwire.com references
+(project services, services, product transparency/EPDs, responsible production), the Forbes
+cover image with credited illustration and linked article, and the public fact base (NRG 2Q26,
+PUCT/TEF, Utility Dive) tied back to A2/A5. Band: "Every claim in this deck traces to one of
+these documents — ask and we will send the source." Deck now 27 slides.
