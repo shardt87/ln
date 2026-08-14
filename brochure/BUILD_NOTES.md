@@ -36,6 +36,16 @@ the $13B figure — none of which appear in the brochure).
   page, the founding story, and the three Southwire proof points. Fact-hygiene
   gates remain hard gates.
 
+## Rev 7 — outcome page recomposed
+
+Page 7 rebuilt as a two-column architecture after Stephan flagged it as unclear:
+left column tells one story top-to-bottom (headline → four levers with their
+outcomes → the two outcome-hypothesis boxes), and the tray-and-cable x-ray now
+sits in a full-height dark "blueprint sidebar" on the right — background matched
+to the render, edges feathered — captioned "The routed model: one electrical
+system — trays, routes and cable planned plant-wide before material is
+released." The image now has a stated purpose instead of floating in a corner.
+
 ## Rev 6 — back of book strengthened from Teaser_3
 
 Three new pages added after the outcome page, extracted from the original

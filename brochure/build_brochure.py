@@ -41,7 +41,8 @@ IMG = {k: ImageReader(A + f) for k, f in {
     'cover_strip': 'cover_strip.png',       # peaker plant, warm-tinted, canvas-extended
     'hero_iso': 'hero_iso_full.jpg',        # 5120px whole-plant isometric, full-bleed crop
     'interior': 'interior_full.jpg',        # 8K turbine-hall interior w/ reel worker, scrimmed
-    'xray': 'xray.png',                     # CCGT tray & cable x-ray, title block cropped
+    'xray': 'xray.png',
+    'xray_feather': 'xray_feather.png',                     # CCGT tray & cable x-ray, title block cropped
     'yard_strip': 'yard_strip.png',
     'peaker': 'peaker_warm.png',        # peaker plant, warm-tinted, native res         # staging yard + Southwire reels band
 }.items()}
@@ -380,64 +381,72 @@ def p6_valueprop(c):
 
 
 def p7_value(c):
-    light_frame(c, 'THE OUTCOME  \u00b7  AN HONEST BASIS', '07')
+    light_frame(c, 'THE OUTCOME', '07')
     y = PH - 116
     c.setFillColor(INK)
     c.setFont('Helvetica-Bold', 24)
-    c.drawString(M, y, 'The value to NRG is fewer execution surprises \u2014')
-    c.drawString(M, y - 30, 'not more supplier services.')
+    c.drawString(M, y, 'The value to NRG is fewer execution')
+    c.drawString(M, y - 30, 'surprises \u2014 not more supplier services.')
 
+    # right: dark blueprint sidebar carrying the routed tray & cable model
+    sx, sw_col = 452, PW - 452
+    TEAL = Color(26/255, 39/255, 47/255)
+    c.setFillColor(TEAL)
+    c.rect(sx, 0, sw_col, 432, fill=1, stroke=0)
+    iw = 332
+    ih = iw * 730 / 1600
+    ix = sx + (sw_col - 9 - iw) / 2
+    c.drawImage(IMG['xray_feather'], ix, 240, width=iw, height=ih, mask='auto')
+    tracked(c, sx + 26, 196, 'THE ROUTED MODEL', 'Helvetica-Bold', 7.5, 1.6, COPPER_LT)
+    c.setFillColor(OFFWHITE)
+    c.setFont('Helvetica', 8.5)
+    c.drawString(sx + 26, 174, 'One electrical system \u2014 trays, routes and cable')
+    c.drawString(sx + 26, 161, 'planned plant-wide before material is released.')
+    c.setFillColor(Color(150/255, 160/255, 166/255))
+    c.setFont('Helvetica', 6)
+    c.drawString(sx + 26, 138, 'CCGT tray & cable x-ray \u00b7 conceptual \u2014 not for construction')
+    tracked(c, PW - M, 20, '07', 'Helvetica-Bold', 6.5, 1.2, COPPER_LT, align='right')
+
+    # left: levers -> outcomes, then the honest hypotheses
     rows = [
         ('ALIGN APPLICATIONS + INTERFACES EARLY', 'Fewer late changes and handoff failures'),
         ('GATE CAPACITY + RELEASES', 'More predictable material availability and sequencing'),
         ('PLAN REELS + REPEATABLE SETS TO THE WORKFACE', 'Less handling and avoidable rework'),
         ('CARRY FIELD RECORDS THROUGH TURNOVER', 'Cleaner commissioning and lifecycle continuity'),
     ]
-    ry = y - 76
-    xr = M + 350
+    lw_col = 376
+    ry = 430
     for label, outcome in rows:
-        tracked(c, M, ry, label, 'Helvetica-Bold', 8, 1.0, INK)
-        c.setStrokeColor(COPPER)
-        c.setLineWidth(1)
-        c.line(xr - 26, ry + 2.5, xr - 12, ry + 2.5)
-        c.line(xr - 16, ry + 5.5, xr - 12, ry + 2.5)
-        c.line(xr - 16, ry - 0.5, xr - 12, ry + 2.5)
+        tracked(c, M, ry, label, 'Helvetica-Bold', 7.5, 0.8, INK)
         c.setFillColor(GRAY)
-        c.setFont('Helvetica', 9.5)
-        c.drawString(xr, ry, outcome)
+        c.setFont('Helvetica', 9)
+        c.drawString(M, ry - 14, outcome)
         c.setStrokeColor(C('D8D2C8'))
         c.setLineWidth(0.6)
-        c.line(M, ry - 11, PW - M, ry - 11)
-        ry -= 32
+        c.line(M, ry - 25, M + lw_col, ry - 25)
+        ry -= 47
 
-    tracked(c, M, 268, 'OUTCOME HYPOTHESES \u2014 TO VALIDATE ON ONE LIVE NRG SCOPE',
-            'Helvetica-Bold', 7.5, 1.2, COPPER_DP)
+    tracked(c, M, 252, 'OUTCOME HYPOTHESES \u2014 TO VALIDATE ON ONE LIVE NRG SCOPE',
+            'Helvetica-Bold', 7, 1.0, COPPER_DP)
     boxes = [
         'Adjacent experience indicates where to test \u2014 not what NRG will save.',
         'No presumption that the answer is prefab \u2014 or that Southwire belongs in the solution.',
     ]
-    bw, bh = 336, 76
-    byt = 250
+    byt = 234
     for txt in boxes:
+        bh = 58
         c.setStrokeColor(COPPER)
         c.setLineWidth(0.9)
-        c.rect(M, byt - bh, bw, bh, fill=0, stroke=1)
-        lines = wrap(c, txt, 'Helvetica', 10.5, bw - 36)
-        ty = byt - bh/2 + (len(lines) - 1) * 15 / 2 - 3.5
+        c.rect(M, byt - bh, lw_col, bh, fill=0, stroke=1)
+        lines = wrap(c, txt, 'Helvetica', 9.5, lw_col - 30)
+        ty = byt - bh/2 + (len(lines) - 1) * 13.5 / 2 - 3
         c.setFillColor(INK)
-        c.setFont('Helvetica', 10.5)
+        c.setFont('Helvetica', 9.5)
         for ln in lines:
-            c.drawCentredString(M + bw/2, ty, ln)
-            ty -= 15
-        byt -= bh + 14
+            c.drawCentredString(M + lw_col/2, ty, ln)
+            ty -= 13.5
+        byt -= bh + 12
 
-    pw_img = 384
-    ph_img = pw_img * 730 / 1600
-    px = PW - pw_img
-    c.drawImage(IMG['xray'], px, 0, width=pw_img, height=ph_img)
-    tracked(c, px + 10, 10, 'CCGT BLACK-START TRAY & CABLE X-RAY  \u00b7  CONCEPTUAL \u2014 NOT FOR CONSTRUCTION',
-            'Helvetica', 5.5, 0.8, Color(200/255, 205/255, 210/255))
-    tracked(c, PW - M, 26, '07', 'Helvetica-Bold', 6.5, 1.2, COPPER_LT, align='right')
 
 
 def p8_econ(c):
