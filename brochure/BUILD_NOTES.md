@@ -36,6 +36,23 @@ the $13B figure — none of which appear in the brochure).
   page, the founding story, and the three Southwire proof points. Fact-hygiene
   gates remain hard gates.
 
+## Rev 4 — "anti-pitch" pass (responding to executive review feedback)
+
+- **Cover**: hexagon texture retired; the cover is now the full-bleed 3D whole-plant
+  isometric with the title set in its sky — leading with build-environment fluency,
+  not brand texture. Credit line reads "Prepared for NRG | Stephan Hardt | …".
+- **NRG logo removed from all headers.** Pages carry a Southwire-only lockup;
+  NRG appears in words, not co-branding, until a pilot exists.
+- **"Who We Are" page deleted.** Second-last page is now "Plant-wide delivery":
+  the new gate render (studio version — the blue-sky variant clashes with the
+  warm/copper palette) as a framed conceptual plate, one delivery statement, and
+  the corporate credentials compressed to a single footnote line in the band
+  ("family-held since 1950 · $9.7B 2025 revenue (Forbes) · vertically
+  integrated"). Founding story, stat row and proof trio removed from the narrative.
+- **Risk copy reverted** to the punchier original (no AI/electrification macro).
+- **Value proposition** is now a typographic statement page (the isometric moved
+  to the cover).
+
 ## Rev 3 — nine pages, renders placed per Stephan's direction
 
 Structure: 1 cover (dark hexagon, restored per feedback) · 2 why now (+ peaker
