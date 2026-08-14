@@ -36,6 +36,21 @@ the $13B figure — none of which appear in the brochure).
   page, the founding story, and the three Southwire proof points. Fact-hygiene
   gates remain hard gates.
 
+## Rev 9 — benchmark reinstated at Stephan's explicit direction (§4 override)
+
+Stephan directed that the 4,400→~880 field-hour benchmark return so the honesty
+statements have their evidence. This is a deliberate override of the brief's §4
+exclusion — the benchmark now travels with the brochure. Page 7 is now the
+"Adjacent evidence" page and reads as one argument: the benchmark pair
+(observed site-built vs modeled factory-built, labeled "illustrative
+adjacent-market benchmark — not an NRG result"), what it suggests, what it does
+not prove, the routed model captioned as what makes the factory-built number
+possible, and the closing discipline lines ("Rebuild the case with NRG scope,
+labor rates, schedule logic and acceptance criteria" / "No presumption…").
+The lever→outcome table was dropped from this page; owner value is carried by
+the owner-economics page. QA banned-strings list updated accordingly
+(4,400 and 880 removed; all other exclusions still enforced).
+
 ## Rev 8 — outcome page unified as a dark spread; hypothesis boxes removed
 
 Stephan asked what the two bordered statements were for without numbers or a

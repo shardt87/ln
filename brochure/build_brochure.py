@@ -385,46 +385,63 @@ def p7_value(c):
     c.setFillColor(TEAL)
     c.rect(0, 0, PW, PH, fill=1, stroke=0)
 
-    tracked(c, M, PH - 64, 'THE OUTCOME', 'Helvetica-Bold', 7.5, 1.6, COPPER_LT)
+    tracked(c, M, PH - 64, 'ADJACENT EVIDENCE', 'Helvetica-Bold', 7.5, 1.6, COPPER_LT)
     c.setFillColor(WHITE)
-    c.setFont('Helvetica-Bold', 24)
-    c.drawString(M, PH - 96, 'The value to NRG is fewer execution')
-    c.drawString(M, PH - 126, 'surprises \u2014 not more supplier services.')
+    c.setFont('Helvetica-Bold', 23)
+    c.drawString(M, PH - 96, 'Adjacent experience indicates where')
+    c.drawString(M, PH - 125, 'to test \u2014 not what NRG will save.')
 
+    # benchmark pair
+    c.setFillColor(WHITE)
+    c.setFont('Helvetica-Bold', 42)
+    c.drawString(M, 388, '4,400')
+    c.setStrokeColor(COPPER)
+    c.setLineWidth(1.6)
+    c.line(M + 182, 402, M + 224, 402)
+    c.line(M + 216, 408, M + 224, 402)
+    c.line(M + 216, 396, M + 224, 402)
+    c.setFillColor(COPPER_LT)
+    c.drawString(M + 244, 388, '~880')
+    tracked(c, M, 366, 'OBSERVED FIELD HOURS', 'Helvetica-Bold', 6.8, 1.0, Color(178/255, 182/255, 184/255))
+    tracked(c, M, 355, 'SITE-BUILT BASELINE', 'Helvetica-Bold', 6.8, 1.0, Color(178/255, 182/255, 184/255))
+    tracked(c, M + 244, 366, 'MODELED FIELD HOURS', 'Helvetica-Bold', 6.8, 1.0, COPPER_LT)
+    tracked(c, M + 244, 355, 'FACTORY-BUILT ASSEMBLY', 'Helvetica-Bold', 6.8, 1.0, COPPER_LT)
+    c.setFillColor(Color(150/255, 158/255, 162/255))
+    c.setFont('Helvetica', 8.5)
+    c.drawString(M, 326, 'Field hours per electrical spine in one repetitive modular-generation scope.')
+    c.drawString(M, 313, 'Illustrative adjacent-market benchmark \u2014 not an NRG result.')
+
+    tracked(c, M, 268, 'WHAT IT SUGGESTS', 'Helvetica-Bold', 7.5, 1.4, COPPER_LT)
+    c.setFillColor(OFFWHITE)
+    c.setFont('Helvetica', 9.5)
+    c.drawString(M, 248, 'Stable, repeatable interfaces may be candidates')
+    c.drawString(M, 234, 'for offsite work.')
+
+    tracked(c, M, 196, 'WHAT IT DOES NOT PROVE', 'Helvetica-Bold', 7.5, 1.4, COPPER_LT)
+    c.setFillColor(OFFWHITE)
+    c.setFont('Helvetica', 9.5)
+    c.drawString(M, 176, 'Net NRG savings, schedule reduction or')
+    c.drawString(M, 162, 'critical-path removal.')
+
+    # routed model, blended into the dark field
     iw = 384
     ih = iw * 730 / 1600
     ix = PW - iw - 9
     c.drawImage(IMG['xray_feather'], ix, 244, width=iw, height=ih, mask='auto')
-    tracked(c, ix + 14, 212, 'THE ROUTED MODEL', 'Helvetica-Bold', 7.5, 1.6, COPPER_LT)
+    tracked(c, ix + 14, 212, 'THE ROUTED MODEL \u2014 WHAT MAKES THE FACTORY-BUILT NUMBER POSSIBLE',
+            'Helvetica-Bold', 6.8, 1.0, COPPER_LT)
     c.setFillColor(OFFWHITE)
     c.setFont('Helvetica', 8.5)
-    c.drawString(ix + 14, 191, 'One electrical system \u2014 trays, routes and cable')
-    c.drawString(ix + 14, 178, 'planned plant-wide before material is released.')
+    c.drawString(ix + 14, 191, 'One electrical system \u2014 trays, routes and cable planned')
+    c.drawString(ix + 14, 178, 'plant-wide, so repeatable runs can be built offsite.')
     c.setFillColor(Color(140/255, 152/255, 158/255))
     c.setFont('Helvetica', 6)
     c.drawString(ix + 14, 156, 'CCGT tray & cable x-ray \u00b7 conceptual \u2014 not for construction')
 
-    rows = [
-        ('ALIGN APPLICATIONS + INTERFACES EARLY', 'Fewer late changes and handoff failures'),
-        ('GATE CAPACITY + RELEASES', 'More predictable material availability and sequencing'),
-        ('PLAN REELS + REPEATABLE SETS TO THE WORKFACE', 'Less handling and avoidable rework'),
-        ('CARRY FIELD RECORDS THROUGH TURNOVER', 'Cleaner commissioning and lifecycle continuity'),
-    ]
-    ry = 430
-    for label, outcome in rows:
-        tracked(c, M, ry, label, 'Helvetica-Bold', 8, 0.8, WHITE)
-        c.setFillColor(Color(178/255, 182/255, 184/255))
-        c.setFont('Helvetica', 9)
-        c.drawString(M, ry - 15, outcome)
-        c.setStrokeColor(Color(52/255, 66/255, 74/255))
-        c.setLineWidth(0.6)
-        c.line(M, ry - 27, M + 340, ry - 27)
-        ry -= 52
-
-    tracked(c, M, 118, 'OUTCOME HYPOTHESES \u2014 VALIDATED OR DISPROVED ON ONE LIVE NRG SCOPE.',
+    tracked(c, M, 100, 'REBUILD THE CASE WITH NRG SCOPE, LABOR RATES, SCHEDULE LOGIC AND ACCEPTANCE CRITERIA.',
             'Helvetica-Bold', 7.5, 1.2, COPPER_LT)
-    tracked(c, M, 102, 'NO PRESUMPTION THAT THE ANSWER IS PREFAB \u2014 OR THAT SOUTHWIRE BELONGS IN THE SOLUTION.',
-            'Helvetica-Bold', 7.5, 1.2, COPPER_LT)
+    tracked(c, M, 84, 'NO PRESUMPTION THAT THE ANSWER IS PREFAB \u2014 OR THAT SOUTHWIRE BELONGS IN THE SOLUTION.',
+            'Helvetica-Bold', 7.5, 1.2, Color(150/255, 158/255, 162/255))
 
     c.setFillColor(Color(150/255, 155/255, 158/255))
     c.setFont('Helvetica', 6.5)
