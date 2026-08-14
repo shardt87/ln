@@ -204,3 +204,23 @@ Changed: A9 title -> "Cedar Bayou Unit 5 — an example, not a recommendation"; 
 ACTIVE PROCUREMENT — INCLUDED AS A WORKED EXAMPLE; NRG SELECTS THE STARTING SCOPE"; A9 column
 head -> "SCOPE THAT WOULD BE IN PLAY"; slide 8 -> "EXAMPLE SCOPE FOR DISCUSSION ... NRG SELECTS
 THE SCOPE". Facts unchanged.
+
+### Rev 15 — best-of-both from user's Rev 14 (2026-08-13)
+
+Base: user-supplied Rev 14 "Mobile Compatible" PPTX (each slide a rasterized PNG + invisible
+text overlay). Executed my Rev 14 review verbatim:
+
+1. **Slide 8 rebuilt natively** — clipped logo fixed; owner-value-levers content unchanged.
+2. **Slide 16 (A5) rebuilt natively** — stray rectangle gone; Rev 14 wording kept.
+3. **Slide 21 (A10) rebuilt natively** — sliced validation footnote now fully visible; stray
+   rectangle gone; "illustrative candidate only" framing kept.
+4. **Slide 19 (A8)** — one-line IPP-relevance overlay added over the raster (generator-funded
+   network upgrades · gen-tie · uprate thermal limits · corridor headroom vs. queue).
+5. **Slide 25 (A14 · Benchmark Math) added** — the gated dollar template restored behind the A4
+   evidence gate ($418K -> $83.6K, ~$334K gross/spine, NOT-NET warning, anonymized source).
+6. Subtitle/title collisions fixed on rebuilt pages; orphaned raster media cleaned.
+
+Outputs: master PPTX (25 slides), full leave-behind PDF (25 pp), executive send-ahead PDF
+(14 pp = core 11 + A1 context + A2 governance + A4 evidence discipline). Rebuilt slides are
+native (crisp, editable); remaining pages stay rasterized as delivered. Rev 15 supersedes both
+Rev 10 and Rev 14.
