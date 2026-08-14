@@ -224,3 +224,15 @@ Outputs: master PPTX (25 slides), full leave-behind PDF (25 pp), executive send-
 (14 pp = core 11 + A1 context + A2 governance + A4 evidence discipline). Rebuilt slides are
 native (crisp, editable); remaining pages stay rasterized as delivered. Rev 15 supersedes both
 Rev 10 and Rev 14.
+
+### Rev 16 — fully editable rebuild (2026-08-13)
+
+Rev 15 fixed Rev 14's defects but inherited its rasterization (21 of 25 slides were pictures).
+Rev 16 makes every slide native PowerPoint: 12 slides harvested from the original native Rev 09
+package (same design DNA) with Rev 14's wording edits applied string-by-string; 6 rebuilt fresh
+in the idiom (A3 support, A4 evidence, A6 SK-120, A7 skid, A8 conductor + IPP line, A9 deployment
+modes); 5 carried over from Rev 15's native rebuilds (owner levers, site model, Cedar Bayou,
+benchmark math) plus A8's dark layout cloned from the adjacent-experience template. All 21
+orphaned raster images removed; only genuine content images remain (cover art, plant model,
+SK-120 poster). 2.2 MB PPTX, every text run editable. Exports regenerated. Rev 16 supersedes
+Rev 15.
