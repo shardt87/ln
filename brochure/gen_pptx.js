@@ -101,8 +101,8 @@ function bandFooter(s, folio, dark) {
     T(s, x, 298, colw, c[1], { size: 8, bold: true, color: COPPER_DP, track: 1.5 });
     T(s, x, 278, colw - 14, c[2], { size: 9.5, color: GRAY, leading: 13.5 });
   });
-  const ih = 150, iw = ih * 1672 / 941;
-  img(s, "peaker_warm.png", PW - iw, 234, iw, ih);
+  const iw = 248, ih = iw * 9 / 16;          // complete gate view, uncropped
+  img(s, "gate_complete.jpg", PW - M - iw, 236, iw, ih);
   T(s, M, 196, 500, ["Specifications, capacity, metals hedging, releases, reels, package interfaces and", "field readiness still have to converge on COD.  Do not sum the figures — asset states overlap."],
     { size: 9.5, color: GRAY, leading: 14 });
   T(s, M, 104, 300, "Source: NRG 2Q26, Aug. 4, 2026", { size: 6, color: GRAY_LT });

@@ -44,6 +44,7 @@ IMG = {k: ImageReader(A + f) for k, f in {
     'xray': 'xray.png',
     'xray_feather': 'xray_feather.png',                     # CCGT tray & cable x-ray, title block cropped
     'yard_strip': 'yard_strip.png',
+    'gate_complete': 'gate_complete.jpg',
     'peaker': 'peaker_warm.png',        # peaker plant, warm-tinted, native res         # staging yard + Southwire reels band
 }.items()}
 
@@ -230,9 +231,9 @@ def p2_why_now(c):
     c.setFont('Helvetica', 10)
     c.drawString(M, 204, 'Specifications, capacity, metals hedging, releases, reels, package interfaces and field')
     c.drawString(M, 190, 'readiness still have to converge on COD.  Do not sum the figures — asset states overlap.')
-    ph_img = 196
-    pw_img = ph_img * 1672 / 941
-    c.drawImage(IMG['peaker'], PW - pw_img, 84, width=pw_img, height=ph_img)
+    pw_img = 260
+    ph_img = pw_img * 9 / 16
+    c.drawImage(IMG['gate_complete'], PW - M - pw_img, 100, width=pw_img, height=ph_img)
     c.setFillColor(GRAY_LT)
     c.setFont('Helvetica', 6)
     c.drawString(M, 100, 'Source: NRG 2Q26, Aug. 4, 2026')

@@ -1,3 +1,22 @@
+## Rev 11 — complete gate render placed uncropped
+
+Stephan flagged the plant shot as "messed up" and asked for the complete view
+"from the last GLB". **No GLB or any 3D model has ever been part of this
+project** — every plant visual is a flat 2D raster, either extracted from
+Teaser_4.pdf or supplied by Stephan as an image. There is no camera to move and
+no geometry to re-render; the crop was made by me from a 2D source.
+
+The complete view he attached (IMG_7951, 3840×2160, natively 16:9) is now used
+directly as `gate_complete.jpg`, colour-harmonised from its cool studio white
+(237,239,242) to the deck's warm white (246,243,238) so it sits on the page
+without a frame. It replaces the earlier peaker panel on page/slide 2, and is
+placed **entirely inside the trim** rather than bleeding off the right edge —
+the whole scene is visible. Effective resolution: 1047 ppi at the placed size
+(288 ppi if ever run full-bleed).
+
+If a GLB is provided, the environment has a Three.js viewer available and views
+could be rendered from the model directly.
+
 ## Rev 10 — PPTX rebuilt as true 16:9 widescreen
 
 The first PPTX used the print geometry (11×8.5in), which viewers rendered
