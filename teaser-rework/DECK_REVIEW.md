@@ -193,3 +193,14 @@ unilaterally reconductor a TO-owned line; it is proposed and funded through the 
 study process with TO and ISO agreement. Notes flag that ERCOT's queue binds less than PJM's, so
 the argument is strongest against NRG's PJM exposure and the mid-Atlantic half of the 5.4 GW
 framework, and that the source baseline is a traditional **new build**, not a rebuild in place.
+
+### Correction — Cedar Bayou presumption softened (2026-08-13)
+
+External review (ChatGPT, comparing against an "Expanded Rev13") correctly caught an internal
+inconsistency: slide 8's callout carried a humility qualifier ("our suggestion, your call") while
+A9's own headline and band did not ("the natural first live scope" / "THE OBVIOUS CANDIDATE").
+Telling an owner which of their projects to pick undercuts the deck's own no-presumption posture.
+Changed: A9 title -> "Cedar Bayou Unit 5 — an example, not a recommendation"; A9 band -> "IN
+ACTIVE PROCUREMENT — INCLUDED AS A WORKED EXAMPLE; NRG SELECTS THE STARTING SCOPE"; A9 column
+head -> "SCOPE THAT WOULD BE IN PLAY"; slide 8 -> "EXAMPLE SCOPE FOR DISCUSSION ... NRG SELECTS
+THE SCOPE". Facts unchanged.
