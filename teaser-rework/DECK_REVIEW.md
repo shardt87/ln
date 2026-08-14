@@ -247,3 +247,14 @@ cannot be used here — PPTX font embedding is ignored by mobile PowerPoint — 
 system base of Southwire's grotesque look, is the brand-safe choice; hierarchy carried by
 weight, caps and color instead of condensation. All 25 pages re-rendered and verified.
 Rev 17 supersedes Rev 16.
+
+### Who We Are at a Glance added as Appendix A1 (2026-08-13)
+
+User-supplied "Southwire_Who_We_Are_At_A_Glance" slide rebuilt in the Rev 17 idiom (copper band,
+logo lockup, Arial hierarchy, ink band) and inserted as the FIRST appendix — the natural landing
+page when the deck gets forwarded. Content preserved: 1950 founding story, five stat tiles
+(1950 / 9,000+ / $9.7B Forbes est. / 12 industries / 7 Copper Mark sites), what-we-make and
+what-we-do columns, Forbes Jul 5 2026 coverage line, and the three market-scale claims as the
+bottom band. Appendices A1-A14 shifted to A2-A15 with page numbers and cross-references
+(benchmark math's "SEE A4" -> "SEE A5") updated. Deck now 26 slides; executive send-ahead now
+15 pages (core 11 + who-we-are + context + governance + evidence discipline).
