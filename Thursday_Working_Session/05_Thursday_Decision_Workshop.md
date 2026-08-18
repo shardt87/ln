@@ -1,93 +1,154 @@
-# 05. Thursday Decision Workshop
+# Thursday Enterprise Power Generation Decision Workshop
 
-Ten decisions, each with a proposed default so the session ratifies or amends rather than debates from a blank page. Ledger IDs cite `01_Evidence_and_Conflict_Ledger.md`. All proposed answers are Recommendations; the evidence cited is what exists, and where it is thin the deferral-risk column says why deciding anyway is still right.
+**Date:** Thursday, August 20, 2026  
+**Working time:** 9:00 a.m.-1:00 p.m.  
+**Primary participants:** Marc Hall and Stephan Hardt
 
-## D1. What is inside and outside enterprise Power Generation?
+**Required pre-read:** `04_Strategy_Thesis_v0.md` and this workshop file.  
+**Supporting material:** `00`-`03` and `06`-`07`; use these for evidence, detail, and follow-through rather than reading every page in the session.
 
-- Proposed default: Inside: generation projects and operating generation fleets across thermal, renewables/storage and (incubated) nuclear, spanning greenfield, repower/uprate and brownfield sustainment, for utility, IPP and industrial/BTM owners, including interconnection scope tied to a generation asset. Outside: transmission and distribution work not tied to a generation project (stays Utility), data center campus electrical scope other than its BTM generation assets (stays Data Center), and general industrial construction (stays Industrial/EPC). Boundary rule for overlaps: the BTM generation asset itself is PowerGen-visible pipeline; the account relationship stays with the vertical that owns it, per the operating model.
-- Alternatives: (a) narrower: new-build generation only; (b) broader: pull all interconnection and substation work in.
-- Rationale: mirrors the brief's five-dimension architecture (B2) and its explicit instruction to define interfaces with adjacent verticals (S1 para 90). Narrower cuts out the fleet/lifecycle ambition (B1); broader picks an unnecessary fight with Utility in week one.
-- Evidence: B1, B2, D1; Data Center overlap flagged in S1 para 108.
-- Risk of deferral: every later decision (pipeline definitions, portfolio, September update scope) inherits the ambiguity; double counting starts immediately.
-- Decision owner: Mark, with Stephan drafting the written scope statement same day.
+## Purpose
 
-## D2. Which operating model should Southwire adopt?
+Leave the session with explicit choices that allow PowerGen to operate for the next 30 days. The win is not agreement on every sentence. It is a coherent direction with named owners, authority limits, routes, dates, and a precise leadership ask.
 
-- Proposed default: Federated horizontal platform (Model 2, file 03), adopted for two quarters with a named review point.
-- Alternatives: BU-led coordination (Model 1); standalone vertical (Model 3).
-- Rationale: only model satisfying the mandate (A2), the no-reorg constraint (D4) and retained execution ownership (S1 para 7) at once. Full comparison in file 03.
-- Evidence: file 03 comparison; near-term problems are visibility and handoffs (D2, E3), which are orchestration problems.
-- Risk of deferral: the IPP conversations are live now; without an adopted model the first real opportunity forces an ad hoc ownership fight.
-- Decision owner: Mark Thursday; leadership ratification at the September update.
+## Required outputs
 
-## D3. What should PowerGen own, and where does its authority stop?
+1. Agreed enterprise PowerGen scope
+2. Selected operating model and authority boundaries
+3. Two immediate 30-day market-validation priorities and one conditional priority
+4. Cross-cutting influence routes, enabling capabilities, pursuit leadership, and route principles
+5. Named 30-day participants, outputs, and dates
+6. Late-September leadership approval package
 
-- Proposed default: PowerGen owns the market thesis, portfolio priorities, the consolidated pipeline view and its definitions, the executive customer narrative and pursuit orchestration. It does not own accounts, pricing, quoting, manufacturing, capacity allocation, channel relationships, marketing production or booked revenue. Disagreements escalate to Mark, then to the monthly update.
-- Alternatives: (a) add gate authority: PowerGen sign-off before any PowerGen-classified pursuit advances; (b) pure advisory with no pipeline ownership.
-- Rationale: matches the responsibility model (file 03) and the hypothesis under test. Gate authority is worth revisiting at the review if orchestration proves toothless; advisory-only repeats Model 1's accountability failure.
-- Evidence: A2, D4, S1 para 7.
-- Risk of deferral: "company-wide ownership" stays an unbounded phrase and breeds suspicion in the businesses.
-- Decision owner: Mark.
+## Workshop rules
 
-## D4. Which three or four plays receive resources now?
+- Separate **Source Fact**, **Inference**, **Recommendation**, and **Open Question**.
+- Do not count a modeled OEM candidate as an opportunity.
+- Keep relationship status separate from commercial stage.
+- Every decision needs an owner and effective date.
+- Park permanent organization design unless it blocks the 90-day pilot.
+- Record modified and deferred decisions in the room.
 
-- Proposed default: (1) Defend and organize Utility and Renewables via the consolidated baseline; (2) accelerate IPP gas via the three named discovery tracks (NRG, Southern Power, CPV); (3) accelerate EPC/OE specification with Industrial/EPC; (4) build the OEM/modular platform behind its quality gates. Repower and prefab stay next; nuclear stays later, watching brief only.
-- Alternatives: promote prefab into the four (argument: it differentiates the labor story); demote OEM until the map consolidates.
-- Rationale: scoring in file 04. Prefab's single proof is unverified (C10), so promoting it builds on an unchecked number. OEM keeps its slot because the work is preparation, which is exactly what its gates require.
-- Evidence: B3, B4, C1-C11, file 04 scoring.
-- Risk of deferral: effort spreads across all eight lanes and the 30-day plan has no priority spine.
-- Decision owner: Mark and Stephan jointly.
+## Run of show
 
-## D5. Who leads owner, EPC/OE and OEM pursuits?
+| Time | Topic | Method | Required result |
+|---|---|---|---|
+| 9:00-9:20 | Evidence and outcome | Read the thesis; confirm known, directional, and missing evidence | Shared fact base and 1:00 exit test |
+| 9:20-10:00 | **Gate 1: scope and mandate** | Compare operating models and authority limits | Interim model, pilot scope, PowerGen limits, sponsor roles |
+| 10:00-10:45 | **Gate 2: validation priorities** | Review the pre-scored hypothesis; change scores only with evidence | Two immediate priorities, one conditional priority, mapping-only lanes |
+| 10:45-10:55 | Break |  |  |
+| 10:55-11:40 | **Gate 3: pursuit and route rules** | Complete the CPV and Powell candidate charters | Pursuit standard, route principles, proposed escalation SLA |
+| 11:40-12:20 | **Gate 4: resources and governance** | Confirm named people, time, outputs, and dates | Resourced 30-day mobilization and decision cadence |
+| 12:20-12:50 | **Gate 5: September leadership ask** | Draft Amber’s exact ratify/modify/stop decision | Clear sponsor narrative and approval request |
+| 12:50-1:00 | Decision readback | Read every decision, owner, and date aloud | Signed or acknowledged decision log |
 
-- Proposed default: Owner/IPP discovery: Stephan, until the September update nominates standing leads. EPC/OE: Industrial/EPC business leads, PowerGen sets targets and joins pursuit teams. OEM: Mike Pitello leads execution with the Aslan advisor, Stephan holds the outreach quality gate until released. Every pursuit above threshold gets a named single pursuit lead at qualification.
-- Alternatives: PowerGen leads all new-lane pursuits until handoff rules mature.
-- Rationale: codifies what the brief already directs (C7, C8, follow-up assignments) instead of inventing new arrangements two days before the session.
-- Evidence: S1 Immediate operating follow-ups, paras 176-199.
-- Risk of deferral: NRG responds and nobody is empowered to run the debrief into a pursuit plan.
-- Decision owner: Mark confirms; names beyond those in the brief are TBD by design.
+## Decision register
 
-## D6. When direct, distribution, agents or partners?
+| ID | Decision | Recommended default | Alternative and tradeoff | Risk if deferred | Owner | Status |
+|---|---|---|---|---|---|---|
+| D-01 | Enterprise scope | Immediate validation: new-build gas and OEM/modular. Conditional: repower/brownfield. Foundation mapping: Utility/Renewables. Evidence mapping only: Data Center/BTM and nuclear/SMR. EPC/OE is a route; prefab is an enabler. | Transfer all PowerGen activity to one vertical: clearer control, much greater disruption and P&L conflict. | Duplicate activity and unclear customer coverage | Marc; Amber ratifies enterprise scope | Open |
+| D-02 | Operating model | Marc authorizes an interim federated model and the August 21-November 18 pilot launch. Amber ratifies, modifies, or stops it in September. | Continue BU-led coordination or create a vertical: either preserves fragmentation or delays launch. | No accountable enterprise coordinator | Marc for interim launch; Amber for ratification | Open |
+| D-03 | PowerGen authority | PowerGen owns strategy development, prioritization process/recommendations, consolidated view, discovery standards, pursuit orchestration, and reporting. Marc approves pilot priorities and material changes. | Broader account/P&L ownership: more control, beyond current evidence and mandate. | Responsibility without authority | Marc | Open |
+| D-04 | Validation priorities | New-build gas project capture and OEM/modular platform embedding now; repower/brownfield only after its activation gate. | Launch all lanes: wider coverage, diluted resources. | Activity without portfolio focus | Marc, based on Stephan’s recommendation | Open |
+| D-05 | Pursuit leadership | One orchestration owner, existing relationship lead, and product/scope owner per lighthouse pursuit. | Independent lane pursuit: simpler locally, greater customer overlap. | Duplicate outreach and missed handoffs | Marc and affected leaders | Open |
+| D-06 | Route principles | Use distinct routes per defined buying scope; run OEM approval and field conversion in parallel when applicable. Account-specific route/credit requires current agreements and affected commercial leaders. | One route for the whole project: simple but ignores factory/field boundaries. | Channel conflict and lost conversion | Marc approves principles; commercial owners decide account-specific routes | Open |
+| D-07 | Route, credit, and overlap | Record route and revenue owner per buying scope before proposal. Adopt a proposed 48-hour sponsor-response target for unresolved conflicts. | Resolve informally: less process, recurring disputes and no record. | Delayed quotes and internal friction | Marc approves SLA; affected P&L leaders decide route/credit | Open |
+| D-08 | 30-day resources | Confirm the standardized functional roster, named people, minimum time, output, and due date shown below. | Wait for a dedicated team: more capacity later, no movement now. | An unresourced coordination model | Marc secures commitments; functional leaders own inputs; Stephan integrates | Open |
+| D-09 | Source of truth | Use S08 as controlled interim view. PowerGen proposes/governs taxonomy; Marc approves; Sales Operations/CRM owns fields and data control; account owners maintain records. | Keep separate trackers: lower effort, inconsistent leadership reporting. | Conflicting stages and counts | Marc approves; CRM owner implements | Open |
+| D-10 | September leadership ask | Amber ratifies, modifies, or stops the pilot model, scope, priorities, decision rights, resources, and scorecard. | Ask for reorganization, revenue target, or final TAM: unsupported today. | Update becomes informational rather than decisive | Marc sponsors; Stephan prepares | Open |
 
-- Proposed default: adopt the brief's route principles as policy: owner engagement creates influence, not a transaction; supply flows through the customer's existing route (EPC, contractor, distributor, agent); direct supply is a deliberate exception justified by volume, buying behavior, strategic scope and channel alignment (B5, S1 para 87). Operating rule: every pursuit declares route intent at qualification, before distribution or field resources engage (C8). Account-specific exceptions and compensation stay parked (D4) but the default rule cannot.
-- Alternatives: decide direct-vs-channel per account with no default (status quo).
-- Rationale: the principles already exist in the brief; Thursday's job is converting them from prose to policy. E3 shows why: owner dialogue is live while rules are absent.
-- Evidence: B5, C8, E3.
-- Risk of deferral: first IPP opportunity triggers channel conflict with distribution or agents and poisons the platform's credibility at launch.
-- Decision owner: Mark Thursday for the principles; channel leadership consulted before the September update for the mechanics.
+## Proposed minimum 30-day resource commitment
 
-## D7. How are overlapping accounts and channel conflicts resolved?
+This is a recommendation for decision, not an existing commitment.
 
-- Proposed default: a three-step protocol. (1) Declare: any PowerGen pursuit touching an account is checked against the baseline map; the incumbent business or channel is at the table from qualification. (2) Decide: pursuit lead and route are set per D5/D6 within two weeks of qualification; incumbent relationships are not bypassed. (3) Escalate: unresolved conflicts go to Mark within one week; standing patterns go to the monthly update. Revenue books where it books today; orchestrated-win credit is recognition only, until leadership sets attribution rules.
-- Alternatives: formal CRM-enforced rules of engagement now.
-- Rationale: CRM mechanics are parked (S1 para 210) and the baseline map does not exist yet (D2). A lightweight protocol works from day one and hardens later.
-- Evidence: D2, D4, E3.
-- Risk of deferral: same as D6, plus internal double-counting the moment two businesses log the same project.
-- Decision owner: Mark.
+| Contributor | Minimum commitment | Required output |
+|---|---|---|
+| Stephan / PowerGen | Approximately 40% of time for 30 days | Integrated map, pursuit charters, playbooks, evidence control, pre-read |
+| Utility, Renewables, Data Center, Industrial/EPC sales, OEM leads | 2-hour baseline workshop plus 45 minutes weekly and account validation, approximately 6-8 hours each | Current-state input, named ownership, active overlaps, pursuit validation |
+| Product/application engineering | Approximately 4 hours weekly | Fit, qualification, technical risks, package boundaries, solution approvals |
+| Solutions/prefab and manufacturing/operations/supply chain | 2-hour baseline plus approximately 3 hours weekly | Deliverability, capacity, lead time, facility/partner, warranty boundaries |
+| Finance/Strategy | Approximately 8-12 hours during weeks 2-3 | Metric definitions, market/economic validation, reconciliation signoff |
+| Sales Operations/CRM | Approximately 4 hours weekly | Stage taxonomy implementation, quote reconciliation, controlled data view |
+| Marketing | Approximately 2-3 hours weekly | Claim control, proof approval, customer and leadership narrative |
+| Channel leadership | Approximately 2 hours weekly plus conflict cases | Existing commitments, route principles, exception decisions |
+| Legal | As needed for warranty, channel, or contracting boundaries | Reviewed exception language and risk decisions |
 
-## D8. Which functional resources are required in the next 30 days?
+## Portfolio force-ranking
 
-- Proposed default: named part-time contributors, no new headcount: Utility, Renewables, Industrial/EPC, Data Center and OEM leads for the baseline inputs (D1); Product Management and Operations for capacity, lead-time and readiness truth; Alan Colorito for marketing governance; Nedra for proof verification; Mike Pitello and the Aslan advisor for OEM preparation; Finance/Strategy for the sizing method; Amber for the executive series logistics. Names of the business-lead individuals: TBD, nominated by Mark Thursday or at the September update per S1 para 170.
-- Alternatives: wait for the September update to request resources.
-- Rationale: the brief's own 30-day plan (S1 paras 114-142) already assumes these contributions; Thursday just makes the ask explicit.
-- Evidence: D1, D3, C7, C10, S1 30-day plan.
-- Risk of deferral: the August 28 baseline deadline fails and the September update has no current-state content.
-- Decision owner: Mark for the mandate to contribute; each function's leader for the named person.
+All scores below are **initial recommendations**, not source facts. Score 1-5, where 1 is weak/unfavorable, 3 is mixed or unverified, and 5 is strong/favorable. Unknown evidence cannot score above 3. Higher is favorable for every criterion, so the route criterion is **route simplicity** and the investment criterion is **low incremental investment**.
 
-## D9. What should leadership approve at the September update?
+| Code | Criterion | Weight | Veto condition |
+|---|---|---:|---|
+| U | Customer urgency | 15% | No identifiable customer problem or timing trigger |
+| M | Market attractiveness | 10% | No plausible value pool after definition reconciliation |
+| W | Southwire right to win | 20% | No credible product/capability fit owner |
+| S | Specification influence | 10% | No reachable decision point before scope is fixed |
+| P | Speed to customer/commercial proof | 10% | No testable event inside 90 days |
+| R | Route simplicity | 10% | Known account/channel restriction without resolution path |
+| C | Capability readiness | 15% | Product, capacity, quality, or delivery owner will not support |
+| I | Low incremental investment | 10% | Unfunded material investment required before customer validation |
 
-- Proposed default: five asks: (1) confirm the enterprise scope statement (D1 output); (2) endorse the federated operating model for two quarters; (3) confirm the four plays; (4) nominate standing functional leads; (5) approve external research support for market sizing (S1 paras 101, 170). Explicitly not asked: org changes, headcount, compensation, channel exceptions.
-- Alternatives: add a budget ask now.
-- Rationale: matches the update agenda already drafted in the brief (S1 paras 144-170) and keeps the asks inside what evidence can defend by late September.
-- Evidence: A6, S1 First Progress Update section.
-- Risk of deferral: the update becomes a status briefing with no decisions, and the six-month series starts without teeth.
-- Decision owner: Mark and Stephan finalize Thursday; Amber releases per para 180.
+No priority moves beyond validation until every veto gate is cleared.
 
-## D10. Which measures define progress?
+| Customer opportunity | Scores U/M/W/S/P/R/C/I | Weighted score / 5 | Evidence note | Initial decision |
+|---|---|---:|---|---|
+| New-build gas project capture | 5/4/3/5/3/2/3/3 | 3.50 | 17 items labeled actionable; stage, route, product, capacity, and economics require validation | Validate now |
+| OEM/modular platform embedding | 4/4/3/4/3/3/3/3 | 3.35 | Developed candidate model; actual buyer, boundary, stage, route, and economics incomplete | Validate now |
+| Repower/brownfield | 3/3/3/3/2/3/2/3 | 2.75 | Proposition exists; no qualified enterprise project list found | Conditional validation only |
+| Data Center/BTM | 4/4/2/3/2/2/2/2 | 2.60 | Strategic adjacency; ownership and account overlap missing | Evidence map only |
+| Nuclear/SMR | 3/4/2/4/1/1/1/1 | 2.10 | Long-term interest; capability, qualification, customer, and resource evidence missing | Evidence map only |
 
-- Proposed default: for the first two quarters, activity and quality measures, not revenue: baseline map completed and accepted by all five businesses (date); three IPP discovery conversations completed with written reads on urgency, control points and buying behavior; OEM gates cleared and outreach released (date); labor proof verified or retired (date); pipeline definitions adopted and first consolidated view published (date); number of pursuits with declared route intent at qualification; escalations resolved within the one-week rule. Revenue-linked measures start only after the baseline establishes what exists, to avoid claiming existing bookings as platform wins.
-- Alternatives: pipeline-value targets now.
-- Rationale: the evidence base contains no numbers to target (00, section 2); inventing targets Thursday would violate the brief's own evidence standard (B6).
-- Evidence: B6, D2.
-- Risk of deferral: the platform cannot show progress in September and the mandate loses momentum.
-- Decision owner: Mark and Stephan Thursday.
+## Candidate pursuit charters to complete in the room
+
+The account names are documented in S08/S09. Blank fields are deliberate evidence gaps and must not be inferred.
+
+| Field | Candidate A: CPV owner/IPP | Candidate B: Powell Industries OEM/package |
+|---|---|---|
+| Project and customer | CPV; named project TBD | Powell Industries; named package/project TBD |
+| Commercial stage and dated evidence | Account row exists in S08; project stage and evidence TBD | Candidate in S09; quote activity reported in S04, quote ID/status reconciliation TBD |
+| Relationship lead | TBD from current account ownership | TBD from current account ownership; Mike’s research role does not establish ownership |
+| PowerGen orchestration lead | Stephan, proposed | Stephan, proposed |
+| Product/scope owner | TBD | TBD |
+| Owner/OE influence path | CPV owner path; OE TBD | Project owner/OE path TBD |
+| EPC/OE specification lead | TBD | EPC/OE and field-project connection TBD |
+| OEM/package scope and lead | Package/OEM scope TBD | Powell factory/package buyer and exact boundary TBD |
+| Field contractor/channel path | Contractor, distributor, and agent path TBD | Field buyer and channel path TBD |
+| Factory versus field boundary | TBD from project documents | TBD from package specification, one-lines, cable schedule, and terminal data |
+| Route and revenue owner by buying scope | TBD; preserve existing route pending commercial-owner decision | Factory and field routes TBD; no assumption of owner-direct or OEM-direct field scope |
+| Quote authority/approver | Existing business/account process; named approver TBD | Existing business/account process; quote-level approver TBD |
+| Value basis | TBD; do not use funnel-average value | TBD pending quote and scope reconciliation |
+| Southwire offer hypothesis | Early electrical-scope coordination, product/supply plan, and installation enablers; validate | Compatible package wiring, repeatable BOM/interface data, and linked field conversion; validate |
+| Evidence owner | Current account owner plus CRM/operations, TBD | Current account owner plus Sales Operations, TBD |
+| Next external decision and date | Discovery meeting and project evidence request, date TBD | Quote/account reconciliation and discovery meeting, date TBD |
+| Internal blocker and escalation owner | Stage, EPC, route, account ownership, technical resource; Marc proposed | Account owner, package boundary, route, quote status, product resource; Marc proposed |
+
+## Questions to force in the room
+
+1. Is PowerGen accountable for enterprise orchestration during the pilot?
+2. Exactly where does that authority stop?
+3. Do new-build gas and OEM/modular receive 30-day validation resources?
+4. What evidence activates the conditional repower/brownfield priority?
+5. Who leads each lighthouse owner, EPC/OE, and OEM pursuit?
+6. What route applies to factory scope and field scope?
+7. Who resolves route and revenue-credit conflicts, and by when?
+8. Which functional leaders commit the named participant, minimum time, and output shown above?
+9. What source and stages will leadership accept?
+10. What precise approval should Amber provide in late September?
+
+## Parking lot
+
+- Permanent organization and reporting lines
+- P&L transfer
+- External TAM study
+- Full nuclear or Data Center strategy
+- Five-year revenue commitment
+- Branding and slide design
+- Expansion beyond selected lighthouse pursuits
+
+## Exit criteria
+
+- D-01 through D-10 are marked **Decided**, **Modified**, or **Deferred**.
+- Every deferred item has an owner and decision date.
+- Two immediate validation priorities, one conditional priority, cross-cutting routes, and enabling capabilities are approved.
+- 30-day functional participants, minimum time, and outputs are named.
+- The September 16 strategy output and late-September leadership ask are confirmed.

@@ -1,68 +1,74 @@
-# 01. Evidence and Conflict Ledger
+# Evidence and Conflict Ledger
 
-Every material statement used in this pack, classified as Source Fact (SF), Inference (INF), Recommendation (REC) or Open Question (OQ). Source Facts cite S1 = `Power_Generation_Strategy_Working_Session_Brief_2.docx` by section and extraction paragraph number (see 00_Source_Inventory.md for the convention).
+**Use:** Separate what the sources say from what is inferred or recommended. Resolve material contradictions before they enter an executive narrative.
 
-## A. Mandate and session
+## Evidence ledger
 
-| ID | Class | Statement | Source / basis |
-|----|-------|-----------|----------------|
-| A1 | SF | Working session is Thursday, August 20, 2026, 9:00 a.m. to 1:00 p.m., Carrollton; participants Mark Hall and Stephan Hardt | S1, header block, paras 3-4 |
-| A2 | SF | "Southwire has been asked to take company-wide ownership of the Power Generation strategy" | S1, Executive direction, para 7 |
-| A3 | OQ | Who issued the mandate in A2, to whom exactly (Stephan, Mark, a team), and with what written scope. The brief does not say. This matters for every authority question in file 03 | Gap in S1 |
-| A4 | SF | Thursday must produce three outputs: scope and architecture; version-zero strategy spine; executive mobilization package | S1, Three non-negotiable outputs, paras 9-12 |
-| A5 | SF | The immediate standard is "clear enough to align leadership, assign work and begin execution without creating another open-ended research cycle"; sizing, account mapping, product requirements and capacity implications are explicitly deferred to the next phase | S1, Executive direction, para 8 |
-| A6 | SF | A late-September Power Generation Progress Update to leadership is planned, opening a six-month monthly series; Amber releases the series; proposed attendees include Winn Wise, Rohan Kelkar, Donna, Mark Hall, Stephan Hardt and functional leaders, with the final list to be confirmed with Mark | S1, First Progress Update, paras 144-146, and Immediate operating follow-ups, para 180 |
+| ID | Classification | Evidence | Traceability | Confidence or constraint |
+|---|---|---|---|---|
+| E01 | Source Fact | Thursday is intended to define an enterprise strategy spine, portfolio, route-to-market, evidence plan, and 30-day mobilization. | S01 pp.1, 3-9 | High for session design; S01 proposes rather than grants authority |
+| E02 | Source Fact | Leadership’s questions include company structure, current activity, where to play, how to win, phasing, and the relationship among Utility, IPP, EPC, nuclear, repower, and Data Center. | S02 pp.1-2 | Medium-high |
+| E03 | Source Fact | The IPP funnel is reported as 500+ initial signals, 29 reviewed, and 17 items labeled actionable, with a recommended focus of 3-5. | S03 pp.1, 3, 5-6 | Medium; stage definitions and snapshot date must stay attached |
+| E04 | Source Fact | The IPP review reports 63 GW, $140-$160B, and an approximately $2B ambition. | S03 p.2 | Medium; these are not interchangeable with Southwire-addressable revenue or OEM TAM |
+| E05 | Source Fact | The IPP review reports a $248M buying wave and uses $16-$24M, less than 2%, and 50-80-week planning metrics. | S03 pp.7, 10 | Medium; preserve original labels and assumptions |
+| E06 | Source Fact | The corrected OEM summary reports approximately $1.8B directional TAM, 55 priorities, 30 Tier 1 targets, $53M annual potential, and $9.7M quote activity. | S04 p.1 | Medium; directional and pending reconciliation |
+| E07 | Source Fact | The current OEM model contains 55 priority accounts, 31 Tier 1 targets, 69 equipment packages, 48 skid/integrator targets, and 114 directory entries. | S09 `Executive Targets!A5:I5` | High for workbook contents, not opportunity status |
+| E08 | Source Fact | Every company in the OEM model is a candidate, not evidence of an incumbent, award, installed vendor, or active project. | S09 `Method & Assumptions!B14:B15` | High |
+| E09 | Source Fact | Factory-wired, OEM-furnished, owner-furnished, EPC-procured, and contractor-installed boundaries require validation with vendor lists, one-lines, cable schedules, and terminal drawings. | S09 `Method & Assumptions!B29,B36,H36` | High |
+| E10 | Source Fact | OEM ranking weights direct buying, specification influence, and cable intensity at 25% each, repeatability at 15%, and access fit at 10%. | S09 `Method & Assumptions!F19:F23` | High for method; rankings remain hypotheses |
+| E11 | Source Fact | The NRG teaser uses an adjacent 4,400-to-approximately-880-hour labor benchmark, not an NRG-specific result. | S10 p.11 | Medium-low until proof is verified |
+| E12 | Source Fact | The working brief calls for verification of the benchmark’s baseline, final hours, scope, and Southwire contribution. | S01 p.8 | High |
+| E13 | Source Fact | The account board flags relationship-versus-stage errors, unsupported schedule language, and unresolved channel/credit rules. | S08 `Critical Corrections` | High for identifying data-quality gaps |
+| E14 | Source Fact | Marc requested market-potential work while explicitly cautioning about channel conflict. | S07 p.2 | High |
+| E15 | Source Fact | The leadership transcript supports keeping Mike’s assignment focused on OEM product/player/target research and force-ranking, rather than broader strategy or agent ownership. | S11 pp.68-71 | Medium due to transcript limitations |
+| E16 | Source Fact | The contractor-landscape reference separates who specifies, approves, buys, installs, and accepts, and requires evidence before an item reaches forecast status. | S12 pp.24, 28, 32 | Medium-high for process architecture |
+| E17 | Inference | A federated horizontal operating model is plausible because the opportunity crosses owner, EPC/OE, OEM, channel, product, and execution boundaries. | S01 pp.3-4; S02 pp.1-2; S09 `Method & Assumptions!B29,B36`; S12 pp.2, 24-25 | Must remain a hypothesis until authority and resources are approved |
+| E18 | Recommendation | Treat Thursday as a decision workshop that establishes scope, authority limits, priority plays, handoff rules, and evidence owners. | Derived from E01-E17 | Recommendation, not current-state fact |
 
-## B. Strategy content in the brief (hypotheses authored by Stephan, not external evidence)
+## Conflict and reconciliation ledger
 
-| ID | Class | Statement | Source / basis |
-|----|-------|-----------|----------------|
-| B1 | SF | The brief's working ambition: position Southwire as the electrical execution partner for power generation projects and operating fleets, integrating early planning, specification, capacity, products, prefabrication, material management and field support; customer outcomes named are faster time to power, lower construction and supply risk, stronger labor productivity, reliable lifecycle performance | S1, Working ambition, para 59 |
-| B2 | SF | The brief proposes a five-dimension market architecture: market arenas; asset lifecycle; owner economics; commercial control points; delivery model | S1, Market architecture, paras 60-66 |
-| B3 | SF | The brief's initial portfolio hypothesis: Defend and organize (Utility and Renewables); Accelerate now (IPP conventional gas, EPC/OE specification); Build into repeatable platforms (OEM/modular, repower/brownfield, prefab); Incubate deliberately (nuclear, SMR) | S1, Initial portfolio hypothesis, paras 67-72 |
-| B4 | SF | The brief itself labels B3 "a starting point for Thursday" that "must be tested" against attractiveness, right to win, urgency, route access and deliverable capacity | S1, para 68 |
-| B5 | SF | Route-to-market principle: owner-level engagement creates visibility and influence and does not automatically imply an owner-direct transaction; supply is aligned through EPC, contractor, distributor or another approved route; direct supply is selective | S1, Route-to-market principles, paras 81, 87 |
-| B6 | SF | The brief's evidence standard: every number must show source, definition, period, inclusion and exclusion rules, overlap treatment and confidence range; unsupported AI outputs are hypotheses only | S1, Evidence standard, para 100 |
-| B7 | INF | Because the brief is authored by the same person driving the strategy, its hypotheses are self-referential. Nothing in the available evidence independently corroborates the ambition, the architecture or the portfolio. They are well-constructed hypotheses, and that is all they are until the current-state baseline and customer validation land | From 00_Source_Inventory.md, section 2 |
+| ID | Topic | Conflicting or incomplete evidence | Required treatment for Thursday | Resolution required |
+|---|---|---|---|---|
+| C01 | OEM market size | S06 reports $12.575B with significant overlap; S04 reports a corrected approximately $1.8B directional TAM. | Use approximately $1.8B only as the latest internal directional estimate. Do not repeat $12.575B as current. | Confirm included segments, overlap removal, period, geography, addressability, and calculation owner |
+| C02 | IPP market versus OEM TAM | S03 reports 63 GW and $140-$160B, while S04 reports approximately $1.8B OEM TAM. They measure different things. | Do not present the figures as comparable market sizes. | Create one metric dictionary covering total project capex, electrical TAM, wire-and-cable TAM, OEM TAM, and Southwire opportunity |
+| C03 | Quote activity | S06 reports more than $20M; S04 reports $9.7M pending reconciliation. | Use `TBD` in the executive thesis unless a quote-level export supports one number. | Reconcile quote IDs, account, project, date, status, duplicates, expiration, scope, and route |
+| C04 | Labor benchmark | S10 supports 4,400 to approximately 880 hours. Any 800-hour shorthand is inconsistent. It is adjacent and not NRG-specific. | Say “4,400 to approximately 880 in an adjacent case” with a verification qualifier. | Obtain case owner, baseline, final hours, exact scope, project conditions, and Southwire contribution |
+| C05 | IPP pipeline stages | 500+, 29, 17, and 3-5 describe different funnel stages. S08 also flags relationship-versus-stage errors. | Do not call 500+, 29, or all 17 “active opportunities” without the agreed definition. | Publish a dated stage glossary and opportunity register with evidence, owner, next event, and value |
+| C06 | OEM targets versus opportunities | S04 reports 300 to 100 to 55 to 30. S09 contains 114 directory entries, 55 priorities, and 31 Tier 1. S09 says all are candidates. | Present as account-universe and prioritization counts, not pipeline, incumbency, or customer interest. | Reconcile source date and identify contacted, engaged, qualified, quoted, awarded, and booked targets |
+| C07 | OEM Tier 1 count | S04 says 30; S09 calculates 31. | Use 31 only when discussing Rev89C; otherwise say “approximately 30.” | Confirm which source is later and whether account membership changed |
+| C08 | Route to market | S09 calls for parallel OEM/specification and EPC/contractor lanes; S07 warns about channel conflict; S08 leaves channel and credit rules open. | Do not promise a direct route or account transfer. Make route selection a project-level qualification decision. | Approve direct, distribution, agent, and partner rules, including credit and escalation |
+| C09 | Enterprise authority | S01 describes company-wide ownership as a proposed mandate, while S02 frames structure as a question. No source grants control over accounts, P&Ls, pricing, manufacturing, channels, or revenue. | Treat authority and its limits as a Thursday decision. | Written sponsor confirmation and a responsibility matrix |
+| C10 | Role boundaries | S11 narrows Mike’s OEM assignment but does not establish ownership for enterprise strategy, agents, IPPs, or revenue. | Use the transcript to clarify boundaries, not infer authority. | Confirm accountable owners for enterprise strategy, OEM, owner/IPP, EPC/OE, agents, and escalation |
+| C11 | Model versus project fact | S09 derives targets from a conceptual combined-cycle model and says voltage, package boundaries, and vendors require confirmation. | Use the model to form discovery hypotheses, not prove project scope or vendor position. | Obtain approved one-lines, vendor lists, package specifications, motor lists, cable schedules, and terminal drawings |
+| C12 | Governance status | S08 keeps decisions open while other documents use assertive strategy language. | Label every page with facts, proposals, and approvals still required. | Assign each governance item an owner and decision date |
 
-## C. Customer and market signals
+## Metric dictionary required before the executive update
 
-The brief's stage ladder is preserved throughout: Target, Contacted, Engaged, Qualified opportunity, RFP, Quoted, Awarded, Booked. No account in the evidence base reaches Qualified opportunity or beyond.
+| Term | Required definition | Current risk |
+|---|---|---|
+| Signal | A market indication with no required account validation | Can be mistaken for an opportunity |
+| Reviewed item | A signal assessed against initial criteria | Can be mistaken for qualified pipeline |
+| Actionable opportunity | Named project/account with an evidence-backed next action | Evidence and stage may still vary |
+| Strategic pursuit | One of a small number approved for enterprise coordination and resources | Approval criteria do not yet exist |
+| Candidate account | Model-generated organization worth researching | Not evidence of access, interest, or fit |
+| Qualified account/package | Buyer, specifier, boundary, need, and next event validated | Qualification fields are not yet common |
+| Quote activity | Released quote tied to quote ID, scope, date, route, and status | Current totals conflict and may duplicate |
+| Awarded | Customer has selected Southwire for defined scope | Relationship or verbal interest is not an award |
+| Booked revenue | Accepted order recorded under current financial rules | Should never be combined with influence value |
 
-| ID | Class | Statement | Source / basis |
-|----|-------|-----------|----------------|
-| C1 | SF | NRG: outreach has occurred and a response is pending. The follow-up reads "Debrief NRG feedback and separate relationship access from proposition resonance. Tighten the Southwire role and route-to-market language in the next revision," timed "After NRG responds" | S1, Immediate operating follow-ups, paras 191-193 |
-| C2 | INF | NRG stage: Contacted, possibly Engaged. Not a qualified opportunity. The instruction to separate relationship access from proposition resonance signals that early reception was mixed or ambiguous, and that the Southwire role and route language did not fully land | From C1 wording |
-| C3 | SF | Southern Power: a catch-up is to be scheduled this week and used as "a discovery and market-validation conversation" | S1, follow-ups, paras 197-199 |
-| C4 | INF | Southern Power stage: existing relationship, discovery. No opportunity is evidenced | From C3 |
-| C5 | SF | CPV is named, once, alongside NRG and Southern Power as a discovery conversation to "test urgency, control points and buying behavior" | S1, Evidence standard, para 104 |
-| C6 | INF | CPV stage: Target for discovery. No contact is evidenced | From C5 |
-| C7 | SF | OEM outreach is active but under quality control: Stephan and Mike Pitello are to "close the corrected outbound message, revised 90-day plan and consolidated OEM or component target map" and to "approve all outreach until quality is consistent," timing Immediate | S1, follow-ups, paras 185-187 |
-| C8 | SF | Before OEM visits, Mike Pitello and an Aslan advisor are to prepare account-specific agendas and role-play, and to "confirm buying route before involving distribution or field resources" | S1, follow-ups, paras 188-190 |
-| C9 | INF | OEM lane stage: Targets identified (map still being consolidated), outreach begun but paused for quality. No OEM account in evidence is Engaged or beyond | From C7, C8 |
-| C10 | SF | A labor-hour proof point exists and must be verified (baseline, final result, scope, Southwire contribution) with Nedra "before it is reused externally" and "before the next customer adaptation" | S1, follow-ups, paras 194-196 |
-| C11 | INF | The labor-hour result comes from one situation and is currently a single-case claim of unknown provenance. Any use of "improved labor productivity" as a general proof is a hypothesis until Nedra's verification closes. This pack treats it that way | From C10 |
+## Most dangerous unsupported assumptions
 
-## D. Internal capability and organization signals
+1. PowerGen already has enterprise-wide authority over existing accounts, products, channels, pricing, P&Ls, or booked revenue.
+2. The approximately $1.8B OEM TAM is externally validated, additive to IPP figures, or directly convertible into revenue.
+3. The $53M annual potential and either quote total are deduplicated, qualified, and probability-weighted pipeline.
+4. All 17 IPP items are qualified opportunities at the same commercial stage.
+5. The 55 OEM priorities or approximately 30 Tier 1 targets are active opportunities, incumbents, or engaged accounts.
+6. The 4,400-to-approximately-880-hour benchmark is an NRG result, a universal result, or entirely attributable to Southwire.
+7. Direct OEM pursuit can proceed without channel, agent, account-credit, or existing-owner conflicts.
+8. Current businesses have agreed to the proposed federated operating model and handoff rules.
+9. The conceptual plant model establishes actual project voltage, procurement boundaries, vendors, or package content.
+10. Named account ownership, resource commitments, and leadership approval can be inferred from working drafts or transcript notes.
 
-| ID | Class | Statement | Source / basis |
-|----|-------|-----------|----------------|
-| D1 | SF | The brief lists cross-functional inputs needed from Utility and Renewables, Industrial/EPC, Data Center, OEM/modular, Product Management and Operations, Marketing, Sales/channels/agents, Finance/Strategy | S1, Cross-functional inputs, paras 105-113 |
-| D2 | INF | The fact that current strategy, revenue, coverage, capability gaps and priorities must be requested from each business confirms that no consolidated enterprise view of Power Generation activity exists today. That is the core operational problem Thursday addresses | From D1 and absence of any pipeline or activity file (00, section 2) |
-| D3 | SF | Marketing governance is unresolved: Stephan and Alan Colorito are to align on "marketing governance, technical accuracy, ownership and approval of Power Generation collateral" before the first executive update | S1, follow-ups, paras 182-184 |
-| D4 | SF | The brief's parking lot excludes from Thursday: TAM methodology detail, product mapping by plant zone, individual project/account/OEM lists, nuclear deep dives, substation white-space analysis, SKU-level capacity, direct-vs-distribution exceptions and compensation, Salesforce attribution mechanics, collateral production, detailed org design and headcount | S1, Rabbit-hole parking lot, paras 201-212 |
-| D5 | INF | Salesforce (or at least a CRM with attribution and opportunity credit mechanics) is in use, since the parking lot defers "Salesforce attribution, opportunity credit and reporting mechanics." Its current Power Generation coverage is TBD | From S1, para 210 |
+## Thursday control rule
 
-## E. Tensions and contradictions to resolve, not paper over
-
-| ID | Tension | Both versions | Validation needed |
-|----|---------|---------------|-------------------|
-| E1 | Mandate ambiguity | A2 says Southwire company-wide ownership "has been asked" without naming who asked, who owns it or its boundaries. The whole pack assumes Stephan carries it with Mark as executive sponsor | Mark confirms Thursday: who issued the mandate, in what words, and who the accountable owner is. Without this, every decision in file 05 is provisional |
-| E2 | Accelerate vs. pause | The portfolio hypothesis says accelerate IPP and build OEM platforms now (B3), while the follow-ups pause OEM outreach for quality control (C7) and hold customer adaptations pending proof-point verification (C10) | Not a contradiction, but a sequencing constraint: acceleration cannot outrun message quality and proof verification. The 30-day plan (file 06) sequences quality gates before volume outreach |
-| E3 | Owner engagement vs. channel peace | B5 wants early owner-level engagement while distribution and agents retain fulfillment. The brief also defers all account-specific direct-vs-distribution exceptions and compensation rules (D4) | The route-to-market principles in file 04 must be adopted Thursday precisely because the detailed rules are deferred. Otherwise the first real IPP pursuit creates the first channel conflict with no rulebook |
-| E4 | Version control | Filename "_2" implies a prior version of this brief. Unknown whether version 1 reached Mark or others with different content | Stephan confirms what, if anything, circulated before, so Thursday works from one text |
-| E5 | Evidence standard vs. Thursday timing | B6 sets a high evidence bar for numbers, and A5 demands decisions now without new research. These coexist only if Thursday decides structure and process, not quantified bets | This pack is built on that reading: Thursday commits to a spine and a validation plan, and defers every number to the 30-day evidence workstreams |
-
-## F. Statements this pack refuses to make
-
-No market size, revenue, pipeline value, opportunity probability, customer interest level, quote or award status, savings figure, or named account ownership appears anywhere in these files except as TBD, because none exists in the evidence base. Where scoring was required (file 04), scores are qualitative, labeled as inference, and tied to the reasoning that produced them.
+If a claim cannot be labeled **Source Fact**, **Inference**, or **Recommendation**, and cannot cite a source or named validation owner, it should not appear in the leadership story.

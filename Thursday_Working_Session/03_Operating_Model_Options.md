@@ -1,74 +1,135 @@
-# 03. Operating-Model Options
+# Operating Model Options
 
-How Southwire should operate Power Generation as one enterprise growth system while existing businesses and channels keep their responsibilities and strengths. Three models compared, one recommended. Classification: the comparison logic is Inference and Recommendation throughout; the constraints it must satisfy are Source Facts from S1 (mandate para 7, deferred org design para 212, deferred channel rules paras 209-210).
+## Decision to make
 
-## Ground rules the model must satisfy (from the evidence)
+How should Southwire coordinate Power Generation across existing businesses, accounts, products, and channels without creating a shadow sales organization or disrupting current customer relationships?
 
-- Company-wide ownership of the strategy has been asked for (A2), but detailed organization design and headcount are explicitly out of scope for Thursday (D4).
-- Existing businesses keep execution ownership where they have it (S1 para 7: "where existing teams retain execution ownership").
-- Direct, distribution, agents and project partners must work together under explicit rules (S1 para 7; B5).
-- The model must be implementable now, inside the current structure, without waiting for a reorganization.
+## Options
 
-## The three models
+### Option 1: Business-unit-led coordination
 
-### Model 1: Business-unit-led coordination
-Each business (Utility, Renewables, Industrial/EPC, Data Center, OEM/modular) runs its own Power Generation activity. A coordination forum meets periodically to share pipeline and deconflict accounts. No one owns the enterprise thesis.
+Each business continues to set priorities and execute independently. PowerGen convenes periodic coordination and consolidates reporting but has no defined enterprise-pursuit authority.
 
-### Model 2: Federated horizontal platform (the working hypothesis)
-A small PowerGen function owns the market thesis, portfolio priorities, common pipeline visibility, the executive customer narrative and cross-business pursuit orchestration. Businesses retain product expertise, customer execution, pricing, manufacturing, fulfillment, channel responsibilities and booked revenue. PowerGen convenes and orchestrates; it does not transact or book.
+### Option 2: Federated horizontal PowerGen platform
 
-### Model 3: Standalone Power Generation vertical
-A new vertical with its own P&L, accounts, quota and eventually dedicated resources, taking ownership of PowerGen accounts and revenue from the existing businesses.
+PowerGen owns strategy development, the prioritization process and recommendations, the common project view, pursuit standards, integrated narrative, cross-business orchestration, and escalation. Marc approves pilot priorities and material changes. Existing businesses retain product, account, pricing, capacity, manufacturing, fulfillment, channel, and revenue authority.
 
-## Comparison
+### Option 3: Standalone PowerGen vertical
 
-Scores are qualitative (Strong / Adequate / Weak) and are inference from the evidence base and the ground rules, not measured outcomes.
+PowerGen receives dedicated account ownership, resources, commercial authority, and eventually a separate P&L or formal vertical structure.
 
-| Criterion | 1. BU-led coordination | 2. Federated platform | 3. Standalone vertical |
+## Comparative assessment
+
+The ratings below are recommendations, not source facts.
+
+| Criterion | Business-unit-led | Federated horizontal | Standalone vertical |
 |---|---|---|---|
-| Customer clarity | Weak. An IPP building a plant touches Utility, Industrial and Data Center logic at once; each business shows up separately. The NRG follow-up already flags that the Southwire role needs tightening (C1) | Strong. One enterprise narrative and one orchestrated pursuit per account, delivered by the business that owns execution | Strong at steady state, weak during transition while accounts migrate |
-| Speed of execution | Weak for cross-business pursuits; adequate within each lane. Forums deconflict after the fact | Strong. Pursuit teams form per opportunity under a standing protocol; execution stays with teams that already know how to deliver | Weak for 12+ months: hiring, account transfer and P&L carve-out precede selling |
-| Accountability | Weak. Enterprise outcome has no single owner; the mandate in A2 goes unanswered | Adequate to strong. PowerGen owner is accountable for thesis, priorities and orchestration; businesses stay accountable for delivery and revenue. Requires the handoff and credit rules of file 05 D7 to hold | Strong on paper: one P&L answers for everything |
-| Political feasibility | Strong. Changes nothing | Adequate to strong. Takes no revenue, no accounts, no pricing and no channels from anyone; asks businesses for visibility and participation | Weak. Moves revenue and accounts; guarantees resistance; contradicts S1's explicit deferral of org design (D4) |
-| Enterprise leverage | Weak. Repeatable plays (OEM packages, prefab, spec programs) stay trapped in single lanes | Strong. The platform's whole purpose is carrying a play proven in one lane into the others | Adequate. Leverage accrues inside the vertical, not across the enterprise |
-| Resource requirements | Minimal | Small: an owner (mandate already implied), part-time functional leads nominated at the September update (S1 para 170), shared pipeline tooling (D5) | Large: leadership, sales, operations and systems buildout, plus transfer cost |
-| P&L clarity | Strong. Nothing moves | Adequate. Revenue stays where it books today; PowerGen is measured on pipeline, orchestrated wins and thesis milestones, not bookings. Needs explicit credit rules to avoid double counting | Strong eventually; contested during carve-out |
-| Channel-conflict risk | High. Live owner-direct dialogue (NRG, Southern Power) with no enterprise rulebook is exactly the current exposure (E3) | Lower, if the route principles in B5 are adopted as policy Thursday: owner engagement creates influence, supply flows through the approved route | Highest. A new vertical with its own quota has structural incentive to go direct |
-| Ability to scale | Weak. Coordination overhead grows with every added lane | Strong. New lanes (nuclear, repower) onboard as portfolio entries, not org changes. A vertical remains a future option once evidence justifies it | Strong once built, but the build precedes the evidence that would justify it |
+| Customer clarity | Moderate: familiar contacts remain, but narratives can fragment | **Potentially strong:** one project narrative can coordinate existing contacts if roles are approved | Potentially strong after a disruptive transition |
+| Speed | Moderate within one business; weak across businesses | **Potentially strong if decision rights and participation are explicit** | Weak initially because staffing and account transfer take time |
+| Enterprise accountability | Weak | **Potentially strong:** one pursuit lead with distributed execution if authority is approved | Strong centrally, contested during transition |
+| Political feasibility | Strong | **Strong-moderate:** preserves existing authority | Weak with current evidence |
+| Enterprise leverage | Weak | **Potentially strong:** repeatable handoffs across existing capabilities | Strong eventually, with duplication risk |
+| Resource requirement | Low | Moderate | High |
+| P&L clarity | Current P&Ls clear; enterprise impact unclear | **Current P&Ls retained; influence/credit rules required** | Potentially clear later; near-term transfer conflict |
+| Channel-conflict risk | High because rules remain fragmented | **Manageable with route guardrails and escalation** | High during transition |
+| Scalability | Relies on individual relationships | **Potentially strong:** common stages, pursuit charters, and decisions | Strong after substantial investment |
+| Fit with evidence | Reflects today but leaves documented gaps unresolved | **Best fit with the working mandate and evidence** | Insufficient current-state, resource, and commercial evidence |
 
-## Recommendation (REC)
+## Recommendation
 
-Adopt Model 2, the federated horizontal platform, for the next two quarters, with a defined review point.
+> Operate Power Generation as a **federated horizontal enterprise platform for an August 21-November 18 pilot**. Marc authorizes the interim launch; Amber ratifies, modifies, or stops the enterprise pilot in September. PowerGen should own strategy development, the prioritization process and recommendations, the common project view, lighthouse-pursuit discipline, executive narrative, and cross-business escalation. Marc should approve pilot priorities and material changes. Existing businesses and sales teams should retain product authority, customer relationships, pricing, capacity, manufacturing, fulfillment, channel commitments, warranty, P&L, and booked revenue.
 
-Reasoning, in order of weight:
+### Evidence behind the recommendation
 
-1. It is the only model that satisfies all four ground rules simultaneously. Model 1 fails the mandate (A2); Model 3 violates the no-reorg constraint (D4) and the retained-execution principle (S1 para 7).
-2. The evidence base shows the actual near-term problems are visibility (D2), pursuit quality (C7, C10) and undefined handoffs (E3). All three are orchestration problems. None requires moving revenue or people.
-3. It preserves the option to revisit. If by the two-quarter review the platform has a validated pipeline and repeated cross-business wins, a heavier structure can be argued from evidence. Deciding that now would be deciding ahead of the data, which the brief's own evidence standard (B6) prohibits.
+- S01 asks for one strategy, scope, priorities, route principles, and mobilization without requiring a reorganization.
+- S03 identifies actionable opportunities but also governance, capacity, and execution risks.
+- S08 shows open account, route, credit, CRM, and resource decisions.
+- S09 recommends coordinated OEM/package and EPC/contractor lanes. The retrieved evidence does not establish one current owner for the full factory-to-field system.
+- S10 positions the customer offer as a coordinated electrical-delivery system with defined participant roles.
 
-Explicit boundaries of the recommendation: PowerGen does not take ownership of existing accounts, product P&Ls, pricing, manufacturing, fulfillment, capacity allocation, channel relationships or booked revenue. Where PowerGen and a business disagree on a pursuit, the escalation path in the responsibility model below applies; PowerGen's authority is to convene, prioritize and escalate, not to overrule.
+## Proposed decision rights
 
-## Proposed responsibility model
+| Decision or activity | PowerGen platform | Existing business/product team | Current account/sales owner | Channel/agent | Executive sponsor |
+|---|---|---|---|---|---|
+| Market thesis and portfolio sequence | Accountable for development, recommendation, and common view | Consulted; validates business impact | Consulted | Consulted where route is affected | Approves pilot priorities and material shifts |
+| Strategic-pursuit designation | Recommends and maintains criteria | Validates fit and capacity | Validates relationship and stage | Validates route implications | Approves disputes |
+| Account relationship | Coordinates cross-business participation | Consulted | **Retains accountability** | Supports under existing agreement | Resolves material overlap |
+| Pursuit charter | **Accountable for standard and completeness** | Owns product commitments | Named pursuit or relationship lead executes | Confirms role | Resolves conflict |
+| Customer discovery | Sets common PowerGen questions and captures enterprise needs | Supplies technical experts | Leads relationship execution unless agreed otherwise | Participates where appropriate | Informed on lighthouse pursuits |
+| EPC/OE specification | Coordinates plant-level scope and interfaces | Owns technical accuracy | Executes account engagement | Informed | Escalation only |
+| OEM/package approval | Coordinates cross-package strategy | Owns product approval and obligations | Executes account plan | Participates if contracted | Escalation only |
+| Integrated offer | Coordinates total customer outcome | **Retains technical authority** | Confirms commercial fit | Confirms service capability | Approves exceptional commitments |
+| Pricing, quote, and margin | Visibility; no unilateral authority | **Retains authority under current rules** | Executes approved quote path | Executes approved channel role | Existing exception authority |
+| Capacity and lead time | Consolidates needs and escalates conflicts | **Retains authority** | Communicates approved commitment | Supports fulfillment | Resolves enterprise conflict |
+| Commercial route | Tests consistency and records decision | Confirms business policy | Proposes route by account/project | Confirms contract and service role | Resolves unresolved conflict |
+| Order, fulfillment, warranty, revenue | Visibility only | **Retains accountability** | Executes current process | Executes contracted role | Existing escalation |
+| Common pipeline and reporting | Proposes and governs the business taxonomy; owns consolidated view | Maintains product/business source data | Maintains account/opportunity source records | Provides route/status input | Approves taxonomy and reviews decisions |
+| External executive narrative | Owns PowerGen storyline | Validates claims | Adapts for account | Uses approved messaging | Approves sensitive enterprise claims |
 
-Three columns: what the evidence says happens today, what is proposed under Model 2, and what needs Mark or leadership approval. "Today" cells marked TBD reflect the evidence gap, not an assertion that no owner exists.
+## Explicit authority boundary
 
-| Responsibility | Current (evidence) | Proposed under Model 2 | Requires Mark / leadership approval? |
-|---|---|---|---|
-| Enterprise PowerGen strategy | Asked for, unowned in writing (A2, A3) | PowerGen owner (Stephan, pending confirmation) drafts; Mark sponsors; leadership ratifies at September update | Yes: confirm owner and mandate wording Thursday |
-| Portfolio prioritization | None; portfolio exists only as hypothesis (B3, B4) | PowerGen proposes; reviewed with business leads; leadership confirms at progress updates | Yes: first portfolio confirmed Thursday, ratified September |
-| Strategic account and project orchestration | Ad hoc; Stephan driving IPP contacts personally (C1, C3) | PowerGen convenes a pursuit team per priority account; the business with execution ownership leads delivery | No, if within adopted protocol; yes for the protocol itself |
-| Customer discovery | Stephan (NRG, Southern Power) and Pitello (OEM), quality-gated (C1, C3, C7) | PowerGen runs discovery for new lanes; businesses run discovery in their installed base; findings land in the shared baseline | No |
-| EPC / OE specification | Industrial/EPC relationships exist, detail TBD (D1) | Industrial/EPC leads; PowerGen supplies the PowerGen-specific narrative and target priorities | No |
-| OEM engagement | Mike Pitello with Aslan advisor, outreach gated by Stephan (C7, C8) | Continue as is; PowerGen sets target priorities from the consolidated map; quality gate stays until released | No |
-| Product and application expertise | Product Management (D1) | Unchanged | No |
-| Pricing and quoting | Businesses (inferred from retained-execution principle, S1 para 7) | Unchanged; PowerGen has no pricing authority | No |
-| Manufacturing and capacity | Operations (D1) | Unchanged; PowerGen surfaces demand signals early per B1; allocation decisions stay with Operations | No |
-| Distribution and agents | Existing channel organizations; PowerGen rules undefined (E3) | Channels keep their accounts and fulfillment; PowerGen pursuits declare route intent at qualification per B5 and C8 | Yes: route-to-market principles adopted Thursday |
-| Marketing approval | Unresolved; Colorito alignment pending (D3) | Single approval path for PowerGen collateral agreed with Colorito before the September update | Yes: the governance agreement itself |
-| Pipeline governance | No shared view exists (D2) | PowerGen owns definitions, stage ladder and the consolidated view; businesses own their entries; CRM mechanics deferred per parking lot (D4) but definitions cannot wait | Yes: mandate businesses to contribute to the baseline |
-| Opportunity handoff and revenue credit | Undefined (D4) | Revenue books where it books today; orchestrated-win credit is recognition, not compensation, until leadership decides otherwise | Yes: leadership, at or after September update |
-| Executive escalation | None defined | Disagreements go Mark first; unresolved or cross-business-leadership issues go to the monthly progress update | Yes: Mark accepts the role Thursday |
+### If approved, PowerGen may
 
-## What this model deliberately does not do
+- Maintain the common Power Generation account and project view.
+- Propose the stage taxonomy and evidence requirements; govern the approved taxonomy after Marc’s approval. CRM/operations owns system fields and data control.
+- Convene cross-business teams for lighthouse pursuits.
+- Require a complete pursuit charter before enterprise-priority status.
+- Recommend portfolio and resource tradeoffs.
+- Coordinate the integrated customer narrative.
+- Escalate unresolved account, capacity, route, and credit conflicts.
+- Report progress, decisions, risks, and evidence gaps to leadership.
 
-It does not create a new organization, move headcount, change compensation, alter channel agreements or touch any P&L. Every one of those is either parked by the brief (D4) or requires evidence that does not yet exist. The two-quarter review is where that evidence gets its hearing.
+### PowerGen may not
+
+- Reassign an existing account unilaterally.
+- Quote or approve pricing outside existing authority.
+- Promise capacity, lead time, engineering performance, or delivery.
+- Change an established distributor, agent, or direct-account route unilaterally.
+- Commit a product team, manufacturing site, or service group without approval.
+- Take booked revenue, P&L, fulfillment, quality, or warranty responsibility from an existing business.
+- Present a target, relationship, or specification influence as an award.
+
+## Route-to-market guardrails
+
+1. **One project, one pursuit charter.** Record project, stage, pursuit lead, relationship lead, specifier, buyer, scope boundary, value basis, and route plus revenue owner for every defined buying scope.
+2. **Separate influence from purchase.** Owner/OE/OEM influence and the field order are linked but not double-counted.
+3. **Run the OEM and EPC lanes in parallel.** OEM/package engineering drives approvals; EPC/contractor/channel converts field scope.
+4. **Direct is not the default.** Use it when the actual buyer and existing commercial rules support it.
+5. **Use distribution where it creates project value.** Cuts, kits, credit, staged delivery, emergency response, and local logistics can be decisive.
+6. **Agents create access under existing agreements.** An introduction does not automatically determine quote ownership or credit.
+7. **No uncoordinated competing quote paths.** Parallel routes require explicit approval, distinct buying scopes, and no double counting.
+8. **No capacity promise without the responsible business.** Priority supports escalation, not unilateral commitment.
+9. **Record exceptions.** State reason, approver, scope, and duration.
+10. **Resolve route conflict before proposal, quote, or commercial commitment.** Coordinate customer discovery under the existing relationship lead while the issue is open.
+
+## Route decision table
+
+| Commercial situation | Primary lane | Required coordination |
+|---|---|---|
+| OEM/skid builder buys factory wiring or package cable | Existing OEM/direct route where permitted | Link package approval to the project; product team approves commitments |
+| OEM specifies cable; EPC/contractor buys field scope | Dual lane | Separate records under one project ID; no double counting |
+| EPC or contractor buys bulk project cable | Existing direct or distribution route | Account owner, business, and channel confirm route before quoting |
+| Distributor provides cuts, kits, credit, staging, or logistics | Distribution | Define service scope, quote ownership, and information sharing |
+| Owner buys owner-furnished material | Approved owner/direct route or established agreement | Confirm EPC interface, delivery, and warranty boundaries |
+| Factory/field boundary is unknown | Discovery only | Obtain vendor list, one-lines, package specs, cable schedule, and terminal drawings before forecasting |
+| Brownfield/MRO need | Existing plant/MRO/distributor route unless chartered otherwise | Coordinate outage, technical, and supply needs without disrupting relationships |
+| Agent introduces or supports account | Existing contractual role | Record account coverage, route, and handoff; introduction alone does not decide revenue |
+
+## Conflict-resolution protocol
+
+1. Record the disputed account, project, scope, stage, relationship, buyer, specifier, current route, and proposed route.
+2. Stop duplicate proposals, quotes, or commercial commitments; coordinate discovery through the existing relationship lead.
+3. Attempt resolution among the account owner, affected business owner, channel owner, and PowerGen pursuit lead.
+4. If D-07 is approved, escalate unresolved issues to the named sponsor under the proposed 48-hour response target.
+5. Record the decision and rationale in the controlled account board.
+6. Reopen only when scope, buyer, contract structure, or stage materially changes.
+
+## Thursday approval requested
+
+1. Authorize the federated model as an interim operating hypothesis and launch the August 21-November 18 pilot, subject to Amber’s September ratification, modification, or stop decision.
+2. Confirm PowerGen’s authority and explicit limits.
+3. Select two immediate 30-day market-validation priorities, new-build gas project capture and OEM/modular platform embedding, plus one conditional repower/brownfield validation priority.
+4. Approve one pursuit-charter format and authorize PowerGen to propose the common taxonomy for Marc’s approval and CRM/operations implementation.
+5. Name the executive escalation owner.
+6. Require named delegates and specific outputs from Utility, Renewables, Data Center, Industrial/EPC sales, OEM, product/application engineering, solutions/prefab, manufacturing/operations/supply chain, Finance/Strategy, Sales Operations/CRM, Marketing, channel leadership, and Legal where warranty or contracting boundaries are involved.
+7. Defer a standalone vertical or P&L decision until the pilot produces the missing evidence.

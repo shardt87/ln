@@ -1,92 +1,112 @@
-# 04. Strategy Thesis, Version 0
+# Enterprise Power Generation Strategy Thesis v0
 
-The five-minute version, then the scoring and mechanics behind it. Classification: the spine restates and stress-tests hypotheses from S1 (ledger IDs B1-B5); scores are labeled inference; nothing here is a measured market claim.
+**Status:** Working recommendation for the August 20, 2026 decision session  
+**Purpose:** Establish the strategic spine, operating model, and initial portfolio choices. This is not an approved mandate.
 
-## The spine, in five minutes
+## Five-minute thesis
 
-1. The mandate. Southwire has been asked to organize Power Generation as one enterprise strategy (A2). Today the activity is real but scattered: established Utility and Renewables positions, early IPP conversations, gated OEM outreach, and concepts (repower, prefab, nuclear) with no baseline behind them (file 02). Nobody holds the whole picture (D2).
+Southwire should operate Power Generation through a **federated enterprise model for an initial 90-day pilot from August 21 through November 18, 2026**, subject to a September leadership checkpoint.
 
-2. The ambition. Southwire becomes the electrical execution partner for power generation projects and operating fleets, entering before the bill of material is fixed and integrating specification, capacity planning, products, prefabrication, material management and field support (B1). The customer buys time: faster time to power, lower construction and supply risk, better labor productivity, reliable lifecycle performance. Time to power is the anchor problem because it is the one pressure the brief evidences customers being framed around (S1 paras 70, 82) and the one Southwire's early-entry mechanics directly address.
+PowerGen should own strategy development, the prioritization process and recommendations, the shared account/project view, customer-discovery standards, lighthouse-pursuit orchestration, escalation, and leadership reporting. Marc should approve pilot priorities and material changes. Existing businesses should retain product authority, pricing, manufacturing, capacity, fulfillment, channel relationships, warranty, P&L, and booked revenue. Existing account owners should retain relationship execution unless accountable leaders approve a change.
 
-3. The market structure. Five dimensions, kept separate to avoid double counting: arenas (thermal, renewables and storage, nuclear); lifecycle (greenfield, repower/uprate, brownfield sustainment); owner economics (regulated utility, IPP/merchant, industrial/BTM); control points (owner, EPC/OE, OEM, contractor/prefab, distributor/agent); delivery model (site-built, prefabricated, modular) (B2). Every pursuit gets classified on all five before it enters the pipeline. This is what keeps the sizing honest later.
+The commercial objective is to enter before electrical scope, vendor lists, package boundaries, and buying routes are fixed. Within each participant’s contractual responsibility, Southwire can help coordinate owner requirements, EPC/OE specifications, OEM package wiring, product supply, and contractor/channel delivery through a clearer electrical execution plan. This does not imply engineering-of-record, EPC, or installation responsibility.
 
-4. The portfolio. Defend and organize Utility and Renewables. Accelerate IPP conventional gas and EPC/OE specification. Build OEM/modular, repower and prefab into repeatable platforms. Incubate nuclear deliberately (B3). Scoring below confirms this sequence against the evidence, with one sharpened condition: nothing accelerates past its quality gates (E2).
+The 30-day market-validation portfolio should stay narrow:
 
-5. The operating model. A federated horizontal platform: PowerGen owns thesis, priorities, pipeline visibility, executive narrative and pursuit orchestration; businesses keep execution, pricing, manufacturing, channels and revenue (file 03). No reorganization.
+1. **New-build gas project capture:** owner/IPP access linked to EPC/OE specification and contractor/channel conversion
+2. **OEM/modular platform embedding:** repeatable factory packages linked to field-order conversion
+3. **Conditional repower/brownfield validation:** activate only if a qualified customer sponsor and project are identified
 
-6. The route. Owner engagement creates influence, not a transaction. Supply flows through the route the customer already uses: EPC, contractor, distributor, agent, with direct supply as a deliberate exception (B5). Route intent is declared per pursuit at qualification, before distribution or field resources engage (C8).
+EPC/OE is a cross-cutting influence route, not a separate end market. Prefab, kitting, application engineering, supply planning, and field support are enabling capabilities, not standalone market plays. Utility and Renewables are the **proposed foundation, pending current-state validation**. Data Center/BTM and nuclear/SMR remain evidence-mapping lanes during the pilot until ownership, customer demand, and resource requirements are clear.
 
-7. The proof discipline. One unverified labor-hour case is currently the entire outcome-proof inventory (C10, C11). The strategy's credibility rests on verified proof, so verification and proof governance are 30-day workstreams, not afterthoughts.
+## Situation and objective
 
-## Where to play: scoring the portfolio hypothesis
+| Element | Version 0 position | Evidence status |
+|---|---|---|
+| Company situation | PowerGen activity exists across multiple businesses and commercial lanes, but current-state visibility, pursuit ownership, route rules, and evidence standards are fragmented. | Source Facts in S01, S03, S08, S09; enterprise conclusion is an Inference |
+| Strategic objective | Be an electrical execution partner, within clearly defined product and commercial responsibilities, that helps improve time to power, reduce execution/supply risk, improve labor productivity, and support lifecycle reliability. | Proposed thesis in S01 p.3 and customer proposition in S10 pp.5-8 |
+| Immediate organizational need | Coordinate one enterprise market system without taking functional execution authority from the existing businesses. | Recommendation based on the documented governance gaps |
+| Thursday outcome | Marc authorizes an interim Version 0 strategy, 30-day mobilization, and launch of the 90-day federated pilot. Amber ratifies, modifies, or stops the enterprise pilot at the September review. | Recommendation aligned to S01 pp.1-2, 7-9 |
 
-Scale: High / Medium / Low / TBD. All scores are inference from S1 plus the stated reasoning. No market data exists in the evidence base (00, section 2); scores marked TBD stay TBD until the sizing workstream reports. Right-to-win scores reflect what the brief asserts and what file 02 shows, nothing more.
+## Evidence that matters
 
-| Criterion | Utility & Renewables (defend) | IPP gas + EPC/OE spec (accelerate) | OEM/modular, repower, prefab (build) | Nuclear / SMR (incubate) |
-|---|---|---|---|---|
-| Market attractiveness | TBD; incumbent base asserted (S1 para 7) | TBD; brief cites "time to power pressure and project visibility" as the opening (S1 para 70) | TBD | TBD; brief cites long qualification path (S1 para 72) |
-| Right to win | High per brief's assertion of established positions; unquantified | Medium: relationships forming (NRG, Southern Power), proposition unproven (C2) | Low-Medium: named owner and process exist, no engaged account yet (C9) | Low: no evidenced capability or qualification |
-| Customer urgency | Medium: fleet and interconnection work ongoing | High per brief's framing of time-to-power pressure; to be validated in NRG/Southern Power/CPV discovery (C1-C6) | Medium: OEM buying behavior TBD | Low near term |
-| Time to commercial impact | Now: business already booked (S1 para 69) | Medium: no qualified opportunity yet; discovery underway | Longer: outreach paused for quality; map unconsolidated (C7) | Years |
-| Specification influence | TBD | High potential: EPC/OE lane exists precisely to earn spec position (S1 para 83); current position TBD | Medium: embedding BOMs in platforms (S1 para 84) is the play, not yet started | None evidenced |
-| Enterprise leverage | High: the base every other play borrows credibility from | High: owner relationships feed every lane | High if platformized: repeatable packages travel across lanes | Low until qualified |
-| Capability readiness | High asserted | Medium: narrative needs tightening per NRG follow-up (C1) | Low-Medium: proof unverified (C10), collateral ungoverned (D3) | Low |
-| Required investment | Low incremental | Low-Medium: mostly time, discovery and orchestration | Medium: prefab and packaging capability TBD by Operations | High and premature |
-| Route-to-market complexity | Low: existing channels | High: owner dialogue over accounts channels may already touch (E3) | Medium: OEM route confirmed per account before channel involvement (C8) | TBD |
+| Classification | Evidence | Strategic consequence | Source |
+|---|---|---|---|
+| Source Fact | The brief calls for an enterprise strategy spine, operating-model hypothesis, and 30-day plan. | Thursday needs choices, not another broad market study. | S01 pp.1-2 |
+| Source Fact | Structure, where to play, and how to win remain open across Utility, IPP, EPC, Data Center, nuclear, and repower. | Authority and lane ownership cannot be treated as approved. | S02 pp.1-2 |
+| Source Fact | The IPP funnel moved from 500+ signals to 29 reviewed and 17 items labeled actionable, with a recommended focus of 3-5. | The issue has shifted from broad discovery to focus, ownership, stage validation, and conversion. | S03 pp.1, 3, 5-6 |
+| Source Fact | The corrected OEM summary reports a directional market model and annual-potential estimate; reported quote activity remains unreconciled. | OEM potential appears material, but the figures cannot support leadership commitments until definitions and records are reconciled. | S04 p.1 |
+| Source Fact | Rev89C shows 55 priorities, 31 Tier 1, 69 packages, 48 skid/integrator targets, and 114 directory candidates. It states that vendors are modeled candidates. | The model supports prioritization, not opportunity or award claims. | S09 `Executive Targets!A5:I5`; `Method & Assumptions!B14:B15` |
+| Recommendation | Rev89C recommends running OEM approval/specification and EPC/contractor field conversion in parallel. | The operating model should test linked factory and field lanes. | S09 `Method & Assumptions!B29` |
+| Source Fact | The NRG material positions Time to Power as electrical execution. The 4,400-to-approximately-880-hour example is adjacent, not an NRG result. | The position is promising; the quantified proof requires verification. | S10 pp.5-6, 11-12 |
+| Source Fact | Account ownership, route, credit, CRM, technical support, and pursuit governance were open in the account board. | Governance is a commercial dependency. | S08 `Governance Board`, RID-01 through RID-09 |
 
-### Recommended immediate plays (REC, maximum four)
+## Strategy on a page
 
-1. Defend and organize Utility and Renewables. First deliverable is the consolidated baseline of what "already underway" means (file 02, lane 1-2). Owner: business leads with Stephan, per the brief's own workstream.
-2. Accelerate IPP conventional gas via owner discovery. NRG debrief, Southern Power catch-up, CPV approach. Deliverable: three completed discovery conversations and a validated read on urgency, control points and buying behavior (S1 para 104).
-3. Accelerate EPC/OE specification. Deliverable: map of existing Industrial/EPC relationships relevant to PowerGen and the first two spec-position targets. Runs with, not around, the Industrial/EPC business.
-4. Build the OEM/modular platform, gated. Deliverable: consolidated target map, corrected message, revised 90-day plan, then released outreach (C7). This play is "immediate" in preparation, deliberately staged in execution.
+| Choice | Version 0 recommendation |
+|---|---|
+| **Ambition** | Be the electrical execution partner that connects early scope decisions to reliable product, factory-interface, supply, and field-delivery outcomes without assuming EPC or installation accountability. |
+| **Market-validation priorities** | New-build gas project capture and OEM/modular platform embedding. |
+| **Conditional priority** | Repower/brownfield validation with a named sponsor, project, and repeatable Time to Power problem. |
+| **Cross-cutting routes** | Owner/IPP access; EPC/OE specification; OEM/package approval; contractor/channel order conversion. |
+| **Enabling capabilities** | Application engineering, product breadth, supply planning, prefab/kitting, manufacturing scale, field support, and distribution. |
+| **Proposed foundation** | Validate and organize Utility and Renewables capabilities, accounts, proof, and supply strengths. |
+| **Evidence-mapping lanes** | Data Center/BTM and nuclear/SMR; no full commercial activation during the pilot without a separate gate. |
+| **How to win** | Enter early; map decision rights and package boundaries; validate compatibility; standardize repeatable scope; coordinate distinct factory and field routes; prove value with project evidence. |
+| **Operating model** | Federated PowerGen platform with one project view and lighthouse-pursuit governance; distributed business execution. |
+| **Near-term proof** | Qualified pursuits, customer discovery, specification/platform progress, resolved routes, verified proof points, and a reconciled evidence base. |
+| **Deliberate non-goals** | No broad account transfer, new P&L, automatic owner-direct model, unreconciled revenue promise, or all-lanes-at-once launch. |
 
-Next, not now: repower/brownfield and prefab productization. Both stay in the portfolio as build plays but get no dedicated pursuit resources until the baseline shows what exists (repower) and the proof point verifies (prefab). Later: nuclear/SMR, held at watching brief with a named owner and a qualification-path scoping note by the two-quarter review.
+## Portfolio sequence
 
-## How Southwire wins: capability to customer outcome
+| Sequence | Customer opportunity | First action | Activation gate |
+|---|---|---|---|
+| Proposed foundation | Utility and Renewables | Map capabilities, relationships, current activity, proof, channels, and handoffs. | Named functional owners and complete current-state input |
+| Validate now | New-build gas project capture | Select 3-5 lighthouse owner/project pursuits and pair each with EPC/OE influence plus field-conversion plans. | Verified stage, pursuit lead, relationship lead, evidence, route/revenue owner per buying scope, and next action |
+| Validate now | OEM/modular platform embedding | Select 3-5 lighthouse accounts and confirm package/buying boundaries before developing standard BOMs. | Buyer/specifier evidence, package boundary, account owner, product support, and factory/field routes |
+| Conditional | Repower/brownfield | Test one project where schedule, labor, outage, or electrical complexity creates a credible problem. | Named sponsor, project, route, and repeatable hypothesis |
+| Evidence map only | Data Center/BTM and nuclear/SMR | Complete ownership, customer, capability, and qualification mapping. | Separate sponsor decision before commercial activation |
 
-Each row follows the required chain. Evidence column is honest: most mechanisms are hypotheses awaiting the validation named.
+## How Southwire wins
 
-### 1. Faster time to power through early entry
-- Problem: generation owners are schedule-constrained; the brief frames time to power as the anchor pressure (S1 paras 70, 82). Validation of how acute, per account, is the point of the discovery calls.
-- Action: engage during master planning and conceptual design, before the BOM is fixed (S1 para 74), bringing specification support and material lead-time planning into the owner's schedule logic.
-- Participants: PowerGen (orchestration), Industrial/EPC (spec relationships), Product Management (application input).
-- Value mechanism: material decisions made early avoid redesign loops and procurement-stage surprises; long-lead electrical scope gets sequenced instead of expedited.
-- Expected outcome: Southwire specified before RFP; schedule risk moves from the customer's unknowns into a managed plan.
-- Evidence / validation: none yet. NRG, Southern Power and CPV discovery must confirm owners actually open planning this early to a materials partner (OQ, file 07).
+1. **Qualify the actual project.** Confirm customer, project, stage, one-lines, vendor list, cable schedule, buying process, and next decision.
+2. **Enter before specifications are fixed.** Use owner, EPC/OE, and OEM access to influence constructions, standards, and interfaces.
+3. **Lock the commercial boundary.** Record factory-wired, owner-furnished, EPC-procured, contractor-installed, and distributor-served scope.
+4. **Engineer compatibility.** Address VFD/motor, hazardous-area, fire, shielding, fiber, bend radius, pulling, and termination requirements.
+5. **Standardize repeatability.** Convert validated scope into approved cable families, package BOMs, labeled kits, schedules, and interface data.
+6. **Run two commercial lanes.** OEM/package approval pulls through specification; EPC/contractor/channel engagement converts field demand.
+7. **Prove customer value.** Use project-specific schedule, labor, supply, and risk evidence. Do not generalize adjacent results without verification.
 
-### 2. Reduced supply and construction risk through capacity-linked planning
-- Problem: project buyers carry supply continuity and change-order risk on electrical scope.
-- Action: use project visibility to align manufacturing capacity, supply assurance, staging, logistics and change control with the project plan (S1 para 75).
-- Participants: Operations (capacity truth), PowerGen (project visibility), the executing business (commercial terms).
-- Value mechanism: the customer's schedule stops depending on spot availability; changes route through one controlled process.
-- Expected outcome: fewer expedites and change orders; supply named as a managed risk in the customer's own risk register.
-- Evidence / validation: capacity, lead times and margin thresholds are TBD inputs from Operations (D1). This mechanism is undeliverable until Operations confirms what can be promised.
+## Operating-model choice
 
-### 3. Improved labor productivity through prefabrication and installation readiness
-- Problem: field electrical labor is scarce and expensive; rework compounds it.
-- Action: factory assemblies, prefab, kitting, bulk packaging and field support to cut jobsite hours (S1 para 77).
-- Participants: Operations, contractor/prefab partners, PowerGen (packaging the story), Nedra (proof verification).
-- Value mechanism: hours move from unpredictable field conditions into controlled factory conditions.
-- Expected outcome: quantified labor-hour reduction per project.
-- Evidence / validation: exactly one case exists and it is unverified (C10). Rule adopted in this pack: the original situation gets documented, and any generalization is labeled hypothesis until a second, verified case lands. External reuse waits for Nedra's verification, as the brief already directs.
+| Model | Benefit | Limitation | Conclusion |
+|---|---|---|---|
+| Business-unit-led coordination | Lowest disruption | Preserves fragmented visibility and handoffs | Keep BU execution, but do not use as the enterprise coordination model |
+| Federated PowerGen platform | Potentially one market system while preserving commercial and P&L responsibilities | Requires explicit authority, participation, and escalation | **Recommended as a testable 90-day hypothesis** |
+| Standalone vertical | Maximum structural clarity | Highest disruption, resource need, P&L conflict, and channel risk | Reconsider only if the pilot proves a need |
 
-### 4. Early specification and material planning at the EPC/OE control point
-- Problem: whoever holds the spec holds the project; arriving at procurement means competing on price alone.
-- Action: earn specification position with engineers and EPCs, reducing their redesign and change-order exposure (S1 para 83).
-- Participants: Industrial/EPC (relationships), Product Management (technical content), PowerGen (target priority).
-- Value mechanism: the EPC's risk goes down when the electrical package is specified around deliverable products and real lead times.
-- Expected outcome: named-basis or approved-equal spec positions on priority projects.
-- Evidence / validation: current spec position is TBD (file 02). The Industrial/EPC input request (D1) is the validation vehicle.
+## Commercial guardrails
 
-### 5. Integrated electrical execution and lifecycle reliability
-- Problem: owners assemble electrical scope from fragmented suppliers across plant, interconnection and supporting infrastructure.
-- Action: connect products, services, technical support and execution across that whole scope (S1 para 76), and extend into operating-fleet sustainment (B1).
-- Participants: all businesses touching the account; PowerGen orchestrates the single narrative.
-- Value mechanism: one accountable partner across scope boundaries where handoffs otherwise create gaps.
-- Expected outcome: broader share of electrical scope per project and recurring fleet revenue.
-- Evidence / validation: entirely hypothesis today. This is the ambition statement, and it earns belief only as plays 1-4 produce verified cases.
+- No authority is asserted until the sponsor approves the operating model.
+- No pricing, capacity, technical, or delivery commitment is made outside the responsible business.
+- Every lighthouse pursuit has one orchestration owner, one relationship lead, one recorded route and revenue owner per buying scope, and one next decision; factory and field routes may differ.
+- Candidate, contacted, engaged, qualified, RFP, quoted, awarded, and booked remain separate stages.
+- Owner, OE, or OEM influence does not determine who buys the field cable.
+- Existing account and channel arrangements remain unless accountable commercial leaders approve a change.
+- If D-07 is approved, unresolved route, credit, or ownership conflicts use a proposed 48-hour sponsor-response target.
+- Unverified market, quote, and labor claims remain internal and labeled directional.
 
-## What would falsify this thesis
+## 30-day leading measures
 
-Worth stating so Thursday adopts a testable position: the thesis fails if discovery shows owners do not engage materials partners pre-BOM (kills play 2's premise), if Operations cannot commit capacity visibility (kills mechanism 2), or if the labor proof fails verification and no replacement case emerges (guts mechanism 3). Each has a named validation activity in the 30-day plan.
+- 3-5 IPP lighthouse pursuits selected and fully chartered.
+- 3-5 OEM/modular lighthouse accounts selected with package boundaries documented.
+- Owner, EPC/OE, OEM, contractor/channel, and internal roles mapped for every lighthouse project.
+- One pursuit lead, relationship lead, stage, evidence, next decision, and route plus revenue owner per buying scope recorded per pursuit.
+- OEM quote activity and major market figures reconciled or explicitly marked unresolved.
+- RID-01 through RID-09 decided, assigned, or escalated with dates.
+- At least one Time to Power proof point validated for external use.
+- Strategy v0.1 and a concise leadership approval request ready by September 16.
+
+## Decision requested August 20
+
+Marc authorizes the August 21 interim launch and 30-day mobilization; selects the market-validation priorities; confirms PowerGen’s coordination authority and limits; assigns functional participation; and agrees that Amber will ratify, modify, or stop the enterprise pilot in the September review.
