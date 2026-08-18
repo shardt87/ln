@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,900&family=Archivo:wght@400;700&display=swap">
+  <style>
+    body { margin:0; background:#0C0C0E; }
+    a { color:#C08552; } a:hover { color:#D9A278; }
+    .kicker { position:absolute; top:70px; left:110px; font-family:'Archivo',sans-serif; font-weight:700; font-size:22px; letter-spacing:7px; color:#C08552; }
+    .title { position:absolute; top:112px; left:110px; width:1560px; font-family:'Source Serif 4',serif; font-weight:900; font-size:58px; line-height:1.14; color:#F3EFE9; }
+    .srcline { position:absolute; bottom:52px; left:110px; width:1300px; font-family:'Archivo',sans-serif; font-weight:400; font-size:17px; color:#77726C; }
+    .pagemark { position:absolute; bottom:52px; right:110px; font-family:'Archivo',sans-serif; font-weight:700; font-size:17px; letter-spacing:3px; color:#77726C; }
+    .pagemark b { color:#C08552; }
+    .hexmark { position:absolute; top:62px; right:110px; }
+    .body { font-family:'Archivo',sans-serif; font-weight:400; color:#CFC9C2; }
+    .label { font-family:'Archivo',sans-serif; font-weight:700; letter-spacing:3px; color:#C08552; }
+    .display { font-family:'Source Serif 4',serif; font-weight:900; color:#F3EFE9; }
+    .card { position:relative; border:2px solid #2C2C30; padding:36px 42px; }
+    .stagechip { display:inline-block; font-family:'Archivo',sans-serif; font-weight:700; font-size:17px; letter-spacing:2px; padding:6px 16px; border-radius:16px; }
+  </style>
+</helmet>
+<div style="position:relative;width:1920px;height:1080px;background:#131315;overflow:hidden;">
+
+  <div class="kicker">WHAT&rsquo;S REAL</div><svg class="hexmark" width="54" height="60" viewBox="0 0 54 60"><path d="M27 2 L51 16 L51 44 L27 58 L3 44 L3 16 Z" fill="none" stroke="#C08552" stroke-width="2.5"/></svg>
+  <div class="title">The outreach is producing: a quote, a warm SVP, a leave-behind in play.</div>
+  <div style="position:absolute; top:320px; left:110px; width:1700px; display:grid; grid-template-columns:1fr 1fr; gap:28px;">
+    <div class="card" style="border-color:#5E8A6A;">
+      <span class="stagechip" style="background:#5E8A6A; color:#131315;">QUOTED</span>
+      <div class="display" style="font-size:42px; margin-top:14px;">Enchanted Rock</div>
+      <div class="body" style="font-size:22px; margin-top:8px; line-height:1.4;">Quote issued, NDA in place, category-buyer access. The &ldquo;40%&rdquo; reference gets confirmed from the quote record this week.</div>
+    </div>
+    <div class="card" style="border-color:#C08552;">
+      <span class="stagechip" style="background:#C08552; color:#131315;">ENGAGED</span>
+      <div class="display" style="font-size:42px; margin-top:14px;">Southern Power</div>
+      <div class="body" style="font-size:22px; margin-top:8px; line-height:1.4;">Hank Adams, SVP: &ldquo;I've heard of Southwire.&rdquo; Chased since March; the golf tournament opened the door; he volunteered the data-center demand signal.</div>
+    </div>
+    <div class="card">
+      <span class="stagechip" style="background:#55565C; color:#F3EFE9;">CONTACTED</span>
+      <div class="display" style="font-size:42px; margin-top:14px;">NRG</div>
+      <div class="body" style="font-size:22px; margin-top:8px; line-height:1.4;">Time to Power leave-behind delivered after a spam scare. Debrief separates relationship access from proposition resonance.</div>
+    </div>
+    <div class="card">
+      <span class="stagechip" style="background:#55565C; color:#F3EFE9;">NEXT</span>
+      <div class="display" style="font-size:42px; margin-top:14px;">CPV &middot; Vistra &middot; Chevron Energies</div>
+      <div class="body" style="font-size:22px; margin-top:8px; line-height:1.4;">CPV this week. OEM lane: 100+ names from the component breakdown, consolidation owed, Houston in September.</div>
+    </div>
+  </div>
+  <div class="srcline">Transcript pp.1-5, 8, 14. Stage ladder: Candidate, Contacted, Engaged, Qualified, RFP, Quoted, Awarded, Booked.</div><div class="pagemark">SOUTHWIRE POWERGEN &nbsp;<b>03</b></div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

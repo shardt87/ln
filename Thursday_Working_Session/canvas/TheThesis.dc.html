@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,900&family=Archivo:wght@400;700&display=swap">
+  <style>
+    body { margin:0; background:#0C0C0E; }
+    a { color:#C08552; } a:hover { color:#D9A278; }
+    .kicker { position:absolute; top:70px; left:110px; font-family:'Archivo',sans-serif; font-weight:700; font-size:22px; letter-spacing:7px; color:#C08552; }
+    .title { position:absolute; top:112px; left:110px; width:1560px; font-family:'Source Serif 4',serif; font-weight:900; font-size:58px; line-height:1.14; color:#F3EFE9; }
+    .srcline { position:absolute; bottom:52px; left:110px; width:1300px; font-family:'Archivo',sans-serif; font-weight:400; font-size:17px; color:#77726C; }
+    .pagemark { position:absolute; bottom:52px; right:110px; font-family:'Archivo',sans-serif; font-weight:700; font-size:17px; letter-spacing:3px; color:#77726C; }
+    .pagemark b { color:#C08552; }
+    .hexmark { position:absolute; top:62px; right:110px; }
+    .body { font-family:'Archivo',sans-serif; font-weight:400; color:#CFC9C2; }
+    .label { font-family:'Archivo',sans-serif; font-weight:700; letter-spacing:3px; color:#C08552; }
+    .display { font-family:'Source Serif 4',serif; font-weight:900; color:#F3EFE9; }
+    .card { position:relative; border:2px solid #2C2C30; padding:36px 42px; }
+    .stagechip { display:inline-block; font-family:'Archivo',sans-serif; font-weight:700; font-size:17px; letter-spacing:2px; padding:6px 16px; border-radius:16px; }
+  </style>
+</helmet>
+<div style="position:relative;width:1920px;height:1080px;background:#131315;overflow:hidden;">
+
+  <div class="kicker">THE THESIS</div><svg class="hexmark" width="54" height="60" viewBox="0 0 54 60"><path d="M27 2 L51 16 L51 44 L27 58 L3 44 L3 16 Z" fill="none" stroke="#C08552" stroke-width="2.5"/></svg>
+  <div class="title">Time to power is an electrical execution problem, argued in the customer&rsquo;s economics.</div>
+  <div style="position:absolute; top:330px; left:110px; width:820px;">
+    <div class="label" style="font-size:20px; margin-bottom:20px;">THREE EXECUTION RISKS</div>
+    <div style="display:flex; flex-direction:column; gap:22px;">
+      <div style="border-left:5px solid #C08552; padding-left:26px;"><div class="display" style="font-size:34px;">Labor demand pressure</div><div class="body" style="font-size:21px; margin-top:6px;">Prefab, kitting, and a yard near site move hours off the jobsite.</div></div>
+      <div style="border-left:5px solid #C08552; padding-left:26px;"><div class="display" style="font-size:34px;">Material and installation lead</div><div class="body" style="font-size:21px; margin-top:6px;">Early material planning against the project schedule.</div></div>
+      <div style="border-left:5px solid #C08552; padding-left:26px;"><div class="display" style="font-size:34px;">Fragmented coordination</div><div class="body" style="font-size:21px; margin-top:6px;">One coordinated electrical execution plan; change orders are the budget&rsquo;s biggest bleed.</div></div>
+    </div>
+  </div>
+  <div style="position:absolute; top:330px; left:1000px; width:810px;">
+    <div class="label" style="font-size:20px; margin-bottom:20px;">THE ECONOMIC ARGUMENT</div>
+    <div class="card" style="padding:30px 34px;">
+      <div class="display" style="font-size:34px;">The LCOE denominator</div>
+      <div class="body" style="font-size:21px; margin-top:10px; line-height:1.45;">Energy delivered sits under the levelized cost of energy. Conductor temperature rating changes deliverable amps; that lands on an IPP&rsquo;s bottom line.</div>
+    </div>
+    <div class="card" style="padding:30px 34px; margin-top:22px;">
+      <div class="display" style="font-size:34px;">One percent, high coefficient</div>
+      <div class="body" style="font-size:21px; margin-top:10px; line-height:1.45;">&ldquo;I know we are one percent, but if we fail, it could cost much more.&rdquo; Small share of capex, outsized execution risk: that is the seat at the planning table.</div>
+    </div>
+  </div>
+  <div class="srcline">Transcript pp.2-3: the argument as actually pitched to NRG, no direct-sale claim anywhere in it.</div><div class="pagemark">SOUTHWIRE POWERGEN &nbsp;<b>05</b></div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

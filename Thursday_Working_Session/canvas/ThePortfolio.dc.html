@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,900&family=Archivo:wght@400;700&display=swap">
+  <style>
+    body { margin:0; background:#0C0C0E; }
+    a { color:#C08552; } a:hover { color:#D9A278; }
+    .kicker { position:absolute; top:70px; left:110px; font-family:'Archivo',sans-serif; font-weight:700; font-size:22px; letter-spacing:7px; color:#C08552; }
+    .title { position:absolute; top:112px; left:110px; width:1560px; font-family:'Source Serif 4',serif; font-weight:900; font-size:58px; line-height:1.14; color:#F3EFE9; }
+    .srcline { position:absolute; bottom:52px; left:110px; width:1300px; font-family:'Archivo',sans-serif; font-weight:400; font-size:17px; color:#77726C; }
+    .pagemark { position:absolute; bottom:52px; right:110px; font-family:'Archivo',sans-serif; font-weight:700; font-size:17px; letter-spacing:3px; color:#77726C; }
+    .pagemark b { color:#C08552; }
+    .hexmark { position:absolute; top:62px; right:110px; }
+    .body { font-family:'Archivo',sans-serif; font-weight:400; color:#CFC9C2; }
+    .label { font-family:'Archivo',sans-serif; font-weight:700; letter-spacing:3px; color:#C08552; }
+    .display { font-family:'Source Serif 4',serif; font-weight:900; color:#F3EFE9; }
+    .card { position:relative; border:2px solid #2C2C30; padding:36px 42px; }
+    .stagechip { display:inline-block; font-family:'Archivo',sans-serif; font-weight:700; font-size:17px; letter-spacing:2px; padding:6px 16px; border-radius:16px; }
+  </style>
+</helmet>
+<div style="position:relative;width:1920px;height:1080px;background:#131315;overflow:hidden;">
+
+  <div class="kicker">THE PORTFOLIO</div><svg class="hexmark" width="54" height="60" viewBox="0 0 54 60"><path d="M27 2 L51 16 L51 44 L27 58 L3 44 L3 16 Z" fill="none" stroke="#C08552" stroke-width="2.5"/></svg>
+  <div class="title">Organize what exists. Define what doesn&rsquo;t. Watch what&rsquo;s next.</div>
+  <div style="position:absolute; top:320px; left:110px; width:1700px; display:flex; flex-direction:column; gap:20px;">
+    <div style="display:grid; grid-template-columns:340px 1fr; gap:22px; align-items:stretch;">
+      <div style="background:#33332F; display:flex; align-items:center; padding:24px;"><span class="label" style="font-size:21px; color:#F3EFE9;">ORGANIZE</span></div>
+      <div class="card" style="padding:24px 30px;"><div class="display" style="font-size:32px;">Utility and Renewables stay verticals</div><div class="body" style="font-size:21px; margin-top:6px;">Their strategies incorporate into one overarching PowerGen story. Open question we answer: what are we good at in utility, and what are we missing.</div></div>
+    </div>
+    <div style="display:grid; grid-template-columns:340px 1fr; gap:22px; align-items:stretch;">
+      <div style="background:#C08552; display:flex; align-items:center; padding:24px;"><span class="label" style="font-size:21px; color:#131315;">DEFINE NOW</span></div>
+      <div class="card" style="border-color:#C08552; padding:24px 30px;"><div class="display" style="font-size:32px;">The IPP space, modular power inside it</div><div class="body" style="font-size:21px; margin-top:6px;">First tranche, already selling. The EPC play and specification ride with it; capacity and product management get pulled in.</div></div>
+    </div>
+    <div style="display:grid; grid-template-columns:340px 1fr; gap:22px; align-items:stretch;">
+      <div style="background:#33332F; display:flex; align-items:center; padding:24px;"><span class="label" style="font-size:21px; color:#F3EFE9;">STRUCTURE</span></div>
+      <div class="card" style="padding:24px 30px;"><div class="display" style="font-size:32px;">Industrial play &middot; data-center connection &middot; channels, agents, BD</div><div class="body" style="font-size:21px; margin-top:6px;">Written into the outline this week. Subsegment to test Thursday: modular substations utility may not be chasing.</div></div>
+    </div>
+    <div style="display:grid; grid-template-columns:340px 1fr; gap:22px; align-items:stretch;">
+      <div style="background:#26262B; display:flex; align-items:center; padding:24px;"><span class="label" style="font-size:21px; color:#8B8C92;">WATCH</span></div>
+      <div class="card" style="padding:24px 30px;"><div class="display" style="font-size:32px; color:#B9B3AC;">Nuclear and new generation technology</div><div class="body" style="font-size:21px; margin-top:6px;">&ldquo;Above&rdquo; the current buckets; a watching brief inside the strategy.</div></div>
+    </div>
+  </div>
+  <div class="srcline">Transcript pp.7, 11-12: the owners&rsquo; own architecture, in their own carve.</div><div class="pagemark">SOUTHWIRE POWERGEN &nbsp;<b>06</b></div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
