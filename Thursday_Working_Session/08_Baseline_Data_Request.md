@@ -1,60 +1,60 @@
 # 08. Current-State Baseline: Data Request to Functional Leads
 
-Purpose: fill the current-state activity map (file 02) between August 21 and 28, per the 30-day plan agreed with Mark. This is the request document to send each contributing lead on Friday August 21, after Thursday confirms the mandate to contribute (decision D8). One version per business, same structure, so the answers consolidate into a single enterprise view without translation.
+Execution instrument for the August 21-28 current-state baseline and pipeline-truth workstreams (06_Thirty_Day_Mobilization, mobilization plan rows 3-4). Send Friday, August 21, after Marc secures the participation mandate (D-08) and names one delegate per function. Deadline: close of business Friday, August 28. Escalation: gaps or non-response go to Marc on August 28 under the sponsor follow-up control (06, risk table).
 
-Send from: Stephan. Deadline: close of business Friday, August 28. Escalation: gaps or non-response go to Mark on August 28, not later, because every September deliverable consumes this baseline.
+Acceptance tests below are taken from the version-of-record pack (02, "Minimum 30-day inputs"). A submission that fails its acceptance test is incomplete, not late.
 
 ## Cover note (common to all recipients)
 
-Subject: Power Generation baseline: your input needed by Aug 28
+Subject: Enterprise PowerGen pilot: your current-state input by Aug 28
 
 [Name],
 
-Mark and I met Thursday to set the enterprise Power Generation strategy in motion. The first step is a factual baseline of what Southwire already does in power generation, business by business. You own the answer for [business]. I need it back by Friday, August 28.
+Marc authorized the interim launch of the enterprise Power Generation pilot on August 21 (90 days, September leadership checkpoint). The first deliverable is a current-state map every business signs off on. You are the named delegate for [function]. Your input is due Friday, August 28.
 
-Three rules keep this fast and useful:
+Rules that keep this fast and usable:
 
-1. Facts only. If a number is an estimate, label it as one. If you do not know, write "unknown" rather than leaving a blank; unknown is a finding.
-2. Use the stage ladder exactly: Target, Contacted, Engaged, Qualified opportunity, RFP, Quoted, Awarded, Booked. A company on a list is a Target, not an opportunity.
-3. Nothing you report changes ownership. Accounts, revenue and channel relationships stay where they are today. This baseline creates visibility, not claims.
+1. Facts only. Label every estimate. Write "unknown" rather than leaving a blank; unknown is a finding.
+2. Use the stage taxonomy exactly: Candidate, Contacted, Engaged, Qualified, RFP, Quoted, Awarded, Booked. A modeled candidate or a relationship is not an opportunity. Keep relationship status separate from commercial stage.
+3. Nothing you report changes ownership. Accounts, pricing, capacity, channels, warranty, P&L and booked revenue stay exactly where they are today. This exercise creates one shared view, not claims.
 
-Thirty minutes of your team's time should cover it. I am happy to walk any section by phone. Template below.
+The commitment Marc confirmed for your function is the 2-hour baseline workshop plus the weekly touchpoint in the pilot charter. I will walk any section by phone.
 
 Stephan
 
 ## Response template (all businesses)
 
 ### Section 1: Activity inventory
-For each power-generation-related account or project your business touches:
+For each Power Generation account or project your team touches (new-build, repower, brownfield, fleet, interconnection tied to a generation asset):
 
-| Account / project | What we do for them today | Stage (ladder above) | Approx. annual or project value (label estimates) | Who owns the account in your team | Who specifies our product there | Who actually buys (owner, EPC, contractor, OEM, distributor) | Route we use (direct, distribution, agent, partner) | Any other Southwire business active on this account? |
-|---|---|---|---|---|---|---|---|---|
-
-Include operating-fleet and interconnection work tied to generation assets. Exclude activity with no generation connection.
+| Account / project | Project ID if known | What we do today | Relationship status | Commercial stage (taxonomy above) | Dated evidence for that stage | Value basis (label estimates; no funnel averages) | Relationship lead in your team | Who specifies | Who buys (owner, EPC, contractor, OEM, distributor) | Route in use | Other Southwire business active on the account? |
+|---|---|---|---|---|---|---|---|---|---|---|---|
 
 ### Section 2: Capability and constraint
-- Products and services your team currently delivers into generation projects or fleets.
-- Known capacity, lead-time or product-readiness constraints that would matter if generation demand grew.
-- Proof points: any documented project result (schedule, labor, cost, supply) with the source that backs it. Unverified claims welcome if labeled unverified.
+- Products and services currently delivered into generation projects or fleets.
+- Product fit, qualification, capacity, lead-time or margin constraints that would gate growth in this lane.
+- Proof points: documented project results (schedule, labor, supply, cost) with the source record. Unverified claims welcome if labeled unverified.
 
-### Section 3: Relationships and gaps
-- EPC, owner's engineer, OEM or developer relationships your team holds that touch generation work, with the strength of the relationship in one line.
-- Where you see white space or overlap with another Southwire business, stated factually.
-- The one thing an enterprise Power Generation effort should do first to help your business.
+### Section 3: Relationships, routes and gaps
+- Owner, EPC/OE, OEM, contractor or developer relationships relevant to generation, with strength in one line.
+- Existing direct, distribution and agent commitments touching these accounts, including exceptions and credit expectations.
+- Overlaps you can see with another Southwire business, stated factually.
+- The one thing the pilot should do first to help your business.
 
-## Business-specific additions
+## Function-specific asks and acceptance tests
 
-Per the cross-functional inputs section of the working brief, add these asks to the relevant version:
-
-- Utility: what "generation, interconnection and existing-fleet work already underway" contains, account by account. Substation scope tied to generation assets included.
-- Renewables: current generation and storage position; any repower or uprate activity, however small; interconnection scope.
-- Industrial / EPC: engineering and contractor relationships relevant to generation; current specification positions; wins, losses and near-misses on generation projects in the last two years.
-- Data Center: developer accounts showing behind-the-meter generation demand; accounts that overlap the IPP conversations (NRG, Southern Power, CPV); shared electrical execution needs.
-- OEM / modular (Mike Pitello): the consolidated OEM and component target map as it stands; for each target, whether Southwire already transacts with them through another business; buying-path notes per account.
-- Product Management and Operations: capacity and lead-time picture for product families relevant to generation projects; custom-requirement history; margin thresholds; investment constraints that would gate a generation push.
-- Sales, channels and agents: distribution and agent positions on any account named in the other responses, especially NRG, Southern Power, CPV and the OEM targets; current attribution practice when two businesses touch one account.
-- Finance / Strategy: what internal data exists on generation-linked revenue today, and how it is tagged, so the sizing method can reconcile external numbers against internal reality.
+| Recipient | Additional ask | Acceptance test (from 02) |
+|---|---|---|
+| Utility and Renewables leaders | Full account/project list behind the "foundation" claim: revenue, pipeline, installed base, channel commitments, substation and interconnection scope tied to generation | Named accounts/projects, stages, revenue/pipeline, products, proof, channels, constraints and owner |
+| Industrial/EPC sales leader | Current EPC/OE relationships, specification positions, pursuits, wins/losses, account owners | EPC/OE relationships, pursuits, stages and account owners stated |
+| Data Center leader | Accounts with behind-the-meter generation demand; overlap with IPP conversations; proposed rule for generation-side versus end-user leadership | End-user and generation account leadership stated for each active overlap |
+| Mike Pitello (OEM) | Rev89C shortlist candidates for the 3-5 OEM lighthouse accounts; per candidate: whether Southwire already transacts through another business; known package boundaries; quote IDs behind the reported $9.7M | Every proposed lighthouse row has buyer, specifier, package boundary, access, next event and routes by scope, or an explicit gap |
+| Product / application engineering | Product fit, qualification status, technical risks and package-interface constraints per lane; named approver for solution commitments | Each lighthouse pursuit can receive a supported feasibility view |
+| Solutions/prefab, manufacturing, operations, supply chain | Prefab delivery boundary: engineering ownership, facility or partner, capacity, warranty position, commercial terms, economics owner | Deliverable offer, facility/partner, engineering, warranty, quote and economics owner stated |
+| Sales Operations / CRM | Quote-level OEM export (quote ID, account, project, scope, route, date, stage, amount, status, duplicates); current stage-field usage | Reported quote values reconcilable line by line |
+| Channel leadership | Current distributor and agent agreements on any account named in other submissions; credit rules; known exceptions | Existing agreements, exceptions, credit rules and escalation owner documented |
+| Finance / Strategy | Internal tagging of generation-linked revenue; inputs for the metric dictionary | Definitions ready for the Aug 24-Sept 4 reconciliation workstream |
 
 ## What happens with the responses
 
-Week of August 31: consolidated into the enterprise activity map, gaps flagged, and returned to every contributor so each business sees the whole picture, most for the first time. The map then feeds the priority playbooks and the late-September leadership update. Individual account data is not shared outside that group without the owning business in the loop.
+Week of August 31: consolidated into the enterprise map, functional leaders sign off on accuracy and completeness (the mobilization acceptance test), and the signed map feeds the lighthouse shortlists, the playbooks and the September leadership pre-read. Account-level data is not shared outside the pilot group without the owning business in the loop. Anything unreconciled stays internal and labeled directional under the evidence guardrail note.
