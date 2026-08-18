@@ -170,6 +170,43 @@ The deck defines four case studies to validate financial impact:
 
 ---
 
+## Part 5 — Round-2 findings: additional Southwire-published case studies (2026-08-18)
+
+Correction: the Novinium MIC case study (formerly #13) features **National Grid** —
+5,000+ feet of energized cable segments injected via MIC with SPR reliability
+(NE US IOU, 10M+ customers, SPR injections since 2007); Mountain View Electric
+Association is a related Novinium reference.
+
+### 21. C7® first commercial installation — CenterPoint Energy 138-kV reconductor
+- **Source:** [T&D World "High Capacity Meets Low Sag"](https://www.tdworld.com/overhead-transmission/article/20964350/high-capacity-meets-low-sag) · [Southwire newsroom](https://www.southwire.com/newsroom/archive/southwire-teams-with-celanese-for-breakthrough-solution-c7-overhead-conductor)
+- CenterPoint was the first commercial C7 installer: 138-kV line Crosby–Mont Belvieu (NE of Houston), fast-growing gas-storage area with six new 138-kV substations in a year; existing single-circuit twin-bundle 927.2 kcmil ACAR on double-circuit towers. C7 gives ~2× ampacity of same-diameter ACSR with less sag — reconductored without exceeding design tensions or replacing structures. **Supports Case 1 (Reconductor vs Rebuild).**
+
+### 22. VR2® vibration-resistant conductor — Midwest utility (ice galloping)
+- **Source:** [Project page](https://overheadtransmission.southwire.com/projects/midwest-utility/) · [Case study PDF](https://overheadtransmission.southwire.com/wp-content/uploads/2017/06/SW_VR2_Midwest_Utility_Case_Study_v3.pdf)
+- ~$70M restoration cost from the Feb 2007 ice storm motivated the utility; ice adds 6–7× conductor weight. 0.65-mile 69-kV side-by-side VR2 install (2008); variable lay length installs without bagging while matching/beating aeolian-vibration and galloping resistance. Value: reliability as avoided storm-restoration cost.
+
+### 23. SIMpull® Cable-in-Conduit — Columbia Basin Electric Cooperative
+- **Source:** [Southwire newsroom case study](https://www.southwire.com/newsroom/archive/case-study-going-underground-helps-columbia-basin-electric-cooperative-beat-extreme-weather-ice-storms) · [cic.southwire.com](http://cic.southwire.com/)
+- PNW co-op undergrounding against ice/fog outages: 1/0 15-kV EPR in 1.5" Sch 40 HDPE on 2,500-ft reels. 60%+ of members now prefer CIC; faster installs, reduced labor, replaceable conductor in conduit. Re3™ SIMpull CIC case study also on the CableTechSupport page; CIC used in DOT/DOE, EV, grid hardening, airports, renewables, data centers.
+
+### 24. Vineyard Wind 1 — onshore HV cable supply & installation
+- **Source:** [Southwire blog](https://www.southwire.com/blogs/vineyard-wind) · [Vineyard Wind press release](https://www.vineyardwind.com/press-releases/2021/4/12/vineyard-wind-announces-us-based-southwire-as-key-supplier-for-nations-first-commercial-scale-offshore-wind-project)
+- First commercial-scale US offshore wind farm (800 MW, 84 turbines, 400,000+ homes). 32+ miles of HV cable from the Huntersville NC HV/EHV plant (69–500 kV); installed by Southwire HV field services; onshore scope ~Q1 2023.
+
+### 25. SPEED™ / CableTechSupport™ — metals & mining corporation (Canada)
+- **Source:** [Electrical Industry News Week case study](https://electricalindustry.ca/latest-articles/8917-case-study-southwire-customizable-speed-and-cabletech-support-services/) · [SPEED services](https://www.southwire.com/services/speed-services)
+- Customized, expedited MV cable solution for one of the world's largest miners. SPEED pages list further case studies: Expedited Service, Unrivaled Service, Standard-to-Innovative.
+
+### 26. Contractor Solutions case study library (incl. Aldi Distribution Center)
+- **Source:** [Contractor Solutions](https://www.southwire.com/services/contractor-solutions) — named PDFs: Aldi Distribution Center; Ineffective→Productive (HDPE Sch 40 alternative method); Obstacle→Advantage; Cumbersome→Effective; Standard→Innovative; Time-Consuming→Efficient; Delayed→On Schedule; Harder→Smarter; Complicated→SIMpull; plus [IEEE case study](https://www.southwire.com/ieee)
+- Real jobsite projects with per-project labor/time numbers inside each PDF — the closest public analog to the quantified-outcome format the Value Prop deck targets.
+
+### 27. 12 for Life® — Harvard Business School case
+- **Source:** [HBS case "Southwire and 12 For Life: Scaling Up?"](https://www.hbs.edu/faculty/Pages/item.aspx?num=45785) · [Southwire blog](https://www.southwire.com/blogs/harvard-12-for-life-case-study)
+- Factory staffed with at-risk high-school students runs at a profit with remarkable student outcomes; oldest case of its kind still taught at HBS. Corporate-credibility material.
+
+---
+
 ## Notes on sourcing
 - Vendor pages (rockwellautomation.com, sap.com, ibm.com, marsdenmarketing.com,
   millfac.com, southwire.com) were not directly fetchable from this environment
