@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,900&family=Archivo:wght@400;700&display=swap">
+  <style>
+    body { margin:0; background:#0C0C0E; }
+    a { color:#C08552; } a:hover { color:#D9A278; }
+    .kicker { position:absolute; top:70px; left:110px; font-family:'Archivo',sans-serif; font-weight:700; font-size:22px; letter-spacing:7px; color:#C08552; }
+    .title { position:absolute; top:112px; left:110px; width:1560px; font-family:'Source Serif 4',serif; font-weight:900; font-size:58px; line-height:1.14; color:#F3EFE9; }
+    .srcline { position:absolute; bottom:52px; left:110px; width:1300px; font-family:'Archivo',sans-serif; font-weight:400; font-size:17px; color:#77726C; }
+    .pagemark { position:absolute; bottom:52px; right:110px; font-family:'Archivo',sans-serif; font-weight:700; font-size:17px; letter-spacing:3px; color:#77726C; }
+    .pagemark b { color:#C08552; }
+    .hexmark { position:absolute; top:62px; right:110px; }
+    .body { font-family:'Archivo',sans-serif; font-weight:400; color:#CFC9C2; }
+    .label { font-family:'Archivo',sans-serif; font-weight:700; letter-spacing:3px; color:#C08552; }
+    .chip { font-family:'Archivo',sans-serif; font-weight:700; font-size:19px; letter-spacing:2px; color:#F3EFE9; }
+  </style>
+</helmet>
+<div style="position:relative;width:1920px;height:1080px;background:#131315;overflow:hidden;">
+  <img src="cover.jpg" alt="Southwire Power Generation Solutions" width="1920" height="1083" style="position:absolute; top:-210px; left:0; width:1920px; height:1083px;"/>
+  <div style="position:absolute; left:0; bottom:0; width:1920px; height:430px; background:linear-gradient(rgba(19,19,21,0), rgba(19,19,21,0.97) 45%, #131315 68%);"></div>
+  <div style="position:absolute; left:110px; bottom:150px; width:1700px;">
+    <div class="label" style="font-size:22px; letter-spacing:8px; margin-bottom:18px;">STRATEGY PRE-READ &nbsp;&middot;&nbsp; DECISION SESSION &nbsp;&middot;&nbsp; VERSION 0</div>
+    <div style="font-family:'Source Serif 4',serif; font-weight:900; font-size:88px; color:#F3EFE9; line-height:1.05;">Enterprise Power Generation</div>
+  </div>
+  <div style="position:absolute; left:110px; bottom:64px; width:1700px; border-top:2px solid #2C2C30; padding-top:22px; font-family:'Archivo',sans-serif; font-size:21px; color:#A9A29A;">
+    Thursday, August 20, 2026 &nbsp;&middot;&nbsp; 9:00 a.m. to 1:00 p.m. &nbsp;&middot;&nbsp; Carrollton &nbsp;&middot;&nbsp; Marc Hall and Stephan Hardt &nbsp;&nbsp;&nbsp;<span style="color:#77726C;">Internal working draft. Not an approved mandate.</span>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

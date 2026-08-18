@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,900&family=Archivo:wght@400;700&display=swap">
+  <style>
+    body { margin:0; background:#0C0C0E; }
+    a { color:#C08552; } a:hover { color:#D9A278; }
+    .kicker { position:absolute; top:70px; left:110px; font-family:'Archivo',sans-serif; font-weight:700; font-size:22px; letter-spacing:7px; color:#C08552; }
+    .title { position:absolute; top:112px; left:110px; width:1560px; font-family:'Source Serif 4',serif; font-weight:900; font-size:58px; line-height:1.14; color:#F3EFE9; }
+    .srcline { position:absolute; bottom:52px; left:110px; width:1300px; font-family:'Archivo',sans-serif; font-weight:400; font-size:17px; color:#77726C; }
+    .pagemark { position:absolute; bottom:52px; right:110px; font-family:'Archivo',sans-serif; font-weight:700; font-size:17px; letter-spacing:3px; color:#77726C; }
+    .pagemark b { color:#C08552; }
+    .hexmark { position:absolute; top:62px; right:110px; }
+    .body { font-family:'Archivo',sans-serif; font-weight:400; color:#CFC9C2; }
+    .label { font-family:'Archivo',sans-serif; font-weight:700; letter-spacing:3px; color:#C08552; }
+    .chip { font-family:'Archivo',sans-serif; font-weight:700; font-size:19px; letter-spacing:2px; color:#F3EFE9; }
+  </style>
+</helmet>
+<div style="position:relative;width:1920px;height:1080px;background:#131315;overflow:hidden;">
+  <div class="kicker">THE ANSWER</div>
+  <svg class="hexmark" width="54" height="60" viewBox="0 0 54 60"><path d="M27 2 L51 16 L51 44 L27 58 L3 44 L3 16 Z" fill="none" stroke="#C08552" stroke-width="2.5"/></svg>
+  <div style="position:absolute; top:300px; left:110px; width:1700px; font-family:'Source Serif 4',serif; font-weight:900; font-size:92px; line-height:1.12; color:#F3EFE9;">
+    One decision Thursday: a <span style="color:#C08552;">90-day pilot</span> that changes decision-making, not ownership.
+  </div>
+  <div style="position:absolute; top:730px; left:110px; width:1700px; display:flex; gap:36px;">
+    <div style="flex:1; border-top:3px solid #C08552; padding-top:26px;">
+      <div style="font-family:'Source Serif 4',serif; font-weight:900; font-size:64px; color:#F3EFE9;">Aug 21 &ndash; Nov 18</div>
+      <div class="body" style="font-size:24px; margin-top:12px; line-height:1.4;">Marc authorizes the interim launch. Amber ratifies, modifies, or stops it in September.</div>
+    </div>
+    <div style="flex:1; border-top:3px solid #C08552; padding-top:26px;">
+      <div style="font-family:'Source Serif 4',serif; font-weight:900; font-size:64px; color:#F3EFE9;">2 + 1 priorities</div>
+      <div class="body" style="font-size:24px; margin-top:12px; line-height:1.4;">New-build gas and OEM/modular validate now. Repower waits behind a named gate.</div>
+    </div>
+    <div style="flex:1; border-top:3px solid #C08552; padding-top:26px;">
+      <div style="font-family:'Source Serif 4',serif; font-weight:900; font-size:64px; color:#F3EFE9;">Zero transfers</div>
+      <div class="body" style="font-size:24px; margin-top:12px; line-height:1.4;">Accounts, pricing, capacity, channels, and every booked dollar stay exactly where they are.</div>
+    </div>
+  </div>
+  <div class="srcline">Basis: strategy thesis v0 and operating-model assessment, files 03 and 04 of the working pack.</div>
+  <div class="pagemark">SOUTHWIRE POWERGEN &nbsp;<b>02</b></div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
