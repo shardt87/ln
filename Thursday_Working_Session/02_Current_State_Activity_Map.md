@@ -1,48 +1,56 @@
-# Current-State Enterprise Activity Map
+# 02. Current-State Activity Map (v1)
 
-**Purpose:** Show what is supported by the current evidence, where work is already moving, and which enterprise handoffs remain undefined. This is not an account-ownership declaration.
+What is actually live, on the stage ladder, per the transcript and the document set. Ledger IDs cite 01; T = transcript page.
 
-## Evidence guardrails
+Stage ladder: Candidate, Contacted, Engaged, Qualified, RFP, Quoted, Awarded, Booked. Relationship warmth and commercial stage are recorded separately.
 
-- **Source Fact:** The IPP funnel moved from more than 500 signals to 29 reviewed items and 17 items labeled actionable. The review recommends concentrating on 3-5 priorities. [S03 pp.1, 3, 5-6]
-- **Source Fact:** Rev89C contains 55 priority accounts, 31 Tier 1 targets, 69 equipment packages, 48 skid/integrator targets, and 114 directory candidates. [S09 `Executive Targets!A5:I5`]
-- **Source Fact:** Every company in the OEM workbook is a modeled candidate, not proof of an incumbent, award, customer interest, or active project. [S09 `Method & Assumptions!B14:B15`]
-- **Conflict:** The latest OEM summary reports 30 Tier 1 targets, while Rev89C calculates 31. [S04 p.1; S09 `Executive Targets!C5`]
-- **Source Fact:** The approximately $1.8B OEM figure is a directional market model, not Southwire revenue or pipeline. The reported $9.7M quote activity requires reconciliation. [S04 p.1]
-- **Source Fact:** The adjacent prefab benchmark moved from 4,400 to approximately 880 labor hours. It is not an NRG result or a universal assumption. [S10 p.11]
-- **Source Fact:** The Master Account Board contains open account, governance, channel, technical-resource, CRM, and credit decisions. [S08 `Governance Board`, RID-01 through RID-09]
+## Named accounts
 
-## Current-state map
+| Account | Lane | Stage | What is actually true | Next event |
+|---|---|---|---|---|
+| Enchanted Rock | BTM / distributed generation | **Quoted** | Quote issued (terms referenced "at 40%", to confirm from the quote record); NDA in place; category-buyer access established (C1, T p.1) | Confirm quote status and what the 40% denotes; track to award |
+| Southern Power | IPP / owner | **Engaged** | Hank Adams (SVP) replied warmly; chased since March; golf-tournament invitation accepted as opener; mentorship framing; data-center demand signal volunteered by him (C3, C8, T pp.4-5) | Stephan's follow-up call; then a tailored energy version of the presentation |
+| NRG | IPP / owner | **Contacted** | Email plus Time to Power leave-behind sent; initial delivery possibly caught in spam; contact resent/receipt confirmed on the call; feedback pending (C2, T pp.2-4) | Debrief on response: separate "took the meeting as a favor" from "material resonated" |
+| CPV | IPP / owner | Candidate (sequenced first) | "CPV is my next one... this week" (C4, T p.5); Houston-based cluster relevant to Formula E hosting idea | Personalized outreach this week using the process model that worked |
+| Vistra | IPP / owner | Candidate | Named on the call as a next target (C4, T p.5) | Sequenced after CPV |
+| Chevron Energies | IPP / owner | Candidate | Named on the call as a next target (C4, T p.5) | Sequenced after CPV |
+| OEM target set | OEM / modular | Candidates | 100+ names from Mike's component-breakdown exercise; consolidated list still owed; visitability is the filter (Chicago/Illinois/Indiana/Ohio flagged plant-heavy); Houston trip planned September (C7, T pp.8, 14) | Consolidate the list; confirm buying route per account before any visit |
 
-| Activity lane | Documented activity and stage | Current offer or capability hypothesis | Internal ownership today | Influence, buyer, and route | Evidence or proof | Material gap | Thursday or 30-day decision |
-|---|---|---|---|---|---|---|---|
-| **Utility and Renewables foundation** | Identified as the enterprise foundation. Current accounts, projects, revenue, pipeline, installed base, and stages were not found. | Existing products, customer access, supply capabilities, and field support should underpin PowerGen, but the exact baseline is TBD. | Existing Utility and Renewables businesses. Named PowerGen handoff owners are TBD. | Utility/developer, consulting engineer, EPC, contractor, distributor, and agent roles require mapping. Existing routes remain in place. | S01 pp.3, 6; S02 pp.1-2 | The strategy assumes a foundation that is not represented in the common account/project view. | Require a current-state submission from each business: accounts, projects, products, revenue/pipeline, channels, capacity, proof, and named owner. |
-| **IPP conventional gas owners** | 500+ signals to 29 reviewed to 17 items labeled actionable. Current project rows exist in S08. Individual stages must remain separated. | Early project intelligence, discovery, electrical-scope mapping, supply planning, prefab, and integrated Time to Power proposition. | A PowerGen market and portfolio view is documented in S03; formal ownership remains TBD. | Owner/developer and OE influence; EPC, contractor, distributor, owner-furnished procurement, or package supplier may buy. | S03 pp.1, 3, 5-8, 13-15; S08; S10 pp.5-6 | Pursuit leadership, buying-scope routes, capacity escalation, and resource commitments are inconsistent or missing. | Select 3-5 lighthouse pursuits. Assign one pursuit lead, relationship lead, stage, specifier, buyer, route and revenue owner per buying scope, next event, and evidence owner. |
-| **EPC and owner’s engineer** | EPC/OE account rows exist in S08; no reconciled enterprise stage summary was found. | FEED/specification influence, cable schedules, application engineering, constructability, reels/kits, prefab, and project material planning. | Current account ownership is not reconciled in the retrieved evidence. Recommended pilot guardrail: preserve existing relationship leadership unless accountable leaders approve otherwise. | EPC/OE engineering may specify; EPC, contractor, distributor, OEM, or owner may buy. | S03 p.8; S08; S09; S12 pp.4-6, 24-25 | Specification influence and order conversion can occur through different organizations, but linked records and leads are not common. | For every lighthouse project, name the EPC/OE specification lead and the separate commercial-conversion lead. |
-| **OEM and modular platforms** | 55 priorities and 31 Tier 1 targets in Rev89C. Some reported quote activity requires quote-level reconciliation. The S09 rows are candidates; S09 does not establish a commercial stage. | Factory-to-field cable architecture, approved cable families, package BOMs, pre-cut/labeled kits, compatibility engineering, cable schedules, and interface data. | OEM workstream plus existing account, product, and business teams. Quote and account authority remain TBD by account. | OEM/package engineering may approve/specify and buy factory scope. EPC/contractor/channel may convert bulk field scope. | S04 p.1; S09 `Executive Targets`, `Skid Builders & Integrators`, `Method & Assumptions` | Target logic is more developed than verified account stage, package boundary, procurement owner, or commercial route. | Select 3-5 lighthouse accounts. Validate factory-wired, owner-furnished, EPC-procured, and contractor-installed boundaries before forecasting. |
-| **Data Center and behind-the-meter generation** | Strategically referenced; no current account, project, or overlap map was found. | Potential generation, BESS, controls, modular electrical, and interconnection proposition requires validation against the Data Center strategy. | Existing Data Center account leadership and the PowerGen generation role are unresolved. | End user/developer, generation provider, design engineer, EPC, utility, and contractor roles vary by commercial model. | S01 pp.3, 6; S02 pp.1-2 | High risk of duplicate outreach, competing narratives, or unclear account leadership. | Map accounts, overlaps, roles, and evidence during the pilot. Do not activate a commercial play without a separate sponsor decision. |
-| **Repower and brownfield** | Customer proposition exists; no sourced enterprise project list was found. | Electrical assessment, replacement/upgrade scope, constructability, outage planning, supply assurance, and reliability improvement. | Likely shared across PowerGen, Utility, services, product teams, and existing account owners. | Owner engineering, plant operations, OE/EPC, service contractor, contractor, and distributor may each control part of the scope. | S02 pp.1-2; S10 p.18 | No qualification standard, repeatable offer boundary, reference list, or current owner is documented. | Treat as one conditional pilot. Activate only with a named customer sponsor, project, business owner, route, and repeatable hypothesis. |
-| **Prefab and standardized assemblies** | Cross-market enabling capability, not a separate end market. Offer concepts and adjacent proof exist; no reconciled opportunity register was found. | Packaged rooms, e-houses/PDCs, cable kits, pre-cut/labeled assemblies, standardized BOMs, staged material, and installation-ready packaging. | Ownership across solutions, engineering, manufacturing, distribution/customization, and partners is TBD. | OEM/skid builder can buy factory scope; EPC, contractor, or channel can buy field scope. | S09; S10 pp.6, 11-12 | Delivery capacity, engineering ownership, economics, warranty, commercial terms, and repeatability are not established. | Define the minimum viable prefab offer, delivery owner, quote path, partner boundary, proof standard, and one pilot. |
-| **Nuclear and SMR** | Identified as a strategic lane; no account/project map or near-term evidence was found. | Product qualification, nuclear-grade requirements, long-cycle specification, and supply assurance require research. | TBD. | Owner, reactor OEM, architect-engineer, EPC, nuclear quality, and regulatory functions. | S01 pp.3, 6; S02 pp.1-2 | No evidence supports near-term commercial prioritization; capability and certification needs are unknown. | Keep in incubation. Define an entry gate, research owner, and decision date before committing commercial resources. |
-| **Enterprise enablers** | Governance, customer materials, a target model, account trackers, and strategy work exist. Functional baselines and commitments are incomplete. | Application engineering, market intelligence, CRM, finance, marketing, operations, supply chain, and executive escalation. | Distributed across existing functions. | Internal service and decision model. | S01 pp.6-8; S08; S12 pp.28-32 | No named resource commitments, common stage language, proof control, or single project identifier. | Confirm named functional delegates, source of truth, stage taxonomy, evidence standard, and escalation SLA. |
+## The outreach machine (what works, per the owners)
 
-## What the current state says
+1. Find one person with a genuine relationship; use a human opener (golf, Formula E, mentorship) rather than a cold deck (C5, C6).
+2. Send the leave-behind so the champion can forward it internally and defend the case.
+3. Thirty-minute call before any meeting.
+4. One-hour on-site visit, experts in the room, no sales presentation ("drop the pressure").
+5. Weekly personalized outreach cadence, owner-run; every send approved where Mike drafts it (D1).
+6. Debrief every response: was it relationship access or proposition resonance.
 
-1. **Inference from source coverage:** The most developed retrieved evidence concerns IPP funnel construction and OEM/package targeting. Utility, Renewables, Data Center/BTM, brownfield, and nuclear lack equivalent current-state inputs.
-2. **Inference:** Southwire has multiple credible Power Generation activities, but not yet one enterprise operating system.
-3. **Recommendation documented in S09:** Pursue two linked lanes: OEM/package approval and EPC/contractor/channel order conversion.
-4. **Inference:** The central issue is how to coordinate the opportunity without taking product, pricing, capacity, customer, channel, or P&L authority from the businesses that currently hold it.
-5. **Recommendation:** Do not combine owner influence, EPC/OE specification, OEM package content, and the eventual purchase into one undifferentiated pipeline record. Link them with one project identifier and separate lane records.
+## Channel guardrails currently in force (owners' words, T pp.3, 7)
 
-## Minimum 30-day inputs
+- Never signal a direct offering to IPPs or OEM accounts unprompted; it can "piss off distribution" and EPC partners simultaneously. Stay open if they raise it.
+- The hedge model is the sanctioned framing where direct comes up: the owner buys material direct, the EPC's electrical contractor installs; it protects the owner's schedule without displacing anyone (B8).
+- OEM accounts: first learn how the account buys. Big accounts stay with distribution; direct only where the account already buys direct (Powell is the cited example).
+- Joint field visits (e.g. with Phil Metz) are relationship maintenance, not a default sales motion.
 
-| Input | Accountable source | Acceptance test |
+## What Southwire is carrying into the pitch (the Time to Power narrative, T pp.2-3)
+
+- Framing: time to power is an electrical execution problem; three execution risks: labor demand pressure, material/installation lead, fragmented coordination.
+- The LCOE argument: energy delivered is the denominator; conductor temperature rating affects deliverable amps; small-percentage effects with high execution coefficients ("I know we are one percent, but if we fail, it could cost much more").
+- Proof: the 4,400-to-~880 labor-hours case, presented explicitly as adjacent evidence (Nedra's case study, Bloom Energy basis), never as a guarantee; per-project scoping caveat attached.
+- Prefab concept: companies will stage and build their own prefabs on site; a prefab yard near site is both a delivery answer and potentially its own business idea.
+- Change orders are the named enemy: "any rework or change of work... that's the biggest cost that bleeds out of their budget."
+
+## Internal state
+
+| Area | State | Cite |
 |---|---|---|
-| Utility and Renewables baseline | Business leaders | Named accounts/projects, stages, revenue/pipeline, products, proof, channels, constraints, and owner |
-| Data Center/BTM overlap map | Data Center leader | End-user and generation account leadership stated for each active overlap |
-| IPP, EPC/OE, and OEM pursuit register | Current account owners plus PowerGen | Every row has project, stage, evidence, next event, pursuit lead, relationship lead, buyer, specifier, route, and value basis |
-| Direct, distribution, and agent commitments | Sales and channel leadership | Existing agreements, exceptions, credit rules, and escalation owner documented |
-| Product fit, capacity, lead times, and margin ranges | Product, engineering, operations, finance | Each lighthouse pursuit receives a supported feasibility view |
-| Prefab operating boundary | Solutions, manufacturing, engineering, legal | Deliverable offer, facility/partner, engineering, warranty, quote, and economics owner stated |
-| OEM quote reconciliation | Finance, sales operations, account owners | Quote ID, account, project, scope, route, date, stage, amount, duplicates, and status reconciled |
-| Nuclear capability baseline | Utility/nuclear quality and product leaders | Required qualifications, product gaps, customer evidence, investment, and entry decision date |
+| Marketing | Self-built material carried the NRG pitch; Alan Colorito alignment meeting to be set; quality, speed, one copyright incident, and catalog-style visuals are the grievances; requirement set: application-story visuals, copyright notice, non-forwardable | D3, T pp.9-10 |
+| CRM | Salesforce alignment day scheduled; review-for-gaps posture, not build | D4, T p.10 |
+| OEM resource | Mike Pitello under a quality gate: message unfinished, 90-day plan returned, outreach requires approval, role-play before visits, coachability being assessed | D1, T pp.8-9, 14 |
+| External support | Michael Rachel (Aslan) commitments pending follow-up; role-play participant; not a distribution point for the energy deck | D2, T pp.9, 14 |
+| Allies | Eric Parsons aligned and complementary (data-driven, renderings/models); Carla owns the renewable-OEM item | D5, D8 |
+| Hiring | Open-doors relationship hire progressing; Donna met him and approved of the profile | D6, T p.7 |
+
+## What this map corrects from the previous version
+
+The claim "no account is evidenced past Engaged" is false: Enchanted Rock is Quoted under NDA. Southern Power is a warm executive engagement, not a pending discovery call. NRG's stage is Contacted with a receipt problem solved, not "hesitation to debrief." The OEM lane's real bottleneck is list consolidation and message quality, not map existence.

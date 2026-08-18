@@ -1,74 +1,91 @@
-# Evidence and Conflict Ledger
+# 01. Evidence and Conflict Ledger (v1)
 
-**Use:** Separate what the sources say from what is inferred or recommended. Resolve material contradictions before they enter an executive narrative.
+Source facts from S13 (the working-call transcript) with page citations, the garble register for a noisy speech-to-text source, and the conflicts that remain open. Labels: Source Fact (SF), Inference (INF), Recommendation (REC), Open Question (OQ).
 
-## Evidence ledger
+## A. Mandate and governance (the corrected picture)
 
-| ID | Classification | Evidence | Traceability | Confidence or constraint |
-|---|---|---|---|---|
-| E01 | Source Fact | Thursday is intended to define an enterprise strategy spine, portfolio, route-to-market, evidence plan, and 30-day mobilization. | S01 pp.1, 3-9 | High for session design; S01 proposes rather than grants authority |
-| E02 | Source Fact | Leadership’s questions include company structure, current activity, where to play, how to win, phasing, and the relationship among Utility, IPP, EPC, nuclear, repower, and Data Center. | S02 pp.1-2 | Medium-high |
-| E03 | Source Fact | The IPP funnel is reported as 500+ initial signals, 29 reviewed, and 17 items labeled actionable, with a recommended focus of 3-5. | S03 pp.1, 3, 5-6 | Medium; stage definitions and snapshot date must stay attached |
-| E04 | Source Fact | The IPP review reports 63 GW, $140-$160B, and an approximately $2B ambition. | S03 p.2 | Medium; these are not interchangeable with Southwire-addressable revenue or OEM TAM |
-| E05 | Source Fact | The IPP review reports a $248M buying wave and uses $16-$24M, less than 2%, and 50-80-week planning metrics. | S03 pp.7, 10 | Medium; preserve original labels and assumptions |
-| E06 | Source Fact | The corrected OEM summary reports approximately $1.8B directional TAM, 55 priorities, 30 Tier 1 targets, $53M annual potential, and $9.7M quote activity. | S04 p.1 | Medium; directional and pending reconciliation |
-| E07 | Source Fact | The current OEM model contains 55 priority accounts, 31 Tier 1 targets, 69 equipment packages, 48 skid/integrator targets, and 114 directory entries. | S09 `Executive Targets!A5:I5` | High for workbook contents, not opportunity status |
-| E08 | Source Fact | Every company in the OEM model is a candidate, not evidence of an incumbent, award, installed vendor, or active project. | S09 `Method & Assumptions!B14:B15` | High |
-| E09 | Source Fact | Factory-wired, OEM-furnished, owner-furnished, EPC-procured, and contractor-installed boundaries require validation with vendor lists, one-lines, cable schedules, and terminal drawings. | S09 `Method & Assumptions!B29,B36,H36` | High |
-| E10 | Source Fact | OEM ranking weights direct buying, specification influence, and cable intensity at 25% each, repeatability at 15%, and access fit at 10%. | S09 `Method & Assumptions!F19:F23` | High for method; rankings remain hypotheses |
-| E11 | Source Fact | The NRG teaser uses an adjacent 4,400-to-approximately-880-hour labor benchmark, not an NRG-specific result. | S10 p.11 | Medium-low until proof is verified |
-| E12 | Source Fact | The working brief calls for verification of the benchmark’s baseline, final hours, scope, and Southwire contribution. | S01 p.8 | High |
-| E13 | Source Fact | The account board flags relationship-versus-stage errors, unsupported schedule language, and unresolved channel/credit rules. | S08 `Critical Corrections` | High for identifying data-quality gaps |
-| E14 | Source Fact | Marc requested market-potential work while explicitly cautioning about channel conflict. | S07 p.2 | High |
-| E15 | Source Fact | The leadership transcript supports keeping Mike’s assignment focused on OEM product/player/target research and force-ranking, rather than broader strategy or agent ownership. | S11 pp.68-71 | Medium due to transcript limitations |
-| E16 | Source Fact | The contractor-landscape reference separates who specifies, approves, buys, installs, and accepts, and requires evidence before an item reaches forecast status. | S12 pp.24, 28, 32 | Medium-high for process architecture |
-| E17 | Inference | A federated horizontal operating model is plausible because the opportunity crosses owner, EPC/OE, OEM, channel, product, and execution boundaries. | S01 pp.3-4; S02 pp.1-2; S09 `Method & Assumptions!B29,B36`; S12 pp.2, 24-25 | Must remain a hypothesis until authority and resources are approved |
-| E18 | Recommendation | Treat Thursday as a decision workshop that establishes scope, authority limits, priority plays, handoff rules, and evidence owners. | Derived from E01-E17 | Recommendation, not current-state fact |
+| ID | Class | Statement | Cite |
+|---|---|---|---|
+| A1 | SF | The initiative traces to Donna's mid-year review with Wynn. Wynn's reaction to owning PowerGen strategy company-wide: "I love it. That's a great idea. Let's get a meeting on the books." | S13 p.6 |
+| A2 | SF | Donna asked Stephan and Marc to write the strategy. Their commitment: "If you give us 30 days, we'll have a strategy ready for you in 30 days." | S13 p.6 |
+| A3 | SF | Marc has been introduced (to a leader whose name transcribes as "Gadesh") as "all things PowerGen." | S13 p.6 |
+| A4 | SF | A monthly PowerGen call will run for six months. Working title from the call: PowerGen progress update. First call late September. Proposed attendees named on the call: Rohan, Donna, Denise, Nedra, Alan, Jono Barski, probably Chris Bailey, Wynn, plus Stephan and Marc. Amber sets it up: title, attendees, agenda, calendar. | S13 p.6 |
+| A5 | SF | A possible second call with Donna around September 2 to preview the agenda and resolve open items; Stephan wants to show "we are out of the foundation stage... it's the second tour now, the outreaches that we're doing." | S13 pp.5-6 |
+| A6 | SF | First monthly call agenda per the owners: what are we doing in power generation, how are we scoping the market, what opportunities are we seeing, what are the gaps and risks. | S13 p.6 |
+| A7 | SF | Posture stated on the call: "We wrote our own strategy... we're not gonna wait around for Nedra to give us a strategy." And: "we're just the business developers... putting the strategy together so that we can expand our current foothold... I'm not trying to get in your way or tell you what you're doing" (to the businesses). | S13 pp.6, 15 |
+| A8 | SF | Principle for the sales organization: "They are our sales execution arm and not someone who dictates the strategy." | S13 p.8 |
+| A9 | INF | Decision line: Stephan and Marc author; Donna is the requesting sponsor; Wynn is the executive endorser; Amber coordinates logistics only. No pilot, no ratify/modify/stop gate exists in the source. | From A1-A6 |
 
-## Conflict and reconciliation ledger
+## B. Strategy content the owners actually stated
 
-| ID | Topic | Conflicting or incomplete evidence | Required treatment for Thursday | Resolution required |
-|---|---|---|---|---|
-| C01 | OEM market size | S06 reports $12.575B with significant overlap; S04 reports a corrected approximately $1.8B directional TAM. | Use approximately $1.8B only as the latest internal directional estimate. Do not repeat $12.575B as current. | Confirm included segments, overlap removal, period, geography, addressability, and calculation owner |
-| C02 | IPP market versus OEM TAM | S03 reports 63 GW and $140-$160B, while S04 reports approximately $1.8B OEM TAM. They measure different things. | Do not present the figures as comparable market sizes. | Create one metric dictionary covering total project capex, electrical TAM, wire-and-cable TAM, OEM TAM, and Southwire opportunity |
-| C03 | Quote activity | S06 reports more than $20M; S04 reports $9.7M pending reconciliation. | Use `TBD` in the executive thesis unless a quote-level export supports one number. | Reconcile quote IDs, account, project, date, status, duplicates, expiration, scope, and route |
-| C04 | Labor benchmark | S10 supports 4,400 to approximately 880 hours. Any 800-hour shorthand is inconsistent. It is adjacent and not NRG-specific. | Say “4,400 to approximately 880 in an adjacent case” with a verification qualifier. | Obtain case owner, baseline, final hours, exact scope, project conditions, and Southwire contribution |
-| C05 | IPP pipeline stages | 500+, 29, 17, and 3-5 describe different funnel stages. S08 also flags relationship-versus-stage errors. | Do not call 500+, 29, or all 17 “active opportunities” without the agreed definition. | Publish a dated stage glossary and opportunity register with evidence, owner, next event, and value |
-| C06 | OEM targets versus opportunities | S04 reports 300 to 100 to 55 to 30. S09 contains 114 directory entries, 55 priorities, and 31 Tier 1. S09 says all are candidates. | Present as account-universe and prioritization counts, not pipeline, incumbency, or customer interest. | Reconcile source date and identify contacted, engaged, qualified, quoted, awarded, and booked targets |
-| C07 | OEM Tier 1 count | S04 says 30; S09 calculates 31. | Use 31 only when discussing Rev89C; otherwise say “approximately 30.” | Confirm which source is later and whether account membership changed |
-| C08 | Route to market | S09 calls for parallel OEM/specification and EPC/contractor lanes; S07 warns about channel conflict; S08 leaves channel and credit rules open. | Do not promise a direct route or account transfer. Make route selection a project-level qualification decision. | Approve direct, distribution, agent, and partner rules, including credit and escalation |
-| C09 | Enterprise authority | S01 describes company-wide ownership as a proposed mandate, while S02 frames structure as a question. No source grants control over accounts, P&Ls, pricing, manufacturing, channels, or revenue. | Treat authority and its limits as a Thursday decision. | Written sponsor confirmation and a responsibility matrix |
-| C10 | Role boundaries | S11 narrows Mike’s OEM assignment but does not establish ownership for enterprise strategy, agents, IPPs, or revenue. | Use the transcript to clarify boundaries, not infer authority. | Confirm accountable owners for enterprise strategy, OEM, owner/IPP, EPC/OE, agents, and escalation |
-| C11 | Model versus project fact | S09 derives targets from a conceptual combined-cycle model and says voltage, package boundaries, and vendors require confirmation. | Use the model to form discovery hypotheses, not prove project scope or vendor position. | Obtain approved one-lines, vendor lists, package specifications, motor lists, cable schedules, and terminal drawings |
-| C12 | Governance status | S08 keeps decisions open while other documents use assertive strategy language. | Label every page with facts, proposals, and approvals still required. | Assign each governance item an owner and decision date |
+| ID | Class | Statement | Cite |
+|---|---|---|---|
+| B1 | SF | Two-part strategy shape: where Southwire plays today with an organized, structured strategy (utility operated as a legacy/separate vertical; renewables as a separate vertical, incorporated into the overarching PowerGen strategy), and where a more defined strategy is needed: the IPP space, with modular power part of it; nuclear as new technology "above." | S13 pp.11-12 |
+| B2 | SF | Go-to-market plays named: a utility play, an industrial play, an EPC play. | S13 p.7 |
+| B3 | SF | Segmentation method: rank the generation types (coal small, gas large, brownfields, co-fire mentioned), build layers that are mutually exclusive, avoid double counting, and have the layers sum to the whole of PowerGen. "McKinsey work that we have to come up with." | S13 pp.11-12 |
+| B4 | SF | Sizing plan: start internal sizing of each market now (utility portion, IPP portion, direct portion); engage an external firm for defensible numbers, name transcribed "Patario"; precedent set with FTI/FGI. "We're gonna have to have a lot of credible data behind this... we can defend it when we are asked." | S13 p.11 |
+| B5 | SF | Phasing: a comprehensive go-to-market strategy over 3-4 months, written in phases, mobilizing early in tranches; IPP is the component to go after quickly; EPC and specification questions ride with it; capacity and product-management operations get pulled in at some point. | S13 p.12 |
+| B6 | SF | Open strategy questions the owners posed to themselves: what are we good at in utility and what are we missing; is there a modular-substation subsegment worth approaching ("pre-fabs") that utility is not really going after. | S13 p.12 |
+| B7 | SF | The Time to Power narrative as pitched to NRG: energy overview, why now; three execution risks (labor demand pressure, material/installation lead, fragmented coordination); a walk through the plant (turbine hall, generation island); the levelized-cost-of-energy formula and the errors Southwire can affect (energy delivered is the denominator; conductor temperature rating lets you deliver more amps, which an IPP feels on the bottom line); the 4,400-to-~880 labor-hours case presented cautiously as adjacent evidence; a prefab-yard concept near site; an appendix. No direct-sale claim anywhere in it. | S13 pp.2-3 |
+| B8 | SF | The commercial hedge model articulated for IPPs: IPPs put risk on the EPC via lump-sum contracts, but rework and change orders are the biggest budget bleed; a possibility is the owner buying material direct while the electrical contractor the EPC hires installs it. "It's like even hedging." | S13 p.3 |
+| B9 | SF | Channel guardrails in the owners' words: do not signal direct offering ("we can piss off distribution by going directly... we can piss off an EPC by going directly to an IPP"); stay open to discussion; for OEM accounts, first understand whether the account buys through distribution; big accounts stay with distribution; direct only where the account already buys direct (Powell used as the example); "if you want to go in with Phil Metz, that's fine. Go in and pick behind the curtain and see what they're buying." | S13 pp.3, 7 |
+| B10 | SF | Renewables treatment: "renewables is going to be operated like utility, as a separate vertical, a separate strategy, but we can incorporate the renewable strategy into the overarching power gen." | S13 p.11 |
 
-## Metric dictionary required before the executive update
+## C. Live commercial status (stage ladder: Candidate, Contacted, Engaged, Qualified, RFP, Quoted, Awarded, Booked)
 
-| Term | Required definition | Current risk |
+| ID | Class | Statement | Cite |
+|---|---|---|---|
+| C1 | SF | Enchanted Rock: "we quoted at 40%... NDA and category buyer access. That's all the [business] development work." Stage: **Quoted**, under NDA, with category-buyer access. The "40%" reference needs written confirmation of what it denotes. | S13 p.1 |
+| C2 | SF | NRG: email and leave-behind sent; the contact had not received it days later (possible spam filtering); the deck was rebuilt around Time to Power; feedback is the next event; the plan is to debrief what resonated ("did they take the meeting because it was a favor? Did they like our material?"). Stage: **Contacted**, response pending. | S13 pp.2-4 |
+| C3 | SF | Southern Power: Hank Adams, SVP, replied warmly ("I've heard of Southwire"); Stephan had chased him since March; a golf-tournament invitation opened the door (Waynesboro hometown annual tournament); mentorship framing; follow-up call planned; a tailored energy version of the presentation to follow. Stage: **Engaged**. | S13 pp.4-5 |
+| C4 | SF | Named next IPP targets: CPV ("my next one, so I'm gonna focus on CPV this week"), Vistra, Chevron Energies. Stage: **Candidates** with named sequencing. | S13 p.5 |
+| C5 | SF | Outreach process model that worked: find a person with a relationship, send the leave-behind for them to forward internally, 30-minute call before any meeting, then a one-hour on-site visit with experts and no sales presentation ("drop the pressure"). Weekly personalized outreach cadence intended ("every week I should send... personalized"). | S13 pp.4-5 |
+| C6 | SF | Relationship platforms in play: the golf tournament; Formula E (Bert and Richard in London; races in Austin and Miami; idea of hosting IPPs, OEMs, CPV, Houston-based players at the races). | S13 p.5 |
+| C7 | SF | OEM lane: Mike produced a 100+ name list from the component breakdown exercise; the consolidated list is still owed; a Houston trip is planned for September; the target-list purpose is identifying accounts they can physically visit (Chicago, Illinois, Indiana, Ohio flagged as plant-heavy). | S13 pp.8, 14 |
+| C8 | SF | Data-center adjacency signal: Southern Power's Hank Adams says software/data-center demand "has actually come up a few times... in recent weeks." | S13 p.5 |
+
+## D. Team, marketing, and operations facts
+
+| ID | Class | Statement | Cite |
+|---|---|---|---|
+| D1 | SF | Mike Pitello development: outbound message still unfinished with spelling and punctuation errors ("it's not ready to go out"); the 90-day plan came back weak and was returned for revision; all outreach and targeted marketing emails require approval before sending; role-play with Aslan ahead of OEM visits; observer-only rule in IPP meetings; coachability is being assessed in the field; possible personal factors acknowledged privately; Dan Jones declined to take Mike onto his team after hearing the history. | S13 pp.8-9, 14 |
+| D2 | SF | Michael Rachel (Aslan) is an external software contractor; follow-up owed on his commitments; role-play participation planned; do not send him the energy presentation to forward at will. | S13 pp.9, 14 |
+| D3 | SF | Marketing: meeting to be set with Alan Colorito to walk through the self-built material and upgrade marketing; grievances: speed and quality ("not getting us to the speed and quality we want"), childish diagrams, and a copyright infringement incident (a diagram pulled from a public source by a co-op design effort; "Miranda, one of the designers" named); requirements: application-story visuals not product-catalog looks ("we cannot make this look like a kettle of white cable catalog... when you're talking to an IPP"), copyright notice on slides, non-forwardable protection. | S13 pp.9-10 |
+| D4 | SF | Salesforce: an alignment day is scheduled (Wednesday); the meeting is to review what exists and find holes and gaps, not yet to build. | S13 p.10 |
+| D5 | SF | Eric Parsons: two-hour working call; data-driven, rendering/diagram/model approach; complementary to Stephan's new-vertical approach; "he's with us." | S13 pp.10-11 |
+| D6 | SF | ABC/open-doors hire: dinner with Donna and Marc went well ("Donna loved him"); profile is relationships, not strategy ("He's not a strategy guy. He's an open-doors guy"); claims deep procurement-director relationships; prior candidate withdrew after being asked strategy questions cold, a coaching lesson Marc took. | S13 p.7 |
+| D7 | SF | Incentives context: plan attainment referenced at 97%; utility and specialty gross-margin components; referral-program questions from Mike routed to HR; the data-center role sits under Joel Wynn and appears filled ("Clyde got it"). | S13 p.13 |
+| D8 | SF | Carla is the contact "to get this renewable OEM thing done." | S13 p.15 |
+| D9 | SF | Pre-Thursday prep the owners assigned themselves: block roughly an hour a day to inventory "all the groups within Southwire that today, to some degree, are calling on PowerGen," draft a rough strategic-plan outline (explicitly including how data center, the legacy industrial group calling on EPCs, channels, agents, and business development connect), and use AI to get started. | S13 p.13 |
+| D10 | SF | Thursday session mechanics: at the office, roughly 9 to 1 with lunch brought in; "here are the non-negotiable 3 things that we've got to knock out in this 3 hour session"; rabbit-hole rule in their own words: "if we're going down a rabbit hole... we call it what it is... park that and say, that's parked... in the rabbit hole zone." | S13 pp.12-13 |
+
+## E. Garble register (speech-to-text artifacts; confirm before external use)
+
+| Heard in transcript | Proposed reading | Basis |
 |---|---|---|
-| Signal | A market indication with no required account validation | Can be mistaken for an opportunity |
-| Reviewed item | A signal assessed against initial criteria | Can be mistaken for qualified pipeline |
-| Actionable opportunity | Named project/account with an evidence-backed next action | Evidence and stage may still vary |
-| Strategic pursuit | One of a small number approved for enterprise coordination and resources | Approval criteria do not yet exist |
-| Candidate account | Model-generated organization worth researching | Not evidence of access, interest, or fit |
-| Qualified account/package | Buyer, specifier, boundary, need, and next event validated | Qualification fields are not yet common |
-| Quote activity | Released quote tied to quote ID, scope, date, route, and status | Current totals conflict and may duplicate |
-| Awarded | Customer has selected Southwire for defined scope | Relationship or verbal interest is not an award |
-| Booked revenue | Accepted order recorded under current financial rules | Should never be combined with influence value |
+| Power John / PowerJet / Power Jed / Parker John / powder gen | PowerGen | Context throughout |
+| soft wire / Southware / Southwire rises | Southwire | Context |
+| $12 billion cable market (Mike's figure) vs "the whole wiring cable market is 33 and... 50% is related to OM" | The early $12B-scale claim was challenged on the call itself; ~$33B total wiring-cable market with ~50% O&M-related is Stephan's stated counter. Both are call-quoted numbers: internal only until written confirmation | S13 p.1 |
+| "improve from 4400 hours to 8888" | 4,400 to ~880 (S10 and S13 p.3 both carry 880 elsewhere) | S13 p.3 |
+| "C7 / C70 proves... delivery of electricity... more amps because of the heat" | Conductor temperature rating (likely 70C-class context) affecting ampacity; the LCOE-denominator lever | S13 p.3 |
+| "bloom energy" | The 4,400-to-880 case derives from Nedra's case study based on Bloom Energy | S13 p.3 |
+| Patario | External market-sizing firm name; spelling unconfirmed | S13 p.11 |
+| Gadesh | Leader Marc was introduced to; name unconfirmed | S13 p.6 |
+| CPB / CPP | CPV (named clearly elsewhere) | S13 p.5 |
+| APC | EPC (electrical/engineering procurement contractor context) | S13 pp.3, 5 |
+| enchanted rock "quoted at 40%" | Quoted; what 40% denotes (margin, share, discount) unconfirmed | S13 p.1 |
+| LEM distribution | Distribution partner name, unconfirmed | S13 p.7 |
+| "unless cow is buying direct" | Unclear account name; direct-buying exception example | S13 p.7 |
+| Jono Barski / "one window" / "Wend" | Attendee names for the monthly call; confirm with Amber before invites go out | S13 p.6 |
+| Bob Bettish / Bobob | Bob (Marc's old friend from college); surname unconfirmed | S13 pp.2, 7-8 |
+| Michael Tal / Mike Patello / Mike Rachel | Two people: Mike Pitello (Southwire OEM) and Michael Rachel (Aslan contractor); several utterances blur them | S13 pp.8-9, 14 |
 
-## Most dangerous unsupported assumptions
+## F. Conflicts still open
 
-1. PowerGen already has enterprise-wide authority over existing accounts, products, channels, pricing, P&Ls, or booked revenue.
-2. The approximately $1.8B OEM TAM is externally validated, additive to IPP figures, or directly convertible into revenue.
-3. The $53M annual potential and either quote total are deduplicated, qualified, and probability-weighted pipeline.
-4. All 17 IPP items are qualified opportunities at the same commercial stage.
-5. The 55 OEM priorities or approximately 30 Tier 1 targets are active opportunities, incumbents, or engaged accounts.
-6. The 4,400-to-approximately-880-hour benchmark is an NRG result, a universal result, or entirely attributable to Southwire.
-7. Direct OEM pursuit can proceed without channel, agent, account-credit, or existing-owner conflicts.
-8. Current businesses have agreed to the proposed federated operating model and handoff rules.
-9. The conceptual plant model establishes actual project voltage, procurement boundaries, vendors, or package content.
-10. Named account ownership, resource commitments, and leadership approval can be inferred from working drafts or transcript notes.
-
-## Thursday control rule
-
-If a claim cannot be labeled **Source Fact**, **Inference**, or **Recommendation**, and cannot cite a source or named validation owner, it should not appear in the leadership story.
+| # | Conflict | Treatment |
+|---|---|---|
+| F1 | $12B (early claim) vs ~$33B total wiring market vs $12.575B (S06 doc) vs ~$1.8B OEM directional (S04) | These measure different things and none is validated. Internal sizing plus the external firm produce the defensible set. Until then: no market number leaves the building |
+| F2 | Enchanted Rock "40%" | Confirm from the quote record what the number denotes before it appears anywhere |
+| F3 | 30 vs 31 Tier 1 (S04 vs S09) | Unchanged: say 31 only when citing Rev89C |
+| F4 | Attendee list for the monthly call | Names partly garbled; Marc confirms the list before Amber releases invites |
+| F5 | The previous pack's pilot/Amber construct vs S13 | Resolved in favor of S13; see corrections table in 00 |
