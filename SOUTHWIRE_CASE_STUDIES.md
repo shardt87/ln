@@ -6,8 +6,9 @@ largest wire and cable manufacturer (Carrollton, GA; 75+ years; 30+ factories).
 Case studies fall into two groups:
 
 - **Part 1:** Case studies published by vendors/partners where **Southwire is the featured customer**
-- **Part 2:** Case studies **published by Southwire** featuring its own products and services
-- **Part 3:** Placeholders for the three user-shared case studies (to be re-supplied)
+- **Part 2:** Case studies **published by Southwire** featuring its own products and services (utility)
+- **Part 3:** Southwire **Contractor Solutions / jobsite productivity** material
+- **Part 4:** Internal **Advanced Conductor Value Prop Project** deck (user-shared slides)
 
 ---
 
@@ -118,15 +119,54 @@ Main index: [Southwire Utility Whitepapers & Case Studies](https://www.southwire
 
 ---
 
-## Part 3 — User-shared case studies (pending)
+## Part 3 — Contractor Solutions & jobsite productivity (Southwire-published)
 
-The three case studies shared in a previous conversation are not accessible from this
-session (files do not carry over between sessions and are not in this repository).
-Placeholders below — re-share the files/links and they will be added in the same format.
+### 16. SIMpull Solutions® / Contractor Solutions program
+- **Source:** [Contractor Solutions](https://www.southwire.com/services/contractor-solutions) · [CoilPAK & BARREL](https://www.southwire.com/CoilPAKandBARREL) · [SIMpull Solutions for energy industry](https://www.southwire.com/blogs/simpull-solutions-introduced-energy) · [Cable Pulling Solutions brochure (PDF)](https://www.southwire.com/medias/SW-1002165-Pulling-BiFold-Brochure-LO.pdf) · [Royal Electric SIMpull overview (PDF)](http://royalelectric.com/electricalist-pdfs/Southwire-SIMpull-Solutions.pdf)
+- **Description:** Jobsite productivity system — SIMpull CoilPAK™ wire payoffs, SIMpull BARREL™ cable drums, SIMpull REEL™, NoLube® SIMpull THHN®, MAXIS® pulling equipment — plus Contractor Solutions Professionals (CSPs) who consult on layouts, pulling calculations, and jobsite setup for the duration of a project.
+- **Metrics:** Building-solutions packaging claims up to 50% jobsite efficiency/savings; SIMpull REEL setup ~4× faster (no jack stands, fewer people, multiple runs per reel); MAXIS pulling comparison shows a 1-man 39-minute elapsed pull vs 45 minutes for a traditional 2-man setup; distributor partners reference jobsite labor and cost-saving case studies.
+- **Value proposition:** Beat branch-circuit wiring budgets by cutting material handling, setup time, and crew size — labor is the contractor's biggest cost and risk.
+- **Note:** Detailed per-project case studies (data centers, hospitals, stadiums) appear to be distributed through Southwire's CSP team and Solutions Partner Distributors rather than published openly — worth requesting internally.
 
-### 16. [User-shared case study #1 — TBD]
-### 17. [User-shared case study #2 — TBD]
-### 18. [User-shared case study #3 — TBD]
+### 17. Data Center Solutions (QWIK™ Whips, cabling solutions)
+- **Source:** [Data center solutions](https://www.southwire.com/industries/data-centers) · [Data Center Solutions overview (PDF)](https://www.southwire.com/cabling-solutions)
+- **Description:** Pre-assembled QWIK™ Whip cables and cable-pulling solutions for data center builds; positions Southwire on labor reduction and schedule for hyperscale/AI construction.
+- **Metrics:** Publicly qualitative (streamlined ordering/install/assembly, labor cost management); no published quantified project case study found — a gap the internal deck below is designed to fill.
+- **Value proposition:** Reduce constrained field labor and keep data center projects on schedule.
+
+---
+
+## Part 4 — Internal: Advanced Conductor Value Prop Project (user-shared deck)
+
+Slides shared 2026-08-18 (internal PowerPoint). Purpose: shift Southwire's messaging
+from technical product features to **quantified business outcomes** (reduced capital
+costs, faster project delivery, reduced labor/operating costs, increased reliability)
+and quantify them into financial impacts. Figures are illustrative models, not yet
+customer-validated.
+
+The deck defines four case studies to validate financial impact:
+- **Case 1 — Reconductor vs Rebuild** (strongest value proposition: rebuild with larger ACSR vs reconductoring with C7)
+- **Case 2 — New Build**
+- **Case 3 — Crossing**
+- **Case 4 — Line Loss Reduction** (quantify lifetime operational savings from reduced conductor losses)
+
+### 18. C7® corridor upgrade — reconductor vs rebuild (illustrative 25-mile corridor)
+- **Description:** Executive value-prop model: reconductoring an existing 25-mile corridor with C7 advanced conductor vs a traditional new-build. Existing towers and right-of-way reused — only the conductor changes ("same towers, same right-of-way — a stronger line, delivered in a fraction of the time").
+- **Metrics:** ~$57.5M capital avoided (traditional $87.5M → C7 $30.0M); 6 years faster to capacity (~2 years vs ~8 years); +450 MVA incremental capacity (2.5× throughput, 300 → 750 MVA). Savings breakdown: ~$30.0M structures/foundations avoided, ~$15.0M ROW/permitting/legal avoided, ~$7.5M materials efficiency, ~$5.0M labor/construction (~$12.5M combined materials + minimal civil work).
+- **Value proposition:** Faster, lower-risk capacity expansion on corridors the utility already owns — framed as a capacity solution, not a conductor purchase.
+- **Assumptions:** 25-mile existing corridor; baseline 300 MVA; C7 at 2.5× capacity; structure & ROW reuse; illustrative cost figures only.
+
+### 19. Prefab cable for modular cooling OEMs (Vertiv-style archetype)
+- **Description:** Cooling is the critical path in AI & hyperscale deployments; Southwire's prefab electrical scope (skid-mounted, factory-tested, pre-routed power & controls cable, plug-and-play CDU/chiller hookup) keeps modular cooling on schedule vs traditional field integration (field piping/brazing/welding, field-run controls & electrical, refrigerant/balancing/testing, multi-trade critical-path risk).
+- **Metrics:** Onsite deployment 6–10 weeks vs 4–6+ months traditional → 2–4 months schedule compression.
+- **Value proposition:** Earlier customer energization, lower commissioning risk, repeatable across fleets. Combined story: "Advanced conductors, prefab power assemblies, and modular cooling all deliver the same value: accelerate capacity while reducing dependence on constrained field labor."
+- **Note:** Illustrative; Vertiv referenced as a representative modular cooling OEM partner archetype.
+
+### 20. Prefab cable for power distribution skid providers
+- **Description:** Illustrative 50 MW distribution skid deployment block; loaded field labor modeled at $180/hr. Traditional field build (15 electricians × 10 weeks, weather/rework/multi-trade risk) vs Southwire prefab (pre-tested, pre-labeled harnesses; plug-and-play modular connections).
+- **Metrics:** Install + commissioning 2–4 weeks vs 8–12 weeks; 40–60% fewer onsite labor hours; per deployment block: 6–8 weeks faster to energization and $500K–$800K field labor savings (vs ~$1.1M–$1.5M traditional field labor); plus lower rework, faster revenue recognition, reduced liquidated-damages exposure.
+- **Value proposition:** Faster energization and lower labor cost per repeatable deployment block. Target markets: data centers, utility substations, battery storage, AI infrastructure, modular industrial plants, fuel cell & gen-set OEMs.
+- **Note:** Figures directional — validate with partner labor data.
 
 ---
 
