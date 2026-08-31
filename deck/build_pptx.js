@@ -10,33 +10,52 @@ pres.title = "Southwire PowerGen Value Proposition — SWR-PG-VP Rev 01";
 
 const W = 13.333;
 const WHITE = "FFFFFF";
-const INK = "1A1D21";
-const COPPER = "C67A43";
-const MUTE = "6B7075"; // muted on light
-const DMUTE = "A6ACB3"; // muted on dark
-const CARD = "F5F4F2";
-const DCARD = "23272C";
-const DFRAME = "22262B";
+// Southwire brand restyle: blue is the working accent (was copper), deep navy
+// carries the dark slides, red is reserved for the wordmark arc only.
+const INK = "0C2340"; // navy — dark-slide ground and body text on light slides
+const COPPER = "00539B"; // Southwire blue — sole working accent (name kept for history)
+const SWRED = "E4322B"; // wordmark arc only
+const DACCENT = "6FA8DC"; // accent on dark navy slides — brand blue is too dim there
+const MUTE = "5B6B7C"; // muted on light
+const DMUTE = "9FB4CC"; // muted on dark
+const CARD = "EFF3F7";
+const DCARD = "16395E";
+const DFRAME = "14324F";
 const FONT = "Arial";
 
 const TOTAL = 13;
 
 function footer(slide, n, dark) {
-  const c = dark ? "8C9299" : "9A9FA4";
+  const c = dark ? "7E95AF" : "8B99A8";
   slide.addText("Stephan Hardt · Power Generation Solutions", {
-    x: 0.6, y: 7.12, w: 5.5, h: 0.26, fontFace: FONT, fontSize: 8, color: c,
+    x: 0.6, y: 7.12, w: 4.2, h: 0.26, fontFace: FONT, fontSize: 8, color: c,
     isTextBox: true, margin: 0, align: "left", valign: "middle",
   });
+  slide.addText("We deliver power… responsibly.®", {
+    x: 4.9, y: 7.12, w: 3.53, h: 0.26, fontFace: FONT, fontSize: 8, italic: true,
+    color: dark ? DMUTE : COPPER, isTextBox: true, margin: 0, align: "center", valign: "middle",
+  });
   slide.addText(`SWR-PG-VP Rev 01 · Internal — Southwire · slide ${n} of ${TOTAL}`, {
-    x: 7.2, y: 7.12, w: 5.53, h: 0.26, fontFace: FONT, fontSize: 8, color: c,
+    x: 8.53, y: 7.12, w: 4.2, h: 0.26, fontFace: FONT, fontSize: 8, color: c,
     isTextBox: true, margin: 0, align: "right", valign: "middle",
+  });
+}
+
+function wordmark(slide, dark) {
+  slide.addShape(pres.ShapeType.arc, {
+    x: 11.6, y: 0.26, w: 0.42, h: 0.3, angleRange: [200, 330],
+    line: { color: SWRED, width: 2.25 }, fill: { type: "none" },
+  });
+  slide.addText("Southwire®", {
+    x: 11.05, y: 0.46, w: 1.7, h: 0.34, fontFace: FONT, fontSize: 14, bold: true,
+    color: dark ? "FFFFFF" : COPPER, isTextBox: true, margin: 0, align: "right", valign: "middle",
   });
 }
 
 function kicker(slide, text, dark) {
   slide.addText(text, {
     x: 0.6, y: 0.48, w: 12.13, h: 0.3, fontFace: FONT, fontSize: 10.5, bold: true,
-    color: COPPER, charSpacing: 2, isTextBox: true, margin: 0, align: "left", valign: "middle",
+    color: dark ? DACCENT : COPPER, charSpacing: 2, isTextBox: true, margin: 0, align: "left", valign: "middle",
   });
 }
 
@@ -63,7 +82,7 @@ function chip(slide, x, y, label, wOverride) {
 function placeholderFrame(slide, x, y, w, h, label, dark) {
   slide.addShape(pres.ShapeType.rect, {
     x, y, w, h,
-    fill: { color: dark ? DFRAME : "F1EEEA" },
+    fill: { color: dark ? DFRAME : "EDF2F7" },
     line: { color: COPPER, width: 0.75, dashType: "dash" },
   });
   slide.addText(label, {
@@ -75,7 +94,7 @@ function placeholderFrame(slide, x, y, w, h, label, dark) {
 
 function dot(slide, x, y, dark) {
   slide.addShape(pres.ShapeType.ellipse, {
-    x, y, w: 0.09, h: 0.09, fill: { color: COPPER }, line: { type: "none" },
+    x, y, w: 0.09, h: 0.09, fill: { color: dark ? DACCENT : COPPER }, line: { type: "none" },
   });
 }
 
@@ -84,6 +103,7 @@ function dot(slide, x, y, dark) {
   const s = pres.addSlide();
   s.background = { color: INK };
   kicker(s, "POWER GENERATION SOLUTIONS · SEPT 3, 2026", true);
+  wordmark(s, true);
   takeaway(s, "We built the technical assets of an engineering partner — in-house.", true, { size: 30, h: 0.75 });
 
   const fw = 3.79, fy = 1.85, fh = 2.35;
@@ -101,8 +121,8 @@ function dot(slide, x, y, dark) {
       color: DMUTE, align: "left", valign: "middle", isTextBox: true, margin: 0,
     });
   }
-  s.addText("→", { x: 4.39, y: 2.78, w: 0.38, h: 0.5, fontFace: FONT, fontSize: 18, bold: true, color: COPPER, align: "center", valign: "middle", isTextBox: true, margin: 0 });
-  s.addText("→", { x: 8.56, y: 2.78, w: 0.38, h: 0.5, fontFace: FONT, fontSize: 18, bold: true, color: COPPER, align: "center", valign: "middle", isTextBox: true, margin: 0 });
+  s.addText("→", { x: 4.39, y: 2.78, w: 0.38, h: 0.5, fontFace: FONT, fontSize: 18, bold: true, color: DACCENT, align: "center", valign: "middle", isTextBox: true, margin: 0 });
+  s.addText("→", { x: 8.56, y: 2.78, w: 0.38, h: 0.5, fontFace: FONT, fontSize: 18, bold: true, color: DACCENT, align: "center", valign: "middle", isTextBox: true, margin: 0 });
 
   const beats = [
     "Working assets, not marketing art — the plant model drives the zone mapping and the One-Line Read.",
@@ -113,7 +133,7 @@ function dot(slide, x, y, dark) {
   for (let i = 0; i < 3; i++) {
     s.addText(String(i + 1), {
       x: 0.6, y: by[i], w: 0.35, h: 0.42, fontFace: FONT, fontSize: 15, bold: true,
-      color: COPPER, align: "left", valign: "top", isTextBox: true, margin: 0,
+      color: DACCENT, align: "left", valign: "top", isTextBox: true, margin: 0,
     });
     s.addText(beats[i], {
       x: 1.05, y: by[i], w: 9.6, h: 0.42, fontFace: FONT, fontSize: 12,
@@ -181,7 +201,7 @@ function dot(slide, x, y, dark) {
 
   // Copper learnings band
   s.addShape(pres.ShapeType.rect, { x: 0.6, y: 5.8, w: 12.13, h: 1.1, fill: { color: COPPER }, line: { type: "none" } });
-  s.addText("WHAT THE OUTREACH TAUGHT US", { x: 0.9, y: 5.92, w: 5.0, h: 0.24, fontFace: FONT, fontSize: 8.5, bold: true, color: "F6E3D3", charSpacing: 1.5, isTextBox: true, margin: 0 });
+  s.addText("WHAT THE OUTREACH TAUGHT US", { x: 0.9, y: 5.92, w: 5.0, h: 0.24, fontFace: FONT, fontSize: 8.5, bold: true, color: "CFE0F2", charSpacing: 1.5, isTextBox: true, margin: 0 });
   s.addText(
     "IPPs push execution risk to their EPCs — so we go OEM- and EPC-first near-term and play the IPP game long. Discovery beats pitching. Success stories open doors.",
     { x: 0.9, y: 6.18, w: 11.5, h: 0.62, fontFace: FONT, fontSize: 12, color: WHITE, isTextBox: true, margin: 0, valign: "top" }
@@ -200,7 +220,7 @@ function dot(slide, x, y, dark) {
   takeaway(s, "Everything inside the fence. Boundary at the point of interconnection.", false, { size: 28, h: 0.7 });
 
   // Fence
-  s.addShape(pres.ShapeType.rect, { x: 0.6, y: 1.95, w: 7.5, h: 3.05, fill: { color: "FDF8F3" }, line: { color: COPPER, width: 2 } });
+  s.addShape(pres.ShapeType.rect, { x: 0.6, y: 1.95, w: 7.5, h: 3.05, fill: { color: "F1F6FB" }, line: { color: COPPER, width: 2 } });
   s.addText("PLANT FENCE — POWERGEN SCOPE", { x: 0.95, y: 2.12, w: 6.8, h: 0.3, fontFace: FONT, fontSize: 10, bold: true, color: COPPER, charSpacing: 1.5, isTextBox: true, margin: 0 });
 
   const blocks1 = ["Generation packages", "BOP cable", "Switchgear"];
@@ -267,7 +287,7 @@ function dot(slide, x, y, dark) {
   }
   chip(s, 10.15, 4.5, "TIMING — WORKING ASSUMPTION", 2.55);
   s.addText("More generation, built faster, closer to load — all of it wired.", {
-    x: 0.6, y: 6.15, w: 12.13, h: 0.5, fontFace: FONT, fontSize: 16, bold: true, color: COPPER, isTextBox: true, margin: 0,
+    x: 0.6, y: 6.15, w: 12.13, h: 0.5, fontFace: FONT, fontSize: 16, bold: true, color: DACCENT, isTextBox: true, margin: 0,
   });
   footer(s, 4, true);
   s.addNotes(
@@ -422,6 +442,7 @@ function dot(slide, x, y, dark) {
   const s = pres.addSlide();
   s.background = { color: INK };
   kicker(s, "EXECUTION — PEOPLE AND COORDINATION", true);
+  wordmark(s, true);
   takeaway(s, "Names on the page. Ask per lane.", true);
 
   // Left: coordination map
@@ -450,7 +471,7 @@ function dot(slide, x, y, dark) {
   }
 
   // Right: asks per lane
-  s.addText("THE ASKS", { x: 7.0, y: 1.98, w: 5.73, h: 0.26, fontFace: FONT, fontSize: 10, bold: true, color: COPPER, charSpacing: 1.5, isTextBox: true, margin: 0 });
+  s.addText("THE ASKS", { x: 7.0, y: 1.98, w: 5.73, h: 0.26, fontFace: FONT, fontSize: 10, bold: true, color: DACCENT, charSpacing: 1.5, isTextBox: true, margin: 0 });
   const asks = [
     ["UTILITY", "the three asks — visibility, agent support, HV underground"],
     ["EPC", "BOM closure + spec access upstream"],
@@ -459,7 +480,7 @@ function dot(slide, x, y, dark) {
   ];
   const ry = [2.4, 3.28, 4.0, 4.72];
   for (let i = 0; i < 4; i++) {
-    s.addText(asks[i][0], { x: 7.0, y: ry[i], w: 1.55, h: 0.3, fontFace: FONT, fontSize: 10, bold: true, color: COPPER, charSpacing: 1, isTextBox: true, margin: 0, valign: "top" });
+    s.addText(asks[i][0], { x: 7.0, y: ry[i], w: 1.55, h: 0.3, fontFace: FONT, fontSize: 10, bold: true, color: DACCENT, charSpacing: 1, isTextBox: true, margin: 0, valign: "top" });
     s.addText(asks[i][1], { x: 8.65, y: ry[i], w: 4.08, h: 0.68, fontFace: FONT, fontSize: 11, color: WHITE, isTextBox: true, margin: 0, valign: "top" });
   }
   chip(s, 7.0, 5.62, "PROVISIONAL");
@@ -468,7 +489,7 @@ function dot(slide, x, y, dark) {
   });
 
   s.addText("The homework is done. This is the operating model.", {
-    x: 0.6, y: 6.35, w: 12.13, h: 0.45, fontFace: FONT, fontSize: 15, bold: true, color: COPPER, isTextBox: true, margin: 0,
+    x: 0.6, y: 6.35, w: 12.13, h: 0.45, fontFace: FONT, fontSize: 15, bold: true, color: DACCENT, isTextBox: true, margin: 0,
   });
   footer(s, 9, true);
   s.addNotes(
@@ -567,7 +588,7 @@ function dot(slide, x, y, dark) {
     dot(s, 0.62, my[i] + 0.08, false);
     s.addText(math[i], { x: 0.95, y: my[i], w: 11.6, h: 0.42, fontFace: FONT, fontSize: 13, color: INK, isTextBox: true, margin: 0, valign: "top" });
   }
-  s.addShape(pres.ShapeType.rect, { x: 0.6, y: 4.5, w: 12.13, h: 1.55, fill: { color: "F7EEE6" }, line: { type: "none" } });
+  s.addShape(pres.ShapeType.rect, { x: 0.6, y: 4.5, w: 12.13, h: 1.55, fill: { color: "EAF1F8" }, line: { type: "none" } });
   s.addText("CAVEATS — READ BEFORE USING THESE NUMBERS", {
     x: 0.9, y: 4.66, w: 8.0, h: 0.24, fontFace: FONT, fontSize: 8.5, bold: true, color: COPPER, charSpacing: 1.5, isTextBox: true, margin: 0,
   });
