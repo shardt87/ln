@@ -188,7 +188,7 @@ function dot(slide, x, y, dark) {
   );
   footer(s, 2, false);
   s.addNotes(
-    "One paragraph per engagement. NRG: teaser delivered against their public program; site visit on the table; taught us to read an account's own numbers back to them. CPV: active development conversations; taught us how offtaker/PPA financing shapes what a developer will pay for. Southern Power: warm inbound at SVP level; taught us success stories open doors. The strategy pivot (OEM- and EPC-first) traces to real IPP feedback — they push execution risk to their EPCs — not a whiteboard.\n[Sources] July OEM quoting report (~$9.7M, quoting not bookings); engagement notes per account; market model is PROVISIONAL pending internal PO history and BOMs."
+    "One paragraph per engagement. NRG: teaser delivered against their public program; site visit on the table; taught us to read an account's own numbers back to them. CPV: active development conversations; taught us how offtaker/PPA financing shapes what a developer will pay for. Southern Power: warm inbound at SVP level; taught us success stories open doors. The strategy pivot (OEM- and EPC-first) traces to real IPP feedback — they push execution risk to their EPCs — not a whiteboard.\n[Sources] July OEM quoting report (~$9.7M, quoting not bookings); engagement notes per account; market model is PROVISIONAL pending internal PO history and BOMs — US_Gas_Power_Wire_Cable_Market_Model_v1.xlsx (17 sheets, live formulas) with the executive readout, research cutoff Aug 27, 2026."
   );
 }
 
@@ -462,13 +462,17 @@ function dot(slide, x, y, dark) {
     s.addText(asks[i][0], { x: 7.0, y: ry[i], w: 1.55, h: 0.3, fontFace: FONT, fontSize: 10, bold: true, color: COPPER, charSpacing: 1, isTextBox: true, margin: 0, valign: "top" });
     s.addText(asks[i][1], { x: 8.65, y: ry[i], w: 4.08, h: 0.68, fontFace: FONT, fontSize: 11, color: WHITE, isTextBox: true, margin: 0, valign: "top" });
   }
+  chip(s, 7.0, 5.62, "PROVISIONAL");
+  s.addText("Market behind the lanes: $170–240M a year in U.S. gas-generation cable POs through 2030 — model v1, awaiting internal PO history and BOMs.", {
+    x: 7.0, y: 5.95, w: 5.73, h: 0.62, fontFace: FONT, fontSize: 9.5, color: DMUTE, isTextBox: true, margin: 0, valign: "top",
+  });
 
   s.addText("The homework is done. This is the operating model.", {
     x: 0.6, y: 6.35, w: 12.13, h: 0.45, fontFace: FONT, fontSize: 15, bold: true, color: COPPER, isTextBox: true, margin: 0,
   });
   footer(s, 9, true);
   s.addNotes(
-    "Cadence proposal: this group reconvenes monthly for the first quarter, then quarterly; lane owners report against the asks on this slide. The 30-day strategy document (with BD) lands: validated market model (replacing the PROVISIONAL tag), lane plans with owners and dates, the agent-credit decision, and the utility funnel mechanics agreed with John's team.\n[Sources] Internal — roles per current org; asks trace to slides 5–8."
+    "Cadence proposal: this group reconvenes monthly for the first quarter, then quarterly; lane owners report against the asks on this slide. The 30-day strategy document (with BD) lands: validated market model (replacing the PROVISIONAL tag), lane plans with owners and dates, the agent-credit decision, and the utility funnel mechanics agreed with John's team. The market line stays PROVISIONAL out loud: base case $170–240M per year in U.S. gas-generation cable POs through 2030 (constant 2026 dollars, manufacturer net sales, generation-side cable only), 2026 SAM ~$172M, cumulative 2026–35 SAM ~$1.0B — only 46% of named MW is evidence-backed and no internal quote/BOM/PO data is loaded, so no figure is presented as validated.\n[Sources] Internal — roles per current org; asks trace to slides 5–8. Market: US_Gas_Power_Wire_Cable_Market_Model_v1.xlsx (Executive_Summary, base scenario, PO-year view) and the gas-power executive readout (research cutoff Aug 27, 2026) — PROVISIONAL, model passes 27 QA tests with 3 disclosed exceptions."
   );
 }
 
