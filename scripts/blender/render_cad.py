@@ -206,12 +206,29 @@ def build_camera(center, radius, azimuth_deg, elevation_deg, args, fit_coords):
     cam.rotation_euler = look.to_track_quat("-Z", "Y").to_euler()
 
     bpy.context.view_layer.update()
-    loc, scale = cam.camera_fit_coords(bpy.context.evaluated_depsgraph_get(), fit_coords)
     if args.perspective:
+        loc, _scale = cam.camera_fit_coords(bpy.context.evaluated_depsgraph_get(), fit_coords)
         cam.location = center + (loc - center) * args.margin
     else:
-        cam.location = loc
-        cam_data.ortho_scale = scale * args.margin
+        # Exact orthographic framing: project the scene bounds into camera
+        # space and size/centre the view from the true extents. (camera_fit_coords
+        # mis-frames ortho cameras at extreme aspect ratios.)
+        cam_inv = cam.matrix_world.inverted()
+        pts = [cam_inv @ Vector(fit_coords[i:i + 3]) for i in range(0, len(fit_coords), 3)]
+        xs = [p.x for p in pts]
+        ys = [p.y for p in pts]
+        span_x, span_y = max(xs) - min(xs), max(ys) - min(ys)
+        res_x = bpy.context.scene.render.resolution_x
+        res_y = bpy.context.scene.render.resolution_y
+        if res_x >= res_y:
+            cam_data.ortho_scale = max(span_x, span_y * res_x / res_y) * args.margin
+        else:
+            cam_data.ortho_scale = max(span_y, span_x * res_y / res_x) * args.margin
+        mid_x = (max(xs) + min(xs)) / 2.0
+        mid_y = (max(ys) + min(ys)) / 2.0
+        right = cam.matrix_world.to_quaternion() @ Vector((1, 0, 0))
+        up = cam.matrix_world.to_quaternion() @ Vector((0, 1, 0))
+        cam.location += right * mid_x + up * mid_y
     cam_data.clip_start = max(radius / 1000.0, 0.001)
     cam_data.clip_end = radius * 100.0
     return cam
