@@ -69,3 +69,34 @@ python scripts/blender/render_glb.py \
     --input site.glb --output out/site.png \
     --views 45,135,225 --exposure -0.3 --sun-strength 2.5
 ```
+
+## CAD-style technical renders — `render_cad.py`
+
+`render_cad.py` produces engineering-drawing renders instead of beauty shots:
+orthographic view presets (`iso`, `dimetric`, `plan`, `front`, `back`, `left`,
+`right`, or custom `az:el` pairs), Freestyle edge extraction (silhouettes,
+creases, borders, material boundaries), and three styles:
+
+- `hiddenline` — white shadeless model, black linework on a white sheet
+- `blueprint` — white linework on a blueprint-blue sheet
+- `shaded` — the model's own materials under flat even light with feature edges
+
+```sh
+python scripts/blender/render_cad.py --input model.glb --output out/cad.png \
+    --style hiddenline --view iso,plan
+```
+
+Freestyle's occlusion solver can need many GB of RAM on dense models viewed
+edge-on (elevations sight through every stacked object); pass `--no-lines`
+with `--style shaded` for those views.
+
+## Sheet-set PDFs — `make_sheets.py`
+
+`make_sheets.py` composes the CAD renders into an ANSI B engineering sheet-set
+PDF with standard drafting furniture: zone-referenced border grid, title block,
+revision table, third-angle projection symbol, general notes, and a graphic
+scale bar (requires `pip install reportlab`).
+
+```sh
+python scripts/blender/make_sheets.py --images-dir out/cad --output out/sheets.pdf
+```

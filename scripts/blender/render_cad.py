@@ -13,6 +13,11 @@
 # View presets follow drafting convention: iso (true isometric), plan (top),
 # front/back/left/right elevations, or any custom azimuth/elevation.
 #
+# NOTE: Freestyle's occlusion solver can need many GB of RAM on dense models
+# viewed edge-on (elevations sight through every stacked object). If a render
+# is OOM-killed, use --no-lines for that view, or the shaded style without
+# lines — the flat orthographic projection still reads as a CAD elevation.
+#
 # Usage:
 #   python scripts/blender/render_cad.py --input model.glb --output out/cad.png \
 #       --style hiddenline --view iso
