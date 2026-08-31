@@ -1,4 +1,4 @@
 node_modules/
 *.pdf
-slide-*.jpg
-deck_dump.txt
+*.jpg
+*_dump.txt
