@@ -242,32 +242,40 @@ func shot(parts []*Part, d pkgDef, outDir string, W, H int, featureDeg, lw float
 		radius, radius*8)
 
 	// Per-shape render (Scene.RenderWithMatrix, unrolled) so visible parts can
-	// be counted the way the raster renderer counted its id-buffer.
+	// be counted the way the raster renderer counted its id-buffer, and so the
+	// two line weights stay separate through occlusion.
 	step := (float64(W) / s) / 2000 // chop for occlusion sampling: frame width / 2000
 	filter := &ln.ClipFilter{Matrix: matrix, Eye: eye, Scene: &scene}
 	screen := ln.Translate(ln.Vector{X: 1, Y: 1}).Scale(ln.Vector{X: float64(W) / 2, Y: float64(H) / 2})
-	var paths ln.Paths
-	visible := 0
-	for _, sh := range shapes {
-		pp := sh.Paths()
+	render := func(pp ln.Paths) ln.Paths {
 		if len(pp) == 0 {
-			continue
+			return nil
 		}
 		pp = pp.Chop(step).Filter(filter)
 		if len(pp) == 0 {
-			continue
+			return nil
 		}
-		visible++
-		paths = append(paths, pp.Simplify(1e-6).Transform(screen)...)
+		return pp.Simplify(1e-6).Transform(screen)
+	}
+	var heavy, light ln.Paths
+	visible := 0
+	for _, sh := range shapes {
+		h := render(sh.heavy)
+		l := render(sh.light)
+		if len(h)+len(l) > 0 {
+			visible++
+		}
+		heavy = append(heavy, h...)
+		light = append(light, l...)
 	}
 
 	pngPath := filepath.Join(outDir, "oem_"+d.Key+".png")
-	if err := writePNG(pngPath, paths, W, H, lw); err != nil {
+	if err := writePNG(pngPath, heavy, light, W, H, lw); err != nil {
 		return nil, err
 	}
 	if svg {
-		if err := paths.WriteToSVG(strings.TrimSuffix(pngPath, ".png")+".svg",
-			float64(W), float64(H)); err != nil {
+		if err := writeSVG(strings.TrimSuffix(pngPath, ".png")+".svg",
+			heavy, light, W, H, lw); err != nil {
 			return nil, err
 		}
 	}
@@ -286,15 +294,13 @@ func shot(parts []*Part, d pkgDef, outDir string, W, H int, featureDeg, lw float
 	}, nil
 }
 
-func writePNG(path string, paths ln.Paths, w, h int, lw float64) error {
-	dc := gg.NewContext(w, h)
-	dc.InvertY()
-	dc.SetRGB(1, 1, 1)
-	dc.Clear()
-	dc.SetRGB(0.08, 0.09, 0.10)
+// lightRatio is the interior (feature-edge) stroke width as a fraction of the
+// outline width — the classic heavy-outline / light-detail drafting hierarchy.
+const lightRatio = 0.42
+
+func strokePaths(dc *gg.Context, paths ln.Paths, lw float64, r, g, b float64) {
+	dc.SetRGB(r, g, b)
 	dc.SetLineWidth(lw)
-	dc.SetLineCapRound()
-	dc.SetLineJoinRound()
 	for _, p := range paths {
 		for _, v := range p {
 			dc.LineTo(v.X, v.Y)
@@ -302,7 +308,42 @@ func writePNG(path string, paths ln.Paths, w, h int, lw float64) error {
 		dc.NewSubPath()
 	}
 	dc.Stroke()
+}
+
+func writePNG(path string, heavy, light ln.Paths, w, h int, lw float64) error {
+	dc := gg.NewContext(w, h)
+	dc.InvertY()
+	dc.SetRGB(1, 1, 1)
+	dc.Clear()
+	dc.SetLineCapRound()
+	dc.SetLineJoinRound()
+	strokePaths(dc, light, lw*lightRatio, 0.22, 0.24, 0.26)
+	strokePaths(dc, heavy, lw, 0.07, 0.08, 0.09)
 	return dc.SavePNG(path)
+}
+
+func writeSVG(path string, heavy, light ln.Paths, w, h int, lw float64) error {
+	var b strings.Builder
+	fmt.Fprintf(&b, "<svg width=\"%d\" height=\"%d\" version=\"1.1\" baseProfile=\"full\" xmlns=\"http://www.w3.org/2000/svg\">\n", w, h)
+	fmt.Fprintf(&b, "<g transform=\"translate(0,%d) scale(1,-1)\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n", h)
+	group := func(paths ln.Paths, width float64, color string) {
+		fmt.Fprintf(&b, "<g stroke=\"%s\" stroke-width=\"%.2f\">\n", color, width)
+		for _, p := range paths {
+			b.WriteString("<polyline points=\"")
+			for i, v := range p {
+				if i > 0 {
+					b.WriteByte(' ')
+				}
+				fmt.Fprintf(&b, "%.2f,%.2f", v.X, v.Y)
+			}
+			b.WriteString("\" />\n")
+		}
+		b.WriteString("</g>\n")
+	}
+	group(light, lw*lightRatio, "#383d42")
+	group(heavy, lw, "#121416")
+	b.WriteString("</g></svg>\n")
+	return os.WriteFile(path, []byte(b.String()), 0644)
 }
 
 func writeJSON(path string, db map[string]cardMeta) {

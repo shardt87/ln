@@ -89,41 +89,46 @@ func buildPartEdges(p *Part) *partEdges {
 }
 
 // paths returns the drawable edges for a view direction (unit vector toward
-// the camera). cosFeature = cos(feature angle threshold).
-func (pe *partEdges) paths(view ln.Vector, cosFeature float64) ln.Paths {
-	var out ln.Paths
+// the camera), split into two weights the way a technical drawing inks them:
+// heavy for object outlines (boundary and view silhouette), light for interior
+// feature edges (sharp dihedrals). cosFeature = cos(feature angle threshold).
+func (pe *partEdges) paths(view ln.Vector, cosFeature float64) (heavy, light ln.Paths) {
 	for _, e := range pe.edges {
-		draw := false
+		outline, feature := false, false
 		switch len(e.n) {
 		case 1:
-			draw = true // boundary
+			outline = true // boundary
 		default:
-			for i := 1; i < len(e.n) && !draw; i++ {
+			for i := 1; i < len(e.n) && !outline; i++ {
 				n0, ni := e.n[0], e.n[i]
-				dot := n0[0]*ni[0] + n0[1]*ni[1] + n0[2]*ni[2]
-				if dot < cosFeature {
-					draw = true // feature (sharp dihedral)
-					break
-				}
 				f0 := n0[0]*view.X + n0[1]*view.Y + n0[2]*view.Z
 				fi := ni[0]*view.X + ni[1]*view.Y + ni[2]*view.Z
 				if (f0 >= 0) != (fi >= 0) {
-					draw = true // silhouette for this view
+					outline = true // silhouette for this view
+					break
+				}
+				dot := n0[0]*ni[0] + n0[1]*ni[1] + n0[2]*ni[2]
+				if dot < cosFeature {
+					feature = true // sharp dihedral
 				}
 			}
 		}
-		if draw {
-			out = append(out, ln.Path{pe.verts[e.a], pe.verts[e.b]})
+		seg := ln.Path{pe.verts[e.a], pe.verts[e.b]}
+		if outline {
+			heavy = append(heavy, seg)
+		} else if feature {
+			light = append(light, seg)
 		}
 	}
-	return out
+	return heavy, light
 }
 
 // edgeShape wraps a part's triangle mesh (for occlusion ray tests) but emits
 // only the extracted line-art edges as paths.
 type edgeShape struct {
 	mesh  *ln.Mesh
-	lines ln.Paths
+	heavy ln.Paths
+	light ln.Paths
 }
 
 func newEdgeShape(p *Part, pe *partEdges, view ln.Vector, cosFeature float64) *edgeShape {
@@ -136,11 +141,12 @@ func newEdgeShape(p *Part, pe *partEdges, view ln.Vector, cosFeature float64) *e
 			ln.Vector{X: v2[0], Y: v2[1], Z: v2[2]},
 		))
 	}
-	return &edgeShape{mesh: ln.NewMesh(triangles), lines: pe.paths(view, cosFeature)}
+	heavy, light := pe.paths(view, cosFeature)
+	return &edgeShape{mesh: ln.NewMesh(triangles), heavy: heavy, light: light}
 }
 
 func (s *edgeShape) Compile()                             { s.mesh.Compile() }
 func (s *edgeShape) BoundingBox() ln.Box                  { return s.mesh.BoundingBox() }
 func (s *edgeShape) Contains(v ln.Vector, f float64) bool { return false }
 func (s *edgeShape) Intersect(r ln.Ray) ln.Hit            { return s.mesh.Intersect(r) }
-func (s *edgeShape) Paths() ln.Paths                      { return s.lines }
+func (s *edgeShape) Paths() ln.Paths                      { return append(append(ln.Paths{}, s.heavy...), s.light...) }
