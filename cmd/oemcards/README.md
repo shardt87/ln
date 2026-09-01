@@ -45,23 +45,32 @@ Options:
 ## How the linework is drawn
 
 Every kept part becomes an occluder (its full triangle mesh goes into the ln
-BVH), but only three kinds of edges are inked:
+BVH), but only three kinds of edges are inked, at two weights the way a
+technical drawing does it:
 
-- boundary edges (used by one triangle),
-- feature edges (dihedral angle above `-angle`),
-- silhouette edges for the card's view (front-facing meets back-facing).
+- boundary edges (used by one triangle) — heavy,
+- silhouette edges for the card's view (front-facing meets back-facing) — heavy,
+- feature edges (dihedral angle above `-angle`) — light interior detail.
 
 So a tessellated cylinder reads as its outline, not its wireframe, and hidden
 lines are removed by real ray tests against everything in frame.
 
 ## Testing without the plant model
 
-`testdata/mktestglb.py` (pure Python stdlib) writes a small GLB in the same
-schema — named parts, identity transforms, metres, y-up — with enough geometry
-to exercise the prefixes, roof drop, below-grade hides, ground context and
-occlusion:
+Two stdlib-only generators write GLBs in the rev89 schema — named parts,
+identity transforms, metres, y-up:
+
+- `testdata/mktestglb.py` — minimal smoke-test model (a handful of parts) that
+  exercises the prefixes, roof drop, below-grade hides, ground context and
+  occlusion.
+- `testdata/mkplantglb.py` — full demonstration CCGT with technically
+  recognizable geometry for **all 47 packages**: GT with compressor /
+  combustor cans / exhaust diffuser, HRSG with drums and ringed stack, GSU
+  with radiator banks + HV bushings + conservator, ACC A-frame streets over
+  fan rings, switchgear lineups with door panels, CCS columns with platforms
+  and ladders, and so on.
 
 ```sh
-python3 cmd/oemcards/testdata/mktestglb.py /tmp/test.glb
-go run ./cmd/oemcards -glb /tmp/test.glb -out /tmp/cards -keys GT,GEN,HRSG
+python3 cmd/oemcards/testdata/mkplantglb.py /tmp/plant.glb
+go run ./cmd/oemcards -glb /tmp/plant.glb -out /tmp/cards
 ```
