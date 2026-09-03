@@ -7,8 +7,8 @@ from PIL import Image
 import numpy as np
 from scipy import ndimage as ndi
 
-SRC = sys.argv[1] if len(sys.argv) > 1 else 'strategy-update-cover-light.png'
-OUT = sys.argv[2] if len(sys.argv) > 2 else 'strategy-update-cover-dark.png'
+SRC = sys.argv[1] if len(sys.argv) > 1 else 'cover-light.png'
+OUT = sys.argv[2] if len(sys.argv) > 2 else 'cover-dark.png'
 
 img = np.array(Image.open(SRC).convert('RGB')).astype(np.float32)
 H, W, _ = img.shape
