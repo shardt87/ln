@@ -23,26 +23,45 @@ text_box = np.zeros((H, W), bool); text_box[TY0:TY1, TX0:TX1] = True
 bg = (mn >= 245) & ~text_box                    # white backdrop incl. enclosed sky gaps
 model = ~bg & ~text_box
 
-# floor of the model: light ground, asphalt yard, roads, parking, concrete pad
+# floor of the model. Seeds: confident floor pixels (smooth neutral greys low in the
+# frame) and confident object pixels; a watershed on the image gradient snaps the
+# boundary between them onto the real contours of the objects standing on the floor.
+from skimage.segmentation import watershed
+from skimage.filters import sobel
 br = B - R
-ground  = (lum >= 195) & (lum <= 232) & (sat <= 12) & (R - B >= 2)
-asphalt = (lum >= 112) & (lum <= 145) & (br >= 6) & (br <= 20) & (sat <= 22)
-road    = (lum >= 70) & (lum <= 104) & (br >= 4) & (br <= 14) & (sat <= 16)
-parking = (lum >= 180) & (lum <= 222) & (br >= 3) & (br <= 14) & (sat <= 16)
-pad     = ((lum >= 140) & (lum <= 172) & (sat <= 6)) | \
-          ((lum >= 150) & (lum <= 215) & (R - B >= 8) & (R - B <= 15) & (sat <= 15) & (yy > 690))
 mf = ndi.uniform_filter(lum, 5); mf2 = ndi.uniform_filter(lum ** 2, 5)
 texture = np.sqrt(np.maximum(mf2 - mf * mf, 0))
-cand = (ground | asphalt | road | parking | pad) & (yy > 600) & model & (texture < 25)
-cand[:700, 1160:1430] = False                   # boiler box panels share the asphalt colour
-cand = ndi.binary_opening(cand, iterations=2)
-lab, n = ndi.label(cand); sizes = ndi.sum(cand, lab, range(1, n + 1))
-keep = np.isin(lab, [i + 1 for i, s in enumerate(sizes) if s >= 3000])
-keep = ndi.binary_dilation(keep, iterations=2)
-holes = ndi.binary_fill_holes(keep) & ~keep
-hl, hn = ndi.label(holes); hs = ndi.sum(holes, hl, range(1, hn + 1))
-floor = (keep | np.isin(hl, [i + 1 for i, s in enumerate(hs) if s <= 600])) & model
-floor_a = ndi.gaussian_filter(floor.astype(np.float32), 1.5)
+neutral = (sat <= 22) & (lum >= 65) & (lum <= 228) & (B - R >= -4)
+warmpad = (lum >= 150) & (lum <= 228) & (R - B >= 5) & (R - B <= 16) & (sat <= 16) & (yy > 690) & (xx >= 560)
+lightground = (lum >= 195) & (lum <= 228) & (sat <= 12) & (R - B >= 2) & (R - B <= 10) & ((xx >= 560) | (yy >= 745) | (xx < 250))   # keep off the container tops
+floorish = (neutral | warmpad | lightground) & (yy > 600) & model
+asphalt_only = (lum >= 112) & (lum <= 145) & (br >= 6) & (br <= 20) & (sat <= 22)
+cbox = np.zeros((H, W), bool); cbox[655:775, 255:565] = True   # container block: only the asphalt gaps are floor
+floorish &= ~cbox | asphalt_only
+floorish[:682, 1160:1430] = False      # boiler box
+floorish[:715, 1385:1465] = False      # right stack base
+floorish[:655, 1050:1185] = False      # big duct into the boiler
+floorish[735:, 1325:] = False           # small building bottom right (roof is light)
+floorish[750:, 1140:1330] &= (lum[750:, 1140:1330] <= 201)   # parked cars vs parking lot
+floor_seed = floorish & (texture < 10)
+floor_seed = ndi.binary_erosion(floor_seed, iterations=2)
+lab, n = ndi.label(floor_seed); sizes = ndi.sum(floor_seed, lab, range(1, n + 1))
+small_ok = np.zeros((H, W), bool)
+small_ok[690:775, 1130:1330] = True    # ground behind the parking lot, chopped up by poles
+small_ok[640:745, 1430:1536] = True    # ground right of the stack, likewise
+floor_seed = np.isin(lab, [i + 1 for i, s in enumerate(sizes) if s >= 300]) | \
+             (np.isin(lab, [i + 1 for i, s in enumerate(sizes) if s >= 60]) & small_ok)
+floor_seed[765:840, 850:970] = False   # white truck cab sides look like floor
+obj_seed = ndi.binary_erosion(~floorish, iterations=1) | (sat > 30) | (lum > 228) | (lum < 60) | (yy < 600) | bg | text_box
+obj_seed &= ~floor_seed
+markers = np.zeros((H, W), np.int32); markers[obj_seed] = 1; markers[floor_seed] = 2
+grad = sobel(lum / 255.0) + 0.5 * (sobel(R / 255.0) + sobel(G / 255.0) + sobel(B / 255.0))
+labels = watershed(grad, markers)
+floor = (labels == 2) & model
+lab, n = ndi.label(floor); sizes = ndi.sum(floor, lab, range(1, n + 1))
+in_strip = ndi.sum(small_ok, lab, range(1, n + 1)) > 0
+floor = np.isin(lab, [i + 1 for i, s in enumerate(sizes) if s >= 2000 or (s >= 300 and in_strip[i])])
+floor_a = ndi.gaussian_filter(floor.astype(np.float32), 0.7)
 
 # ---------------------------------------------------------------- backdrop
 cx, cy = 0.68 * W, 0.60 * H
