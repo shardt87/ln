@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Accelerating Time to Power</title>
+<meta name="description" content="Southwire Power Generation Solutions: cable, application engineering and project execution from the generation asset to the grid interface.">
+<style>
+{{FONTS}}
+:root{
+  --paper:#f3f3f1;--paper-2:#e8e9e6;--white:#ffffff;--ink:#141618;--ink-2:#454a4f;--ink-3:#7d838a;--rule:#d5d7d3;--rule-2:#c2c5c0;
+  --night:#0b0e11;--night-2:#141a20;--on-night:#eef0ee;--on-night-2:#aab1b7;--night-rule:#26303a;
+  --copper:#a8541f;--copper-ink:#ffffff;--copper-soft:#f1e3d7;
+  --display:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;--body:"Source Sans 3","Helvetica Neue",Arial,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --w:1280px;--gutter:clamp(20px,5vw,72px);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;scroll-padding-top:80px}
+html.js .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+html.js .reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}html.js .reveal{opacity:1;transform:none;transition:none}*{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.5;font-variant-numeric:tabular-nums}
+h1,h2,h3,h4{font-family:var(--display);font-weight:600;line-height:1;margin:0;letter-spacing:-.02em;text-wrap:balance;font-variation-settings:"opsz" 96}
+h1{font-size:clamp(56px,10vw,150px);font-weight:700;letter-spacing:-.035em;line-height:.92}
+h2{font-size:clamp(40px,6vw,88px);letter-spacing:-.03em;line-height:.96}
+h3{font-size:clamp(26px,2.6vw,36px);letter-spacing:-.02em;line-height:1.05}
+h4{font-size:22px;line-height:1.1;letter-spacing:-.01em;font-variation-settings:"opsz" 24}
+p{margin:0}
+a{color:inherit;text-decoration-color:var(--rule-2);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--copper);color:var(--copper)}
+img,video{max-width:100%;display:block}
+button{font:inherit;color:inherit}
+.wrap{max-width:var(--w);margin:0 auto;padding-inline:var(--gutter)}
+.mono{font-family:var(--mono);font-size:.82em;letter-spacing:.01em}
+.small{font-size:15px;color:var(--ink-3);line-height:1.5}
+:focus-visible{outline:2px solid var(--copper);outline-offset:3px}
+.sr{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.chapter{font-family:var(--mono);font-size:13px;color:var(--ink-3);letter-spacing:.04em;display:flex;gap:14px;align-items:center;margin-bottom:22px}
+.chapter::before{content:"";width:34px;height:1px;background:var(--ink-3)}
+.on-night .chapter{color:var(--on-night-2)}.on-night .chapter::before{background:var(--on-night-2)}
+.lede{font-size:clamp(20px,1.8vw,26px);line-height:1.4;color:var(--ink-2);max-width:56ch;margin-top:22px;font-weight:400}
+.on-night .lede{color:var(--on-night-2)}
+.btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:17px;padding:15px 22px;border-radius:999px;text-decoration:none;border:1.5px solid var(--ink);color:var(--ink);background:transparent;cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+.btn:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.btn.solid{background:var(--ink);color:var(--paper)}
+.btn.solid:hover{background:var(--copper);border-color:var(--copper);color:#fff}
+.btn svg{width:18px;height:18px}
+.on-night .btn{border-color:var(--on-night);color:var(--on-night)}
+.on-night .btn:hover{background:var(--on-night);color:var(--night)}
+.on-night .btn.solid{background:var(--on-night);color:var(--night)}
+.on-night .btn.solid:hover{background:var(--copper);border-color:var(--copper);color:#fff}
+
+/* ---------- header ---------- */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:rgba(243,243,241,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .3s}
+.top.scrolled{border-bottom-color:var(--rule)}
+.top .wrap{display:flex;align-items:center;gap:24px;height:64px}
+.brand{display:flex;align-items:baseline;gap:10px;text-decoration:none;color:var(--ink)}
+.brand b{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.02em}
+.brand span{font-family:var(--mono);font-size:12px;color:var(--ink-3);letter-spacing:.02em}
+.top nav{margin-left:auto;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.top nav::-webkit-scrollbar{display:none}
+.top nav a{font-size:15px;color:var(--ink-2);text-decoration:none;padding:8px 10px;border-radius:999px;white-space:nowrap}
+.top nav a:hover{color:var(--ink);background:var(--paper-2)}
+.top nav a.on{color:var(--ink);background:var(--paper-2)}
+.top nav a.cta{color:var(--copper);font-weight:600}
+@media (max-width:640px){.brand span{display:none}.top .wrap{height:56px}}
+
+/* ---------- hero ---------- */
+.hero{position:relative;background:var(--night);color:var(--on-night);min-height:min(92vh,900px);display:grid;align-items:end;overflow:hidden}
+.hero .media{position:absolute;inset:0}
+.hero .media img,.hero .media video{width:100%;height:100%;object-fit:cover;object-position:62% 50%;transform:scale(1.04)}
+.hero .media video{position:absolute;inset:0;opacity:0;transition:opacity 1.2s}
+.hero .media video.on{opacity:1}
+.hero .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,14,17,.25) 0%,rgba(11,14,17,0) 30%,rgba(11,14,17,.55) 65%,rgba(11,14,17,.94) 100%)}
+.hero .wrap{position:relative;width:100%;padding-block:clamp(120px,18vh,220px) clamp(36px,5vw,64px)}
+.hero .kick{font-family:var(--mono);font-size:13px;color:var(--on-night-2);letter-spacing:.04em;margin-bottom:26px;display:flex;gap:18px;flex-wrap:wrap}
+.hero h1{color:#fff;max-width:12ch}
+.hero h1 i{font-style:normal;color:#e7b98f}
+.hero .row{display:grid;grid-template-columns:1fr;gap:28px;margin-top:34px;align-items:end}
+.hero .lede{margin-top:0;max-width:44ch;color:#d6dadb}
+.hero .acts{display:flex;flex-wrap:wrap;gap:12px}
+.hero .cue{position:absolute;right:var(--gutter);bottom:26px;font-family:var(--mono);font-size:12px;color:var(--on-night-2);display:flex;align-items:center;gap:10px}
+.hero .cue i{display:block;width:1px;height:36px;background:var(--on-night-2);animation:cue 2.2s ease-in-out infinite;transform-origin:top}
+@keyframes cue{0%{transform:scaleY(0);opacity:0}30%{opacity:1}100%{transform:scaleY(1);opacity:0}}
+@media (min-width:860px){.hero .row{grid-template-columns:1.2fr .8fr}.hero .acts{justify-content:flex-end}}
+
+/* ---------- statement ---------- */
+.statement{padding-block:clamp(72px,10vw,150px)}
+.statement .big{font-family:var(--display);font-weight:500;font-size:clamp(28px,3.6vw,52px);line-height:1.12;letter-spacing:-.025em;max-width:24ch;font-variation-settings:"opsz" 96}
+.statement .big em{font-style:normal;color:var(--copper)}
+.needs{margin-top:clamp(48px,6vw,88px);display:grid;grid-template-columns:1fr;gap:0;border-top:1px solid var(--rule)}
+.need{display:grid;grid-template-columns:1fr;gap:10px 40px;padding:28px 0;border-bottom:1px solid var(--rule)}
+.need .n{font-family:var(--display);font-weight:700;font-size:15px;color:var(--ink-3);letter-spacing:.02em;font-variation-settings:"opsz" 12}
+.need h3{max-width:14ch}
+.need p{color:var(--ink-2);font-size:17.5px;max-width:52ch}
+.need p b{color:var(--ink);font-weight:600}
+@media (min-width:860px){.need{grid-template-columns:80px 1.1fr 1.4fr;align-items:start}.need .n{padding-top:8px}}
+
+/* ---------- plant chapter (scrollytelling) ---------- */
+.plant{background:var(--night);color:var(--on-night);padding-block:clamp(72px,9vw,130px)}
+.plant h2{color:#fff}
+.plant .intro{max-width:70ch;margin-bottom:clamp(40px,6vw,80px)}
+.scrolly{display:grid;grid-template-columns:1fr;gap:32px;align-items:start}
+.sticky{position:sticky;top:84px}
+.stage{position:relative;background:#000;border-radius:6px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.stage img{width:100%;height:auto;aspect-ratio:16/9;object-fit:contain}
+.pins{position:absolute;inset:0}
+.pin{position:absolute;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;border:1.5px solid rgba(255,255,255,.7);background:rgba(11,14,17,.55);color:#fff;font-family:var(--mono);font-size:12px;display:grid;place-items:center;cursor:pointer;padding:0;transition:transform .25s,background .25s,border-color .25s,opacity .25s;opacity:.55}
+.pin.lit{opacity:1;background:#e7b98f;border-color:#fff;color:#141618;transform:translate(-50%,-50%) scale(1.25);box-shadow:0 0 0 6px rgba(231,185,143,.25)}
+.pin:hover{opacity:1}
+@media (max-width:560px){.pin{width:24px;height:24px;font-size:10px}}
+.stage .cap{position:absolute;left:14px;bottom:12px;font-family:var(--mono);font-size:11.5px;color:var(--on-night-2);background:rgba(11,14,17,.6);padding:5px 9px;border-radius:4px}
+.steps{display:grid;gap:0}
+.step{min-height:52vh;display:grid;align-content:center;padding:32px 0;border-top:1px solid var(--night-rule);opacity:.38;transition:opacity .4s}
+.step.active{opacity:1}
+.step .z{font-family:var(--mono);font-size:13px;color:#e7b98f;margin-bottom:12px}
+.step h3{color:#fff;font-size:clamp(28px,3vw,40px);margin-bottom:14px}
+.step p{color:var(--on-night-2);font-size:17px;max-width:48ch}
+.step p b{color:var(--on-night);font-weight:600}
+.step .open{margin-top:16px;display:inline-flex;gap:8px;align-items:center;font-family:var(--display);font-weight:600;font-size:16px;color:#fff;background:transparent;border:0;padding:0;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(255,255,255,.3);text-underline-offset:4px}
+.step .open:hover{text-decoration-color:#e7b98f;color:#e7b98f}
+@media (min-width:900px){.scrolly{grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:56px}}
+@media (max-width:899px){.sticky{position:static}.step{min-height:auto;padding:26px 0}.plant .intro{margin-bottom:28px}}
+.zindex{margin-top:clamp(48px,6vw,88px);display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:2px 24px;border-top:1px solid var(--night-rule);padding-top:22px}
+.zindex button{display:flex;gap:12px;align-items:baseline;text-align:left;background:transparent;border:0;padding:8px 0;color:var(--on-night-2);font-size:15.5px;cursor:pointer;border-bottom:1px solid transparent}
+.zindex button b{font-family:var(--mono);font-weight:500;font-size:12.5px;color:#e7b98f}
+.zindex button:hover{color:#fff}
+.plant .note{margin-top:28px;font-size:14.5px;color:var(--on-night-2);max-width:80ch}
+
+/* zone dialog */
+dialog.zone{border:0;padding:0;background:var(--paper);color:var(--ink);width:min(760px,calc(100vw - 32px));max-height:calc(100vh - 48px);border-radius:8px;box-shadow:0 40px 100px rgba(0,0,0,.5)}
+dialog.zone::backdrop{background:rgba(11,14,17,.7);backdrop-filter:blur(4px)}
+dialog.zone .in{padding:clamp(24px,4vw,44px);display:grid;gap:18px}
+dialog.zone .num{font-family:var(--mono);font-size:13px;color:var(--copper)}
+dialog.zone h3{font-size:clamp(30px,4vw,44px)}
+dialog.zone .pk{font-family:var(--display);font-weight:600;font-size:19px;color:var(--ink-2)}
+dialog.zone p{color:var(--ink-2);font-size:16.5px}
+dialog.zone p b{color:var(--ink);font-weight:600}
+dialog.zone .fam{display:flex;flex-wrap:wrap;gap:8px}
+dialog.zone .fam span{font-family:var(--mono);font-size:12px;padding:5px 10px;border-radius:999px;background:var(--paper-2);color:var(--ink-2)}
+dialog.zone .refs{display:grid;gap:6px}
+dialog.zone .refs a{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:baseline;text-decoration:none;padding:9px 0;border-top:1px solid var(--rule);color:var(--ink)}
+dialog.zone .refs a:hover{color:var(--copper)}
+dialog.zone .refs a b{font-family:var(--mono);font-weight:500;font-size:14px}
+dialog.zone .refs a span{font-size:15px;color:var(--ink-2)}
+dialog.zone .close{position:absolute;right:14px;top:14px;width:40px;height:40px;border-radius:50%;border:1px solid var(--rule-2);background:var(--paper);cursor:pointer;display:grid;place-items:center}
+dialog.zone .close:hover{background:var(--ink);color:var(--paper)}
+dialog.zone .dec{border-top:1px solid var(--rule);padding-top:16px}
+dialog.zone .dec .num{margin-bottom:6px;display:block}
+
+/* ---------- films ---------- */
+.films{background:var(--night);color:var(--on-night);padding-block:0 clamp(72px,9vw,130px)}
+.films .strip{display:grid;grid-auto-flow:column;grid-auto-columns:min(78vw,520px);gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:12px;scrollbar-width:thin;scrollbar-color:var(--night-rule) transparent}
+.films .strip a{scroll-snap-align:start;color:var(--on-night);text-decoration:none;display:grid;gap:14px}
+.films .strip img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:6px;transition:transform .5s}
+.films .strip a:hover img{transform:scale(1.02)}
+.films .strip b{font-family:var(--display);font-weight:600;font-size:24px;display:block}
+.films .strip span{display:block;color:var(--on-night-2);font-size:15.5px;margin-top:4px}
+.films .strip small{display:block;font-family:var(--mono);font-size:12px;color:#e7b98f;margin-top:8px}
+
+/* ---------- offering index ---------- */
+.offer{padding-block:clamp(72px,10vw,150px)}
+.index{margin-top:clamp(40px,5vw,72px);border-top:1px solid var(--ink)}
+.fam{border-bottom:1px solid var(--rule)}
+.fam summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:1fr;gap:6px 32px;padding:22px 0;align-items:baseline}
+.fam summary::-webkit-details-marker{display:none}
+.fam summary .n{font-family:var(--mono);font-size:13px;color:var(--ink-3)}
+.fam summary h3{font-size:clamp(28px,3.4vw,48px);font-weight:600;transition:color .2s}
+.fam summary:hover h3{color:var(--copper)}
+.fam summary .cnt{font-family:var(--mono);font-size:13px;color:var(--ink-3);justify-self:start}
+.fam summary .plus{width:28px;height:28px;border-radius:50%;border:1px solid var(--rule-2);display:grid;place-items:center;justify-self:end;transition:transform .3s,background .2s}
+.fam[open] summary .plus{transform:rotate(45deg);background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.fam .body{display:grid;grid-template-columns:1fr;gap:20px 40px;padding:0 0 30px}
+.fam .body p{color:var(--ink-2);font-size:17px;max-width:52ch}
+.fam .refs{display:grid;gap:0}
+.fam .refs a{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:baseline;padding:8px 0;border-top:1px solid var(--rule);text-decoration:none;color:var(--ink);font-size:15px}
+.fam .refs a:first-child{border-top:0}
+.fam .refs a b{font-family:var(--mono);font-weight:500;font-size:13.5px}
+.fam .refs a span{color:var(--ink-2)}
+.fam .refs a em{font-style:normal;font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+.fam .refs a:hover{color:var(--copper)}
+@media (min-width:860px){.fam summary{grid-template-columns:70px 1fr auto 40px}.fam .body{grid-template-columns:70px 1fr 1.1fr}.fam .body p{grid-column:2}.fam .refs{grid-column:3}}
+.rules{margin-top:clamp(40px,5vw,72px);display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px 40px}
+.rules div{font-size:16px;color:var(--ink-2);line-height:1.5;padding-top:14px;border-top:1px solid var(--rule)}
+.rules b{display:block;color:var(--ink);font-family:var(--display);font-weight:600;font-size:18px;margin-bottom:4px;letter-spacing:-.01em}
+.catalink{margin-top:36px}
+
+/* ---------- execution ---------- */
+.exec{padding-block:clamp(72px,10vw,150px);background:var(--white)}
+.exec .split{display:grid;grid-template-columns:1fr;gap:clamp(36px,6vw,80px);align-items:start}
+.tl{position:relative;padding-left:34px}
+.tl::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:1px;background:var(--rule-2)}
+.tl .line{position:absolute;left:8px;top:6px;width:1px;background:var(--copper);height:0;transition:height .4s linear}
+.tl>div{position:relative;padding:0 0 30px}
+.tl>div::before{content:"";position:absolute;left:-30px;top:8px;width:9px;height:9px;border-radius:50%;background:var(--paper);border:1.5px solid var(--rule-2);transition:background .3s,border-color .3s}
+.tl>div.lit::before{background:var(--copper);border-color:var(--copper)}
+.tl .ph{font-family:var(--mono);font-size:12.5px;color:var(--ink-3);margin-bottom:4px}
+.tl h4{margin-bottom:6px}
+.tl p{color:var(--ink-2);font-size:16.5px;max-width:52ch}
+.tl .ln{margin-top:8px;font-size:15px;display:flex;flex-wrap:wrap;gap:4px 18px}
+.exec figure{margin:0;position:sticky;top:96px}
+.exec figure img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:6px}
+.exec figcaption{margin-top:12px;font-size:15px;color:var(--ink-3);max-width:52ch}
+.spine{margin-top:22px;padding:20px 22px;background:var(--paper);border-radius:6px;font-size:16px;color:var(--ink-2);line-height:1.5}
+.spine b{color:var(--ink);font-weight:600}
+@media (min-width:900px){.exec .split{grid-template-columns:1fr 1fr}}
+.record{margin-top:clamp(56px,8vw,110px);border-top:1px solid var(--ink);padding-top:28px}
+.record .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:28px 32px;margin-top:28px}
+.record .grid>div{display:grid;gap:8px;align-content:start}
+.record .grid .n{font-family:var(--display);font-weight:700;font-size:44px;line-height:1;letter-spacing:-.03em;color:var(--rule-2)}
+.record .grid h4{font-size:20px}
+.record .grid p{font-size:15.5px;color:var(--ink-2)}
+.record .ln{margin-top:26px;font-size:15px;display:flex;flex-wrap:wrap;gap:6px 22px}
+.life{margin-top:clamp(56px,8vw,110px);display:grid;grid-template-columns:1fr;gap:40px}
+.life .lead h3{font-size:clamp(30px,4vw,54px);max-width:12ch}
+.life .lead p{margin-top:16px;color:var(--ink-2);max-width:40ch;font-size:17px}
+.life .four{display:grid;grid-template-columns:1fr;gap:0;border-top:1px solid var(--rule)}
+.life .four>div{padding:20px 0;border-bottom:1px solid var(--rule);display:grid;grid-template-columns:1fr;gap:6px 32px}
+.life .four .k{font-family:var(--mono);font-size:12.5px;color:var(--ink-3)}
+.life .four h4{font-size:21px}
+.life .four p{font-size:15.5px;color:var(--ink-2)}
+.life .four .ln{font-size:15px;margin-top:4px}
+@media (min-width:900px){.life{grid-template-columns:.8fr 1.2fr}.life .four>div{grid-template-columns:150px 1fr}.life .four .k{padding-top:6px}}
+
+/* ---------- applications ---------- */
+.apps{padding-block:clamp(72px,10vw,150px)}
+.apps .hero2{display:grid;grid-template-columns:1fr;gap:clamp(28px,5vw,64px);align-items:center;margin-top:clamp(36px,5vw,64px)}
+.apps .hero2 img{width:100%;border-radius:6px;mix-blend-mode:multiply}
+.apps .list{display:grid;gap:0;border-top:1px solid var(--rule)}
+.apps .list>div{padding:22px 0;border-bottom:1px solid var(--rule)}
+.apps .list .k{font-family:var(--mono);font-size:12.5px;color:var(--ink-3);margin-bottom:6px}
+.apps .list h3{font-size:clamp(24px,2.4vw,32px);margin-bottom:8px}
+.apps .list p{color:var(--ink-2);font-size:16px;max-width:52ch}
+.apps .list button{margin-top:10px;background:transparent;border:0;padding:0;color:var(--copper);font-family:var(--display);font-weight:600;font-size:15.5px;cursor:pointer;text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--copper-soft)}
+@media (min-width:900px){.apps .hero2{grid-template-columns:1.1fr .9fr}}
+.bounds{margin-top:clamp(56px,8vw,110px);display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px 32px}
+.bounds>div{border-top:1px solid var(--ink);padding-top:16px}
+.bounds .k{font-family:var(--mono);font-size:12.5px;color:var(--ink-3);margin-bottom:8px}
+.bounds h4{font-size:21px;margin-bottom:8px}
+.bounds p{font-size:15.5px;color:var(--ink-2)}
+.grid2{margin-top:clamp(40px,5vw,72px);display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:32px 40px}
+.grid2>div{padding-top:16px;border-top:1px solid var(--rule)}
+.grid2 h4{font-size:22px;margin-bottom:8px}
+.grid2 p{font-size:16px;color:var(--ink-2)}
+.grid2 .ln{margin-top:10px;font-size:15px;display:flex;flex-wrap:wrap;gap:4px 18px}
+
+/* ---------- cases ---------- */
+.cases{padding-block:clamp(72px,10vw,150px);background:var(--white)}
+.casegrid{margin-top:clamp(40px,5vw,72px);display:grid;grid-template-columns:1fr;gap:40px 48px}
+.case{display:grid;gap:14px;align-content:start;padding-top:22px;border-top:1px solid var(--ink)}
+.case .k{font-family:var(--mono);font-size:12.5px;color:var(--ink-3)}
+.case .stat{font-family:var(--display);font-weight:700;font-size:clamp(54px,6vw,86px);line-height:.95;letter-spacing:-.04em}
+.case h3{font-size:24px;font-weight:600}
+.case dl{margin:6px 0 0;display:grid;gap:10px}
+.case dt{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+.case dd{margin:2px 0 0;font-size:16px;color:var(--ink-2)}
+.case dd.pg{color:var(--ink)}
+.case .src{font-size:15px;margin-top:4px}
+@media (min-width:860px){.casegrid{grid-template-columns:repeat(3,1fr)}}
+.more{margin-top:clamp(48px,6vw,80px);display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px 40px}
+.more h4{font-size:19px;margin-bottom:12px}
+.more ul{margin:0;padding:0;list-style:none;display:grid;gap:9px;font-size:15.5px}
+.more li span{display:block;color:var(--ink-3);font-size:14px}
+
+/* ---------- catalog ---------- */
+.catalog{padding-block:clamp(72px,10vw,150px)}
+.ctrl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:clamp(28px,4vw,48px) 0 20px}
+.ctrl button{font-size:14.5px;color:var(--ink-2);background:transparent;border:1px solid var(--rule-2);padding:8px 14px;border-radius:999px;cursor:pointer}
+.ctrl button:hover{border-color:var(--ink);color:var(--ink)}
+.ctrl button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.ctrl input{margin-left:auto;font:inherit;font-size:15.5px;color:var(--ink);background:var(--white);border:1px solid var(--rule-2);padding:10px 16px;border-radius:999px;min-width:220px;flex:1 1 220px;max-width:380px}
+.tablewrap{overflow-x:auto;border-top:1px solid var(--ink)}
+table{border-collapse:collapse;width:100%;min-width:960px;font-size:15px}
+th,td{text-align:left;vertical-align:top;padding:12px 14px 12px 0;border-bottom:1px solid var(--rule);line-height:1.4}
+th{font-family:var(--mono);font-weight:500;font-size:12.5px;color:var(--ink-3);position:sticky;top:64px;background:var(--paper)}
+td{color:var(--ink-2)}
+td.st{color:var(--ink);font-family:var(--mono);font-size:14px;white-space:nowrap}
+td .note{display:block;font-size:13px;color:var(--ink-3);font-family:var(--body);white-space:normal;max-width:26ch}
+td .note.ct{color:var(--copper)}
+td .fm{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px;vertical-align:0}
+td.fam{white-space:nowrap}
+td a{white-space:nowrap}
+td .na{color:var(--ink-3);font-style:italic}
+.count{font-family:var(--mono);font-size:13px;color:var(--ink-3);margin-top:12px}
+
+/* ---------- contact ---------- */
+.contact{background:var(--night);color:var(--on-night);padding-block:clamp(80px,10vw,150px)}
+.contact h2{color:#fff;max-width:12ch}
+.contact .split{display:grid;grid-template-columns:1fr;gap:clamp(32px,5vw,72px);margin-top:clamp(36px,5vw,64px)}
+.contact .who{display:grid;gap:22px}
+.contact .who .k{font-family:var(--mono);font-size:12.5px;color:var(--on-night-2);margin-bottom:6px}
+.contact .who a{font-family:var(--display);font-weight:600;font-size:clamp(22px,2.6vw,34px);color:#fff;text-decoration:none;letter-spacing:-.02em}
+.contact .who a:hover{color:#e7b98f}
+.contact .who span{display:block;color:var(--on-night-2);font-size:15px}
+.contact .check{display:grid;gap:0;border-top:1px solid var(--night-rule)}
+.contact .check>div{display:grid;grid-template-columns:44px 1fr;gap:12px;padding:16px 0;border-bottom:1px solid var(--night-rule)}
+.contact .check .n{font-family:var(--mono);font-size:13px;color:#e7b98f;padding-top:4px}
+.contact .check h4{color:#fff;margin-bottom:4px}
+.contact .check p{color:var(--on-night-2);font-size:15.5px}
+@media (min-width:900px){.contact .split{grid-template-columns:1fr 1fr}}
+footer{background:var(--night);color:var(--on-night-2);padding:0 0 40px;font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:10px 32px;justify-content:space-between;border-top:1px solid var(--night-rule);padding-top:22px}
+footer a{color:var(--on-night)}
+@media print{.top,.hero .cue,.ctrl,.films{display:none}body{background:#fff}.hero{min-height:auto}}
+</style>
+</head>
+<body>
+<script>document.documentElement.classList.add('js')</script>
+
+<header class="top" id="top">
+  <div class="wrap">
+    <a class="brand" href="#"><b>Southwire</b><span>Power Generation Solutions</span></a>
+    <nav aria-label="Sections">
+      <a href="#plant">The plant</a>
+      <a href="#offer">Cable</a>
+      <a href="#exec">Execution</a>
+      <a href="#apps">Applications</a>
+      <a href="#cases">Experience</a>
+      <a href="#catalog">Catalog</a>
+      <a class="cta" href="#contact">Start a review</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="hero on-night" aria-label="Opening">
+  <div class="media">
+    <img src="assets/hall-interior.jpg" alt="Inside the enclosed turbine hall of the plant model: turbine machinery, auxiliary packages, overhead cable routes" fetchpriority="high">
+    <video id="herovid" muted playsinline loop preload="none" poster="assets/hall-interior.jpg" aria-hidden="true" tabindex="-1"></video>
+  </div>
+  <div class="veil"></div>
+  <div class="wrap">
+    <div class="kick"><span>Power Generation Solutions</span><span id="filmnote">Still from the original engineering model</span></div>
+    <h1>Accelerating time to <i>power.</i></h1>
+    <div class="row">
+      <p class="lede">From the generation asset to the grid interface: cable, application engineering and project execution, connected to the plant's electrical scope.</p>
+      <div class="acts">
+        <a class="btn solid" href="#plant">Explore the plant <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn" href="{{REVIEW_MAILTO}}">Start a cable package review</a>
+      </div>
+    </div>
+  </div>
+  <div class="cue"><i></i>Scroll</div>
+</section>
+
+<section class="statement" id="why" aria-labelledby="h-why">
+  <div class="wrap">
+    <p class="chapter">Why cable decides the schedule</p>
+    <p class="big reveal" id="h-why">Cable is under one percent of a plant's cost and sits at the end of every contract branch. Its specification is written three tiers up, months before the reel is cut. <em>That is where time to power is won or lost.</em></p>
+    <div class="needs" id="needs"></div>
+  </div>
+</section>
+
+<section class="plant on-night" id="plant" aria-labelledby="h-plant">
+  <div class="wrap">
+    <p class="chapter">The plant</p>
+    <h2 id="h-plant">One plant. Sixteen application zones.</h2>
+    <p class="lede intro">Scroll through the plant. Each stop lights the zones it covers on the original engineering model and shows what has to be settled before the cable is released. Open any zone for its cable families, references and specifications.</p>
+    <div class="scrolly">
+      <div class="sticky">
+        <div class="stage" id="stage">
+          <img src="assets/plant-zones.jpg" alt="Isometric render of the combined-cycle plant model with sixteen numbered application zones">
+          <div class="pins" id="pins" role="group" aria-label="Plant zones"></div>
+          <div class="cap" id="stagecap">Original engineering model · illustrative, not a digital twin</div>
+        </div>
+      </div>
+      <div class="steps" id="steps"></div>
+    </div>
+    <div class="zindex" id="zindex" role="group" aria-label="All zones"></div>
+    <p class="note">Concept application map. Optional systems are shown. Cable design and quantities follow the approved project scope; shared routes and staging do not add circuit footage. Select constructions against actual routes and approved OEM data.</p>
+  </div>
+</section>
+
+<section class="films on-night" aria-label="Films">
+  <div class="wrap">
+    <p class="chapter">The model in motion</p>
+    <div class="strip" id="films"></div>
+    <p class="note small" style="color:var(--on-night-2);margin-top:14px">Silent films from the original model, hosted on the online field guide. Illustrative geometry and route colors.</p>
+  </div>
+</section>
+
+<section class="offer" id="offer" aria-labelledby="h-offer">
+  <div class="wrap">
+    <p class="chapter">The cable offering</p>
+    <h2 id="h-offer">Seven families. One electrical scope.</h2>
+    <p class="lede">Published constructions with specification numbers, from the switchyard to the last instrument loop. Open a family for its references; every one links to the manufacturer's document.</p>
+    <div class="index" id="index"></div>
+    <div class="rules" id="rules"></div>
+    <p class="catalink"><a class="btn" href="#catalog">Open the technical catalog</a></p>
+  </div>
+</section>
+
+<section class="exec" id="exec" aria-labelledby="h-exec">
+  <div class="wrap">
+    <p class="chapter">From specification to installation</p>
+    <h2 id="h-exec">Make the schedule work in the field.</h2>
+    <p class="lede">Coordinate cable, equipment interfaces and the installation sequence before material reaches the jobsite. Then package the delivery around the pull sequence.</p>
+    <div class="split" style="margin-top:clamp(40px,5vw,72px)">
+      <div class="tl" id="tl"><div class="line" id="tline"></div></div>
+      <div>
+        <figure><img src="assets/reel-yard.jpg" alt="Cable reels staged at the plant laydown yard" loading="lazy"><figcaption>Reel staging and prefab, zone 03. Staging adds no circuit footage; it changes when and how the footage is issued.</figcaption>
+        <div class="spine"><b>Prefabricated cable spine, project development.</b> A factory-built spine needs defined interfaces, a qualified assembly provider and an agreed test plan. Evaluate a pilot on factory labor, field labor, logistics, schedule and total installed cost. Availability and performance are project-specific.</div></figure>
+      </div>
+    </div>
+    <div class="record">
+      <p class="chapter">One circuit record, specification through energization</p>
+      <h3>Turn the cable schedule into a field plan.</h3>
+      <div class="grid" id="rel"></div>
+      <div class="ln" id="rellinks"></div>
+    </div>
+    <div class="life">
+      <div class="lead"><p class="chapter">Extend the lifecycle offer</p><h3>Assess. Repair. Rejuvenate. Replace.</h3><p>Choose the intervention from condition, duty and the outage window. Agree eligibility, acceptance and scope before release. Historical case results do not establish future performance.</p></div>
+      <div class="four" id="life"></div>
+    </div>
+  </div>
+</section>
+
+<section class="apps" id="apps" aria-labelledby="h-apps">
+  <div class="wrap">
+    <p class="chapter">Beyond one plant configuration</p>
+    <h2 id="h-apps">Build the package around the application.</h2>
+    <div class="hero2">
+      <img src="assets/cover-plant.jpg" alt="Isometric plant model with turbine hall, HRSG stacks, switchyard and a delivery truck with cable reels" loading="lazy">
+      <div class="list" id="applist"></div>
+    </div>
+    <div class="bounds" id="bounds"></div>
+    <div class="grid2" id="gridtie"></div>
+  </div>
+</section>
+
+<section class="cases" id="cases" aria-labelledby="h-cases">
+  <div class="wrap">
+    <p class="chapter">Documented experience</p>
+    <h2 id="h-cases">Results with a reference.</h2>
+    <p class="lede">Historical Southwire projects, each with its published source. The PowerGen application under each case is a proposed use, not an outcome from the illustrated plant.</p>
+    <div class="casegrid" id="casegrid"></div>
+    <div class="more" id="more"></div>
+  </div>
+</section>
+
+<section class="catalog" id="catalog" aria-labelledby="h-cat">
+  <div class="wrap">
+    <p class="chapter">Technical reference</p>
+    <h2 id="h-cat">Cable catalog.</h2>
+    <p class="lede">Published references by family with the specification number and the manufacturer's document. Stock numbers do not indicate inventory; confirm voltage, insulation level, conductor size, installation rating, reel length, listing, pricing and lead time against the project design.</p>
+    <div class="ctrl" id="ctrl" role="group" aria-label="Filter"></div>
+    <div class="tablewrap"><table id="cat"><thead><tr><th>Stock / reference</th><th>Family</th><th>Duty</th><th>Construction / size</th><th>Spec</th><th>Documents</th><th>Zones</th></tr></thead><tbody></tbody></table></div>
+    <p class="count" id="count"></p>
+    <p class="small" style="margin-top:14px;max-width:90ch">Reference types: a <b>product family</b> is selected by size and listing; a <b>specification number</b> describes a construction; a <b>published base code</b> is not a complete orderable stock number; a <b>stock number</b> is orderable but does not establish inventory; <b>request stock code</b> means size and duty are selected with the project; a <b>project-specific engineered selection</b> is made against the approved design. Type TC and TC-ER are distinct ratings.</p>
+  </div>
+</section>
+
+<section class="contact on-night" id="contact" aria-labelledby="h-contact">
+  <div class="wrap">
+    <p class="chapter">Project conversation</p>
+    <h2 id="h-contact">Connect your next power project.</h2>
+    <div class="split">
+      <div>
+        <p class="lede" style="margin-top:0">Start with the one-line diagram, the cable schedule, the equipment interfaces and the target energization date.</p>
+        <div class="who" id="who" style="margin-top:32px"></div>
+        <p style="margin-top:32px"><a class="btn solid" href="{{REVIEW_MAILTO}}">Start a cable package review</a></p>
+      </div>
+      <div class="check" id="check"></div>
+    </div>
+  </div>
+</section>
+</main>
+<footer>
+  <div class="wrap">
+    <span id="srcnote"></span>
+    <span><a href="PowerGen_eBrochure.pdf">Email PDF</a> · <a href="PowerGen_Technical_Appendix.pdf">Technical appendix</a> · <a href="source-and-asset-register.md">Sources</a> · <a href="CHANGELOG.md">Change log</a></span>
+  </div>
+</footer>
+
+<dialog class="zone" id="zdlg"><div class="in" id="zin"></div></dialog>
+
+<script id="data" type="application/json">{{DATA}}</script>
+<script>
+(function(){
+  var D=JSON.parse(document.getElementById('data').textContent);
+  var FAM={};D.families.forEach(function(f){FAM[f.id]=f});
+  var CAT={};D.catalog.forEach(function(c){CAT[c.stock]=c});
+  function pad(n){return (n<10?'0':'')+n}
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+  function A(t,u,cls){return '<a href="'+u+'" target="_blank" rel="noopener"'+(cls?' class="'+cls+'"':'')+'>'+esc(t)+'</a>'}
+  var rm=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* header state */
+  var top=document.getElementById('top');
+  window.addEventListener('scroll',function(){top.classList.toggle('scrolled',window.scrollY>8)},{passive:true});
+  /* hero video */
+  var v=document.getElementById('herovid');
+  if(v&&!rm&&D.films[0]&&D.films[0].url){
+    v.addEventListener('canplay',function(){v.classList.add('on');document.getElementById('filmnote').textContent='Plant flythrough · original engineering model';v.play().catch(function(){})});
+    var s=document.createElement('source');s.src=D.films[0].url;s.type='video/mp4';s.addEventListener('error',function(){v.remove()});v.appendChild(s);v.load();
+  }
+  /* needs */
+  var NEEDS=[
+    ['Time to power','Reach the specification before it is frozen, with the plant model, the one-line and the cable schedule in the same conversation.','CableTechSupport application review; Construction Planning Services takeoffs and pull calculations.'],
+    ['Installation labor and constructability','Reel lengths, pull sections, circuit identification and staged issue planned around the installation sequence.','Contractor Solutions and SIMpull equipment planning; qualified prefabrication to an agreed engineered scope.'],
+    ['Material availability, coordination and traceability','Published constructions with specification numbers, kitting and labels by circuit, reel tracking and staged delivery.','SPEED Services, Project Services, Southwire Reel Tracking System.'],
+    ['Reliable operation and lifecycle support','Constructions rated for the duty, and assessment or rejuvenation of existing feeders where a brownfield expansion depends on them.','Field Assessment Services and cable rejuvenation, with published utility results.']];
+  document.getElementById('needs').innerHTML=NEEDS.map(function(n,i){return '<div class="need reveal"><div class="n">'+pad(i+1)+'</div><h3>'+esc(n[0])+'</h3><p>'+esc(n[1])+' <b>What Southwire brings:</b> '+esc(n[2])+'</p></div>'}).join('');
+  /* plant: pins + steps + index */
+  var pins=document.getElementById('pins');
+  D.zones.forEach(function(z){
+    var b=document.createElement('button');b.type='button';b.className='pin';b.textContent=pad(z.n);b.setAttribute('aria-label','Zone '+pad(z.n)+': '+z.name);b.dataset.n=z.n;b.style.left=z.x+'%';b.style.top=z.y+'%';
+    b.addEventListener('click',function(){openZone(z.n)});pins.appendChild(b);
+  });
+  var steps=document.getElementById('steps');
+  steps.innerHTML=D.zoneDecisions.map(function(d,i){return '<div class="step" data-i="'+i+'"><div class="z">Zones '+d.zones.map(pad).join(' · ')+' · '+esc(d.group)+'</div><h3>'+esc(d.title)+'</h3><p><b>Cables.</b> '+esc(d.cables)+'</p><p style="margin-top:10px"><b>Before release.</b> '+esc(d.release)+'</p><button type="button" class="open" data-z="'+d.zones[0]+'">Open zone '+pad(d.zones[0])+' · '+esc(D.zones[d.zones[0]-1].name)+'</button></div>'}).join('');
+  steps.addEventListener('click',function(e){var b=e.target.closest('button.open');if(b)openZone(+b.dataset.z)});
+  function light(zs){document.querySelectorAll('#pins .pin').forEach(function(p){p.classList.toggle('lit',zs.indexOf(+p.dataset.n)>=0)});document.getElementById('stagecap').textContent=zs.length?'Zones '+zs.map(pad).join(', ')+' highlighted':'Original engineering model · illustrative, not a digital twin'}
+  var stepEls=Array.prototype.slice.call(document.querySelectorAll('.step'));
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){stepEls.forEach(function(s){s.classList.remove('active')});en.target.classList.add('active');light(D.zoneDecisions[+en.target.dataset.i].zones)}})},{rootMargin:'-45% 0px -45% 0px',threshold:0});
+    stepEls.forEach(function(s){io.observe(s)});
+  }
+  stepEls[0].classList.add('active');light(D.zoneDecisions[0].zones);
+  document.getElementById('zindex').innerHTML=D.zones.map(function(z){return '<button type="button" data-n="'+z.n+'"><b>'+pad(z.n)+'</b>'+esc(z.name)+'</button>'}).join('');
+  document.getElementById('zindex').addEventListener('click',function(e){var b=e.target.closest('button');if(b)openZone(+b.dataset.n)});
+  var dlg=document.getElementById('zdlg'),zin=document.getElementById('zin');
+  function openZone(n){
+    var z=D.zones[n-1];
+    var refs=z.refs.length?z.refs.map(function(r){var c=CAT[r];var u=c&&(c.specUrl||c.productUrl);return '<a href="'+(u||'#catalog')+'"'+(u?' target="_blank" rel="noopener"':'')+'><b>'+esc(r)+'</b><span>'+esc(c?c.duty+' · '+c.construction:'')+'</span></a>'}).join(''):'<p class="small">Services and staging scope; see the execution chapter.</p>';
+    zin.innerHTML='<button type="button" class="close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3l10 10M13 3L3 13"/></svg></button>'
+      +'<span class="num">Zone '+pad(n)+' of 16</span><h3>'+esc(z.name)+'</h3><div class="pk">'+esc(z.package)+'</div>'
+      +'<p><b>Equipment and application.</b> '+esc(z.cable)+'</p>'
+      +'<div class="fam">'+z.families.map(function(k){return '<span>'+esc(FAM[k].short)+'</span>'}).join('')+'</div>'
+      +'<p><b>Selection considerations.</b> '+esc(z.focus)+'</p><p><b>Specifies and buys.</b> '+esc(z.buys)+'</p>'
+      +'<div><span class="num">References · click for the manufacturer document</span><div class="refs" style="margin-top:8px">'+refs+'</div></div>'
+      +(z.decision?'<div class="dec"><span class="num">Before release · '+esc(z.decision.group)+'</span><p>'+esc(z.decision.release)+'</p></div>':'')
+      +'<p class="small"><a href="#catalog" data-zone="'+n+'" class="tocat">All references for zone '+pad(n)+' in the catalog</a>'+(z.link?' · <a href="'+z.link[1]+'">'+esc(z.link[0])+'</a>':'')+'</p>';
+    zin.querySelector('.close').addEventListener('click',function(){dlg.close()});
+    zin.querySelector('.tocat').addEventListener('click',function(){dlg.close();setFilter('zone:'+n)});
+    var lk=zin.querySelector('a[href^="#"]:not(.tocat)');if(lk)lk.addEventListener('click',function(){dlg.close()});
+    if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','');
+  }
+  dlg.addEventListener('click',function(e){if(e.target===dlg)dlg.close()});
+  /* films */
+  document.getElementById('films').innerHTML=D.films.map(function(f){return '<a href="'+f.url+'" target="_blank" rel="noopener"><img src="assets/'+f.poster+'" alt="" loading="lazy"><div><b>'+esc(f.title)+'</b><span>'+esc(f.desc)+'</span><small>Watch online · '+f.seconds+' s</small></div></a>'}).join('');
+  /* offering index */
+  var CT={base:'base code',request:'request stock code',family:'family',stock:''};
+  document.getElementById('index').innerHTML=D.families.map(function(f,i){
+    var items=D.catalog.filter(function(c){return c.family===f.id});
+    var core=items.filter(function(c){return c.tier==='core'}),ex=items.filter(function(c){return c.tier==='expanded'});
+    var row=function(c){var u=c.specUrl||c.productUrl;return '<a href="'+(u||'#catalog')+'"'+(u?' target="_blank" rel="noopener"':'')+'><b>'+esc(c.tier==='expanded'?c.duty:c.stock)+'</b><span>'+esc(c.tier==='expanded'?(c.stock+(c.size?' · '+c.size:'')):c.duty)+'</span><em>'+(c.spec?'spec '+esc(c.spec):'')+(CT[c.codeType]?' · '+CT[c.codeType]:'')+'</em></a>'};
+    return '<details class="fam reveal"'+(i===0?' open':'')+'><summary><span class="n">'+pad(i+1)+'</span><h3>'+esc(f.name)+'</h3><span class="cnt">'+core.length+' core · '+ex.length+' expanded</span><span class="plus"><svg width="12" height="12" viewBox="0 0 12 12" stroke="currentColor" stroke-width="1.6"><path d="M6 1v10M1 6h10"/></svg></span></summary><div class="body"><p>'+esc(f.desc)+'</p><div class="refs">'+core.map(row).join('')+ex.map(row).join('')+'</div></div></details>'}).join('');
+  var RULES=[['OEM internal wiring vs. field interconnection','The OEM wires inside the package to terminal boxes or local panels; the EPC or installer connects between packages. The terminal point follows the contract.'],['Fixed wiring vs. portable cable','DLO and other flexible constructions are portable-cable applications, not substitutes for fixed tray-rated wiring.'],['MV insulation level','Voltage class, 100% or 133% insulation level and shield type are project selections from the one-line, not from the model.'],['VFD duty','Drive-output cable is matched to the drive system; qualify the drive before selecting the cable.'],['Hazardous locations','ARMOR-X MC-HL constructions, glands and seals follow the area classification and the complete installation.'],['BESS DC vs. solar PV','RenewaFLEX is approved internal BESS wiring, not a photovoltaic application. Immersion and circuit integrity are separate qualifications.']];
+  document.getElementById('rules').innerHTML=RULES.map(function(r){return '<div class="reveal"><b>'+esc(r[0])+'</b>'+esc(r[1])+'</div>'}).join('');
+  /* execution timeline */
+  var tl=document.getElementById('tl');
+  tl.insertAdjacentHTML('beforeend',D.services.map(function(s){return '<div class="reveal"><div class="ph">'+esc(s.phase)+'</div><h4>'+esc(s.name)+'</h4><p>'+esc(s.desc)+'</p><div class="ln">'+s.links.map(function(l){return A(l[0],l[1])}).join('')+'</div></div>'}).join(''));
+  var tline=document.getElementById('tline'),tlItems=Array.prototype.slice.call(tl.querySelectorAll(':scope > div:not(.line)'));
+  function drawLine(){var r=tl.getBoundingClientRect(),vh=window.innerHeight,p=Math.min(1,Math.max(0,(vh*0.6-r.top)/r.height));tline.style.height=(p*100)+'%';tlItems.forEach(function(it){var ir=it.getBoundingClientRect();it.classList.toggle('lit',ir.top<vh*0.6)})}
+  window.addEventListener('scroll',drawLine,{passive:true});window.addEventListener('resize',drawLine);drawLine();
+  document.getElementById('rel').innerHTML=D.release.steps.map(function(s,i){return '<div class="reveal"><div class="n">'+pad(i+1)+'</div><h4>'+esc(s[0])+'</h4><p>'+esc(s[1])+'</p></div>'}).join('');
+  document.getElementById('rellinks').innerHTML=D.release.links.map(function(l){return A(l[0],l[1])}).join('');
+  document.getElementById('life').innerHTML=D.lifecycle.map(function(a){return '<div class="reveal"><div class="k">'+esc(a.k)+'</div><div><h4>'+esc(a.name)+'</h4><p>'+esc(a.desc)+'</p><div class="ln">'+a.links.map(function(l){return A(l[0],l[1])}).join(' · ')+'</div></div></div>'}).join('');
+  /* applications */
+  var al=document.getElementById('applist');
+  al.innerHTML=D.applications.map(function(a){return '<div class="reveal"><div class="k">'+esc(a.k)+'</div><h3>'+esc(a.name)+'</h3><p>'+esc(a.desc)+'</p><button type="button" data-zone="'+a.zone+'">Open zone '+pad(a.zone)+' · '+esc(D.zones[a.zone-1].name)+'</button></div>'}).join('');
+  al.addEventListener('click',function(e){var b=e.target.closest('button[data-zone]');if(b)openZone(+b.dataset.zone)});
+  document.getElementById('bounds').innerHTML=D.boundaries.map(function(b){return '<div class="reveal"><div class="k">'+esc(b.k)+'</div><h4>'+esc(b.name)+'</h4><p>'+esc(b.desc)+'</p></div>'}).join('');
+  document.getElementById('gridtie').innerHTML=D.grid.map(function(g){return '<div class="reveal"><h4>'+esc(g.name)+'</h4><p>'+esc(g.desc)+'</p><div class="ln">'+g.links.map(function(l){return A(l[0],l[1])}).join('')+'</div></div>'}).join('');
+  /* cases */
+  function card(c){return '<article class="case reveal"><span class="k">'+esc(c.tag)+'</span><div class="stat">'+esc(c.stat)+'</div><h3>'+esc(c.title)+'</h3><dl><dt>Customer problem</dt><dd>'+esc(c.problem)+'</dd><dt>Southwire contribution</dt><dd>'+esc(c.contribution)+'</dd><dt>Published result</dt><dd>'+esc(c.result)+'</dd><dt>PowerGen application · proposed</dt><dd class="pg">'+esc(c.powergen)+'</dd></dl><p class="src">'+A('Read the case study · PDF',c.url)+'</p></article>'}
+  document.getElementById('casegrid').innerHTML=D.cases.filter(function(c){return c.featured}).map(card).join('');
+  document.getElementById('more').innerHTML='<div><h4>More documented experience</h4><ul>'+D.cases.filter(function(c){return !c.featured}).map(function(c){return '<li>'+A(c.tag,c.url)+'<span>'+esc(c.stat)+' · '+esc(c.title)+'</span></li>'}).join('')+'</ul></div>'
+    +'<div><h4>Services and grid connection</h4><ul>'+D.services.concat(D.grid).map(function(s){return s.links.map(function(l){return '<li>'+A(l[0],l[1])+'<span>'+esc(s.phase||s.name)+'</span></li>'}).join('')}).join('')+'</ul></div>'
+    +'<div><h4>Downloads and sources</h4><ul><li><a href="PowerGen_eBrochure.pdf">Email brochure · PDF</a><span>Ten spreads, clickable links</span></li><li><a href="PowerGen_Technical_Appendix.pdf">Technical appendix · PDF</a><span>Zone packages, decisions and the full catalog</span></li><li><a href="source-and-asset-register.md">Source and asset register</a><span>What was used, what is unverified</span></li><li><a href="CHANGELOG.md">Change log</a></li></ul></div>';
+  /* contact */
+  document.getElementById('who').innerHTML=D.contacts.map(function(c){return '<div><div class="k">'+esc(c.org||c.name)+'</div><a href="mailto:'+c.email+'">'+esc(c.email)+'</a>'+(c.role?'<span>'+esc(c.role)+'</span>':'')+'</div>'}).join('');
+  document.getElementById('check').innerHTML=D.checklist.map(function(c,i){return '<div><div class="n">'+pad(i+1)+'</div><div><h4>'+esc(c[0])+'</h4><p>'+esc(c[1])+'</p></div></div>'}).join('');
+  document.getElementById('srcnote').textContent=D.sourceNote;
+  /* catalog */
+  var ctrl=document.getElementById('ctrl'),tb=document.querySelector('#cat tbody'),filter='all',q='';
+  var btns=[['all','All'],['core','Core'],['expanded','Expanded']].concat(D.families.map(function(f){return [f.id,f.short]}));
+  ctrl.innerHTML=btns.map(function(b){return '<button type="button" data-f="'+b[0]+'" aria-pressed="'+(b[0]==='all')+'">'+esc(b[1])+'</button>'}).join('')+'<label class="sr" for="q">Search</label><input id="q" type="search" placeholder="Search stock, duty, construction, spec">';
+  ctrl.addEventListener('click',function(e){var b=e.target.closest('button[data-f]');if(b)setFilter(b.dataset.f)});
+  document.getElementById('q').addEventListener('input',function(e){q=e.target.value.toLowerCase();render()});
+  function setFilter(f){filter=f;ctrl.querySelectorAll('button[data-f]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.f===f||(f.indexOf('zone:')===0&&b.dataset.f==='all')))});render();if(f.indexOf('zone:')===0)document.getElementById('catalog').scrollIntoView()}
+  function docs(c){var a=[];if(c.specUrl)a.push(A('Spec '+c.spec+' · PDF',c.specUrl));else if(c.spec)a.push('<span class="na">Spec '+esc(c.spec)+' · no PDF in source</span>');if(c.productUrl)a.push(A('Product page',c.productUrl));(c.extraUrls||[]).forEach(function(x){a.push(A('Spec '+x[0]+' · PDF',x[1]))});return a.length?a.join('<br>'):'<span class="na">Not published in source</span>'}
+  var CTL={base:'Published base code',request:'Request stock code',family:'Product family'};
+  function render(){
+    var zn=filter.indexOf('zone:')===0?+filter.slice(5):0;
+    var rows=D.catalog.filter(function(c){if(zn)return c.zones.indexOf(zn)>=0;if(filter==='core'||filter==='expanded')return c.tier===filter;if(filter!=='all')return c.family===filter;return true}).filter(function(c){if(!q)return true;return [c.stock,c.duty,c.construction,c.spec||'',FAM[c.family].name].join(' ').toLowerCase().indexOf(q)>=0});
+    tb.innerHTML=rows.map(function(c){var f=FAM[c.family];return '<tr><td class="st">'+esc(c.stock)+(c.size?'<span class="note">'+esc(c.size)+'</span>':'')+(CTL[c.codeType]?'<span class="note ct">'+CTL[c.codeType]+'</span>':'')+(c.note?'<span class="note">'+esc(c.note)+'</span>':'')+'</td><td class="fam"><span class="fm" style="background:'+f.color+'"></span>'+esc(f.short)+(c.hazloc?'<span class="note">MC-HL · hazardous location</span>':'')+'</td><td>'+esc(c.duty)+'</td><td>'+esc(c.construction)+'</td><td class="mono">'+esc(c.spec||'—')+'</td><td>'+docs(c)+'</td><td class="mono">'+(c.zones.length?c.zones.map(pad).join(', '):'—')+'</td></tr>'}).join('');
+    document.getElementById('count').textContent=rows.length+' of '+D.catalog.length+' references'+(zn?' · zone '+pad(zn)+' '+D.zones[zn-1].name:'')+(q?' · "'+q+'"':'');
+  }
+  render();
+  /* reveal on scroll (elements already on screen are shown immediately) */
+  var rv=Array.prototype.slice.call(document.querySelectorAll('.reveal'));
+  if(rm||!('IntersectionObserver' in window)){rv.forEach(function(el){el.classList.add('in')})}
+  else{var ro=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');ro.unobserve(en.target)}})},{rootMargin:'0px 0px -8% 0px'});rv.forEach(function(el){var r=el.getBoundingClientRect();if(r.top<window.innerHeight)el.classList.add('in');else ro.observe(el)})}
+  /* nav highlight */
+  var links=document.querySelectorAll('.top nav a');
+  if('IntersectionObserver' in window){var no=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){links.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+en.target.id)})}})},{rootMargin:'-35% 0px -60% 0px'});document.querySelectorAll('main section[id]').forEach(function(s){no.observe(s)})}
+})();
+</script>
+</body>
+</html>

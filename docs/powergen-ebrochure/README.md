@@ -6,15 +6,15 @@ Southwire Power Generation Solutions. September 2026.
 
 | Path | What it is |
 |---|---|
-| `index.html` | The responsive e-brochure. Self-contained apart from the six images in `assets/`; fonts and data are embedded. Works offline from a folder or from any static host. |
+| `index.html` | The responsive e-brochure. Self-contained apart from the images in `assets/`; fonts and data are embedded. Works offline from a folder or from any static host. |
 | `assets/` | Six plant renders from the original engineering model (JPEG). |
 | `PowerGen_eBrochure.pdf` | Email-ready brochure, 10 spreads, 16:10, clickable links. |
 | `PowerGen_Technical_Appendix.pdf` | Zone cable packages (16), zone decisions, and the full catalog (29 core references + 24 expanded families), clickable links. |
 | `source-and-asset-register.md` | What was used, what was not, what is unverified. |
 | `CHANGELOG.md` | What was consolidated, removed, corrected, left unresolved. |
 | `src/data.json` | Single source of truth for zones, catalog, services, cases, contacts. Edit here and rebuild. |
-| `src/index.template.html`, `src/build.py` | Page template and build script (`python3 src/build.py` writes `index.html`, `pdf-main.html`, `pdf-appendix.html`). |
-| `src/fonts/` | Nimbus Sans / Nimbus Sans Narrow, Latin subset, WOFF2 (URW base35, open licence). |
+| `src/template.html`, `src/build.py` | Page template (data is injected at build) and the PDF page builder (`python3 src/build.py` writes `pdf-main.html` and `pdf-appendix.html`; render at 1440 × 900 per page). |
+| `src/fonts/` | Bricolage Grotesque, Source Sans 3, IBM Plex Mono; Latin subset WOFF2 (Google Fonts, open licence). |
 
 ## Requirements
 

@@ -24,7 +24,9 @@ All renders were extracted from the presentation's media and compressed (JPEG, p
 | `assets/xray-plant.jpg` (1558 × 959) | Slide 10, `image11.png`, full-plant cable X-ray | Electrical-tour film poster; appendix cover |
 | `assets/xray-hall.jpg` (1600 × 900) | Slide 11, `image12.png`, turbine hall X-ray | Cable X-ray film poster |
 | `assets/reel-yard.jpg` (1600 × 900) | Slide 29, `image19.jpeg`, reel staging | Execution section; PDF page 6 |
-| `assets/plant-scope.jpg` (1600 × 900) | Slide 4, `image7.jpeg`, plant with scope boundary | Beyond-one-configuration section |
+| `assets/plant-scope.jpg` (1600 × 900) | Slide 4, `image7.jpeg`, plant with scope boundary | Kept in the package; not placed in the redesign |
+| `assets/cover-plant.jpg` (1800 × 1012) | Slide 1, `image1.jpeg`, isometric plant on white with delivery truck | Applications section (multiplied onto the paper ground) |
+| `assets/plant-aerial.jpg`, `assets/plant-core.jpg` | Slides 2 and 5 | Kept in the package for future use |
 
 Not used: cover artwork with the race car (slide 28, off-brief for a customer piece), the state heat-map chart (slide 27, internal), the lifecycle friction infographic (slide 30, superseded by the services section and published case links), the wordmark-on-hex panel (slide 18; its baked-in tagline text conflicts with editable copy).
 
@@ -40,7 +42,7 @@ No 3D model file was supplied, so the plant map uses the original render with ac
 
 ## Typography
 
-Fonts identified from the embedded fonts of the email brochure PDF: **Nimbus Sans Regular, Nimbus Sans Bold, Nimbus Sans Narrow Bold** (URW). The presentation's text runs are predominantly Nimbus Sans (976 runs) with Arial fallback. The package embeds the URW base35 Nimbus Sans and Nimbus Sans Narrow faces (Latin subset, WOFF2, open licence) so the e-brochure and PDFs render with the source typefaces offline. Fallback stack: Helvetica, Arial.
+The source documents are set in Nimbus Sans / Nimbus Sans Narrow Bold (identified from the embedded fonts of the email brochure PDF; the deck's text runs are predominantly Nimbus Sans with Arial fallback). The first e-brochure reproduced those faces; the September 16 redesign deliberately departs from them to give the piece an editorial, non-templated character while keeping the Southwire wordmark treatment and the copper accent restrained: **Bricolage Grotesque** (display, variable optical size), **Source Sans 3** (text) and **IBM Plex Mono** (reference numbers, labels). All three are open-licence Google Fonts, embedded in the package as WOFF2 (Latin subset) so the e-brochure and PDFs render identically offline. Fallback stack: Helvetica Neue, Arial. If brand governance requires the Nimbus Sans set, `src/fonts` and the two font variables in `src/template.html` and `src/build.py` are the only places to change.
 
 ## Product references
 

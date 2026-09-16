@@ -2,6 +2,19 @@
 
 PowerGen e-brochure, "Accelerating Time to Power". Consolidation of the September 2026 strategy update and the PowerGen email brochure into one customer package.
 
+## Redesign (September 16)
+
+The first build was rejected as looking machine-made: dark ground throughout, a grid of bordered cards in every section, copper uppercase labels and numbered eyebrows. The content and data were kept; the visual system was replaced.
+
+- **Light editorial pages** with dark bands only where the renders need them (opening, the plant chapter, the films, the closing). Whitespace and hairline rules instead of card grids; one accent colour used for links and one word of the headline.
+- **Typography** re-set in Bricolage Grotesque, Source Sans 3 and IBM Plex Mono (see the register). Large headline sizes, sentence case, mono for references and labels, no letter-spaced uppercase.
+- **The plant chapter is scroll-driven.** The render stays pinned while the eight zone-decision stops scroll past; each stop lights its zones on the model. Any zone opens in a modal sheet with its package, families, references, specification links and before-release guidance. The film strip scrolls horizontally.
+- **The cable offering is a typographic index** (seven expandable families with counts) instead of cards; the catalog is a light table with mono stock numbers and a sticky header.
+- **Execution** is a timeline whose line draws as you scroll, then the five-step circuit record and the four lifecycle options as an editorial list.
+- **Motion**: reveal-on-scroll for below-the-fold blocks, the timeline line, zone highlighting; all disabled under prefers-reduced-motion; nothing is hidden at rest above the fold.
+- **The PDFs** were re-set in the same system: light pages, mono labels, the same type, the same content and page count (10 + 16).
+- Removed: card grids, uppercase eyebrows, copper section numbers, the wordmark-on-hex closing.
+
 ## Update for email brochure rev 5 (28 pages)
 
 Rev 5 is a superset of the 19-page revision: the cover subtitle changed to "Expanded cable offering", and nine pages were added. All of it is now in the package:
