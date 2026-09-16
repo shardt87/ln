@@ -63,7 +63,7 @@ tpl = open(os.path.join(HERE, 'template.html')).read()
 html = tpl.replace('{{CHART}}', chart_svg()).replace('{{PINS}}', pins()).replace('{{ZONELIST}}', zonelist())
 
 # index.html: google font link + local fonts fallback (inline @font-face), assets relative
-index = html.replace('{{FONTS}}', FONTS_INLINE)
+index = html.replace('{{FONTS}}', FONTS_INLINE).replace('<link rel="stylesheet" href="https://use.typekit.net/vgi8pyi.css">\n','')
 open(os.path.join(HERE, 'index.html'), 'w').write(index)
 
 # express.html: everything inline
@@ -73,7 +73,7 @@ def inline_images(h):
         b = base64.b64encode(open(p,'rb').read()).decode()
         return f'data:image/jpeg;base64,{b}'
     return re.sub(r'assets/([a-z0-9\-]+\.jpg)', rep, h)
-express = inline_images(index)
+express = inline_images(html.replace('{{FONTS}}', FONTS_INLINE))
 express = express[:express.index('<script>')] + '</body>\n</html>\n'
 open(os.path.join(HERE, 'express.html'), 'w').write(express)
 print('index', len(index)//1024, 'KB; express', len(express)//1024, 'KB')
