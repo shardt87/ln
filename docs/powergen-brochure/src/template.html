@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440">
+<meta name="hz:slide-selector" content=".slide">
+<meta name="hz:canvas-width" content="1440">
+<meta name="hz:canvas-height" content="900">
+<title>Accelerating Time to Power — Southwire Power Generation strategy brochure</title>
+<link rel="stylesheet" href="https://use.typekit.net/vgi8pyi.css">
+<style>
+{{FONTS}}
+:root{--bg:#0f1113;--bg2:#171a1d;--bg3:#1f2327;--line:#2c3034;--ink:#f1efe9;--ink2:#c9c8c2;--ink3:#8f949a;--copper:#e0a672;--copper2:#c9803f;--blue:#4f93d8}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#000}
+body{font-family:"Barlow","barlow",system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+.slide{position:relative;width:1440px;height:900px;overflow:hidden;background:var(--bg);color:var(--ink);page-break-after:always;break-after:page}
+.slide:last-child{page-break-after:auto;break-after:auto}
+.hd{position:absolute;left:60px;right:60px;top:34px;height:30px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:12px}
+.hd .wm{font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:24px;letter-spacing:.12em;color:var(--ink)}
+.hd .wm span{color:var(--copper)}
+.hd .pg{font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:600;font-size:14px;letter-spacing:.16em;color:var(--ink3)}
+.ft{position:absolute;left:60px;right:60px;bottom:30px;height:22px;display:flex;justify-content:space-between;align-items:center;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:600;font-size:13px;letter-spacing:.14em;color:var(--ink3)}
+.ft .n{color:var(--ink2);font-size:15px}
+.eyebrow{position:absolute;left:60px;top:96px;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:600;font-size:15px;letter-spacing:.18em;color:var(--copper)}
+.h{position:absolute;left:60px;top:118px;width:1320px;white-space:nowrap;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:50px;line-height:1.0;letter-spacing:.005em;color:var(--ink)}
+.h em{font-style:normal;color:var(--copper)}
+.lede{position:absolute;left:60px;top:184px;width:960px;font-size:19px;line-height:1.45;color:var(--ink2)}
+.body{position:absolute;left:60px;top:250px;width:1320px;height:570px}
+.k{font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:600;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--copper)}
+.t{font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;color:var(--ink);line-height:1.02}
+.p{font-size:15px;line-height:1.45;color:var(--ink2)}
+.s{font-size:13px;line-height:1.4;color:var(--ink3)}
+.tag{display:inline-block;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:600;font-size:12px;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border:1px solid var(--copper);color:var(--copper);line-height:1.1;vertical-align:1px}
+.tag.fill{background:var(--copper2);border-color:var(--copper2);color:#0f1113}
+.tag.dim{border-color:var(--ink3);color:var(--ink3);border-style:dashed}
+.num{font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;color:var(--copper)}
+.grid{display:grid}
+.card{background:var(--bg2);border:1px solid var(--line);padding:20px 22px}
+.rule{border-top:1px solid var(--line)}
+.cap{position:absolute;left:60px;bottom:66px;width:1320px;font-size:12.5px;color:var(--ink3)}
+img{display:block}
+
+/* cover */
+.cover{background:#000}
+.cover .bgimg{position:absolute;left:0;top:0;width:1440px;height:900px;object-fit:cover;object-position:60% 50%}
+.cover .shade{position:absolute;left:0;top:0;width:1440px;height:900px;background:linear-gradient(90deg,rgba(8,9,10,.96) 0%,rgba(8,9,10,.86) 34%,rgba(8,9,10,.35) 62%,rgba(8,9,10,.15) 100%)}
+.cover .shade2{position:absolute;left:0;top:0;width:1440px;height:900px;background:linear-gradient(180deg,rgba(8,9,10,.55) 0%,rgba(8,9,10,0) 25%,rgba(8,9,10,0) 60%,rgba(8,9,10,.92) 100%)}
+.cover .hd{border-bottom-color:rgba(255,255,255,.18)}
+.cover .hd .pg{color:#d8d6cf}
+.cover .ey{position:absolute;left:60px;top:176px;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:600;font-size:16px;letter-spacing:.2em;color:var(--copper)}
+.cover .title{position:absolute;left:58px;top:206px;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:124px;line-height:.92;letter-spacing:-.005em;color:#fff}
+.cover .title em{font-style:normal;color:var(--copper)}
+.cover .sub{position:absolute;left:60px;top:470px;width:640px;font-size:22px;line-height:1.4;color:#e8e6df}
+.cover .chip{position:absolute;left:60px;top:590px;background:var(--copper2);color:#0f1113;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:16px;letter-spacing:.1em;text-transform:uppercase;padding:12px 20px}
+.cover .stats{position:absolute;left:60px;right:60px;bottom:78px;display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid rgba(255,255,255,.22);padding-top:18px;column-gap:24px}
+.cover .stats b{display:block;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:40px;line-height:1;color:#fff}
+.cover .stats span{display:block;font-size:13px;color:#c9c8c2;margin-top:6px;line-height:1.35}
+.cover .ft{color:#b7b9bc}
+
+/* agenda */
+.agenda .body{display:grid;grid-template-columns:860px 420px;column-gap:40px}
+.ag{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
+.ag>div{background:var(--bg);padding:20px 22px;min-height:150px}
+.ag b{display:block;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:40px;line-height:.9;color:var(--copper);margin-bottom:8px}
+.ag strong{display:block;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:24px;line-height:1.05;text-transform:uppercase;margin-bottom:6px}
+.ag span{display:block;font-size:14.5px;line-height:1.4;color:var(--ink2)}
+.spine{display:grid;grid-template-rows:1fr 1fr 1fr;gap:16px}
+.spine>div{border-left:3px solid var(--copper2);padding:14px 18px;background:var(--bg2)}
+.spine .k{display:block;margin-bottom:6px}
+.spine b{display:block;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:26px;line-height:1.05;margin-bottom:6px}
+.spine p{font-size:14.5px;line-height:1.4;color:var(--ink2)}
+
+/* started */
+.started .body{display:grid;grid-template-columns:640px 640px;column-gap:40px}
+.started figure img{width:640px;height:330px;object-fit:cover}
+.started figcaption{font-size:13px;color:var(--ink3);margin-top:10px;line-height:1.4}
+.started .fence{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:22px}
+.started .fence>div{background:var(--bg);padding:12px 14px}
+.started .fence .k{display:block;margin-bottom:6px}
+.started .fence b{display:block;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:20px;line-height:1.05;margin-bottom:4px}
+.started .fence p{font-size:12.5px;line-height:1.38;color:var(--ink2)}
+.sign{display:grid;grid-template-rows:auto auto auto;gap:12px}
+.sign>div{padding:16px 20px;background:var(--bg2);border:1px solid var(--line)}
+.sign>div.ch{background:#241a12;border-color:#5a3a20}
+.sign .k{display:block;margin-bottom:6px}
+.sign b{display:block;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:24px;line-height:1.05;margin-bottom:6px}
+.sign p,.sign li{font-size:14.5px;line-height:1.42;color:var(--ink2)}
+.sign ol{padding-left:18px}
+.sign li{margin-top:4px}
+
+/* scope table */
+.scope table{border-collapse:collapse;width:1320px;font-size:14px;table-layout:fixed}
+.scope th,.scope td{text-align:left;vertical-align:top;padding:11px 14px;border:1px solid var(--line);line-height:1.38}
+.scope th{font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;background:var(--bg3);color:var(--ink)}
+.scope th.pg{background:var(--copper2);color:#0f1113}
+.scope td.pg{background:#2a1f16;color:var(--ink)}
+.scope td{color:var(--ink2)}
+.scope tbody th{background:var(--bg2);font-size:14px;letter-spacing:.02em;text-transform:none;color:var(--ink2);width:150px}
+.scope tr.cf td{background:var(--bg2)}
+.scope tr.cf th{color:var(--copper)}
+.defn{display:grid;grid-template-columns:560px 1fr;column-gap:40px;margin-bottom:22px;align-items:start}
+.defn .big{font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:600;font-size:26px;line-height:1.15;color:var(--ink)}
+.defn .p{margin-top:10px}
+.fence3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
+.fence3>div{background:var(--bg2);padding:14px 16px;min-height:150px}
+.fence3 .k{display:block;margin-bottom:6px}
+.fence3 b{display:block;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:22px;line-height:1.05;margin-bottom:6px}
+.fence3 p{font-size:13.5px;line-height:1.4;color:var(--ink2)}
+.fence3 .out b{color:var(--ink3)}
+
+/* map */
+.map .body{display:grid;grid-template-columns:900px 380px;column-gap:40px}
+.map .stage{position:relative;width:900px;height:506px;background:#000}
+.map .stage img{width:900px;height:506px;object-fit:contain}
+.pin{position:absolute;width:30px;height:30px;margin-left:-15px;margin-top:-15px;border-radius:50%;background:#0f1113;border:2px solid #f1efe9;color:#f1efe9;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:14px;line-height:26px;text-align:center}
+.pin.core{background:#c9803f;border-color:#fff;color:#0f1113}
+.zl{display:grid;grid-template-columns:34px 1fr;align-items:center;height:31.5px;border-bottom:1px solid var(--line);font-size:15px;color:var(--ink2)}
+.zl b{font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:17px;color:var(--copper)}
+.map .four{position:absolute;left:60px;right:60px;top:790px;display:grid;grid-template-columns:repeat(4,1fr);column-gap:24px;font-size:13px;color:var(--ink3)}
+.map .four b{font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--copper);margin-right:8px}
+
+/* cable */
+.cable .body{display:grid;grid-template-columns:640px 640px;column-gap:40px}
+.cable figure img{width:640px;height:394px;object-fit:cover}
+.fam{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.fam>div{display:grid;grid-template-columns:12px 1fr;column-gap:12px;align-items:start;border:1px solid var(--line);padding:10px 12px;background:var(--bg2)}
+.fam>div>div{display:block}
+.fam i{display:block;width:12px;height:38px;margin-top:2px}
+.fam b{display:block;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:19px;line-height:1}
+.fam span{display:block;font-size:13px;color:var(--ink2);margin-top:4px}
+.cable .rt h3{font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:28px;line-height:1.05;margin-bottom:10px}
+.cable .rt .p{margin-bottom:14px}
+.callout{background:var(--bg3);border-left:3px solid var(--copper2);padding:14px 18px;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:600;font-size:22px;line-height:1.25;color:var(--ink)}
+.callout em{font-style:normal;color:var(--copper)}
+svg text{font-family:"Barlow","barlow",sans-serif}
+svg .cd{font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700}
+
+/* opportunity */
+.bignum{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:22px}
+.bignum>div{background:var(--bg2);padding:18px 20px;min-height:180px}
+.bignum .k{display:block}
+.bignum b{display:block;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:54px;line-height:1;margin:8px 0 8px}
+.bignum p{font-size:14px;line-height:1.4;color:var(--ink2)}
+.bignum small{display:block;margin-top:8px;font-size:12.5px;color:var(--ink3);line-height:1.4}
+
+/* po chart page */
+.po .body{display:grid;grid-template-columns:840px 440px;column-gap:40px}
+.lg{display:flex;gap:18px;font-size:13.5px;color:var(--ink2);margin-bottom:6px}
+.lg i{display:inline-block;width:12px;height:12px;margin-right:6px;vertical-align:-1px}
+.bars{display:grid;row-gap:8px}
+.bars .row{display:grid;grid-template-columns:104px 1fr 62px;column-gap:10px;align-items:center;font-size:14px}
+.bars .track{position:relative;height:16px;background:var(--bg3)}
+.bars .track i{position:absolute;left:0;top:0;bottom:0;background:#6a4a2e}
+.bars .track b{position:absolute;left:0;top:0;bottom:0;background:var(--copper2)}
+.bars .row span:last-child{text-align:right;color:var(--ink2)}
+.po h3{font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:24px;line-height:1.05;margin-bottom:8px}
+.recon{border:1px solid #5a3a20;background:#1c1510;padding:14px 16px;margin-top:18px}
+.recon b{display:block;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:18px;letter-spacing:.04em;text-transform:uppercase;color:var(--copper);margin-bottom:6px}
+.recon p{font-size:13px;line-height:1.42;color:var(--ink2)}
+
+/* buyers */
+.paths{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:20px}
+.paths>div{background:var(--bg2);padding:16px 18px}
+.paths b{display:block;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:22px;text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px}
+.paths dl{display:grid;grid-template-columns:96px 1fr;row-gap:5px;column-gap:10px;font-size:13.5px}
+.paths dt{color:var(--copper);font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:12px;padding-top:2px}
+.paths dd{color:var(--ink2);line-height:1.38}
+
+/* lanes table */
+.lanes table{border-collapse:collapse;width:1320px;table-layout:fixed;font-size:13px}
+.lanes th,.lanes td{text-align:left;vertical-align:top;padding:9px 12px;border:1px solid var(--line);line-height:1.36;color:var(--ink2)}
+.lanes thead th{background:var(--bg3);vertical-align:bottom;padding-bottom:10px}
+.lanes thead th b{display:block;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:22px;text-transform:uppercase;letter-spacing:.02em;color:var(--ink);line-height:1}
+.lanes thead th span{display:block;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:28px;color:var(--copper);line-height:1;margin:6px 0 4px}
+.lanes thead th small{display:block;font-size:12px;color:var(--ink3);font-weight:400;line-height:1.35}
+.lanes tbody th{font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--copper);background:var(--bg2);width:110px}
+.lanes td strong{color:var(--ink);font-weight:600}
+.lanes td.hv{background:var(--bg2)}
+
+/* value */
+.val{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.val>div{background:var(--bg2);padding:16px 18px;min-height:340px;display:flex;flex-direction:column}
+.val h3{font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:24px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:10px}
+.val ul{list-style:none;display:grid;row-gap:8px}
+.val li{font-size:13.5px;line-height:1.4;color:var(--ink2);padding-left:14px;position:relative}
+.val li::before{content:"";position:absolute;left:0;top:.55em;width:7px;height:7px;background:var(--copper2)}
+.val li b{color:var(--ink);font-weight:600}
+.val .ev{margin-top:auto;padding-top:10px;border-top:1px solid var(--line);font-size:12.5px;line-height:1.4;color:var(--ink3)}
+.val .ev b{color:var(--copper);font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:12px;margin-right:6px}
+.pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-top:0}
+.pillars>div{background:var(--bg);padding:14px 18px;display:grid;grid-template-columns:36px 1fr;column-gap:12px;align-items:start}
+.pillars>div>div{display:block}
+.pillars svg{width:36px;height:36px}
+.pillars b{display:block;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:20px;line-height:1.05}
+.pillars span{display:block;font-size:13px;color:var(--ink2);margin-top:4px;line-height:1.35}
+
+/* friction */
+.fric .body{display:grid;grid-template-rows:330px 210px;row-gap:26px}
+.fric .low{display:grid;grid-template-columns:740px 540px;column-gap:40px}
+.fric .low img{width:540px;height:210px;object-fit:cover}
+.svc{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
+.svc>div{background:var(--bg2);padding:12px 14px}
+.svc .k{display:block;margin-bottom:6px}
+.svc p{font-size:13px;line-height:1.4;color:var(--ink2)}
+.svc p b{color:var(--ink);font-weight:600}
+.fric .ask{margin-top:14px;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:600;font-size:20px;line-height:1.25;color:var(--ink)}
+.fric .ask em{font-style:normal;color:var(--copper)}
+
+/* decisions */
+.dec .body{display:grid;grid-template-columns:780px 500px;column-gap:40px}
+.evd{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
+.evd>div{background:var(--bg2);padding:14px 16px;min-height:168px}
+.evd b{display:block;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:26px;line-height:1;margin-bottom:8px}
+.evd p{font-size:14px;line-height:1.4;color:var(--ink2)}
+.evd small{display:block;margin-top:8px;font-size:12.5px;color:var(--copper)}
+.asks{display:grid;grid-template-rows:repeat(4,1fr);row-gap:10px}
+.asks>div{display:grid;grid-template-columns:64px 1fr;column-gap:14px;border:1px solid var(--line);padding:12px 16px;background:var(--bg2);align-items:start}
+.asks>div>div{display:block}
+.asks>div.dr{border-color:#5a3a20;background:#1c1510}
+.asks .n{font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:44px;line-height:.9;color:var(--copper)}
+.asks b{display:block;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:22px;line-height:1.05;text-transform:uppercase;margin-bottom:4px}
+.asks p{font-size:13.5px;line-height:1.4;color:var(--ink2)}
+.asks .own{margin-top:4px;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:600;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)}
+
+/* close */
+.close .bgimg{position:absolute;left:0;top:0;width:1440px;height:900px;object-fit:cover}
+.close .shade{position:absolute;left:0;top:0;width:1440px;height:900px;background:linear-gradient(180deg,rgba(6,7,8,.6) 0%,rgba(6,7,8,.25) 28%,rgba(6,7,8,.7) 58%,rgba(6,7,8,.98) 100%)}
+.close .t1{position:absolute;left:60px;top:560px;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:700;font-size:64px;line-height:.98;color:#fff;width:1000px}
+.close .t1 em{font-style:normal;color:var(--copper)}
+.close .contact{position:absolute;left:60px;top:720px;display:grid;grid-template-columns:auto auto auto;column-gap:48px;font-size:16px;color:#e8e6df}
+.close .contact b{display:block;font-family:"Barlow Condensed","barlow-condensed",sans-serif;font-weight:600;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--copper);margin-bottom:6px}
+.close .ft{color:#b7b9bc}
+</style>
+</head>
+<body>
+
+<!-- 01 COVER -->
+<section class="slide cover">
+  <img class="bgimg" src="assets/hall-interior.jpg" alt="">
+  <div class="shade"></div><div class="shade2"></div>
+  <div class="hd"><div class="wm">SOUTHWIRE</div><div class="pg">POWER GENERATION SOLUTIONS</div></div>
+  <div class="ey">POWER GENERATION SOLUTIONS &nbsp;/&nbsp; STRATEGY UPDATE &nbsp;·&nbsp; SIX MONTHS IN</div>
+  <div class="title">Accelerating<br>Time to <em>Power</em></div>
+  <div class="sub">A blank page became a plant. What we learned, what we built, and the decisions Southwire needs to turn a $1.17 billion gas-cable window into growth.</div>
+  <div class="chip">Strategic brochure · 15 spreads · September 2026</div>
+  <div class="stats">
+    <div><b>378 → 94 GW</b><span>Reported U.S. gas pipeline → modeled additions through 2036</span></div>
+    <div><b>$1.17B</b><span>Core gas cable by purchase-order year, 2026–35</span></div>
+    <div><b>&lt; 1%</b><span>Cable's share of plant cost. The spec is written three tiers up.</span></div>
+    <div><b>16 zones</b><span>Application zones and 75 equipment nodes in the plant model</span></div>
+    <div><b>4 asks</b><span>Definition, EPC onboarding, Houston, the strategic plan</span></div>
+  </div>
+  <div class="ft"><span>POWERGEN / STRATEGY UPDATE · SEPTEMBER 2026</span><span>STEPHAN HARDT · POWER GENERATION SOLUTIONS</span></div>
+</section>
+
+<!-- 02 AGENDA -->
+<section class="slide agenda">
+  <div class="hd"><div class="wm">SOUTHWIRE</div><div class="pg">POWER GENERATION SOLUTIONS</div></div>
+  <div class="eyebrow">01 / OBJECTIVE &amp; AGENDA</div>
+  <div class="h">One objective: align on the opportunity and the decisions.</div>
+  <div class="lede">Six sections in the order the leadership conversation runs: what we learned, what we built, what we are working on. The asks come last, so nobody has to wait for them.</div>
+  <div class="body">
+    <div class="ag">
+      <div><b>01</b><strong>Definition &amp; learnings</strong><span>Where we started, what we learned and what is in scope.</span></div>
+      <div><b>02</b><strong>The plant is the model</strong><span>Sixteen application zones, four cable families, two cable scopes.</span></div>
+      <div><b>03</b><strong>Opportunity</strong><span>One gas-generation scenario with explicit assumptions, and the purchase-order-year view.</span></div>
+      <div><b>04</b><strong>Buyers &amp; influencers</strong><span>Who specifies, who buys each package, and where the money goes.</span></div>
+      <div><b>05</b><strong>Go-to-market &amp; value</strong><span>IOU, IPP / EPC, OEM and HV coverage with named leads; benefits by lane.</span></div>
+      <div><b>06</b><strong>Current state &amp; decisions</strong><span>Evidence to build on, next proof points and leadership commitments.</span></div>
+    </div>
+    <div class="spine">
+      <div><span class="k">What we learned</span><b>The plant is the model.</b><p>IPPs pointed us to EPCs and OEMs. The drawing is the proof of six months.</p></div>
+      <div><span class="k">How big</span><b>$1.17B core cable, $100–200M a year.</b><p>Two bases, both provisional. The bridge between them is the Business Development ask.</p></div>
+      <div><span class="k">What we need</span><b>Five segments, four asks.</b><p>Definition buy-in, EPC onboarding, Houston, the strategic plan.</p></div>
+    </div>
+  </div>
+  <div class="ft"><span>POWERGEN / OBJECTIVE &amp; AGENDA</span><span class="n">02</span></div>
+</section>
+
+<!-- 03 WHERE WE STARTED -->
+<section class="slide started">
+  <div class="hd"><div class="wm">SOUTHWIRE</div><div class="pg">POWER GENERATION SOLUTIONS</div></div>
+  <div class="eyebrow">02 / WHERE WE STARTED</div>
+  <div class="h">IPPs were the starting point. Owners pointed us to the EPCs.</div>
+  <div class="lede">The assignment was the independent-power-producer pipeline. The owners taught us two things: EPCs write the cable specification, and OEM packages are where that specification is still open in 2026.</div>
+  <div class="body">
+    <figure>
+      <img src="assets/plant-scope.jpg" alt="">
+      <figcaption>The working definition, drawn: generation assets and the electrical balance of plant, up to the step-up transformer. Everything else on the site is auxiliary at some scale.</figcaption>
+      <div class="fence">
+        <div><span class="k">In scope</span><b>Generation assets and electrical balance of plant</b><p>Including behind-the-meter generation. The rule follows the generation function, not the site.</p></div>
+        <div><span class="k">Not in scope</span><b style="color:var(--ink3)">Utility T&amp;D, data-center campuses, industrial manufacturing</b><p>Renewables and storage keep their own lanes. Nuclear is a later workstream.</p></div>
+        <div><span class="k">Commercial handoff</span><b>Up to the GSU</b><p>The purchased work package sets the switchyard, interconnect and shared-equipment handoff. <span class="tag fill">Decision required</span></p></div>
+      </div>
+    </figure>
+    <div class="sign">
+      <div><span class="k">Starting point</span><b>Evaluate the IPP gas-plant pipeline</b><p>Understand owner priorities, pain points and engagement strategy with Business Development. Test assumptions on HV underground opportunities.</p></div>
+      <div><span class="k">Work completed</span><b>A funnel, the relationships, the map</b><p>Built an internal funnel of 17 pursuits, pursued owner conversations and mapped EPC relationships, plant applications, stakeholders and buying preference.</p></div>
+      <div class="ch"><span class="k">What changed</span><b>The whole plant, near to long term</b><ol><li>Owner discussions pointed to EPCs as the primary audience for influencing cable specifications and preference.</li><li>An OEM execution strategy expands reach across modular power, packagers and integrators.</li></ol></div>
+    </div>
+  </div>
+  <div class="ft"><span>POWERGEN / WHERE WE STARTED</span><span class="n">03</span></div>
+</section>
+
+<!-- 04 DEFINITION & SCOPE -->
+<section class="slide scope">
+  <div class="hd"><div class="wm">SOUTHWIRE</div><div class="pg">POWER GENERATION SOLUTIONS</div></div>
+  <div class="eyebrow">03 / DEFINITION &amp; SCOPE</div>
+  <div class="h">Five verticals, one site, no tug of war.</div>
+  <div class="lede">What each vertical leads, the typical package it buys, and the boundary the room still has to confirm.</div>
+  <div class="body" style="top:238px">
+    <div class="defn">
+      <div><div class="big">Power generation: any entity that generates or stores electricity and delivers it to grid operators or end consumers.</div>
+        <p class="p">Conventional, renewable, nuclear and battery. Target audiences: generation asset owners and operators, design firms, EPCs, and generation equipment and component manufacturers. Initial focus: gas generation, engines, fuel cells and modular packages.</p></div>
+      <div class="fence3">
+        <div><span class="k">Proposed rule</span><b>Generation is generation</b><p>Regardless of what it sits next to. A gas turbine or fuel cell behind a data-center meter is a PowerGen application.</p></div>
+        <div><span class="k">Open boundary</span><b>Storage</b><p>The BESS boundary with the Renewables and Energy Storage team is still open. Standalone storage needs separate ownership.</p></div>
+        <div><span class="k">Shared platforms</span><b>One OEM lead per account</b><p>Application teams support. Proposal on the table, not agreed: ask the room, don't announce it.</p></div>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th></th><th class="pg">PowerGen</th><th>Data center</th><th>Utility T&amp;D</th><th>Industrial</th><th>OEM / integrator</th></tr></thead>
+      <tbody>
+        <tr><th>Working scope</th><td class="pg">Generation assets and supporting plant systems</td><td>Campus distribution and consuming infrastructure</td><td>Network transmission, distribution and grid assets</td><td>Process loads and facility infrastructure</td><td>Equipment / package buying role</td></tr>
+        <tr><th>Typical package</th><td class="pg">Turbine / genset, controls, generation switchgear</td><td>Campus MV, UPS, PDU, busway and cooling</td><td>Grid substation, transmission and distribution</td><td>Motors, drives, process controls and MRO</td><td>Switchgear, e-house or packaged power</td></tr>
+        <tr><th>Proposed lead</th><td class="pg">PowerGen for the generation application</td><td>Data Center for facility scope</td><td>Utility team for network scope</td><td>Industrial team for process scope</td><td>One OEM lead; application teams support</td></tr>
+        <tr class="cf"><th>Confirm boundary</th><td>GSU, interconnect and shared BOP</td><td>Shared campus interface</td><td>Asset ownership, contract and POI</td><td>CHP and captive generation island</td><td>Cross-vertical platforms and bundled RFQs</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="cap">The bottom row is the open decision. This table already landed with Donna and Marc; the ask is what is missing, not a rebuild.</div>
+  <div class="ft"><span>POWERGEN / DEFINITION &amp; SCOPE</span><span class="n">04</span></div>
+</section>
+
+<!-- 05 APPLICATION MAP -->
+<section class="slide map">
+  <div class="hd"><div class="wm">SOUTHWIRE</div><div class="pg">POWER GENERATION SOLUTIONS</div></div>
+  <div class="eyebrow">04 / THE PLANT IS THE MODEL</div>
+  <div class="h">One plant. Sixteen zones. Every one a place cable gets bought.</div>
+  <div class="lede">Built in-house from our own drawings: sixteen application zones and seventy-five equipment nodes. Copper pins mark the zones the strategy turns on.</div>
+  <div class="body" style="top:250px;height:520px">
+    <div class="stage"><img src="assets/plant-zones.jpg" alt="">{{PINS}}</div>
+    <div>{{ZONELIST}}</div>
+  </div>
+  <div class="four">
+    <div><b>Plant</b>Understand the systems.</div>
+    <div><b>Equipment</b>Locate the interfaces.</div>
+    <div><b>Cable</b>Discuss the scope.</div>
+    <div><b>Delivery</b>Connect it to execution.</div>
+  </div>
+  <div class="ft"><span>POWERGEN / PLANT APPLICATION MAP · LEARNING AND SALES-ENABLEMENT MODEL, NOT ENGINEERING</span><span class="n">05</span></div>
+</section>
+
+<!-- 06 WHERE CABLE LIVES -->
+<section class="slide cable">
+  <div class="hd"><div class="wm">SOUTHWIRE</div><div class="pg">POWER GENERATION SOLUTIONS</div></div>
+  <div class="eyebrow">05 / WHERE CABLE LIVES</div>
+  <div class="h">Four families run the whole site. Two scopes buy them.</div>
+  <div class="lede">Cable is in every zone, under one percent of plant cost, at the end of every contract branch. That is why the play is the specification and the package, not the reel.</div>
+  <div class="body">
+    <div>
+      <figure><img src="assets/xray-plant.jpg" alt=""></figure>
+      <div class="fam">
+        <div><i style="background:#c9803f"></i><div><b>MV power</b><span>Plant feeders and auxiliary systems</span></div></div>
+        <div><i style="background:#9aa0a6"></i><div><b>LV power</b><span>Tray cable, motors, panels and equipment</span></div></div>
+        <div><i style="background:#4f93d8"></i><div><b>Control &amp; instrumentation</b><span>Signals, monitoring and protection</span></div></div>
+        <div><i style="background:#5fbf86"></i><div><b>Grounding</b><span>Bonding and the ground grid</span></div></div>
+      </div>
+    </div>
+    <div class="rt">
+      <h3>Inside the package, between the packages</h3>
+      <p class="p">The OEM may supply wiring inside a package up to terminal boxes or local panels. The EPC or an assigned installer supplies the interconnects between packages. The exact terminal point follows the contract and the scope split: two cable scopes, two buyers, two specifications.</p>
+      <svg viewBox="0 0 640 230" width="640" height="230" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="20" width="210" height="150" fill="#1f2327" stroke="#3a3f45"/>
+        <text x="14" y="44" class="cd" font-size="17" fill="#f1efe9">OEM PACKAGE</text>
+        <text x="14" y="62" font-size="12" fill="#8f949a">Package design and internal wiring</text>
+        <rect x="18" y="80" width="66" height="60" fill="#0f1113" stroke="#3a3f45"/><rect x="128" y="80" width="66" height="60" fill="#0f1113" stroke="#3a3f45"/>
+        <path d="M84 98 H128 M84 122 H128 M38 80 V70 H170 V80" fill="none" stroke="#e0a672" stroke-width="2.5"/>
+        <text x="105" y="160" font-size="12" fill="#c9c8c2" text-anchor="middle">package cable · OEM buys</text>
+        <rect x="430" y="20" width="210" height="150" fill="#1f2327" stroke="#3a3f45"/>
+        <text x="444" y="44" class="cd" font-size="17" fill="#f1efe9">PLANT PACKAGE</text>
+        <text x="444" y="62" font-size="12" fill="#8f949a">Terminal boxes, local panels, MCC</text>
+        <rect x="448" y="80" width="66" height="60" fill="#0f1113" stroke="#3a3f45"/><rect x="558" y="80" width="66" height="60" fill="#0f1113" stroke="#3a3f45"/>
+        <path d="M514 98 H558 M514 122 H558" fill="none" stroke="#e0a672" stroke-width="2.5"/>
+        <text x="535" y="160" font-size="12" fill="#c9c8c2" text-anchor="middle">package cable · supplier buys</text>
+        <path d="M210 110 H430" fill="none" stroke="#c9803f" stroke-width="5"/>
+        <rect x="272" y="86" width="96" height="22" fill="#c9803f"/>
+        <text x="320" y="101" font-size="12" font-weight="600" fill="#0f1113" text-anchor="middle">FIELD CABLE</text>
+        <text x="320" y="134" font-size="12" fill="#c9c8c2" text-anchor="middle">between packages</text>
+        <text x="320" y="150" font-size="12" fill="#c9c8c2" text-anchor="middle">EPC electrical sub via distributor</text>
+        <text x="320" y="210" font-size="12" fill="#8f949a" text-anchor="middle">Typical route. OEMs may also buy through distribution; confirm each package.</text>
+      </svg>
+      <div class="callout" style="margin-top:14px">Reach the specification before it is written. <em>Engineering tier or package first; the PO follows.</em></div>
+    </div>
+  </div>
+  <div class="cap">Presentation routes, not a circuit schedule or a verified takeoff. Colors do not establish voltage classification.</div>
+  <div class="ft"><span>POWERGEN / WHERE CABLE LIVES</span><span class="n">06</span></div>
+</section>
+
+<!-- 07 SIZING -->
+<section class="slide opp">
+  <div class="hd"><div class="wm">SOUTHWIRE</div><div class="pg">POWER GENERATION SOLUTIONS</div></div>
+  <div class="eyebrow">06 / OPPORTUNITY</div>
+  <div class="h">Sizing the wire and cable window in U.S. gas generation.</div>
+  <div class="lede">Start from the reported pipeline and be conservative about what gets built. Then value the same plants two ways. Conservative planning scenario, every assumption on the page.</div>
+  <div class="body" style="top:250px">
+    <svg viewBox="0 0 1320 270" width="1320" height="270" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="0,20 420,20 420,250 0,250" fill="#1f2327"/>
+      <polygon points="420,20 780,64 780,206 420,250" fill="#2a1f16"/>
+      <polygon points="780,64 980,92 980,178 780,206" fill="#6a4a2e"/>
+      <polygon points="980,92 1090,110 1090,160 980,178" fill="#c9803f"/>
+      <text x="24" y="84" class="cd" font-size="60" fill="#f1efe9">378 GW</text>
+      <text x="24" y="112" font-size="15" fill="#c9c8c2">Reported U.S. gas development pipeline</text>
+      <text x="24" y="160" font-size="15" fill="#c9c8c2">52 GW under construction × 90% = 46.8 GW</text>
+      <text x="24" y="186" font-size="15" fill="#c9c8c2">326 GW at earlier stages × 13.5% = 44.0 GW</text>
+      <text x="24" y="212" font-size="15" fill="#c9c8c2">+ 2.9 GW already operating in 2026</text>
+      <text x="444" y="128" class="cd" font-size="54" fill="#f1efe9">93.7 GW</text>
+      <text x="444" y="154" font-size="15" fill="#c9c8c2">Modeled additions, 2026 through 2036</text>
+      <text x="796" y="128" class="cd" font-size="36" fill="#f1efe9">~$180B</text>
+      <text x="796" y="150" font-size="13" fill="#c9c8c2">× $1,923/kW blended plant cost</text>
+      <text x="1106" y="122" class="cd" font-size="38" fill="#e0a672">$750M–$1B</text>
+      <text x="1106" y="146" font-size="14" fill="#c9c8c2">plant-wide wire &amp; cable</text>
+      <text x="1106" y="166" font-size="13" fill="#8f949a">× $8/kW allowance · ~$68M a year</text>
+    </svg>
+    <div class="bignum">
+      <div><span class="k">Capacity</span><b>93.7 GW</b><p>Realized additions 2026–2036 from the 378 GW reported pipeline. The arithmetic is on the page; nobody has to trust a black box.</p><small><span class="tag dim">Known</span>&nbsp; Completion rates are illustrative.</small></div>
+      <div><span class="k">Whole-plant investment</span><b>~$180B</b><p>Generation equipment, auxiliaries, electrical systems and construction, constant 2026 dollars.</p><small><span class="tag">Working assumption</span>&nbsp; 65% CCGT at $2,150/kW, 25% peakers at $1,300/kW, 10% engines at $2,000/kW.</small></div>
+      <div><span class="k">Plant-wide cable</span><b>$750M–1B</b><p>Cable materials over the period across all suppliers. Southwire's achievable share needs a separate addressability and market-share calculation.</p><small><span class="tag">Working assumption</span>&nbsp; $8/kW cable allowance.</small></div>
+    </div>
+  </div>
+  <div class="ft"><span>POWERGEN / SIZING THE OPPORTUNITY · CONSERVATIVE SCENARIO</span><span class="n">07</span></div>
+</section>
+
+<!-- 08 PO YEAR -->
+<section class="slide po">
+  <div class="hd"><div class="wm">SOUTHWIRE</div><div class="pg">POWER GENERATION SOLUTIONS</div></div>
+  <div class="eyebrow">07 / BY PURCHASE-ORDER YEAR</div>
+  <div class="h">$1.17B of core gas cable over ten years, peaking 2028–29.</div>
+  <div class="lede">Project by project, by the year the cable purchase order is cut. Project likelihood and supply caps are already in the model; OEM internal wiring and HV underground are outside it.</div>
+  <div class="body">
+    <div>
+      <div class="lg"><span><i style="background:#c9803f"></i>Named projects · $673M</span><span><i style="background:#4f93d8"></i>Future-project allowance · $501M</span><span style="color:var(--ink3)">Total $1.17B · 10% CAGR · $100–200M a year</span></div>
+      {{CHART}}
+    </div>
+    <div>
+      <h3>By buyer segment, weighted $M</h3>
+      <div class="bars">
+        <div class="row"><span>IOU</span><div class="track"><i style="width:89.7%"></i><b style="width:73.1%"></b></div><span>$291M</span></div>
+        <div class="row"><span>IPP</span><div class="track"><i style="width:100%"></i><b style="width:44.2%"></b></div><span>$176M</span></div>
+        <div class="row"><span>Co-op / public</span><div class="track"><i style="width:27.1%"></i><b style="width:23.2%"></b></div><span>$92M</span></div>
+        <div class="row"><span>BTM / captive</span><div class="track"><i style="width:95.6%"></i><b style="width:16.1%"></b></div><span>$64M</span></div>
+      </div>
+      <p class="s" style="margin-top:8px">Copper = weighted. Dark = gross. Model probability: IOU 81.5% · IPP 44.2% · Co-op 85.7% · BTM 16.8%. IOU carries the highest probability, IPP the largest gross, behind-the-meter the biggest discount.</p>
+      <h3 style="margin-top:20px">By technology and where it concentrates</h3>
+      <div class="bars">
+        <div class="row"><span>CCGT</span><div class="track"><b style="width:56.5%"></b></div><span>56.5%</span></div>
+        <div class="row"><span>SCGT</span><div class="track"><b style="width:32.2%"></b></div><span>32.2%</span></div>
+        <div class="row"><span>RICE</span><div class="track"><b style="width:5.8%"></b></div><span>5.8%</span></div>
+      </div>
+      <p class="s" style="margin-top:8px">OEM association, weighted: GE Vernova $173M · Mitsubishi Power $109M · Siemens Energy $55M. Constructors: Kiewit / TIC $36M · Zachry / Quanta $15M · Gemma $15M.</p>
+      <div class="recon"><b>Two models, two bases: never add them</b><p>Main-deck scenario: 93.7 GW × $8/kW ≈ $750M (2026–36). Project model: 85.35 GW named + 64.5 GW allowance at technology rates ≈ $1.17B (2026–35). The bridge is not validated; that is the Business Development ask.</p></div>
+    </div>
+  </div>
+  <div class="ft"><span>POWERGEN / CORE GAS CABLE BY PO YEAR</span><span class="n">08</span></div>
+</section>
+
+<!-- 09 WHO CONTROLS THE SPEND -->
+<section class="slide buy">
+  <div class="hd"><div class="wm">SOUTHWIRE</div><div class="pg">POWER GENERATION SOLUTIONS</div></div>
+  <div class="eyebrow">08 / BUYERS &amp; INFLUENCERS</div>
+  <div class="h">Whoever writes the spec is not whoever cuts the PO.</div>
+  <div class="lede">Owners set requirements. EPC and OEM packages determine the buying path. The distributor holds the purchase order. PowerGen works upstream of the PO; the field closes.</div>
+  <div class="body">
+    <svg viewBox="0 0 1320 290" width="1320" height="290" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#8f949a"/></marker><marker id="arc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#c9803f"/></marker></defs>
+      <text x="0" y="16" class="cd" font-size="14" fill="#e0a672" letter-spacing="2">WHO CONTROLS THE SPEND</text>
+      <rect x="0" y="40" width="270" height="90" fill="#1f2327" stroke="#3a3f45"/><text x="135" y="74" class="cd" font-size="24" fill="#f1efe9" text-anchor="middle">Owner / OE</text><text x="135" y="98" font-size="14" fill="#c9c8c2" text-anchor="middle">Project requirements</text><text x="135" y="116" font-size="14" fill="#c9c8c2" text-anchor="middle">and priorities</text>
+      <path d="M270 85 H345" stroke="#8f949a" stroke-width="2" marker-end="url(#ar)"/>
+      <rect x="350" y="40" width="270" height="90" fill="#1f2327" stroke="#3a3f45"/><text x="485" y="74" class="cd" font-size="24" fill="#f1efe9" text-anchor="middle">EPC</text><text x="485" y="98" font-size="14" fill="#c9c8c2" text-anchor="middle">Field specification</text><text x="485" y="116" font-size="14" fill="#c9c8c2" text-anchor="middle">and procurement</text>
+      <path d="M620 85 H695" stroke="#8f949a" stroke-width="2" marker-end="url(#ar)"/>
+      <rect x="700" y="40" width="270" height="90" fill="#2a1f16" stroke="#c9803f"/><text x="835" y="74" class="cd" font-size="24" fill="#f1efe9" text-anchor="middle">Distributor</text><text x="835" y="98" font-size="14" fill="#c9c8c2" text-anchor="middle">Holds the cable PO;</text><text x="835" y="116" font-size="14" fill="#c9c8c2" text-anchor="middle">project and stock margin</text>
+      <path d="M970 85 H1045" stroke="#c9803f" stroke-width="3" marker-end="url(#arc)"/>
+      <rect x="1050" y="40" width="270" height="90" fill="#c9803f"/><text x="1185" y="74" class="cd" font-size="24" fill="#0f1113" text-anchor="middle">FIELD CABLE</text><text x="1185" y="98" font-size="14" fill="#0f1113" text-anchor="middle">Between plant packages</text><text x="1185" y="116" font-size="14" fill="#0f1113" text-anchor="middle">Southwire via distributor</text>
+      <path d="M485 130 V195" stroke="#8f949a" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#ar)"/>
+      <text x="498" y="168" font-size="13" fill="#8f949a">package scope</text>
+      <rect x="350" y="200" width="270" height="80" fill="#1f2327" stroke="#3a3f45"/><text x="485" y="232" class="cd" font-size="24" fill="#f1efe9" text-anchor="middle">OEM / packager</text><text x="485" y="256" font-size="14" fill="#c9c8c2" text-anchor="middle">Package design and internal wiring</text>
+      <path d="M620 240 H1045" stroke="#c9803f" stroke-width="3" marker-end="url(#arc)"/>
+      <text x="832" y="230" font-size="13" fill="#8f949a" text-anchor="middle">product engineering, quote and supply · direct or via distribution</text>
+      <rect x="1050" y="200" width="270" height="80" fill="#c9803f"/><text x="1185" y="232" class="cd" font-size="24" fill="#0f1113" text-anchor="middle">PACKAGE CABLE</text><text x="1185" y="256" font-size="14" fill="#0f1113" text-anchor="middle">Inside OEM packages</text>
+    </svg>
+    <div class="paths">
+      <div><b>IOU / IPP generation</b><dl><dt>Influencers</dt><dd>Utility standards group, owner's engineer, EPC engineering</dd><dt>PO source</dt><dd>Utility, EPC or distributor</dd><dt>Entry point</dt><dd>Generation plan and qualified package</dd></dl></div>
+      <div><b>EPC</b><dl><dt>Influencers</dt><dd>Procurement teams (AVL), EPC electrical lead</dd><dt>PO source</dt><dd>EPC or distributor</dd><dt>Entry point</dt><dd>EPC specification and cable schedule</dd></dl></div>
+      <div><b>OEM / modular</b><dl><dt>Influencers</dt><dd>Package engineering and operations</dd><dt>PO source</dt><dd>OEM, integrator or distributor</dd><dt>Entry point</dt><dd>Repeat design and forecast</dd></dl></div>
+    </div>
+  </div>
+  <div class="cap">"IPPs don't buy cable" is how the structure works, not a sales result. IPPs push spec and execution to the EPC by design; contractors won't warranty owner-furnished cable.</div>
+  <div class="ft"><span>POWERGEN / WHO BUYS AND WHO INFLUENCES</span><span class="n">09</span></div>
+</section>
+
+<!-- 10 WHERE THE MONEY GOES -->
+<section class="slide money">
+  <div class="hd"><div class="wm">SOUTHWIRE</div><div class="pg">POWER GENERATION SOLUTIONS</div></div>
+  <div class="eyebrow">09 / WHERE THE MONEY GOES</div>
+  <div class="h">Under 1% of plant cost, at the end of every branch.</div>
+  <div class="lede">Its spec is written three tiers up. Every box is a contract or a purchase order. Shares are working assumptions for a one-gigawatt combined-cycle plant at about $2.4B. The owner lets the contracts.</div>
+  <div class="body" style="top:246px">
+    <svg viewBox="0 0 1320 500" width="1320" height="500" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="#5a6068" stroke-width="1.5" fill="none">
+        <path d="M660 58 V80 M165 80 H1155 M165 80 V96 M495 80 V96 M825 80 V96 M1155 80 V96"/>
+        <path d="M165 168 V200 M495 168 V184 M495 184 H1155 M495 184 V200 M825 184 V200 M1155 184 V200"/>
+        <path d="M165 272 V304 M825 272 V304 M1155 272 V304"/>
+        <path d="M1155 376 V392 M825 392 H1155 M825 392 V408 M1155 392 V408"/>
+      </g>
+      <rect x="440" y="0" width="440" height="58" fill="#1f2327" stroke="#3a3f45"/><text x="660" y="24" class="cd" font-size="20" fill="#f1efe9" text-anchor="middle">Owner's project budget</text><text x="660" y="46" font-size="13" fill="#c9c8c2" text-anchor="middle">~$2.4B per GW · rate base (IOU) or equity and project debt (IPP)</text>
+      <g font-size="13" fill="#c9c8c2" text-anchor="middle">
+        <rect x="20" y="96" width="290" height="72" fill="#1f2327" stroke="#3a3f45"/><text x="165" y="122" class="cd" font-size="18" fill="#f1efe9">Power island · turbine OEM</text><text x="165" y="142">25–30% of plant cost</text><text x="165" y="159">GT, ST, generators</text>
+        <rect x="350" y="96" width="290" height="72" fill="#2a1f16" stroke="#c9803f"/><text x="495" y="122" class="cd" font-size="18" fill="#f1efe9">EPC contract</text><text x="495" y="142">50–60% of plant cost</text><text x="495" y="159">lump sum or split E/P/C</text>
+        <rect x="680" y="96" width="290" height="72" fill="#1f2327" stroke="#3a3f45"/><text x="825" y="122" class="cd" font-size="18" fill="#f1efe9">Owner's costs</text><text x="825" y="142">12–18% of plant cost</text><text x="825" y="159">land, permits, OE and IE fees, financing</text>
+        <rect x="1010" y="96" width="290" height="72" fill="#1f2327" stroke="#3a3f45"/><text x="1155" y="122" class="cd" font-size="18" fill="#f1efe9">Grid tie &amp; gas lateral</text><text x="1155" y="142">3–8% of plant cost</text><text x="1155" y="159">TO facilities, switchyard, lateral</text>
+        <rect x="20" y="200" width="290" height="72" fill="#1f2327" stroke="#3a3f45"/><text x="165" y="226" class="cd" font-size="17" fill="#f1efe9">OEM sub-suppliers</text><text x="165" y="246">generator, GCB, LCI,</text><text x="165" y="263">isophase bus, controls</text>
+        <rect x="350" y="200" width="290" height="72" fill="#1f2327" stroke="#3a3f45"/><text x="495" y="226" class="cd" font-size="17" fill="#f1efe9">Engineering</text><text x="495" y="246">5–7% of EPC</text><text x="495" y="263">writes the cable schedule</text>
+        <rect x="680" y="200" width="290" height="72" fill="#1f2327" stroke="#3a3f45"/><text x="825" y="226" class="cd" font-size="17" fill="#f1efe9">Equipment packages</text><text x="825" y="246">40–45% of EPC</text><text x="825" y="263">HRSG, GSU, switchgear, ACC, water</text>
+        <rect x="1010" y="200" width="290" height="72" fill="#2a1f16" stroke="#c9803f"/><text x="1155" y="226" class="cd" font-size="17" fill="#f1efe9">Construction</text><text x="1155" y="246">40–45% of EPC</text><text x="1155" y="263">civil, mechanical, electrical</text>
+        <rect x="20" y="304" width="290" height="72" fill="#1f2327" stroke="#3a3f45"/><text x="165" y="330" class="cd" font-size="17" fill="#f1efe9">Package cable</text><text x="165" y="350">wired inside the package</text><text x="165" y="367">to the terminal boxes</text>
+        <rect x="680" y="304" width="290" height="72" fill="#1f2327" stroke="#3a3f45"/><text x="825" y="330" class="cd" font-size="17" fill="#f1efe9">Package suppliers</text><text x="825" y="350">buy their own cable,</text><text x="825" y="367">often via OEM distribution</text>
+        <rect x="1010" y="304" width="290" height="72" fill="#2a1f16" stroke="#c9803f"/><text x="1155" y="330" class="cd" font-size="17" fill="#f1efe9">Electrical subcontractor</text><text x="1155" y="350">12–15% of EPC</text><text x="1155" y="367">field cable usually in scope</text>
+        <rect x="680" y="408" width="290" height="64" fill="#c9803f"/><text x="825" y="434" class="cd" font-size="18" fill="#0f1113">Wire and cable</text><text x="825" y="456" fill="#0f1113" font-size="12.5">~$8/kW core · $11–19/kW all-in · under 1% of plant</text>
+        <rect x="1010" y="408" width="290" height="64" fill="#1f2327" stroke="#3a3f45"/><text x="1155" y="434" class="cd" font-size="17" fill="#f1efe9">Labor, tray, terminations</text><text x="1155" y="456" font-size="12.5">the rest of the electrical spend, not wire</text>
+      </g>
+      <g font-size="13" fill="#8f949a"><text x="350" y="330">Distributor holds the field-cable PO;</text><text x="350" y="348">project and stock margin.</text><text x="350" y="372">HV underground: only where the site is</text><text x="350" y="390">ducted; direct or via the EPC.</text></g>
+      <g font-size="14" fill="#e0a672" class="cd"><text x="20" y="470">SMALL IN DOLLARS, LARGE IN LEVERAGE.</text><text x="20" y="492" fill="#c9c8c2" font-family="Barlow" font-weight="400" font-size="13">Reach the engineering tier or the package and the PO follows.</text></g>
+    </svg>
+  </div>
+  <div class="ft"><span>POWERGEN / WHERE THE MONEY GOES · 1 GW COMBINED CYCLE, WORKING ASSUMPTIONS</span><span class="n">10</span></div>
+</section>
+
+<!-- 11 PATH TO MARKET -->
+<section class="slide lanes">
+  <div class="hd"><div class="wm">SOUTHWIRE</div><div class="pg">POWER GENERATION SOLUTIONS</div></div>
+  <div class="eyebrow">10 / GO-TO-MARKET</div>
+  <div class="h">Five lanes, a name on each door.</div>
+  <div class="lede">How big and when, the path in, who leads, what is happening today, and ready for 2027.</div>
+  <div class="body" style="top:236px">
+    <table>
+      <thead><tr>
+        <th></th>
+        <th><b>IOU / utility gen.</b><span>$250M</span><small>+ $61M co-op / public · core orders 2026–35 (28.9 + 7.8 GW) · 65% building or approved</small></th>
+        <th><b>IPP / developer</b><span>$220M</span><small>core orders 2026–35 (26.8 GW) · 17 projects, ~24 GW in our funnel · procurement now through 2027</small></th>
+        <th><b>OEM / EP&amp;ES</b><span>$100M</span><small>~$10M quoted in July across four accounts · ~25% of the market via OEM / integrator · spec still open in 2026</small></th>
+        <th><b>HV services</b><span>Site by site</span><small>HV underground only where a site is ducted · up to $398M over ten years if every site were, which it is not</small></th>
+        <th><b>Other</b><span>Route on contact</span><small>Specialty, datacom, HVAC, other verticals · data-center BTM generation ($149M named) is the boundary case</small></th>
+      </tr></thead>
+      <tbody>
+        <tr><th>Path to market</th><td>Utility team and agents, with the EPC or OEM that buys the package</td><td>Through the EPC. IPPs do not buy cable; they are the second conversation</td><td>Jeff's team vets direct first, then Bob's distribution; Cordie's EP&amp;ES team on the visits</td><td class="hv">Project package with Denise's specialist team</td><td>Existing vertical or product owner; no orphan scope</td></tr>
+        <tr><th>Who leads</th><td><strong>John + a named generation lead</strong></td><td><strong>Stephan + Patrick</strong></td><td><strong>Stephan</strong></td><td class="hv"><strong>Denise + Barrett</strong></td><td><strong>Application owner</strong></td></tr>
+        <tr><th>Today</th><td>Ask John's team for the funnel and agent support; agent incentive. NextEra's $13B gas plan needs a named owner. <span class="tag fill">Decision required</span></td><td>NRG leave-behind in motion; CPV through Gemma / CIE; Southern Power came to us; Texas, Ohio, Indiana first</td><td>Enchanted Rock visited; VoltaGrid, Powell and NRG for Houston, week of Sept 21; ten account plans by Oct 2</td><td class="hv">Pull-through via utility contacts; define the scope with Denise. Denise's team to flag the actual sites <span class="tag dim">To verify</span></td><td>Route on contact; record the handoff</td></tr>
+        <tr><th>Ready for 2027</th><td>Agents feeding the EPC pipeline; credit rule in place</td><td>Package map with EPCs; tier-2 IPPs via contractors</td><td>Repeat packages with standard specs; qualified assemblies</td><td class="hv">Scope and service attachment defined</td><td>Handoffs recorded in Salesforce</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="cap">Where the build concentrates: Texas is IPP and behind-the-meter; Louisiana, the Carolinas, Indiana and Georgia are IOU; Pennsylvania and Ohio are IPP. Texas, Ohio and Indiana come first; no coverage is spent on California or New York.</div>
+  <div class="ft"><span>POWERGEN / PATH TO MARKET</span><span class="n">11</span></div>
+</section>
+
+<!-- 12 VALUE -->
+<section class="slide value">
+  <div class="hd"><div class="wm">SOUTHWIRE</div><div class="pg">POWER GENERATION SOLUTIONS</div></div>
+  <div class="eyebrow">11 / SOLUTIONS &amp; VALUE</div>
+  <div class="h">The value proposition is the moat, not what sits inside it.</div>
+  <div class="lede">Candidates by lane, each with the product underneath and the evidence we have or still need. Presented for the room's view, not a sign-off.</div>
+  <div class="body" style="top:238px">
+    <div class="val">
+      <div><h3>OEM / EP&amp;ES</h3><ul>
+        <li><b>Repeatable designs, fewer assembly hours.</b> Standard specifications and qualified assemblies shipped as a finished EP&amp;ES solution.</li>
+        <li><b>Products ahead of the trend.</b> A 2.4 kV rating on standard cable ahead of 800 VDC, so customers do not jump to 5 kV.</li>
+        <li><b>A direct path when it qualifies.</b> Jeff's team vets direct; distribution otherwise.</li></ul>
+        <p class="ev"><b>Evidence</b>$9.7M quoted in July; Enchanted Rock $2.3M at ~40% quoted margin, order status to confirm.</p></div>
+      <div><h3>EPC</h3><ul>
+        <li><b>Less field work.</b> Factory-built, tested cable spine and terminations instead of site labor.</li>
+        <li><b>Material readiness.</b> Standard put-ups, kitting, labeling and staged deliveries, run with distribution (CIE), not around it.</li>
+        <li><b>Engineering before the spec.</b> The plant model and the one-line read: we reach the specification before it is written.</li></ul>
+        <p class="ev"><b>Evidence</b>CIE, Sept 2: fit, put-ups, visibility and delivery are what they get paid for; $24–28M directional across four Gemma opportunities. Fuel-cell spine ~80% less field labor, to confirm.</p></div>
+      <div><h3>IOU / utility gen.</h3><ul>
+        <li><b>Predictable electrical delivery.</b> Early planning and engineering support around the outage and energization dates.</li>
+        <li><b>The product the spec asks for.</b> Thermoset CPE medium-voltage cable where the utility specifies it; HV underground and grounding where the project calls for it.</li></ul>
+        <p class="ev"><b>Evidence</b>TBD. Say it plainly; thermoset CPE is the lesson.</p></div>
+      <div><h3>IPP / owner</h3><ul>
+        <li><b>Lower exposure at the electrical milestones.</b> Owner requirements aligned with the EPC and OEM packages before procurement locks.</li>
+        <li><b>A leave-behind their engineers use.</b> The plant model as the door-opener; the spine as the primary opportunity.</li></ul>
+        <p class="ev"><b>Evidence</b>NRG leave-behind forwarded to their generation team; Southern Power came to us.</p></div>
+    </div>
+    <div class="pillars">
+      <div><svg viewBox="0 0 40 40"><g fill="none" stroke="#e0a672" stroke-width="2" stroke-linecap="round"><circle cx="20" cy="22" r="13"/><path d="M20 22V13M17 5h6M20 5v4M20 22l6 4"/></g></svg><div><b>Reduced installation time</b><span>Custom prefab and standardized designs across projects.</span></div></div>
+      <div><svg viewBox="0 0 40 40"><g fill="none" stroke="#e0a672" stroke-width="2" stroke-linejoin="round"><rect x="5" y="12" width="30" height="20"/><path d="M5 18h30M13 12v20M20 5l6 7H14z"/></g></svg><div><b>Material readiness</b><span>Reel IDs, kits and sequenced delivery.</span></div></div>
+      <div><svg viewBox="0 0 40 40"><g fill="none" stroke="#e0a672" stroke-width="2" stroke-linejoin="round"><path d="M6 30l8-9 7 5 13-14M27 12h7v7M4 34h32"/></g></svg><div><b>Supply certainty</b><span>Forecasts tied to a confirmed supply plan.</span></div></div>
+      <div><svg viewBox="0 0 40 40"><g fill="none" stroke="#e0a672" stroke-width="2" stroke-linejoin="round"><path d="M22 4L8 22h10l-2 14 14-18H20z"/></g></svg><div><b>Execution speed</b><span>Earlier decisions and repeat designs.</span></div></div>
+    </div>
+  </div>
+  <div class="cap">Measure hours, shortages, on-time delivery and electrical milestone dates. That is the answer to "prove it".</div>
+  <div class="ft"><span>POWERGEN / OPPORTUNITY TO INCREASE VALUE</span><span class="n">12</span></div>
+</section>
+
+<!-- 13 FRICTION -->
+<section class="slide fric">
+  <div class="hd"><div class="wm">SOUTHWIRE</div><div class="pg">POWER GENERATION SOLUTIONS</div></div>
+  <div class="eyebrow">12 / LIFE-CYCLE FRICTION</div>
+  <div class="h">Where cable causes friction, and what already takes it out.</div>
+  <div class="lede">Problem shares from Southwire's own publications. Most of the fixes already exist, built for data centers, utilities and contractors. What is missing is pointing them at gas plants before the spec is frozen.</div>
+  <div class="body" style="top:246px">
+    <svg viewBox="0 0 1320 330" width="1320" height="330" xmlns="http://www.w3.org/2000/svg">
+      <path d="M40 200 H1290" stroke="#8f949a" stroke-width="3"/><polygon points="1290,192 1306,200 1290,208" fill="#8f949a"/>
+      <g class="cd" font-size="16" fill="#f1efe9" text-anchor="middle"><text x="160" y="238">SPECIFY</text><text x="400" y="238">PROCURE</text><text x="660" y="238">INSTALL</text><text x="920" y="238">COMMISSION</text><text x="1160" y="238">OPERATE</text></g>
+      <g font-size="13" fill="#8f949a" text-anchor="middle"><text x="160" y="260">12–24 months before the PO</text><text x="400" y="260">cable lead time 8–20 weeks</text><text x="660" y="260">laydown, pull, terminate</text><text x="920" y="260">before energization</text><text x="1160" y="260">40+ years in service</text></g>
+      <g fill="#f1efe9"><circle cx="160" cy="200" r="6"/><circle cx="400" cy="200" r="6"/><circle cx="660" cy="200" r="6"/><circle cx="920" cy="200" r="6"/><circle cx="1160" cy="200" r="6"/></g>
+      <circle cx="160" cy="110" r="36" fill="#c9803f"/><text x="160" y="119" font-size="26" font-weight="700" fill="#0f1113" text-anchor="middle">15%</text>
+      <circle cx="530" cy="96" r="52" fill="#c9803f"/><text x="530" y="106" font-size="32" font-weight="700" fill="#0f1113" text-anchor="middle">40%</text>
+      <circle cx="1160" cy="92" r="58" fill="#c9803f"/><text x="1160" y="103" font-size="34" font-weight="700" fill="#0f1113" text-anchor="middle">45%</text>
+      <g font-size="14" fill="#c9c8c2"><text x="212" y="98">of cable problems start with</text><text x="212" y="118">a design that does not fit</text><text x="212" y="138">the site</text></g>
+      <g font-size="14" fill="#c9c8c2"><text x="596" y="80">damage in transit, handling,</text><text x="596" y="100">storage and pulling; shows up</text><text x="596" y="120">at the first test, with no time</text><text x="596" y="140">to replace it</text></g>
+      <g font-size="14" fill="#c9c8c2" text-anchor="end"><text x="1088" y="80">harsh conditions 25%,</text><text x="1088" y="100">aging or overload 20%;</text><text x="1088" y="120">maintenance is now mandatory</text></g>
+      <text x="40" y="308" class="cd" font-size="15" fill="#e0a672" letter-spacing="1.5">THE ASK IS NOT NEW PRODUCTS. IT IS AIMING EXISTING SERVICES AT A NEW CUSTOMER, EARLIER.</text>
+    </svg>
+    <div class="low">
+      <div>
+        <div class="svc">
+          <div><span class="k">Specify · exists</span><p><b>CableTechSupport</b>, engineering letters, pre-planning calls. <b>Proposed:</b> the One-Line Read, reserved MV and HV production slots.</p></div>
+          <div><span class="k">Procure · install · exists</span><p><b>SPEED</b> Services, <b>SIMpull</b> and MAXIS, Contractor Solutions Professionals, kitting and labeling. <b>Proposed:</b> the factory-built spine, 4,400 to ~880 field hours.</p></div>
+          <div><span class="k">Commission · operate · exists</span><p>Pre-energization guidance, <b>nitrogen purge</b> ($185K saved on one job), rejuvenation, resiliency assessments. <b>Proposed:</b> tray and duct room for a future carbon-capture island.</p></div>
+        </div>
+        <p class="ask">Houston is the first test: the problem, its current cost, repeatability, willingness to pay. <em>Figures current before customer use.</em></p>
+      </div>
+      <img src="assets/reel-yard.jpg" alt="">
+    </div>
+  </div>
+  <div class="ft"><span>POWERGEN / LIFE-CYCLE FRICTION · SOUTHWIRE PUBLICATIONS AND CASE STUDIES</span><span class="n">13</span></div>
+</section>
+
+<!-- 14 CURRENT STATE & ASKS -->
+<section class="slide dec">
+  <div class="hd"><div class="wm">SOUTHWIRE</div><div class="pg">POWER GENERATION SOLUTIONS</div></div>
+  <div class="eyebrow">13 / CURRENT STATE &amp; DECISIONS</div>
+  <div class="h">We have evidence to build on. Each line carries its caveat.</div>
+  <div class="lede">A funnel, not orders. Quotes, not closed business. A learning tool, not engineering. Said plainly, so the room reads the numbers the way they were built. Then four asks.</div>
+  <div class="body">
+    <div class="evd">
+      <div><b>17 validated IPP pursuits</b><p>~24 GW; more than $200M of project-life cable potential, from 500+ signals.</p><small>Historical funnel, not orders.</small></div>
+      <div><b>$9.7M quoted to OEMs</b><p>Four accounts in July; about 300 names mapped and 50–100 prioritized.</p><small>Quotes, not closed business.</small></div>
+      <div><b>16 application zones</b><p>The plant model connects equipment, cables, buying roles and delivery.</p><small>A learning and sales-enablement tool.</small></div>
+      <div><b>Working scope</b><p>Generation and supporting plant systems, including behind-the-meter assets.</p><small>Shared handoffs remain for agreement.</small></div>
+      <div><b>Reporting established</b><p>Salesforce structure and SAP / CPQ indicator 34 are in place.</p><small>Flagged bookings (~$11M) require reconciliation.</small></div>
+      <div><b>Field learning underway</b><p>CIE and Enchanted Rock engagement; Houston visits the week of Sept 21.</p><small>Turn discussions into qualified packages.</small></div>
+    </div>
+    <div class="asks">
+      <div class="dr"><div class="n">01</div><div><b>Validate</b><p>Buy-in on the PowerGen definition. Business Development to stress-test the market sizing and bridge the two models.</p><p class="own">PowerGen + BD + Finance · Decision required</p></div></div>
+      <div><div class="n">02</div><div><b>Onboard the EPC hire</b><p>Sales and vertical leaders open the EPC doors. Patrick Richey starts Sept 14.</p><p class="own">Sales and vertical leaders</p></div></div>
+      <div><div class="n">03</div><div><b>Key end-user visits, Houston</b><p>VoltaGrid, Powell and NRG the week of Sept 21 with the EP&amp;ES team. Identify the EP&amp;ES plays; ten account plans by Oct 2.</p><p class="own">Stephan / Corky</p></div></div>
+      <div><div class="n">04</div><div><b>PowerGen strategic plan</b><p>Bring back the plan with the lanes, the leads and the validated sizing.</p><p class="own">Marc + Stephan</p></div></div>
+    </div>
+  </div>
+  <div class="cap">So we leave with the definition agreed, the sizing reviewed, Houston on the 21st, and the plan back on a date.</div>
+  <div class="ft"><span>POWERGEN / CURRENT STATE &amp; LEADERSHIP ASKS</span><span class="n">14</span></div>
+</section>
+
+<!-- 15 CLOSE -->
+<section class="slide close">
+  <img class="bgimg" src="assets/plant-dark.jpg" alt="" style="object-position:50% 40%">
+  <div class="shade"></div>
+  <div class="hd" style="border-bottom-color:rgba(255,255,255,.18)"><div class="wm">SOUTHWIRE</div><div class="pg">POWER GENERATION SOLUTIONS</div></div>
+  <div class="t1">Faster time to power. Lower execution risk. <em>Engineered for long-term reliability.</em></div>
+  <div class="contact">
+    <div><b>Power Generation Solutions</b>powergen@southwire.com</div>
+    <div><b>Stephan Hardt</b>stephan.hardt@southwire.com</div>
+    <div><b>Source</b>Sept 14, 2026 strategy update · internal planning figures</div>
+  </div>
+  <div class="ft"><span>POWERGEN / WE DELIVER POWER RESPONSIBLY</span><span class="n">15</span></div>
+</section>
+
+<script>
+(function(){if(location.hash==="#print")return;var s=document.createElement("style");s.textContent="html,body{background:#000}body{display:flex;flex-direction:column;align-items:center;gap:16px;padding:16px 0}.slide{transform-origin:top left;flex:none}";document.head.appendChild(s);function fit(){var sc=Math.min(1,(window.innerWidth-16)/1440);document.querySelectorAll(".slide").forEach(function(el){el.style.transform="scale("+sc+")";el.style.marginBottom=(900*sc-900)+"px";el.style.marginRight=(1440*sc-1440)+"px"});}fit();window.addEventListener("resize",fit);})();
+</script>
+</body>
+</html>

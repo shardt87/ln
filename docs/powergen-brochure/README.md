@@ -1,17 +1,19 @@
 # Accelerating Time to Power — strategic brochure
 
-A single-page strategic brochure built from the Southwire Power Generation
-strategy update (`PowerGen_101_Accelerating_Time_to_Power`, September 2026).
+Fifteen fixed 16:10 spreads (1440 × 900) built from the September 2026
+Southwire Power Generation strategy update, in the same format as the
+PowerGen email brochure: Southwire wordmark header, numbered section
+eyebrow, one headline per spread, page footer.
 
-- `index.html` — the brochure. Open it directly in a browser or serve the
-  folder with GitHub Pages (Settings → Pages → `docs/`).
-- `assets/` — plant renders and the wordmark, compressed from the deck.
+- `PowerGen_Strategy_Brochure.pdf` — the print/email deliverable.
+- `index.html` — the same spreads in a browser (scales to the window). Serve
+  the folder with GitHub Pages (Settings → Pages → `docs/`).
+- `assets/` — plant renders from the deck, compressed.
+- `src/` — the page template and the build script that generates the HTML
+  (chart geometry, zone pins, inlined fonts).
 
-Sections: cover, agenda, 01 definition & learnings, 02 model studio
-(interactive 16-zone plant model with cable-route layers), where cable lives,
-03 opportunity (funnel, PO-year chart, buyer segments, reconciliation note),
-04 buyers & influencers (spend chain, money tree), 05 go-to-market lanes,
-06 solutions & value (lanes, pillars, life-cycle friction), 07 current state
-& decisions, closer.
-
-The page is print-ready (`Ctrl/Cmd+P`) and supports light and dark themes.
+Spreads: cover · objective & agenda · where we started · definition & scope ·
+plant application map (16 zones) · where cable lives · sizing the opportunity ·
+core cable by PO year · who controls the spend · where the money goes ·
+path to market · solutions & value · life-cycle friction · current state &
+asks · close.
