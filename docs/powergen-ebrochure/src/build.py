@@ -186,6 +186,7 @@ pages.append(page('', 'THE ELECTRICAL EXECUTION CHALLENGE', 2, f'''
 <div class="chain">{chain}</div></div>
 <div class="cap">Audience: EPC engineers and procurement teams; generation owners, utilities and independent power producers; OEMs, modular-power companies and equipment packagers.</div>'''))
 
+
 # 3 plant map
 pins = ''.join(f'<div class="pin{" core" if z.get("core") else ""}" style="left:{z["x"]}%;top:{z["y"]}%">{pad(z["n"])}</div>' for z in D['zones'])
 zl = ''.join(f'<div class="zl"><b>{pad(z["n"])}</b><span>{e(z["name"])}</span></div>' for z in D['zones'])
@@ -213,8 +214,10 @@ pages.append(page('', 'ZONE PACKAGES · KEY ZONES', 4, f'''
 
 # 5 families
 def fam_cell(f):
-    refs = ' '.join(reflink(c['stock']) for c in D['catalog'] if c['family']==f['id'])
-    return f'<div><i style="background:{f["color"]}"></i><div><h3>{e(f["name"])}</h3><p>{e(f["desc"])}</p><div class="refs">{refs}</div></div></div>'
+    refs = ' '.join(reflink(c['stock']) for c in D['catalog'] if c['family']==f['id'] and c['tier']=='core')
+    nx = sum(1 for c in D['catalog'] if c['family']==f['id'] and c['tier']=='expanded')
+    more = f' <span class="s">+ {nx} expanded {"family" if nx==1 else "families"} in the appendix</span>' if nx else ''
+    return f'<div><i style="background:{f["color"]}"></i><div><h3>{e(f["name"])}</h3><p>{e(f["desc"])}</p><div class="refs">{refs}{more}</div></div></div>'
 bounds = [('OEM internal wiring vs. field interconnection.','The OEM wires inside the package to terminal boxes or local panels; the EPC or installer connects between packages.'),
  ('Fixed wiring vs. portable cable.','DLO and other flexible constructions are portable-cable applications, not substitutes for fixed tray-rated wiring.'),
  ('MV insulation level.','Voltage class, 100% or 133% insulation level and shield type are project selections from the one-line.'),
@@ -225,7 +228,7 @@ fams7 = D['families']
 pages.append(page('', 'THE CABLE OFFERING', 5, f'''
 <div class="eyebrow">03 / THE CABLE OFFERING</div>
 <div class="h">Seven families cover the plant's electrical scope.</div>
-<div class="lede">Published references connect circuit requirements to specific constructions. Stock numbers do not indicate inventory. The full catalog with specifications and documents is in the technical appendix.</div>
+<div class="lede">Twenty-nine core references and twenty-four expanded families from the September 2026 offering. Stock numbers do not indicate inventory. The full catalog with specifications and documents is in the technical appendix.</div>
 <div class="body" style="top:236px"><div class="fams">{''.join(fam_cell(f) for f in fams7[:4])}</div>
 <div class="fams" style="border-top:0;grid-template-columns:1fr 1fr 1fr">{''.join(fam_cell(f) for f in fams7[4:])}</div>
 <div class="bounds">{''.join(f'<div><b>{e(a)}</b> {e(b)}</div>' for a,b in bounds)}</div></div>'''))
@@ -248,8 +251,17 @@ pages.append(page('beyond', 'GENERATION APPLICATIONS · PLANT TO GRID', 7, f'''
 <div class="h">Build the package around the application.</div>
 <div class="lede">The combined-cycle model is a starting point. Adapt scope to the generation technology, site and operating duty. Do not combine plant configurations or carry the model's preliminary quantities into procurement.</div>
 <div class="body" style="top:236px"><div class="g4">{apps}</div>
-<div class="scope3" style="margin-top:22px"><div><b>Generation scope</b><p>Generation assets and the electrical balance of plant, up to the generator step-up transformer. Includes behind-the-meter generation packages wherever they sit.</p></div><div><b>Downstream facility scope</b><p>Campus distribution, UPS, PDU and the consuming infrastructure belong to the facility. Confirm the generation-to-campus handoff at the equipment boundary.</p></div><div><b>Grid interface</b><p>Agree the GSU, point of interconnection, asset owner and route before selecting the connection cable. Underground and overhead need different engineering packages.</p></div></div>
-<div class="g2" style="margin-top:22px">{grid}</div></div>'''))
+<div class="g2" style="margin-top:18px">{grid}</div></div>'''))
+
+# 8 boundaries + lifecycle
+bnd = ''.join(f'<div class="cell"><span class="k">{e(a["k"])}</span><h3>{e(a["name"])}</h3><p style="font-size:12.5px">{e(a["desc"])}</p></div>' for a in D['boundaries'])
+life = ''.join(f'<div class="cell alt"><span class="k">{e(a["k"])}</span><h3>{e(a["name"])}</h3><p style="font-size:12.5px">{e(a["desc"])}</p><div class="ln">{" ".join(A(l[0],l[1]) for l in a["links"])}</div></div>' for a in D['lifecycle'])
+pages.append(page('', 'SCOPE BOUNDARIES · LIFECYCLE OPTIONS', 8, f'''
+<div class="eyebrow">05 / COMPLETE THE OFFERING</div>
+<div class="h">Define what the cable package includes. Then extend its life.</div>
+<div class="lede">Keep a named source, destination and responsible party for each permanent circuit and each package interface. Choose lifecycle interventions from condition, duty and the outage window.</div>
+<div class="body" style="top:236px"><div class="g4">{bnd}</div><div class="g4" style="margin-top:18px;border-top:0">{life}</div></div>
+<div class="cap">The supplied studies use different plant configurations and voltage assumptions; this brochure makes no project quantity, voltage or construction-release commitment. Service availability, repair suitability, testing and warranty are confirmed for the actual asset.</div>'''))
 
 # 8 cases
 def case_card(c):
@@ -258,7 +270,7 @@ def case_card(c):
 <p class="src">{A('Read the case study · PDF', c['url'])}</p></div>'''
 feat = [c for c in D['cases'] if c['featured']]
 more = [c for c in D['cases'] if not c['featured']]
-pages.append(page('', 'DOCUMENTED EXPERIENCE', 8, f'''
+pages.append(page('', 'DOCUMENTED EXPERIENCE', 9, f'''
 <div class="eyebrow">06 / DOCUMENTED EXPERIENCE</div>
 <div class="h">Results with a reference.</div>
 <div class="lede">Historical Southwire project examples with their published sources. The PowerGen application under each case is a proposed use, not an outcome from the illustrated plant.</div>
@@ -268,14 +280,16 @@ pages.append(page('', 'DOCUMENTED EXPERIENCE', 8, f'''
 # 9 contact
 who = ''.join(f'<div><b>{e(c.get("org") or c["name"])}</b><a href="mailto:{c["email"]}">{e(c["email"])}</a>{"<span>"+e(c["role"])+"</span>" if c.get("role") else ""}</div>' for c in D['contacts'])
 check = ''.join(f'<div><div class="nn">{pad(i+1)}</div><div><h4>{e(t)}</h4><p>{e(d)}</p></div></div>' for i,(t,d) in enumerate(D['checklist']))
-pages.append(page('contact', 'PROJECT REVIEW & CONTACT', 9, f'''
+rel = ''.join(f'<div><div class="nn">{pad(i+1)}</div><div><h4>{e(t)}</h4><p>{e(d)}</p></div></div>' for i,(t,d) in enumerate(D['release']['steps']))
+rellinks = ' &nbsp; '.join(A(l[0],l[1]) for l in D['release']['links'])
+pages.append(page('contact', 'PROJECT REVIEW & CONTACT', 10, f'''
 <div class="eyebrow">07 / PROJECT CONVERSATION</div>
 <div class="h">Connect your next power project.</div>
 <div class="body" style="top:200px"><div><div class="big">Start with the one-line diagram, the cable schedule, the equipment interfaces and the target energization date.</div>
 <div class="who">{who}</div><a class="chip" href="{e(D['reviewMailto'])}">Start a cable package review</a>
 <div class="s" style="margin-top:26px">Interactive e-brochure: explore the plant, the films and the searchable catalog online. Technical appendix: all sixteen zone packages and the full catalog with specification links.</div></div>
-<div class="check">{check}</div></div>
-<div class="cap">Based on the September 2026 PowerGen strategy update, the PowerGen email brochure and linked Southwire references. Final engineering and commercial terms are project-specific.</div>''', links=False))
+<div><div class="k" style="margin-bottom:8px">From scope to release · one circuit record</div><div class="check">{rel}</div><div class="s" style="margin-top:10px;font-size:13px">{rellinks}</div></div></div>
+<div class="cap">{e(D['sourceNote'])}</div>''', links=False))
 
 def doc(title, pages_html):
     return f'<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>{e(title)}</title><style>{CSS}</style></head><body>{"".join(pages_html)}</body></html>'
@@ -298,7 +312,18 @@ for i in range(0, 16, 4):
 <div class="h">Applications {pad(i+1)}–{pad(i+4)}. From equipment to scope.</div>
 <div class="body" style="top:196px;height:620px"><div class="zp">{''.join(zone_block(z) for z in zs)}</div></div>
 <div class="cap">Click a stock reference for its technical document. Shared routes and staging do not add circuit footage. Illustrative model; cable design and quantities follow the approved project scope.</div>'''))
-# catalog pages by family groups
+# zone decisions
+for i in range(0, 8, 4):
+    n += 1
+    ds = D['zoneDecisions'][i:i+4]
+    cells = ''.join(f'<div class="cell"><span class="k">Zones {" / ".join(pad(z) for z in d["zones"])} · {e(d["group"])}</span><h3>{e(d["title"])}</h3><p><b>Cables:</b> {e(d["cables"])}</p><p style="margin-top:8px"><b>Before release:</b> {e(d["release"])}</p></div>' for d in ds)
+    ap.append(page('', f'ZONE DECISIONS {i//4+1}', n, f'''
+<div class="eyebrow">A2 / ZONE DECISIONS</div>
+<div class="h">{"Specify the duty. Protect the interface." if i==0 else "Close the gaps between packages."}</div>
+<div class="lede">{"Application requirements drawn from the NGCC zone framework. Zone numbers follow the map in this brochure." if i==0 else "Separate installed field cable, factory wiring, shared infrastructure and temporary equipment in the scope register."}</div>
+<div class="body" style="top:236px"><div class="g2">{cells}</div></div>
+<div class="cap">Select constructions against actual routes and approved OEM data. The equipment shown does not establish cable size, quantity or a product guarantee.</div>'''))
+# catalog pages by family groups, paginated
 groups = [('Medium-voltage power', ['mv']), ('Low-voltage, VFD and flexible / DC', ['lv','vfd','dc']), ('Control, instrumentation and protection', ['ci']), ('Grounding, networks, building systems and specialty', ['gnd','sp'])]
 def row(c):
     f = FAM[c['family']]
@@ -311,17 +336,26 @@ def row(c):
     note = f'<span class="note">{e(c["note"])}</span>' if c.get('note') else ''
     hz = '<span class="note">MC-HL · hazardous location</span>' if c.get('hazloc') else ''
     zones = ', '.join(pad(z) for z in c['zones']) or '—'
-    return f'<tr><td class="st">{e(c["stock"])}{note}</td><td><span class="fm" style="background:{f["color"]}"></span>{e(f["short"])}{hz}</td><td>{e(c["duty"])}</td><td>{e(c["construction"])}</td><td>{e(c.get("spec") or "—")}</td><td>{"<br>".join(docs)}</td><td>{zones}</td></tr>'
+    CT = {'base':'Published base code','request':'Request stock code','family':'Product family'}
+    size = f'<span class="note">{e(c["size"])}</span>' if c.get('size') else ''
+    ct = f'<span class="note" style="color:#e0a672">{CT[c["codeType"]]}</span>' if c.get('codeType') in CT else ''
+    return f'<tr><td class="st">{e(c["stock"])}{size}{ct}{note}</td><td><span class="fm" style="background:{f["color"]}"></span>{e(f["short"])}{hz}</td><td>{e(c["duty"])}</td><td>{e(c["construction"])}</td><td>{e(c.get("spec") or "—")}</td><td>{"<br>".join(docs)}</td><td>{zones}</td></tr>'
 for title, fams in groups:
-    n += 1
-    rows = [c for c in D['catalog'] if c['family'] in fams]
-    ap.append(page('', f'CATALOG · {title.upper()}', n, f'''
-<div class="eyebrow">B / CABLE CATALOG</div>
-<div class="h">{e(title)}</div>
+  for tier, tlabel in (('core','core references'),('expanded','expanded families')):
+    allrows = [c for c in D['catalog'] if c['family'] in fams and c['tier']==tier]
+    if not allrows: continue
+    PER = 10
+    chunks = [allrows[i:i+PER] for i in range(0, len(allrows), PER)]
+    for ci, rows in enumerate(chunks):
+      n += 1
+      suffix = f' ({ci+1}/{len(chunks)})' if len(chunks)>1 else ''
+      ap.append(page('', f'CATALOG · {title.upper()} · {tlabel.upper()}', n, f'''
+<div class="eyebrow">B / CABLE CATALOG · {tlabel.upper()}</div>
+<div class="h">{e(title)}{suffix}</div>
 <div class="lede">Published references connect circuit requirements to specific constructions. Stock numbers do not indicate inventory.</div>
 <div class="body" style="top:236px"><table><colgroup><col style="width:190px"><col style="width:130px"><col style="width:190px"><col style="width:380px"><col style="width:90px"><col style="width:190px"><col style="width:150px"></colgroup>
 <thead><tr><th>Stock # / reference</th><th>Family</th><th>Duty</th><th>Construction / size</th><th>Spec</th><th>Documents</th><th>Zones</th></tr></thead><tbody>{''.join(row(c) for c in rows)}</tbody></table></div>
-<div class="cap">Reference types: product family (selected by size and listing) · specification number (a construction) · published base code (not a complete orderable stock number) · stock number (orderable; not inventory) · project-specific engineered selection. Type TC and TC-ER are distinct ratings.</div>'''))
+<div class="cap">Reference types: product family (selected by size and listing) · specification number (a construction) · published base code (not a complete orderable stock number) · stock number (orderable; not inventory) · request stock code (size and duty selection) · project-specific engineered selection. Type TC and TC-ER are distinct ratings.</div>'''))
 n += 1
 ap.append(page('', 'MORE DOCUMENTED EXPERIENCE', n, f'''
 <div class="eyebrow">C / DOCUMENTED EXPERIENCE · RESOURCE LIBRARY</div>

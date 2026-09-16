@@ -102,6 +102,10 @@ section{padding-block:clamp(64px,8vw,120px);border-top:1px solid var(--line)}
 .panel .refs a:hover{border-color:var(--copper)}
 .panel .refs a small{color:var(--ink3);font-weight:400;margin-left:6px}
 .panel .more a{font-size:14px}
+.panel .dec{border-top:1px solid var(--line);padding-top:12px;display:grid;gap:6px}
+.panel .dec .k{display:block}
+.panel .dec b{font-family:var(--narrow);font-weight:700;font-size:20px;line-height:1.05}
+.panel .dec p{font-size:14px}
 .zonelist{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:2px;margin-top:18px}
 .zonelist button{display:grid;grid-template-columns:32px 1fr;gap:8px;align-items:center;text-align:left;background:var(--bg2);border:1px solid var(--line);color:var(--ink2);padding:9px 10px;cursor:pointer;border-radius:2px;font-size:14px}
 .zonelist button b{font-family:var(--narrow);font-weight:700;font-size:19px;color:var(--copper)}
@@ -128,6 +132,7 @@ section{padding-block:clamp(64px,8vw,120px);border-top:1px solid var(--line)}
 .fams .refs{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
 .fams .refs a{font-size:12.5px;font-weight:700;text-decoration:none;border:1px solid var(--line2);padding:3px 7px;border-radius:2px;color:var(--ink2)}
 .fams .refs a:hover{border-color:var(--copper);color:var(--ink)}
+.fams .refs a.expanded{border-style:dashed;color:var(--ink3)}
 .bounds{margin-top:36px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px 28px;font-size:14.5px;color:var(--ink2)}
 .bounds b{color:var(--ink);font-weight:700}
 
@@ -145,9 +150,11 @@ th{font-weight:700;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase
 td{color:var(--ink2)}
 td.st{color:var(--ink);font-weight:700;white-space:nowrap}
 td .fm{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:8px;vertical-align:0}
+td.fam{white-space:nowrap}
 td .note{display:block;font-size:12.5px;color:var(--ink3);margin-top:4px}
 td a{white-space:nowrap}
 td .na{color:var(--ink3);font-style:italic}
+td .note.ct{color:var(--copper);font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
 .count{font-size:13.5px;color:var(--ink3);margin-top:10px}
 
 /* execution */
@@ -163,6 +170,16 @@ td .na{color:var(--ink3);font-style:italic}
 .exec figcaption{font-size:13.5px;color:var(--ink3);margin-top:10px}
 .spine{margin-top:24px;padding:18px 20px;border:1px solid var(--line2);background:var(--bg2);font-size:14.5px;color:var(--ink2)}
 .spine b{color:var(--ink)}
+.sub{margin-top:clamp(48px,6vw,80px)}
+.sub h3{font-size:clamp(28px,3vw,40px);margin-top:4px}
+.sub .p2{color:var(--ink2);max-width:64ch;margin:12px 0 22px;font-size:16.5px}
+.rel{display:grid;gap:0;border-top:1px solid var(--line)}
+.rel>div{display:grid;grid-template-columns:52px 1fr 1.4fr;gap:12px 18px;padding:14px 0;border-bottom:1px solid var(--line);align-items:start}
+.rel .n{font-family:var(--narrow);font-weight:700;font-size:30px;color:var(--copper);line-height:1}
+.rel h4{font-family:var(--narrow);font-size:23px}
+.rel p{color:var(--ink2);font-size:15px}
+.rel .ln{grid-column:2/4;font-size:14px;display:flex;flex-wrap:wrap;gap:6px 18px;padding-top:4px}
+@media (max-width:700px){.rel>div{grid-template-columns:44px 1fr}.rel h4{grid-column:2}.rel p{grid-column:2}.rel .ln{grid-column:2}}
 
 /* beyond */
 .apps{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
@@ -262,7 +279,7 @@ footer a{color:var(--ink2)}
       <a class="btn" href="{{REVIEW_MAILTO}}">Start a cable package review</a>
       <a class="btn ghost" href="#plant">Explore the plant</a>
     </div>
-    <div class="meta"><span><b>16</b> application zones</span><span><b>29</b> catalog references</span><span><b>6</b> documented cases</span></div>
+    <div class="meta"><span><b>16</b> application zones</span><span><b id="ncat">53</b> catalog references</span><span><b>6</b> documented cases</span></div>
   </div>
   <div class="film" id="filmnote">Still from the original engineering model</div>
 </section>
@@ -318,6 +335,7 @@ footer a{color:var(--ink2)}
         <p id="p-focus"></p>
         <p id="p-buys"></p>
         <div class="refs" id="p-refs"></div>
+        <div class="dec" id="p-dec"></div>
         <p class="more" id="p-more"></p>
       </aside>
     </div>
@@ -335,7 +353,7 @@ footer a{color:var(--ink2)}
     <div class="head">
       <p class="eyebrow">03 / The cable offering</p>
       <h2 id="h-of">Seven families cover the plant's electrical scope.</h2>
-      <p class="lede">Published references connect circuit requirements to specific constructions. Each family below links to the references in the technical catalog; the catalog links to the manufacturer's specification.</p>
+      <p class="lede">Published references connect circuit requirements to specific constructions. Each family lists its core references first and the expanded families from the September 2026 offering after them; the catalog links every one to the manufacturer's document.</p>
     </div>
     <div class="fams" id="fams"></div>
     <div class="bounds">
@@ -365,6 +383,8 @@ footer a{color:var(--ink2)}
         <div class="spine"><b>Prefabricated cable spine, project development.</b> A factory-built spine needs defined interfaces, a qualified assembly provider and an agreed test plan. Evaluate a pilot using factory labor, field labor, logistics, schedule and total installed cost. Availability and performance are project-specific.</div>
       </div>
     </div>
+    <div class="sub"><p class="eyebrow">From scope to release</p><h3>Turn the cable schedule into a field plan.</h3><p class="p2">Use one circuit record from specification through energization. Select the Southwire support scope with the project team.</p><div class="rel" id="rel"></div></div>
+    <div class="sub"><p class="eyebrow">Extend the lifecycle offer</p><h3>Assess. Repair. Rejuvenate. Replace.</h3><p class="p2">Choose the intervention from condition, duty and the outage window. Agree eligibility, acceptance and scope before release.</p><div class="apps" id="life"></div><p class="s" style="margin-top:12px">Service availability, repair suitability, testing and warranty are confirmed for the actual asset. Historical case results do not establish future performance.</p></div>
   </div>
 </section>
 
@@ -386,6 +406,7 @@ footer a{color:var(--ink2)}
       </div>
     </div>
     <div class="gridtie" id="grid"></div>
+    <div class="sub"><p class="eyebrow">Complete the offering</p><h3>Define what the cable package includes.</h3><p class="p2">Keep a named source, destination and responsible party for each permanent circuit and each package interface.</p><div class="apps" id="bounds"></div><p class="s" style="margin-top:12px">The supplied studies use different plant configurations and voltage assumptions. This brochure makes no project quantity, voltage or construction-release commitment.</p></div>
   </div>
 </section>
 
@@ -444,7 +465,7 @@ footer a{color:var(--ink2)}
 
 <footer>
   <div class="wrap">
-    <span>Southwire Power Generation Solutions · Based on the September 2026 PowerGen strategy update, the PowerGen email brochure and linked Southwire references. Final engineering and commercial terms are project-specific.</span>
+    <span id="srcnote">Southwire Power Generation Solutions.</span>
     <span><a href="source-and-asset-register.md">Source and asset register</a> · <a href="CHANGELOG.md">Change log</a> · <a href="PowerGen_eBrochure.pdf">Email PDF</a> · <a href="PowerGen_Technical_Appendix.pdf">Technical appendix</a></span>
   </div>
 </footer>
@@ -491,6 +512,7 @@ footer a{color:var(--ink2)}
     document.getElementById('p-focus').innerHTML='<b>Selection considerations.</b> '+esc(z.focus);
     document.getElementById('p-buys').innerHTML='<b>Specifies and buys.</b> '+esc(z.buys);
     document.getElementById('p-refs').innerHTML=z.refs.length?z.refs.map(function(r){var c=CAT[r];var u=c&&(c.specUrl||c.productUrl);return u?'<a href="'+u+'" target="_blank" rel="noopener" title="'+esc(c.duty)+'">'+esc(r)+'<small>'+esc(c.duty)+'</small></a>':'<a href="#catalog">'+esc(r)+'</a>'}).join(''):'<span class="s">Services and staging scope; see the execution section.</span>';
+    document.getElementById('p-dec').innerHTML=z.decision?'<span class="k">Before release · '+esc(z.decision.group)+'</span><b>'+esc(z.decision.title)+'</b><p>'+esc(z.decision.release)+'</p>':'';
     document.getElementById('p-more').innerHTML=(z.link?'<a href="'+z.link[1]+'">'+esc(z.link[0])+' →</a> · ':'')+'<a href="#catalog" data-zone="'+n+'" class="tocat">All references for this zone in the catalog →</a>';
     document.querySelectorAll('#pins .pin,#zonelist button').forEach(function(el){el.setAttribute('aria-pressed',String(+el.getAttribute('data-n')===n))});
   }
@@ -500,7 +522,8 @@ footer a{color:var(--ink2)}
   document.getElementById('films').innerHTML=D.films.map(function(f){return '<a href="'+f.url+'" target="_blank" rel="noopener"><img src="assets/'+f.poster+'" alt="" loading="lazy"><div class="t"><b>'+esc(f.title)+'</b><span>'+esc(f.desc)+'</span><small>Watch online · '+f.seconds+' seconds</small></div></a>'}).join('');
   /* families */
   document.getElementById('fams').innerHTML=D.families.map(function(f){
-    var refs=D.catalog.filter(function(c){return c.family===f.id}).map(function(c){var u=c.specUrl||c.productUrl;return u?'<a href="'+u+'" target="_blank" rel="noopener">'+esc(c.stock)+'</a>':'<a href="#catalog">'+esc(c.stock)+'</a>'}).join('');
+    var mk=function(c){var u=c.specUrl||c.productUrl;var lab=c.tier==='expanded'?c.duty:c.stock;return u?'<a href="'+u+'" target="_blank" rel="noopener" class="'+c.tier+'">'+esc(lab)+'</a>':'<a href="#catalog" class="'+c.tier+'">'+esc(lab)+'</a>'};
+    var refs=D.catalog.filter(function(c){return c.family===f.id&&c.tier==='core'}).map(mk).join('')+D.catalog.filter(function(c){return c.family===f.id&&c.tier==='expanded'}).map(mk).join('');
     return '<div><i style="background:'+f.color+'"></i><div><h3>'+esc(f.name)+'</h3><p>'+esc(f.desc)+'</p><div class="refs">'+refs+'</div></div></div>'}).join('')+'<div class="how"><i style="background:var(--line2)"></i><div><h3>How to read a reference</h3><p><b>Product family</b> (SIMpull Barrel, Genesis): selected by size and listing. <b>Specification number</b> (46103): describes a construction. <b>Published base code</b> (577883): not a complete orderable stock number. <b>Stock number</b> (55052299): orderable, but does not establish current inventory. <b>Project-specific engineered selection</b>: made against the approved design.</p></div></div>';
   /* execution steps */
   document.getElementById('steps').innerHTML=D.services.map(function(s){return '<div><div class="ph">'+esc(s.phase)+'</div><div><h4>'+esc(s.name)+'</h4><p>'+esc(s.desc)+'</p><div class="ln">'+s.links.map(function(l){return '<a href="'+l[1]+'" target="_blank" rel="noopener">'+esc(l[0])+'</a>'}).join('')+'</div></div></div>'}).join('');
@@ -514,14 +537,14 @@ footer a{color:var(--ink2)}
   document.getElementById('cases').innerHTML=D.cases.filter(function(c){return c.featured}).map(caseCard).join('');
   var lib=document.getElementById('library');
   lib.innerHTML='<div><h4>More documented experience</h4><ul>'+D.cases.filter(function(c){return !c.featured}).map(function(c){return '<li><a href="'+c.url+'" target="_blank" rel="noopener">'+esc(c.tag)+'</a><span>'+esc(c.stat)+' · '+esc(c.title)+' Proposed PowerGen use: '+esc(c.powergen)+'</span></li>'}).join('')+'</ul></div>'
-    +'<div><h4>Services and grid connection</h4><ul>'+D.services.map(function(s){return s.links.map(function(l){return '<li><a href="'+l[1]+'" target="_blank" rel="noopener">'+esc(l[0])+'</a><span>'+esc(s.phase)+'</span></li>'}).join('')}).join('')+D.grid.map(function(g){return g.links.map(function(l){return '<li><a href="'+l[1]+'" target="_blank" rel="noopener">'+esc(l[0])+'</a><span>'+esc(g.name)+'</span></li>'}).join('')}).join('')+'</ul></div>'
+    +'<div><h4>Services and grid connection</h4><ul>'+D.services.map(function(s){return s.links.map(function(l){return '<li><a href="'+l[1]+'" target="_blank" rel="noopener">'+esc(l[0])+'</a><span>'+esc(s.phase)+'</span></li>'}).join('')}).join('')+D.grid.map(function(g){return g.links.map(function(l){return '<li><a href="'+l[1]+'" target="_blank" rel="noopener">'+esc(l[0])+'</a><span>'+esc(g.name)+'</span></li>'}).join('')}).join('')+D.lifecycle.map(function(g){return g.links.map(function(l){return '<li><a href="'+l[1]+'" target="_blank" rel="noopener">'+esc(l[0])+'</a><span>'+esc(g.k)+'</span></li>'}).join('')}).join('')+D.release.links.slice(2).map(function(l){return '<li><a href="'+l[1]+'" target="_blank" rel="noopener">'+esc(l[0])+'</a><span>Reference</span></li>'}).join('')+'</ul></div>'
     +'<div><h4>Downloads and sources</h4><ul><li><a href="PowerGen_eBrochure.pdf">Email brochure · PDF</a><span>Nine spreads with clickable links</span></li><li><a href="PowerGen_Technical_Appendix.pdf">Technical appendix · PDF</a><span>Zone packages and the full catalog</span></li><li><a href="source-and-asset-register.md">Source and asset register</a><span>What was used, what was not, what is unverified</span></li><li><a href="CHANGELOG.md">Change log</a><span>Consolidated, removed, corrected, unresolved</span></li></ul></div>';
   /* contact */
   document.getElementById('who').innerHTML=D.contacts.map(function(c){return '<div><b>'+esc(c.org||c.name)+'</b><a href="mailto:'+c.email+'">'+esc(c.email)+'</a>'+(c.role?'<span>'+esc(c.role)+'</span>':'')+'</div>'}).join('');
   document.getElementById('check').innerHTML=D.checklist.map(function(c,i){return '<div><div class="n">'+pad(i+1)+'</div><div><h4>'+esc(c[0])+'</h4><p>'+esc(c[1])+'</p></div></div>'}).join('');
   /* catalog */
   var ctrl=document.getElementById('ctrl'),tb=document.querySelector('#cat tbody'),filter='all',q='';
-  var btns=[['all','All']].concat(D.families.map(function(f){return [f.id,f.short]}));
+  var btns=[['all','All'],['core','Core'],['expanded','Expanded']].concat(D.families.map(function(f){return [f.id,f.short]}));
   ctrl.innerHTML=btns.map(function(b){return '<button type="button" data-f="'+b[0]+'" aria-pressed="'+(b[0]==='all')+'">'+esc(b[1])+'</button>'}).join('')+'<label class="sr" for="q">Search the catalog</label><input id="q" type="search" placeholder="Search stock, duty, construction, spec…">';
   ctrl.addEventListener('click',function(e){var b=e.target.closest('button[data-f]');if(b)setFilter(b.getAttribute('data-f'))});
   document.getElementById('q').addEventListener('input',function(e){q=e.target.value.toLowerCase();render()});
@@ -530,13 +553,20 @@ footer a{color:var(--ink2)}
     var zn=filter.indexOf('zone:')===0?+filter.slice(5):0;
     var rows=D.catalog.filter(function(c){
       if(zn&&c.zones.indexOf(zn)<0)return false;
-      if(!zn&&filter!=='all'&&c.family!==filter)return false;
+      if(!zn&&(filter==='core'||filter==='expanded')&&c.tier!==filter)return false;
+      if(!zn&&filter!=='all'&&filter!=='core'&&filter!=='expanded'&&c.family!==filter)return false;
       if(q){var t=[c.stock,c.duty,c.construction,c.spec||'',FAM[c.family].name].join(' ').toLowerCase();if(t.indexOf(q)<0)return false}
       return true});
-    tb.innerHTML=rows.map(function(c){var f=FAM[c.family];return '<tr><td class="st">'+esc(c.stock)+(c.note?'<span class="note">'+esc(c.note)+'</span>':'')+'</td><td><span class="fm" style="background:'+f.color+'"></span>'+esc(f.short)+(c.hazloc?'<span class="note">MC-HL · hazardous location</span>':'')+'</td><td>'+esc(c.duty)+'</td><td>'+esc(c.construction)+'</td><td>'+esc(c.spec||'—')+'</td><td>'+docLink(c)+'</td><td>'+(c.zones.length?c.zones.map(pad).join(', '):'—')+'</td></tr>'}).join('');
+    var CT={base:'Published base code',request:'Request stock code',family:'Product family',stock:''};
+    tb.innerHTML=rows.map(function(c){var f=FAM[c.family];return '<tr><td class="st">'+esc(c.stock)+(c.size?'<span class="note">'+esc(c.size)+'</span>':'')+(CT[c.codeType]?'<span class="note ct">'+CT[c.codeType]+'</span>':'')+(c.tier==='expanded'?'<span class="note ct">Expanded offering</span>':'')+(c.note?'<span class="note">'+esc(c.note)+'</span>':'')+'</td><td class="fam"><span class="fm" style="background:'+f.color+'"></span>'+esc(f.short)+(c.hazloc?'<span class="note">MC-HL · hazardous location</span>':'')+'</td><td>'+esc(c.duty)+'</td><td>'+esc(c.construction)+'</td><td>'+esc(c.spec||'—')+'</td><td>'+docLink(c)+'</td><td>'+(c.zones.length?c.zones.map(pad).join(', '):'—')+'</td></tr>'}).join('');
     document.getElementById('count').textContent=rows.length+' of '+D.catalog.length+' references'+(zn?' · zone '+pad(zn)+' '+D.zones[zn-1].name:'')+(q?' · matching "'+q+'"':'');
   }
   render();
+  document.getElementById('ncat').textContent=D.catalog.length;
+  document.getElementById('srcnote').textContent='Southwire Power Generation Solutions · '+D.sourceNote;
+  document.getElementById('rel').innerHTML=D.release.steps.map(function(s,i){return '<div><div class="n">'+pad(i+1)+'</div><h4>'+esc(s[0])+'</h4><p>'+esc(s[1])+'</p></div>'}).join('')+'<div><div></div><div class="ln">'+D.release.links.map(function(l){return '<a href="'+l[1]+'" target="_blank" rel="noopener">'+esc(l[0])+'</a>'}).join('')+'</div></div>';
+  document.getElementById('life').innerHTML=D.lifecycle.map(function(a){return '<div><span class="k">'+esc(a.k)+'</span><h3>'+esc(a.name)+'</h3><p>'+esc(a.desc)+'</p><p style="margin-top:10px;font-size:14px">'+a.links.map(function(l){return '<a href="'+l[1]+'" target="_blank" rel="noopener">'+esc(l[0])+'</a>'}).join(' · ')+'</p></div>'}).join('');
+  document.getElementById('bounds').innerHTML=D.boundaries.map(function(a){return '<div><span class="k">'+esc(a.k)+'</span><h3>'+esc(a.name)+'</h3><p>'+esc(a.desc)+'</p></div>'}).join('');
   /* nav highlight */
   var links=document.querySelectorAll('.bar nav a');
   if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){links.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id)})}})},{rootMargin:'-40% 0px -55% 0px'});document.querySelectorAll('main section[id]').forEach(function(s){io.observe(s)})}

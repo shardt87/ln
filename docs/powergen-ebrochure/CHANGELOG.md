@@ -2,6 +2,18 @@
 
 PowerGen e-brochure, "Accelerating Time to Power". Consolidation of the September 2026 strategy update and the PowerGen email brochure into one customer package.
 
+## Update for email brochure rev 5 (28 pages)
+
+Rev 5 is a superset of the 19-page revision: the cover subtitle changed to "Expanded cable offering", and nine pages were added. All of it is now in the package:
+
+- **Zone decisions** (rev 5 pages 8–9): eight zone groups with cables and "before release" guidance. In the e-brochure each zone panel now ends with its group's before-release guidance; the appendix carries both pages.
+- **Expanded cable offering** (pages 14–17): 24 additional families added to the catalog with a "core / expanded" filter, each tagged by reference type (published base code, request stock code, stock number). Family cards list core references first and expanded families after them. The email PDF shows core references with a count of expanded families per family; the appendix lists every one.
+- **Lifecycle options** (page 23): assess, repair (Re³ kits, spec 10911), rejuvenate, EPIC HPFF retrofit. Added to the execution section and to email PDF page 8.
+- **Scope boundaries** (page 24): generator and grid, OEM and specialist packages, life safety and communications, quantity and revision control. Added to the applications section and email PDF page 8.
+- **Release package** (page 25): five steps from "agree the basis" to "test and retain the record", with the CableTechSupport, Project Services and manuals links. Added to the execution section and to the email PDF contact page.
+- The source note now cites rev 5 and its own statement that references were checked September 2026.
+- Email PDF grows from 9 to 10 spreads; appendix from 10 to 17.
+
 ## Consolidated
 
 - **Three levels instead of one long document.** Level 1: a nine-spread customer story (e-brochure sections A–H and the email PDF). Level 2: the interactive plant map with a panel per zone. Level 3: the filterable catalog and the technical appendix. The email brochure's five catalog pages and four zone-package pages moved out of the story and into levels 2 and 3.
@@ -30,7 +42,8 @@ PowerGen e-brochure, "Accelerating Time to Power". Consolidation of the Septembe
 ## Left unresolved (needs an owner)
 
 1. **Films not verified.** The three mp4 files on the online field guide could not be fetched from this environment. The hero shows the still until the film can play; confirm the files are live before distribution or supply the mp4s to embed locally.
-2. **External links not fetched.** 67 URLs reused verbatim from the source PDF; none could be opened from here. One pass from a networked machine is recommended.
+2. **External links not fetched.** 101 URLs reused verbatim from rev 5; none could be opened from here. Rev 5 states its author checked them in September 2026; one pass from a networked machine is still recommended before distribution.
+3. **Six expanded references carry no zone assignment in the source** (SIMpull XHHW-2, Royal SOOW, Jacketed Armorlite MC, 300 V PLTC/ITC, 2 kV Type PV, Circuit Defender): they show a dash in the zone column rather than an invented zone.
 3. **Spec PDF gaps in the source**: 66131915 (35 kV EPR concentric-neutral) has a product page but no spec PDF; Genesis has a family page only; Southwire OS2 fiber stock number is stated as unverified in the source and is not listed as a reference.
 4. **Two document formats for 89066999 / 45834799 / 89008499 / 67747299**: the source links these to `download_cable/?cable=…` rather than `download_spec/?spec=…`. Kept as in the source.
 5. **Prefabricated cable spine**: stated as project development, no availability or performance claim. The deck's "~80% less field labor" figure is an adjacent-market internal number and was not used.
