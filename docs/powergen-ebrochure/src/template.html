@@ -4,476 +4,276 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Accelerating Time to Power</title>
-<meta name="description" content="Southwire Power Generation Solutions: cable, application engineering and project execution from the generation asset to the grid interface.">
+<meta name="description" content="Southwire Power Generation Solutions. Explore the plant model: sixteen application zones, cable families, references and execution support.">
 <style>
 {{FONTS}}
 :root{
-  --paper:#f3f3f1;--paper-2:#e8e9e6;--white:#ffffff;--ink:#141618;--ink-2:#454a4f;--ink-3:#7d838a;--rule:#d5d7d3;--rule-2:#c2c5c0;
-  --night:#0b0e11;--night-2:#141a20;--on-night:#eef0ee;--on-night-2:#aab1b7;--night-rule:#26303a;
-  --copper:#a8541f;--copper-ink:#ffffff;--copper-soft:#f1e3d7;
-  --display:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;--body:"Source Sans 3","Helvetica Neue",Arial,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
-  --w:1280px;--gutter:clamp(20px,5vw,72px);
+  --ui:#ffffff;--ui-2:#f4f5f7;--ui-3:#e8eaee;--line:#dfe2e7;--line-2:#c9ced6;
+  --ink:#0f1b2d;--ink-2:#4e5866;--ink-3:#7c8592;
+  --accent:#c8501e;--accent-2:#a8421a;--accent-soft:#fbeee7;
+  --stage:#0b0d10;--on-stage:#f2f4f6;--on-stage-2:#aab2bd;
+  --sans:"Instrument Sans","Helvetica Neue",Arial,sans-serif;--mono:"Geist Mono",ui-monospace,Menlo,Consolas,monospace;
+  --bar:60px;--foot:52px;--panel:400px;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;scroll-padding-top:80px}
-html.js .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
-html.js .reveal.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}html.js .reveal{opacity:1;transform:none;transition:none}*{animation:none!important;transition:none!important}}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.5;font-variant-numeric:tabular-nums}
-h1,h2,h3,h4{font-family:var(--display);font-weight:600;line-height:1;margin:0;letter-spacing:-.02em;text-wrap:balance;font-variation-settings:"opsz" 96}
-h1{font-size:clamp(56px,10vw,150px);font-weight:700;letter-spacing:-.035em;line-height:.92}
-h2{font-size:clamp(40px,6vw,88px);letter-spacing:-.03em;line-height:.96}
-h3{font-size:clamp(26px,2.6vw,36px);letter-spacing:-.02em;line-height:1.05}
-h4{font-size:22px;line-height:1.1;letter-spacing:-.01em;font-variation-settings:"opsz" 24}
+html,body{height:100%;margin:0}
+body{background:var(--ui);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.45;overflow:hidden;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.02em;line-height:1.1}
 p{margin:0}
-a{color:inherit;text-decoration-color:var(--rule-2);text-underline-offset:3px}
-a:hover{text-decoration-color:var(--copper);color:var(--copper)}
-img,video{max-width:100%;display:block}
-button{font:inherit;color:inherit}
-.wrap{max-width:var(--w);margin:0 auto;padding-inline:var(--gutter)}
-.mono{font-family:var(--mono);font-size:.82em;letter-spacing:.01em}
-.small{font-size:15px;color:var(--ink-3);line-height:1.5}
-:focus-visible{outline:2px solid var(--copper);outline-offset:3px}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.01em}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .sr{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
-.chapter{font-family:var(--mono);font-size:13px;color:var(--ink-3);letter-spacing:.04em;display:flex;gap:14px;align-items:center;margin-bottom:22px}
-.chapter::before{content:"";width:34px;height:1px;background:var(--ink-3)}
-.on-night .chapter{color:var(--on-night-2)}.on-night .chapter::before{background:var(--on-night-2)}
-.lede{font-size:clamp(20px,1.8vw,26px);line-height:1.4;color:var(--ink-2);max-width:56ch;margin-top:22px;font-weight:400}
-.on-night .lede{color:var(--on-night-2)}
-.btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:17px;padding:15px 22px;border-radius:999px;text-decoration:none;border:1.5px solid var(--ink);color:var(--ink);background:transparent;cursor:pointer;transition:background .2s,color .2s,border-color .2s}
-.btn:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-.btn.solid{background:var(--ink);color:var(--paper)}
-.btn.solid:hover{background:var(--copper);border-color:var(--copper);color:#fff}
-.btn svg{width:18px;height:18px}
-.on-night .btn{border-color:var(--on-night);color:var(--on-night)}
-.on-night .btn:hover{background:var(--on-night);color:var(--night)}
-.on-night .btn.solid{background:var(--on-night);color:var(--night)}
-.on-night .btn.solid:hover{background:var(--copper);border-color:var(--copper);color:#fff}
 
-/* ---------- header ---------- */
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:rgba(243,243,241,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .3s}
-.top.scrolled{border-bottom-color:var(--rule)}
-.top .wrap{display:flex;align-items:center;gap:24px;height:64px}
-.brand{display:flex;align-items:baseline;gap:10px;text-decoration:none;color:var(--ink)}
-.brand b{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.02em}
-.brand span{font-family:var(--mono);font-size:12px;color:var(--ink-3);letter-spacing:.02em}
-.top nav{margin-left:auto;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
-.top nav::-webkit-scrollbar{display:none}
-.top nav a{font-size:15px;color:var(--ink-2);text-decoration:none;padding:8px 10px;border-radius:999px;white-space:nowrap}
-.top nav a:hover{color:var(--ink);background:var(--paper-2)}
-.top nav a.on{color:var(--ink);background:var(--paper-2)}
-.top nav a.cta{color:var(--copper);font-weight:600}
-@media (max-width:640px){.brand span{display:none}.top .wrap{height:56px}}
+/* ---------- app shell ---------- */
+.app{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:var(--bar) 1fr var(--foot);height:100%;width:100%;padding-top:env(safe-area-inset-top,0px)}
+.bar{display:flex;align-items:center;gap:18px;min-width:0;padding:0 20px;border-bottom:1px solid var(--line);background:var(--ui);position:relative;z-index:30}
+.brand{display:flex;align-items:baseline;gap:10px;white-space:nowrap}
+.brand b{font-weight:700;font-size:19px;letter-spacing:-.02em}
+.brand span{font-size:12.5px;color:var(--ink-3)}
+.views{display:flex;gap:2px;margin-left:12px;min-width:0;flex:1 1 auto;overflow-x:auto;scrollbar-width:none;padding:6px 0}
+.views::-webkit-scrollbar{display:none}
+.views button{padding:8px 12px;border-radius:6px;font-size:14px;color:var(--ink-2);white-space:nowrap}
+.views button:hover{background:var(--ui-2);color:var(--ink)}
+.views button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.tools{margin-left:auto;display:flex;gap:2px;flex:none}
+.tools button.menu{display:none;width:38px;height:38px;padding:0;place-items:center;border:1px solid var(--line)}
+.tools button.menu svg{width:16px;height:16px}
+.tools button{padding:8px 12px;border-radius:6px;font-size:14px;color:var(--ink-2);white-space:nowrap}
+.tools button:hover{background:var(--ui-2);color:var(--ink)}
+.tools button.primary{background:var(--accent);color:#fff;font-weight:600}
+.tools button.primary:hover{background:var(--accent-2)}
+@media (max-width:820px){.brand span,.tools button:not(.primary):not(.menu){display:none}.tools button.menu{display:grid}.tools button.primary{padding:8px 10px;font-size:13px}.bar{padding:0 14px;gap:10px}.views{margin-left:0}}
 
-/* ---------- hero ---------- */
-.hero{position:relative;background:var(--night);color:var(--on-night);min-height:min(92vh,900px);display:grid;align-items:end;overflow:hidden}
-.hero .media{position:absolute;inset:0}
-.hero .media img,.hero .media video{width:100%;height:100%;object-fit:cover;object-position:62% 50%;transform:scale(1.04)}
-.hero .media video{position:absolute;inset:0;opacity:0;transition:opacity 1.2s}
-.hero .media video.on{opacity:1}
-.hero .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,14,17,.25) 0%,rgba(11,14,17,0) 30%,rgba(11,14,17,.55) 65%,rgba(11,14,17,.94) 100%)}
-.hero .wrap{position:relative;width:100%;padding-block:clamp(120px,18vh,220px) clamp(36px,5vw,64px)}
-.hero .kick{font-family:var(--mono);font-size:13px;color:var(--on-night-2);letter-spacing:.04em;margin-bottom:26px;display:flex;gap:18px;flex-wrap:wrap}
-.hero h1{color:#fff;max-width:12ch}
-.hero h1 i{font-style:normal;color:#e7b98f}
-.hero .row{display:grid;grid-template-columns:1fr;gap:28px;margin-top:34px;align-items:end}
-.hero .lede{margin-top:0;max-width:44ch;color:#d6dadb}
-.hero .acts{display:flex;flex-wrap:wrap;gap:12px}
-.hero .cue{position:absolute;right:var(--gutter);bottom:26px;font-family:var(--mono);font-size:12px;color:var(--on-night-2);display:flex;align-items:center;gap:10px}
-.hero .cue i{display:block;width:1px;height:36px;background:var(--on-night-2);animation:cue 2.2s ease-in-out infinite;transform-origin:top}
-@keyframes cue{0%{transform:scaleY(0);opacity:0}30%{opacity:1}100%{transform:scaleY(1);opacity:0}}
-@media (min-width:860px){.hero .row{grid-template-columns:1.2fr .8fr}.hero .acts{justify-content:flex-end}}
+/* ---------- stage ---------- */
+.stagewrap{position:relative;overflow:hidden;background:var(--stage);transition:background .5s}
+.stagewrap.light{background:#ffffff}
+.viewport{position:absolute;inset:0;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.viewport.drag{cursor:grabbing}
+.world{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+.world.anim{transition:transform .55s cubic-bezier(.2,.7,.2,1)}
+.world img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity .5s;pointer-events:none}
+.world img.on{opacity:1}
+.pins{position:absolute;inset:0;transition:opacity .3s}
+.pins.off{opacity:0;pointer-events:none}
+.pin{position:absolute;transform:translate(-50%,-50%);width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.92);color:var(--ink);font-family:var(--mono);font-size:11px;display:grid;place-items:center;box-shadow:0 1px 2px rgba(0,0,0,.4),0 0 0 1px rgba(0,0,0,.25);transition:transform .2s,background .2s,color .2s;pointer-events:auto}
+.pin:hover{transform:translate(-50%,-50%) scale(1.12)}
+.pin[aria-pressed="true"]{background:var(--accent);color:#fff;transform:translate(-50%,-50%) scale(1.25);box-shadow:0 0 0 6px rgba(200,80,30,.28),0 2px 6px rgba(0,0,0,.4)}
+.pin.dim{opacity:.55}
+.pin .lab{position:absolute;left:36px;top:50%;transform:translateY(-50%);white-space:nowrap;background:rgba(15,27,45,.88);color:#fff;font-family:var(--sans);font-size:12.5px;padding:5px 9px;border-radius:5px;opacity:0;transition:opacity .2s;pointer-events:none}
+.pin:hover .lab,.pin[aria-pressed="true"] .lab{opacity:1}
+.stagewrap.light .pin{box-shadow:0 1px 2px rgba(0,0,0,.25),0 0 0 1px rgba(0,0,0,.15)}
 
-/* ---------- statement ---------- */
-.statement{padding-block:clamp(72px,10vw,150px)}
-.statement .big{font-family:var(--display);font-weight:500;font-size:clamp(28px,3.6vw,52px);line-height:1.12;letter-spacing:-.025em;max-width:24ch;font-variation-settings:"opsz" 96}
-.statement .big em{font-style:normal;color:var(--copper)}
-.needs{margin-top:clamp(48px,6vw,88px);display:grid;grid-template-columns:1fr;gap:0;border-top:1px solid var(--rule)}
-.need{display:grid;grid-template-columns:1fr;gap:10px 40px;padding:28px 0;border-bottom:1px solid var(--rule)}
-.need .n{font-family:var(--display);font-weight:700;font-size:15px;color:var(--ink-3);letter-spacing:.02em;font-variation-settings:"opsz" 12}
-.need h3{max-width:14ch}
-.need p{color:var(--ink-2);font-size:17.5px;max-width:52ch}
-.need p b{color:var(--ink);font-weight:600}
-@media (min-width:860px){.need{grid-template-columns:80px 1.1fr 1.4fr;align-items:start}.need .n{padding-top:8px}}
+/* intro overlay */
+.intro{position:absolute;inset:0;z-index:20;display:grid;align-content:end;padding:0 clamp(20px,5vw,72px) clamp(40px,7vh,80px);background:linear-gradient(180deg,rgba(11,13,16,0) 30%,rgba(11,13,16,.55) 70%,rgba(11,13,16,.9) 100%);color:#fff;transition:opacity .6s;pointer-events:none}
+.intro>*{pointer-events:auto}
+.intro.off{opacity:0;pointer-events:none}
+.intro .k{font-family:var(--mono);font-size:12.5px;color:var(--on-stage-2);margin-bottom:18px}
+.intro h1{font-size:clamp(40px,7vw,104px);font-weight:600;letter-spacing:-.035em;line-height:.95;max-width:12ch}
+.intro p{margin-top:18px;font-size:clamp(16px,1.5vw,20px);color:#d7dce3;max-width:46ch}
+.intro .acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.cta{display:inline-flex;align-items:center;gap:10px;font-weight:600;font-size:15px;padding:13px 20px;border-radius:8px;background:#fff;color:var(--ink);transition:background .2s,transform .2s}
+.cta:hover{background:#eef0f3;text-decoration:none}
+.cta.ghost{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.35)}
+.cta.ghost:hover{background:rgba(255,255,255,.2)}
+.cta svg{width:16px;height:16px}
 
-/* ---------- plant chapter (scrollytelling) ---------- */
-.plant{background:var(--night);color:var(--on-night);padding-block:clamp(72px,9vw,130px)}
-.plant h2{color:#fff}
-.plant .intro{max-width:70ch;margin-bottom:clamp(40px,6vw,80px)}
-.scrolly{display:grid;grid-template-columns:1fr;gap:32px;align-items:start}
-.sticky{position:sticky;top:84px}
-.stage{position:relative;background:#000;border-radius:6px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45)}
-.stage img{width:100%;height:auto;aspect-ratio:16/9;object-fit:contain}
-.pins{position:absolute;inset:0}
-.pin{position:absolute;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;border:1.5px solid rgba(255,255,255,.7);background:rgba(11,14,17,.55);color:#fff;font-family:var(--mono);font-size:12px;display:grid;place-items:center;cursor:pointer;padding:0;transition:transform .25s,background .25s,border-color .25s,opacity .25s;opacity:.55}
-.pin.lit{opacity:1;background:#e7b98f;border-color:#fff;color:#141618;transform:translate(-50%,-50%) scale(1.25);box-shadow:0 0 0 6px rgba(231,185,143,.25)}
-.pin:hover{opacity:1}
-@media (max-width:560px){.pin{width:24px;height:24px;font-size:10px}}
-.stage .cap{position:absolute;left:14px;bottom:12px;font-family:var(--mono);font-size:11.5px;color:var(--on-night-2);background:rgba(11,14,17,.6);padding:5px 9px;border-radius:4px}
-.steps{display:grid;gap:0}
-.step{min-height:52vh;display:grid;align-content:center;padding:32px 0;border-top:1px solid var(--night-rule);opacity:.38;transition:opacity .4s}
-.step.active{opacity:1}
-.step .z{font-family:var(--mono);font-size:13px;color:#e7b98f;margin-bottom:12px}
-.step h3{color:#fff;font-size:clamp(28px,3vw,40px);margin-bottom:14px}
-.step p{color:var(--on-night-2);font-size:17px;max-width:48ch}
-.step p b{color:var(--on-night);font-weight:600}
-.step .open{margin-top:16px;display:inline-flex;gap:8px;align-items:center;font-family:var(--display);font-weight:600;font-size:16px;color:#fff;background:transparent;border:0;padding:0;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(255,255,255,.3);text-underline-offset:4px}
-.step .open:hover{text-decoration-color:#e7b98f;color:#e7b98f}
-@media (min-width:900px){.scrolly{grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:56px}}
-@media (max-width:899px){.sticky{position:static}.step{min-height:auto;padding:26px 0}.plant .intro{margin-bottom:28px}}
-.zindex{margin-top:clamp(48px,6vw,88px);display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:2px 24px;border-top:1px solid var(--night-rule);padding-top:22px}
-.zindex button{display:flex;gap:12px;align-items:baseline;text-align:left;background:transparent;border:0;padding:8px 0;color:var(--on-night-2);font-size:15.5px;cursor:pointer;border-bottom:1px solid transparent}
-.zindex button b{font-family:var(--mono);font-weight:500;font-size:12.5px;color:#e7b98f}
-.zindex button:hover{color:#fff}
-.plant .note{margin-top:28px;font-size:14.5px;color:var(--on-night-2);max-width:80ch}
+/* zone legend (desktop) */
+.legend{position:absolute;left:16px;top:16px;z-index:12;width:236px;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:10px;padding:10px 0;box-shadow:0 8px 30px rgba(0,0,0,.18);transition:opacity .3s,transform .3s}
+.intro:not(.off)~.cap,.intro:not(.off)~.hud{opacity:0;pointer-events:none}
+.legend.off,.intro:not(.off)~.legend{opacity:0;transform:translateX(-12px);pointer-events:none}
+.legend .t{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);padding:4px 14px 8px}
+.legend button{display:grid;grid-template-columns:28px 1fr;gap:6px;align-items:center;width:100%;text-align:left;padding:6px 14px;font-size:13.5px;color:var(--ink-2)}
+.legend button b{font-family:var(--mono);font-weight:500;font-size:11.5px;color:var(--ink-3)}
+.legend button:hover{background:var(--ui-2);color:var(--ink)}
+.legend button[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink)}
+.legend button[aria-pressed="true"] b{color:var(--accent)}
+@media (max-width:900px){.legend{display:none}}
 
-/* zone dialog */
-dialog.zone{border:0;padding:0;background:var(--paper);color:var(--ink);width:min(760px,calc(100vw - 32px));max-height:calc(100vh - 48px);border-radius:8px;box-shadow:0 40px 100px rgba(0,0,0,.5)}
-dialog.zone::backdrop{background:rgba(11,14,17,.7);backdrop-filter:blur(4px)}
-dialog.zone .in{padding:clamp(24px,4vw,44px);display:grid;gap:18px}
-dialog.zone .num{font-family:var(--mono);font-size:13px;color:var(--copper)}
-dialog.zone h3{font-size:clamp(30px,4vw,44px)}
-dialog.zone .pk{font-family:var(--display);font-weight:600;font-size:19px;color:var(--ink-2)}
-dialog.zone p{color:var(--ink-2);font-size:16.5px}
-dialog.zone p b{color:var(--ink);font-weight:600}
-dialog.zone .fam{display:flex;flex-wrap:wrap;gap:8px}
-dialog.zone .fam span{font-family:var(--mono);font-size:12px;padding:5px 10px;border-radius:999px;background:var(--paper-2);color:var(--ink-2)}
-dialog.zone .refs{display:grid;gap:6px}
-dialog.zone .refs a{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:baseline;text-decoration:none;padding:9px 0;border-top:1px solid var(--rule);color:var(--ink)}
-dialog.zone .refs a:hover{color:var(--copper)}
-dialog.zone .refs a b{font-family:var(--mono);font-weight:500;font-size:14px}
-dialog.zone .refs a span{font-size:15px;color:var(--ink-2)}
-dialog.zone .close{position:absolute;right:14px;top:14px;width:40px;height:40px;border-radius:50%;border:1px solid var(--rule-2);background:var(--paper);cursor:pointer;display:grid;place-items:center}
-dialog.zone .close:hover{background:var(--ink);color:var(--paper)}
-dialog.zone .dec{border-top:1px solid var(--rule);padding-top:16px}
-dialog.zone .dec .num{margin-bottom:6px;display:block}
+/* stage HUD */
+.hud{position:absolute;right:16px;bottom:16px;z-index:12;display:flex;gap:6px}
+.hud button{width:38px;height:38px;border-radius:8px;background:rgba(255,255,255,.94);color:var(--ink);border:1px solid var(--line);display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.hud button:hover{background:#fff}
+.hud svg{width:16px;height:16px}
+.cap{position:absolute;left:16px;bottom:16px;z-index:12;max-width:min(520px,calc(100% - 140px));font-family:var(--mono);font-size:11.5px;color:var(--on-stage-2);background:rgba(11,13,16,.6);padding:6px 10px;border-radius:6px;transition:opacity .3s}
+.stagewrap.light .cap{color:var(--ink-2);background:rgba(255,255,255,.85)}
+.cap a{color:inherit;text-decoration:underline;text-underline-offset:2px}
 
-/* ---------- films ---------- */
-.films{background:var(--night);color:var(--on-night);padding-block:0 clamp(72px,9vw,130px)}
-.films .strip{display:grid;grid-auto-flow:column;grid-auto-columns:min(78vw,520px);gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:12px;scrollbar-width:thin;scrollbar-color:var(--night-rule) transparent}
-.films .strip a{scroll-snap-align:start;color:var(--on-night);text-decoration:none;display:grid;gap:14px}
-.films .strip img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:6px;transition:transform .5s}
-.films .strip a:hover img{transform:scale(1.02)}
-.films .strip b{font-family:var(--display);font-weight:600;font-size:24px;display:block}
-.films .strip span{display:block;color:var(--on-night-2);font-size:15.5px;margin-top:4px}
-.films .strip small{display:block;font-family:var(--mono);font-size:12px;color:#e7b98f;margin-top:8px}
+/* ---------- foot ---------- */
+.foot{display:flex;align-items:center;gap:20px;padding:0 20px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-3);overflow:hidden;white-space:nowrap}
+.foot a{color:var(--ink-2)}
+.foot .src{overflow:hidden;text-overflow:ellipsis;flex:1}
+@media (max-width:820px){.foot{padding:0 14px;gap:12px;font-size:12px}}
 
-/* ---------- offering index ---------- */
-.offer{padding-block:clamp(72px,10vw,150px)}
-.index{margin-top:clamp(40px,5vw,72px);border-top:1px solid var(--ink)}
-.fam{border-bottom:1px solid var(--rule)}
-.fam summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:1fr;gap:6px 32px;padding:22px 0;align-items:baseline}
-.fam summary::-webkit-details-marker{display:none}
-.fam summary .n{font-family:var(--mono);font-size:13px;color:var(--ink-3)}
-.fam summary h3{font-size:clamp(28px,3.4vw,48px);font-weight:600;transition:color .2s}
-.fam summary:hover h3{color:var(--copper)}
-.fam summary .cnt{font-family:var(--mono);font-size:13px;color:var(--ink-3);justify-self:start}
-.fam summary .plus{width:28px;height:28px;border-radius:50%;border:1px solid var(--rule-2);display:grid;place-items:center;justify-self:end;transition:transform .3s,background .2s}
-.fam[open] summary .plus{transform:rotate(45deg);background:var(--ink);color:var(--paper);border-color:var(--ink)}
-.fam .body{display:grid;grid-template-columns:1fr;gap:20px 40px;padding:0 0 30px}
-.fam .body p{color:var(--ink-2);font-size:17px;max-width:52ch}
-.fam .refs{display:grid;gap:0}
-.fam .refs a{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:baseline;padding:8px 0;border-top:1px solid var(--rule);text-decoration:none;color:var(--ink);font-size:15px}
-.fam .refs a:first-child{border-top:0}
-.fam .refs a b{font-family:var(--mono);font-weight:500;font-size:13.5px}
-.fam .refs a span{color:var(--ink-2)}
-.fam .refs a em{font-style:normal;font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
-.fam .refs a:hover{color:var(--copper)}
-@media (min-width:860px){.fam summary{grid-template-columns:70px 1fr auto 40px}.fam .body{grid-template-columns:70px 1fr 1.1fr}.fam .body p{grid-column:2}.fam .refs{grid-column:3}}
-.rules{margin-top:clamp(40px,5vw,72px);display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px 40px}
-.rules div{font-size:16px;color:var(--ink-2);line-height:1.5;padding-top:14px;border-top:1px solid var(--rule)}
-.rules b{display:block;color:var(--ink);font-family:var(--display);font-weight:600;font-size:18px;margin-bottom:4px;letter-spacing:-.01em}
-.catalink{margin-top:36px}
+/* ---------- side panel (zone) ---------- */
+.panel{position:absolute;top:16px;right:16px;bottom:16px;width:var(--panel);z-index:14;background:var(--ui);border:1px solid var(--line);border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.28);display:grid;grid-template-rows:auto 1fr;overflow:hidden;transform:translateX(calc(100% + 24px));transition:transform .45s cubic-bezier(.2,.7,.2,1)}
+.panel.on{transform:none}
+.panel .ph{display:flex;align-items:flex-start;gap:12px;padding:18px 18px 12px;border-bottom:1px solid var(--line)}
+.panel .ph .n{font-family:var(--mono);font-size:12px;color:var(--accent);margin-bottom:4px}
+.panel .ph h2{font-size:24px}
+.panel .ph .pk{color:var(--ink-2);font-size:14px;margin-top:4px}
+.panel .x{margin-left:auto;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;flex:none}
+.panel .x:hover{background:var(--ui-2)}
+.panel .pb{overflow-y:auto;padding:16px 18px 20px;display:grid;gap:16px;align-content:start}
+.sec{display:grid;gap:6px}
+.sec .l{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+.sec p{font-size:14.5px;color:var(--ink-2)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{font-size:12.5px;padding:5px 9px;border-radius:999px;background:var(--ui-2);color:var(--ink-2)}
+.refs{display:grid;gap:0;border-top:1px solid var(--line)}
+.refs a{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line);color:var(--ink);font-size:13.5px}
+.refs a b{font-family:var(--mono);font-weight:500;font-size:12.5px;display:block}
+.refs a span{color:var(--ink-3);font-size:12.5px;display:block;margin-top:2px}
+.refs a em{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--accent);white-space:nowrap}
+.refs a:hover{text-decoration:none;background:var(--ui-2)}
+.panel .nav{display:flex;gap:6px;margin-top:4px}
+.panel .nav button{flex:1;padding:10px;border-radius:8px;border:1px solid var(--line);font-size:13.5px;color:var(--ink-2)}
+.panel .nav button:hover{background:var(--ui-2);color:var(--ink)}
+.panel .more{font-size:13.5px}
+@media (max-width:900px){.panel{top:auto;left:0;right:0;bottom:0;width:auto;max-height:62%;border-radius:14px 14px 0 0;transform:translateY(105%)}.panel.on{transform:none}}
 
-/* ---------- execution ---------- */
-.exec{padding-block:clamp(72px,10vw,150px);background:var(--white)}
-.exec .split{display:grid;grid-template-columns:1fr;gap:clamp(36px,6vw,80px);align-items:start}
-.tl{position:relative;padding-left:34px}
-.tl::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:1px;background:var(--rule-2)}
-.tl .line{position:absolute;left:8px;top:6px;width:1px;background:var(--copper);height:0;transition:height .4s linear}
-.tl>div{position:relative;padding:0 0 30px}
-.tl>div::before{content:"";position:absolute;left:-30px;top:8px;width:9px;height:9px;border-radius:50%;background:var(--paper);border:1.5px solid var(--rule-2);transition:background .3s,border-color .3s}
-.tl>div.lit::before{background:var(--copper);border-color:var(--copper)}
-.tl .ph{font-family:var(--mono);font-size:12.5px;color:var(--ink-3);margin-bottom:4px}
-.tl h4{margin-bottom:6px}
-.tl p{color:var(--ink-2);font-size:16.5px;max-width:52ch}
-.tl .ln{margin-top:8px;font-size:15px;display:flex;flex-wrap:wrap;gap:4px 18px}
-.exec figure{margin:0;position:sticky;top:96px}
-.exec figure img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:6px}
-.exec figcaption{margin-top:12px;font-size:15px;color:var(--ink-3);max-width:52ch}
-.spine{margin-top:22px;padding:20px 22px;background:var(--paper);border-radius:6px;font-size:16px;color:var(--ink-2);line-height:1.5}
-.spine b{color:var(--ink);font-weight:600}
-@media (min-width:900px){.exec .split{grid-template-columns:1fr 1fr}}
-.record{margin-top:clamp(56px,8vw,110px);border-top:1px solid var(--ink);padding-top:28px}
-.record .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:28px 32px;margin-top:28px}
-.record .grid>div{display:grid;gap:8px;align-content:start}
-.record .grid .n{font-family:var(--display);font-weight:700;font-size:44px;line-height:1;letter-spacing:-.03em;color:var(--rule-2)}
-.record .grid h4{font-size:20px}
-.record .grid p{font-size:15.5px;color:var(--ink-2)}
-.record .ln{margin-top:26px;font-size:15px;display:flex;flex-wrap:wrap;gap:6px 22px}
-.life{margin-top:clamp(56px,8vw,110px);display:grid;grid-template-columns:1fr;gap:40px}
-.life .lead h3{font-size:clamp(30px,4vw,54px);max-width:12ch}
-.life .lead p{margin-top:16px;color:var(--ink-2);max-width:40ch;font-size:17px}
-.life .four{display:grid;grid-template-columns:1fr;gap:0;border-top:1px solid var(--rule)}
-.life .four>div{padding:20px 0;border-bottom:1px solid var(--rule);display:grid;grid-template-columns:1fr;gap:6px 32px}
-.life .four .k{font-family:var(--mono);font-size:12.5px;color:var(--ink-3)}
-.life .four h4{font-size:21px}
-.life .four p{font-size:15.5px;color:var(--ink-2)}
-.life .four .ln{font-size:15px;margin-top:4px}
-@media (min-width:900px){.life{grid-template-columns:.8fr 1.2fr}.life .four>div{grid-template-columns:150px 1fr}.life .four .k{padding-top:6px}}
-
-/* ---------- applications ---------- */
-.apps{padding-block:clamp(72px,10vw,150px)}
-.apps .hero2{display:grid;grid-template-columns:1fr;gap:clamp(28px,5vw,64px);align-items:center;margin-top:clamp(36px,5vw,64px)}
-.apps .hero2 img{width:100%;border-radius:6px;mix-blend-mode:multiply}
-.apps .list{display:grid;gap:0;border-top:1px solid var(--rule)}
-.apps .list>div{padding:22px 0;border-bottom:1px solid var(--rule)}
-.apps .list .k{font-family:var(--mono);font-size:12.5px;color:var(--ink-3);margin-bottom:6px}
-.apps .list h3{font-size:clamp(24px,2.4vw,32px);margin-bottom:8px}
-.apps .list p{color:var(--ink-2);font-size:16px;max-width:52ch}
-.apps .list button{margin-top:10px;background:transparent;border:0;padding:0;color:var(--copper);font-family:var(--display);font-weight:600;font-size:15.5px;cursor:pointer;text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--copper-soft)}
-@media (min-width:900px){.apps .hero2{grid-template-columns:1.1fr .9fr}}
-.bounds{margin-top:clamp(56px,8vw,110px);display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px 32px}
-.bounds>div{border-top:1px solid var(--ink);padding-top:16px}
-.bounds .k{font-family:var(--mono);font-size:12.5px;color:var(--ink-3);margin-bottom:8px}
-.bounds h4{font-size:21px;margin-bottom:8px}
-.bounds p{font-size:15.5px;color:var(--ink-2)}
-.grid2{margin-top:clamp(40px,5vw,72px);display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:32px 40px}
-.grid2>div{padding-top:16px;border-top:1px solid var(--rule)}
-.grid2 h4{font-size:22px;margin-bottom:8px}
-.grid2 p{font-size:16px;color:var(--ink-2)}
-.grid2 .ln{margin-top:10px;font-size:15px;display:flex;flex-wrap:wrap;gap:4px 18px}
-
-/* ---------- cases ---------- */
-.cases{padding-block:clamp(72px,10vw,150px);background:var(--white)}
-.casegrid{margin-top:clamp(40px,5vw,72px);display:grid;grid-template-columns:1fr;gap:40px 48px}
-.case{display:grid;gap:14px;align-content:start;padding-top:22px;border-top:1px solid var(--ink)}
-.case .k{font-family:var(--mono);font-size:12.5px;color:var(--ink-3)}
-.case .stat{font-family:var(--display);font-weight:700;font-size:clamp(54px,6vw,86px);line-height:.95;letter-spacing:-.04em}
-.case h3{font-size:24px;font-weight:600}
-.case dl{margin:6px 0 0;display:grid;gap:10px}
-.case dt{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
-.case dd{margin:2px 0 0;font-size:16px;color:var(--ink-2)}
-.case dd.pg{color:var(--ink)}
-.case .src{font-size:15px;margin-top:4px}
-@media (min-width:860px){.casegrid{grid-template-columns:repeat(3,1fr)}}
-.more{margin-top:clamp(48px,6vw,80px);display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px 40px}
-.more h4{font-size:19px;margin-bottom:12px}
-.more ul{margin:0;padding:0;list-style:none;display:grid;gap:9px;font-size:15.5px}
-.more li span{display:block;color:var(--ink-3);font-size:14px}
-
-/* ---------- catalog ---------- */
-.catalog{padding-block:clamp(72px,10vw,150px)}
-.ctrl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:clamp(28px,4vw,48px) 0 20px}
-.ctrl button{font-size:14.5px;color:var(--ink-2);background:transparent;border:1px solid var(--rule-2);padding:8px 14px;border-radius:999px;cursor:pointer}
-.ctrl button:hover{border-color:var(--ink);color:var(--ink)}
-.ctrl button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-.ctrl input{margin-left:auto;font:inherit;font-size:15.5px;color:var(--ink);background:var(--white);border:1px solid var(--rule-2);padding:10px 16px;border-radius:999px;min-width:220px;flex:1 1 220px;max-width:380px}
+/* ---------- drawers ---------- */
+.menu-list{display:grid;gap:0;border-top:1px solid var(--line)}
+.menu-list a{display:grid;gap:2px;padding:14px 0;border-bottom:1px solid var(--line);color:var(--ink)}
+.menu-list a b{font-size:17px;font-weight:600}
+.menu-list a span{font-size:13px;color:var(--ink-3)}
+.menu-zones{display:grid;grid-template-columns:1fr 1fr;gap:0 16px;margin-top:10px}
+.menu-zones a{display:grid;grid-template-columns:26px 1fr;gap:6px;padding:8px 0;border-bottom:1px solid var(--line);color:var(--ink-2);font-size:13.5px}
+.menu-zones a b{font-family:var(--mono);font-weight:500;font-size:11.5px;color:var(--ink-3)}
+@media (max-width:480px){.menu-zones{grid-template-columns:1fr}}
+.drawer{position:absolute;top:0;right:0;bottom:0;width:min(760px,100%);z-index:40;background:var(--ui);box-shadow:-20px 0 60px rgba(0,0,0,.25);transform:translateX(102%);transition:transform .45s cubic-bezier(.2,.7,.2,1);display:grid;grid-template-rows:auto 1fr;overflow:hidden}
+.drawer.on{transform:none}
+.scrim{position:absolute;inset:0;z-index:39;background:rgba(15,27,45,.35);opacity:0;pointer-events:none;transition:opacity .4s}
+.scrim.on{opacity:1;pointer-events:auto}
+.dh{display:flex;align-items:center;gap:14px;padding:18px clamp(18px,4vw,40px);border-bottom:1px solid var(--line)}
+.dh h2{font-size:22px}
+.dh .x{margin-left:auto;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center}
+.dh .x:hover{background:var(--ui-2)}
+.db{overflow-y:auto;padding:clamp(18px,4vw,40px);display:grid;grid-template-columns:minmax(0,1fr);gap:28px;align-content:start}
+.db>*{min-width:0}
+.db .lead{font-size:16px;color:var(--ink-2);max-width:60ch}
+.db h3{font-size:16px;font-weight:600;margin-bottom:8px}
+.list{display:grid;border-top:1px solid var(--line)}
+.list>div{display:grid;grid-template-columns:120px 1fr;gap:6px 18px;padding:14px 0;border-bottom:1px solid var(--line)}
+.list .l{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);padding-top:3px}
+.list h4{margin:0 0 4px;font-size:15px;font-weight:600}
+.list p{font-size:14px;color:var(--ink-2)}
+.list .ln{margin-top:6px;font-size:13.5px;display:flex;flex-wrap:wrap;gap:4px 16px}
+@media (max-width:560px){.list>div{grid-template-columns:1fr}}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px 28px}
+.case{display:grid;gap:8px;align-content:start;padding-top:14px;border-top:2px solid var(--ink)}
+.case .k{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+.case .stat{font-size:40px;font-weight:600;letter-spacing:-.03em;line-height:1}
+.case h4{margin:0;font-size:16px}
+.case p{font-size:13.5px;color:var(--ink-2)}
+.case p b{color:var(--ink);font-weight:600}
+.case .src{font-size:13px}
+.fams{display:grid;gap:0;border-top:1px solid var(--line)}
+.fams details{border-bottom:1px solid var(--line)}
+.fams summary{list-style:none;display:grid;grid-template-columns:32px 1fr auto 24px;gap:12px;align-items:center;padding:14px 0;cursor:pointer}
+.fams summary::-webkit-details-marker{display:none}
+.fams summary .n{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+.fams summary h4{margin:0;font-size:16px;font-weight:600}
+.fams summary .c{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+.fams summary .pl{width:22px;height:22px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;transition:transform .3s}
+.fams details[open] summary .pl{transform:rotate(45deg);background:var(--ink);color:#fff;border-color:var(--ink)}
+.fams .fb{padding:0 0 16px 44px;display:grid;gap:12px}
+.fams .fb p{font-size:14px;color:var(--ink-2);max-width:60ch}
+.ctrl{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.ctrl button{font-size:13px;color:var(--ink-2);border:1px solid var(--line-2);padding:6px 11px;border-radius:999px}
+.ctrl button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.ctrl input{font:inherit;font-size:14px;color:var(--ink);border:1px solid var(--line-2);padding:8px 12px;border-radius:999px;min-width:200px;flex:1 1 200px}
 .tablewrap{overflow-x:auto;border-top:1px solid var(--ink)}
-table{border-collapse:collapse;width:100%;min-width:960px;font-size:15px}
-th,td{text-align:left;vertical-align:top;padding:12px 14px 12px 0;border-bottom:1px solid var(--rule);line-height:1.4}
-th{font-family:var(--mono);font-weight:500;font-size:12.5px;color:var(--ink-3);position:sticky;top:64px;background:var(--paper)}
+table{border-collapse:collapse;width:100%;min-width:820px;font-size:13.5px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px 10px 0;border-bottom:1px solid var(--line);line-height:1.4}
+th{font-family:var(--mono);font-weight:500;font-size:11.5px;color:var(--ink-3)}
 td{color:var(--ink-2)}
-td.st{color:var(--ink);font-family:var(--mono);font-size:14px;white-space:nowrap}
-td .note{display:block;font-size:13px;color:var(--ink-3);font-family:var(--body);white-space:normal;max-width:26ch}
-td .note.ct{color:var(--copper)}
-td .fm{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px;vertical-align:0}
-td.fam{white-space:nowrap}
+td.st{color:var(--ink);font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+td .note{display:block;font-size:12px;color:var(--ink-3);font-family:var(--sans);white-space:normal;max-width:24ch}
+td .note.ct{color:var(--accent)}
 td a{white-space:nowrap}
 td .na{color:var(--ink-3);font-style:italic}
-.count{font-family:var(--mono);font-size:13px;color:var(--ink-3);margin-top:12px}
-
-/* ---------- contact ---------- */
-.contact{background:var(--night);color:var(--on-night);padding-block:clamp(80px,10vw,150px)}
-.contact h2{color:#fff;max-width:12ch}
-.contact .split{display:grid;grid-template-columns:1fr;gap:clamp(32px,5vw,72px);margin-top:clamp(36px,5vw,64px)}
-.contact .who{display:grid;gap:22px}
-.contact .who .k{font-family:var(--mono);font-size:12.5px;color:var(--on-night-2);margin-bottom:6px}
-.contact .who a{font-family:var(--display);font-weight:600;font-size:clamp(22px,2.6vw,34px);color:#fff;text-decoration:none;letter-spacing:-.02em}
-.contact .who a:hover{color:#e7b98f}
-.contact .who span{display:block;color:var(--on-night-2);font-size:15px}
-.contact .check{display:grid;gap:0;border-top:1px solid var(--night-rule)}
-.contact .check>div{display:grid;grid-template-columns:44px 1fr;gap:12px;padding:16px 0;border-bottom:1px solid var(--night-rule)}
-.contact .check .n{font-family:var(--mono);font-size:13px;color:#e7b98f;padding-top:4px}
-.contact .check h4{color:#fff;margin-bottom:4px}
-.contact .check p{color:var(--on-night-2);font-size:15.5px}
-@media (min-width:900px){.contact .split{grid-template-columns:1fr 1fr}}
-footer{background:var(--night);color:var(--on-night-2);padding:0 0 40px;font-size:14px}
-footer .wrap{display:flex;flex-wrap:wrap;gap:10px 32px;justify-content:space-between;border-top:1px solid var(--night-rule);padding-top:22px}
-footer a{color:var(--on-night)}
-@media print{.top,.hero .cue,.ctrl,.films{display:none}body{background:#fff}.hero{min-height:auto}}
+.count{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+.who{display:grid;gap:18px}
+.who .l{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);margin-bottom:4px}
+.who a{font-size:22px;font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+.who span{display:block;color:var(--ink-3);font-size:13.5px}
+.checks{display:grid;border-top:1px solid var(--line)}
+.checks>div{display:grid;grid-template-columns:36px 1fr;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.checks .n{font-family:var(--mono);font-size:12px;color:var(--accent);padding-top:3px}
+.checks h4{margin:0 0 3px;font-size:15px}
+.checks p{font-size:13.5px;color:var(--ink-2)}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px;padding:11px 16px;border-radius:8px;background:var(--accent);color:#fff}
+.btn:hover{background:var(--accent-2);text-decoration:none}
+.btn.o{background:var(--ui-2);color:var(--ink)}
+.btn.o:hover{background:var(--ui-3)}
+.films{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.films a{display:grid;gap:8px;color:var(--ink)}
+.films img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px}
+.films b{font-size:14.5px}
+.films span{font-size:12.5px;color:var(--ink-3)}
 </style>
 </head>
 <body>
-<script>document.documentElement.classList.add('js')</script>
+<div class="app">
+  <header class="bar">
+    <div class="brand"><b>Southwire</b><span>Power Generation Solutions</span></div>
+    <nav class="views" id="views" aria-label="Views"></nav>
+    <div class="tools">
+      <button type="button" data-drawer="cable">Cable</button>
+      <button type="button" data-drawer="exec">Execution</button>
+      <button type="button" data-drawer="apps">Applications</button>
+      <button type="button" data-drawer="cases">Cases</button>
+      <button type="button" class="primary" data-drawer="contact">Start a review</button>
+      <button type="button" class="menu" data-drawer="menu" aria-label="Menu"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h12M2 8h12M2 12h12"/></svg></button>
+    </div>
+  </header>
 
-<header class="top" id="top">
-  <div class="wrap">
-    <a class="brand" href="#"><b>Southwire</b><span>Power Generation Solutions</span></a>
-    <nav aria-label="Sections">
-      <a href="#plant">The plant</a>
-      <a href="#offer">Cable</a>
-      <a href="#exec">Execution</a>
-      <a href="#apps">Applications</a>
-      <a href="#cases">Experience</a>
-      <a href="#catalog">Catalog</a>
-      <a class="cta" href="#contact">Start a review</a>
-    </nav>
-  </div>
-</header>
+  <div class="stagewrap" id="stagewrap">
+    <div class="viewport" id="viewport">
+      <div class="world" id="world">
+        <div id="imgs"></div>
+        <div class="pins" id="pins" role="group" aria-label="Plant zones"></div>
+      </div>
+    </div>
 
-<main>
-
-<section class="hero on-night" aria-label="Opening">
-  <div class="media">
-    <img src="assets/hall-interior.jpg" alt="Inside the enclosed turbine hall of the plant model: turbine machinery, auxiliary packages, overhead cable routes" fetchpriority="high">
-    <video id="herovid" muted playsinline loop preload="none" poster="assets/hall-interior.jpg" aria-hidden="true" tabindex="-1"></video>
-  </div>
-  <div class="veil"></div>
-  <div class="wrap">
-    <div class="kick"><span>Power Generation Solutions</span><span id="filmnote">Still from the original engineering model</span></div>
-    <h1>Accelerating time to <i>power.</i></h1>
-    <div class="row">
-      <p class="lede">From the generation asset to the grid interface: cable, application engineering and project execution, connected to the plant's electrical scope.</p>
+    <div class="intro" id="intro">
+      <div class="k">Power Generation Solutions · the plant model</div>
+      <h1>Accelerating time to power.</h1>
+      <p>Cable, application engineering and project execution, from the generation asset to the grid interface. Start with the plant.</p>
       <div class="acts">
-        <a class="btn solid" href="#plant">Explore the plant <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-        <a class="btn" href="{{REVIEW_MAILTO}}">Start a cable package review</a>
+        <button type="button" class="cta" id="explore">Explore the plant <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <a class="cta ghost" href="{{REVIEW_MAILTO}}">Start a cable package review</a>
       </div>
     </div>
-  </div>
-  <div class="cue"><i></i>Scroll</div>
-</section>
 
-<section class="statement" id="why" aria-labelledby="h-why">
-  <div class="wrap">
-    <p class="chapter">Why cable decides the schedule</p>
-    <p class="big reveal" id="h-why">Cable is under one percent of a plant's cost and sits at the end of every contract branch. Its specification is written three tiers up, months before the reel is cut. <em>That is where time to power is won or lost.</em></p>
-    <div class="needs" id="needs"></div>
-  </div>
-</section>
+    <aside class="legend" id="legend" aria-label="Zones"><div class="t">Application zones · select one</div><div id="legendlist"></div></aside>
 
-<section class="plant on-night" id="plant" aria-labelledby="h-plant">
-  <div class="wrap">
-    <p class="chapter">The plant</p>
-    <h2 id="h-plant">One plant. Sixteen application zones.</h2>
-    <p class="lede intro">Scroll through the plant. Each stop lights the zones it covers on the original engineering model and shows what has to be settled before the cable is released. Open any zone for its cable families, references and specifications.</p>
-    <div class="scrolly">
-      <div class="sticky">
-        <div class="stage" id="stage">
-          <img src="assets/plant-zones.jpg" alt="Isometric render of the combined-cycle plant model with sixteen numbered application zones">
-          <div class="pins" id="pins" role="group" aria-label="Plant zones"></div>
-          <div class="cap" id="stagecap">Original engineering model · illustrative, not a digital twin</div>
-        </div>
-      </div>
-      <div class="steps" id="steps"></div>
+    <aside class="panel" id="panel" aria-live="polite">
+      <div class="ph"><div><div class="n" id="p-n"></div><h2 id="p-t"></h2><div class="pk" id="p-pk"></div></div><button type="button" class="x" id="p-x" aria-label="Close"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 2l10 10M12 2L2 12"/></svg></button></div>
+      <div class="pb" id="p-b"></div>
+    </aside>
+
+    <div class="cap" id="cap"></div>
+    <div class="hud">
+      <button type="button" id="zin" aria-label="Zoom in"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3v10M3 8h10"/></svg></button>
+      <button type="button" id="zout" aria-label="Zoom out"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8h10"/></svg></button>
+      <button type="button" id="zreset" aria-label="Reset view"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8a6 6 0 1 0 2-4.5M2 2v4h4"/></svg></button>
     </div>
-    <div class="zindex" id="zindex" role="group" aria-label="All zones"></div>
-    <p class="note">Concept application map. Optional systems are shown. Cable design and quantities follow the approved project scope; shared routes and staging do not add circuit footage. Select constructions against actual routes and approved OEM data.</p>
-  </div>
-</section>
 
-<section class="films on-night" aria-label="Films">
-  <div class="wrap">
-    <p class="chapter">The model in motion</p>
-    <div class="strip" id="films"></div>
-    <p class="note small" style="color:var(--on-night-2);margin-top:14px">Silent films from the original model, hosted on the online field guide. Illustrative geometry and route colors.</p>
+    <div class="scrim" id="scrim"></div>
+    <section class="drawer" id="drawer" aria-labelledby="d-t"><div class="dh"><h2 id="d-t"></h2><button type="button" class="x" id="d-x" aria-label="Close"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 2l10 10M12 2L2 12"/></svg></button></div><div class="db" id="d-b"></div></section>
   </div>
-</section>
 
-<section class="offer" id="offer" aria-labelledby="h-offer">
-  <div class="wrap">
-    <p class="chapter">The cable offering</p>
-    <h2 id="h-offer">Seven families. One electrical scope.</h2>
-    <p class="lede">Published constructions with specification numbers, from the switchyard to the last instrument loop. Open a family for its references; every one links to the manufacturer's document.</p>
-    <div class="index" id="index"></div>
-    <div class="rules" id="rules"></div>
-    <p class="catalink"><a class="btn" href="#catalog">Open the technical catalog</a></p>
-  </div>
-</section>
-
-<section class="exec" id="exec" aria-labelledby="h-exec">
-  <div class="wrap">
-    <p class="chapter">From specification to installation</p>
-    <h2 id="h-exec">Make the schedule work in the field.</h2>
-    <p class="lede">Coordinate cable, equipment interfaces and the installation sequence before material reaches the jobsite. Then package the delivery around the pull sequence.</p>
-    <div class="split" style="margin-top:clamp(40px,5vw,72px)">
-      <div class="tl" id="tl"><div class="line" id="tline"></div></div>
-      <div>
-        <figure><img src="assets/reel-yard.jpg" alt="Cable reels staged at the plant laydown yard" loading="lazy"><figcaption>Reel staging and prefab, zone 03. Staging adds no circuit footage; it changes when and how the footage is issued.</figcaption>
-        <div class="spine"><b>Prefabricated cable spine, project development.</b> A factory-built spine needs defined interfaces, a qualified assembly provider and an agreed test plan. Evaluate a pilot on factory labor, field labor, logistics, schedule and total installed cost. Availability and performance are project-specific.</div></figure>
-      </div>
-    </div>
-    <div class="record">
-      <p class="chapter">One circuit record, specification through energization</p>
-      <h3>Turn the cable schedule into a field plan.</h3>
-      <div class="grid" id="rel"></div>
-      <div class="ln" id="rellinks"></div>
-    </div>
-    <div class="life">
-      <div class="lead"><p class="chapter">Extend the lifecycle offer</p><h3>Assess. Repair. Rejuvenate. Replace.</h3><p>Choose the intervention from condition, duty and the outage window. Agree eligibility, acceptance and scope before release. Historical case results do not establish future performance.</p></div>
-      <div class="four" id="life"></div>
-    </div>
-  </div>
-</section>
-
-<section class="apps" id="apps" aria-labelledby="h-apps">
-  <div class="wrap">
-    <p class="chapter">Beyond one plant configuration</p>
-    <h2 id="h-apps">Build the package around the application.</h2>
-    <div class="hero2">
-      <img src="assets/cover-plant.jpg" alt="Isometric plant model with turbine hall, HRSG stacks, switchyard and a delivery truck with cable reels" loading="lazy">
-      <div class="list" id="applist"></div>
-    </div>
-    <div class="bounds" id="bounds"></div>
-    <div class="grid2" id="gridtie"></div>
-  </div>
-</section>
-
-<section class="cases" id="cases" aria-labelledby="h-cases">
-  <div class="wrap">
-    <p class="chapter">Documented experience</p>
-    <h2 id="h-cases">Results with a reference.</h2>
-    <p class="lede">Historical Southwire projects, each with its published source. The PowerGen application under each case is a proposed use, not an outcome from the illustrated plant.</p>
-    <div class="casegrid" id="casegrid"></div>
-    <div class="more" id="more"></div>
-  </div>
-</section>
-
-<section class="catalog" id="catalog" aria-labelledby="h-cat">
-  <div class="wrap">
-    <p class="chapter">Technical reference</p>
-    <h2 id="h-cat">Cable catalog.</h2>
-    <p class="lede">Published references by family with the specification number and the manufacturer's document. Stock numbers do not indicate inventory; confirm voltage, insulation level, conductor size, installation rating, reel length, listing, pricing and lead time against the project design.</p>
-    <div class="ctrl" id="ctrl" role="group" aria-label="Filter"></div>
-    <div class="tablewrap"><table id="cat"><thead><tr><th>Stock / reference</th><th>Family</th><th>Duty</th><th>Construction / size</th><th>Spec</th><th>Documents</th><th>Zones</th></tr></thead><tbody></tbody></table></div>
-    <p class="count" id="count"></p>
-    <p class="small" style="margin-top:14px;max-width:90ch">Reference types: a <b>product family</b> is selected by size and listing; a <b>specification number</b> describes a construction; a <b>published base code</b> is not a complete orderable stock number; a <b>stock number</b> is orderable but does not establish inventory; <b>request stock code</b> means size and duty are selected with the project; a <b>project-specific engineered selection</b> is made against the approved design. Type TC and TC-ER are distinct ratings.</p>
-  </div>
-</section>
-
-<section class="contact on-night" id="contact" aria-labelledby="h-contact">
-  <div class="wrap">
-    <p class="chapter">Project conversation</p>
-    <h2 id="h-contact">Connect your next power project.</h2>
-    <div class="split">
-      <div>
-        <p class="lede" style="margin-top:0">Start with the one-line diagram, the cable schedule, the equipment interfaces and the target energization date.</p>
-        <div class="who" id="who" style="margin-top:32px"></div>
-        <p style="margin-top:32px"><a class="btn solid" href="{{REVIEW_MAILTO}}">Start a cable package review</a></p>
-      </div>
-      <div class="check" id="check"></div>
-    </div>
-  </div>
-</section>
-</main>
-<footer>
-  <div class="wrap">
-    <span id="srcnote"></span>
-    <span><a href="PowerGen_eBrochure.pdf">Email PDF</a> · <a href="PowerGen_Technical_Appendix.pdf">Technical appendix</a> · <a href="source-and-asset-register.md">Sources</a> · <a href="CHANGELOG.md">Change log</a></span>
-  </div>
-</footer>
-
-<dialog class="zone" id="zdlg"><div class="in" id="zin"></div></dialog>
+  <footer class="foot">
+    <span class="src" id="srcnote"></span>
+    <a href="PowerGen_eBrochure.pdf">Email PDF</a><a href="PowerGen_Technical_Appendix.pdf">Appendix</a><a href="source-and-asset-register.md">Sources</a>
+  </footer>
+</div>
 
 <script id="data" type="application/json">{{DATA}}</script>
 <script>
@@ -481,121 +281,178 @@ footer a{color:var(--on-night)}
   var D=JSON.parse(document.getElementById('data').textContent);
   var FAM={};D.families.forEach(function(f){FAM[f.id]=f});
   var CAT={};D.catalog.forEach(function(c){CAT[c.stock]=c});
-  function pad(n){return (n<10?'0':'')+n}
-  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
-  function A(t,u,cls){return '<a href="'+u+'" target="_blank" rel="noopener"'+(cls?' class="'+cls+'"':'')+'>'+esc(t)+'</a>'}
+  var pad=function(n){return (n<10?'0':'')+n},esc=function(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')};
+  var A=function(t,u){return '<a href="'+u+'" target="_blank" rel="noopener">'+esc(t)+'</a>'};
   var rm=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  /* header state */
-  var top=document.getElementById('top');
-  window.addEventListener('scroll',function(){top.classList.toggle('scrolled',window.scrollY>8)},{passive:true});
-  /* hero video */
-  var v=document.getElementById('herovid');
-  if(v&&!rm&&D.films[0]&&D.films[0].url){
-    v.addEventListener('canplay',function(){v.classList.add('on');document.getElementById('filmnote').textContent='Plant flythrough · original engineering model';v.play().catch(function(){})});
-    var s=document.createElement('source');s.src=D.films[0].url;s.type='video/mp4';s.addEventListener('error',function(){v.remove()});v.appendChild(s);v.load();
-  }
-  /* needs */
-  var NEEDS=[
-    ['Time to power','Reach the specification before it is frozen, with the plant model, the one-line and the cable schedule in the same conversation.','CableTechSupport application review; Construction Planning Services takeoffs and pull calculations.'],
-    ['Installation labor and constructability','Reel lengths, pull sections, circuit identification and staged issue planned around the installation sequence.','Contractor Solutions and SIMpull equipment planning; qualified prefabrication to an agreed engineered scope.'],
-    ['Material availability, coordination and traceability','Published constructions with specification numbers, kitting and labels by circuit, reel tracking and staged delivery.','SPEED Services, Project Services, Southwire Reel Tracking System.'],
-    ['Reliable operation and lifecycle support','Constructions rated for the duty, and assessment or rejuvenation of existing feeders where a brownfield expansion depends on them.','Field Assessment Services and cable rejuvenation, with published utility results.']];
-  document.getElementById('needs').innerHTML=NEEDS.map(function(n,i){return '<div class="need reveal"><div class="n">'+pad(i+1)+'</div><h3>'+esc(n[0])+'</h3><p>'+esc(n[1])+' <b>What Southwire brings:</b> '+esc(n[2])+'</p></div>'}).join('');
-  /* plant: pins + steps + index */
-  var pins=document.getElementById('pins');
-  D.zones.forEach(function(z){
-    var b=document.createElement('button');b.type='button';b.className='pin';b.textContent=pad(z.n);b.setAttribute('aria-label','Zone '+pad(z.n)+': '+z.name);b.dataset.n=z.n;b.style.left=z.x+'%';b.style.top=z.y+'%';
-    b.addEventListener('click',function(){openZone(z.n)});pins.appendChild(b);
+
+  /* ---------- views ---------- */
+  var VIEWS=[
+    {id:'zones',name:'Plant',src:'assets/plant-zones.jpg',light:false,pins:true,cap:'Original engineering model, sixteen application zones. Drag to pan, scroll or pinch to zoom, select a zone.'},
+    {id:'aerial',name:'Aerial',src:'assets/plant-aerial.jpg',light:true,cap:'Aerial view of the plant model. Illustrative; not a validated engineering design.'},
+    {id:'core',name:'Power block',src:'assets/plant-core.jpg',light:false,cap:'The power generation core: turbine hall and HRSGs outlined. Everything else on the site is auxiliary at some scale.'},
+    {id:'xray',name:'Cable routes',src:'assets/xray-plant.jpg',light:false,cap:'X-ray route concept for the full plant. Presentation routes, not a circuit schedule; colours do not establish voltage class.',film:2},
+    {id:'hall',name:'Turbine hall',src:'assets/xray-hall.jpg',light:false,cap:'Turbine hall with the MCC, UPS, VFD and motor room: where OEM package wiring meets field cable.',film:1},
+    {id:'inside',name:'Inside the hall',src:'assets/hall-interior.jpg',light:false,cap:'Inside the enclosed hall: machinery, auxiliary packages, overhead routes and lighting.',film:0}
+  ];
+  var imgs=document.getElementById('imgs'),viewsNav=document.getElementById('views'),stagewrap=document.getElementById('stagewrap'),pinsEl=document.getElementById('pins'),cap=document.getElementById('cap');
+  VIEWS.forEach(function(v,i){
+    var im=document.createElement('img');im.src=v.src;im.alt='';im.dataset.id=v.id;if(i===0)im.classList.add('on');if(i>0)im.loading='lazy';imgs.appendChild(im);
+    var b=document.createElement('button');b.type='button';b.textContent=v.name;b.dataset.id=v.id;b.setAttribute('aria-pressed',String(i===0));b.addEventListener('click',function(){setView(v.id)});viewsNav.appendChild(b);
   });
-  var steps=document.getElementById('steps');
-  steps.innerHTML=D.zoneDecisions.map(function(d,i){return '<div class="step" data-i="'+i+'"><div class="z">Zones '+d.zones.map(pad).join(' · ')+' · '+esc(d.group)+'</div><h3>'+esc(d.title)+'</h3><p><b>Cables.</b> '+esc(d.cables)+'</p><p style="margin-top:10px"><b>Before release.</b> '+esc(d.release)+'</p><button type="button" class="open" data-z="'+d.zones[0]+'">Open zone '+pad(d.zones[0])+' · '+esc(D.zones[d.zones[0]-1].name)+'</button></div>'}).join('');
-  steps.addEventListener('click',function(e){var b=e.target.closest('button.open');if(b)openZone(+b.dataset.z)});
-  function light(zs){document.querySelectorAll('#pins .pin').forEach(function(p){p.classList.toggle('lit',zs.indexOf(+p.dataset.n)>=0)});document.getElementById('stagecap').textContent=zs.length?'Zones '+zs.map(pad).join(', ')+' highlighted':'Original engineering model · illustrative, not a digital twin'}
-  var stepEls=Array.prototype.slice.call(document.querySelectorAll('.step'));
-  if('IntersectionObserver' in window){
-    var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){stepEls.forEach(function(s){s.classList.remove('active')});en.target.classList.add('active');light(D.zoneDecisions[+en.target.dataset.i].zones)}})},{rootMargin:'-45% 0px -45% 0px',threshold:0});
-    stepEls.forEach(function(s){io.observe(s)});
+  var curView='zones';
+  function setView(id){
+    curView=id;var v=VIEWS.filter(function(x){return x.id===id})[0];
+    imgs.querySelectorAll('img').forEach(function(im){im.classList.toggle('on',im.dataset.id===id)});
+    viewsNav.querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.id===id))});
+    stagewrap.classList.toggle('light',!!v.light);
+    pinsEl.classList.toggle('off',!v.pins);
+    document.getElementById('legend').classList.toggle('off',!v.pins);
+    var f=(v.film!=null)?D.films[v.film]:null;
+    cap.innerHTML=esc(v.cap)+(f?' · '+A('Watch the '+f.title.toLowerCase()+' ('+f.seconds+' s)',f.url):'');
+    fit(true);
   }
-  stepEls[0].classList.add('active');light(D.zoneDecisions[0].zones);
-  document.getElementById('zindex').innerHTML=D.zones.map(function(z){return '<button type="button" data-n="'+z.n+'"><b>'+pad(z.n)+'</b>'+esc(z.name)+'</button>'}).join('');
-  document.getElementById('zindex').addEventListener('click',function(e){var b=e.target.closest('button');if(b)openZone(+b.dataset.n)});
-  var dlg=document.getElementById('zdlg'),zin=document.getElementById('zin');
-  function openZone(n){
-    var z=D.zones[n-1];
-    var refs=z.refs.length?z.refs.map(function(r){var c=CAT[r];var u=c&&(c.specUrl||c.productUrl);return '<a href="'+(u||'#catalog')+'"'+(u?' target="_blank" rel="noopener"':'')+'><b>'+esc(r)+'</b><span>'+esc(c?c.duty+' · '+c.construction:'')+'</span></a>'}).join(''):'<p class="small">Services and staging scope; see the execution chapter.</p>';
-    zin.innerHTML='<button type="button" class="close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3l10 10M13 3L3 13"/></svg></button>'
-      +'<span class="num">Zone '+pad(n)+' of 16</span><h3>'+esc(z.name)+'</h3><div class="pk">'+esc(z.package)+'</div>'
-      +'<p><b>Equipment and application.</b> '+esc(z.cable)+'</p>'
-      +'<div class="fam">'+z.families.map(function(k){return '<span>'+esc(FAM[k].short)+'</span>'}).join('')+'</div>'
-      +'<p><b>Selection considerations.</b> '+esc(z.focus)+'</p><p><b>Specifies and buys.</b> '+esc(z.buys)+'</p>'
-      +'<div><span class="num">References · click for the manufacturer document</span><div class="refs" style="margin-top:8px">'+refs+'</div></div>'
-      +(z.decision?'<div class="dec"><span class="num">Before release · '+esc(z.decision.group)+'</span><p>'+esc(z.decision.release)+'</p></div>':'')
-      +'<p class="small"><a href="#catalog" data-zone="'+n+'" class="tocat">All references for zone '+pad(n)+' in the catalog</a>'+(z.link?' · <a href="'+z.link[1]+'">'+esc(z.link[0])+'</a>':'')+'</p>';
-    zin.querySelector('.close').addEventListener('click',function(){dlg.close()});
-    zin.querySelector('.tocat').addEventListener('click',function(){dlg.close();setFilter('zone:'+n)});
-    var lk=zin.querySelector('a[href^="#"]:not(.tocat)');if(lk)lk.addEventListener('click',function(){dlg.close()});
-    if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','');
+
+  /* ---------- pan / zoom ---------- */
+  var vp=document.getElementById('viewport'),world=document.getElementById('world');
+  var W=2000,H=1125,tx=0,ty=0,s=1,minS=1,maxS=6;
+  function layout(){var vw=vp.clientWidth,vh=vp.clientHeight;world.style.width=W+'px';world.style.height=H+'px';minS=Math.min(vw/W,vh/H);maxS=minS*7}
+  function apply(anim){world.classList.toggle('anim',!!anim&&!rm);world.style.transform='translate('+tx+'px,'+ty+'px) scale('+s+')'}
+  function clamp(){var vw=vp.clientWidth,vh=vp.clientHeight;s=Math.max(minS,Math.min(maxS,s));var ww=W*s,hh=H*s;
+    if(ww<=vw)tx=(vw-ww)/2;else tx=Math.min(0,Math.max(vw-ww,tx));
+    if(hh<=vh)ty=(vh-hh)/2;else ty=Math.min(0,Math.max(vh-hh,ty))}
+  function fit(anim){layout();var vw=vp.clientWidth,vh=vp.clientHeight;s=(vw<vh)?Math.max(vw/W,vh/H):minS;tx=(vw-W*s)/2;ty=(vh-H*s)/2;clamp();apply(anim)}
+  function zoomAt(px,py,factor,anim){var ns=Math.max(minS,Math.min(maxS,s*factor));var k=ns/s;tx=px-(px-tx)*k;ty=py-(py-ty)*k;s=ns;clamp();apply(anim)}
+  function centerOn(fx,fy,targetS,anim){var vw=vp.clientWidth,vh=vp.clientHeight;s=Math.max(minS,Math.min(maxS,targetS));tx=vw/2-fx*W*s;ty=vh/2-fy*H*s;clamp();apply(anim)}
+  var ptrs=new Map(),last=null,pinchD=0,moved=false;
+  vp.addEventListener('pointerdown',function(e){if(e.target.closest('.pin,.hud,.legend,.panel,.intro,.cap'))return;vp.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});last={x:e.clientX,y:e.clientY};moved=false;vp.classList.add('drag');world.classList.remove('anim');
+    if(ptrs.size===2){var a=Array.from(ptrs.values());pinchD=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)}});
+  vp.addEventListener('pointermove',function(e){if(!ptrs.has(e.pointerId))return;ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(ptrs.size===2){var a=Array.from(ptrs.values());var d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);var r=vp.getBoundingClientRect();var cx=(a[0].x+a[1].x)/2-r.left,cy=(a[0].y+a[1].y)/2-r.top;if(pinchD>0)zoomAt(cx,cy,d/pinchD,false);pinchD=d;moved=true;return}
+    if(!last)return;var dx=e.clientX-last.x,dy=e.clientY-last.y;if(Math.abs(dx)+Math.abs(dy)>2)moved=true;tx+=dx;ty+=dy;last={x:e.clientX,y:e.clientY};clamp();apply(false)});
+  function up(e){ptrs.delete(e.pointerId);if(ptrs.size<2)pinchD=0;if(ptrs.size===0){last=null;vp.classList.remove('drag')}}
+  vp.addEventListener('pointerup',up);vp.addEventListener('pointercancel',up);
+  vp.addEventListener('wheel',function(e){e.preventDefault();var r=vp.getBoundingClientRect();var f=Math.exp(-e.deltaY*0.0016);zoomAt(e.clientX-r.left,e.clientY-r.top,f,false)},{passive:false});
+  vp.addEventListener('dblclick',function(e){var r=vp.getBoundingClientRect();zoomAt(e.clientX-r.left,e.clientY-r.top,1.8,true)});
+  document.getElementById('zin').addEventListener('click',function(){zoomAt(vp.clientWidth/2,vp.clientHeight/2,1.5,true)});
+  document.getElementById('zout').addEventListener('click',function(){zoomAt(vp.clientWidth/2,vp.clientHeight/2,1/1.5,true)});
+  document.getElementById('zreset').addEventListener('click',function(){fit(true);closeZone()});
+  window.addEventListener('resize',function(){var os=s/minS;layout();s=minS*os;clamp();apply(false)});
+  window.addEventListener('keydown',function(e){if(e.key==='Escape'){closeDrawer();closeZone()}});
+
+  /* ---------- pins, legend, zone panel ---------- */
+  var legend=document.getElementById('legendlist'),panel=document.getElementById('panel'),cur=0;
+  D.zones.forEach(function(z){
+    var b=document.createElement('button');b.type='button';b.className='pin';b.dataset.n=z.n;b.style.left=z.x+'%';b.style.top=z.y+'%';b.setAttribute('aria-label','Zone '+pad(z.n)+': '+z.name);b.innerHTML=pad(z.n)+'<span class="lab">'+esc(z.name)+'</span>';
+    b.addEventListener('click',function(e){e.stopPropagation();openZone(z.n,true)});pinsEl.appendChild(b);
+    var l=document.createElement('button');l.type='button';l.dataset.n=z.n;l.innerHTML='<b>'+pad(z.n)+'</b><span>'+esc(z.name)+'</span>';l.addEventListener('click',function(){openZone(z.n,true)});legend.appendChild(l);
+  });
+  function openZone(n,fly){
+    cur=n;var z=D.zones[n-1];
+    if(curView!=='zones')setView('zones');
+    document.querySelectorAll('#pins .pin').forEach(function(p){var on=+p.dataset.n===n;p.setAttribute('aria-pressed',String(on));p.classList.toggle('dim',!on)});
+    legend.querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',String(+b.dataset.n===n))});
+    document.getElementById('p-n').textContent='Zone '+pad(n)+' of 16';
+    document.getElementById('p-t').textContent=z.name;
+    document.getElementById('p-pk').textContent=z.package;
+    var refs=z.refs.length?z.refs.map(function(r){var c=CAT[r];var u=c&&(c.specUrl||c.productUrl);return '<a href="'+(u||'#')+'"'+(u?' target="_blank" rel="noopener"':' data-cat="'+n+'"')+'><span><b>'+esc(r)+'</b><span>'+esc(c?c.duty:'')+'</span></span><em>'+(c&&c.spec?'spec '+esc(c.spec):'')+'</em></a>'}).join(''):'<p style="font-size:13.5px;color:var(--ink-3)">Services and staging scope. See Execution.</p>';
+    document.getElementById('p-b').innerHTML=
+      '<div class="chips">'+z.families.map(function(k){return '<span>'+esc(FAM[k].short)+'</span>'}).join('')+'</div>'
+      +'<div class="sec"><div class="l">Equipment and application</div><p>'+esc(z.cable)+'</p></div>'
+      +'<div class="sec"><div class="l">Selection considerations</div><p>'+esc(z.focus)+'</p></div>'
+      +'<div class="sec"><div class="l">Specifies and buys</div><p>'+esc(z.buys)+'</p></div>'
+      +(z.decision?'<div class="sec"><div class="l">Before release · '+esc(z.decision.group)+'</div><p>'+esc(z.decision.release)+'</p></div>':'')
+      +'<div class="sec"><div class="l">References · manufacturer documents</div><div class="refs">'+refs+'</div></div>'
+      +'<p class="more"><a href="#" data-cat="'+n+'">All references for this zone in the catalog</a>'+(z.link?' · <a href="#" data-drawer="'+(z.link[1]==='#execution'?'exec':z.link[1]==='#grid'?'apps':'apps')+'">'+esc(z.link[0])+'</a>':'')+'</p>'
+      +'<div class="nav"><button type="button" data-go="'+(n===1?16:n-1)+'">← Zone '+pad(n===1?16:n-1)+'</button><button type="button" data-go="'+(n===16?1:n+1)+'">Zone '+pad(n===16?1:n+1)+' →</button></div>';
+    panel.classList.add('on');
+    if(fly)centerOn(z.x/100,z.y/100,Math.max(minS*2.2,s),true);
   }
-  dlg.addEventListener('click',function(e){if(e.target===dlg)dlg.close()});
-  /* films */
-  document.getElementById('films').innerHTML=D.films.map(function(f){return '<a href="'+f.url+'" target="_blank" rel="noopener"><img src="assets/'+f.poster+'" alt="" loading="lazy"><div><b>'+esc(f.title)+'</b><span>'+esc(f.desc)+'</span><small>Watch online · '+f.seconds+' s</small></div></a>'}).join('');
-  /* offering index */
-  var CT={base:'base code',request:'request stock code',family:'family',stock:''};
-  document.getElementById('index').innerHTML=D.families.map(function(f,i){
-    var items=D.catalog.filter(function(c){return c.family===f.id});
-    var core=items.filter(function(c){return c.tier==='core'}),ex=items.filter(function(c){return c.tier==='expanded'});
-    var row=function(c){var u=c.specUrl||c.productUrl;return '<a href="'+(u||'#catalog')+'"'+(u?' target="_blank" rel="noopener"':'')+'><b>'+esc(c.tier==='expanded'?c.duty:c.stock)+'</b><span>'+esc(c.tier==='expanded'?(c.stock+(c.size?' · '+c.size:'')):c.duty)+'</span><em>'+(c.spec?'spec '+esc(c.spec):'')+(CT[c.codeType]?' · '+CT[c.codeType]:'')+'</em></a>'};
-    return '<details class="fam reveal"'+(i===0?' open':'')+'><summary><span class="n">'+pad(i+1)+'</span><h3>'+esc(f.name)+'</h3><span class="cnt">'+core.length+' core · '+ex.length+' expanded</span><span class="plus"><svg width="12" height="12" viewBox="0 0 12 12" stroke="currentColor" stroke-width="1.6"><path d="M6 1v10M1 6h10"/></svg></span></summary><div class="body"><p>'+esc(f.desc)+'</p><div class="refs">'+core.map(row).join('')+ex.map(row).join('')+'</div></div></details>'}).join('');
-  var RULES=[['OEM internal wiring vs. field interconnection','The OEM wires inside the package to terminal boxes or local panels; the EPC or installer connects between packages. The terminal point follows the contract.'],['Fixed wiring vs. portable cable','DLO and other flexible constructions are portable-cable applications, not substitutes for fixed tray-rated wiring.'],['MV insulation level','Voltage class, 100% or 133% insulation level and shield type are project selections from the one-line, not from the model.'],['VFD duty','Drive-output cable is matched to the drive system; qualify the drive before selecting the cable.'],['Hazardous locations','ARMOR-X MC-HL constructions, glands and seals follow the area classification and the complete installation.'],['BESS DC vs. solar PV','RenewaFLEX is approved internal BESS wiring, not a photovoltaic application. Immersion and circuit integrity are separate qualifications.']];
-  document.getElementById('rules').innerHTML=RULES.map(function(r){return '<div class="reveal"><b>'+esc(r[0])+'</b>'+esc(r[1])+'</div>'}).join('');
-  /* execution timeline */
-  var tl=document.getElementById('tl');
-  tl.insertAdjacentHTML('beforeend',D.services.map(function(s){return '<div class="reveal"><div class="ph">'+esc(s.phase)+'</div><h4>'+esc(s.name)+'</h4><p>'+esc(s.desc)+'</p><div class="ln">'+s.links.map(function(l){return A(l[0],l[1])}).join('')+'</div></div>'}).join(''));
-  var tline=document.getElementById('tline'),tlItems=Array.prototype.slice.call(tl.querySelectorAll(':scope > div:not(.line)'));
-  function drawLine(){var r=tl.getBoundingClientRect(),vh=window.innerHeight,p=Math.min(1,Math.max(0,(vh*0.6-r.top)/r.height));tline.style.height=(p*100)+'%';tlItems.forEach(function(it){var ir=it.getBoundingClientRect();it.classList.toggle('lit',ir.top<vh*0.6)})}
-  window.addEventListener('scroll',drawLine,{passive:true});window.addEventListener('resize',drawLine);drawLine();
-  document.getElementById('rel').innerHTML=D.release.steps.map(function(s,i){return '<div class="reveal"><div class="n">'+pad(i+1)+'</div><h4>'+esc(s[0])+'</h4><p>'+esc(s[1])+'</p></div>'}).join('');
-  document.getElementById('rellinks').innerHTML=D.release.links.map(function(l){return A(l[0],l[1])}).join('');
-  document.getElementById('life').innerHTML=D.lifecycle.map(function(a){return '<div class="reveal"><div class="k">'+esc(a.k)+'</div><div><h4>'+esc(a.name)+'</h4><p>'+esc(a.desc)+'</p><div class="ln">'+a.links.map(function(l){return A(l[0],l[1])}).join(' · ')+'</div></div></div>'}).join('');
-  /* applications */
-  var al=document.getElementById('applist');
-  al.innerHTML=D.applications.map(function(a){return '<div class="reveal"><div class="k">'+esc(a.k)+'</div><h3>'+esc(a.name)+'</h3><p>'+esc(a.desc)+'</p><button type="button" data-zone="'+a.zone+'">Open zone '+pad(a.zone)+' · '+esc(D.zones[a.zone-1].name)+'</button></div>'}).join('');
-  al.addEventListener('click',function(e){var b=e.target.closest('button[data-zone]');if(b)openZone(+b.dataset.zone)});
-  document.getElementById('bounds').innerHTML=D.boundaries.map(function(b){return '<div class="reveal"><div class="k">'+esc(b.k)+'</div><h4>'+esc(b.name)+'</h4><p>'+esc(b.desc)+'</p></div>'}).join('');
-  document.getElementById('gridtie').innerHTML=D.grid.map(function(g){return '<div class="reveal"><h4>'+esc(g.name)+'</h4><p>'+esc(g.desc)+'</p><div class="ln">'+g.links.map(function(l){return A(l[0],l[1])}).join('')+'</div></div>'}).join('');
-  /* cases */
-  function card(c){return '<article class="case reveal"><span class="k">'+esc(c.tag)+'</span><div class="stat">'+esc(c.stat)+'</div><h3>'+esc(c.title)+'</h3><dl><dt>Customer problem</dt><dd>'+esc(c.problem)+'</dd><dt>Southwire contribution</dt><dd>'+esc(c.contribution)+'</dd><dt>Published result</dt><dd>'+esc(c.result)+'</dd><dt>PowerGen application · proposed</dt><dd class="pg">'+esc(c.powergen)+'</dd></dl><p class="src">'+A('Read the case study · PDF',c.url)+'</p></article>'}
-  document.getElementById('casegrid').innerHTML=D.cases.filter(function(c){return c.featured}).map(card).join('');
-  document.getElementById('more').innerHTML='<div><h4>More documented experience</h4><ul>'+D.cases.filter(function(c){return !c.featured}).map(function(c){return '<li>'+A(c.tag,c.url)+'<span>'+esc(c.stat)+' · '+esc(c.title)+'</span></li>'}).join('')+'</ul></div>'
-    +'<div><h4>Services and grid connection</h4><ul>'+D.services.concat(D.grid).map(function(s){return s.links.map(function(l){return '<li>'+A(l[0],l[1])+'<span>'+esc(s.phase||s.name)+'</span></li>'}).join('')}).join('')+'</ul></div>'
-    +'<div><h4>Downloads and sources</h4><ul><li><a href="PowerGen_eBrochure.pdf">Email brochure · PDF</a><span>Ten spreads, clickable links</span></li><li><a href="PowerGen_Technical_Appendix.pdf">Technical appendix · PDF</a><span>Zone packages, decisions and the full catalog</span></li><li><a href="source-and-asset-register.md">Source and asset register</a><span>What was used, what is unverified</span></li><li><a href="CHANGELOG.md">Change log</a></li></ul></div>';
-  /* contact */
-  document.getElementById('who').innerHTML=D.contacts.map(function(c){return '<div><div class="k">'+esc(c.org||c.name)+'</div><a href="mailto:'+c.email+'">'+esc(c.email)+'</a>'+(c.role?'<span>'+esc(c.role)+'</span>':'')+'</div>'}).join('');
-  document.getElementById('check').innerHTML=D.checklist.map(function(c,i){return '<div><div class="n">'+pad(i+1)+'</div><div><h4>'+esc(c[0])+'</h4><p>'+esc(c[1])+'</p></div></div>'}).join('');
-  document.getElementById('srcnote').textContent=D.sourceNote;
-  /* catalog */
-  var ctrl=document.getElementById('ctrl'),tb=document.querySelector('#cat tbody'),filter='all',q='';
-  var btns=[['all','All'],['core','Core'],['expanded','Expanded']].concat(D.families.map(function(f){return [f.id,f.short]}));
-  ctrl.innerHTML=btns.map(function(b){return '<button type="button" data-f="'+b[0]+'" aria-pressed="'+(b[0]==='all')+'">'+esc(b[1])+'</button>'}).join('')+'<label class="sr" for="q">Search</label><input id="q" type="search" placeholder="Search stock, duty, construction, spec">';
-  ctrl.addEventListener('click',function(e){var b=e.target.closest('button[data-f]');if(b)setFilter(b.dataset.f)});
-  document.getElementById('q').addEventListener('input',function(e){q=e.target.value.toLowerCase();render()});
-  function setFilter(f){filter=f;ctrl.querySelectorAll('button[data-f]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.f===f||(f.indexOf('zone:')===0&&b.dataset.f==='all')))});render();if(f.indexOf('zone:')===0)document.getElementById('catalog').scrollIntoView()}
+  function closeZone(){panel.classList.remove('on');cur=0;document.querySelectorAll('#pins .pin').forEach(function(p){p.setAttribute('aria-pressed','false');p.classList.remove('dim')});legend.querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed','false')})}
+  document.getElementById('p-x').addEventListener('click',closeZone);
+  panel.addEventListener('click',function(e){var g=e.target.closest('button[data-go]');if(g){openZone(+g.dataset.go,true);return}
+    var c=e.target.closest('a[data-cat]');if(c){e.preventDefault();openDrawer('cable');setFilter('zone:'+c.dataset.cat);return}
+    var d=e.target.closest('a[data-drawer]');if(d){e.preventDefault();openDrawer(d.dataset.drawer)}});
+
+  /* ---------- intro ---------- */
+  var intro=document.getElementById('intro');
+  function dismiss(){intro.classList.add('off');try{sessionStorage.setItem('pg-intro','1')}catch(e){}}
+  document.getElementById('explore').addEventListener('click',function(){dismiss();setTimeout(function(){openZone(7,true)},150)});
+  vp.addEventListener('pointerdown',function(){if(!intro.classList.contains('off'))dismiss()});
+  try{if(sessionStorage.getItem('pg-intro'))intro.classList.add('off')}catch(e){}
+
+  /* ---------- drawers ---------- */
+  var drawer=document.getElementById('drawer'),scrim=document.getElementById('scrim'),dt=document.getElementById('d-t'),db=document.getElementById('d-b');
+  var CT={base:'base code',request:'request stock code',family:'family',stock:''},CTL={base:'Published base code',request:'Request stock code',family:'Product family'};
+  function famBlock(){return '<div class="fams">'+D.families.map(function(f,i){var items=D.catalog.filter(function(c){return c.family===f.id});var core=items.filter(function(c){return c.tier==='core'}).length;
+      return '<details'+(i===0?' open':'')+'><summary><span class="n">'+pad(i+1)+'</span><h4>'+esc(f.name)+'</h4><span class="c">'+core+' core · '+(items.length-core)+' expanded</span><span class="pl"><svg width="10" height="10" viewBox="0 0 10 10" stroke="currentColor" stroke-width="1.5"><path d="M5 0v10M0 5h10"/></svg></span></summary><div class="fb"><p>'+esc(f.desc)+'</p><div class="refs">'+items.map(function(c){var u=c.specUrl||c.productUrl;return '<a href="'+(u||'#')+'"'+(u?' target="_blank" rel="noopener"':'')+'><span><b>'+esc(c.tier==='expanded'?c.duty:c.stock)+'</b><span>'+esc(c.tier==='expanded'?c.stock+(c.size?' · '+c.size:''):c.duty)+'</span></span><em>'+(c.spec?'spec '+esc(c.spec):'')+(CT[c.codeType]?' · '+CT[c.codeType]:'')+'</em></a>'}).join('')+'</div></div></details>'}).join('')+'</div>'}
+  var RULES=[['OEM internal wiring vs. field interconnection','The OEM wires inside the package to terminal boxes or local panels; the EPC or installer connects between packages.'],['Fixed wiring vs. portable cable','DLO and other flexible constructions are portable-cable applications, not substitutes for fixed tray-rated wiring.'],['MV insulation level','Voltage class, 100% or 133% insulation level and shield type are project selections from the one-line.'],['VFD duty','Drive-output cable is matched to the drive system; qualify the drive before selecting the cable.'],['Hazardous locations','ARMOR-X MC-HL constructions, glands and seals follow the area classification and the complete installation.'],['BESS DC vs. solar PV','RenewaFLEX is approved internal BESS wiring, not a photovoltaic application.']];
+  var filter='all',q='';
   function docs(c){var a=[];if(c.specUrl)a.push(A('Spec '+c.spec+' · PDF',c.specUrl));else if(c.spec)a.push('<span class="na">Spec '+esc(c.spec)+' · no PDF in source</span>');if(c.productUrl)a.push(A('Product page',c.productUrl));(c.extraUrls||[]).forEach(function(x){a.push(A('Spec '+x[0]+' · PDF',x[1]))});return a.length?a.join('<br>'):'<span class="na">Not published in source</span>'}
-  var CTL={base:'Published base code',request:'Request stock code',family:'Product family'};
-  function render(){
-    var zn=filter.indexOf('zone:')===0?+filter.slice(5):0;
+  function renderTable(){var tb=db.querySelector('#cat tbody');if(!tb)return;var zn=filter.indexOf('zone:')===0?+filter.slice(5):0;
     var rows=D.catalog.filter(function(c){if(zn)return c.zones.indexOf(zn)>=0;if(filter==='core'||filter==='expanded')return c.tier===filter;if(filter!=='all')return c.family===filter;return true}).filter(function(c){if(!q)return true;return [c.stock,c.duty,c.construction,c.spec||'',FAM[c.family].name].join(' ').toLowerCase().indexOf(q)>=0});
-    tb.innerHTML=rows.map(function(c){var f=FAM[c.family];return '<tr><td class="st">'+esc(c.stock)+(c.size?'<span class="note">'+esc(c.size)+'</span>':'')+(CTL[c.codeType]?'<span class="note ct">'+CTL[c.codeType]+'</span>':'')+(c.note?'<span class="note">'+esc(c.note)+'</span>':'')+'</td><td class="fam"><span class="fm" style="background:'+f.color+'"></span>'+esc(f.short)+(c.hazloc?'<span class="note">MC-HL · hazardous location</span>':'')+'</td><td>'+esc(c.duty)+'</td><td>'+esc(c.construction)+'</td><td class="mono">'+esc(c.spec||'—')+'</td><td>'+docs(c)+'</td><td class="mono">'+(c.zones.length?c.zones.map(pad).join(', '):'—')+'</td></tr>'}).join('');
-    document.getElementById('count').textContent=rows.length+' of '+D.catalog.length+' references'+(zn?' · zone '+pad(zn)+' '+D.zones[zn-1].name:'')+(q?' · "'+q+'"':'');
-  }
-  render();
-  /* reveal on scroll (elements already on screen are shown immediately) */
-  var rv=Array.prototype.slice.call(document.querySelectorAll('.reveal'));
-  if(rm||!('IntersectionObserver' in window)){rv.forEach(function(el){el.classList.add('in')})}
-  else{var ro=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');ro.unobserve(en.target)}})},{rootMargin:'0px 0px -8% 0px'});rv.forEach(function(el){var r=el.getBoundingClientRect();if(r.top<window.innerHeight)el.classList.add('in');else ro.observe(el)})}
-  /* nav highlight */
-  var links=document.querySelectorAll('.top nav a');
-  if('IntersectionObserver' in window){var no=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){links.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+en.target.id)})}})},{rootMargin:'-35% 0px -60% 0px'});document.querySelectorAll('main section[id]').forEach(function(s){no.observe(s)})}
+    tb.innerHTML=rows.map(function(c){var f=FAM[c.family];return '<tr><td class="st">'+esc(c.stock)+(c.size?'<span class="note">'+esc(c.size)+'</span>':'')+(CTL[c.codeType]?'<span class="note ct">'+CTL[c.codeType]+'</span>':'')+(c.note?'<span class="note">'+esc(c.note)+'</span>':'')+'</td><td>'+esc(f.short)+(c.hazloc?'<span class="note">MC-HL · hazardous location</span>':'')+'</td><td>'+esc(c.duty)+'</td><td>'+esc(c.construction)+'</td><td class="mono">'+esc(c.spec||'—')+'</td><td>'+docs(c)+'</td><td class="mono">'+(c.zones.length?c.zones.map(pad).join(', '):'—')+'</td></tr>'}).join('');
+    var cnt=db.querySelector('#count');if(cnt)cnt.textContent=rows.length+' of '+D.catalog.length+' references'+(zn?' · zone '+pad(zn)+' '+D.zones[zn-1].name:'');
+    db.querySelectorAll('.ctrl button[data-f]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.f===filter||(zn&&b.dataset.f==='all')))})}
+  function setFilter(f){filter=f;renderTable();var t=db.querySelector('#cattop');if(t)t.scrollIntoView({block:'start'})}
+  var DR={
+    cable:function(){dt.textContent='Cable offering';return '<p class="lead">Seven families cover the plant\'s electrical scope. Published references link to the manufacturer\'s document. Stock numbers do not indicate inventory.</p>'+famBlock()
+      +'<div><h3>Application boundaries</h3><div class="list">'+RULES.map(function(r){return '<div><div class="l"></div><div><h4>'+esc(r[0])+'</h4><p>'+esc(r[1])+'</p></div></div>'}).join('')+'</div></div>'
+      +'<div id="cattop"><h3>Catalog</h3><div class="ctrl">'+[['all','All'],['core','Core'],['expanded','Expanded']].concat(D.families.map(function(f){return [f.id,f.short]})).map(function(b){return '<button type="button" data-f="'+b[0]+'" aria-pressed="'+(b[0]===filter)+'">'+esc(b[1])+'</button>'}).join('')+'<input id="q" type="search" placeholder="Search stock, duty, construction, spec" aria-label="Search"></div>'
+      +'<div class="tablewrap" style="margin-top:14px"><table id="cat"><thead><tr><th>Stock / reference</th><th>Family</th><th>Duty</th><th>Construction / size</th><th>Spec</th><th>Documents</th><th>Zones</th></tr></thead><tbody></tbody></table></div><p class="count" id="count" style="margin-top:10px"></p>'
+      +'<p style="font-size:12.5px;color:var(--ink-3);margin-top:10px">Product family: selected by size and listing. Specification number: a construction. Published base code: not a complete orderable stock number. Stock number: orderable, not inventory. Request stock code: size and duty selected with the project. Type TC and TC-ER are distinct ratings.</p></div>'},
+    exec:function(){dt.textContent='From specification to installation';return '<p class="lead">Coordinate cable, equipment interfaces and the installation sequence before material reaches the jobsite. Package the delivery around the pull sequence.</p>'
+      +'<img src="assets/reel-yard.jpg" alt="Cable reels staged at the plant laydown yard" style="width:100%;border-radius:8px" loading="lazy">'
+      +'<div class="list">'+D.services.map(function(s){return '<div><div class="l">'+esc(s.phase)+'</div><div><h4>'+esc(s.name)+'</h4><p>'+esc(s.desc)+'</p><div class="ln">'+s.links.map(function(l){return A(l[0],l[1])}).join('')+'</div></div></div>'}).join('')+'</div>'
+      +'<div><h3>One circuit record, specification through energization</h3><div class="list">'+D.release.steps.map(function(s,i){return '<div><div class="l">'+pad(i+1)+'</div><div><h4>'+esc(s[0])+'</h4><p>'+esc(s[1])+'</p></div></div>'}).join('')+'</div><div class="ln" style="margin-top:10px;font-size:13.5px;display:flex;gap:16px;flex-wrap:wrap">'+D.release.links.map(function(l){return A(l[0],l[1])}).join('')+'</div></div>'
+      +'<div><h3>Assess. Repair. Rejuvenate. Replace.</h3><div class="list">'+D.lifecycle.map(function(a){return '<div><div class="l">'+esc(a.k)+'</div><div><h4>'+esc(a.name)+'</h4><p>'+esc(a.desc)+'</p><div class="ln">'+a.links.map(function(l){return A(l[0],l[1])}).join('')+'</div></div></div>'}).join('')+'</div></div>'
+      +'<p style="font-size:13px;color:var(--ink-3)">Prefabricated cable spine: project development. A factory-built spine needs defined interfaces, a qualified assembly provider and an agreed test plan. Availability and performance are project-specific.</p>'},
+    apps:function(){dt.textContent='Beyond one plant configuration';return '<p class="lead">The combined-cycle model is a starting point. Adapt scope to the generation technology, site and operating duty. Do not combine plant configurations or carry the model\'s preliminary quantities into procurement.</p>'
+      +'<img src="assets/cover-plant.jpg" alt="Isometric plant model on white with a delivery truck and cable reels" style="width:100%;border-radius:8px;background:#fff" loading="lazy">'
+      +'<div class="list">'+D.applications.map(function(a){return '<div><div class="l">'+esc(a.k)+'</div><div><h4>'+esc(a.name)+'</h4><p>'+esc(a.desc)+'</p><div class="ln"><a href="#" data-zone="'+a.zone+'">Open zone '+pad(a.zone)+' · '+esc(D.zones[a.zone-1].name)+'</a></div></div></div>'}).join('')+'</div>'
+      +'<div><h3>Define what the cable package includes</h3><div class="list">'+D.boundaries.map(function(b){return '<div><div class="l">'+esc(b.k)+'</div><div><h4>'+esc(b.name)+'</h4><p>'+esc(b.desc)+'</p></div></div>'}).join('')+'</div></div>'
+      +'<div><h3>Plant to grid</h3><div class="list">'+D.grid.map(function(g){return '<div><div class="l"></div><div><h4>'+esc(g.name)+'</h4><p>'+esc(g.desc)+'</p><div class="ln">'+g.links.map(function(l){return A(l[0],l[1])}).join('')+'</div></div></div>'}).join('')+'</div></div>'
+      +'<div><h3>The model in motion</h3><div class="films">'+D.films.map(function(f){return '<a href="'+f.url+'" target="_blank" rel="noopener"><img src="assets/'+f.poster+'" alt="" loading="lazy"><b>'+esc(f.title)+' · '+f.seconds+' s</b><span>'+esc(f.desc)+'</span></a>'}).join('')+'</div><p style="font-size:12.5px;color:var(--ink-3);margin-top:10px">Silent films from the original model, hosted on the online field guide.</p></div>'},
+    cases:function(){dt.textContent='Documented experience';return '<p class="lead">Historical Southwire projects with their published sources. The PowerGen application under each is a proposed use, not an outcome from the illustrated plant.</p>'
+      +'<div class="grid3">'+D.cases.map(function(c){return '<div class="case"><span class="k">'+esc(c.tag)+'</span><div class="stat">'+esc(c.stat)+'</div><h4>'+esc(c.title)+'</h4><p><b>Result.</b> '+esc(c.result)+'</p><p><b>PowerGen use, proposed.</b> '+esc(c.powergen)+'</p><p class="src">'+A('Case study · PDF',c.url)+'</p></div>'}).join('')+'</div>'},
+    menu:function(){dt.textContent='Menu';return '<div class="menu-list">'+[['cable','Cable offering','Seven families, catalog and application boundaries'],['exec','Execution','Specification to installation, release record, lifecycle'],['apps','Applications','Other plant configurations, scope boundaries, grid, films'],['cases','Documented experience','Six published Southwire projects'],['contact','Start a cable package review','Contacts, checklist and PDFs']].map(function(m){return '<a href="#" data-drawer="'+m[0]+'"><b>'+m[1]+'</b><span>'+m[2]+'</span></a>'}).join('')+'</div>'
+      +'<div><h3>Application zones</h3><div class="menu-zones">'+D.zones.map(function(z,i){return '<a href="#" data-zone="'+(i+1)+'"><b>'+pad(i+1)+'</b>'+esc(z.name)+'</a>'}).join('')+'</div></div>'},
+    contact:function(){dt.textContent='Start a cable package review';return '<p class="lead">Start with the one-line diagram, the cable schedule, the equipment interfaces and the target energization date.</p>'
+      +'<div class="who">'+D.contacts.map(function(c){return '<div><div class="l">'+esc(c.org||c.name)+'</div><a href="mailto:'+c.email+'">'+esc(c.email)+'</a>'+(c.role?'<span>'+esc(c.role)+'</span>':'')+'</div>'}).join('')+'</div>'
+      +'<div class="btnrow"><a class="btn" href="'+D.reviewMailto+'">Start a cable package review</a><a class="btn o" href="PowerGen_eBrochure.pdf">Email brochure · PDF</a><a class="btn o" href="PowerGen_Technical_Appendix.pdf">Technical appendix · PDF</a></div>'
+      +'<div><h3>What a review needs</h3><div class="checks">'+D.checklist.map(function(c,i){return '<div><div class="n">'+pad(i+1)+'</div><div><h4>'+esc(c[0])+'</h4><p>'+esc(c[1])+'</p></div></div>'}).join('')+'</div></div>'
+      +'<p style="font-size:12.5px;color:var(--ink-3)">'+esc(D.sourceNote)+' <a href="source-and-asset-register.md">Sources</a> · <a href="CHANGELOG.md">Change log</a></p>'}
+  };
+  function openDrawer(k){db.innerHTML=DR[k]();drawer.classList.add('on');scrim.classList.add('on');db.scrollTop=0;
+    if(k==='cable'){renderTable();var qi=db.querySelector('#q');qi.addEventListener('input',function(e){q=e.target.value.toLowerCase();renderTable()})}}
+  function closeDrawer(){drawer.classList.remove('on');scrim.classList.remove('on');filter='all';q=''}
+  document.querySelectorAll('.tools button[data-drawer]').forEach(function(b){b.addEventListener('click',function(){dismiss();openDrawer(b.dataset.drawer)})});
+  document.getElementById('d-x').addEventListener('click',closeDrawer);scrim.addEventListener('click',closeDrawer);
+  db.addEventListener('click',function(e){var f=e.target.closest('.ctrl button[data-f]');if(f){setFilter(f.dataset.f);return}var dd=e.target.closest('a[data-drawer]');if(dd){e.preventDefault();openDrawer(dd.dataset.drawer);return}var z=e.target.closest('a[data-zone]');if(z){e.preventDefault();closeDrawer();openZone(+z.dataset.zone,true)}});
+  document.getElementById('srcnote').textContent=D.sourceNote;
+
+  /* ---------- optional 3D model: activates only if assets/plant.glb is present ---------- */
+  fetch('assets/plant.glb',{method:'HEAD'}).then(function(r){if(!r.ok)return;
+    var b=document.createElement('button');b.type='button';b.textContent='3D model';b.dataset.id='glb';viewsNav.appendChild(b);
+    b.addEventListener('click',function(){
+      var c=document.getElementById('glbc');if(!c){c=document.createElement('canvas');c.id='glbc';c.style.cssText='position:absolute;inset:0;width:100%;height:100%';stagewrap.insertBefore(c,vp.nextSibling);
+        var load=function(src){return new Promise(function(res,rej){var s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)})};
+        load('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js').then(function(){return load('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js')}).then(function(){return load('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js')}).then(function(){
+          var T=window.THREE,ren=new T.WebGLRenderer({canvas:c,antialias:true,alpha:true});ren.setPixelRatio(Math.min(2,window.devicePixelRatio));ren.setSize(c.clientWidth,c.clientHeight,false);
+          var sc=new T.Scene(),cam=new T.PerspectiveCamera(40,c.clientWidth/c.clientHeight,.1,5000);cam.position.set(60,45,60);
+          sc.add(new T.HemisphereLight(0xffffff,0x334455,1.1));var dl=new T.DirectionalLight(0xffffff,.8);dl.position.set(50,80,30);sc.add(dl);
+          var ctl=new T.OrbitControls(cam,c);ctl.enableDamping=true;
+          new T.GLTFLoader().load('assets/plant.glb',function(g){var box=new T.Box3().setFromObject(g.scene),size=box.getSize(new T.Vector3()),ctr=box.getCenter(new T.Vector3());g.scene.position.sub(ctr);var d=Math.max(size.x,size.y,size.z);cam.position.set(d,d*.7,d);ctl.target.set(0,0,0);sc.add(g.scene)});
+          (function loop(){ctl.update();ren.render(sc,cam);requestAnimationFrame(loop)})();
+          window.addEventListener('resize',function(){ren.setSize(c.clientWidth,c.clientHeight,false);cam.aspect=c.clientWidth/c.clientHeight;cam.updateProjectionMatrix()});
+        }).catch(function(){c.remove()});
+      }
+      vp.style.visibility='hidden';c.style.display='block';pinsEl.classList.add('off');document.getElementById('legend').classList.add('off');
+      viewsNav.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',String(x.dataset.id==='glb'))});cap.textContent='Orbit: drag · zoom: scroll · pan: right-drag. Model as supplied; illustrative.';
+    });
+    viewsNav.querySelectorAll('button:not([data-id="glb"])').forEach(function(x){x.addEventListener('click',function(){vp.style.visibility='';var c=document.getElementById('glbc');if(c)c.style.display='none'})});
+  }).catch(function(){});
+
+  setView('zones');
 })();
 </script>
 </body>

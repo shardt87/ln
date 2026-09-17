@@ -1,368 +1,190 @@
 #!/usr/bin/env python3
-"""Build the PowerGen e-brochure package: index.html, pdf-main.html, pdf-appendix.html (paged, 1440x900)."""
-import json, os, re, html as H
-HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, 'dist')
-os.makedirs(OUT, exist_ok=True)
+"""Build: dist/index.html (plant-first app), dist/pdf-main.html (8 photo-led spreads), dist/pdf-appendix.html (technical)."""
+import json, os, html as H, re
+HERE = os.path.dirname(os.path.abspath(__file__)); OUT = os.path.dirname(HERE) if os.path.basename(HERE) == 'src' else os.path.join(HERE, 'dist'); os.makedirs(OUT, exist_ok=True)
 D = json.load(open(os.path.join(HERE, 'data.json')))
 FONTS = open(os.path.join(HERE, 'fonts', 'fonts-inline.css')).read()
-FAM = {f['id']: f for f in D['families']}
-CAT = {c['stock']: c for c in D['catalog']}
-e = H.escape
-pad = lambda n: f'{n:02d}'
+FAM = {f['id']: f for f in D['families']}; CAT = {c['stock']: c for c in D['catalog']}
+e = H.escape; pad = lambda n: f'{n:02d}'
 
-# ---------------- e-brochure ----------------
-tpl = ''
-data_js = json.dumps(D).replace('</', '<\\/')
-index=''
+tpl = open(os.path.join(HERE, 'template.html')).read()
+open(os.path.join(OUT, 'index.html'), 'w').write(tpl.replace('{{FONTS}}', FONTS).replace('{{DATA}}', json.dumps(D).replace('</', '<\\/')).replace('{{REVIEW_MAILTO}}', D['reviewMailto']))
 
-# ---------------- paged PDF ----------------
 CSS = FONTS + '''
-:root{--bg:#f3f3f1;--bg2:#ffffff;--bg3:#e8e9e6;--line:#d5d7d3;--line2:#c2c5c0;--ink:#141618;--ink2:#454a4f;--ink3:#7d838a;--copper:#a8541f;--copper2:#a8541f;
---sans:"Source Sans 3","Helvetica Neue",Arial,sans-serif;--narrow:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;--mono:"IBM Plex Mono",Menlo,monospace}
+:root{--ink:#0f1b2d;--ink2:#4e5866;--ink3:#7c8592;--line:#dfe2e7;--accent:#c8501e;--sans:"Instrument Sans","Helvetica Neue",Arial,sans-serif;--mono:"Geist Mono",Menlo,monospace}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:#fff}
-body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased}
-.n,.h,.cell h3,.zp .t b,.zp .t span,.fams h3,.steps h4,.case h3,.contact .big,.check h4,.cover .title{letter-spacing:-.02em;font-variation-settings:"opsz" 96}
-a{color:var(--copper);text-decoration:underline;text-decoration-color:rgba(168,84,31,.35);text-underline-offset:2px}
-.page{position:relative;width:1440px;height:900px;overflow:hidden;background:var(--bg);page-break-after:always;break-after:page}
+body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+a{color:var(--accent);text-decoration:none}
+.page{position:relative;width:1440px;height:900px;overflow:hidden;background:#fff;page-break-after:always;break-after:page}
 .page:last-child{page-break-after:auto;break-after:auto}
-.hd{position:absolute;left:60px;right:60px;top:34px;height:30px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:12px}
-.hd .wm{font-family:var(--narrow);font-weight:800;font-size:22px;letter-spacing:-.02em}
-.hd .pg{font-family:var(--mono);font-weight:400;font-size:12px;letter-spacing:.02em;color:var(--ink3)}
-.ft{position:absolute;left:60px;right:60px;bottom:30px;display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-weight:400;font-size:11.5px;letter-spacing:.02em;color:var(--ink3)}
-.ft .n{color:var(--ink2);font-size:14px}
-.ft a{color:var(--copper);text-decoration:none}
-.eyebrow{position:absolute;left:60px;top:96px;font-family:var(--mono);font-weight:400;font-size:12.5px;letter-spacing:.02em;color:var(--ink3)}
-.eyebrow::before{content:"";display:inline-block;width:28px;height:1px;background:var(--ink3);vertical-align:middle;margin-right:12px}
-.h{position:absolute;left:60px;top:118px;width:1320px;white-space:nowrap;font-family:var(--narrow);font-weight:600;font-size:50px;line-height:1}
-.lede{position:absolute;left:60px;top:184px;width:980px;font-size:18px;line-height:1.45;color:var(--ink2)}
-.body{position:absolute;left:60px;top:250px;width:1320px;height:570px}
-.k{font-family:var(--mono);font-weight:400;font-size:11.5px;letter-spacing:.02em;color:var(--ink3)}
+.hd{position:absolute;left:64px;right:64px;top:36px;display:flex;justify-content:space-between;align-items:baseline}
+.hd .wm{font-weight:700;font-size:20px;letter-spacing:-.02em}
+.hd .pg{font-family:var(--mono);font-size:12px;color:var(--ink3)}
+.ft{position:absolute;left:64px;right:64px;bottom:32px;display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:11.5px;color:var(--ink3)}
+.ft a{color:var(--accent)}
+.h{position:absolute;left:64px;top:110px;width:1312px;font-weight:600;font-size:54px;letter-spacing:-.03em;line-height:1;white-space:nowrap}
+.lede{position:absolute;left:64px;top:186px;width:760px;font-size:19px;line-height:1.45;color:var(--ink2)}
+.body{position:absolute;left:64px;top:262px;width:1312px;height:560px}
+.k{font-family:var(--mono);font-size:11.5px;color:var(--ink3)}
 .s{font-size:12.5px;line-height:1.4;color:var(--ink3)}
-.cap{position:absolute;left:60px;bottom:66px;width:1320px;font-size:12px;color:var(--ink3)}
-.n{font-family:var(--narrow);font-weight:700}
+.cap{position:absolute;left:64px;bottom:66px;width:1312px;font-size:12px;color:var(--ink3)}
 img{display:block}
+.dark{background:#0b0d10;color:#fff}
+.dark .hd .wm{color:#fff}.dark .hd .pg,.dark .ft{color:#aab2bd}
 /* cover */
-.cover .bgimg{position:absolute;left:0;top:0;width:1440px;height:900px;object-fit:cover;object-position:60% 50%}
-.cover{background:#0b0e11;color:#eef0ee}
-.cover .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,14,17,.9) 0%,rgba(11,14,17,.7) 34%,rgba(11,14,17,.25) 62%,rgba(11,14,17,.1) 100%)}
-.cover .shade2{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,9,10,.55) 0%,rgba(8,9,10,0) 25%,rgba(8,9,10,0) 60%,rgba(8,9,10,.92) 100%)}
-.cover .hd{border-bottom-color:rgba(255,255,255,.18)}.cover .hd .pg{color:#d8d6cf}.cover .hd .wm{color:#fff}
-.cover .ey{position:absolute;left:60px;top:190px;font-family:var(--mono);font-size:13px;letter-spacing:.02em;color:#aab1b7}
-.cover .title{position:absolute;left:56px;top:220px;font-family:var(--narrow);font-weight:700;font-size:126px;line-height:.9;color:#fff;letter-spacing:-.035em}
-.cover .title em{font-style:normal;color:#e7b98f}
-.cover .sub{position:absolute;left:60px;top:486px;width:640px;font-size:21px;line-height:1.4;color:#e8e6df}
-.cover .chip{position:absolute;left:60px;top:604px;background:#eef0ee;color:#0b0e11;font-family:var(--narrow);font-weight:600;font-size:16px;padding:14px 24px;border-radius:999px;text-decoration:none}
-.cover .meta{position:absolute;left:60px;top:690px;font-family:var(--mono);font-size:13px;color:#aab1b7}
-.cover .ft{color:#b7b9bc}
-/* generic grids */
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
-.cell{background:var(--bg2);padding:18px 20px}
-.cell.alt{background:var(--bg)}
-.cell h3{font-family:var(--narrow);font-weight:600;font-size:24px;line-height:1.05;margin-bottom:8px}
-.cell p{font-size:14px;line-height:1.42;color:var(--ink2)}
-.cell p b{color:var(--ink);font-weight:700}
-.cell .k{display:block;margin-bottom:6px}
-.cell .ln{margin-top:8px;font-size:13px;display:flex;flex-wrap:wrap;gap:4px 14px}
-/* map */
-.map .body{display:grid;grid-template-columns:900px 380px;column-gap:40px}
-.stage{position:relative;width:900px;height:506px;background:#0b0e11;border-radius:6px;overflow:hidden}
-.stage img{width:900px;height:506px;object-fit:contain}
-.pin{position:absolute;width:30px;height:30px;margin-left:-15px;margin-top:-15px;border-radius:50%;background:rgba(11,14,17,.75);border:1.5px solid rgba(255,255,255,.8);color:#fff;font-family:var(--mono);font-size:12px;line-height:27px;text-align:center}
-.pin.core{background:#e7b98f;border-color:#fff;color:#141618}
-.zl{display:grid;grid-template-columns:34px 1fr;align-items:center;height:31.5px;border-bottom:1px solid var(--line);font-size:14.5px;color:var(--ink2)}
-.zl b{font-family:var(--mono);font-weight:500;font-size:13px;color:var(--ink3)}
-/* zone packages (appendix) */
-.zp{display:grid;grid-template-columns:1fr 1fr;gap:22px 40px}
-.zp>div{border-top:1px solid var(--line);padding-top:12px}
-.zp .t{display:flex;gap:14px;align-items:baseline;margin-bottom:6px}
-.zp .t b{font-family:var(--mono);font-weight:500;font-size:14px;color:var(--ink3)}
-.zp .t span{font-family:var(--narrow);font-weight:600;font-size:26px}
-.zp .pk{font-weight:600;color:var(--ink);font-size:13px;margin-bottom:6px}
-.zp p{font-size:12.5px;line-height:1.4;color:var(--ink2);margin-bottom:4px}
-.zp p b{color:var(--ink)}
-.zp .refs{font-size:12.5px;margin-top:4px}
+.cover .bg{position:absolute;inset:0;width:1440px;height:900px;object-fit:cover;object-position:62% 50%}
+.cover .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,13,16,.05) 30%,rgba(11,13,16,.55) 70%,rgba(11,13,16,.9) 100%)}
+.cover .t{position:absolute;left:64px;bottom:150px;width:1000px}
+.cover .t .k{color:#aab2bd;margin-bottom:16px;display:block}
+.cover h1{font-size:112px;font-weight:600;letter-spacing:-.04em;line-height:.95;color:#fff}
+.cover p{margin-top:20px;font-size:21px;color:#d7dce3;max-width:46ch}
+.cover .chip{position:absolute;right:64px;bottom:150px;background:#fff;color:var(--ink);font-weight:600;font-size:15px;padding:14px 22px;border-radius:8px;text-decoration:none}
+/* photo pages */
+.photo{position:absolute;left:64px;top:262px;width:820px;height:560px;object-fit:cover;border-radius:10px}
+.photo.contain{object-fit:contain;background:#0b0d10}
+.side{position:absolute;left:928px;top:262px;width:448px;height:560px;display:grid;align-content:start;gap:12px}
+.zl{display:grid;grid-template-columns:32px 1fr;align-items:center;font-size:13.5px;color:var(--ink2);padding:5px 0;border-bottom:1px solid var(--line)}
+.zl b{font-family:var(--mono);font-weight:500;font-size:11.5px;color:var(--ink3)}
+.row{display:grid;grid-template-columns:150px 1fr;gap:6px 18px;padding:12px 0;border-bottom:1px solid var(--line)}
+.row .k{padding-top:3px}
+.row h4{font-size:16px;font-weight:600;margin-bottom:2px}
+.row p{font-size:13px;color:var(--ink2);line-height:1.4}
+.row .ln{font-size:12.5px;margin-top:3px}
+.row .ln a{margin-right:12px}
+.pin{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:rgba(255,255,255,.94);color:var(--ink);font-family:var(--mono);font-size:11px;line-height:26px;text-align:center;box-shadow:0 0 0 1px rgba(0,0,0,.3)}
+.pin.core{background:var(--accent);color:#fff}
+.cols{display:grid;grid-template-columns:repeat(4,1fr);gap:0 28px}
+.cols>div{border-top:2px solid var(--ink);padding-top:14px}
+.cols .k{display:block;margin-bottom:8px}
+.cols h4{font-size:19px;font-weight:600;margin-bottom:8px;letter-spacing:-.01em}
+.cols p{font-size:13.5px;color:var(--ink2);line-height:1.42}
+.cols .refs{margin-top:10px;font-family:var(--mono);font-size:11.5px;line-height:1.7;color:var(--ink2)}
+.cols .refs a{margin-right:8px;white-space:nowrap}
+.cases{display:grid;grid-template-columns:repeat(3,1fr);gap:0 36px}
+.cases>div{border-top:2px solid var(--ink);padding-top:16px}
+.cases .stat{font-size:64px;font-weight:600;letter-spacing:-.04em;line-height:1;margin:12px 0 10px}
+.cases h4{font-size:19px;font-weight:600;margin-bottom:10px}
+.cases p{font-size:13.5px;color:var(--ink2);line-height:1.42;margin-bottom:8px}
+.cases p b{color:var(--ink);font-weight:600}
+.contact .big{font-size:36px;font-weight:600;letter-spacing:-.025em;line-height:1.1;max-width:20ch}
+.who{margin-top:34px;display:grid;gap:18px}
+.who .k{display:block;margin-bottom:4px}
+.who a{font-size:24px;font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+.who span{display:block;color:var(--ink3);font-size:13.5px}
+.chipbtn{display:inline-block;margin-top:34px;background:var(--accent);color:#fff;font-weight:600;font-size:15px;padding:14px 22px;border-radius:8px}
+/* appendix */
+.zp{display:grid;grid-template-columns:1fr 1fr;gap:20px 40px}
+.zp>div{border-top:1px solid var(--line);padding-top:10px}
+.zp .t{display:flex;gap:12px;align-items:baseline;margin-bottom:4px}
+.zp .t b{font-family:var(--mono);font-weight:500;font-size:12px;color:var(--ink3)}
+.zp .t span{font-size:22px;font-weight:600;letter-spacing:-.01em}
+.zp .pk{font-weight:600;font-size:13px;margin-bottom:5px}
+.zp p{font-size:12.5px;line-height:1.4;color:var(--ink2);margin-bottom:3px}
+.zp p b{color:var(--ink);font-weight:600}
+.zp .refs{font-size:12.5px;margin-top:3px}
 .zp .refs a{margin-right:8px}
-/* families page */
-.fams{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
-.fams>div{background:var(--bg2);padding:16px 18px;display:grid;grid-template-columns:8px 1fr;column-gap:12px;min-height:170px}
-.fams i{display:block;width:8px;border-radius:2px}
-.fams h3{font-family:var(--narrow);font-weight:600;font-size:21px;line-height:1.05;margin-bottom:6px}
-.fams p{font-size:12.5px;line-height:1.4;color:var(--ink2)}
-.fams .refs{margin-top:8px;font-size:12px;line-height:1.6}
-.fams .refs a{margin-right:8px;white-space:nowrap}
-.bounds{margin-top:18px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px 28px;font-size:12.5px;color:var(--ink2);line-height:1.4}
-.bounds b{color:var(--ink)}
-/* table */
-table{border-collapse:collapse;width:1320px;table-layout:fixed;font-size:12.5px}
-th,td{text-align:left;vertical-align:top;padding:6px 10px;border-bottom:1px solid var(--line);line-height:1.35;color:var(--ink2)}
-th{font-family:var(--mono);font-weight:400;font-size:11.5px;letter-spacing:.02em;background:transparent;color:var(--ink3);border-bottom:1px solid var(--ink)}
+table{border-collapse:collapse;width:1312px;table-layout:fixed;font-size:12.5px}
+th,td{text-align:left;vertical-align:top;padding:6px 10px 6px 0;border-bottom:1px solid var(--line);line-height:1.35;color:var(--ink2)}
+th{font-family:var(--mono);font-weight:500;font-size:11.5px;color:var(--ink3);border-bottom:1px solid var(--ink)}
 td.st{color:var(--ink);font-family:var(--mono);font-size:12px}
-td .note{display:block;font-size:11.5px;color:var(--ink3)}
-td .fm{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px}
-/* exec */
-.exec .body{display:grid;grid-template-columns:740px 540px;column-gap:40px}
-.steps>div{display:grid;grid-template-columns:120px 1fr;column-gap:14px;padding:8px 0;border-bottom:1px solid var(--line)}
-.steps .ph{font-family:var(--mono);font-size:11px;color:var(--ink3);padding-top:5px}
-.steps h4{font-family:var(--narrow);font-weight:600;font-size:19px;margin-bottom:2px}
-.steps p{font-size:12px;line-height:1.38;color:var(--ink2)}
-.steps .ln{font-size:12px;margin-top:3px}
-.steps .ln a{margin-right:12px}
-.exec img{width:540px;height:304px;object-fit:cover;border:1px solid var(--line)}
-.exec .spine{margin-top:14px;padding:14px 16px;border-radius:6px;background:var(--bg3);font-size:12.5px;line-height:1.4;color:var(--ink2)}
-.exec .spine b{color:var(--ink)}
-.exec figcaption{font-size:12px;color:var(--ink3);margin-top:8px}
-/* cases */
-.cases{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
-.case{background:var(--bg2);padding:20px 20px 22px}
-.case .k{display:block;margin-bottom:12px}
-.case .stat{font-family:var(--narrow);font-weight:700;font-size:60px;line-height:.95;color:var(--ink);letter-spacing:-.04em}
-.case h3{font-family:var(--narrow);font-weight:600;font-size:24px;line-height:1.05;margin:10px 0 12px}
-.case dt{font-family:var(--mono);font-size:11px;color:var(--ink3);margin-top:8px}
-.case dd{font-size:13px;line-height:1.4;color:var(--ink2)}
-.case dd.pg{color:var(--ink)}
-.case .src{margin-top:12px;font-size:13px}
-/* contact */
-.contact .body{display:grid;grid-template-columns:600px 680px;column-gap:40px}
-.contact .big{font-family:var(--narrow);font-weight:600;font-size:34px;line-height:1.1}
-.contact .who{margin-top:30px;display:grid;gap:16px}
-.contact .who b{display:block;font-family:var(--mono);font-weight:400;font-size:11.5px;color:var(--ink3);margin-bottom:4px}
-.contact .who a{font-family:var(--narrow);font-weight:600;font-size:24px;text-decoration:none;color:var(--ink)}
-.contact .who span{display:block;color:var(--ink3);font-size:13px}
-.contact .chip{display:inline-block;margin-top:30px;background:var(--ink);color:#fff;font-family:var(--narrow);font-weight:600;font-size:16px;padding:14px 24px;border-radius:999px;text-decoration:none}
-.check>div{display:grid;grid-template-columns:44px 1fr;column-gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
-.check .nn{font-family:var(--mono);font-size:13px;color:var(--ink3);line-height:1;padding-top:6px}
-.check h4{font-family:var(--narrow);font-weight:600;font-size:21px;margin-bottom:3px}
-.check p{font-size:13px;line-height:1.4;color:var(--ink2)}
-.needs{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
-.chain{margin-top:22px}
-.chain svg{width:1320px;height:auto;display:block}
-.beyond .body{display:grid;grid-template-rows:auto auto;row-gap:20px}
-.scope3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px}
-.scope3>div{border-left:3px solid var(--copper2);padding:2px 0 2px 14px}
-.scope3 b{display:block;font-family:var(--narrow);font-weight:600;font-size:20px;margin-bottom:4px}
-.scope3 p{font-size:12.5px;line-height:1.4;color:var(--ink2)}
+td .note{display:block;font-size:11.5px;color:var(--ink3);font-family:var(--sans)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px 40px}
+.g2>div{border-top:1px solid var(--line);padding-top:12px}
+.g2 h4{font-size:19px;font-weight:600;margin-bottom:6px}
+.g2 p{font-size:13px;color:var(--ink2);line-height:1.42;margin-bottom:5px}
+.g2 p b{color:var(--ink);font-weight:600}
 '''
-
-def hd(): return '<div class="hd"><div class="wm">Southwire</div><div class="pg">Power Generation Solutions</div></div>'
-def ft(label, n, link=True):
-    l = f'<a href="mailto:powergen@southwire.com">powergen@southwire.com</a>' if link else ''
-    return f'<div class="ft"><span>PowerGen / {e(label).capitalize()}</span><span>{l}</span><span class="n">{pad(n)}</span></div>'
-def page(cls, label, n, inner, links=True):
-    return f'<section class="page {cls}">{hd()}{inner}{ft(label, n, links)}</section>'
-def A(text, url): return f'<a href="{e(url)}">{e(text)}</a>'
+def hd(dark=False): return '<div class="hd"><div class="wm">Southwire</div><div class="pg">Power Generation Solutions</div></div>'
+def ft(label, n): return f'<div class="ft"><span>PowerGen / {e(label)}</span><span><a href="mailto:powergen@southwire.com">powergen@southwire.com</a></span><span>{pad(n)}</span></div>'
+def page(cls, label, n, inner): return f'<section class="page {cls}">{hd()}{inner}{ft(label, n)}</section>'
+def A(t, u): return f'<a href="{e(u)}">{e(t)}</a>'
 def reflink(r):
     c = CAT.get(r); u = c and (c.get('specUrl') or c.get('productUrl'))
     return A(r, u) if u else e(r)
+def doc(title, pages_html): return f'<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>{e(title)}</title><style>{CSS}</style></head><body>{"".join(pages_html)}</body></html>'
 
-pages = []
+P = []
 # 1 cover
-pages.append(page('cover', 'CABLE, ENGINEERING & EXECUTION · SEPTEMBER 2026', 1, f'''
-<img class="bgimg" src="assets/hall-interior.jpg" alt=""><div class="shade"></div><div class="shade2"></div>
-<div class="ey">Power Generation Solutions · September 2026</div>
-<div class="title">Accelerating<br>time to <em>power.</em></div>
-<div class="sub">From the generation asset to the grid interface. Cable products, application support, installation planning and project execution, connected to the plant's electrical scope.</div>
-<a class="chip" href="{e(D['reviewMailto'])}">Start a cable package review</a>
-<div class="meta">16 application zones &nbsp;/&nbsp; 29 catalog references &nbsp;/&nbsp; 6 documented cases &nbsp;/&nbsp; interactive e-brochure and technical appendix enclosed</div>'''))
-
-# 2 challenge
-needs = [('Time to power','Reach the specification before it is frozen, with the plant model, the one-line and the cable schedule in the same conversation.','CableTechSupport application review; Construction Planning Services takeoffs and pull calculations.'),
- ('Installation labor and constructability','Reel lengths, pull sections, circuit identification and staged issue planned around the installation sequence.','Contractor Solutions and SIMpull equipment planning; qualified prefabrication to an agreed engineered scope.'),
- ('Material availability, coordination and traceability','Published constructions with specification numbers, kitting and labels by circuit, reel tracking and staged delivery.','SPEED Services, Project Services, Southwire Reel Tracking System.'),
- ('Reliable operation and lifecycle support','Constructions rated for the duty, and assessment or rejuvenation of existing feeders where a brownfield expansion depends on them.','Field Assessment Services and cable rejuvenation, with published utility results.')]
-chain = '''<svg viewBox="0 0 1320 150" xmlns="http://www.w3.org/2000/svg" font-family="Source Sans 3, Helvetica, Arial, sans-serif">
-<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#7d838a"/></marker></defs>
-<g fill="#ffffff" stroke="#c2c5c0"><rect x="0" y="20" width="300" height="64" rx="4"/><rect x="340" y="20" width="300" height="64" rx="4"/><rect x="680" y="20" width="300" height="64" rx="4"/><rect x="1020" y="20" width="300" height="64" rx="4" fill="#141618" stroke="#141618"/></g>
-<g stroke="#7d838a" stroke-width="1.5" marker-end="url(#ar)"><path d="M300 52H334"/><path d="M640 52H674"/><path d="M980 52H1014"/></g>
-<g font-family="Bricolage Grotesque, Arial, sans-serif" font-weight="600" font-size="22" fill="#141618" text-anchor="middle" letter-spacing="-0.4"><text x="150" y="60">Specification</text><text x="490" y="60">Equipment interfaces</text><text x="830" y="60">Construction sequence</text><text x="1170" y="60" fill="#ffffff">Energization</text></g>
-<g font-size="13" fill="#7d838a" text-anchor="middle"><text x="150" y="112">one-line · cable schedule · voltage class</text><text x="490" y="112">OEM terminal boundaries · package scope</text><text x="830" y="112">pull sections · reel plan · kitting</text><text x="1170" y="112">test records · outage and COD dates</text></g>
-<g font-size="12" fill="#a8541f" text-anchor="middle" font-family="IBM Plex Mono, monospace"><text x="150" y="138">CABLETECHSUPPORT</text><text x="490" y="138">APPLICATION REVIEW</text><text x="830" y="138">PLANNING · PROJECT SERVICES</text><text x="1170" y="138">FIELD ASSESSMENT</text></g></svg>'''
-pages.append(page('', 'THE ELECTRICAL EXECUTION CHALLENGE', 2, f'''
-<div class="eyebrow">01 / The electrical execution challenge</div>
-<div class="h">Cable is last on every branch and first on the schedule.</div>
-<div class="lede">Cable selection, equipment interfaces, construction sequencing and energization are one chain. A spec frozen before the interfaces are agreed, a reel out of sequence, or a drive output on the wrong cable each costs time to power.</div>
-<div class="body"><div class="needs">{''.join(f'<div class="cell"><h3>{e(a)}</h3><p>{e(b)}</p><p style="margin-top:8px"><b>Capability:</b> {e(c)}</p></div>' for a,b,c in needs)}</div>
-<div class="chain">{chain}</div></div>
-<div class="cap">Audience: EPC engineers and procurement teams; generation owners, utilities and independent power producers; OEMs, modular-power companies and equipment packagers.</div>'''))
-
-
-# 3 plant map
-pins = ''.join(f'<div class="pin{" core" if z.get("core") else ""}" style="left:{z["x"]}%;top:{z["y"]}%">{pad(z["n"])}</div>' for z in D['zones'])
+P.append(page('cover dark', 'Cable, engineering and execution · September 2026', 1, f'''<img class="bg" src="assets/hall-interior.jpg" alt=""><div class="veil"></div>
+<div class="t"><span class="k">Power Generation Solutions · the plant model</span><h1>Accelerating<br>time to power.</h1><p>Cable, application engineering and project execution, from the generation asset to the grid interface.</p></div>
+<a class="chip" href="{e(D['reviewMailto'])}">Start a cable package review</a>'''))
+# 2 the plant
+pins = ''.join(f'<div class="pin{" core" if z.get("core") else ""}" style="left:{64+820*z["x"]/100:.0f}px;top:{262+560*z["y"]/100:.0f}px">{pad(z["n"])}</div>' for z in D['zones'])
 zl = ''.join(f'<div class="zl"><b>{pad(z["n"])}</b><span>{e(z["name"])}</span></div>' for z in D['zones'])
-pages.append(page('map', 'PLANT APPLICATION MAP', 3, f'''
-<div class="eyebrow">02 / Explore the plant</div>
-<div class="h">One plant. Sixteen application zones.</div>
-<div class="lede">Every zone is an equipment package, a cable scope and a buyer. The interactive e-brochure opens each one with its cable families, products, services and specification links. Copper pins mark the zones most conversations start in.</div>
-<div class="body" style="top:250px;height:520px"><div class="stage"><img src="assets/plant-zones.jpg" alt="">{pins}</div><div>{zl}</div></div>
-<div class="cap">Concept application map from the original engineering model. Optional systems are shown. Illustrative, not a validated engineering design or digital twin; cable design and quantities follow the approved project scope.</div>'''))
-
-# 4 six key zones
-key = [1, 5, 7, 9, 10, 16]
-def zone_block(z, short=False):
-    refs = ' '.join(reflink(r) for r in z['refs']) or '<span class="s">Services and staging scope</span>'
-    fam = ' · '.join(FAM[k]['short'] for k in z['families'])
-    return f'''<div><div class="t"><b>{pad(z['n'])}</b><span>{e(z['name'])}</span></div><div class="pk">{e(z['package'])}</div>
-<p>{e(z['cable'])}</p><p><b>Package focus:</b> {e(z['focus'])}</p><p><b>Specifies &amp; buys:</b> {e(z['buys'])}</p>
-<div class="refs"><span class="k" style="margin-right:6px">References</span>{refs}</div></div>'''
-pages.append(page('', 'ZONE PACKAGES · KEY ZONES', 4, f'''
-<div class="eyebrow">02 / Explore the plant</div>
-<div class="h">From equipment to scope: the six zones that set the package.</div>
-<div class="lede">The handoff, the primary distribution, the core, the drives, the modular yard and the corridor that connects them. The other ten zones are in the technical appendix and the e-brochure.</div>
-<div class="body" style="top:236px"><div class="zp">{''.join(zone_block(D['zones'][n-1]) for n in key)}</div></div>
-<div class="cap">Click a stock reference for its technical document. Shared routes and staging do not add circuit footage.</div>'''))
-
-# 5 families
-def fam_cell(f):
-    refs = ' '.join(reflink(c['stock']) for c in D['catalog'] if c['family']==f['id'] and c['tier']=='core')
-    nx = sum(1 for c in D['catalog'] if c['family']==f['id'] and c['tier']=='expanded')
-    more = f' <span class="s">+ {nx} expanded {"family" if nx==1 else "families"} in the appendix</span>' if nx else ''
-    return f'<div><i style="background:{f["color"]}"></i><div><h3>{e(f["name"])}</h3><p>{e(f["desc"])}</p><div class="refs">{refs}{more}</div></div></div>'
-bounds = [('OEM internal wiring vs. field interconnection.','The OEM wires inside the package to terminal boxes or local panels; the EPC or installer connects between packages.'),
- ('Fixed wiring vs. portable cable.','DLO and other flexible constructions are portable-cable applications, not substitutes for fixed tray-rated wiring.'),
- ('MV insulation level.','Voltage class, 100% or 133% insulation level and shield type are project selections from the one-line.'),
- ('VFD duty.','Drive-output cable is matched to the drive system; qualify the drive before selecting the cable.'),
- ('Hazardous locations.','ARMOR-X MC-HL constructions, glands and seals follow the area classification and the complete installation.'),
- ('BESS DC vs. solar PV.','RenewaFLEX is approved internal BESS wiring, not a photovoltaic application. Immersion and circuit integrity are separate qualifications.')]
-fams7 = D['families']
-pages.append(page('', 'THE CABLE OFFERING', 5, f'''
-<div class="eyebrow">03 / The cable offering</div>
-<div class="h">Seven families cover the plant's electrical scope.</div>
-<div class="lede">Twenty-nine core references and twenty-four expanded families from the September 2026 offering. Stock numbers do not indicate inventory. The full catalog with specifications and documents is in the technical appendix.</div>
-<div class="body" style="top:236px"><div class="fams">{''.join(fam_cell(f) for f in fams7[:4])}</div>
-<div class="fams" style="border-top:0;grid-template-columns:1fr 1fr 1fr">{''.join(fam_cell(f) for f in fams7[4:])}</div>
-<div class="bounds">{''.join(f'<div><b>{e(a)}</b> {e(b)}</div>' for a,b in bounds)}</div></div>'''))
-
-# 6 execution
-steps = ''.join(f'<div><div class="ph">{e(s["phase"])}</div><div><h4>{e(s["name"])}</h4><p>{e(s["desc"])}</p><div class="ln">{" ".join(A(l[0],l[1]) for l in s["links"])}</div></div></div>' for s in D['services'])
-pages.append(page('exec', 'FROM SPECIFICATION TO INSTALLATION', 6, f'''
-<div class="eyebrow">04 / From specification to installation</div>
-<div class="h">Make the schedule work in the field.</div>
-<div class="lede">Coordinate cable, equipment interfaces and the installation sequence before material reaches the jobsite. Package the delivery around the pull sequence: reel lengths, circuit identification, staging.</div>
-<div class="body" style="top:240px"><div class="steps">{steps}</div>
-<div><img src="assets/reel-yard.jpg" alt=""><div class="s" style="margin-top:8px">Reel staging and prefab, zone 03. Staging adds no circuit footage; it changes when and how the footage is issued.</div>
-<div class="spine"><b>Prefabricated cable spine, project development.</b> A factory-built spine needs defined interfaces, a qualified assembly provider and an agreed test plan. Evaluate a pilot using factory labor, field labor, logistics, schedule and total installed cost. Availability and performance are project-specific.</div></div></div>'''))
-
-# 7 beyond + grid
-apps = ''.join(f'<div class="cell"><span class="k">{e(a["k"])}</span><h3>{e(a["name"])}</h3><p>{e(a["desc"])}</p><p style="margin-top:8px;font-size:12.5px;color:var(--copper)">Review zone {pad(a["zone"])} · {e(D["zones"][a["zone"]-1]["name"])}</p></div>' for a in D['applications'])
-grid = ''.join(f'<div class="cell alt"><h3>{e(g["name"])}</h3><p>{e(g["desc"])}</p><div class="ln">{" ".join(A(l[0],l[1]) for l in g["links"])}</div></div>' for g in D['grid'])
-pages.append(page('beyond', 'GENERATION APPLICATIONS · PLANT TO GRID', 7, f'''
-<div class="eyebrow">05 / Beyond one plant configuration</div>
-<div class="h">Build the package around the application.</div>
-<div class="lede">The combined-cycle model is a starting point. Adapt scope to the generation technology, site and operating duty. Do not combine plant configurations or carry the model's preliminary quantities into procurement.</div>
-<div class="body" style="top:236px"><div class="g4">{apps}</div>
-<div class="g2" style="margin-top:18px">{grid}</div></div>'''))
-
-# 8 boundaries + lifecycle
-bnd = ''.join(f'<div class="cell"><span class="k">{e(a["k"])}</span><h3>{e(a["name"])}</h3><p style="font-size:12.5px">{e(a["desc"])}</p></div>' for a in D['boundaries'])
-life = ''.join(f'<div class="cell alt"><span class="k">{e(a["k"])}</span><h3>{e(a["name"])}</h3><p style="font-size:12.5px">{e(a["desc"])}</p><div class="ln">{" ".join(A(l[0],l[1]) for l in a["links"])}</div></div>' for a in D['lifecycle'])
-pages.append(page('', 'SCOPE BOUNDARIES · LIFECYCLE OPTIONS', 8, f'''
-<div class="eyebrow">05 / Complete the offering</div>
-<div class="h">Define what the cable package includes. Then extend its life.</div>
-<div class="lede">Keep a named source, destination and responsible party for each permanent circuit and each package interface. Choose lifecycle interventions from condition, duty and the outage window.</div>
-<div class="body" style="top:236px"><div class="g4">{bnd}</div><div class="g4" style="margin-top:18px;border-top:0">{life}</div></div>
-<div class="cap">The supplied studies use different plant configurations and voltage assumptions; this brochure makes no project quantity, voltage or construction-release commitment. Service availability, repair suitability, testing and warranty are confirmed for the actual asset.</div>'''))
-
-# 8 cases
-def case_card(c):
-    return f'''<div class="case"><span class="k">{e(c['tag'])}</span><div class="stat">{e(c['stat'])}</div><h3>{e(c['title'])}</h3>
-<dt>Customer problem</dt><dd>{e(c['problem'])}</dd><dt>Southwire contribution</dt><dd>{e(c['contribution'])}</dd><dt>Published result</dt><dd>{e(c['result'])}</dd><dt>PowerGen application · proposed</dt><dd class="pg">{e(c['powergen'])}</dd>
-<p class="src">{A('Read the case study · PDF', c['url'])}</p></div>'''
-feat = [c for c in D['cases'] if c['featured']]
+P.append(page('', 'The plant', 2, f'''<div class="h">One plant. Sixteen application zones.</div><div class="lede">Every zone is an equipment package, a cable scope and a buyer. The interactive e-brochure opens each one from the model.</div>
+<img class="photo contain" src="assets/plant-zones.jpg" alt="">{pins}<div class="side">{zl}</div>
+<div class="cap">Original engineering model. Illustrative; not a validated engineering design or a digital twin. Cable design and quantities follow the approved project scope.</div>'''))
+# 3 before release
+rows = ''.join(f'<div class="row"><div class="k">Zones {" · ".join(pad(z) for z in d["zones"])}</div><div><h4>{e(d["title"])}</h4><p>{e(d["release"])}</p></div></div>' for d in D['zoneDecisions'])
+P.append(page('', 'Before release', 3, f'''<div class="h">What has to be settled before the cable is released.</div><div class="lede">Eight decisions, drawn from the zone framework. Zone numbers follow the model.</div>
+<div class="body" style="top:250px;height:580px;columns:2;column-gap:40px">{rows}</div>'''))
+# 4 families
+def fam(f):
+    core = [c for c in D['catalog'] if c['family']==f['id'] and c['tier']=='core']; nx = sum(1 for c in D['catalog'] if c['family']==f['id'] and c['tier']=='expanded')
+    return f'<div><span class="k">{len(core)} core · {nx} expanded</span><h4>{e(f["name"])}</h4><p>{e(f["desc"])}</p><div class="refs">{" ".join(reflink(c["stock"]) for c in core)}</div></div>'
+fs = D['families']
+P.append(page('', 'The cable offering', 4, f'''<div class="h">Seven families. One electrical scope.</div><div class="lede">Published constructions with specification numbers. Stock numbers do not indicate inventory; the technical appendix carries every reference and its manufacturer document.</div>
+<div class="body" style="top:292px"><div class="cols">{''.join(fam(f) for f in fs[:4])}</div><div class="cols" style="margin-top:26px;grid-template-columns:repeat(3,1fr)">{''.join(fam(f) for f in fs[4:])}</div></div>'''))
+# 5 execution
+svc = ''.join(f'<div class="row" style="grid-template-columns:110px 1fr;padding:9px 0"><div class="k">{e(s["phase"])}</div><div><h4 style="font-size:15px">{e(s["name"])}</h4><p style="font-size:12.5px">{e(s["desc"])}</p><div class="ln">{" ".join(A(l[0],l[1]) for l in s["links"])}</div></div></div>' for s in D['services'])
+P.append(page('', 'From specification to installation', 5, f'''<div class="h">Make the schedule work in the field.</div><div class="lede">Package the delivery around the installation sequence: reel lengths, circuit identification, staged issue.</div>
+<img class="photo" src="assets/reel-yard.jpg" alt="" style="width:600px"><div class="side" style="left:708px;width:668px;gap:0">{svc}</div>
+<div class="cap">Reel staging and prefab, zone 03. Staging adds no circuit footage; it changes when and how the footage is issued.</div>'''))
+# 6 applications
+apps = ''.join(f'<div class="row" style="grid-template-columns:130px 1fr;padding:10px 0"><div class="k">{e(a["k"])}</div><div><h4 style="font-size:15px">{e(a["name"])}</h4><p style="font-size:12.5px">{e(a["desc"])}</p></div></div>' for a in D['applications'])
+P.append(page('', 'Beyond one plant configuration', 6, f'''<div class="h">Build the package around the application.</div><div class="lede">The combined-cycle model is a starting point. Adapt scope to the generation technology, site and operating duty.</div>
+<img class="photo" src="assets/cover-plant.jpg" alt="" style="width:600px;object-fit:contain;background:#fff;border:1px solid var(--line)"><div class="side" style="left:708px;width:668px;gap:0">{apps}<div class="row" style="grid-template-columns:130px 1fr;padding:10px 0;border-bottom:0"><div class="k">Plant to grid</div><div><p style="font-size:12.5px">{e(D["grid"][0]["desc"])}</p><div class="ln">{" ".join(A(l[0],l[1]) for g in D["grid"] for l in g["links"])}</div></div></div></div>'''))
+# 7 cases
+cs = ''.join(f'<div><span class="k">{e(c["tag"])}</span><div class="stat">{e(c["stat"])}</div><h4>{e(c["title"])}</h4><p><b>Result.</b> {e(c["result"])}</p><p><b>PowerGen use, proposed.</b> {e(c["powergen"])}</p><p>{A("Case study · PDF", c["url"])}</p></div>' for c in D['cases'] if c['featured'])
 more = [c for c in D['cases'] if not c['featured']]
-pages.append(page('', 'DOCUMENTED EXPERIENCE', 9, f'''
-<div class="eyebrow">06 / Documented experience</div>
-<div class="h">Results with a reference.</div>
-<div class="lede">Historical Southwire project examples with their published sources. The PowerGen application under each case is a proposed use, not an outcome from the illustrated plant.</div>
-<div class="body" style="top:236px"><div class="cases">{''.join(case_card(c) for c in feat)}</div>
-<div class="s" style="margin-top:14px">More in the resource library: {' · '.join(A(c["tag"]+" ("+c["stat"]+")", c["url"]) for c in more)}.</div></div>'''))
+P.append(page('', 'Documented experience', 7, f'''<div class="h">Results with a reference.</div><div class="lede">Historical Southwire projects with their published sources. The PowerGen use is proposed, not an outcome from the illustrated plant.</div>
+<div class="body" style="top:250px"><div class="cases">{cs}</div><p class="s" style="margin-top:28px">More: {" · ".join(A(c["tag"]+" ("+c["stat"]+")", c["url"]) for c in more)}.</p></div>'''))
+# 8 contact
+who = ''.join(f'<div><span class="k">{e(c.get("org") or c["name"])}</span><a href="mailto:{c["email"]}">{e(c["email"])}</a>{"<span>"+e(c["role"])+"</span>" if c.get("role") else ""}</div>' for c in D['contacts'])
+chk = ''.join(f'<div class="row"><div class="k">{pad(i+1)}</div><div><h4>{e(t)}</h4><p>{e(d)}</p></div></div>' for i,(t,d) in enumerate(D['checklist']))
+P.append(page('contact', 'Project review and contact', 8, f'''<div class="h">Connect your next power project.</div>
+<div class="body" style="top:200px"><div style="display:grid;grid-template-columns:600px 640px;column-gap:72px"><div><div class="big">Start with the one-line diagram, the cable schedule, the equipment interfaces and the target energization date.</div><div class="who">{who}</div><a class="chipbtn" href="{e(D['reviewMailto'])}">Start a cable package review</a></div><div>{chk}</div></div></div>
+<div class="cap">{e(D['sourceNote'])}</div>'''))
+open(os.path.join(OUT, 'pdf-main.html'), 'w').write(doc('Accelerating Time to Power', P))
 
-# 9 contact
-who = ''.join(f'<div><b>{e(c.get("org") or c["name"])}</b><a href="mailto:{c["email"]}">{e(c["email"])}</a>{"<span>"+e(c["role"])+"</span>" if c.get("role") else ""}</div>' for c in D['contacts'])
-check = ''.join(f'<div><div class="nn">{pad(i+1)}</div><div><h4>{e(t)}</h4><p>{e(d)}</p></div></div>' for i,(t,d) in enumerate(D['checklist']))
-rel = ''.join(f'<div><div class="nn">{pad(i+1)}</div><div><h4>{e(t)}</h4><p>{e(d)}</p></div></div>' for i,(t,d) in enumerate(D['release']['steps']))
-rellinks = ' &nbsp; '.join(A(l[0],l[1]) for l in D['release']['links'])
-pages.append(page('contact', 'PROJECT REVIEW & CONTACT', 10, f'''
-<div class="eyebrow">07 / Project conversation</div>
-<div class="h">Connect your next power project.</div>
-<div class="body" style="top:200px"><div><div class="big">Start with the one-line diagram, the cable schedule, the equipment interfaces and the target energization date.</div>
-<div class="who">{who}</div><a class="chip" href="{e(D['reviewMailto'])}">Start a cable package review</a>
-<div class="s" style="margin-top:26px">Interactive e-brochure: explore the plant, the films and the searchable catalog online. Technical appendix: all sixteen zone packages and the full catalog with specification links.</div></div>
-<div><div class="k" style="margin-bottom:8px">From scope to release · one circuit record</div><div class="check">{rel}</div><div class="s" style="margin-top:10px;font-size:13px">{rellinks}</div></div></div>
-<div class="cap">{e(D['sourceNote'])}</div>''', links=False))
-
-def doc(title, pages_html):
-    return f'<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>{e(title)}</title><style>{CSS}</style></head><body>{"".join(pages_html)}</body></html>'
-open(os.path.join(OUT, 'pdf-main.html'), 'w').write(doc('Accelerating Time to Power — PowerGen e-brochure', pages))
-
-# ---------------- appendix ----------------
-ap = []
-n = 1
-ap.append(page('cover', 'TECHNICAL APPENDIX', n, f'''
-<img class="bgimg" src="assets/xray-plant.jpg" alt="" style="object-position:50% 50%"><div class="shade"></div><div class="shade2"></div>
-<div class="ey">Power Generation Solutions · September 2026</div>
-<div class="title" style="font-size:110px">Technical<br><em>appendix.</em></div>
-<div class="sub" style="top:440px">Sixteen zone cable packages and the full catalog of published references, with specification numbers and manufacturer documents. Companion to the Accelerating Time to Power e-brochure.</div>
-<div class="meta" style="top:560px">Stock numbers do not indicate inventory. Confirm voltage, insulation level, conductor size, installation rating, reel length, listing, pricing and lead time against the project design.</div>'''))
+# ---------- appendix ----------
+def zone_block(z):
+    refs = ' '.join(reflink(r) for r in z['refs']) or '<span class="s">Services and staging scope</span>'
+    return f'<div><div class="t"><b>{pad(z["n"])}</b><span>{e(z["name"])}</span></div><div class="pk">{e(z["package"])}</div><p>{e(z["cable"])}</p><p><b>Package focus:</b> {e(z["focus"])}</p><p><b>Specifies &amp; buys:</b> {e(z["buys"])}</p><div class="refs"><span class="k" style="margin-right:6px">References</span>{refs}</div></div>'
+AP = []; n = 1
+AP.append(page('cover dark', 'Technical appendix', n, f'''<img class="bg" src="assets/xray-plant.jpg" alt="" style="object-position:50% 50%"><div class="veil"></div>
+<div class="t"><span class="k">Power Generation Solutions · September 2026</span><h1 style="font-size:100px">Technical<br>appendix.</h1><p>Sixteen zone cable packages, zone decisions and the full catalog of published references with manufacturer documents. Stock numbers do not indicate inventory.</p></div>'''))
 for i in range(0, 16, 4):
     n += 1
-    zs = D['zones'][i:i+4]
-    ap.append(page('', f'ZONE PACKAGES {pad(i+1)}–{pad(i+4)}', n, f'''
-<div class="eyebrow">A / Zone cable packages</div>
-<div class="h">Applications {pad(i+1)}–{pad(i+4)}. From equipment to scope.</div>
-<div class="body" style="top:196px;height:620px"><div class="zp">{''.join(zone_block(z) for z in zs)}</div></div>
-<div class="cap">Click a stock reference for its technical document. Shared routes and staging do not add circuit footage. Illustrative model; cable design and quantities follow the approved project scope.</div>'''))
-# zone decisions
+    AP.append(page('', f'Zone packages {pad(i+1)}–{pad(i+4)}', n, f'<div class="h">Applications {pad(i+1)}–{pad(i+4)}. From equipment to scope.</div><div class="body" style="top:190px;height:630px"><div class="zp">{"".join(zone_block(z) for z in D["zones"][i:i+4])}</div></div><div class="cap">Click a stock reference for its technical document. Shared routes and staging do not add circuit footage.</div>'))
 for i in range(0, 8, 4):
     n += 1
-    ds = D['zoneDecisions'][i:i+4]
-    cells = ''.join(f'<div class="cell"><span class="k">Zones {" / ".join(pad(z) for z in d["zones"])} · {e(d["group"])}</span><h3>{e(d["title"])}</h3><p><b>Cables:</b> {e(d["cables"])}</p><p style="margin-top:8px"><b>Before release:</b> {e(d["release"])}</p></div>' for d in ds)
-    ap.append(page('', f'ZONE DECISIONS {i//4+1}', n, f'''
-<div class="eyebrow">A2 / Zone decisions</div>
-<div class="h">{"Specify the duty. Protect the interface." if i==0 else "Close the gaps between packages."}</div>
-<div class="lede">{"Application requirements drawn from the NGCC zone framework. Zone numbers follow the map in this brochure." if i==0 else "Separate installed field cable, factory wiring, shared infrastructure and temporary equipment in the scope register."}</div>
-<div class="body" style="top:236px"><div class="g2">{cells}</div></div>
-<div class="cap">Select constructions against actual routes and approved OEM data. The equipment shown does not establish cable size, quantity or a product guarantee.</div>'''))
-# catalog pages by family groups, paginated
-groups = [('Medium-voltage power', ['mv']), ('Low-voltage, VFD and flexible / DC', ['lv','vfd','dc']), ('Control, instrumentation and protection', ['ci']), ('Grounding, networks, building systems and specialty', ['gnd','sp'])]
+    cells = ''.join(f'<div><span class="k">Zones {" / ".join(pad(z) for z in d["zones"])} · {e(d["group"])}</span><h4>{e(d["title"])}</h4><p><b>Cables:</b> {e(d["cables"])}</p><p><b>Before release:</b> {e(d["release"])}</p></div>' for d in D['zoneDecisions'][i:i+4])
+    AP.append(page('', f'Zone decisions {i//4+1}', n, f'<div class="h">{"Specify the duty. Protect the interface." if i==0 else "Close the gaps between packages."}</div><div class="body" style="top:200px"><div class="g2">{cells}</div></div><div class="cap">Select constructions against actual routes and approved OEM data. The equipment shown does not establish cable size, quantity or a product guarantee.</div>'))
 def row(c):
-    f = FAM[c['family']]
-    docs = []
+    f = FAM[c['family']]; docs = []
     if c.get('specUrl'): docs.append(A(f'Spec {c["spec"]} · PDF', c['specUrl']))
     elif c.get('spec'): docs.append(f'<span class="note">Spec {e(c["spec"])} · no PDF in source</span>')
     if c.get('productUrl'): docs.append(A('Product page', c['productUrl']))
     for x in c.get('extraUrls', []): docs.append(A(f'Spec {x[0]} · PDF', x[1]))
     if not docs: docs.append('<span class="note">Not published in source</span>')
-    note = f'<span class="note">{e(c["note"])}</span>' if c.get('note') else ''
-    hz = '<span class="note">MC-HL · hazardous location</span>' if c.get('hazloc') else ''
-    zones = ', '.join(pad(z) for z in c['zones']) or '—'
-    CT = {'base':'Published base code','request':'Request stock code','family':'Product family'}
-    size = f'<span class="note">{e(c["size"])}</span>' if c.get('size') else ''
-    ct = f'<span class="note" style="color:#e0a672">{CT[c["codeType"]]}</span>' if c.get('codeType') in CT else ''
-    return f'<tr><td class="st">{e(c["stock"])}{size}{ct}{note}</td><td><span class="fm" style="background:{f["color"]}"></span>{e(f["short"])}{hz}</td><td>{e(c["duty"])}</td><td>{e(c["construction"])}</td><td>{e(c.get("spec") or "—")}</td><td>{"<br>".join(docs)}</td><td>{zones}</td></tr>'
+    CTL = {'base':'Published base code','request':'Request stock code','family':'Product family'}
+    extra = (f'<span class="note">{e(c["size"])}</span>' if c.get('size') else '') + (f'<span class="note" style="color:var(--accent)">{CTL[c["codeType"]]}</span>' if c.get('codeType') in CTL else '') + (f'<span class="note">{e(c["note"])}</span>' if c.get('note') else '')
+    return f'<tr><td class="st">{e(c["stock"])}{extra}</td><td>{e(f["short"])}{"<span class=note>MC-HL · hazardous location</span>" if c.get("hazloc") else ""}</td><td>{e(c["duty"])}</td><td>{e(c["construction"])}</td><td>{e(c.get("spec") or "—")}</td><td>{"<br>".join(docs)}</td><td>{", ".join(pad(z) for z in c["zones"]) or "—"}</td></tr>'
+groups = [('Medium-voltage power', ['mv']), ('Low-voltage, VFD and flexible / DC', ['lv','vfd','dc']), ('Control, instrumentation and protection', ['ci']), ('Grounding, networks, building systems and specialty', ['gnd','sp'])]
 for title, fams in groups:
-  for tier, tlabel in (('core','core references'),('expanded','expanded families')):
-    allrows = [c for c in D['catalog'] if c['family'] in fams and c['tier']==tier]
-    if not allrows: continue
-    PER = 10
-    chunks = [allrows[i:i+PER] for i in range(0, len(allrows), PER)]
-    for ci, rows in enumerate(chunks):
-      n += 1
-      suffix = f' ({ci+1}/{len(chunks)})' if len(chunks)>1 else ''
-      ap.append(page('', f'CATALOG · {title.upper()} · {tlabel.upper()}', n, f'''
-<div class="eyebrow">B / Cable catalog · {tlabel}</div>
-<div class="h">{e(title)}{suffix}</div>
-<div class="lede">Published references connect circuit requirements to specific constructions. Stock numbers do not indicate inventory.</div>
-<div class="body" style="top:236px"><table><colgroup><col style="width:190px"><col style="width:130px"><col style="width:190px"><col style="width:380px"><col style="width:90px"><col style="width:190px"><col style="width:150px"></colgroup>
-<thead><tr><th>Stock # / reference</th><th>Family</th><th>Duty</th><th>Construction / size</th><th>Spec</th><th>Documents</th><th>Zones</th></tr></thead><tbody>{''.join(row(c) for c in rows)}</tbody></table></div>
-<div class="cap">Reference types: product family (selected by size and listing) · specification number (a construction) · published base code (not a complete orderable stock number) · stock number (orderable; not inventory) · request stock code (size and duty selection) · project-specific engineered selection. Type TC and TC-ER are distinct ratings.</div>'''))
+    for tier, tl in (('core','core references'),('expanded','expanded families')):
+        rows = [c for c in D['catalog'] if c['family'] in fams and c['tier']==tier]
+        if not rows: continue
+        chunks = [rows[i:i+10] for i in range(0, len(rows), 10)]
+        for ci, ch in enumerate(chunks):
+            n += 1; suffix = f' ({ci+1}/{len(chunks)})' if len(chunks)>1 else ''
+            AP.append(page('', f'Catalog · {title} · {tl}', n, f'''<div class="h">{e(title)}{suffix}</div><div class="lede">{tl.capitalize()}. Published references connect circuit requirements to specific constructions.</div>
+<div class="body" style="top:250px"><table><colgroup><col style="width:190px"><col style="width:120px"><col style="width:190px"><col style="width:380px"><col style="width:90px"><col style="width:200px"><col style="width:142px"></colgroup><thead><tr><th>Stock / reference</th><th>Family</th><th>Duty</th><th>Construction / size</th><th>Spec</th><th>Documents</th><th>Zones</th></tr></thead><tbody>{"".join(row(c) for c in ch)}</tbody></table></div>
+<div class="cap">Product family: selected by size and listing · specification number: a construction · published base code: not a complete orderable stock number · stock number: orderable, not inventory · request stock code: size and duty selected with the project.</div>'''))
 n += 1
-ap.append(page('', 'MORE DOCUMENTED EXPERIENCE', n, f'''
-<div class="eyebrow">C / Documented experience · resource library</div>
-<div class="h">Additional cases with a reference.</div>
-<div class="lede">Historical Southwire examples. The PowerGen application is a proposed use, not an outcome from the illustrated plant.</div>
-<div class="body" style="top:236px"><div class="cases">{''.join(case_card(c) for c in more)}</div></div>''', ))
-open(os.path.join(OUT, 'pdf-appendix.html'), 'w').write(doc('PowerGen technical appendix', ap))
-print('index', len(index)//1024, 'KB; main pages', len(pages), '; appendix pages', len(ap))
+cs2 = ''.join(f'<div><span class="k">{e(c["tag"])}</span><div class="stat">{e(c["stat"])}</div><h4>{e(c["title"])}</h4><p><b>Problem.</b> {e(c["problem"])}</p><p><b>Contribution.</b> {e(c["contribution"])}</p><p><b>Result.</b> {e(c["result"])}</p><p><b>PowerGen use, proposed.</b> {e(c["powergen"])}</p><p>{A("Case study · PDF", c["url"])}</p></div>' for c in more)
+AP.append(page('', 'More documented experience', n, f'<div class="h">Additional cases with a reference.</div><div class="body" style="top:200px"><div class="cases">{cs2}</div></div>'))
+open(os.path.join(OUT, 'pdf-appendix.html'), 'w').write(doc('PowerGen technical appendix', AP))
+print('main', len(P), 'appendix', len(AP))

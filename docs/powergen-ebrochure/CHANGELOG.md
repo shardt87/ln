@@ -2,6 +2,19 @@
 
 PowerGen e-brochure, "Accelerating Time to Power". Consolidation of the September 2026 strategy update and the PowerGen email brochure into one customer package.
 
+## Plant-first rebuild (September 17)
+
+Both earlier builds were rejected: the first as a dark card grid that looked machine-made, the second (light editorial long-scroll) as too much text and not an e-brochure. Direction given: the interactive plant first, the register of Siemens Energy and GE Vernova product pages (white space, big photography, restrained blue-grey, clean data blocks). The content and data were kept; the product was rebuilt from scratch.
+
+- **The page is the plant.** There is no scrolling page. The full viewport is a stage showing the plant model; every piece of content opens from it. Six views (Plant, Aerial, Power block, Cable routes, Turbine hall, Inside the hall) crossfade on the same stage; each is an original render. The stage pans and zooms (drag, wheel, pinch, double-click, HUD) and clamps to the image.
+- **Sixteen zones as pins** on the numbered plant render, positions computed from the deck's own shapes. Selecting a pin, a legend entry or "Explore the plant" flies the stage to the zone and opens a side panel: package, cable families, equipment, selection considerations, who specifies and buys, before-release guidance, references with spec links, previous/next, and a link into the catalog filtered to that zone.
+- **Everything else is a drawer** over the stage: Cable offering (seven families as an expandable index, application boundaries, the full 53-reference catalog with family, core/expanded and zone filters and search), Execution (services in phase order, the five-step circuit record, lifecycle options, the prefabricated-spine statement), Applications (four plant configurations each linking to a zone, scope boundaries, plant to grid, the three films with posters), Documented experience (six cases), Start a review (contacts, checklist, PDFs). On phones the drawer buttons collapse into a menu that also lists the sixteen zones.
+- **Opening**: one headline over the plant, one sentence, two actions. No intro copy beyond that.
+- **Typography** re-set in Instrument Sans and Geist Mono (see the register). Copper accent kept for the primary action, selected pin and spec links only.
+- **Email PDF**: 8 pages instead of 10. Cover, the plant with 16 numbered pins and the zone list, before-release decisions, seven families with core references, execution, applications, three cases, contact. Sixty clickable links. The appendix is unchanged in content (16 pages, 137 links) and re-set in the same type.
+- **Optional 3D**: a glTF viewer wired to `assets/plant.glb`, dormant until that file exists (see the register).
+- Removed: long-scroll narrative sections, reveal-on-scroll motion, the scroll-pinned zone story, the timeline, the "chapter" numbering.
+
 ## Redesign (September 16)
 
 The first build was rejected as looking machine-made: dark ground throughout, a grid of bordered cards in every section, copper uppercase labels and numbered eyebrows. The content and data were kept; the visual system was replaced.
@@ -54,7 +67,7 @@ Rev 5 is a superset of the 19-page revision: the cover subtitle changed to "Expa
 
 ## Left unresolved (needs an owner)
 
-1. **Films not verified.** The three mp4 files on the online field guide could not be fetched from this environment. The hero shows the still until the film can play; confirm the files are live before distribution or supply the mp4s to embed locally.
+1. **Films not verified.** The three mp4 files on the online field guide could not be fetched from this environment. They are linked with posters, not embedded; confirm the files are live before distribution or supply the mp4s to embed locally.
 2. **External links not fetched.** 101 URLs reused verbatim from rev 5; none could be opened from here. Rev 5 states its author checked them in September 2026; one pass from a networked machine is still recommended before distribution.
 3. **Six expanded references carry no zone assignment in the source** (SIMpull XHHW-2, Royal SOOW, Jacketed Armorlite MC, 300 V PLTC/ITC, 2 kV Type PV, Circuit Defender): they show a dash in the zone column rather than an invented zone.
 4. **Spec PDF gaps in the source**: 66131915 (35 kV EPR concentric-neutral) has a product page but no spec PDF; Genesis has a family page only; Southwire OS2 fiber stock number is stated as unverified in the source and is not listed as a reference.

@@ -1,29 +1,29 @@
 # Accelerating Time to Power — PowerGen e-brochure package
 
-Southwire Power Generation Solutions. September 2026.
+Southwire Power Generation Solutions. September 2026. Plant-first build.
 
 ## Contents
 
 | Path | What it is |
 |---|---|
-| `index.html` | The responsive e-brochure. Self-contained apart from the images in `assets/`; fonts and data are embedded. Works offline from a folder or from any static host. |
-| `assets/` | Six plant renders from the original engineering model (JPEG). |
-| `PowerGen_eBrochure.pdf` | Email-ready brochure, 10 spreads, 16:10, clickable links. |
-| `PowerGen_Technical_Appendix.pdf` | Zone cable packages (16), zone decisions, and the full catalog (29 core references + 24 expanded families), clickable links. |
+| `index.html` | The e-brochure: a full-screen interactive plant stage with zone pins, a zone panel and five content drawers. Self-contained apart from the images in `assets/`; fonts and data are embedded. Works offline from a folder or from any static host. |
+| `assets/` | Eight plant renders from the original engineering model (JPEG). Drop an `assets/plant.glb` here to enable the 3D model viewer. |
+| `PowerGen_eBrochure.pdf` | Email-ready brochure, 8 pages, 16:10, 60 clickable links. |
+| `PowerGen_Technical_Appendix.pdf` | Zone cable packages (16), zone decisions, and the full catalog (29 core references + 24 expanded families), 16 pages, 137 clickable links. |
 | `source-and-asset-register.md` | What was used, what was not, what is unverified. |
-| `CHANGELOG.md` | What was consolidated, removed, corrected, left unresolved. |
+| `CHANGELOG.md` | What was consolidated, removed, corrected, left unresolved, and the September 17 rebuild. |
 | `src/data.json` | Single source of truth for zones, catalog, services, cases, contacts. Edit here and rebuild. |
-| `src/template.html`, `src/build.py` | Page template (data is injected at build) and the PDF page builder (`python3 src/build.py` writes `pdf-main.html` and `pdf-appendix.html`; render at 1440 × 900 per page). |
-| `src/fonts/` | Bricolage Grotesque, Source Sans 3, IBM Plex Mono; Latin subset WOFF2 (Google Fonts, open licence). |
+| `src/template.html`, `src/build.py` | Page template (data and fonts injected at build) and the builder: `python3 src/build.py` writes `index.html`, `pdf-main.html` and `pdf-appendix.html`. |
+| `src/fonts/` | Instrument Sans and Geist Mono, Latin subset WOFF2, inlined as `fonts-inline.css` (Google Fonts, open licence). |
 
 ## Requirements
 
-- **Offline:** open `index.html` directly; everything renders except the three films, which link to the online field guide.
-- **Online:** the hero attempts the plant-flythrough film from the field guide and shows the still until it can play. External specification, product and case-study links open on southwire.com.
+- **Offline:** open `index.html` directly; everything renders. The three films link to the online field guide.
+- **Online:** external specification, product and case-study links open on southwire.com.
 - No build step is needed to view. To regenerate the PDFs, render `pdf-main.html` and `pdf-appendix.html` at 1440 × 900 px per page with a Chromium-based browser (print backgrounds on, no margins).
 
-## Levels
+## How it is organised
 
-1. **Customer story**, sections 01–07: challenge, plant, cable offering, execution, applications, experience, conversation.
-2. **Application exploration**: the plant map; select a zone for equipment, cable families, products, services, considerations and spec links.
-3. **Technical reference**: the catalog at the end of the page, filterable by family and searchable; the appendix PDF for print.
+1. **The plant.** Six views on one stage. Drag to pan, scroll or pinch to zoom, double-click to zoom in. Sixteen pins; select one for the zone package.
+2. **Drawers**, from the header: Cable (families, boundaries, catalog with filters and search), Execution, Applications, Cases, Start a review. Escape closes any panel or drawer.
+3. **Print**: the email PDF for the first conversation, the appendix for the engineer.

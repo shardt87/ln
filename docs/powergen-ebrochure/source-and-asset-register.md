@@ -15,34 +15,34 @@ Not supplied: cable schedules, drawings, a 3D model file, video files, HTML sour
 
 ## Assets used
 
-All renders were extracted from the presentation's media and compressed (JPEG, progressive). No image was generated, regenerated or altered beyond cropping to frame and compression.
+All renders were extracted from the presentation's media and compressed (JPEG, progressive). No image was generated, regenerated or altered beyond cropping to frame and compression. Every image in the package is placed at least once; nothing is a placeholder.
 
 | Asset (package path) | Source in deck | Used for |
 |---|---|---|
-| `assets/hall-interior.jpg` (1600 × 900) | Slide 12, `image13.jpg`, "Inside the enclosed hall" | Hero still and video poster; PDF cover |
-| `assets/plant-zones.jpg` (2000 × 1125) | Slides 8–9, `image10.png`, the numbered zone render | Interactive plant map; PDF application map. Pin positions computed from the slide's own zone-location shapes. |
-| `assets/xray-plant.jpg` (1558 × 959) | Slide 10, `image11.png`, full-plant cable X-ray | Electrical-tour film poster; appendix cover |
-| `assets/xray-hall.jpg` (1600 × 900) | Slide 11, `image12.png`, turbine hall X-ray | Cable X-ray film poster |
-| `assets/reel-yard.jpg` (1600 × 900) | Slide 29, `image19.jpeg`, reel staging | Execution section; PDF page 6 |
-| `assets/plant-scope.jpg` (1600 × 900) | Slide 4, `image7.jpeg`, plant with scope boundary | Kept in the package; not placed in the redesign |
-| `assets/cover-plant.jpg` (1800 × 1012) | Slide 1, `image1.jpeg`, isometric plant on white with delivery truck | Applications section (multiplied onto the paper ground) |
-| `assets/plant-aerial.jpg`, `assets/plant-core.jpg` | Slides 2 and 5 | Kept in the package for future use |
+| `assets/plant-zones.jpg` (2000 × 1125) | Slides 8–9, `image10.png`, the numbered zone render | **The opening view and the plant map.** Sixteen clickable pins; positions computed from the slide's own zone-location shapes (python-pptx), not placed by eye. PDF page 2. |
+| `assets/plant-aerial.jpg` (2400 × 1350) | Slide 2 | "Aerial" view of the stage |
+| `assets/plant-core.jpg` (2400 × 1350) | Slide 5 | "Power block" view |
+| `assets/xray-plant.jpg` (1558 × 959) | Slide 10, `image11.png`, full-plant cable X-ray | "Cable routes" view; electrical-tour film poster; appendix cover |
+| `assets/xray-hall.jpg` (1600 × 900) | Slide 11, `image12.png`, turbine hall X-ray | "Turbine hall" view; cable X-ray film poster |
+| `assets/hall-interior.jpg` (2000 × 1125) | Slide 12, `image13.jpg`, "Inside the enclosed hall" | "Inside the hall" view; flythrough film poster; email PDF cover |
+| `assets/reel-yard.jpg` (1600 × 900) | Slide 29, `image19.jpeg`, reel staging | Execution drawer; PDF page 5 |
+| `assets/cover-plant.jpg` (1800 × 1012) | Slide 1, `image1.jpeg`, isometric plant on white with delivery truck | Applications drawer; PDF page 6 |
 
-Not used: cover artwork with the race car (slide 28, off-brief for a customer piece), the state heat-map chart (slide 27, internal), the lifecycle friction infographic (slide 30, superseded by the services section and published case links), the wordmark-on-hex panel (slide 18; its baked-in tagline text conflicts with editable copy).
+Not used: cover artwork with the race car (slide 28, off-brief for a customer piece), the state heat-map chart (slide 27, internal), the lifecycle friction infographic (slide 30, superseded by the services section and published case links), the wordmark-on-hex panel (slide 18; its baked-in tagline text conflicts with editable copy), the scope-boundary render (slide 4) and the dark plant render (slide 3), both dropped from this build because each view on the stage must carry something the previous one does not.
 
 ## Media
 
 | Film | URL (from the email brochure, page 3) | Verified? |
 |---|---|---|
-| Plant flythrough, 24 s | `…/assets/motion/plant-flythrough.mp4` | **No.** Host blocked from this environment. The hero tries this file and shows the still until the file can play; if it cannot load, the still remains. |
+| Plant flythrough, 24 s | `…/assets/motion/plant-flythrough.mp4` | **No.** Host blocked from this environment. Linked from the "Inside the hall" caption and the Applications drawer with its poster; not embedded, so nothing in the page can fail to play. |
 | Cable X-ray, 5 s | `…/assets/motion/turbine-xray.mp4` | No. Linked with poster. |
 | Electrical tour, 28 s | `…/assets/motion/electrical-tour.mp4` | No. Linked with poster. |
 
-No 3D model file was supplied, so the plant map uses the original render with accurately placed clickable zones rather than a 3D interaction.
+**3D.** No 3D model file was supplied. The stage is therefore built from the original renders with true pan and zoom (pointer drag, wheel, pinch, double-click, HUD buttons) and accurately placed zone pins, not a fake 3D interaction assembled from unrelated stills. The page contains an opt-in model viewer (three.js, GLTF) that activates only if a file named `assets/plant.glb` is present next to the page; with no file, no control, placeholder or message is shown. Export the engineering model to glTF binary and drop it in to get a rotatable model view without any code change.
 
 ## Typography
 
-The source documents are set in Nimbus Sans / Nimbus Sans Narrow Bold (identified from the embedded fonts of the email brochure PDF; the deck's text runs are predominantly Nimbus Sans with Arial fallback). The first e-brochure reproduced those faces; the September 16 redesign deliberately departs from them to give the piece an editorial, non-templated character while keeping the Southwire wordmark treatment and the copper accent restrained: **Bricolage Grotesque** (display, variable optical size), **Source Sans 3** (text) and **IBM Plex Mono** (reference numbers, labels). All three are open-licence Google Fonts, embedded in the package as WOFF2 (Latin subset) so the e-brochure and PDFs render identically offline. Fallback stack: Helvetica Neue, Arial. If brand governance requires the Nimbus Sans set, `src/fonts` and the two font variables in `src/template.html` and `src/build.py` are the only places to change.
+The source documents are set in Nimbus Sans / Nimbus Sans Narrow Bold (identified from the embedded fonts of the email brochure PDF; the deck's text runs are predominantly Nimbus Sans with Arial fallback). This build follows the register of Siemens Energy and GE Vernova product pages, which the reviewer named as the reference: one neutral grotesk in sentence case, large and tightly set for headlines, small and calm for data. **Instrument Sans** (400/500/600/700 and italic) is used for all text and **Geist Mono** (400/500) for stock numbers, spec numbers, zone numbers and labels. Both are open-licence Google Fonts, embedded in the page and PDFs as WOFF2 (Latin subset, 242 KB inlined) so they render identically offline. Fallback stack: Helvetica Neue, Arial. If brand governance requires the Nimbus Sans set, `src/fonts/fonts-inline.css` and the two font variables at the top of `src/template.html` and `src/build.py` are the only places to change.
 
 ## Product references
 
@@ -52,7 +52,7 @@ Zone decisions (rev 5 pages 8–9), lifecycle options (page 23, including the Re
 
 ## Case studies
 
-Six cases from email brochure pages 17–18 with their PDF links. Three featured in the main brochure (custom MV cable; AES Ohio rejuvenation; BJC West County installation), three in the resource library. Published results are quoted as the source states them; the "PowerGen application" lines are proposed uses and are labelled as such.
+Six cases from email brochure pages 17–18 with their PDF links. Three featured on email PDF page 7 (custom MV cable; AES Ohio rejuvenation; BJC West County installation), all six in the Cases drawer and the appendix. Published results are quoted as the source states them; the "PowerGen application" lines are proposed uses and are labelled as such.
 
 ## Contacts
 
