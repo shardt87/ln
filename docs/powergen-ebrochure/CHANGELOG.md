@@ -2,6 +2,20 @@
 
 PowerGen e-brochure, "Accelerating Time to Power". Consolidation of the September 2026 strategy update and the PowerGen email brochure into one customer package.
 
+## Site-style rebuild to the supplied reference (September 17, later)
+
+The plant-first stage was set aside after a reference layout was supplied: a full-bleed hero film with the Southwire logo and a site navigation, light thin headlines, and application sections that pair a spec table with a render and a featured product. The page was rebuilt to that register; the data was kept.
+
+- **Hero**: the hall interior full-bleed, the plant-flythrough film attempted behind it with a "Pause film" control, "Accelerating Time to Power." in Inter 300, the sub-line, one outlined action and "Watch the plant tour".
+- **Navigation**: Southwire logo (composed from the deck's own artwork) with "Power Generation Solutions", Solutions / Products / Support / Contact and a catalog search; transparent over the hero, white once scrolled; collapses to a menu on phones.
+- **Four application sections** (Turbine hall; E-house and motor control; Switchyard, GSU and grid tie; Battery energy storage): copper eyebrow, headline, one paragraph, a three-row table (need → cable family, each linking into the catalog), a render, and a featured reference with a construction diagram and "View specification · NNNNN". Products are the zone's own references from the source: DLO 44020, 15 kV MV-105 46304, substation control 45059, RenewaFLEX 44080.
+- **The plant** keeps the sixteen-pin map with a zone panel, now inline on a navy band, followed by the three films.
+- **Products**: seven families as an expandable index, the six application boundaries, the full catalog with filters and search.
+- **Support**: seven services in a grid, the five-step circuit record, the four lifecycle options, the reel-yard render.
+- **Beyond one configuration**, **Results with a reference** and **Contact** follow, then the footer with the tagline "Engineering support. Installation planning. Material coordination." and both addresses.
+- **PDFs** re-set in the same system: Inter 300 headlines, the logo in the header, copper eyebrows, outlined cover action; still 8 + 16 pages, 60 + 137 links.
+- Removed: the full-viewport stage and drawers, Instrument Sans and Geist Mono, the dormant glTF viewer.
+
 ## Plant-first rebuild (September 17)
 
 Both earlier builds were rejected: the first as a dark card grid that looked machine-made, the second (light editorial long-scroll) as too much text and not an e-brochure. Direction given: the interactive plant first, the register of Siemens Energy and GE Vernova product pages (white space, big photography, restrained blue-grey, clean data blocks). The content and data were kept; the product was rebuilt from scratch.
