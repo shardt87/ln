@@ -24,7 +24,7 @@ Southwire Power Generation Solutions. September 2026.
 
 ## Sections
 
-1. **Solutions**: four application sections, then the plant map (sixteen zones, one panel each) and the films.
+1. **Solutions**: five application sections (turbine hall, e-house and motor control, switchyard and GSU, plant to grid, battery storage), then the plant map (sixteen zones, one panel each) and the films.
 2. **Products**: seven families, application boundaries, the catalog with family, core/expanded and zone filters and search.
 3. **Support**: services by phase, the circuit record, lifecycle options.
 4. **Applications beyond one configuration**, **documented experience**, **contact**.

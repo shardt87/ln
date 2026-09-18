@@ -28,7 +28,8 @@ All renders were extracted from the presentation's media and compressed (JPEG, p
 | `assets/plant-zones.jpg` (2000 × 1125) | Slides 8–9, `image10.png`, the numbered zone render | Interactive plant map with sixteen pins (positions computed from the slide's own zone shapes); PDF page 2 |
 | `assets/reel-yard.jpg` (2000 × 1125) | Slide 29, `image19.jpeg`, reel staging | Support section; PDF page 5 |
 | `assets/plant-white.jpg` (2200 × 1238) | Slide 1, `image1.jpeg`, isometric plant on white with delivery truck | "Beyond one configuration" section; PDF page 6 |
-| `assets/aerial-white.jpg`, `assets/plant-dark.jpg`, `assets/plant-night.jpg` | Slides 3, 4, 6 | Kept in the package for future use; not placed |
+| `assets/aerial-white.jpg` (2200 × 1238) | Slide 3, `image5.png`, aerial on white | Plant to grid section |
+| `assets/plant-dark.jpg`, `assets/plant-night.jpg` | Slides 4, 6 | Kept in the package for future use; not placed |
 
 **Cable construction diagrams.** No product photography exists in the supplied sources, and the manufacturer's site could not be reached. The four product blocks therefore carry a cross-section diagram drawn in the page (inline SVG) from the construction text of the referenced specification: conductor count and size, insulation, shield, jacket, colours where the source states them. Each diagram is labelled "Construction diagram, illustrative · layers per spec NNNNN" and links to the manufacturer's specification. They are not photographs and do not show dimensions, semiconducting layers or fillers the source does not list. Replace with product photography from Southwire when available; the diagrams are built by one function (`xsec` in `src/template.html`).
 

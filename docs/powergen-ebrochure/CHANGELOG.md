@@ -2,6 +2,10 @@
 
 PowerGen e-brochure, "Accelerating Time to Power". Consolidation of the September 2026 strategy update and the PowerGen email brochure into one customer package.
 
+## Plant to grid given its own place (September 18)
+
+The grid side (rev 5 page 20, "Zone 01, plant to grid") had been reduced to two cards at the foot of the applications section. Now: a fifth application section, "Plant to grid", follows the switchyard section with the source's own headline and intro (added to `data.json` as `gridIntro`, page 20), a three-row table (Underground transmission; Overhead gen-tie and grid upgrades; One agreed grid handoff, from the zone 01 decision), the aerial render on white, the two HV cases (Vineyard Wind 1, Atlantic Municipal Utilities) and the transmission line card and conductor comparison documents. The switchyard section's table gained a "Grid connection" row pointing to it. Email PDF page 6 carries a matching "Zone 01 · Plant to grid" band with both scopes, their links and the two cases. No new facts; every line is from the source brochure.
+
 ## Site-style rebuild to the supplied reference (September 17, later)
 
 The plant-first stage was set aside after a reference layout was supplied: a full-bleed hero film with the Southwire logo and a site navigation, light thin headlines, and application sections that pair a spec table with a render and a featured product. The page was rebuilt to that register; the data was kept.

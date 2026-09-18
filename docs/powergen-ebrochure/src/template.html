@@ -105,6 +105,18 @@ img{display:block;max-width:100%}
 .prod .lnk .arrow{border-bottom:1px solid var(--ink);padding-bottom:5px}
 .prod .layers{margin-top:10px;font-size:13px;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:4px 18px}
 .prod .layers b{font-weight:600;color:var(--ink-2);margin-right:5px}
+.fig.light{background:#fff;border:1px solid var(--line)}
+.fig.light figcaption{color:var(--ink-3);background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,.85))}
+.spec span a{color:var(--copper);font-size:14px;margin-top:6px;display:inline}
+.hvc{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;border-top:1px solid var(--ink)}
+.hvc a{display:grid;gap:4px;align-content:start;padding:18px 0 20px;border-bottom:1px solid var(--line-2)}
+.hvc a .k{font-size:11.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--copper)}
+.hvc a .stat{font-size:clamp(34px,3.4vw,46px);font-weight:300;letter-spacing:-.03em;line-height:1;margin-top:8px;color:var(--ink)}
+.hvc a b{font-size:15.5px;font-weight:600;letter-spacing:-.01em;margin-top:4px}
+.hvc a .pg{font-size:13.5px;color:var(--ink-2);line-height:1.45}
+.hvc a em{font-style:normal;font-size:13.5px;color:var(--copper);margin-top:4px}
+.hvc a:hover b{color:var(--copper)}
+@media (max-width:560px){.hvc{grid-template-columns:1fr}}
 @media (max-width:900px){.app .g,.app.flip .g{grid-template-columns:1fr}.app.flip .g>.txt{order:0}.app h2{max-width:none}}
 
 /* ---------- plant map ---------- */
@@ -511,22 +523,29 @@ td .na{color:var(--ink-3);font-size:12.5px}
      img:'assets/xray-plant.jpg',cap:'X-ray route concept for the full plant. Colours do not establish voltage class.',flip:true,
      prod:{stock:'55050899',name:'15 kV MV-105',x:{id:'b',alt:'15 kV MV-105 cable cross-section',spec:'46304',cond:{n:1,label:'500 kcmil copper conductor',color:COL.cu,hi:COL.cuHi},layers:[{label:'CPE-TP jacket',color:COL.jacket,w:14},{label:'Copper tape shield',color:COL.shield,w:7},{label:'NL-EPR, 220 mil, 133% level',color:COL.epr,w:30}]}}},
     {zone:1,eye:'Application / Switchyard, GSU and grid tie',h:'Protect the interface to the grid.',lede:'Station service, protection and control between the generator step-up transformer, the switchyard and the plant.',
-     rows:[['Protection and control','CT/VT control, breaker control and substation control cable, tinned copper, Type TC-ER.','ci'],['Station service','Low-voltage distribution for switchyard auxiliaries and the control house.','lv'],['Grounding','Bare copper ground; final sizes follow the grounding study.','gnd']],
+     rows:[['Protection and control','CT/VT control, breaker control and substation control cable, tinned copper, Type TC-ER.','ci'],['Station service','Low-voltage distribution for switchyard auxiliaries and the control house.','lv'],['Grounding','Bare copper ground; final sizes follow the grounding study.','gnd'],['Grid connection','HV underground cable is a separate engineered scope. Underground and overhead connections require different engineering packages.',null,'<a href="#app-grid">Plant to grid · HV underground and overhead</a>']],
      img:'assets/aerial.jpg',cap:'Aerial view of the plant model with the switchyard and the shared cable corridor.',
      prod:{stock:'59945899',name:'Substation control',x:{id:'c',alt:'Substation control cable cross-section',spec:'45059',cond:{n:4,label:'#14 tinned Cu, black / white / red / green',color:COL.cu,hi:COL.cuHi,colors:[COL.black,COL.white,COL.red,COL.green]},layers:[{label:'CPE-TP jacket, Type TC-ER',color:COL.jacket,w:14},{label:'EPR XHHW-2 insulation',color:COL.epr,w:6}],fill:'#2a3038'}}},
+    {zone:1,id:'grid',eye:'Application / Plant to grid',h:'Qualify the connection before selecting the cable.',lede:'Agree the generator step-up transformer (GSU), point of interconnection (POI), asset owner and route. Underground and overhead connections require different engineering packages.',
+     rows:[['Underground transmission','Southwire\'s published 69–500 kV scope includes cable systems, accessories, engineering, installation and testing. Qualify voltage, route, bonding, terminations and the utility interface.',null,'GRIDLINKS0'],['Overhead gen-tie & grid upgrades','Compare conventional conductors with C7 composite-core options when thermal capacity, span, sag or reconductoring drives the design. Final selection belongs to the line engineer and utility.',null,'GRIDLINKS1'],['One agreed grid handoff','Confirm ownership, voltage, terminals, sheath bonding, ground-potential interfaces and diverse protection routes. Select OPGW or ADSS only when the overhead communications architecture requires it.',null,'<a href="#plant" data-zone="1">Zone 01 · before release</a>']],
+     img:'assets/aerial-white.jpg',cap:'Aerial view of the plant model with the switchyard and grid tie. Route concept from the original model; qualify the project-specific installation.',flip:true,grid:true},
     {zone:2,eye:'Application / Battery energy storage',h:'Interconnect the batteries. Collect the power.',lede:'Battery-to-collector interconnection: approved internal BESS wiring, DC circuits and the medium-voltage collector.',
      rows:[['Internal BESS wiring','RenewaFLEX, approved for internal battery energy storage wiring. Not a photovoltaic application.','dc'],['Collector feeders','35 kV EPR concentric-neutral primary to the collector and the plant.','mv'],['Protection and grounding','Control and instrumentation for the battery management interface; equipment grounds.','ci']],
      img:'assets/power-core.jpg',cap:'Power generation core of the plant model.',flip:true,
      prod:{stock:'13892403',name:'RenewaFLEX BESS',x:{id:'d',alt:'RenewaFLEX BESS cable cross-section',spec:'44080',cond:{n:1,label:'4/0 copper conductor',color:COL.cu,hi:COL.cuHi},layers:[{label:'Orange jacket',color:COL.orange,w:14},{label:'RHH/RHW-2 insulation, 2 kV',color:COL.epr,w:26}]}}}
   ];
   var appsEl=document.getElementById('apps');
-  appsEl.innerHTML=APPS.map(function(a,i){var c=CAT[a.prod.stock];var z=D.zones[a.zone-1];var u=docUrl(c);
-    return '<section class="app'+(i%2?' alt':'')+(a.flip?' flip':'')+'" id="app-'+a.zone+'"><div class="wrap"><div class="g">'
-      +'<div class="txt rv"><div class="eyebrow">'+esc(a.eye)+'</div><h2>'+esc(a.h)+'</h2><p class="lede">'+esc(a.lede)+'</p><div class="spec">'+a.rows.map(function(r){return '<div><b>'+esc(r[0])+'</b><span>'+esc(r[1])+'<br><a href="#catalog" data-fam="'+r[2]+'">'+esc(FAM[r[2]].name)+' · catalog</a></span></div>'}).join('')+'</div>'
+  var GRIDLINKS=D.grid.map(function(g){return g.links.map(function(l){return A(l[0],l[1])}).join(' &nbsp;·&nbsp; ')});
+  var HVCASES=D.cases.filter(function(c){return c.id==='vineyard'||c.id==='atlantic'});
+  function gridBlock(){return '<div class="prod griddocs"><div class="hvc">'+HVCASES.map(function(c){return '<a href="'+c.url+'" target="_blank" rel="noopener"><span class="k">'+esc(c.tag)+'</span><span class="stat">'+esc(c.stat)+'</span><b>'+esc(c.title)+'</b><span class="pg">'+esc(c.powergen)+'</span><em>Case study · PDF</em></a>'}).join('')+'</div>'
+    +'<div><h3>Transmission scope, published</h3><div class="k">Southwire high-voltage underground transmission and overhead conductor documents, from the source brochure.</div><p class="lnk"><a class="arrow" href="'+D.grid[0].links[1][1]+'" target="_blank" rel="noopener">Transmission line card · PDF '+AR+'</a></p><p class="lnk" style="margin-top:8px"><a class="arrow" href="'+D.grid[1].links[0][1]+'" target="_blank" rel="noopener">Overhead conductor comparison · PDF '+AR+'</a></p></div></div>'}
+  appsEl.innerHTML=APPS.map(function(a,i){var z=D.zones[a.zone-1];var c=a.prod?CAT[a.prod.stock]:null;var u=c?docUrl(c):'';
+    return '<section class="app'+(i%2?' alt':'')+(a.flip?' flip':'')+'" id="app-'+(a.id||a.zone)+'"><div class="wrap"><div class="g">'
+      +'<div class="txt rv"><div class="eyebrow">'+esc(a.eye)+'</div><h2>'+esc(a.h)+'</h2><p class="lede">'+esc(a.lede)+'</p><div class="spec">'+a.rows.map(function(r){var ln=r[3]?(r[3]==='GRIDLINKS0'?GRIDLINKS[0]:r[3]==='GRIDLINKS1'?GRIDLINKS[1]:r[3]):'<a href="#catalog" data-fam="'+r[2]+'">'+esc(FAM[r[2]].name)+' · catalog</a>';return '<div><b>'+esc(r[0])+'</b><span>'+esc(r[1])+'<br>'+ln+'</span></div>'}).join('')+'</div>'
       +'<p class="more"><a class="arrow ul" href="#plant" data-zone="'+a.zone+'">Zone '+pad(a.zone)+' · '+esc(z.name)+' cable package '+AR+'</a></p></div>'
-      +'<div class="rv"><figure class="fig"><img src="'+a.img+'" alt="" loading="'+(i?'lazy':'eager')+'"><figcaption>'+esc(a.cap)+'</figcaption></figure>'
-      +'<div class="prod"><div class="pic">'+xsec(a.prod.x)+'</div><div><h3>'+esc(a.prod.name)+'</h3><div class="k">Stock '+esc(c.stock)+' · '+esc(c.construction)+'</div>'
-      +(u?'<p class="lnk"><a class="arrow" href="'+u+'" target="_blank" rel="noopener">View specification · '+esc(c.spec)+' '+AR+'</a></p>':'')+'</div></div></div>'
+      +'<div class="rv"><figure class="fig'+(a.grid?' light':'')+'"><img src="'+a.img+'" alt="" loading="'+(i?'lazy':'eager')+'"><figcaption>'+esc(a.cap)+'</figcaption></figure>'
+      +(a.grid?gridBlock():'<div class="prod"><div class="pic">'+xsec(a.prod.x)+'</div><div><h3>'+esc(a.prod.name)+'</h3><div class="k">Stock '+esc(c.stock)+' · '+esc(c.construction)+'</div>'
+      +(u?'<p class="lnk"><a class="arrow" href="'+u+'" target="_blank" rel="noopener">View specification · '+esc(c.spec)+' '+AR+'</a></p>':'')+'</div></div>')+'</div>'
       +'</div></div></section>'}).join('');
 
   /* ---------- plant map ---------- */

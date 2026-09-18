@@ -1820,5 +1820,10 @@
    ]
   ]
  },
- "sourceNote": "Based on the PowerGen email brochure rev 5 (28 pages, September 2026) and the September 2026 strategy update, with linked Southwire references. The source states its manufacturer references were checked September 2026. Project engineering governs; final engineering and commercial terms are project-specific."
+ "sourceNote": "Based on the PowerGen email brochure rev 5 (28 pages, September 2026) and the September 2026 strategy update, with linked Southwire references. The source states its manufacturer references were checked September 2026. Project engineering governs; final engineering and commercial terms are project-specific.",
+ "gridIntro": {
+  "title": "Qualify the connection before selecting the cable.",
+  "desc": "Agree the generator step-up transformer (GSU), point of interconnection (POI), asset owner and route. Underground and overhead connections require different engineering packages.",
+  "source": "PowerGen email brochure rev 5, page 20"
+ }
 }
