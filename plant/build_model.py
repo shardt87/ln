@@ -102,6 +102,7 @@ def solid(layer, name, x0, x1, y0, y1, z0, z1, c="equip", **meta):
 
 def pad(layer, name, x0, x1, y0, y1, c="pad", z1=0.4, **meta):
     meta.setdefault("register", False)
+    z1 += 0.008 * (len(items) % 30)      # unique heights: overlapping pads never share a face
     item(layer, name, (x0, x1, y0, y1), (0, z1), **meta)
     B(x0, x1, y0, y1, 0, z1, c)
 

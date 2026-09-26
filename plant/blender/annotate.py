@@ -89,6 +89,7 @@ def annotate(png, meta):
         d.text((W - tw - int(22 * k), H - bar_h + int(8 * k) + i * int(25 * k)), t, font=f, fill=c)
     out = png.replace(".png", "_annotated.png")
     im.save(out, optimize=True)
+    im.save(out.replace(".png", ".jpg"), quality=90, optimize=True, progressive=True)
     return out
 
 

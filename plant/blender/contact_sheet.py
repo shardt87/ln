@@ -30,4 +30,5 @@ for style in ("drawing", "photo"):
         ImageDraw.Draw(sheet).rectangle((x - 1, y - 1, x + tw, y + t.height), outline=(207, 213, 212))
     out = os.path.join(root, f"contact_sheet_{style}.png")
     sheet.save(out, optimize=True)
+    sheet.save(out.replace(".png", ".jpg"), quality=88, optimize=True, progressive=True)
     print("wrote", out, f"({len(thumbs)} views)")
