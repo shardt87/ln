@@ -34,15 +34,36 @@ jobs:
           python3 plant/threejs/export_bay.py
       - name: Assemble the site
         run: python3 plant/site/build_site.py site
-      - uses: actions/configure-pages@v5
+      - name: Upload the site as a download (always)
+        uses: actions/upload-artifact@v4
         with:
-          enablement: true
-      - uses: actions/upload-pages-artifact@v3
+          name: sk3x1-site
+          path: site
+      # Pages must be switched on once by the repo owner:
+      # Settings -> Pages -> Build and deployment -> Source: GitHub Actions.
+      # Until then the site is still available as the sk3x1-site download.
+      - id: pages
+        uses: actions/configure-pages@v5
+        continue-on-error: true
+      - if: steps.pages.outcome == 'success'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: site
+      - name: Pages status
+        run: |
+          if [ "${{ steps.pages.outcome }}" = "success" ]; then
+            echo "Pages is enabled; deploying." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "GitHub Pages is not enabled for this repository, so the site was not deployed." >> "$GITHUB_STEP_SUMMARY"
+            echo "Enable it once in Settings -> Pages -> Source: GitHub Actions. The assembled site is in the **sk3x1-site** artifact." >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning::GitHub Pages is not enabled; site uploaded as the sk3x1-site artifact instead"
+          fi
+    outputs:
+      pages: ${{ steps.pages.outcome }}
 
   deploy:
     needs: build
+    if: needs.build.outputs.pages == 'success'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
