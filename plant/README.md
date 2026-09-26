@@ -26,16 +26,40 @@ The checks corrected the model in several places:
 
 | File | What it is |
 |---|---|
-| `build_model.py` | Model source: 338 register items built from about 3,000 parts (boxes, cylinders/cones, A-frames, lofts). Writes `sk3x1_model.json`. |
+| `build_model.py` | Model source: 338 register items built from about 3,000 primary parts (boxes, cylinders/cones, A-frames, lofts). Writes `sk3x1_model.json`. |
+| `detail.py` | Detail pass (about 9,100 parts). See "Detail layer" below. |
 | `routes_base.json`, `routes_optional.json` | Tray, bus, duct-bank, 230 kV and process-pipe centrelines from the vector geometry of sheets 01 and 02. |
 | `extract_reference.py` | Pulls reference geometry from the drawing PDF into `reference/sk3x1_rev14_reference.json` (committed, so the PDF is not needed to verify). |
 | `verify.py` | Runs the checks above and writes `verify_report.json`. Exits 1 on failure. |
 | `palette.json` | Colour for each material key, shared by the viewer and the OBJ export. |
-| `viewer/index.html` | Interactive Three.js viewer: the sheet 11 views, layer toggles, a section cut by elevation, a live X / Y / EL readout, an inspector, the equipment register, a verification report, electrical rooms and the motor schedule. |
+| `viewer/index.html` | Interactive Three.js viewer: physically based materials with procedural textures (ribbed cladding, concrete, gravel, asphalt, grass, grating, fin stripes), a sky with fog, camera-following shadows and a Detail toggle. It also has the sheet 11 views, layer toggles, a section cut by elevation, a live X / Y / EL readout, an inspector, the equipment register, a verification report, electrical rooms and the motor schedule. |
+| `threejs/` | GT train 1 bay as compact JSON (`export_bay.py`) and a standalone three.js r181 scene (`gt1_bay_scene.js`, `bay.html`). |
+| `site/build_site.py` | Assembles the GitHub Pages site: the viewer, the bay scene and a render gallery. |
 | `render.go` | Line art using this repository's `ln` engine, one SVG + PNG per sheet 11 view in `renders/`. |
 | `export_obj.py` | Wavefront OBJ + MTL for Blender, SketchUp or Rhino: one group per item, with the layer in the group name. |
 | `blender/` | Blender build script (sheet 11), label annotation, contact sheets, render summary and requirements. |
 | `renders/blender/` | Annotated Cycles renders and contact sheets. |
+
+## Detail layer
+
+`detail.py` runs after the primary model is built. It adds:
+
+- open stair towers with switchback flights, landings and handrails, in place of solid blocks;
+- guard rails on every raised platform and ring platform;
+- caged ladders on the stacks, absorbers, strippers and tanks;
+- sheds on every bushing and post insulator, and fans under the transformer radiators;
+- lattice bracing and shield wires in the switchyard;
+- process piping on the rack tiers;
+- HRSG side platforms and downcomers;
+- doors and louvres, light poles and fence posts.
+
+Detail parts carry `d: 1`. None of them come from the drawing; all are typical. `verify.py` therefore checks the primary geometry against the drawing and runs only the bounds check on the detail parts. In the viewer, the Detail button toggles them.
+
+## GitHub Pages
+
+`.github/workflows/sk3x1-pages.yml` rebuilds and verifies the model, then assembles the site with `plant/site/build_site.py`. The site has the viewer as `index.html`, the GT1 bay close-up as `bay.html`, and a render gallery as `renders.html`.
+
+The workflow always uploads the site as the **sk3x1-site** artifact. It also deploys to GitHub Pages once the repository owner has turned Pages on (Settings → Pages → Build and deployment → Source: GitHub Actions). A workflow token cannot turn Pages on by itself.
 
 ## Blender renders (local or GitHub Actions)
 
