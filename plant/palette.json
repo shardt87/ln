@@ -238,5 +238,25 @@
 "lng": {
 "hex": "#4a78a8",
 "opacity": 1
+},
+"rail": {
+"hex": "#d8b43a",
+"opacity": 1
+},
+"pipe": {
+"hex": "#9aa6ad",
+"opacity": 1
+},
+"lamp": {
+"hex": "#f4f1e0",
+"opacity": 1
+},
+"rollup": {
+"hex": "#8d989e",
+"opacity": 1
+},
+"louvre": {
+"hex": "#6f7a82",
+"opacity": 1
 }
 }

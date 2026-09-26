@@ -1382,6 +1382,11 @@ for v in VIEWS:
     v["fit"] = FIT[v["k"]]
 
 
+# Detail pass (LOD 2): stairs, rails, ladders, sheds, lattice, rack piping, doors, poles
+import detail as _detail
+N_DETAIL = _detail.Detail(items, parts).run()
+
+
 def validate():
     ids = {it["id"] for it in items}
     assert all(p["item"] in ids for p in parts)
@@ -1405,8 +1410,16 @@ model = dict(
 if __name__ == "__main__":
     validate()
     out = os.path.join(HERE, "sk3x1_model.json")
+    def _r(o):  # 0.01 ft is far below any drawn tolerance; keeps the file small
+        if isinstance(o, float):
+            return round(o, 2)
+        if isinstance(o, list):
+            return [_r(v) for v in o]
+        if isinstance(o, dict):
+            return {k: _r(v) for k, v in o.items()}
+        return o
     with open(out, "w") as f:
-        json.dump(model, f, separators=(",", ":"))
+        json.dump(_r(model), f, separators=(",", ":"))
     reg = sum(1 for it in items if it["register"])
-    print(f"wrote {out}: {len(items)} items ({reg} in the register), {len(parts)} parts, "
-          f"{len(routes)} route polylines")
+    print(f"wrote {out}: {len(items)} items ({reg} in the register), {len(parts)} parts "
+          f"({N_DETAIL} detail), {len(routes)} route polylines")

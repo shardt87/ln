@@ -4,3 +4,4 @@
 # Blender render outputs: commit the annotated JPEGs, CI publishes the PNGs
 plant/renders/blender/*.png
 plant/renders/blender/*.json
+__pycache__/

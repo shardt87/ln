@@ -1,0 +1,52 @@
+# Publish the SK-3X1 3D viewer, the GT1 bay scene and the render gallery on
+# GitHub Pages. The model is rebuilt and verified against the drawing first.
+name: SK-3X1 viewer on GitHub Pages
+
+on:
+  push:
+    paths:
+      - "plant/**"
+      - ".github/workflows/sk3x1-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: sk3x1-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build and verify the model
+        run: |
+          python3 plant/build_model.py
+          python3 plant/verify.py
+          python3 plant/build_viewer.py
+          python3 plant/threejs/export_bay.py
+      - name: Assemble the site
+        run: python3 plant/site/build_site.py site
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

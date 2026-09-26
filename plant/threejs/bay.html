@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SK-3X1 GT1 Bay</title>
+<style>
+  html,body{margin:0;height:100%;background:#e9eef0;font:14px/1.4 "IBM Plex Sans Condensed",Arial,sans-serif;color:#1f2b33}
+  canvas{display:block;width:100%;height:100%}
+  .cap{position:fixed;left:14px;top:12px;background:rgba(248,249,247,.9);border:1px solid #cfd5d4;padding:8px 12px;max-width:min(560px,calc(100% - 52px))}
+  .cap b{display:block;font-size:16px}
+  .cap span{color:#55636c;font-size:12.5px}
+  .foot{position:fixed;right:12px;bottom:10px;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:#b0662b}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="cap"><b>GT train 1 bay: GT1, HRSG 1, stack, FH-1, GSU-1</b><span>SK-3X1 Rev 14 3D model, detail level 2. Drag to orbit, scroll to zoom, right-drag to pan. <a href="./">Full plant viewer</a></span></div>
+<div class="foot">Conceptual illustration · not engineered · not for construction</div>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.181.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.181.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+const canvas = document.getElementById('c');
+const [D, code] = await Promise.all([fetch('gt1_bay.json').then(r => r.json()), fetch('gt1_bay_scene.js').then(r => r.text())]);
+const width = innerWidth, height = innerHeight;
+new Function('THREE', 'OrbitControls', 'canvas', 'width', 'height', 'D', code)(THREE, OrbitControls, canvas, width, height, D);
+</script>
+</body>
+</html>

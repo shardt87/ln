@@ -47,7 +47,10 @@ def is_axis_rod(p):
     return p["kind"] != "rod" or sum(1 for i in range(3) if p["a"][i] != p["b"][i]) == 1
 
 
-PB = [(p, part_box(p)) for p in model["parts"]]
+# Detail parts (d=1: rails, ladders, sheds, ...) are typical dressing; the drawing checks
+# use the primary geometry. Bounds are checked on everything.
+PB_ALL = [(p, part_box(p)) for p in model["parts"]]
+PB = [(p, b) for p, b in PB_ALL if not p.get("d")]
 results = {}
 
 
@@ -100,7 +103,7 @@ for (label, pat, want, extra) in H13:
         hrows.append(dict(item=label, expected=want, model=None, ok=False)); continue
     it = its[0]
     if extra is None:   # absorber shell top, not the stack
-        top = max(part_box(p)[5] for p, _ in [(p, 0) for p in model["parts"]]
+        top = max(part_box(p)[5] for p, _ in [(p, 0) for p in model["parts"] if not p.get("d")]
                   if p["item"] == it["id"] and p["color"] == "ccs" and p["kind"] == "rod" and p["r"] > 20 and p["r2"] > 20)
         extra = 0
     else:
@@ -235,7 +238,7 @@ results["clashes"] = dict(pairs_tested=len(seen), clashes=cl, ok=not cl)
 # 5. bounds -------------------------------------------------------------------
 below_ok = re.compile(r"Stormwater|cable basement|Compound")
 oob = []
-for p, b in PB:
+for p, b in PB_ALL:
     n = items[p["item"]]["name"]
     if p["kind"] == "rod":
         b = (min(p["a"][0], p["b"][0]), max(p["a"][0], p["b"][0]), min(p["a"][1], p["b"][1]),
