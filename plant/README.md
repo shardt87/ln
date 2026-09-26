@@ -34,6 +34,51 @@ The checks corrected the model in several places:
 | `viewer/index.html` | Interactive Three.js viewer: the sheet 11 views, layer toggles, a section cut by elevation, a live X / Y / EL readout, an inspector, the equipment register, a verification report, electrical rooms and the motor schedule. |
 | `render.go` | Line art using this repository's `ln` engine, one SVG + PNG per sheet 11 view in `renders/`. |
 | `export_obj.py` | Wavefront OBJ + MTL for Blender, SketchUp or Rhino: one group per item, with the layer in the group name. |
+| `blender/` | Blender build script (sheet 11), label annotation, contact sheets, render summary and requirements. |
+| `renders/blender/` | Annotated Cycles renders and contact sheets. |
+
+## Blender renders (local or GitHub Actions)
+
+`blender/SK-3X1_Rev14_blender_build.py` is the build script named on sheet SK-3X1-11. It:
+
+- builds the model into Blender collections named as on that sheet;
+- fits the orthographic 1920 x 1080 cameras to each view with the 3% margin;
+- renders with Cycles.
+
+There are two styles:
+
+- **drawing** (the sheet 11 look): white world, neutral grey equipment, copper only on cables, trays and bus, and dark Freestyle outlines.
+- **photo:** a Nishita sky, sun shadows and darker real-world albedos.
+
+`blender/annotate.py` then burns in the equipment labels and the credit block, and `blender/contact_sheet.py` tiles the views onto one page.
+
+```sh
+pip install -r plant/blender/requirements.txt          # bpy 4.2 (Blender as a Python module) + Pillow
+python plant/blender/SK-3X1_Rev14_blender_build.py --views A,B --style drawing --samples 64
+python plant/blender/annotate.py plant/renders/blender
+# or inside a Blender install:
+blender -b -P plant/blender/SK-3X1_Rev14_blender_build.py -- --views A --style photo --blend sk3x1.blend
+```
+
+The GitHub workflow `.github/workflows/sk3x1-blender-render.yml` runs in three stages:
+
+1. It runs `verify.py` and fails if the model JSON is stale.
+2. It renders all views in five parallel jobs.
+3. It publishes an **sk3x1-renders** artifact. That artifact holds the annotated PNGs, contact sheets, `SK-3X1_Rev14.blend` and the OBJ, and each run has a job summary.
+
+It runs on every push that touches `plant/`, and you can also run it by hand. The manual run (Actions → SK-3X1 Blender renders → Run workflow) lets you choose the views, samples and resolution.
+
+Sheet 11 lists ten views, and the render loop was adjusted over several review passes:
+
+| Issue | Fix |
+|---|---|
+| Framing too wide (view A was 2,108 ft) | Clip the fit set to D1–D3. It is now 1,325 ft; sheet 11 gives 1,438 ft. |
+| Coplanar road crossings rendered as black squares | Stagger the road heights. |
+| Hidden collections blocked the label visibility rays | Exclude hidden collections instead of hiding them. |
+| Freestyle strokes below 1 px vanished | Set strokes to 1.8 px. |
+| Collinear tray runs overlapped and rendered black | Merge the runs per tier. |
+| Stormwater basin appeared black | Build the ground slab around the basin and recalculate normals. |
+| Photo style overexposed | Lower the sky and exposure and use real-world albedos. |
 
 ## Coordinates and sources
 

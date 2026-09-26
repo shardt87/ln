@@ -189,7 +189,9 @@ def column_grid(xs, ys, z1, s=1.5, c="steel"):
 L = "SITE"
 item(L, "Compound (2,420 x 1,920 ft, 107 acres)", (0, 2420, 0, 1920), (0, 0), register=False,
      info="Compound unchanged since Rev 06; base plant about 43 acres.")
-B(0, 2420, 0, 1920, -0.5, 0, "ground")
+# ground slab built around the stormwater basin (no coplanar faces over the water)
+for (gx0, gx1, gy0, gy1) in [(0, 2420, 0, 1430), (0, 2420, 1640, 1920), (0, 40, 1430, 1640), (320, 2420, 1430, 1640)]:
+    B(gx0, gx1, gy0, gy1, -0.5, 0, "ground")
 for (x0, x1, y0, y1, n) in [
         (0, 2400, 270, 300, "30 ft access road"), (370, 400, 300, 1675, "West spine road"),
         (1460, 1490, 270, 1400, "East spine road"), (370, 1490, 900, 930, "30 ft ring road"),
@@ -197,7 +199,7 @@ for (x0, x1, y0, y1, n) in [
         (400, 1500, 1650, 1675, "30 ft road (reserved for CCS utilities)"),
         (1490, 2400, 1650, 1675, "30 ft fuel road (LNG trucks)"),
         (1950, 1975, 1400, 1650, "Fuel-yard link road"), (484, 508, 560, 830, "24 ft lane")]:
-    pad(L, n, x0, x1, y0, y1, "road", z1=0.25)
+    pad(L, n, x0, x1, y0, y1, "road", z1=0.25 + 0.012 * len(items))   # staggered: no coplanar crossings
 pad(L, "Removal apron", 400, 480, 410, 560, "road", z1=0.25, sheet="SK-3X1-10",
     info="GT, generator and ST leave the laydown bay through the west door onto a trailer.")
 item(L, "Perimeter fence (8 ft)", (0, 2420, 0, 1920), (0, 8), basis="typical", register=False)
@@ -399,8 +401,8 @@ for i, gx in enumerate(GX, start=1):
     B(588 + dx, 672 + dx, 367, 403, 100, 104, "steel")
     for k in range(3):                                        # weather hoods, south face
         z0 = 108 + 9 * k
-        H([(589 + dx, 367, z0 + 8), (671 + dx, 367, z0 + 8), (671 + dx, 367, z0 + 1), (589 + dx, 367, z0 + 1),
-           (589 + dx, 367, z0 + 8), (671 + dx, 367, z0 + 8), (671 + dx, 363, z0), (589 + dx, 363, z0)], "filter")
+        H([(589 + dx, 367, z0 + 7), (671 + dx, 367, z0 + 7), (671 + dx, 367, z0 + 8), (589 + dx, 367, z0 + 8),
+           (589 + dx, 363, z0), (671 + dx, 363, z0), (671 + dx, 363, z0 + 1), (589 + dx, 363, z0 + 1)], "filter")
     for cx in (590, 630, 670):
         for cy in (367.5, 401.5):
             B(cx + dx - 1.5, cx + dx + 1.5, cy - 1.5, cy + 1.5, 0, 100, "steel")
@@ -1356,6 +1358,27 @@ VIEWS = [
          "SWYD_FUTURE"], t=[1980, 1650, 10], c=[1650, 1150, 700]),
     dict(k="ALL", n="Everything", show=list(LAYERS), t=[1210, 960, 60], c=[-500, -900, 2000]),
 ]
+
+
+# Fit sets for the orthographic cameras (SK-3X1-11: "its fit set is projected
+# along the view direction; ortho scale and target are solved so the fit set
+# fills the frame with a 3% margin"). Either layers or a plan/elevation box.
+FIT = {
+    "A": dict(layers=["BASE_POWER_BLOCK", "BASE_INLET_AIR", "BASE_ELECTRICAL", "BASE_SWITCHYARD"],
+              clip=[380, 1480, 0, 900]),       # core plant + D1-D3; the long buses run beyond
+    "B": dict(box=[410, 480, 600, 780, 0, 24]),
+    "B2": dict(box=[1135, 1310, 308, 368, 0, 16]),
+    "C": dict(box=[1130, 1450, 790, 850, 0, 40]),
+    "H": dict(box=[480, 1100, 370, 560, 0, 60]),
+    "O1": dict(layers=["OPT_MOD", "OPT_TMP"]),
+    "O2": dict(layers=["OPT_BESS"]),
+    "O3": dict(layers=["OPT_CCS", "OPT_CCSU"]),
+    "O4": dict(layers=["OPT_IC"]),
+    "O5": dict(layers=["OPT_LNG", "OPT_H2"], box=[1560, 2400, 1410, 1910, 0, 30]),
+    "ALL": dict(box=[0, 2420, 0, 1920, 0, 120]),
+}
+for v in VIEWS:
+    v["fit"] = FIT[v["k"]]
 
 
 def validate():

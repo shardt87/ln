@@ -1,0 +1,128 @@
+# Verify the SK-3X1 plant model against the drawing, then render the
+# SK-3X1-11 camera views in Blender (Cycles + Freestyle) and publish them
+# as build artifacts together with the .blend and OBJ files.
+name: SK-3X1 Blender renders
+
+on:
+  push:
+    paths:
+      - "plant/**"
+      - ".github/workflows/sk3x1-blender-render.yml"
+  pull_request:
+    paths:
+      - "plant/**"
+  workflow_dispatch:
+    inputs:
+      views:
+        description: "Views to render (comma list, empty = all: A,B,B2,C,H,O1,O2,O3,O4,O5)"
+        required: false
+        default: ""
+      samples:
+        description: "Cycles samples per pixel"
+        required: false
+        default: "64"
+      scale:
+        description: "Resolution % of 1920 x 1080"
+        required: false
+        default: "100"
+
+concurrency:
+  group: sk3x1-render-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify model against drawing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Rebuild model and check it is committed
+        run: |
+          python3 plant/build_model.py
+          git diff --exit-code -- plant/sk3x1_model.json || (echo "::error::sk3x1_model.json is stale; run plant/build_model.py" && exit 1)
+      - name: Verify (footprints, heights, sheet-09 screen, clashes, bounds)
+        run: python3 plant/verify.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: verify-report
+          path: plant/verify_report.json
+
+  render:
+    name: Render ${{ matrix.style }} ${{ matrix.views }}
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { style: drawing, views: "A,B,B2" }
+          - { style: drawing, views: "C,H,O1" }
+          - { style: drawing, views: "O2,O3,O4,O5" }
+          - { style: photo, views: "A,H" }
+          - { style: photo, views: "O3,O5" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: plant/blender/requirements.txt
+      - name: System libraries for headless Blender
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libxrender1 libxxf86vm1 libxfixes3 libxi6 libxkbcommon0 libsm6 libgl1 fonts-dejavu-core
+      - name: Install Blender (bpy) and Pillow
+        run: pip install -r plant/blender/requirements.txt
+      - name: Render
+        env:
+          VIEWS: ${{ github.event.inputs.views || matrix.views }}
+          SAMPLES: ${{ github.event.inputs.samples || '64' }}
+          SCALE: ${{ github.event.inputs.scale || '100' }}
+        run: |
+          python plant/blender/SK-3X1_Rev14_blender_build.py \
+            --views "$VIEWS" --style ${{ matrix.style }} --samples "$SAMPLES" --scale "$SCALE" \
+            --out out 2>&1 | grep -E "^(scene built|rendered)|Error|Traceback"
+          python plant/blender/annotate.py out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: renders-${{ matrix.style }}-${{ strategy.job-index }}
+          path: out/*
+
+  package:
+    name: Contact sheets, .blend and OBJ
+    needs: render
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: plant/blender/requirements.txt
+      - run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libxrender1 libxxf86vm1 libxfixes3 libxi6 libxkbcommon0 libsm6 libgl1 fonts-dejavu-core
+          pip install -r plant/blender/requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: renders-*
+          path: renders
+          merge-multiple: true
+      - name: Contact sheets
+        run: python plant/blender/contact_sheet.py renders
+      - name: Save the Blender scene (all collections, all cameras)
+        run: |
+          python plant/blender/SK-3X1_Rev14_blender_build.py --no-render --views A,B,B2,C,H,O1,O2,O3,O4,O5,ALL \
+            --out renders/scene --blend renders/SK-3X1_Rev14.blend 2>&1 | grep -E "scene built|saved"
+          python plant/export_obj.py
+          cp plant/sk3x1_model.obj plant/sk3x1_model.mtl renders/
+      - name: Job summary
+        run: python plant/blender/summary.py renders >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sk3x1-renders
+          path: renders/*
