@@ -1,0 +1,242 @@
+{
+"ground": {
+"hex": "#dfe3dc",
+"opacity": 1
+},
+"road": {
+"hex": "#c6c9c7",
+"opacity": 1
+},
+"gravel": {
+"hex": "#bcc3c6",
+"opacity": 1
+},
+"pad": {
+"hex": "#d6d4ca",
+"opacity": 1
+},
+"corridor": {
+"hex": "#d3dde6",
+"opacity": 1
+},
+"fence": {
+"hex": "#8f9aa1",
+"opacity": 1
+},
+"concrete": {
+"hex": "#c2c4be",
+"opacity": 1
+},
+"building": {
+"hex": "#d6dbdd",
+"opacity": 1
+},
+"roof": {
+"hex": "#b9c2c7",
+"opacity": 1
+},
+"hall": {
+"hex": "#c9d5dc",
+"opacity": 0.25
+},
+"partition": {
+"hex": "#e2e5e3",
+"opacity": 1
+},
+"door": {
+"hex": "#6e8fa8",
+"opacity": 1
+},
+"stair": {
+"hex": "#8a949a",
+"opacity": 1
+},
+"grating": {
+"hex": "#9aa4a9",
+"opacity": 1
+},
+"steel": {
+"hex": "#6f7a82",
+"opacity": 1
+},
+"machine": {
+"hex": "#7f8c95",
+"opacity": 1
+},
+"equip": {
+"hex": "#b3bcc1",
+"opacity": 1
+},
+"motor": {
+"hex": "#5f7382",
+"opacity": 1
+},
+"pump": {
+"hex": "#8fa3ae",
+"opacity": 1
+},
+"red": {
+"hex": "#b5524a",
+"opacity": 1
+},
+"amber": {
+"hex": "#e3be68",
+"opacity": 1
+},
+"hrsg": {
+"hex": "#b7c1c7",
+"opacity": 1
+},
+"stack": {
+"hex": "#99a3a9",
+"opacity": 1
+},
+"duct": {
+"hex": "#a2acb2",
+"opacity": 1
+},
+"filter": {
+"hex": "#aab4ba",
+"opacity": 1
+},
+"acc": {
+"hex": "#c3c9c6",
+"opacity": 1
+},
+"bundle": {
+"hex": "#a9b6b2",
+"opacity": 1
+},
+"windwall": {
+"hex": "#cdd3d0",
+"opacity": 1
+},
+"fan": {
+"hex": "#8e999f",
+"opacity": 1
+},
+"fanhub": {
+"hex": "#6f7a82",
+"opacity": 1
+},
+"xfmr": {
+"hex": "#8a959b",
+"opacity": 1
+},
+"radiator": {
+"hex": "#98a3a8",
+"opacity": 1
+},
+"insulator": {
+"hex": "#c9a27a",
+"opacity": 1
+},
+"ehouse": {
+"hex": "#aeb8be",
+"opacity": 1
+},
+"tank": {
+"hex": "#dbe3e5",
+"opacity": 1
+},
+"conductor": {
+"hex": "#3a4650",
+"opacity": 1
+},
+"future": {
+"hex": "#cdd6da",
+"opacity": 1
+},
+"water": {
+"hex": "#7fa6b8",
+"opacity": 1
+},
+"conditional": {
+"hex": "#dfbf78",
+"opacity": 1
+},
+"ccs": {
+"hex": "#d5dddf",
+"opacity": 1
+},
+"tower": {
+"hex": "#b4c4ca",
+"opacity": 1
+},
+"bess": {
+"hex": "#a7bcc3",
+"opacity": 1
+},
+"crane": {
+"hex": "#d9a92e",
+"opacity": 1
+},
+"battery": {
+"hex": "#6f8d7a",
+"opacity": 1
+},
+"cabinet": {
+"hex": "#b8c2c8",
+"opacity": 1
+},
+"swgr": {
+"hex": "#9eaab2",
+"opacity": 1
+},
+"panel": {
+"hex": "#c9d0d4",
+"opacity": 1
+},
+"basement": {
+"hex": "#8b8f8a",
+"opacity": 1
+},
+"copper": {
+"hex": "#b87333",
+"opacity": 1
+},
+"copper_dark": {
+"hex": "#8a4f1d",
+"opacity": 1
+},
+"ductbank": {
+"hex": "#c79a6a",
+"opacity": 1
+},
+"steam": {
+"hex": "#4f5b66",
+"opacity": 1
+},
+"condensate": {
+"hex": "#3d8f8f",
+"opacity": 1
+},
+"feedwater": {
+"hex": "#2f6f9f",
+"opacity": 1
+},
+"ccw": {
+"hex": "#7d8f4e",
+"opacity": 1
+},
+"fuelgas": {
+"hex": "#9c7a3c",
+"opacity": 1
+},
+"cw": {
+"hex": "#6b9ac4",
+"opacity": 1
+},
+"chw": {
+"hex": "#5d7fb5",
+"opacity": 1
+},
+"hydrogen": {
+"hex": "#2e8b6f",
+"opacity": 1
+},
+"lng": {
+"hex": "#4a78a8",
+"opacity": 1
+}
+}

@@ -1,0 +1,240 @@
+{
+ "footprints": {
+  "checked": 211,
+  "matched": 211,
+  "missing": [],
+  "ok": true,
+  "tolerance_ft": 0.6
+ },
+ "heights": {
+  "rows": [
+   {
+    "item": "BESS container",
+    "expected": 9.5,
+    "model": 9.5,
+    "ok": true
+   },
+   {
+    "item": "E-house (R2A)",
+    "expected": 14,
+    "model": 14,
+    "ok": true
+   },
+   {
+    "item": "Admin building",
+    "expected": 20,
+    "model": 20,
+    "ok": true
+   },
+   {
+    "item": "Maintenance bldg",
+    "expected": 20,
+    "model": 20,
+    "ok": true
+   },
+   {
+    "item": "R1 electrical bldg",
+    "expected": 24,
+    "model": 24,
+    "ok": true
+   },
+   {
+    "item": "Water treatment",
+    "expected": 30,
+    "model": 30,
+    "ok": true
+   },
+   {
+    "item": "Warehouse",
+    "expected": 35,
+    "model": 35,
+    "ok": true
+   },
+   {
+    "item": "230 kV dead-end",
+    "expected": 47,
+    "model": 47,
+    "ok": true
+   },
+   {
+    "item": "Water tanks",
+    "expected": 48,
+    "model": 48.0,
+    "ok": true
+   },
+   {
+    "item": "CCS cooling tower",
+    "expected": 50,
+    "model": 50,
+    "ok": true
+   },
+   {
+    "item": "Aero stack",
+    "expected": 80,
+    "model": 80,
+    "ok": true
+   },
+   {
+    "item": "RICE stacks",
+    "expected": 90,
+    "model": 90,
+    "ok": true
+   },
+   {
+    "item": "DCC (quench)",
+    "expected": 90,
+    "model": 90,
+    "ok": true
+   },
+   {
+    "item": "HRSG",
+    "expected": 100,
+    "model": 100,
+    "ok": true
+   },
+   {
+    "item": "Turbine hall",
+    "expected": 101,
+    "model": 101,
+    "ok": true
+   },
+   {
+    "item": "ACC",
+    "expected": 125,
+    "model": 125.0,
+    "ok": true
+   },
+   {
+    "item": "Filter house top",
+    "expected": 135,
+    "model": 135,
+    "ok": true
+   },
+   {
+    "item": "HRSG stack",
+    "expected": 180,
+    "model": 180,
+    "ok": true
+   },
+   {
+    "item": "CO2 stripper",
+    "expected": 207,
+    "model": 207,
+    "ok": true
+   },
+   {
+    "item": "CCS absorber",
+    "expected": 262,
+    "model": 262,
+    "ok": true
+   },
+   {
+    "item": "Absorber stack",
+    "expected": 313,
+    "model": 313,
+    "ok": true
+   }
+  ],
+  "ok": true
+ },
+ "sheet09": {
+  "clearances": [
+   {
+    "check": "Inlet duct (horizontal) to GT travel band",
+    "model": 6,
+    "sheet": 6.0,
+    "required": 3.0,
+    "ok": true
+   },
+   {
+    "check": "Inlet duct (horizontal) to generator travel band",
+    "model": 4,
+    "sheet": 4.0,
+    "required": 3.0,
+    "ok": true
+   },
+   {
+    "check": "Inlet duct to GT lift column",
+    "model": 15,
+    "sheet": 15.0,
+    "required": 3.0,
+    "ok": true
+   },
+   {
+    "check": "Inlet duct to bridge-crane travel",
+    "model": 4,
+    "sheet": 4.0,
+    "required": 3.0,
+    "ok": true
+   },
+   {
+    "check": "Filter house to bridge-crane travel",
+    "model": 4,
+    "sheet": 4.0,
+    "required": 3.0,
+    "ok": true
+   },
+   {
+    "check": "FH south columns to bridge-crane travel",
+    "model": 35.0,
+    "sheet": 35.0,
+    "required": 3.0,
+    "ok": true
+   }
+  ],
+  "hook": [
+   {
+    "check": "GT lift",
+    "model": 11,
+    "sheet": 11,
+    "ok": true
+   },
+   {
+    "check": "Generator lift",
+    "model": 15,
+    "sheet": 15,
+    "ok": true
+   },
+   {
+    "check": "ST lift-out over the ST",
+    "model": 7,
+    "sheet": 7,
+    "ok": true
+   },
+   {
+    "check": "ST component travel over GT bays",
+    "model": 15,
+    "sheet": 15,
+    "ok": true
+   }
+  ],
+  "assumptions": {
+   "gt_top": 38,
+   "gen_top": 36,
+   "st_top": 46,
+   "lift_gap": 5,
+   "hook_max": 82,
+   "rigging": 10,
+   "bridge_travel": [
+    84,
+    96
+   ]
+  },
+  "ok": true
+ },
+ "clashes": {
+  "pairs_tested": 34154,
+  "clashes": [],
+  "ok": true
+ },
+ "bounds": {
+  "out_of_bounds": [],
+  "ok": true
+ },
+ "summary": {
+  "ok": true,
+  "items": 479,
+  "parts": 2964,
+  "routes": 262
+ }
+}

@@ -5,83 +5,94 @@
 <style>
 :root{
   --paper:#eef0ee; --panel:#f8f9f7; --ink:#1f2b33; --ink2:#55636c; --rule:#cfd5d4;
-  --copper:#b0662b; --teal:#177f7e; --amber:#b88a1e; --focus:#1d6fd6;
-  --scene:#e9ecea; --chip:#e2e7e5;
+  --copper:#b0662b; --teal:#177f7e; --amber:#a87c14; --ok:#2f7d4f; --bad:#b3413a; --focus:#1d6fd6;
+  --scene:#e7ebe8; --chip:#e2e7e5;
   --sans:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   color-scheme:dark; --paper:#141a1e; --panel:#1b2328; --ink:#dde3e5; --ink2:#95a3aa; --rule:#2e3a41;
-  --copper:#d0874a; --teal:#3fb2ae; --amber:#d9aa3d; --focus:#6aa8ff; --scene:#1a2126; --chip:#24303a;}}
+  --copper:#d0874a; --teal:#3fb2ae; --amber:#d9aa3d; --ok:#5cc08a; --bad:#e57a70; --focus:#6aa8ff; --scene:#1c2328; --chip:#24303a;}}
 :root[data-theme="dark"]{
   color-scheme:dark; --paper:#141a1e; --panel:#1b2328; --ink:#dde3e5; --ink2:#95a3aa; --rule:#2e3a41;
-  --copper:#d0874a; --teal:#3fb2ae; --amber:#d9aa3d; --focus:#6aa8ff; --scene:#1a2126; --chip:#24303a;}
+  --copper:#d0874a; --teal:#3fb2ae; --amber:#d9aa3d; --ok:#5cc08a; --bad:#e57a70; --focus:#6aa8ff; --scene:#1c2328; --chip:#24303a;}
 *{box-sizing:border-box}
 body{background:var(--paper);color:var(--ink);font:14px/1.45 var(--sans);margin:0}
-.wrap{padding:16px 16px 40px;max-width:1500px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.wrap{padding:16px 16px 40px;max-width:1520px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
 header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 24px;border-bottom:2px solid var(--ink);padding-bottom:10px}
 h1{font-weight:700;font-size:26px;line-height:1.1;margin:0;text-wrap:balance;letter-spacing:.2px}
 h1 span{color:var(--copper)}
-.sub{color:var(--ink2);margin:4px 0 0}
+.sub{color:var(--ink2);margin:4px 0 0;max-width:95ch}
 .docno{font:500 12px/1.4 var(--mono);text-align:right;color:var(--ink2)}
 .docno b{color:var(--ink);font-weight:500}
-.grid{display:grid;grid-template-columns:250px minmax(0,1fr) 300px;gap:12px}
-@media (max-width:1100px){.grid{grid-template-columns:minmax(0,1fr)}.side{order:2}.insp{order:3}}
+.grid{display:grid;grid-template-columns:260px minmax(0,1fr) 310px;gap:12px}
+@media (max-width:1150px){.grid{grid-template-columns:minmax(0,1fr)}.side{order:2}.insp{order:3}}
 .side,.insp{background:var(--panel);border:1px solid var(--rule);padding:12px;display:flex;flex-direction:column;gap:14px;min-width:0}
 .lbl{font:600 11px/1 var(--sans);letter-spacing:.9px;text-transform:uppercase;color:var(--ink2);margin:0 0 6px}
 .views{display:flex;flex-wrap:wrap;gap:6px}
-button,.btn{font:500 12px/1 var(--sans);color:var(--ink);background:var(--chip);border:1px solid var(--rule);padding:7px 9px;cursor:pointer;border-radius:2px}
+button{font:500 12px/1 var(--sans);color:var(--ink);background:var(--chip);border:1px solid var(--rule);padding:7px 9px;cursor:pointer;border-radius:2px}
 button:hover{border-color:var(--ink2)}
 button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
-.layers{display:flex;flex-direction:column;gap:2px;max-height:430px;overflow:auto}
-.layers label{display:flex;gap:7px;align-items:flex-start;padding:3px 2px;cursor:pointer;font-size:13px}
+.layers{display:flex;flex-direction:column;gap:1px;max-height:360px;overflow:auto;padding-right:4px}
+.layers label{display:flex;gap:7px;align-items:flex-start;padding:2px;cursor:pointer;font-size:13px}
 .layers input{margin-top:3px;accent-color:var(--copper)}
 .layers .opt{color:var(--teal)}
-.grp{font:600 10.5px/1 var(--sans);letter-spacing:.8px;text-transform:uppercase;color:var(--ink2);margin:8px 0 2px}
-.stage{position:relative;background:var(--scene);border:1px solid var(--rule);min-height:560px;height:72vh;overflow:hidden}
+.grp{font:600 10.5px/1 var(--sans);letter-spacing:.8px;text-transform:uppercase;color:var(--ink2);margin:8px 0 3px}
+.cut{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;font-size:13px}
+.cut input{width:100%;accent-color:var(--copper)}
+.cut output{font:500 12px var(--mono);min-width:7ch;text-align:right}
+.stage{position:relative;background:var(--scene);border:1px solid var(--rule);min-height:560px;height:74vh;overflow:hidden}
 @media (max-width:700px){.stage{height:62vh;min-height:420px}}
 #cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 #labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-.tag{position:absolute;transform:translate(-50%,-100%);font:500 10.5px/1 var(--mono);color:var(--ink);background:color-mix(in srgb,var(--panel) 86%,transparent);border:1px solid var(--rule);padding:2px 4px;white-space:nowrap}
+.tag{position:absolute;transform:translate(-50%,-100%);font:500 10.5px/1 var(--mono);color:var(--ink);background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--rule);padding:2px 4px;white-space:nowrap}
 .tag.o{color:var(--teal)}
+.read{position:absolute;left:10px;top:8px;font:500 11.5px/1.35 var(--mono);color:var(--ink);background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--rule);padding:4px 7px;pointer-events:none;font-variant-numeric:tabular-nums;max-width:calc(100% - 80px)}
+.read span{color:var(--ink2)}
 .hud{position:absolute;left:10px;bottom:8px;font:400 11px/1.3 var(--mono);color:var(--ink2);pointer-events:none}
 .north{position:absolute;right:12px;top:10px;width:44px;height:44px;pointer-events:none}
 .stamp{position:absolute;right:10px;bottom:8px;font:500 10.5px/1.3 var(--sans);letter-spacing:.6px;text-transform:uppercase;color:var(--copper);pointer-events:none;text-align:right}
+.loading[hidden]{display:none}
+.loading{position:absolute;inset:0;display:grid;place-items:center;font:500 13px var(--mono);color:var(--ink2)}
 .insp h2{font-size:18px;margin:0;line-height:1.2;text-wrap:balance}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:13px;margin:0}
 .kv dt{color:var(--ink2)} .kv dd{margin:0;font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums}
 .pill{display:inline-block;font:600 10.5px/1 var(--sans);letter-spacing:.6px;text-transform:uppercase;padding:4px 6px;border:1px solid currentColor;border-radius:2px}
 .b-drawing{color:var(--ink)} .b-vendor{color:var(--teal)} .b-typical{color:var(--ink2)} .b-conditional{color:var(--amber)}
+.p-ok{color:var(--ok)} .p-bad{color:var(--bad)}
 .info{font-size:13px;color:var(--ink);margin:0}
 .muted{color:var(--ink2);font-size:12.5px;margin:0}
 .legend{display:grid;grid-template-columns:18px 1fr;gap:4px 8px;font-size:12px;align-items:center}
 .sw{height:4px;width:18px}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
-@media (max-width:700px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
+@media (max-width:900px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .stat{background:var(--panel);padding:10px 12px}
 .stat b{display:block;font:600 20px/1.1 var(--sans);font-variant-numeric:tabular-nums}
+.stat b.ok{color:var(--ok)}
 .stat span{color:var(--ink2);font-size:12px}
-.tabs{display:flex;gap:0;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.tabs{display:flex;border-bottom:1px solid var(--rule);flex-wrap:wrap}
 .tabs button{background:none;border:none;border-bottom:3px solid transparent;padding:10px 14px;font-size:14px;font-weight:600;color:var(--ink2);border-radius:0}
 .tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--copper)}
 .panel{padding-top:12px}
 .tbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;align-items:center}
 input[type=search],select{font:14px var(--sans);color:var(--ink);background:var(--panel);border:1px solid var(--rule);padding:7px 9px;border-radius:2px;min-width:0}
-.tw{overflow-x:auto;border:1px solid var(--rule);max-height:520px;overflow-y:auto;background:var(--panel)}
+.tw{overflow-x:auto;border:1px solid var(--rule);max-height:540px;overflow-y:auto;background:var(--panel)}
 table{border-collapse:collapse;width:100%;font-size:13px}
 th,td{padding:6px 9px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
 th{position:sticky;top:0;background:var(--panel);font:600 11px/1.2 var(--sans);letter-spacing:.7px;text-transform:uppercase;color:var(--ink2);z-index:1}
 td.m{font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
-tbody tr{cursor:pointer} tbody tr:hover td{background:var(--chip)}
+td.r{text-align:right}
+tbody.pick tr{cursor:pointer} tbody.pick tr:hover td{background:var(--chip)}
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
 .card{background:var(--panel);border:1px solid var(--rule);padding:14px}
 .card h3{margin:0 0 6px;font-size:16px}
 .card p{margin:0 0 6px;max-width:68ch}
+h3.sec{margin:20px 0 8px;font-size:16px}
 .tagbox{display:inline-block;font:600 12px/1 var(--mono);background:var(--ink);color:var(--paper);padding:4px 6px;margin-right:6px}
 .hbars{display:flex;flex-direction:column;gap:4px}
 .hb{display:grid;grid-template-columns:150px 1fr 56px;gap:8px;align-items:center;font-size:12.5px}
-.hb .bar{height:12px;background:var(--ink2);position:relative}
+.hb .bar{height:12px;background:var(--ink2)}
 .hb .bar.hi{background:var(--copper)}
 .hb .v{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
 .axis{display:grid;grid-template-columns:150px 1fr 56px;gap:8px;font:11px var(--mono);color:var(--ink2)}
@@ -94,7 +105,7 @@ footer{color:var(--ink2);font-size:12px;border-top:1px solid var(--rule);padding
 <header>
   <div>
     <h1>3x1 Combined-Cycle Plant <span>/ 3D model</span></h1>
-    <p class="sub">Coordinate model rebuilt from drawing set SK-3X1 Rev 14. Three H-class GTs, three HRSGs, one ST, 80-cell ACC, 230 kV breaker-and-a-half yard, plus the optional and adjacent-market systems.</p>
+    <p class="sub">Coordinate model rebuilt from drawing set SK-3X1 Rev 14 and checked back against it: footprints against sheets 01 and 05, heights against sheet 13, crane clearances against sheet 09, plus a full clash check.</p>
   </div>
   <div class="docno"><b>SK-3X1-3D / REV 14</b><br>X east, Y north, Z up, feet<br>Compound 2,420 x 1,920 ft</div>
 </header>
@@ -104,7 +115,7 @@ footer{color:var(--ink2);font-size:12px;border-top:1px solid var(--rule);padding
 <div class="grid">
   <aside class="side" aria-label="Views and layers">
     <div>
-      <p class="lbl">Views (per SK-3X1-11)</p>
+      <p class="lbl">Views (SK-3X1-11)</p>
       <div class="views" id="views"></div>
     </div>
     <div>
@@ -112,8 +123,14 @@ footer{color:var(--ink2);font-size:12px;border-top:1px solid var(--rule);padding
       <div class="views">
         <button id="bXray" aria-pressed="true">X-ray hall</button>
         <button id="bTags" aria-pressed="true">Tags</button>
+        <button id="bShadow" aria-pressed="true">Shadows</button>
         <button id="bOpt" aria-pressed="false">All optional</button>
       </div>
+    </div>
+    <div>
+      <p class="lbl">Section cut</p>
+      <div class="cut"><input type="range" id="cut" min="2" max="320" step="1" value="320" aria-label="Cut everything above this elevation"><output id="cutv" for="cut">off</output></div>
+      <p class="muted" style="margin-top:4px">Removes everything above the chosen elevation.</p>
     </div>
     <div>
       <p class="lbl">Layers</p>
@@ -124,9 +141,11 @@ footer{color:var(--ink2);font-size:12px;border-top:1px solid var(--rule);padding
   <div class="stage" id="stage">
     <canvas id="cv" aria-label="Interactive 3D model of the plant. Drag to orbit, scroll to zoom, right-drag to pan, click equipment for details."></canvas>
     <div id="labels"></div>
-    <svg class="north" id="north" viewBox="-22 -22 44 44" aria-hidden="true"><circle r="20" fill="none" stroke="currentColor" opacity=".35"/><g id="narrow"><path d="M0,-18 L5,-2 L0,-5 L-5,-2 Z" fill="currentColor"/><text x="0" y="9" text-anchor="middle" font-size="10" font-family="IBM Plex Mono,monospace" fill="currentColor">N</text></g></svg>
-    <div class="hud" id="hud">drag orbit · right-drag pan · scroll zoom · click to inspect</div>
+    <div class="read" id="read"><span>X</span> — <span>Y</span> — <span>EL</span> —</div>
+    <svg class="north" viewBox="-22 -22 44 44" aria-hidden="true" id="north"><circle r="20" fill="none" stroke="currentColor" opacity=".35"/><g id="narrow"><path d="M0,-18 L5,-2 L0,-5 L-5,-2 Z" fill="currentColor"/><text x="0" y="9" text-anchor="middle" font-size="10" font-family="IBM Plex Mono,monospace" fill="currentColor">N</text></g></svg>
+    <div class="hud">drag orbit · right-drag pan · scroll zoom · click to inspect · double-click to fly</div>
     <div class="stamp">Conceptual illustration<br>Not engineered · not for construction</div>
+    <div class="loading" id="loading">building model…</div>
   </div>
 
   <aside class="insp" aria-label="Inspector" aria-live="polite">
@@ -141,6 +160,7 @@ footer{color:var(--ink2);font-size:12px;border-top:1px solid var(--rule);padding
 <section>
   <div class="tabs" role="tablist" id="tabs">
     <button role="tab" aria-selected="true" data-t="reg" id="tab-reg">Equipment register</button>
+    <button role="tab" aria-selected="false" data-t="ver" id="tab-ver">Verification</button>
     <button role="tab" aria-selected="false" data-t="ele" id="tab-ele">Electrical</button>
     <button role="tab" aria-selected="false" data-t="hgt" id="tab-hgt">Heights</button>
     <button role="tab" aria-selected="false" data-t="opt" id="tab-opt">Optional systems</button>
@@ -149,26 +169,29 @@ footer{color:var(--ink2);font-size:12px;border-top:1px solid var(--rule);padding
 
   <div class="panel" id="p-reg" role="tabpanel">
     <div class="tbar">
-      <input type="search" id="q" placeholder="Search tag or name (e.g. GSU, R4, absorber)" aria-label="Search equipment" style="flex:1 1 260px">
-      <select id="fl" aria-label="Filter by layer"></select>
+      <input type="search" id="q" placeholder="Search tag or name (e.g. GSU, R4, absorber, LCI)" aria-label="Search equipment" style="flex:1 1 260px">
+      <select id="fa" aria-label="Filter by area"></select>
+      <select id="fb" aria-label="Filter by basis"><option value="">All bases</option><option value="drawing">drawing</option><option value="vendor">vendor</option><option value="typical">typical</option><option value="conditional">conditional</option></select>
       <span class="muted" id="cnt"></span>
     </div>
-    <div class="tw"><table><thead><tr><th>Tag</th><th>Equipment</th><th>Area</th><th>Plan X / Y (ft)</th><th>Size W x L (ft)</th><th>EL (ft)</th><th>Basis</th><th>Sheet</th></tr></thead><tbody id="tb"></tbody></table></div>
+    <div class="tw"><table><thead><tr><th>Tag</th><th>Equipment</th><th>Area</th><th>Plan X / Y (ft)</th><th>Size W x L (ft)</th><th>EL (ft)</th><th>Basis</th><th>Sheet</th></tr></thead><tbody id="tb" class="pick"></tbody></table></div>
   </div>
+
+  <div class="panel" id="p-ver" role="tabpanel" hidden><div id="ver"></div></div>
 
   <div class="panel" id="p-ele" role="tabpanel" hidden>
     <div class="cols" id="rooms"></div>
-    <h3 style="margin:18px 0 8px">Preliminary motor / load schedule (SK-3X1-03)</h3>
+    <h3 class="sec">Preliminary motor / load schedule (SK-3X1-03)</h3>
     <div class="tw" style="max-height:none"><table><thead><tr><th>ID</th><th>Driven equipment</th><th>Qty</th><th>Voltage</th><th>Starter / drive</th><th>Fed from</th><th>Route</th></tr></thead><tbody id="motors"></tbody></table></div>
     <div class="cols" style="margin-top:16px">
-      <div class="card"><h3>Start-up path, GT-1 (SK-3X1-04)</h3><p>230 kV bus back-feeds GSU-1 through D1. The UAT-1 tap sits on the GSU side of GCB-1, so with GCB-1 open the grid energises UAT-1 and 13.8 kV bus 1 in R1. Bus 1 feeds the LCI-1 input transformer; LCI-1 drives GTG-1 as a motor on the generator side of GCB-1. GCB-1 closes at synchronisation.</p></div>
+      <div class="card"><h3>Start-up path, GT-1 (SK-3X1-04)</h3><p>The 230 kV bus back-feeds GSU-1 through D1. The UAT-1 tap sits on the GSU side of GCB-1, so with GCB-1 open the grid energises UAT-1 and 13.8 kV bus 1 in R1. Bus 1 feeds the LCI-1 input transformer, and LCI-1 drives GTG-1 as a motor on the generator side of GCB-1. GCB-1 closes at synchronisation.</p></div>
       <div class="card"><h3>Assumed ratings</h3><p>Generators 21 kV. GSUs 21/230 kV, one per generator. UATs 21/13.8 kV. T4-A/B 13.8/4.16 kV. LCT-A/B, T-R2A-C, T-R3, T-R4-1..4 and T-WT 13.8/0.48 kV. MVA, impedance and fault levels are not calculated.</p></div>
       <div class="card"><h3>Switchyard</h3><p>Breaker-and-a-half, 5 diameters x 3 breakers: 15 positions, 9 installed. D1 GTG-1 + Line 1, D2 GTG-2 + Line 2, D3 STG + GTG-3. D4 (BESS / modular yard) and D5 (CCS) are future; D6 (green H2 import) is an adjacent-market extension.</p></div>
     </div>
   </div>
 
   <div class="panel" id="p-hgt" role="tabpanel" hidden>
-    <p class="muted" style="margin-bottom:10px">Model heights after Rev 12, drawn to one scale (SK-3X1-13). The order HRSG &lt; ACC &lt; HRSG stack &lt; stripper &lt; absorber &lt; absorber stack follows real plants.</p>
+    <p class="muted" style="margin-bottom:10px">Model heights drawn to one scale, with the sheet-13 reference for each class. The order HRSG &lt; ACC &lt; HRSG stack &lt; stripper &lt; absorber &lt; absorber stack follows real plants.</p>
     <div class="hbars" id="hbars"></div>
   </div>
 
@@ -176,10 +199,10 @@ footer{color:var(--ink2);font-size:12px;border-top:1px solid var(--rule);padding
 
   <div class="panel" id="p-bas" role="tabpanel" hidden>
     <div class="cols">
-      <div class="card"><h3>How this model was built</h3><p>Plan positions were read from the vector geometry of sheets 01 and 02, where the drawing maps exactly to the 2,420 x 1,920 ft compound (3.115 ft per PDF point). Every footprint lands on the round-foot coordinates of the original coordinate model. Cable, tray, bus and pipe routes are the drawn centrelines, lifted to their stated tiers (MV tray EL +36, control tray EL +42, IPB EL 20).</p></div>
-      <div class="card"><h3>Heights</h3><p>From the hall section (SK-3X1-09), the dimension review (SK-3X1-12) and the height comparison (SK-3X1-13). Items without a stated height use typical values and are tagged <span class="pill b-typical">typical</span>. Conditional items are tagged <span class="pill b-conditional">conditional</span>.</p></div>
-      <div class="card"><h3>Simplifications</h3><p>Equipment is shown as boxes, cylinders and A-frame prisms. HRSG internals, crane, IPB phases, pipe sizes and conductor bundles are not modelled. Filter-house frames, stair towers, rack bents and ACC columns are representative.</p></div>
-      <div class="card"><h3>Status</h3><p>Conceptual illustration. Not engineered. Not for construction. All optional counts, sizes and ratings are assumptions, and each optional system is Decision Required before cable is scheduled.</p></div>
+      <div class="card"><h3>How the model was built</h3><p>Plan positions come from the vector geometry of sheets 01, 02 and 05. On sheet 01 the frame maps exactly to the 2,420 x 1,920 ft compound (3.115 ft per PDF point); on sheet 05 the R1 plan is rotated with plant north to the right (4.08 pt per ft). Routes are the drawn centrelines lifted to their tiers: MV tray EL +36, control tray EL +42, IPB about EL 20.</p></div>
+      <div class="card"><h3>How it was checked</h3><p><code>verify.py</code> matches every drawn shape to a model item within 0.6 ft, reproduces the sheet-13 heights, recomputes the sheet-09 clearance screen and hook margins from the model, and tests every pair of parts for clashes. The Verification tab shows the latest run.</p></div>
+      <div class="card"><h3>What the checks corrected</h3><p>They caught GT combustor cans above the EL 38 envelope (which cut the GT hook margin to 9.7 ft instead of 11), an ACC steam riser rising through the fans, and three misread shapes: the filter-house stair tower, the hoist landing with truck access, and the gallery-door forklift apron (sheet 10).</p></div>
+      <div class="card"><h3>Simplifications</h3><p>Equipment is built from boxes, cylinders, cones, A-frames and lofts. Cabinet heights, drum sizes, transformer radiators, gantries and structural steel are typical where no drawing gives them, and are tagged <span class="pill b-typical">typical</span>. Conceptual illustration: not engineered, not for construction.</p></div>
     </div>
   </div>
 </section>
@@ -189,317 +212,320 @@ footer{color:var(--ink2);font-size:12px;border-top:1px solid var(--rule);padding
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/utils/BufferGeometryUtils.js"></script>
 <script>
 const MODEL = /*MODEL_JSON*/null;
+const PALETTE = /*PALETTE_JSON*/null;
+const REPORT = /*REPORT_JSON*/null;
 
-const COL = {ground:0xdfe3dc,road:0xc9ccca,fence:0x8f9aa1,hall:0xc7d3da,pad:0xd8d6cc,concrete:0xbfc2bc,machine:0x7d8a93,
- amber:0xe8c77a,hrsg:0xb9c3c9,stack:0x9aa4aa,duct:0xa3adb3,filter:0xa9b3b9,steel:0x6f7a82,acc:0xc5cbc8,fan:0x8e999f,
- xfmr:0x8c969c,ehouse:0xaab4ba,building:0xd4d9db,motor:0x97a2a8,tank:0xd9e2e4,rack:0xb07d4a,gravel:0xbfc6c9,
- conductor:0x3a4650,future:0xcdd6da,corridor:0xd5dfe8,water:0x7fa6b8,conditional:0xe0c07a,ccs:0xd7dedf,tower:0xb6c6cc,
- bess:0xa9bdc4,equip:0xb3bcc1,copper:0xb87333,copper_dark:0x8a4f1d,ductbank:0xc79a6a,steam:0x4f5b66,condensate:0x3d8f8f,
- feedwater:0x2f6f9f,ccw:0x7d8f4e,fuelgas:0x9c7a3c,cw:0x6b9ac4,chw:0x5d7fb5,hydrogen:0x2e8b6f,lng:0x4a78a8};
-const OPT = l => l.startsWith('OPT_');
-const DEFAULT_ON = new Set(['SITE','BASE_POWER_BLOCK','BASE_INLET_AIR','BASE_ACC','BASE_ELECTRICAL','BASE_UTILITIES','BASE_SWITCHYARD','BASE_SERVICES','BASE_WATER','BASE_FUEL','ADJ_MR','ROUTES_BASE','PROCESS_PIPING']);
-const GROUPS = [['Base plant',['SITE','BASE_POWER_BLOCK','BASE_INLET_AIR','BASE_ACC','BASE_ELECTRICAL','BASE_UTILITIES','BASE_SWITCHYARD','BASE_SERVICES','BASE_WATER','BASE_FUEL','ADJ_MR']],
- ['Routes',['ROUTES_BASE','PROCESS_PIPING','OPT_ROUTES']],
- ['Optional / adjacent',['OPT_CCS','OPT_CCSU','OPT_BESS','OPT_MOD','OPT_TMP','OPT_IC','OPT_LNG','OPT_H2','OPT_D6']]];
-const CX = 1210, CY = 960;               // compound centre
+const OPT = l => /^(OPT_|HV_CORRIDOR|SWYD_FUTURE)/.test(l);
+const INTERIOR = new Set(['R1_INTERIOR','R4_INTERIOR']);
+const CX = 1210, CY = 960;
 const P = (x,y,z) => new THREE.Vector3(x-CX, z, -(y-CY));
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = v => (Math.round(v*10)/10).toLocaleString('en-US');
+const items = Object.fromEntries(MODEL.items.map(i=>[i.id,i]));
 
-// ---------- scene ----------
+// ---------- renderer ----------
 const cv = document.getElementById('cv'), stage = document.getElementById('stage');
 const renderer = new THREE.WebGLRenderer({canvas:cv, antialias:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.localClippingEnabled = true;
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(35, 1, 5, 30000);
+const camera = new THREE.PerspectiveCamera(35, 1, 2, 30000);
 const controls = new THREE.OrbitControls(camera, cv);
 controls.enableDamping = true; controls.dampingFactor = .08; controls.maxPolarAngle = Math.PI*0.495;
-scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8f86, .75));
-const sun = new THREE.DirectionalLight(0xffffff, .75); sun.position.set(-900,1600,1200); scene.add(sun);
-const fill = new THREE.DirectionalLight(0xffffff, .25); fill.position.set(1200,600,-900); scene.add(fill);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8b9088, .62));
+const sun = new THREE.DirectionalLight(0xffffff, .78); sun.position.set(-700,1100,900);
+sun.castShadow = true; sun.shadow.mapSize.set(4096,4096);
+Object.assign(sun.shadow.camera,{left:-1500,right:1500,top:1300,bottom:-1300,near:100,far:4000}); sun.shadow.bias=-0.0006; sun.shadow.normalBias=0.6;
+scene.add(sun); scene.add(sun.target);
+const fillL = new THREE.DirectionalLight(0xffffff, .22); fillL.position.set(1200,500,-900); scene.add(fillL);
 
-const layerGroups = {}; const pickables = []; const byId = {};
-function grp(l){ if(!layerGroups[l]){ const g=new THREE.Group(); g.name=l; scene.add(g); layerGroups[l]=g;} return layerGroups[l]; }
-const matCache = {};
-function mat(key, opt){
-  const k = key+(opt?'o':'');
-  if(!matCache[k]){
-    let c = new THREE.Color(COL[key] ?? 0xb3bcc1);
-    if(opt && !['conditional','copper','copper_dark','stack'].includes(key)) c.lerp(new THREE.Color(0x9fd0cd), .22);
-    matCache[k] = new THREE.MeshLambertMaterial({color:c});
-  }
-  return matCache[k];
-}
-const edgeMat = new THREE.LineBasicMaterial({color:0x27313a, transparent:true, opacity:.35});
-const hallMats = [];
+const cutPlane = new THREE.Plane(new THREE.Vector3(0,-1,0), 1e6);
+const CLIP = [cutPlane];
+const matSolid = new THREE.MeshLambertMaterial({vertexColors:true, clippingPlanes:CLIP, clipShadows:true});
+const matGlass = new THREE.MeshLambertMaterial({vertexColors:true, transparent:true, opacity:.24, depthWrite:false, clippingPlanes:CLIP, side:THREE.DoubleSide});
+const matHi = new THREE.MeshLambertMaterial({color:0xd0874a, emissive:0x6a3208, clippingPlanes:CLIP});
+const edgeMat = new THREE.LineBasicMaterial({color:0x27313a, transparent:true, opacity:.28, clippingPlanes:CLIP});
 
-function prismGeo(w,h,d,ridge){ // centred box extents; ridge along depth (local z)
-  const g = new THREE.BufferGeometry(), x=w/2, z=d/2, y0=-h/2, y1=h/2;
-  const v = [ -x,y0,-z,  x,y0,-z, 0,y1,-z,   -x,y0,z, 0,y1,z, x,y0,z,
-              -x,y0,-z, 0,y1,-z, 0,y1,z,  -x,y0,-z, 0,y1,z, -x,y0,z,
-               x,y0,-z, x,y0,z, 0,y1,z,   x,y0,-z, 0,y1,z, 0,y1,-z ];
-  g.setAttribute('position', new THREE.Float32BufferAttribute(v,3)); g.computeVertexNormals(); return g;
+// ---------- geometry ----------
+const col = {}; for(const k in PALETTE) col[k] = new THREE.Color(PALETTE[k].hex);
+function paint(g, c){ g.deleteAttribute('uv'); g.deleteAttribute('normal'); const n=g.attributes.position.count, a=new Float32Array(n*3);
+  for(let i=0;i<n;i++){ a[i*3]=c.r; a[i*3+1]=c.g; a[i*3+2]=c.b; } g.setAttribute('color', new THREE.BufferAttribute(a,3)); return g; }
+function toThree(g){ // model coords (x east, y north, z up) -> three (x, y up, -z north)
+  const p=g.attributes.position; for(let i=0;i<p.count;i++){ const x=p.getX(i),y=p.getY(i),z=p.getZ(i); p.setXYZ(i,x-CX,z,-(y-CY)); }
+  g.computeVertexNormals(); return g; }
+function fromTris(v, tris){ const pos=[]; for(const t of tris) for(const k of t) pos.push(...v[k]);
+  const g=new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos,3)); return g; }
+function quadsToTris(qs){ const t=[]; for(const q of qs){ t.push([q[0],q[1],q[2]]); if(q.length===4) t.push([q[0],q[2],q[3]]); } return t; }
+function partGeo(p){
+  let g;
+  if(p.kind==='box'){
+    const [x0,y0,z0]=p.min,[x1,y1,z1]=p.max;
+    g = new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0).toNonIndexed(); g.translate((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);
+  } else if(p.kind==='rod'){
+    const a=new THREE.Vector3(...p.a), b=new THREE.Vector3(...p.b), d=b.clone().sub(a), L=d.length();
+    const seg = p.seg || (Math.max(p.r,p.r2)>10?36:16);
+    g = new THREE.CylinderGeometry(p.r2, p.r, L, seg).toNonIndexed(); // along +Y, r at -Y
+    const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), d.normalize());
+    g.applyQuaternion(q); g.translate((p.a[0]+p.b[0])/2,(p.a[1]+p.b[1])/2,(p.a[2]+p.b[2])/2);
+  } else if(p.kind==='prism'){
+    const [x0,y0,z0]=p.min,[x1,y1,z1]=p.max; let v;
+    if(p.ridge==='x'){ const ym=(y0+y1)/2; v=[[x0,y0,z0],[x0,y1,z0],[x0,ym,z1],[x1,y0,z0],[x1,y1,z0],[x1,ym,z1]]; }
+    else { const xm=(x0+x1)/2; v=[[x0,y0,z0],[x1,y0,z0],[xm,y0,z1],[x0,y1,z0],[x1,y1,z0],[xm,y1,z1]]; }
+    g = fromTris(v, quadsToTris([[0,2,1],[3,4,5],[0,3,5,2],[1,2,5,4],[0,1,4,3]]));
+  } else if(p.kind==='hex'){
+    g = fromTris(p.v, quadsToTris([[0,3,2,1],[4,5,6,7],[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]]));
+  }
+  return paint(g, col[p.color] || col.equip);
 }
 
-for(const o of MODEL.objects){
-  let geo, pos, m;
-  const opt = OPT(o.layer);
-  if(o.kind==='box' || o.kind==='prism' || o.kind==='hcyl'){
-    const [x0,y0,z0]=o.min,[x1,y1,z1]=o.max, w=x1-x0, d=y1-y0, h=Math.max(z1-z0,0.15);
-    pos = P((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);
-    if(o.kind==='box') geo = new THREE.BoxGeometry(w,h,d);
-    else if(o.kind==='prism') geo = prismGeo(w,h,d);
-    else { const len = o.axis==='x'?w:d; geo = new THREE.CylinderGeometry(o.r,o.r,len,20);
-           geo.rotateZ(Math.PI/2); if(o.axis==='y') geo.rotateY(Math.PI/2); }
-  } else if(o.kind==='cyl'){
-    const h=o.z1-o.z0; pos = P(o.center[0],o.center[1],(o.z0+o.z1)/2);
-    geo = new THREE.CylinderGeometry(o.r,o.r,h, o.r>10?40:20);
-  }
-  m = mat(o.color, opt);
-  if(o.color==='hall'){ m = m.clone(); m.transparent=true; m.opacity=.22; m.depthWrite=false; hallMats.push(m); }
-  if(o.color==='water'){ m = m.clone(); }
-  const mesh = new THREE.Mesh(geo, m); mesh.position.copy(pos); mesh.userData.o=o;
-  grp(o.layer).add(mesh);
-  const small = /column|rack bent|fan$|fan stack|radiator/.test(o.name);
-  if(o.layer!=='SITE' && !small && o.kind!=='cyl'){
-    const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 30), edgeMat); e.position.copy(pos); grp(o.layer).add(e);
-  }
-  if(o.layer!=='SITE' || /Main gate/.test(o.name)) pickables.push(mesh);
-  byId[o.id]=mesh;
+const layerGroups = {}, itemMeshes = {}, pickables = [];
+function grp(l){ if(!layerGroups[l]){ const g=new THREE.Group(); g.name=l; scene.add(g); layerGroups[l]=g; } return layerGroups[l]; }
+const buckets = {};
+for(const p of MODEL.parts){
+  const glass = (PALETTE[p.color]||{}).opacity < 1;
+  const k = p.item+'|'+p.layer+'|'+(glass?'g':'s');
+  (buckets[k] ||= {item:p.item, layer:p.layer, glass, geos:[]}).geos.push(partGeo(p));
 }
-// routes: one box per segment
-const routeTypes = {};
-for(const r of MODEL.routes){
-  routeTypes[r.type] = r;
-  const m = mat(r.color, false);
-  const z = r.z < 0 ? 0.35 : r.z;
-  const g = grp(r.layer);
+for(const b of Object.values(buckets)){
+  const merged = toThree(THREE.BufferGeometryUtils.mergeBufferGeometries(b.geos, false));
+  const m = new THREE.Mesh(merged, b.glass ? matGlass : matSolid);
+  m.castShadow = !b.glass && items[b.item].layer !== 'SITE'; m.receiveShadow = true;
+  m.userData.item = b.item; grp(b.layer).add(m);
+  if(items[b.item].layer!=='SITE') pickables.push(m);
+  (itemMeshes[b.item] ||= []).push(m);
+  if(!b.glass && merged.attributes.position.count < 60000){
+    const e = new THREE.LineSegments(new THREE.EdgesGeometry(merged, 35), edgeMat); grp(b.layer).add(e);
+  }
+}
+// routes: one mesh per route polyline
+const routeById = [];
+MODEL.routes.forEach((r,ri)=>{
+  const z = r.z<0 ? 0.3 : r.z, h = r.z<0 ? 0.35 : r.h, geos=[];
   for(let i=0;i<r.points.length-1;i++){
-    const [ax,ay]=r.points[i],[bx,by]=r.points[i+1];
-    const len = Math.hypot(bx-ax,by-ay); if(len<0.5) continue;
-    const h = r.z<0 ? 0.4 : r.h;
-    const geo = new THREE.BoxGeometry(len+r.w, h, r.w);
-    const mesh = new THREE.Mesh(geo, m);
-    mesh.position.copy(P((ax+bx)/2,(ay+by)/2,z));
-    mesh.rotation.y = Math.atan2(by-ay, bx-ax);
-    mesh.userData.route = r; g.add(mesh); pickables.push(mesh);
+    const [ax,ay]=r.points[i],[bx,by]=r.points[i+1], len=Math.hypot(bx-ax,by-ay); if(len<0.5) continue;
+    const g = new THREE.BoxGeometry(len+r.w, r.w, h).toNonIndexed();
+    g.rotateZ(Math.atan2(by-ay,bx-ax)); g.translate((ax+bx)/2,(ay+by)/2,z); geos.push(paint(g, col[r.color]));
   }
-  // risers where elevated routes meet grade equipment: short vertical stubs at ends
-  if(r.z>6 && r.layer!=='ROUTES_BASE' || r.type==='mv_tray'){
+  if(r.z>6 && !['ipb','hv_overhead','hmod'].includes(r.type)){
     for(const [x,y] of [r.points[0], r.points[r.points.length-1]]){
-      const s = new THREE.Mesh(new THREE.BoxGeometry(r.w, z, r.w), m); s.position.copy(P(x,y,z/2)); g.add(s);
-    }
+      const g=new THREE.BoxGeometry(r.w, r.w, z).toNonIndexed(); g.translate(x,y,z/2); geos.push(paint(g,col[r.color])); }
   }
-}
-// grid on ground (100 ft)
-const gridH = new THREE.GridHelper(2400, 24, 0x000000, 0x000000); gridH.material.transparent=true; gridH.material.opacity=.06;
-gridH.position.set(0,0.05,0); scene.add(gridH);
+  if(!geos.length) return;
+  const m = new THREE.Mesh(toThree(THREE.BufferGeometryUtils.mergeBufferGeometries(geos,false)), matSolid);
+  m.castShadow = r.z>0; m.userData.route = ri; grp(r.layer).add(m); pickables.push(m);
+});
+const gridH = new THREE.GridHelper(2400, 24, 0x000000, 0x000000); gridH.material.transparent=true; gridH.material.opacity=.05; gridH.position.y=.05; scene.add(gridH);
+document.getElementById('loading').hidden = true;
 
-// ---------- UI: layers ----------
-const layersEl = document.getElementById('layers');
-const layerBoxes = {};
-for(const [gname, ls] of GROUPS){
-  const h = document.createElement('div'); h.className='grp'; h.textContent=gname; layersEl.appendChild(h);
-  for(const l of ls){ if(!MODEL.layers[l]) continue;
-    const lab = document.createElement('label'); if(OPT(l)) lab.className='opt';
-    const cb = document.createElement('input'); cb.type='checkbox'; cb.id='ly-'+l; cb.checked = DEFAULT_ON.has(l);
-    cb.addEventListener('change', ()=>{ setLayer(l, cb.checked); syncOptBtn(); });
-    lab.append(cb, document.createTextNode(MODEL.layers[l])); layersEl.appendChild(lab); layerBoxes[l]=cb;
-    setLayer(l, cb.checked);
+// ---------- layers ----------
+const layersEl = document.getElementById('layers'), layerBoxes = {};
+const byGroup = {}; for(const [k,v] of Object.entries(MODEL.layers)) (byGroup[v.group] ||= []).push(k);
+for(const [g, ls] of Object.entries(byGroup)){
+  const h=document.createElement('div'); h.className='grp'; h.textContent=g; layersEl.appendChild(h);
+  for(const l of ls){
+    const lab=document.createElement('label'); if(OPT(l)) lab.className='opt';
+    const cb=document.createElement('input'); cb.type='checkbox'; cb.id='ly-'+l;
+    cb.addEventListener('change',()=>{ setLayer(l,cb.checked); syncOpt(); });
+    lab.append(cb, document.createTextNode(MODEL.layers[l].label)); layersEl.appendChild(lab); layerBoxes[l]=cb;
   }
 }
 function setLayer(l,on){ if(layerGroups[l]) layerGroups[l].visible=on; if(layerBoxes[l]) layerBoxes[l].checked=on; }
-function setLayers(onSet){ for(const l in layerBoxes) setLayer(l, onSet.has(l)); syncOptBtn(); }
-const bOpt = document.getElementById('bOpt');
-function syncOptBtn(){ const all = Object.keys(layerBoxes).filter(OPT).every(l=>layerBoxes[l].checked); bOpt.setAttribute('aria-pressed', all); }
-bOpt.onclick = ()=>{ const on = bOpt.getAttribute('aria-pressed')!=='true'; for(const l in layerBoxes) if(OPT(l)) setLayer(l,on); syncOptBtn(); };
-const bX = document.getElementById('bXray');
-bX.onclick = ()=>{ const on = bX.getAttribute('aria-pressed')!=='true'; bX.setAttribute('aria-pressed',on);
-  hallMats.forEach(m=>{ m.opacity = on?.22:1; m.transparent=on; m.depthWrite=!on; m.needsUpdate=true; }); };
-const bT = document.getElementById('bTags');
-bT.onclick = ()=>{ const on = bT.getAttribute('aria-pressed')!=='true'; bT.setAttribute('aria-pressed',on); labelsEl.hidden=!on; };
+function setLayers(show){ const s=new Set(show); for(const l in MODEL.layers) setLayer(l, s.has(l)); syncOpt(); }
+const bOpt=document.getElementById('bOpt');
+function syncOpt(){ bOpt.setAttribute('aria-pressed', Object.keys(layerBoxes).filter(OPT).every(l=>layerBoxes[l].checked)); }
+bOpt.onclick=()=>{ const on=bOpt.getAttribute('aria-pressed')!=='true'; for(const l in layerBoxes) if(OPT(l)) setLayer(l,on); syncOpt(); };
+const toggle=(id,fn)=>{ const b=document.getElementById(id); b.onclick=()=>{ const on=b.getAttribute('aria-pressed')!=='true'; b.setAttribute('aria-pressed',on); fn(on); }; };
+toggle('bXray', on=>{ matGlass.opacity = on?.24:1; matGlass.transparent=on; matGlass.depthWrite=!on; matGlass.needsUpdate=true; });
+toggle('bTags', on=>{ labelsEl.hidden=!on; });
+toggle('bShadow', on=>{ renderer.shadowMap.enabled=on; scene.traverse(o=>{ if(o.material) o.material.needsUpdate=true; }); });
+const cut=document.getElementById('cut'), cutv=document.getElementById('cutv');
+cut.addEventListener('input',()=>{ const v=+cut.value; cutPlane.constant = v>=320?1e6:v; cutv.textContent = v>=320?'off':'EL '+v; });
 
-// ---------- views (SK-3X1-11) ----------
-const BASE = [...DEFAULT_ON];
-const VIEWS = [
- {k:'A', n:'A Overview', t:[1000,560,40], c:[-260,-720,1250], L:BASE},
- {k:'B', n:'B R1 room', t:[442,690,10], c:[250,560,230], L:BASE},
- {k:'B2', n:'B2 R4 VFD', t:[1195,340,10], c:[1060,180,220], L:BASE},
- {k:'C', n:'C Pumps / ACC', t:[1250,780,40], c:[1200,1180,300], L:BASE},
- {k:'PB', n:'Power block', t:[800,520,40], c:[520,120,420], L:BASE},
- {k:'O1', n:'O1 Modular', t:[1960,900,20], c:[1500,300,900], L:[...BASE,'OPT_MOD','OPT_TMP','OPT_ROUTES','OPT_D6']},
- {k:'O2', n:'O2 BESS', t:[1740,560,10], c:[1450,160,520], L:[...BASE,'OPT_BESS','OPT_ROUTES']},
- {k:'O3', n:'O3 Carbon capture', t:[900,1300,110], c:[150,150,1150], L:[...BASE,'OPT_CCS','OPT_CCSU','OPT_ROUTES']},
- {k:'O4', n:'O4 Inlet chilling', t:[180,1160,20], c:[-150,820,420], L:[...BASE,'OPT_IC','OPT_ROUTES']},
- {k:'O5', n:'O5 Gas, LNG, H2', t:[1980,1650,10], c:[1650,1150,700], L:[...BASE,'OPT_LNG','OPT_H2','OPT_D6','OPT_ROUTES']},
- {k:'ALL', n:'Everything', t:[1210,960,60], c:[-500,-900,2000], L:Object.keys(MODEL.layers)},
-];
-const viewsEl = document.getElementById('views');
-let anim=null;
+// ---------- views ----------
+const viewsEl=document.getElementById('views'); let anim=null;
 function goView(v, instant){
-  setLayers(new Set(v.L));
-  const t = P(...v.t), c = P(...v.c);
+  setLayers(v.show);
   [...viewsEl.children].forEach(b=>b.setAttribute('aria-pressed', b.dataset.k===v.k));
+  const t=P(...v.t), c=P(...v.c);
   if(instant || matchMedia('(prefers-reduced-motion: reduce)').matches){ controls.target.copy(t); camera.position.copy(c); return; }
-  anim = {t0:performance.now(), ft:controls.target.clone(), fc:camera.position.clone(), t, c};
+  anim={t0:performance.now(), ft:controls.target.clone(), fc:camera.position.clone(), t, c};
 }
-for(const v of VIEWS){ const b=document.createElement('button'); b.textContent=v.n; b.dataset.k=v.k; b.onclick=()=>goView(v); viewsEl.appendChild(b); }
-function flyTo(mesh){
-  const o = mesh.userData.o; const c = centerOf(o); const size = Math.max(sizeOf(o), 40);
-  setLayer(o.layer, true);
-  const t = P(c[0],c[1],c[2]); const dir = camera.position.clone().sub(controls.target).normalize();
-  anim = {t0:performance.now(), ft:controls.target.clone(), fc:camera.position.clone(), t, c:t.clone().add(dir.multiplyScalar(size*3.2+80))};
+for(const v of MODEL.views){ const b=document.createElement('button'); b.textContent=v.n; b.dataset.k=v.k; b.onclick=()=>goView(v); viewsEl.appendChild(b); }
+function envelope(it){ return {c:[(it.fp[0]+it.fp[1])/2,(it.fp[2]+it.fp[3])/2,(it.z[0]+it.z[1])/2], s:Math.max(it.fp[1]-it.fp[0], it.fp[3]-it.fp[2], it.z[1]-it.z[0])}; }
+function flyTo(id){
+  const it=items[id], e=envelope(it); (itemMeshes[id]||[]).forEach(m=>{ m.parent.visible=true; if(layerBoxes[m.parent.name]) layerBoxes[m.parent.name].checked=true; });
+  const t=P(...e.c), dir=camera.position.clone().sub(controls.target).normalize();
+  anim={t0:performance.now(), ft:controls.target.clone(), fc:camera.position.clone(), t, c:t.clone().add(dir.multiplyScalar(Math.max(e.s,30)*2.6+60))};
 }
 
 // ---------- labels ----------
-const labelsEl = document.getElementById('labels');
-const LABEL_TAGS = ['GT1','GT2','GT3','ST','HRSG-1','HRSG-2','HRSG-3','STK-2','ACC','R1','R2A','R2B','R2C','R3','R4','RH','CR','GSU-1','GSU-2','GSU-3','GSU-ST','FH-2','R-WT','EDG-1','ABS-A','ABS-B','ABS-C','STR-B','DCC-B','CCS T-1','BF-B','AUXC','CP-A/B/C','D1','D2','D3'];
-const labelObjs = [];
-const seen = new Set();
-for(const o of MODEL.objects){ if(LABEL_TAGS.includes(o.tag) && !seen.has(o.tag)){ seen.add(o.tag);
-  const el=document.createElement('div'); el.className='tag'+(OPT(o.layer)?' o':''); el.textContent=o.tag; labelsEl.appendChild(el);
-  const c=centerOf(o), top = o.kind==='cyl'?o.z1:o.max[2]; labelObjs.push({o, el, p:P(c[0],c[1],top+6)}); } }
-[['Pipeline M&R',1680,1800,20,'ADJ_MR'],['Gas yard',1650,1540,20,'BASE_FUEL'],['BESS',1740,590,14,'OPT_BESS'],['RICE hall',1690,1085,44,'OPT_MOD'],['LNG satellite',2200,1790,22,'OPT_LNG'],['25 MW H2',2090,1480,34,'OPT_H2'],['CCS tower',815,1800,52,'OPT_CCSU'],['Inlet chilling',180,1280,52,'OPT_IC'],['Portable pad',2170,520,18,'OPT_TMP']].forEach(([n,x,y,z,l])=>{
-  const el=document.createElement('div'); el.className='tag'+(OPT(l)?' o':''); el.textContent=n; labelsEl.appendChild(el); labelObjs.push({o:{layer:l}, el, p:P(x,y,z)}); });
-function centerOf(o){ return o.kind==='cyl' ? [o.center[0],o.center[1],(o.z0+o.z1)/2] : [(o.min[0]+o.max[0])/2,(o.min[1]+o.max[1])/2,(o.min[2]+o.max[2])/2]; }
-function sizeOf(o){ return o.kind==='cyl' ? Math.max(o.r*2,o.z1-o.z0) : Math.max(o.max[0]-o.min[0],o.max[1]-o.min[1],o.max[2]-o.min[2]); }
-function dims(o){
-  if(o.kind==='cyl') return {plan:`${fmt(o.r*2)} dia`, el:`${fmt(o.z0)}–${fmt(o.z1)}`, xy:`${fmt(o.center[0])} / ${fmt(o.center[1])}`};
-  const w=o.max[0]-o.min[0], d=o.max[1]-o.min[1];
-  return {plan:`${fmt(w)} x ${fmt(d)}`, el:`${fmt(o.min[2])}–${fmt(o.max[2])}`, xy:`${fmt(o.min[0])}–${fmt(o.max[0])} / ${fmt(o.min[1])}–${fmt(o.max[1])}`};
-}
-function fmt(v){ return (Math.round(v*10)/10).toLocaleString('en-US'); }
+const labelsEl=document.getElementById('labels'), labelObjs=[];
+const LABEL = /^(GT\d|ST|HRSG-\d|STK-2|ACC|R1|R2[ABC]|R3|R4|RH|CR|GSU-\d|GSU-ST|FH-2|R-WT|EDG-1|ABS-[ABC]|STR-B|DCC-B|CCS T-1|BF-B|AUXC|CP-A\/B\/C|CRANE|BESS|RICE|SC-1|H2-EL|T-MOD-1|MOB-1|LNG-T4|Line-1|SWGR-13\.8-2|LCI-2|MCC-GT2|VFD-L2|T-H2|CCS-CT)$/;
+for(const it of MODEL.items){ if(!it.tag || !LABEL.test(it.tag)) continue;
+  const el=document.createElement('div'); el.className='tag'+(OPT(it.layer)?' o':''); el.textContent=it.tag; labelsEl.appendChild(el);
+  labelObjs.push({layer:it.layer, el, p:P((it.fp[0]+it.fp[1])/2,(it.fp[2]+it.fp[3])/2,it.z[1]+(INTERIOR.has(it.layer)?1.5:6)), near:INTERIOR.has(it.layer)?260:2600}); }
+for(const [n,x,y,z,l] of [['Pipeline M&R',1680,1800,20,'BASE_UTILITIES'],['Gas yard',1650,1540,20,'BASE_UTILITIES'],['Switchyard',1250,160,52,'BASE_SWITCHYARD'],['Portable pad',2170,520,18,'OPT_TMP'],['Inlet chilling',180,1280,52,'OPT_IC']]){
+  const el=document.createElement('div'); el.className='tag'+(OPT(l)?' o':''); el.textContent=n; labelsEl.appendChild(el); labelObjs.push({layer:l, el, p:P(x,y,z), near:2600}); }
 
-// ---------- picking + inspector ----------
-const ray = new THREE.Raycaster(), mouse = new THREE.Vector2();
-let sel=null, selMat=null;
-const hiMat = new THREE.MeshLambertMaterial({color:0xd0874a, emissive:0x5a2a08});
-const insp = document.getElementById('insp');
-function select(mesh){
-  if(sel){ sel.material = selMat; } sel=null;
-  if(!mesh){ showDefault(); return; }
-  sel = mesh; selMat = mesh.material; mesh.material = hiMat;
-  if(mesh.userData.o) showObj(mesh.userData.o); else showRoute(mesh.userData.route);
-}
-function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
-function showObj(o){
-  const d = dims(o);
-  insp.innerHTML = `<p class="lbl">${esc(MODEL.layers[o.layer]||o.layer)}</p>
-   <h2>${o.tag?`<span class="tagbox">${esc(o.tag)}</span>`:''}${esc(o.name)}</h2>
-   <p style="margin:8px 0"><span class="pill b-${o.basis}">${esc(o.basis)}</span> <span class="muted" style="margin-left:6px">${esc(o.sheet)}</span></p>
-   <dl class="kv"><dt>Plan X / Y</dt><dd>${d.xy}</dd><dt>Size</dt><dd>${d.plan} ft</dd><dt>Elevation</dt><dd>EL ${d.el} ft</dd></dl>
-   ${o.info?`<p class="info" style="margin-top:10px">${esc(o.info)}</p>`:''}`;
+// ---------- inspector ----------
+const insp=document.getElementById('insp');
+function dims(it){ const [x0,x1,y0,y1]=it.fp;
+  return it.shape==='circle' ? {xy:`${fmt((x0+x1)/2)} / ${fmt((y0+y1)/2)}`, plan:`${fmt(x1-x0)} dia`, el:`${fmt(it.z[0])}–${fmt(it.z[1])}`}
+   : {xy:`${fmt(x0)}–${fmt(x1)} / ${fmt(y0)}–${fmt(y1)}`, plan:`${fmt(x1-x0)} x ${fmt(y1-y0)}`, el:`${fmt(it.z[0])}–${fmt(it.z[1])}`}; }
+let selId=null, selRoute=null;
+function clearSel(){ if(selId) (itemMeshes[selId]||[]).forEach(m=>m.material = m.userData.mat); if(selRoute) { selRoute.material = matSolid; } selId=null; selRoute=null; }
+function selectItem(id){ clearSel(); if(!id){ showDefault(); return; } selId=id;
+  (itemMeshes[id]||[]).forEach(m=>{ m.userData.mat=m.material; m.material=matHi; }); showItem(items[id]); }
+function selectRoute(mesh){ clearSel(); selRoute=mesh; mesh.material=matHi; showRoute(MODEL.routes[mesh.userData.route]); }
+function showItem(it){
+  const d=dims(it), nParts=MODEL.parts.filter(p=>p.item===it.id).length;
+  insp.innerHTML=`<p class="lbl">${esc(MODEL.areas[it.area]?`Area ${it.area} · ${MODEL.areas[it.area]}`:MODEL.layers[it.layer].label)}</p>
+   <h2>${it.tag?`<span class="tagbox">${esc(it.tag)}</span>`:''}${esc(it.name)}</h2>
+   <p style="margin:8px 0"><span class="pill b-${it.basis}">${esc(it.basis)}</span> <span class="muted" style="margin-left:6px">${esc(it.sheet)} · ${esc(it.layer)}</span></p>
+   <dl class="kv"><dt>Plan X / Y</dt><dd>${d.xy}</dd><dt>Size</dt><dd>${d.plan} ft</dd><dt>Elevation</dt><dd>EL ${d.el} ft</dd><dt>Parts</dt><dd>${nParts}</dd></dl>
+   ${it.info?`<p class="info" style="margin-top:10px">${esc(it.info)}</p>`:''}
+   <div class="views" style="margin-top:10px"><button id="bFly">Fly to</button></div>`;
+  document.getElementById('bFly').onclick=()=>flyTo(it.id);
 }
 function showRoute(r){
-  insp.innerHTML = `<p class="lbl">${esc(MODEL.layers[r.layer])}</p><h2>${esc(r.label)}</h2>
-   <dl class="kv" style="margin-top:8px"><dt>Elevation</dt><dd>${r.z<0?'below grade (duct bank)':'EL '+r.z+' ft'}</dd><dt>Vertices</dt><dd>${r.points.length}</dd><dt>Length</dt><dd>${fmt(r.points.reduce((s,p,i,a)=>i?s+Math.hypot(p[0]-a[i-1][0],p[1]-a[i-1][1]):0,0))} ft</dd><dt>Source</dt><dd>${esc(r.sheet)}</dd></dl>
-   <p class="muted" style="margin-top:8px">Route centreline, not conductor quantity.</p>`;
+  const len=r.points.reduce((s,p,i,a)=>i?s+Math.hypot(p[0]-a[i-1][0],p[1]-a[i-1][1]):0,0);
+  insp.innerHTML=`<p class="lbl">${esc(MODEL.layers[r.layer].label)}</p><h2>${esc(r.label)}</h2>
+   <dl class="kv" style="margin-top:8px"><dt>Elevation</dt><dd>${r.z<0?'below grade':'EL '+r.z+' ft'}</dd><dt>Vertices</dt><dd>${r.points.length}</dd><dt>Plan length</dt><dd>${fmt(len)} ft</dd><dt>Source</dt><dd>${esc(r.sheet)}</dd></dl>
+   <p class="muted" style="margin-top:8px">Route centreline taken from the drawing, not a conductor quantity.</p>`;
 }
 function showDefault(){
-  insp.innerHTML = `<p class="lbl">Inspector</p><h2>Select equipment</h2>
-   <p class="info" style="margin-top:6px">Click anything in the model, or a row in the equipment register, to see its tag, coordinates, size, elevation, basis and drawing reference.</p>
+  insp.innerHTML=`<p class="lbl">Inspector</p><h2>Select equipment</h2>
+   <p class="info" style="margin-top:6px">Click anything in the model, or a row in the register, to see its tag, drawn footprint, elevation, basis and sheet. Double-click to fly to it.</p>
    <dl class="kv" style="margin-top:10px"><dt>Output</dt><dd>~1,622 MW (3x1 H-class)</dd><dt>Grid</dt><dd>230 kV, 2 lines</dd><dt>Cooling</dt><dd>ACC, 80 cells</dd><dt>Tallest base</dt><dd>HRSG stacks 180 ft</dd><dt>Tallest option</dt><dd>Absorber stack 313 ft</dd></dl>`;
 }
 showDefault();
+const ray=new THREE.Raycaster(), mouse=new THREE.Vector2();
+function hit(e){ const r=cv.getBoundingClientRect(); mouse.set(((e.clientX-r.left)/r.width)*2-1, -((e.clientY-r.top)/r.height)*2+1);
+  ray.setFromCamera(mouse,camera);
+  const hs=ray.intersectObjects(pickables.filter(m=>m.parent.visible),false).filter(h=>{
+    if(h.point.y > cutPlane.constant) return false;
+    return !(h.object.material===matGlass && matGlass.transparent); });
+  return hs[0]; }
 let down=null;
-cv.addEventListener('pointerdown', e=>{ down=[e.clientX,e.clientY]; });
-cv.addEventListener('pointerup', e=>{
-  if(!down || Math.hypot(e.clientX-down[0], e.clientY-down[1])>5) return;
-  const r = cv.getBoundingClientRect(); mouse.set(((e.clientX-r.left)/r.width)*2-1, -((e.clientY-r.top)/r.height)*2+1);
-  ray.setFromCamera(mouse, camera);
-  const hits = ray.intersectObjects(pickables.filter(m=>m.parent.visible), false).filter(h=>!(h.object.userData.o&&h.object.userData.o.color==='hall'&&bX.getAttribute('aria-pressed')==='true'));
-  select(hits.length?hits[0].object:null);
-});
+cv.addEventListener('pointerdown',e=>{ down=[e.clientX,e.clientY]; });
+cv.addEventListener('pointerup',e=>{ if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>5) return; const h=hit(e);
+  if(!h) return selectItem(null); if(h.object.userData.item) selectItem(h.object.userData.item); else selectRoute(h.object); });
+cv.addEventListener('dblclick',e=>{ const h=hit(e); if(h && h.object.userData.item) flyTo(h.object.userData.item); });
+const read=document.getElementById('read'); let rq=0;
+cv.addEventListener('pointermove',e=>{ if(rq) return; rq=requestAnimationFrame(()=>{ rq=0; const h=hit(e);
+  if(h){ const x=h.point.x+CX, y=-h.point.z+CY, z=h.point.y; const n=h.object.userData.item?items[h.object.userData.item]:null;
+    read.innerHTML=`<span>X</span> ${fmt(x)} <span>Y</span> ${fmt(y)} <span>EL</span> ${fmt(z)}${n?` <span>·</span> ${esc(n.tag||n.name.slice(0,34))}`:''}`; } }); });
 
 // ---------- legend ----------
-const leg = document.getElementById('legend');
-const seenT = new Set();
-for(const r of MODEL.routes){ if(seenT.has(r.label)) continue; seenT.add(r.label);
-  const sw=document.createElement('div'); sw.className='sw'; sw.style.background='#'+(COL[r.color]).toString(16).padStart(6,'0');
-  if(r.z<0) sw.style.background=`repeating-linear-gradient(90deg,${sw.style.background} 0 3px,transparent 3px 5px)`;
+const leg=document.getElementById('legend'), seenL=new Set();
+for(const r of MODEL.routes){ if(seenL.has(r.label)) continue; seenL.add(r.label);
+  const sw=document.createElement('div'); sw.className='sw'; const c=PALETTE[r.color].hex;
+  sw.style.background = r.z<0 ? `repeating-linear-gradient(90deg,${c} 0 3px,transparent 3px 5px)` : c;
   const t=document.createElement('div'); t.textContent=r.label; leg.append(sw,t); }
 
 // ---------- stats ----------
-const stats = [['840+','modelled objects'],[MODEL.routes.length,'route polylines from the drawing'],['180 ft','HRSG stacks, tallest base item'],['107 ac','compound, base plant ~43 ac']];
-stats[0][0] = MODEL.objects.length.toLocaleString('en-US');
-document.getElementById('stats').innerHTML = stats.map(([b,s])=>`<div class="stat"><b>${b}</b><span>${s}</span></div>`).join('');
+const reg = MODEL.items.filter(i=>i.register);
+const R = REPORT;
+document.getElementById('stats').innerHTML = [
+  [reg.length.toLocaleString('en-US'), `register items · ${MODEL.parts.length.toLocaleString('en-US')} modelled parts`],
+  [`${R.footprints.matched}/${R.footprints.checked}`, `drawn shapes matched within ${R.footprints.tolerance_ft} ft`, R.footprints.ok],
+  [`${R.heights.rows.filter(r=>r.ok).length}/${R.heights.rows.length}`, 'sheet-13 heights reproduced', R.heights.ok],
+  [`${R.sheet09.clearances.filter(r=>r.ok).length+R.sheet09.hook.filter(r=>r.ok).length}/${R.sheet09.clearances.length+R.sheet09.hook.length}`, 'sheet-09 crane checks reproduced', R.sheet09.ok],
+  [String(R.clashes.clashes.length), `clashes in ${R.clashes.pairs_tested.toLocaleString('en-US')} part pairs`, R.clashes.ok],
+].map(([b,s,ok])=>`<div class="stat"><b class="${ok?'ok':''}">${b}</b><span>${s}</span></div>`).join('');
 
 // ---------- register ----------
-const REG = MODEL.objects.filter(o=>!/column|rack bent|fan$|fan stack|radiator|windwall|^rack|bushings|firewall|frame column/.test(o.name) && o.layer!=='SITE');
-const fl = document.getElementById('fl');
-fl.innerHTML = `<option value="">All areas (${REG.length})</option>` + Object.entries(MODEL.layers).filter(([k])=>REG.some(o=>o.layer===k)).map(([k,v])=>`<option value="${k}">${esc(v)}</option>`).join('');
-const tb = document.getElementById('tb'), q = document.getElementById('q'), cnt = document.getElementById('cnt');
-function renderReg(){
-  const s = q.value.trim().toLowerCase(), L = fl.value;
-  const rows = REG.filter(o=>(!L||o.layer===L) && (!s || (o.tag+' '+o.name+' '+o.info).toLowerCase().includes(s)));
-  cnt.textContent = `${rows.length} items`;
-  tb.innerHTML = rows.map(o=>{ const d=dims(o); return `<tr data-id="${o.id}"><td class="m">${esc(o.tag||'—')}</td><td>${esc(o.name)}</td><td>${esc((MODEL.layers[o.layer]||'').replace(/^Optional [A-Z]: |^Adjacent K: /,''))}</td><td class="m">${d.xy}</td><td class="m">${d.plan}</td><td class="m">${d.el}</td><td><span class="pill b-${o.basis}">${o.basis}</span></td><td class="m">${esc(o.sheet)}</td></tr>`; }).join('');
-}
-q.addEventListener('input', renderReg); fl.addEventListener('change', renderReg); renderReg();
-tb.addEventListener('click', e=>{ const tr=e.target.closest('tr'); if(!tr) return; const m=byId[tr.dataset.id]; select(m); flyTo(m); stage.scrollIntoView({behavior:'smooth',block:'center'}); });
+const fa=document.getElementById('fa'), fb=document.getElementById('fb');
+fa.innerHTML = `<option value="">All areas (${reg.length})</option>`+Object.entries(MODEL.areas).map(([k,v])=>`<option value="${k}">${k} ${esc(v)} (${reg.filter(i=>i.area===k).length})</option>`).join('');
+const tb=document.getElementById('tb'), q=document.getElementById('q'), cnt=document.getElementById('cnt');
+function renderReg(){ const s=q.value.trim().toLowerCase();
+  const rows=reg.filter(i=>(!fa.value||i.area===fa.value)&&(!fb.value||i.basis===fb.value)&&(!s||(i.tag+' '+i.name+' '+i.info).toLowerCase().includes(s)));
+  cnt.textContent=`${rows.length} items`;
+  tb.innerHTML=rows.map(i=>{ const d=dims(i); return `<tr data-id="${i.id}"><td class="m">${esc(i.tag||'—')}</td><td>${esc(i.name)}</td><td>${esc(i.area)}</td><td class="m">${d.xy}</td><td class="m">${d.plan}</td><td class="m">${d.el}</td><td><span class="pill b-${i.basis}">${i.basis}</span></td><td class="m">${esc(i.sheet)}</td></tr>`; }).join(''); }
+[q,fa,fb].forEach(el=>el.addEventListener('input',renderReg)); renderReg();
+tb.addEventListener('click',e=>{ const tr=e.target.closest('tr'); if(!tr) return; selectItem(tr.dataset.id); flyTo(tr.dataset.id); stage.scrollIntoView({behavior:'smooth',block:'center'}); });
+
+// ---------- verification ----------
+const pill = ok => `<span class="pill ${ok?'p-ok':'p-bad'}">${ok?'pass':'fail'}</span>`;
+document.getElementById('ver').innerHTML = `
+ <p class="info" style="max-width:80ch;margin-bottom:12px">Result of <code>plant/verify.py</code> for this build: ${pill(R.summary.ok)} The model is compared against the drawing, not against itself. The reference geometry is extracted from the PDF by <code>extract_reference.py</code>.</p>
+ <div class="cols">
+  <div class="card"><h3>Footprints ${pill(R.footprints.ok)}</h3><p>${R.footprints.matched} of ${R.footprints.checked} filled shapes on sheets 01 and 05 match a model item or part within ${R.footprints.tolerance_ft} ft on all four edges. The dashed optional-reserve frames on sheet 01 are not counted; their contents come from sheet 02.</p></div>
+  <div class="card"><h3>Clashes ${pill(R.clashes.ok)}</h3><p>${R.clashes.pairs_tested.toLocaleString('en-US')} pairs of parts from different items tested as boxes; ${R.clashes.clashes.length} overlap. Contacts the drawings define (the plenum spool touching the GT lift column, ducts penetrating the gallery roof, bus on its dead-ends) are listed in the script.</p></div>
+  <div class="card"><h3>Bounds ${pill(R.bounds.ok)}</h3><p>All parts sit inside the 2,420 x 1,920 ft compound. Only the stormwater basin and the R1 cable basement go below grade.</p></div>
+ </div>
+ <h3 class="sec">Sheet 09 coordination screen, recomputed from the model</h3>
+ <div class="tw" style="max-height:none"><table><thead><tr><th>Check</th><th class="r">Model</th><th class="r">Sheet 09</th><th>Result</th></tr></thead><tbody>
+ ${R.sheet09.clearances.map(r=>`<tr><td>${esc(r.check)}</td><td class="m r">${r.model} ft</td><td class="m r">${r.sheet} ft</td><td>${pill(r.ok)}</td></tr>`).join('')}
+ ${R.sheet09.hook.map(r=>`<tr><td>Hook height: ${esc(r.check)}</td><td class="m r">+${r.model} ft</td><td class="m r">+${r.sheet} ft</td><td>${pill(r.ok)}</td></tr>`).join('')}
+ </tbody></table></div>
+ <p class="muted" style="margin-top:6px">Assumptions as on sheet 09: GT / generator / ST tops EL ${R.sheet09.assumptions.gt_top} / ${R.sheet09.assumptions.gen_top} / ${R.sheet09.assumptions.st_top}, lift gap ${R.sheet09.assumptions.lift_gap} ft, lifted heights 18 / 16 / 14 ft, rigging ${R.sheet09.assumptions.rigging} ft, hook max EL ${R.sheet09.assumptions.hook_max}, bridge travel EL ${R.sheet09.assumptions.bridge_travel.join('-')}. Clearance is the largest per-axis gap between boxes.</p>
+ <h3 class="sec">Sheet 13 heights</h3>
+ <div class="tw" style="max-height:none"><table><thead><tr><th>Class</th><th class="r">Model</th><th class="r">Sheet 13</th><th>Result</th></tr></thead><tbody>
+ ${R.heights.rows.map(r=>`<tr><td>${esc(r.item)}</td><td class="m r">${r.model} ft</td><td class="m r">${r.expected} ft</td><td>${pill(r.ok)}</td></tr>`).join('')}
+ </tbody></table></div>`;
 
 // ---------- electrical ----------
-const ROOMS = [
- ['R1','Main electrical building','64 x 180 ft conventional building','UAT-1/2/3 via duct bank DB-S; EDG-1/2 emergency. 13.8 kV and 4.16 kV switchgear, 480 V load centres, GT and common MCCs, emergency MCC, static starters, UPS, station DC, protection, DCS and comms.'],
+const ROOMS=[['R1','Main electrical building','64 x 180 ft conventional building','UAT-1/2/3 via duct bank DB-S; EDG-1/2 emergency. 13.8 kV and 4.16 kV switchgear, 480 V load centres, GT and common MCCs, emergency MCC, static starters, UPS, station DC, protection, DCS and comms.'],
  ['R2A-C','Unit / HRSG electrical rooms','32 x 40 ft e-houses, outdoor 13.8/0.48 kV transformer each','SWGR-13.8-1/2/3. 480 V switchgear, MCC and DCS remote I/O for SCR blowers, ammonia injection, HRSG valves and drains.'],
  ['R3','ST auxiliary electrical room','40 x 65 ft e-house, outdoor transformer','SWGR-13.8-2. 480 V switchgear and MCC for ST lube oil, turning gear, EHC and air compressors.'],
  ['R4','ACC electrical (VFD) building','60 x 120 ft e-house, four outdoor transformers','SWGR-13.8-1/2/2/3. 480 V switchgear, 92 VFDs (80 ACC fans, 12 aux cooler fans), MCC for vacuum pumps.'],
  ['R-WT','Water-treatment electrical room','Room in the water-treatment building','SWGR-13.8-2 via DB-W. 480 V MCC for water treatment, wastewater and the fire-pump jockey pump.'],
  ['RH','Switchyard relay / control house','52 x 70 ft prefabricated control house','Protection, SCADA and communications for the 230 kV yard; 125 V DC and fibre to R1 via DB-S.'],
  ['CR','Main operator control room','Room in the control / administration building','Operator consoles only. DCS cabinets are distributed in R1, R2A-C, R3 and R4.']];
-document.getElementById('rooms').innerHTML = ROOMS.map(([t,n,s,d])=>`<div class="card"><h3><span class="tagbox">${t}</span>${n}</h3><p class="muted">${s}</p><p>${d}</p></div>`).join('');
-const MOTORS = [['BFP-1A/B, 2A/B, 3A/B','Boiler feed pumps, at each HRSG','6','13.8 kV','MV breaker, DOL','R1 SWGR-13.8-1/2/3','MV-BFP-1/2/3'],['CP-A/B/C','Condensate pumps, north of ACC','3','4.16 kV','MV contactor','R1 SWGR-4.16-A/B','MV-CP'],['CCW-A/B','Closed cooling water pumps','2','4.16 kV','MV contactor','R1 SWGR-4.16-A/B','MV-CCW'],['ACC-F01..F80','ACC fans, fan deck','80','480 V','VFD','R4','VFD-ACC'],['AUXC-F01..12','Aux dry cooler fans (CCW)','12','480 V','VFD','R4','LV-VAC tray'],['VAC-A/B','ACC air-removal vacuum pumps','2','480 V','MCC starter','R4','LV-VAC'],['AC-A/B/C','Air compressors','3','480 V','MCC soft starter','R3','LV-AIRC'],['SCRB-1..3 (A/B)','SCR dilution air blowers','6','480 V','MCC starter','R2A / R2B / R2C','LV-SCR-1/2/3'],['GT1-3 aux','GT lube oil, hydraulics, enclosure fans','sets','480 V','MCC-GT1/2/3','R1','LV-GTAUX-1/2/3'],['ST aux','ST lube oil, turning gear, EHC','set','480 V','MCC','R3','LV-ST'],['EOP-GT1..3, EOP-ST','DC emergency lube-oil pumps','4','125 V DC','DC starter','R1 DC-1 / DC-2','DC-EOP'],['LCI-1/2/3','GT static starters (start-up drive)','3','13.8 kV in','LCI cabinets','R1 SWGR-13.8-1/2/3','LCI-OUT-1/2/3'],['FS-GT1..3','GT CO2 fire suppression','3','480 V + 24 V DC','local panel','R1 MCC-GT / DC','hall control tray'],['WASH-GT1..3','GT compressor water-wash skids','3','480 V','MCC starter','R1 MCC-GT1/2/3','LV-GTAUX'],['HTP-1..4','Heat-trace panels (rack, gas, NH3, tanks)','4','480 V','panel breakers','R1 LC / R-WT','LV-HTP-1..4'],['CPR-1/2','Cathodic protection rectifiers','2','AC in / DC out','rectifier','local panels','DC-CP-1/2']];
-document.getElementById('motors').innerHTML = MOTORS.map(r=>`<tr style="cursor:default">${r.map((c,i)=>`<td class="${i===0||i>=5?'m':''}">${esc(c)}</td>`).join('')}</tr>`).join('');
+document.getElementById('rooms').innerHTML=ROOMS.map(([t,n,s,d])=>`<div class="card"><h3><span class="tagbox">${t}</span>${n}</h3><p class="muted">${s}</p><p>${d}</p></div>`).join('');
+const MOTORS=[['BFP-1A/B, 2A/B, 3A/B','Boiler feed pumps, at each HRSG','6','13.8 kV','MV breaker, DOL','R1 SWGR-13.8-1/2/3','MV-BFP-1/2/3'],['CP-A/B/C','Condensate pumps, north of ACC','3','4.16 kV','MV contactor','R1 SWGR-4.16-A/B','MV-CP'],['CCW-A/B','Closed cooling water pumps','2','4.16 kV','MV contactor','R1 SWGR-4.16-A/B','MV-CCW'],['ACC-F01..F80','ACC fans, fan deck','80','480 V','VFD','R4','VFD-ACC'],['AUXC-F01..12','Aux dry cooler fans (CCW)','12','480 V','VFD','R4','LV-VAC tray'],['VAC-A/B','ACC air-removal vacuum pumps','2','480 V','MCC starter','R4','LV-VAC'],['AC-A/B/C','Air compressors','3','480 V','MCC soft starter','R3','LV-AIRC'],['SCRB-1..3 (A/B)','SCR dilution air blowers','6','480 V','MCC starter','R2A / R2B / R2C','LV-SCR-1/2/3'],['GT1-3 aux','GT lube oil, hydraulics, enclosure fans','sets','480 V','MCC-GT1/2/3','R1','LV-GTAUX-1/2/3'],['ST aux','ST lube oil, turning gear, EHC','set','480 V','MCC','R3','LV-ST'],['EOP-GT1..3, EOP-ST','DC emergency lube-oil pumps','4','125 V DC','DC starter','R1 DC-1 / DC-2','DC-EOP'],['LCI-1/2/3','GT static starters (start-up drive)','3','13.8 kV in','LCI cabinets','R1 SWGR-13.8-1/2/3','LCI-OUT-1/2/3'],['FS-GT1..3','GT CO2 fire suppression','3','480 V + 24 V DC','local panel','R1 MCC-GT / DC','hall control tray'],['WASH-GT1..3','GT compressor water-wash skids','3','480 V','MCC starter','R1 MCC-GT1/2/3','LV-GTAUX'],['HTP-1..4','Heat-trace panels (rack, gas, NH3, tanks)','4','480 V','panel breakers','R1 LC / R-WT','LV-HTP-1..4'],['CPR-1/2','Cathodic protection rectifiers','2','AC in / DC out','rectifier','local panels','DC-CP-1/2']];
+document.getElementById('motors').innerHTML=MOTORS.map(r=>`<tr>${r.map((c,i)=>`<td class="${i===0||i>=5?'m':''}">${esc(c)}</td>`).join('')}</tr>`).join('');
 
 // ---------- heights ----------
-const H = [['Person',6],['BESS container',9.5],['E-house',14],['Admin building',20],['Maintenance bldg',20],['R1 electrical bldg',24],['Water treatment',30],['Warehouse',35],['230 kV dead-end',47],['Water tanks',48],['CCS cooling tower',50],['Aero stack',80],['RICE stacks',90],['DCC (quench)',90],['HRSG',100],['Turbine hall',101],['ACC',125],['Filter house top',135],['HRSG stack',180],['CO2 stripper',207],['CCS absorber',262],['Absorber stack',313]];
-const hmax = 320;
-document.getElementById('hbars').innerHTML = H.map(([n,v])=>`<div class="hb"><span>${n}</span><div class="bar${v>=180?' hi':''}" style="width:${v/hmax*100}%"></div><span class="v">${v} ft</span></div>`).join('') +
+const hmax=320;
+document.getElementById('hbars').innerHTML = R.heights.rows.map(r=>`<div class="hb"><span>${esc(r.item)}</span><div class="bar${r.expected>=180?' hi':''}" style="width:${r.model/hmax*100}%"></div><span class="v">${r.model} ft</span></div>`).join('')+
  `<div class="axis"><span></span><div><span>0</span><span>80</span><span>160</span><span>240</span><span>320 ft</span></div><span></span></div>`;
 
-// ---------- optional systems ----------
-const OPTS = [
- ['G','Carbon capture (SK-3X1-06)','O3','Three post-combustion amine trains, one per HRSG: diverter damper, ~16 MW booster fan, DCC, 62 ft x 262 ft absorber (stack to 313 ft), 207 ft stripper with reboiler. Shared reclaimer, solvent storage and 3 x ~19 MW CO2 compression. ~150 MWe from a future D5 diameter by 230 kV cable; LP steam from ST extraction. ~30-cell cooling tower north of the plant.'],
- ['H','BESS (SK-3X1-07)','O2','30 ISO 40 ft containers and 15 PCS / MV skids, 34.5 kV collector e-house, main power transformer to D4 upper position, auxiliary transformers, EMS / SCADA and a conditional grounding transformer.'],
- ['I','Modular and portable power (SK-3X1-07, -08)','O1','8-engine RICE hall with 40 radiators and 90 ft stacks, two aeroderivative simple-cycle units, four SOFC modules, three microturbines, proposed black-start gensets (BESS alternative). Portable pad with containerized, trailer, enclosed and open gensets and a load bank. 230 kV tie H-MOD in the reserved corridor COR-HMOD to D4 lower.'],
- ['J','GT inlet chilling','O4','Six water-cooled chillers, pumps and a 12-cell tower (one option), conditional TES tank. Air-cooled chillers or evaporative cooling are lower-water alternatives for an ACC plant.'],
- ['K','Fuel supply: adjacent market (SK-3X1-14)','O5','Pipeline M&R by the pipeline operator; LNG satellite with 8 Chart HS 50000 tanks (414,000 gal, ~9 h of one GT); 25 MW green hydrogen (5 x HyLYZER-1000, 10.8 t/day) blended into GT-1 fuel at ~5% vol, powered by renewable import through a future D6 diameter.']];
-document.getElementById('opts').innerHTML = OPTS.map(([k,n,v,d])=>`<div class="card"><h3><span class="tagbox">${k}</span>${n}</h3><p>${d}</p><button data-v="${v}">Show in 3D (view ${v})</button></div>`).join('');
-document.getElementById('opts').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return; goView(VIEWS.find(v=>v.k===b.dataset.v)); stage.scrollIntoView({behavior:'smooth',block:'center'}); });
+// ---------- optional ----------
+const OPTS=[['G','Carbon capture (SK-3X1-06)','O3','Three post-combustion amine trains, one per HRSG: diverter damper, ~16 MW booster fan, DCC, a 62 ft x 262 ft absorber with its stack to 313 ft, and a 207 ft stripper with reboiler. Shared reclaimer, solvent storage and 3 x ~19 MW CO2 compression. About 150 MWe from a future D5 diameter by 230 kV cable; LP steam from ST extraction; a ~30-cell cooling tower to the north.'],
+ ['H','BESS (SK-3X1-07)','O2','30 ISO 40 ft containers and 15 PCS / MV skids, a 34.5 kV collector e-house, a main power transformer to the D4 upper position, auxiliary transformers, EMS / SCADA and a conditional grounding transformer.'],
+ ['I','Modular and portable power (SK-3X1-07, -08)','O1','An 8-engine RICE hall with 40 radiators and 90 ft stacks, two aeroderivative simple-cycle units, four SOFC modules, three microturbines and proposed black-start gensets. A portable pad with containerized, trailer, enclosed and open gensets and a load bank. The 230 kV H-MOD tie runs in the reserved corridor COR-HMOD to D4 lower.'],
+ ['J','GT inlet chilling','O4','Six water-cooled chillers, pumps and a 12-cell tower (one option), plus a conditional TES tank. Air-cooled chillers or evaporative cooling are lower-water alternatives for an ACC plant.'],
+ ['K','Fuel supply: adjacent market (SK-3X1-14)','O5','Pipeline M&R by the pipeline operator; an LNG satellite with 8 Chart HS 50000 tanks (414,000 gal, about 9 h of one GT); 25 MW green hydrogen (5 x HyLYZER-1000, 10.8 t/day) blended into GT-1 fuel at about 5% by volume, powered by renewable import through a future D6 diameter.']];
+document.getElementById('opts').innerHTML=OPTS.map(([k,n,v,d])=>`<div class="card"><h3><span class="tagbox">${k}</span>${n}</h3><p>${d}</p><button data-v="${v}">Show in 3D (view ${v})</button></div>`).join('');
+document.getElementById('opts').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; goView(MODEL.views.find(v=>v.k===b.dataset.v)); stage.scrollIntoView({behavior:'smooth',block:'center'}); });
 
 // ---------- tabs ----------
-const tabs = document.getElementById('tabs');
-tabs.addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return;
+const tabs=document.getElementById('tabs');
+tabs.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return;
   [...tabs.children].forEach(x=>{ const on=x===b; x.setAttribute('aria-selected',on); document.getElementById('p-'+x.dataset.t).hidden=!on; });
-  try{ localStorage.setItem('sk3x1-tab', b.dataset.t);}catch(_){}});
+  try{ localStorage.setItem('sk3x1-tab',b.dataset.t); }catch(_){} });
 try{ const t=localStorage.getItem('sk3x1-tab'); if(t) tabs.querySelector(`[data-t="${t}"]`)?.click(); }catch(_){}
 
 // ---------- theme ----------
-function applyTheme(){ const c = getComputedStyle(document.documentElement).getPropertyValue('--scene').trim(); scene.background = new THREE.Color(c||'#e9ecea');
-  const dark = scene.background.getHSL({}).l < .4; edgeMat.color.set(dark?0x0b1014:0x27313a); gridH.material.color.set(dark?0xffffff:0x000000);
-  document.getElementById('north').style.color = getComputedStyle(document.documentElement).getPropertyValue('--ink'); }
-applyTheme(); matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+function applyTheme(){ const cs=getComputedStyle(document.documentElement); scene.background=new THREE.Color(cs.getPropertyValue('--scene').trim()||'#e7ebe8');
+  const dark=scene.background.getHSL({}).l<.4; edgeMat.color.set(dark?0x080c0f:0x27313a); edgeMat.opacity=dark?.5:.28; gridH.material.color.set(dark?0xffffff:0x000000);
+  document.getElementById('north').style.color=cs.getPropertyValue('--ink'); }
+applyTheme(); matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme);
 new MutationObserver(applyTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 
 // ---------- loop ----------
-function resize(){ const w=stage.clientWidth, h=stage.clientHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix(); }
+function resize(){ const w=stage.clientWidth,h=stage.clientHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix(); }
 new ResizeObserver(resize).observe(stage); resize();
-const narrow = document.getElementById('narrow');
-const v3 = new THREE.Vector3();
+const narrow=document.getElementById('narrow'), v3=new THREE.Vector3();
 function tick(now){
-  if(anim){ const k = Math.min((now-anim.t0)/900,1), e = k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
-    controls.target.lerpVectors(anim.ft, anim.t, e); camera.position.lerpVectors(anim.fc, anim.c, e); if(k>=1) anim=null; }
+  if(anim){ const k=Math.min((now-anim.t0)/900,1), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+    controls.target.lerpVectors(anim.ft,anim.t,e); camera.position.lerpVectors(anim.fc,anim.c,e); if(k>=1) anim=null; }
   controls.update(); renderer.render(scene,camera);
-  // north arrow: project +Y (north) direction
-  const az = Math.atan2(camera.position.x-controls.target.x, camera.position.z-controls.target.z);
-  narrow.setAttribute('transform', `rotate(${az*180/Math.PI})`);
-  if(!labelsEl.hidden){ const w=stage.clientWidth, h=stage.clientHeight;
-    for(const L of labelObjs){ const vis = layerGroups[L.o.layer]?.visible; v3.copy(L.p).project(camera);
-      const on = vis && v3.z<1 && Math.abs(v3.x)<1.02 && Math.abs(v3.y)<1.02 && camera.position.distanceTo(L.p) < 2600;
-      L.el.hidden = !on; if(on){ L.el.style.left=((v3.x+1)/2*w)+'px'; L.el.style.top=((1-v3.y)/2*h)+'px'; } } }
+  const az=Math.atan2(camera.position.x-controls.target.x, camera.position.z-controls.target.z);
+  narrow.setAttribute('transform',`rotate(${az*180/Math.PI})`);
+  if(!labelsEl.hidden){ const w=stage.clientWidth,h=stage.clientHeight;
+    for(const L of labelObjs){ const vis=layerGroups[L.layer]?.visible && L.p.y <= cutPlane.constant+6; v3.copy(L.p).project(camera);
+      const on=vis && v3.z<1 && Math.abs(v3.x)<1.02 && Math.abs(v3.y)<1.02 && camera.position.distanceTo(L.p)<L.near;
+      L.el.hidden=!on; if(on){ L.el.style.left=((v3.x+1)/2*w)+'px'; L.el.style.top=((1-v3.y)/2*h)+'px'; } } }
   requestAnimationFrame(tick);
 }
-goView(VIEWS[0], true);
+goView(MODEL.views[0], true);
 requestAnimationFrame(tick);
-document.getElementById('foot').textContent = `${MODEL.objects.length} objects · ${MODEL.routes.length} routes · model built from sheets 01-14`;
+document.getElementById('foot').textContent=`${MODEL.items.length} items · ${MODEL.parts.length} parts · ${MODEL.routes.length} routes`;
 </script>

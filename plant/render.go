@@ -3,10 +3,12 @@
 //
 // Usage (from the repository root):
 //
-//	go run ./plant                       # all views, base plant
-//	go run ./plant -view powerblock -opt # one view, include optional systems
+//	go run ./plant                 # all views
+//	go run ./plant -view B         # one view (keys from the model's view list)
+//	go run ./plant -list           # list the views
 //
-// The model is read from plant/sk3x1_model.json (see build_model.py).
+// Views and their layer lists come from sk3x1_model.json, which follows the
+// camera plan on sheet SK-3X1-11 (e.g. view B hides R1_ROOF and R1_WALL_E).
 // Output is written as SVG and PNG to plant/renders/.
 package main
 
@@ -17,28 +19,26 @@ import (
 	"math"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"github.com/fogleman/ln/ln"
 )
 
-type object struct {
-	Kind   string     `json:"kind"`
-	Layer  string     `json:"layer"`
-	Name   string     `json:"name"`
-	Min    [3]float64 `json:"min"`
-	Max    [3]float64 `json:"max"`
-	Center [2]float64 `json:"center"`
-	R      float64    `json:"r"`
-	Z0     float64    `json:"z0"`
-	Z1     float64    `json:"z1"`
-	Axis   string     `json:"axis"`
-	Color  string     `json:"color"`
+type part struct {
+	Kind  string       `json:"kind"`
+	Layer string       `json:"layer"`
+	Min   [3]float64   `json:"min"`
+	Max   [3]float64   `json:"max"`
+	A     [3]float64   `json:"a"`
+	B     [3]float64   `json:"b"`
+	R     float64      `json:"r"`
+	R2    float64      `json:"r2"`
+	V     [][3]float64 `json:"v"`
+	Ridge string       `json:"ridge"`
+	Color string       `json:"color"`
 }
 
 type route struct {
-	Type   string       `json:"type"`
 	Layer  string       `json:"layer"`
 	Z      float64      `json:"z"`
 	W      float64      `json:"w"`
@@ -46,125 +46,100 @@ type route struct {
 	Points [][2]float64 `json:"points"`
 }
 
-type model struct {
-	Objects []object `json:"objects"`
-	Routes  []route  `json:"routes"`
-}
-
 type view struct {
-	eye, center ln.Vector
-	fovy        float64
-	// clip limits drawn geometry to a plan window (x0, y0, x1, y1) to keep
-	// close-up renders fast; zero means no clip.
-	clip [4]float64
+	K    string     `json:"k"`
+	N    string     `json:"n"`
+	Show []string   `json:"show"`
+	T    [3]float64 `json:"t"`
+	C    [3]float64 `json:"c"`
 }
 
-var views = map[string]view{
-	"overview":   {ln.Vector{-420, -780, 1150}, ln.Vector{1180, 760, 20}, 32, [4]float64{}},
-	"powerblock": {ln.Vector{430, 70, 330}, ln.Vector{820, 560, 40}, 45, [4]float64{380, 280, 1480, 880}},
-	"acc":        {ln.Vector{1720, 1130, 360}, ln.Vector{1250, 600, 50}, 40, [4]float64{980, 280, 1500, 900}},
-	"ccs":        {ln.Vector{120, 380, 820}, ln.Vector{900, 1250, 110}, 42, [4]float64{400, 780, 1500, 1920}},
+type model struct {
+	Parts  []part  `json:"parts"`
+	Routes []route `json:"routes"`
+	Views  []view  `json:"views"`
 }
 
-var skip = regexp.MustCompile(`rack bent|fan stack|radiator|Compound|lane$`)
+func vec(a [3]float64) ln.Vector { return ln.Vector{X: a[0], Y: a[1], Z: a[2]} }
 
-func inClip(c [4]float64, x0, y0, x1, y1 float64) bool {
-	if c == [4]float64{} {
-		return true
+// skipColor drops surface finishes that only add clutter to line art.
+var skipColor = map[string]bool{"ground": true}
+
+func build(m *model, v view, eye ln.Vector, clip float64) *ln.Scene {
+	show := map[string]bool{}
+	for _, l := range v.Show {
+		show[l] = true
 	}
-	return x1 >= c[0] && x0 <= c[2] && y1 >= c[1] && y0 <= c[3]
-}
-
-func build(m *model, v view, withOpt bool) *ln.Scene {
-	scene := &ln.Scene{}
-	up := ln.Vector{0, 0, 1}
-	layerOK := func(l string) bool {
-		if l == "SITE" {
+	center := vec(v.T)
+	near := func(lo, hi ln.Vector) bool {
+		if clip <= 0 {
 			return true
 		}
-		return withOpt || !strings.HasPrefix(l, "OPT_")
+		dx := math.Max(math.Max(lo.X-center.X, center.X-hi.X), 0)
+		dy := math.Max(math.Max(lo.Y-center.Y, center.Y-hi.Y), 0)
+		return math.Hypot(dx, dy) < clip
 	}
-	for _, o := range m.Objects {
-		if !layerOK(o.Layer) || skip.MatchString(o.Name) {
+	up := ln.Vector{Z: 1}
+	scene := &ln.Scene{}
+	for _, p := range m.Parts {
+		if !show[p.Layer] || skipColor[p.Color] {
 			continue
 		}
-		switch o.Kind {
-		case "box", "prism":
-			if !inClip(v.clip, o.Min[0], o.Min[1], o.Max[0], o.Max[1]) {
+		switch p.Kind {
+		case "box":
+			lo, hi := vec(p.Min), vec(p.Max)
+			if !near(lo, hi) {
 				continue
 			}
-			lo, hi := ln.Vector{o.Min[0], o.Min[1], o.Min[2]}, ln.Vector{o.Max[0], o.Max[1], o.Max[2]}
-			if hi.Z-lo.Z < 0.2 {
-				hi.Z = lo.Z + 0.2
+			scene.Add(ln.NewCube(lo, hi))
+		case "prism":
+			lo, hi := vec(p.Min), vec(p.Max)
+			if near(lo, hi) {
+				scene.Add(prism(lo, hi, p.Ridge))
 			}
-			if o.Kind == "prism" {
-				scene.Add(prism(lo, hi))
+		case "hex":
+			var q [8]ln.Vector
+			for i := range q {
+				q[i] = vec(p.V[i])
+			}
+			if near(q[0].Min(q[6]), q[0].Max(q[6])) {
+				scene.Add(hex(q))
+			}
+		case "rod":
+			a, b := vec(p.A), vec(p.B)
+			r := math.Max(p.R, p.R2)
+			if !near(a.Min(b).SubScalar(r), a.Max(b).AddScalar(r)) {
+				continue
+			}
+			if math.Abs(p.R-p.R2) < 1e-6 {
+				scene.Add(ln.NewTransformedOutlineCylinder(eye, up, a, b, p.R))
 			} else {
-				scene.Add(ln.NewCube(lo, hi))
+				scene.Add(frustum(a, b, p.R, p.R2))
 			}
-		case "cyl":
-			c := o.Center
-			if !inClip(v.clip, c[0]-o.R, c[1]-o.R, c[0]+o.R, c[1]+o.R) {
-				continue
-			}
-			scene.Add(ln.NewTransformedOutlineCylinder(v.eye, up,
-				ln.Vector{c[0], c[1], o.Z0}, ln.Vector{c[0], c[1], o.Z1}, o.R))
-		case "hcyl":
-			if !inClip(v.clip, o.Min[0], o.Min[1], o.Max[0], o.Max[1]) {
-				continue
-			}
-			zc := (o.Min[2] + o.Max[2]) / 2
-			var a, b ln.Vector
-			if o.Axis == "x" {
-				yc := (o.Min[1] + o.Max[1]) / 2
-				a, b = ln.Vector{o.Min[0], yc, zc}, ln.Vector{o.Max[0], yc, zc}
-			} else {
-				xc := (o.Min[0] + o.Max[0]) / 2
-				a, b = ln.Vector{xc, o.Min[1], zc}, ln.Vector{xc, o.Max[1], zc}
-			}
-			scene.Add(ln.NewTransformedOutlineCylinder(v.eye, up, a, b, o.R))
 		}
 	}
-	// routes above grade become thin boxes along each segment
 	for _, r := range m.Routes {
-		if !layerOK(r.Layer) || r.Z < 0 {
+		if !show[r.Layer] || r.Z < 0 {
 			continue
 		}
 		for i := 0; i+1 < len(r.Points); i++ {
 			a, b := r.Points[i], r.Points[i+1]
-			hw := r.W / 2
-			x0, x1 := math.Min(a[0], b[0])-hw, math.Max(a[0], b[0])+hw
-			y0, y1 := math.Min(a[1], b[1])-hw, math.Max(a[1], b[1])+hw
-			if (x1-x0 > r.W+0.5 && y1-y0 > r.W+0.5) ||
-				!inClip(v.clip, x0, y0, x1, y1) {
-				continue // diagonal segment: skip (drawings are orthogonal)
+			if a[0] != b[0] && a[1] != b[1] {
+				continue // drawings are orthogonal; skip the odd diagonal
 			}
-			scene.Add(ln.NewCube(ln.Vector{x0, y0, r.Z - r.H/2}, ln.Vector{x1, y1, r.Z + r.H/2}))
+			hw := r.W / 2
+			lo := ln.Vector{X: math.Min(a[0], b[0]) - hw, Y: math.Min(a[1], b[1]) - hw, Z: r.Z - r.H/2}
+			hi := ln.Vector{X: math.Max(a[0], b[0]) + hw, Y: math.Max(a[1], b[1]) + hw, Z: r.Z + r.H/2}
+			if near(lo, hi) {
+				scene.Add(ln.NewCube(lo, hi))
+			}
 		}
 	}
 	return scene
 }
 
-// prism builds an A-frame (gable) solid with its ridge along Y.
-func prism(lo, hi ln.Vector) ln.Shape {
-	xm := (lo.X + hi.X) / 2
-	a := ln.Vector{lo.X, lo.Y, lo.Z}
-	b := ln.Vector{hi.X, lo.Y, lo.Z}
-	c := ln.Vector{xm, lo.Y, hi.Z}
-	d := ln.Vector{lo.X, hi.Y, lo.Z}
-	e := ln.Vector{hi.X, hi.Y, lo.Z}
-	f := ln.Vector{xm, hi.Y, hi.Z}
-	t := []*ln.Triangle{
-		ln.NewTriangle(a, b, c), ln.NewTriangle(d, f, e),
-		ln.NewTriangle(a, c, f), ln.NewTriangle(a, f, d),
-		ln.NewTriangle(b, e, f), ln.NewTriangle(b, f, c),
-		ln.NewTriangle(a, d, e), ln.NewTriangle(a, e, b),
-	}
-	return &outlineMesh{ln.NewMesh(t), []ln.Path{{a, b, c, a}, {d, e, f, d}, {a, d}, {b, e}, {c, f}}}
-}
-
-// outlineMesh draws only the silhouette edges of a mesh instead of every
-// triangle edge.
+// outlineMesh is a triangle mesh (for hidden-line tests) that draws only
+// the given feature edges instead of every triangle edge.
 type outlineMesh struct {
 	*ln.Mesh
 	paths ln.Paths
@@ -172,10 +147,86 @@ type outlineMesh struct {
 
 func (m *outlineMesh) Paths() ln.Paths { return m.paths }
 
+func quads(v []ln.Vector, faces [][4]int) []*ln.Triangle {
+	var t []*ln.Triangle
+	for _, f := range faces {
+		t = append(t, ln.NewTriangle(v[f[0]], v[f[1]], v[f[2]]), ln.NewTriangle(v[f[0]], v[f[2]], v[f[3]]))
+	}
+	return t
+}
+
+// hex is a general 8-vertex loft: q[0..3] one end, q[4..7] the other.
+func hex(q [8]ln.Vector) ln.Shape {
+	v := q[:]
+	t := quads(v, [][4]int{{0, 1, 2, 3}, {4, 7, 6, 5}, {0, 4, 5, 1}, {1, 5, 6, 2}, {2, 6, 7, 3}, {3, 7, 4, 0}})
+	var p ln.Paths
+	p = append(p, ln.Path{q[0], q[1], q[2], q[3], q[0]}, ln.Path{q[4], q[5], q[6], q[7], q[4]})
+	for i := 0; i < 4; i++ {
+		p = append(p, ln.Path{q[i], q[i+4]})
+	}
+	return &outlineMesh{ln.NewMesh(t), p}
+}
+
+// prism is an A-frame (gable) solid with its ridge along X or Y.
+func prism(lo, hi ln.Vector, ridge string) ln.Shape {
+	var a, b, c, d, e, f ln.Vector
+	if ridge == "x" {
+		ym := (lo.Y + hi.Y) / 2
+		a, b, c = ln.Vector{X: lo.X, Y: lo.Y, Z: lo.Z}, ln.Vector{X: lo.X, Y: hi.Y, Z: lo.Z}, ln.Vector{X: lo.X, Y: ym, Z: hi.Z}
+		d, e, f = ln.Vector{X: hi.X, Y: lo.Y, Z: lo.Z}, ln.Vector{X: hi.X, Y: hi.Y, Z: lo.Z}, ln.Vector{X: hi.X, Y: ym, Z: hi.Z}
+	} else {
+		xm := (lo.X + hi.X) / 2
+		a, b, c = ln.Vector{X: lo.X, Y: lo.Y, Z: lo.Z}, ln.Vector{X: hi.X, Y: lo.Y, Z: lo.Z}, ln.Vector{X: xm, Y: lo.Y, Z: hi.Z}
+		d, e, f = ln.Vector{X: lo.X, Y: hi.Y, Z: lo.Z}, ln.Vector{X: hi.X, Y: hi.Y, Z: lo.Z}, ln.Vector{X: xm, Y: hi.Y, Z: hi.Z}
+	}
+	t := []*ln.Triangle{
+		ln.NewTriangle(a, b, c), ln.NewTriangle(d, f, e),
+		ln.NewTriangle(a, c, f), ln.NewTriangle(a, f, d),
+		ln.NewTriangle(b, e, f), ln.NewTriangle(b, f, c),
+		ln.NewTriangle(a, d, e), ln.NewTriangle(a, e, b),
+	}
+	return &outlineMesh{ln.NewMesh(t), ln.Paths{{a, b, c, a}, {d, e, f, d}, {a, d}, {b, e}, {c, f}}}
+}
+
+// frustum is a cone section from a (radius r1) to b (radius r2), drawn as
+// its two end circles and four generator lines.
+func frustum(a, b ln.Vector, r1, r2 float64) ln.Shape {
+	const n = 24
+	ax := b.Sub(a).Normalize()
+	ref := ln.Vector{X: 1}
+	if math.Abs(ax.X) > 0.9 {
+		ref = ln.Vector{Y: 1}
+	}
+	u := ax.Cross(ref).Normalize()
+	w := ax.Cross(u)
+	ring := func(c ln.Vector, r float64) []ln.Vector {
+		v := make([]ln.Vector, n)
+		for i := range v {
+			t := 2 * math.Pi * float64(i) / n
+			v[i] = c.Add(u.MulScalar(r * math.Cos(t))).Add(w.MulScalar(r * math.Sin(t)))
+		}
+		return v
+	}
+	p0, p1 := ring(a, r1), ring(b, r2)
+	var tris []*ln.Triangle
+	for i := 0; i < n; i++ {
+		j := (i + 1) % n
+		tris = append(tris, ln.NewTriangle(p0[i], p0[j], p1[j]), ln.NewTriangle(p0[i], p1[j], p1[i]),
+			ln.NewTriangle(a, p0[j], p0[i]), ln.NewTriangle(b, p1[i], p1[j]))
+	}
+	c0, c1 := append(ln.Path{}, p0...), append(ln.Path{}, p1...)
+	c0, c1 = append(c0, p0[0]), append(c1, p1[0])
+	paths := ln.Paths{c0, c1}
+	for i := 0; i < n; i += n / 4 {
+		paths = append(paths, ln.Path{p0[i], p1[i]})
+	}
+	return &outlineMesh{ln.NewMesh(tris), paths}
+}
+
 func main() {
 	dir := flag.String("dir", "plant", "directory holding sk3x1_model.json")
-	only := flag.String("view", "", "render one view: overview, powerblock, acc, ccs")
-	withOpt := flag.Bool("opt", false, "include optional / adjacent-market systems")
+	only := flag.String("view", "", "render one view by key (see -list)")
+	list := flag.Bool("list", false, "list the views and exit")
 	size := flag.Float64("size", 2400, "output width in pixels (height is 2/3)")
 	flag.Parse()
 
@@ -189,29 +240,39 @@ func main() {
 		fmt.Fprintln(os.Stderr, "parse model:", err)
 		os.Exit(1)
 	}
+	if *list {
+		for _, v := range m.Views {
+			fmt.Printf("%-4s %s\n", v.K, v.N)
+		}
+		return
+	}
 	out := filepath.Join(*dir, "renders")
-	os.MkdirAll(out, 0o755)
-
-	names := []string{"overview", "powerblock", "acc", "ccs"}
-	if *only != "" {
-		names = []string{*only}
+	if err := os.MkdirAll(out, 0o755); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 	width, height := *size, *size*2/3
-	for _, n := range names {
-		v, ok := views[n]
-		if !ok {
-			fmt.Fprintln(os.Stderr, "unknown view:", n)
-			os.Exit(2)
+	for _, v := range m.Views {
+		if (*only != "" && !strings.EqualFold(*only, v.K)) || (*only == "" && v.K == "ALL") {
+			continue
 		}
-		opt := *withOpt || n == "ccs"
-		scene := build(&m, v, opt)
-		paths := scene.Render(v.eye, v.center, ln.Vector{0, 0, 1}, width, height, v.fovy, 1, 20000, 0.5)
-		base := filepath.Join(out, "sk3x1_"+n)
-		if opt && n != "ccs" {
-			base += "_opt"
+		eye, center := vec(v.C), vec(v.T)
+		dist := eye.Sub(center).Length()
+		fovy := 34.0
+		// geometry clip radius keeps close-ups fast; overviews draw everything
+		clip := 0.0
+		if dist < 900 {
+			clip = dist * 1.6
 		}
-		paths.WriteToSVG(base+".svg", width, height)
+		scene := build(&m, v, eye, clip)
+		paths := scene.Render(eye, center, ln.Vector{Z: 1}, width, height, fovy, 1, 20000, 0.25)
+		name := "sk3x1_view_" + strings.ToLower(v.K)
+		base := filepath.Join(out, name)
+		if err := paths.WriteToSVG(base+".svg", width, height); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
 		paths.WriteToPNG(base+".png", width, height)
-		fmt.Printf("%-11s %6d paths -> %s.{svg,png}\n", n, len(paths), base)
+		fmt.Printf("%-4s %-26s %6d paths -> %s.{svg,png}\n", v.K, v.N, len(paths), base)
 	}
 }
