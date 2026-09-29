@@ -1,0 +1,1061 @@
+{
+ "series": "Illustrative 3x1 combined-cycle plant | cable-application drawing set",
+ "sheet": {
+  "px": [
+   6000,
+   4500
+  ],
+  "dpi": 300,
+  "credit": "Stephan Hardt | Power Generation Solutions \u00b7 Illustrative combined-cycle plant",
+  "credit_color": "#4A4A48",
+  "credit_height_frac": 0.011,
+  "disclaimer": "Illustrative arrangement. Generic equipment and circuits; not procurement or construction data.",
+  "title_pt": 24,
+  "subtitle_pt": 14,
+  "legend_pt": 11,
+  "footnote_pt": 10,
+  "page_pt": 11,
+  "margin_px": 200,
+  "legend_columns": 4,
+  "colors": {
+   "page": "#D9D8D5",
+   "title": "#3E3E3C",
+   "subtitle": "#8A8985",
+   "copper": "#C8722E",
+   "text": "#4A4A48",
+   "bubble": "#FFFFFF",
+   "footnote": "#6E6D69"
+  }
+ },
+ "render": {
+  "px": [
+   5000,
+   3550
+  ],
+  "samples": 384,
+  "denoise": true,
+  "backdrop": "#D9D8D5",
+  "world_strength": 1.0,
+  "sun_energy": 2.0,
+  "sun_angle_deg": 25,
+  "sun_elevation_deg": 55,
+  "sun_azimuth_deg": 200,
+  "ao_strength": 0.45,
+  "ao_distance_ft": 20,
+  "mist_start_factor": 1.1,
+  "mist_depth_factor": 2.5,
+  "exposure": 1.0,
+  "xray_alpha": 0.3,
+  "xray_color": "#C9C6BF"
+ },
+ "zones": {
+  "1": "Switchyard and GSU transformers",
+  "2": "BESS yard",
+  "3": "Reel staging, laydown and prefab spine",
+  "4": "Admin building and control room",
+  "5": "Elevated modular e-house",
+  "6": "HRSGs and stacks",
+  "7": "Turbine hall (3 GT + 1 ST)",
+  "8": "GT air-inlet filter houses",
+  "9": "MCC / VFD / UPS building",
+  "10": "Modular power yard",
+  "11": "Air-cooled condenser",
+  "12": "Chillers and auxiliary cooling towers",
+  "13": "Water treatment, tanks and pond",
+  "14": "Carbon capture block",
+  "15": "Gas metering and process tanks",
+  "16": "Site cable corridor and MV distribution"
+ },
+ "views": [
+  {
+   "id": "01",
+   "kind": "camera",
+   "title": "Whole site",
+   "subtitle": "Site arrangement | the sixteen zones and how the power block sits between fuel, cooling and the grid",
+   "camera": {
+    "az": 45,
+    "el": 38,
+    "lens": 85,
+    "crop_top": 0.12,
+    "pad": 1.03,
+    "target_height_frac": 0.15
+   },
+   "frame": [
+    "SITE-GROUND",
+    "FUELGAS-GROUND",
+    "HRSG-",
+    "CCS-ABSORBER",
+    "SWYD-GRID-TOWER"
+   ],
+   "hidden": [],
+   "xray": [],
+   "callouts": [
+    {
+     "tag": "1",
+     "anchor": "ANCHOR-ZONE-01"
+    },
+    {
+     "tag": "2",
+     "anchor": "ANCHOR-ZONE-02"
+    },
+    {
+     "tag": "3",
+     "anchor": "ANCHOR-ZONE-03"
+    },
+    {
+     "tag": "4",
+     "anchor": "ANCHOR-ZONE-04"
+    },
+    {
+     "tag": "5",
+     "anchor": "ANCHOR-ZONE-05"
+    },
+    {
+     "tag": "6",
+     "anchor": "ANCHOR-ZONE-06"
+    },
+    {
+     "tag": "7",
+     "anchor": "ANCHOR-ZONE-07"
+    },
+    {
+     "tag": "8",
+     "anchor": "ANCHOR-ZONE-08"
+    },
+    {
+     "tag": "9",
+     "anchor": "ANCHOR-ZONE-09"
+    },
+    {
+     "tag": "10",
+     "anchor": "ANCHOR-ZONE-10"
+    },
+    {
+     "tag": "11",
+     "anchor": "ANCHOR-ZONE-11"
+    },
+    {
+     "tag": "12",
+     "anchor": "ANCHOR-ZONE-12"
+    },
+    {
+     "tag": "13",
+     "anchor": "ANCHOR-ZONE-13"
+    },
+    {
+     "tag": "14",
+     "anchor": "ANCHOR-ZONE-14"
+    },
+    {
+     "tag": "15",
+     "anchor": "ANCHOR-ZONE-15"
+    },
+    {
+     "tag": "16",
+     "anchor": "ANCHOR-ZONE-16"
+    }
+   ],
+   "footnote": "Explains where each package sits and which way the gas, steam, cooling and electrical paths run across the site."
+  },
+  {
+   "id": "02",
+   "kind": "camera",
+   "title": "Turbine hall cutaway",
+   "subtitle": "GT train | gas turbine, generator, generator leads and isophase bus to the GSU",
+   "camera": {
+    "az": 38,
+    "el": 28,
+    "lens": 60,
+    "crop_top": 0.14,
+    "pad": 1.05
+   },
+   "frame": [
+    "GT-",
+    "ST-",
+    "HALL-FLOOR"
+   ],
+   "hidden": [
+    "HALL-ROOF",
+    "HALL-WALL-S",
+    "INLET-",
+    "GENTIE-GANTRY",
+    "GENTIE-INSULATORS",
+    "GENTIE-STRAIN-BUS",
+    "GSU-"
+   ],
+   "xray": [],
+   "callouts": [
+    {
+     "tag": "A",
+     "anchor": "ANCHOR-GT-2-TURBINE"
+    },
+    {
+     "tag": "B",
+     "anchor": "ANCHOR-GT-2-GENERATOR"
+    },
+    {
+     "tag": "C",
+     "anchor": "ANCHOR-GT-2-LEADS"
+    },
+    {
+     "tag": "D",
+     "anchor": "ANCHOR-GT-2-IPB"
+    },
+    {
+     "tag": "E",
+     "anchor": "ANCHOR-GT-2-INLET-PLENUM"
+    },
+    {
+     "tag": "F",
+     "anchor": "ANCHOR-GT-2-EXHAUST"
+    },
+    {
+     "tag": "G",
+     "anchor": "ANCHOR-ST-TURBINE"
+    },
+    {
+     "tag": "H",
+     "anchor": "ANCHOR-ST-GENERATOR"
+    },
+    {
+     "tag": "I",
+     "anchor": "ANCHOR-HALL-CRANE"
+    },
+    {
+     "tag": "J",
+     "anchor": "ANCHOR-HALL-TRAY"
+    }
+   ],
+   "footnote": "Explains the generator connection: leads at the terminal box, isophase bus out through the wall, and the tray tiers that carry auxiliaries."
+  },
+  {
+   "id": "03",
+   "kind": "camera",
+   "title": "HRSG and stack",
+   "subtitle": "Heat recovery | exhaust from the GT through the HRSG casing to the stack, with the steam headers to the ST",
+   "camera": {
+    "az": 50,
+    "el": 32,
+    "lens": 65,
+    "crop_top": 0.1,
+    "pad": 1.05
+   },
+   "frame": [
+    "HRSG-"
+   ],
+   "hidden": [],
+   "xray": [],
+   "callouts": [
+    {
+     "tag": "A",
+     "anchor": "ANCHOR-HRSG-2-INLET-TRANSITION"
+    },
+    {
+     "tag": "B",
+     "anchor": "ANCHOR-HRSG-2-CASING"
+    },
+    {
+     "tag": "C",
+     "anchor": "ANCHOR-HRSG-2-DRUMS"
+    },
+    {
+     "tag": "D",
+     "anchor": "ANCHOR-HRSG-2-OUTLET"
+    },
+    {
+     "tag": "E",
+     "anchor": "ANCHOR-HRSG-2-STACK"
+    },
+    {
+     "tag": "F",
+     "anchor": "ANCHOR-HRSG-2-STAIR-TOWER"
+    },
+    {
+     "tag": "G",
+     "anchor": "ANCHOR-HRSG-2-CCS-TAP"
+    },
+    {
+     "tag": "H",
+     "anchor": "ANCHOR-STEAM-HEADERS"
+    },
+    {
+     "tag": "I",
+     "anchor": "ANCHOR-CCS-FLUE-DUCT"
+    }
+   ],
+   "footnote": "Explains the gas path from turbine exhaust to stack and where the flue gas can be diverted to the capture block."
+  },
+  {
+   "id": "04",
+   "kind": "camera",
+   "title": "Switchyard and GSUs",
+   "subtitle": "Power export | GSU transformers, the overhead gen-tie and the underground HV getaway option (ground shown X-ray)",
+   "camera": {
+    "az": 45,
+    "el": 35,
+    "lens": 65,
+    "crop_top": 0.12,
+    "pad": 1.05,
+    "target_height_frac": 0.1
+   },
+   "frame": [
+    "SWYD-",
+    "GSU-",
+    "GENTIE-"
+   ],
+   "hidden": [
+    "SITE-EARTHGRID",
+    "CORR-",
+    "SWYD-GRID-TOWER",
+    "SWYD-GRID-LINE"
+   ],
+   "xray": [
+    "SITE-BACKDROP",
+    "SITE-GROUND",
+    "SITE-PAD",
+    "SITE-ROAD",
+    "SWYD-PAD",
+    "FUELGAS-GROUND"
+   ],
+   "show_below_grade": true,
+   "callouts": [
+    {
+     "tag": "A",
+     "anchor": "ANCHOR-GSU-2-TANK"
+    },
+    {
+     "tag": "B",
+     "anchor": "ANCHOR-GSU-2-HV-BUSHINGS"
+    },
+    {
+     "tag": "C",
+     "anchor": "ANCHOR-GSU-2-LV-BUSHINGS"
+    },
+    {
+     "tag": "D",
+     "anchor": "ANCHOR-GENTIE-GANTRY"
+    },
+    {
+     "tag": "E",
+     "anchor": "ANCHOR-GENTIE-TOWER"
+    },
+    {
+     "tag": "F",
+     "anchor": "ANCHOR-SWYD-DEADEND"
+    },
+    {
+     "tag": "G",
+     "anchor": "ANCHOR-SWYD-BUS"
+    },
+    {
+     "tag": "H",
+     "anchor": "ANCHOR-SWYD-BREAKER"
+    },
+    {
+     "tag": "I",
+     "anchor": "ANCHOR-GENTIE-UG-TERMINATION"
+    },
+    {
+     "tag": "J",
+     "anchor": "ANCHOR-GENTIE-UG-DUCTBANK"
+    }
+   ],
+   "footnote": "Explains the two ways the 230 kV connection can leave the GSUs: overhead on towers, or underground in a duct bank with sealing ends at each end."
+  },
+  {
+   "id": "05",
+   "kind": "camera",
+   "title": "E-house cutaway",
+   "subtitle": "MV collection and auxiliaries | elevated modular e-house with the cable vault beneath",
+   "camera": {
+    "az": 35,
+    "el": 30,
+    "lens": 55,
+    "crop_top": 0.12,
+    "pad": 1.06
+   },
+   "frame": [
+    "ELEC-EHOUSE-"
+   ],
+   "hidden": [
+    "ELEC-EHOUSE-ROOF",
+    "ELEC-EHOUSE-WALL-S",
+    "GENTIE-TOWERS",
+    "GENTIE-CONDUCTORS",
+    "GENTIE-SHIELD-WIRE"
+   ],
+   "xray": [],
+   "callouts": [
+    {
+     "tag": "A",
+     "anchor": "ANCHOR-ELEC-EHOUSE-MV-SWITCHGEAR"
+    },
+    {
+     "tag": "B",
+     "anchor": "ANCHOR-ELEC-EHOUSE-LV-SWITCHGEAR"
+    },
+    {
+     "tag": "C",
+     "anchor": "ANCHOR-ELEC-EHOUSE-RELAY-PANELS"
+    },
+    {
+     "tag": "D",
+     "anchor": "ANCHOR-ELEC-EHOUSE-UPS"
+    },
+    {
+     "tag": "E",
+     "anchor": "ANCHOR-ELEC-EHOUSE-OVERHEAD-TRAY"
+    },
+    {
+     "tag": "F",
+     "anchor": "ANCHOR-ELEC-EHOUSE-RISERS"
+    },
+    {
+     "tag": "G",
+     "anchor": "ANCHOR-ELEC-EHOUSE-UNDERFLOOR-TRAY"
+    },
+    {
+     "tag": "H",
+     "anchor": "ANCHOR-ELEC-EHOUSE-SUPPORT-STEEL"
+    },
+    {
+     "tag": "I",
+     "anchor": "ANCHOR-ELEC-EHOUSE-HVAC"
+    },
+    {
+     "tag": "J",
+     "anchor": "ANCHOR-ELEC-EHOUSE-STAIR"
+    }
+   ],
+   "footnote": "Explains how feeders arrive below the floor, rise into the switchgear and how controls run overhead to the relay panels."
+  },
+  {
+   "id": "06",
+   "kind": "camera",
+   "title": "MCC / VFD / UPS room cutaway",
+   "subtitle": "Motor control | MCC, drives and UPS in separated rooms with a common overhead tray",
+   "camera": {
+    "az": 35,
+    "el": 30,
+    "lens": 55,
+    "crop_top": 0.12,
+    "pad": 1.06
+   },
+   "frame": [
+    "ELEC-MCC-"
+   ],
+   "hidden": [
+    "ELEC-MCC-ROOF",
+    "ELEC-MCC-WALL-S",
+    "ACC-STEAM-DUCT",
+    "ACC-STEAM-DUCT-SUPPORTS"
+   ],
+   "xray": [],
+   "callouts": [
+    {
+     "tag": "A",
+     "anchor": "ANCHOR-ELEC-MCC-MCC-LINEUP"
+    },
+    {
+     "tag": "B",
+     "anchor": "ANCHOR-ELEC-MCC-VFD"
+    },
+    {
+     "tag": "C",
+     "anchor": "ANCHOR-ELEC-MCC-UPS"
+    },
+    {
+     "tag": "D",
+     "anchor": "ANCHOR-ELEC-MCC-DC-PANEL"
+    },
+    {
+     "tag": "E",
+     "anchor": "ANCHOR-ELEC-MCC-OVERHEAD-TRAY"
+    },
+    {
+     "tag": "F",
+     "anchor": "ANCHOR-ELEC-MCC-TERMINATIONS"
+    },
+    {
+     "tag": "G",
+     "anchor": "ANCHOR-ELEC-MCC-CABLE-PIT"
+    },
+    {
+     "tag": "H",
+     "anchor": "ANCHOR-ELEC-MCC-PARTITION"
+    },
+    {
+     "tag": "I",
+     "anchor": "ANCHOR-ELEC-MCC-HVAC"
+    }
+   ],
+   "footnote": "Explains where motor feeders, drive outputs and DC supplies are terminated, and how the entry pit feeds the overhead tray."
+  },
+  {
+   "id": "07",
+   "kind": "camera",
+   "title": "BESS yard",
+   "subtitle": "Energy storage | battery containers each paired with a PCS / transformer skid, collected to MV switchgear",
+   "camera": {
+    "az": 45,
+    "el": 35,
+    "lens": 65,
+    "crop_top": 0.12,
+    "pad": 1.05
+   },
+   "frame": [
+    "BESS-CONTAINERS",
+    "BESS-PCS",
+    "BESS-MV-SWITCHGEAR",
+    "BESS-COLLECTOR-TRAY"
+   ],
+   "hidden": [
+    "GENTIE-TOWERS",
+    "GENTIE-CONDUCTORS",
+    "GENTIE-SHIELD-WIRE"
+   ],
+   "xray": [],
+   "callouts": [
+    {
+     "tag": "A",
+     "anchor": "ANCHOR-BESS-CONTAINER"
+    },
+    {
+     "tag": "B",
+     "anchor": "ANCHOR-BESS-PCS"
+    },
+    {
+     "tag": "C",
+     "anchor": "ANCHOR-BESS-DC-CABLES"
+    },
+    {
+     "tag": "D",
+     "anchor": "ANCHOR-BESS-COLLECTOR-TRAY"
+    },
+    {
+     "tag": "E",
+     "anchor": "ANCHOR-BESS-MV-SWITCHGEAR"
+    },
+    {
+     "tag": "F",
+     "anchor": "ANCHOR-BESS-FEEDER"
+    },
+    {
+     "tag": "G",
+     "anchor": "ANCHOR-BESS-HVAC"
+    }
+   ],
+   "footnote": "Explains the DC-to-AC-to-MV chain: container to PCS, PCS to collector tray, collector to switchgear and one feeder to the e-house."
+  },
+  {
+   "id": "08",
+   "kind": "camera",
+   "title": "Air-cooled condenser",
+   "subtitle": "Main condenser | steam duct from the ST, A-frame bundles, fan cells and the fan motor feeders",
+   "camera": {
+    "az": 50,
+    "el": 33,
+    "lens": 65,
+    "crop_top": 0.1,
+    "pad": 1.05,
+    "target_height_frac": 0.45
+   },
+   "frame": [
+    "ACC-COLUMNS",
+    "ACC-WINDWALL",
+    "ACC-MCC",
+    "ACC-CONDENSATE-TANK"
+   ],
+   "hidden": [],
+   "xray": [],
+   "callouts": [
+    {
+     "tag": "A",
+     "anchor": "ANCHOR-ACC-FAN"
+    },
+    {
+     "tag": "B",
+     "anchor": "ANCHOR-ACC-FAN-MOTOR"
+    },
+    {
+     "tag": "C",
+     "anchor": "ANCHOR-ACC-DECK-TRAY"
+    },
+    {
+     "tag": "D",
+     "anchor": "ANCHOR-ACC-FEEDERS"
+    },
+    {
+     "tag": "E",
+     "anchor": "ANCHOR-ACC-RISER"
+    },
+    {
+     "tag": "F",
+     "anchor": "ANCHOR-ACC-MCC"
+    },
+    {
+     "tag": "G",
+     "anchor": "ANCHOR-ACC-STEAM-DUCT"
+    },
+    {
+     "tag": "H",
+     "anchor": "ANCHOR-ACC-STEAM-HEADER"
+    },
+    {
+     "tag": "I",
+     "anchor": "ANCHOR-ACC-TUBE-BUNDLES"
+    },
+    {
+     "tag": "J",
+     "anchor": "ANCHOR-ACC-WINDWALL"
+    }
+   ],
+   "footnote": "Explains the condensing path and the electrical path to the sixty-four fan motors: MCC, riser, deck trays, one drop per motor."
+  },
+  {
+   "id": "09",
+   "kind": "camera",
+   "title": "Fuel gas and metering",
+   "subtitle": "Fuel supply | pipeline crossing, metering and conditioning, with LNG and hydrogen supply context outside the fence",
+   "camera": {
+    "az": 45,
+    "el": 35,
+    "lens": 60,
+    "crop_top": 0.12,
+    "pad": 1.05
+   },
+   "frame": [
+    "GASMET-",
+    "FUELGAS-LNG",
+    "FUELGAS-H2",
+    "FUELGAS-BLOCK",
+    "FUELGAS-PIPE-SUPPORTS"
+   ],
+   "hidden": [
+    "CCS-CO2-EXPORT"
+   ],
+   "xray": [],
+   "callouts": [
+    {
+     "tag": "A",
+     "anchor": "ANCHOR-FUELGAS-PIPELINE"
+    },
+    {
+     "tag": "B",
+     "anchor": "ANCHOR-FUELGAS-BLOCK-VALVE"
+    },
+    {
+     "tag": "C",
+     "anchor": "ANCHOR-GASMET-ESD"
+    },
+    {
+     "tag": "D",
+     "anchor": "ANCHOR-GASMET-PIG-RECEIVER"
+    },
+    {
+     "tag": "E",
+     "anchor": "ANCHOR-GASMET-FILTERS"
+    },
+    {
+     "tag": "F",
+     "anchor": "ANCHOR-GASMET-METER-RUNS"
+    },
+    {
+     "tag": "G",
+     "anchor": "ANCHOR-GASMET-PRESSURE-REDUCTION"
+    },
+    {
+     "tag": "H",
+     "anchor": "ANCHOR-GASMET-HOUSE"
+    },
+    {
+     "tag": "I",
+     "anchor": "ANCHOR-FUELGAS-LNG-VESSEL"
+    },
+    {
+     "tag": "J",
+     "anchor": "ANCHOR-FUELGAS-H2-MODULE"
+    }
+   ],
+   "footnote": "Explains the primary pipeline supply through metering and pressure reduction, and where alternative LNG or hydrogen supply would tie in."
+  },
+  {
+   "id": "10",
+   "kind": "camera",
+   "title": "Carbon capture block",
+   "subtitle": "Post-combustion capture | flue gas from the stacks through the DCC and absorber, solvent regeneration and CO2 compression",
+   "camera": {
+    "az": 45,
+    "el": 32,
+    "lens": 60,
+    "crop_top": 0.08,
+    "pad": 1.05,
+    "target_height_frac": 0.4
+   },
+   "frame": [
+    "CCS-DCC",
+    "CCS-ABSORBER",
+    "CCS-REGENERATOR",
+    "CCS-COMPRESSOR",
+    "CCS-AMINE",
+    "CCS-HX"
+   ],
+   "hidden": [],
+   "xray": [],
+   "callouts": [
+    {
+     "tag": "A",
+     "anchor": "ANCHOR-CCS-FLUE-DUCT"
+    },
+    {
+     "tag": "B",
+     "anchor": "ANCHOR-CCS-DCC"
+    },
+    {
+     "tag": "C",
+     "anchor": "ANCHOR-CCS-ABSORBER"
+    },
+    {
+     "tag": "D",
+     "anchor": "ANCHOR-CCS-REGENERATOR"
+    },
+    {
+     "tag": "E",
+     "anchor": "ANCHOR-CCS-HX"
+    },
+    {
+     "tag": "F",
+     "anchor": "ANCHOR-CCS-AMINE-TANK"
+    },
+    {
+     "tag": "G",
+     "anchor": "ANCHOR-CCS-COMPRESSOR"
+    },
+    {
+     "tag": "H",
+     "anchor": "ANCHOR-CCS-PIPING"
+    },
+    {
+     "tag": "I",
+     "anchor": "ANCHOR-CCS-CO2-EXPORT"
+    }
+   ],
+   "footnote": "Explains one representative capture train: quench, absorb, regenerate, compress and export; not a proven three-GT capture design."
+  },
+  {
+   "id": "11",
+   "kind": "camera",
+   "title": "Modular power yard",
+   "subtitle": "Resilience | standby and black-start gensets, fuel-cell modules and the paralleling switchgear",
+   "camera": {
+    "az": 45,
+    "el": 35,
+    "lens": 65,
+    "crop_top": 0.12,
+    "pad": 1.05
+   },
+   "frame": [
+    "MODPWR-"
+   ],
+   "hidden": [
+    "ACC-STEAM-DUCT",
+    "ACC-STEAM-DUCT-SUPPORTS"
+   ],
+   "xray": [],
+   "callouts": [
+    {
+     "tag": "A",
+     "anchor": "ANCHOR-MODPWR-STANDBY-1"
+    },
+    {
+     "tag": "B",
+     "anchor": "ANCHOR-MODPWR-BLACK-START"
+    },
+    {
+     "tag": "C",
+     "anchor": "ANCHOR-MODPWR-FUEL-CELL"
+    },
+    {
+     "tag": "D",
+     "anchor": "ANCHOR-MODPWR-INVERTER"
+    },
+    {
+     "tag": "E",
+     "anchor": "ANCHOR-MODPWR-PARALLELING-SWGR"
+    },
+    {
+     "tag": "F",
+     "anchor": "ANCHOR-MODPWR-FUEL-GAS-SKID"
+    },
+    {
+     "tag": "G",
+     "anchor": "ANCHOR-MODPWR-CABLES"
+    }
+   ],
+   "footnote": "Explains which sources can start the plant with the grid down and how they are paralleled onto the auxiliary system."
+  },
+  {
+   "id": "12",
+   "kind": "camera",
+   "title": "Site cable corridor",
+   "subtitle": "Cable routing | two-tier tray, duct bank below (X-ray), MV ring-main kiosks and a lateral to a building",
+   "camera": {
+    "az": 40,
+    "el": 28,
+    "lens": 55,
+    "crop_top": 0.1,
+    "pad": 1.05,
+    "target_height_frac": 0.3
+   },
+   "frame": [],
+   "frame_box_ft": [
+    1120,
+    326,
+    -8,
+    1460,
+    430,
+    12
+   ],
+   "hidden": [
+    "ACC-STEAM-DUCT",
+    "ACC-STEAM-DUCT-SUPPORTS",
+    "MODPWR-"
+   ],
+   "xray": [
+    "SITE-BACKDROP",
+    "SITE-GROUND",
+    "SITE-PAD",
+    "SITE-ROAD",
+    "SWYD-PAD",
+    "FUELGAS-GROUND"
+   ],
+   "show_below_grade": true,
+   "callouts": [
+    {
+     "tag": "A",
+     "anchor": "ANCHOR-CORR-TRAY-POWER"
+    },
+    {
+     "tag": "B",
+     "anchor": "ANCHOR-CORR-TRAY-CONTROL"
+    },
+    {
+     "tag": "C",
+     "anchor": "ANCHOR-CORR-DUCTBANK"
+    },
+    {
+     "tag": "D",
+     "anchor": "ANCHOR-CORR-CONDUITS"
+    },
+    {
+     "tag": "E",
+     "anchor": "ANCHOR-CORR-MANHOLE"
+    },
+    {
+     "tag": "F",
+     "anchor": "ANCHOR-CORR-MV-SWGR-1180"
+    },
+    {
+     "tag": "G",
+     "anchor": "ANCHOR-CORR-PADMOUNT"
+    },
+    {
+     "tag": "H",
+     "anchor": "ANCHOR-CORR-LATERAL"
+    },
+    {
+     "tag": "I",
+     "anchor": "ANCHOR-CORR-GROUND-RISER"
+    },
+    {
+     "tag": "J",
+     "anchor": "ANCHOR-CORR-ROAD-CROSSING"
+    }
+   ],
+   "footnote": "Explains the separation of power (lower tier) from controls (upper tier), where cables go underground to cross a road, and how MV is tapped along the spine."
+  },
+  {
+   "id": "13",
+   "kind": "camera",
+   "title": "Reel staging and prefab spine",
+   "subtitle": "Installation | reels on payout stands feeding a prefabricated two-tier tray spine with cleats, bonding and end caps",
+   "camera": {
+    "az": 45,
+    "el": 33,
+    "lens": 60,
+    "crop_top": 0.12,
+    "pad": 1.05
+   },
+   "frame": [
+    "LAYDOWN-"
+   ],
+   "hidden": [
+    "GENTIE-TOWERS",
+    "GENTIE-CONDUCTORS",
+    "GENTIE-SHIELD-WIRE"
+   ],
+   "xray": [],
+   "callouts": [
+    {
+     "tag": "A",
+     "anchor": "ANCHOR-LAYDOWN-REEL"
+    },
+    {
+     "tag": "B",
+     "anchor": "ANCHOR-LAYDOWN-PAYOUT-STAND"
+    },
+    {
+     "tag": "C",
+     "anchor": "ANCHOR-LAYDOWN-PULLED-CABLES"
+    },
+    {
+     "tag": "D",
+     "anchor": "ANCHOR-LAYDOWN-PREFAB-SPINE"
+    },
+    {
+     "tag": "E",
+     "anchor": "ANCHOR-LAYDOWN-CLEATS"
+    },
+    {
+     "tag": "F",
+     "anchor": "ANCHOR-LAYDOWN-BONDING"
+    },
+    {
+     "tag": "G",
+     "anchor": "ANCHOR-LAYDOWN-CABLE-ENDS"
+    },
+    {
+     "tag": "H",
+     "anchor": "ANCHOR-LAYDOWN-CRATES"
+    },
+    {
+     "tag": "I",
+     "anchor": "ANCHOR-LAYDOWN-SITE-OFFICE"
+    }
+   ],
+   "footnote": "Explains how cable leaves the reel under control, is dressed into the spine and secured, and why the copper ends stay capped until termination."
+  },
+  {
+   "id": "14",
+   "kind": "text",
+   "title": "How the plant connects",
+   "subtitle": "Power path | gas supply to generation to collection to GSU to grid",
+   "path": [
+    "Gas supply",
+    "Generation",
+    "Collection",
+    "GSU",
+    "Grid"
+   ],
+   "path_detail": [
+    "Pipeline gas (or LNG / hydrogen alternatives) enters at the fence, is metered, filtered, pressure-reduced and heated, then piped to each gas turbine.",
+    "Three gas turbines drive three generators at 18 kV; their exhaust raises steam in three HRSGs whose headers feed one steam turbine generator.",
+    "Generator output leaves through isophase bus. Auxiliaries are collected at 13.8 kV in the e-house, with the BESS, modular yard and MCCs tied in.",
+    "Four generator step-up transformers raise 18 kV to 230 kV; each connects through the take-off gantry to the gen-tie (overhead or underground).",
+    "The 230 kV switchyard breakers and buses connect the plant to the transmission line leaving the site."
+   ],
+   "columns": [
+    {
+     "heading": "Inside the equipment",
+     "items": [
+      "Generator leads and terminal box",
+      "Isophase bus and UAT tap",
+      "Switchgear risers and terminations",
+      "Fan motor drops on the ACC deck",
+      "PCS to transformer skid links",
+      "Cleats, bonding and end caps on the prefab spine"
+     ]
+    },
+    {
+     "heading": "Across the site",
+     "items": [
+      "Two-tier tray corridor: power low, controls high",
+      "Duct bank with manholes under each road crossing",
+      "MV ring-main kiosks and pad-mount transformers",
+      "Gen-tie towers or 230 kV duct bank to the switchyard",
+      "Steam headers and main steam duct to the ACC",
+      "Grounding grid with copper risers at each structure"
+     ]
+    },
+    {
+     "heading": "Outside the view",
+     "items": [
+      "Transmission line beyond the switchyard",
+      "Gas transmission pipeline and its block valves",
+      "LNG deliveries and hydrogen supply",
+      "CO2 export pipeline to storage",
+      "Make-up water source and wastewater discharge",
+      "Control system networks between buildings"
+     ]
+    }
+   ],
+   "abbreviations": [
+    [
+     "ACC",
+     "Air-cooled condenser"
+    ],
+    [
+     "BESS",
+     "Battery energy storage system"
+    ],
+    [
+     "CCS",
+     "Carbon capture and storage"
+    ],
+    [
+     "DCC",
+     "Direct-contact cooler"
+    ],
+    [
+     "GSU",
+     "Generator step-up transformer"
+    ],
+    [
+     "GT",
+     "Gas turbine"
+    ],
+    [
+     "HRSG",
+     "Heat recovery steam generator"
+    ],
+    [
+     "HV / MV / LV",
+     "High / medium / low voltage"
+    ],
+    [
+     "IPB",
+     "Isophase bus"
+    ],
+    [
+     "MCC",
+     "Motor control centre"
+    ],
+    [
+     "PCS",
+     "Power conversion system"
+    ],
+    [
+     "ST",
+     "Steam turbine"
+    ],
+    [
+     "UAT",
+     "Unit auxiliary transformer"
+    ],
+    [
+     "UPS",
+     "Uninterruptible power supply"
+    ],
+    [
+     "VFD",
+     "Variable-frequency drive"
+    ],
+    [
+     "XLPE",
+     "Cross-linked polyethylene (cable insulation)"
+    ]
+   ],
+   "footnote": "Explains the complete electrical path in words so that every numbered sheet can be read against it."
+  }
+ ]
+}
