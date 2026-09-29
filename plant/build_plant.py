@@ -139,6 +139,70 @@ MATERIALS = {
 }
 _MAT_CACHE = {}
 
+# (noise scale per metre, bump strength, colour variation, per-object tint variation)
+_DETAIL = {
+    "GRAVEL": (55.0, 0.55, 0.10, 0.00), "ASPH": (170.0, 0.45, 0.10, 0.00), "CONC": (9.0, 0.10, 0.045, 0.02),
+    "ENCL": (14.0, 0.0, 0.020, 0.035), "STEEL": (60.0, 0.06, 0.05, 0.05), "STEEL_DK": (60.0, 0.06, 0.05, 0.05),
+    "INSUL": (18.0, 0.0, 0.03, 0.03), "DUCT": (20.0, 0.05, 0.04, 0.03), "PORCELAIN": (30.0, 0.0, 0.02, 0.03),
+}
+
+def _surface_detail(m, bsdf, key, rgb, special):
+    """large-scale mottling + fine bump + a small per-object tint, so flat surfaces read as real materials.
+    The colour stays inside the specified palette (variations are a few percent)."""
+    if key not in _DETAIL:
+        return
+    scale, bump_s, var, tint = _DETAIL[key]
+    nt = m.node_tree
+    N = nt.nodes
+    tc = N.new("ShaderNodeTexCoord")
+    mp = N.new("ShaderNodeMapping")
+    nz = N.new("ShaderNodeTexNoise")
+    nz.inputs["Scale"].default_value = scale
+    nz.inputs["Detail"].default_value = 8.0
+    nt.links.new(tc.outputs["Object"], mp.inputs["Vector"])
+    nt.links.new(mp.outputs["Vector"], nz.inputs["Vector"])
+    # where does the current colour come from? (the scored-concrete brick node, if present)
+    src = None
+    for l in nt.links:
+        if l.to_socket == bsdf.inputs["Base Color"]:
+            src = l.from_socket
+    def ramp(fac_socket, lo, hi):
+        cr = N.new("ShaderNodeValToRGB")
+        cr.color_ramp.elements[0].color = (lo, lo, lo, 1.0)
+        cr.color_ramp.elements[1].color = (hi, hi, hi, 1.0)
+        nt.links.new(fac_socket, cr.inputs["Fac"])
+        return cr.outputs["Color"]
+    cur = src
+    if var > 0:
+        mix = N.new("ShaderNodeMixRGB")
+        mix.blend_type = "MULTIPLY"
+        mix.inputs["Fac"].default_value = 1.0
+        if cur is None:
+            mix.inputs["Color1"].default_value = (*rgb, 1.0)
+        else:
+            nt.links.new(cur, mix.inputs["Color1"])
+        nt.links.new(ramp(nz.outputs["Fac"], 1.0 - var, 1.0 + var * 0.4), mix.inputs["Color2"])
+        cur = mix.outputs["Color"]
+    if tint > 0:
+        oi = N.new("ShaderNodeObjectInfo")
+        mix2 = N.new("ShaderNodeMixRGB")
+        mix2.blend_type = "MULTIPLY"
+        mix2.inputs["Fac"].default_value = 1.0
+        if cur is None:
+            mix2.inputs["Color1"].default_value = (*rgb, 1.0)
+        else:
+            nt.links.new(cur, mix2.inputs["Color1"])
+        nt.links.new(ramp(oi.outputs["Random"], 1.0 - tint, 1.0), mix2.inputs["Color2"])
+        cur = mix2.outputs["Color"]
+    if cur is not None:
+        nt.links.new(cur, bsdf.inputs["Base Color"])
+    if bump_s > 0:
+        bp = N.new("ShaderNodeBump")
+        bp.inputs["Strength"].default_value = bump_s
+        bp.inputs["Distance"].default_value = 0.02
+        nt.links.new(nz.outputs["Fac"], bp.inputs["Height"])
+        nt.links.new(bp.outputs["Normal"], bsdf.inputs["Normal"])
+
 def get_mat(key):
     if not HAVE_BPY:
         return key
@@ -178,6 +242,8 @@ def get_mat(key):
     if special == "xray":
         m.blend_method = "BLEND"
         bsdf.inputs["Alpha"].default_value = 0.35
+    else:
+        _surface_detail(m, bsdf, key, rgb, special)
     m["plant_material"] = key
     _MAT_CACHE[key] = m
     return m
@@ -249,6 +315,9 @@ class MeshAcc:
         return self
 
     def box(self, x0, y0, z0, x1, y1, z1):
+        if x0 > x1: x0, x1 = x1, x0
+        if y0 > y1: y0, y1 = y1, y0
+        if z0 > z1: z0, z1 = z1, z0
         return self.hexa([(x0, y0, z0), (x1, y0, z0), (x1, y1, z0), (x0, y1, z0),
                           (x0, y0, z1), (x1, y0, z1), (x1, y1, z1), (x0, y1, z1)])
 
@@ -366,7 +435,23 @@ class MeshAcc:
             hw = width / 2
             corners = [(a[0] + nx * hw, a[1] + ny * hw), (a[0] - nx * hw, a[1] - ny * hw),
                        (b[0] - nx * hw, b[1] - ny * hw), (b[0] + nx * hw, b[1] + ny * hw)]
-            self.hexa([(x, y, z) for x, y in corners] + [(x, y, z + 0.12) for x, y in corners])
+            # ladder tray: rungs every 1 ft between the side rails (cables are visible through it)
+            kk = 0.0
+            while kk <= L:
+                cx_, cy_ = a[0] + ux * kk, a[1] + uy * kk
+                c0 = (cx_ + nx * hw, cy_ + ny * hw)
+                c1 = (cx_ - nx * hw, cy_ - ny * hw)
+                q = [(c0[0] - ux * 0.07, c0[1] - uy * 0.07), (c1[0] - ux * 0.07, c1[1] - uy * 0.07),
+                     (c1[0] + ux * 0.07, c1[1] + uy * 0.07), (c0[0] + ux * 0.07, c0[1] + uy * 0.07)]
+                self.hexa([(x, y, z) for x, y in q] + [(x, y, z + 0.1) for x, y in q])
+                kk += 1.0
+            kk = 10.0                      # splice plates on the rails every 10 ft
+            while kk < L:
+                for s in (1, -1):
+                    px_, py_ = a[0] + ux * kk + s * nx * hw, a[1] + uy * kk + s * ny * hw
+                    self.box(px_ - 0.5 * abs(ux) - 0.12, py_ - 0.5 * abs(uy) - 0.12, z + 0.05,
+                             px_ + 0.5 * abs(ux) + 0.12, py_ + 0.5 * abs(uy) + 0.12, z + rail_h + 0.04)
+                kk += 10.0
             for s in (1, -1):
                 c2 = [(a[0] + s * nx * hw, a[1] + s * ny * hw), (a[0] + s * nx * (hw - 0.15), a[1] + s * ny * (hw - 0.15)),
                       (b[0] + s * nx * (hw - 0.15), b[1] + s * ny * (hw - 0.15)), (b[0] + s * nx * hw, b[1] + s * ny * hw)]
@@ -874,10 +959,10 @@ def build_gt(i):
         uat.cyl(ax + 28 + k * 4, 617, GZ + 10, 0.5, 4, 8)
     uat.build()
     # local GT control module beside the enclosure
-    MeshAcc(pre + "CONTROL-MODULE", "ENCL").box(ax + 14, g["y_enc0"] + 8, GZ + 0.3, ax + 22, g["y_enc0"] + 28, GZ + 9.3).build()
+    MeshAcc(pre + "CONTROL-MODULE", "ENCL").box(ax - 22, g["y_enc0"] + 8, GZ + 0.3, ax - 14, g["y_enc0"] + 28, GZ + 9.3).build()
     ctl = CurveAcc(pre + "CONTROL-CABLES", "CABLE", 0.05)
     for k in range(4):
-        ctl.add([(ax + 18 + k * 0.4, g["y_enc0"] + 28, GZ + 9.3), (ax + 18 + k * 0.4, HY0 + 8, 33.3)])
+        ctl.add([(ax - 18 + k * 0.4, g["y_enc0"] + 28, GZ + 9.3), (ax - 18 + k * 0.4, HY0 + 8, 33.3)])
     ctl.build()
     # anchors
     anchor(pre + "TURBINE", ax, g["y_enc0"] + 30, GZ + 25, "Gas turbine package (enclosed)", 7)
@@ -886,7 +971,7 @@ def build_gt(i):
     anchor(pre + "IPB", ax + 6, 660, zb + 2, "Isophase bus duct (generator to GSU)", 7)
     anchor(pre + "INLET-PLENUM", ax, g["y_enc0"] + 8, GZ + 37, "Inlet plenum and silencer", 7)
     anchor(pre + "EXHAUST", ax, g["y_diff0"] + 8, GZ + 27, "Exhaust diffuser to HRSG", 7)
-    anchor(pre + "CONTROL-MODULE", ax + 18, g["y_enc0"] + 18, GZ + 10.3, "GT local control module", 7)
+    anchor(pre + "CONTROL-MODULE", ax - 18, g["y_enc0"] + 18, GZ + 10.3, "GT local control module", 7)
     anchor("UAT-%d" % n, ax + 32, 613, GZ + 15, "Unit auxiliary transformer (IPB tap)", 7)
     anchor(pre + "EXCITER", ax, g["y_exc0"] + 3, GZ + 21, "Exciter", 7)
 
@@ -996,7 +1081,6 @@ def build_hrsg(i):
         for x in (ax - hw - 1.5, ax + hw + 1.5):
             st.box(x - 1, y0 + 30, z - 1, x + 1, y1 - 24, z)
     # roof deck frame at envelope height
-    st.box(ax - hw - 2.5, y0 + 30, HRSG_H - 1.5, ax + hw + 2.5, y1 - 24, HRSG_H)
     st.build()
     # steam drums on top (HP, IP, LP) + downcomers
     d = MeshAcc(pre + "DRUMS", "INSUL")
@@ -1342,13 +1426,36 @@ def build_switchyard():
 # =============================================================================
 # ELECTRICAL BUILDINGS: E-HOUSE (elevated modular), MCC/VFD/UPS, ADMIN
 # =============================================================================
-def cabinet_row(m, x0, y0, z0, n, w, d, h, along="x", door_side=None):
-    """row of n cabinets (boxes) starting at x0,y0."""
+def cabinet_row(m, x0, y0, z0, n, w, d, h, along="x", door_side=None, detail=True):
+    """row of n cabinets: body, proud door panel with handle and vent slots, top hood and plinth."""
     for k in range(n):
         if along == "x":
-            m.box(x0 + k * w, y0, z0, x0 + (k + 1) * w - 0.1, y0 + d, z0 + h)
+            bx0, bx1, by0, by1 = x0 + k * w, x0 + (k + 1) * w - 0.1, y0, y0 + d
         else:
-            m.box(x0, y0 + k * w, z0, x0 + d, y0 + (k + 1) * w - 0.1, z0 + h)
+            bx0, bx1, by0, by1 = x0, x0 + d, y0 + k * w, y0 + (k + 1) * w - 0.1
+        m.box(bx0, by0, z0 + 0.3, bx1, by1, z0 + (h - 0.25 if detail else h))
+        if not detail:
+            continue
+        m.box(bx0 - 0.03, by0 - 0.03, z0, bx1 + 0.03, by1 + 0.03, z0 + 0.3)              # plinth
+        m.box(bx0 - 0.05, by0 - 0.05, z0 + h - 0.25, bx1 + 0.05, by1 + 0.05, z0 + h)     # top hood
+        # door panel on the operating face(s): -y for x-rows, -x for y-rows (and the opposite face for double-sided rows)
+        if along == "x":
+            e = 0.06
+            for (fy, sg) in ((by0, -1), ) if door_side != "both" else ((by0, -1), (by1, 1)):
+                yy0, yy1 = (fy - e, fy) if sg < 0 else (fy, fy + e)
+                m.box(bx0 + 0.12, yy0, z0 + 0.55, bx1 - 0.12, yy1, z0 + h - 0.45)
+                m.box(bx1 - 0.35, yy0 - sg * 0.04 if sg < 0 else yy0, z0 + h * 0.5 - 0.5, bx1 - 0.28, yy1 + (0.06 if sg > 0 else 0.0) if sg > 0 else yy1 + 0.0, z0 + h * 0.5 + 0.5)
+                for v in range(4):                                                        # vent slots (raised bars)
+                    zz = z0 + h - 1.3 - v * 0.22
+                    m.box(bx0 + 0.3, yy0 - (0.03 if sg < 0 else 0.0), zz, bx1 - 0.3, yy1 + (0.03 if sg > 0 else 0.0), zz + 0.08)
+        else:
+            e = 0.06
+            xx0, xx1 = bx0 - e, bx0
+            m.box(xx0, by0 + 0.12, z0 + 0.55, xx1, by1 - 0.12, z0 + h - 0.45)
+            m.box(xx0 - 0.04, by1 - 0.35, z0 + h * 0.5 - 0.5, xx1, by1 - 0.28, z0 + h * 0.5 + 0.5)
+            for v in range(4):
+                zz = z0 + h - 1.3 - v * 0.22
+                m.box(xx0 - 0.03, by0 + 0.3, zz, xx1, by1 - 0.3, zz + 0.08)
 
 def build_ehouse():
     pre = "ELEC-EHOUSE-"
@@ -1383,7 +1490,7 @@ def build_ehouse():
     wall_with_openings(ws, x0, x1, y0, y0 + 0.6, zf, zf + H, [(x0 + 4, x0 + 8, zf, zf + 8)], axis="x")   # door
     ws.build()
     MeshAcc(pre + "ROOF", "ENCL", cutaway=True).box(x0 - 0.5, y0 - 0.5, zf + H, x1 + 0.5, y1 + 0.5, zf + H + 0.6).build()
-    hv = MeshAcc(pre + "HVAC", "STEEL")
+    hv = MeshAcc(pre + "ROOF-HVAC", "STEEL")
     for x in (x0 + 20, x0 + 70):
         hv.box(x, y1 - 10, zf + H + 0.6, x + 8, y1 - 2, zf + H + 4)
     hv.build()
@@ -1477,7 +1584,7 @@ def build_mcc():
     wall_with_openings(ws, x0, x1, y0, y0 + 0.8, z0, z0 + H, [(x0 + 4, x0 + 10, z0, z0 + 8), (x0 + 60, x0 + 66, z0, z0 + 8)], axis="x")
     ws.build()
     MeshAcc(pre + "ROOF", "ENCL", cutaway=True).box(x0 - 0.5, y0 - 0.5, z0 + H, x1 + 0.5, y1 + 0.5, z0 + H + 0.6).build()
-    hv = MeshAcc(pre + "HVAC", "STEEL")
+    hv = MeshAcc(pre + "ROOF-HVAC", "STEEL")
     hv.box(x0 + 10, y1 - 12, z0 + H + 0.6, x0 + 18, y1 - 4, z0 + H + 4)
     hv.box(x0 + 40, y1 - 12, z0 + H + 0.6, x0 + 48, y1 - 4, z0 + H + 4)
     hv.build()
@@ -2314,6 +2421,1699 @@ def build_corridor():
     anchor(pre + "CABLE-ENDS", 1181, y0 + CORR_W + 6, GZ + 4.5, "Cable end caps (copper)", 16)
     anchor("ZONE-16", 1000, yt, zc + 6, ZONES[16][0], 16)
 
+
+# =============================================================================
+# DETAIL PASS  --  cladding, doors, louvres, rails, ladders, skids, hardware
+# =============================================================================
+def _m_rail(self, pts, z, h=3.5, pitch=5.0, r=0.07, skip=None, toe=True):
+    """handrail (posts + top rail + mid rail + toe board) along a polyline of (x, y) at deck height z."""
+    for a, b in zip(pts[:-1], pts[1:]):
+        L = math.hypot(b[0] - a[0], b[1] - a[1])
+        if L < 1e-6:
+            continue
+        n = max(1, int(round(L / pitch)))
+        for i in range(n + 1):
+            t = i / n
+            px, py = a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t
+            if skip and skip(px, py):
+                continue
+            self.seg((px, py, z), (px, py, z + h), r, 4)
+        for hh in (h, h * 0.5):
+            self.seg((a[0], a[1], z + hh), (b[0], b[1], z + hh), r, 4)
+        if toe:
+            self.seg((a[0], a[1], z + 0.2), (b[0], b[1], z + 0.2), r * 1.6, 4)
+    return self
+
+def _m_ladder(self, x, y, z0, z1, face=(0, -1), cage=True, w=1.6):
+    """vertical fixed ladder; `face` is the horizontal direction the climber faces away from... (points away from the wall)."""
+    fx, fy = face
+    px, py = -fy, fx
+    for s in (-1, 1):
+        self.seg((x + px * s * w / 2, y + py * s * w / 2, z0), (x + px * s * w / 2, y + py * s * w / 2, z1), 0.07, 4)
+    k = 1.0
+    while z0 + k < z1:
+        self.seg((x - px * w / 2, y - py * w / 2, z0 + k), (x + px * w / 2, y + py * w / 2, z0 + k), 0.05, 4)
+        k += 1.0
+    if cage and z1 - z0 > 8:
+        zc = z0 + 7.0
+        cx, cy = x + fx * 1.1, y + fy * 1.1
+        base = math.atan2(fy, fx)
+        while zc < z1:
+            pts = []
+            for j in range(9):
+                a = base - math.radians(100) + math.radians(200) * j / 8
+                pts.append((cx + 1.7 * math.cos(a) - fx * 0.0, cy + 1.7 * math.sin(a), zc))
+            for p0, p1 in zip(pts[:-1], pts[1:]):
+                self.seg(p0, p1, 0.04, 4)
+            zc += 2.5
+        for j in (0, 4, 8):
+            a = base - math.radians(100) + math.radians(200) * j / 8
+            self.seg((cx + 1.7 * math.cos(a), cy + 1.7 * math.sin(a), z0 + 7.0), (cx + 1.7 * math.cos(a), cy + 1.7 * math.sin(a), z1), 0.04, 4)
+    return self
+
+def _m_ribs_x(self, y_face, sign, x0, x1, z0, z1, pitch=6.0, w=0.5, d=0.4, avoid=()):
+    """vertical cladding ribs on a wall running along x (outer face at y_face, outside is `sign` * y)."""
+    x = x0 + pitch / 2
+    while x < x1:
+        if not any(a - 1.0 < x + w / 2 < b + 1.0 for a, b in avoid):
+            ya, yb = (y_face, y_face + d) if sign > 0 else (y_face - d, y_face)
+            self.box(x, ya, z0, x + w, yb, z1)
+        x += pitch
+    return self
+
+def _m_ribs_y(self, x_face, sign, y0, y1, z0, z1, pitch=6.0, w=0.5, d=0.4, avoid=()):
+    y = y0 + pitch / 2
+    while y < y1:
+        if not any(a - 1.0 < y + w / 2 < b + 1.0 for a, b in avoid):
+            xa, xb = (x_face, x_face + d) if sign > 0 else (x_face - d, x_face)
+            self.box(xa, y, z0, xb, y + w, z1)
+        y += pitch
+    return self
+
+def _m_louvre_x(self, x0, x1, y_face, sign, z0, z1, slat=0.5, d=0.5):
+    """louvre panel on a wall along x: frame + tilted slats."""
+    ya, yb = (y_face, y_face + d) if sign > 0 else (y_face - d, y_face)
+    self.box(x0, ya, z0, x0 + 0.25, yb, z1).box(x1 - 0.25, ya, z0, x1, yb, z1)
+    self.box(x0, ya, z0, x1, yb, z0 + 0.25).box(x0, ya, z1 - 0.25, x1, yb, z1)
+    z = z0 + 0.4
+    sd = sign * d
+    while z < z1 - 0.4:
+        self.hexa([(x0 + 0.2, y_face, z), (x1 - 0.2, y_face, z), (x1 - 0.2, y_face + sd, z - 0.22), (x0 + 0.2, y_face + sd, z - 0.22),
+                   (x0 + 0.2, y_face, z + 0.09), (x1 - 0.2, y_face, z + 0.09), (x1 - 0.2, y_face + sd, z - 0.13), (x0 + 0.2, y_face + sd, z - 0.13)])
+        z += slat
+    return self
+
+def _m_louvre_y(self, y0, y1, x_face, sign, z0, z1, slat=0.5, d=0.5):
+    xa, xb = (x_face, x_face + d) if sign > 0 else (x_face - d, x_face)
+    self.box(xa, y0, z0, xb, y0 + 0.25, z1).box(xa, y1 - 0.25, z0, xb, y1, z1)
+    self.box(xa, y0, z0, xb, y1, z0 + 0.25).box(xa, y0, z1 - 0.25, xb, y1, z1)
+    z = z0 + 0.4
+    sd = sign * d
+    while z < z1 - 0.4:
+        self.hexa([(x_face, y0 + 0.2, z), (x_face, y1 - 0.2, z), (x_face + sd, y1 - 0.2, z - 0.22), (x_face + sd, y0 + 0.2, z - 0.22),
+                   (x_face, y0 + 0.2, z + 0.09), (x_face, y1 - 0.2, z + 0.09), (x_face + sd, y1 - 0.2, z - 0.13), (x_face + sd, y0 + 0.2, z - 0.13)])
+        z += slat
+    return self
+
+def _m_door_x(self, cx, y_face, sign, z0, w=3.4, h=7.0):
+    """personnel door on a wall along x: frame, leaf, kick plate, handle, small vision panel."""
+    ya, yb = (y_face, y_face + 0.35) if sign > 0 else (y_face - 0.35, y_face)
+    self.box(cx - w / 2 - 0.3, ya, z0, cx - w / 2, yb, z0 + h + 0.3).box(cx + w / 2, ya, z0, cx + w / 2 + 0.3, yb, z0 + h + 0.3)
+    self.box(cx - w / 2 - 0.3, ya, z0 + h, cx + w / 2 + 0.3, yb, z0 + h + 0.3)
+    la, lb = (y_face, y_face + 0.2) if sign > 0 else (y_face - 0.2, y_face)
+    self.box(cx - w / 2, la, z0, cx + w / 2, lb, z0 + h)
+    ha, hb = (y_face + 0.2, y_face + 0.5) if sign > 0 else (y_face - 0.5, y_face - 0.2)
+    self.box(cx - w / 2 + 0.15, ha, z0, cx + w / 2 - 0.15, hb, z0 + 0.9)                      # kick plate
+    self.box(cx + w / 2 - 0.8, ha, z0 + 3.2, cx + w / 2 - 0.3, hb, z0 + 3.5)                  # handle
+    self.box(cx - w / 2 + 0.6, ha, z0 + 4.6, cx + w / 2 - 0.6, hb, z0 + 6.0)                  # vision / signage panel
+    return self
+
+def _m_door_y(self, cy, x_face, sign, z0, w=3.4, h=7.0):
+    xa, xb = (x_face, x_face + 0.35) if sign > 0 else (x_face - 0.35, x_face)
+    self.box(xa, cy - w / 2 - 0.3, z0, xb, cy - w / 2, z0 + h + 0.3).box(xa, cy + w / 2, z0, xb, cy + w / 2 + 0.3, z0 + h + 0.3)
+    self.box(xa, cy - w / 2 - 0.3, z0 + h, xb, cy + w / 2 + 0.3, z0 + h + 0.3)
+    la, lb = (x_face, x_face + 0.2) if sign > 0 else (x_face - 0.2, x_face)
+    self.box(la, cy - w / 2, z0, lb, cy + w / 2, z0 + h)
+    ha, hb = (x_face + 0.2, x_face + 0.5) if sign > 0 else (x_face - 0.5, x_face - 0.2)
+    self.box(ha, cy - w / 2 + 0.15, z0, hb, cy + w / 2 - 0.15, z0 + 0.9)
+    self.box(ha, cy + w / 2 - 0.8, z0 + 3.2, hb, cy + w / 2 - 0.3, z0 + 3.5)
+    self.box(ha, cy - w / 2 + 0.6, z0 + 4.6, hb, cy + w / 2 - 0.6, z0 + 6.0)
+    return self
+
+def _m_rollup_x(self, cx, y_face, sign, z0, w=12.0, h=14.0):
+    """roller shutter door: guides, slats, hood, bottom bar."""
+    def yy(a, b):
+        return (y_face + a, y_face + b) if sign > 0 else (y_face - b, y_face - a)
+    ya, yb = yy(0.0, 0.5)
+    self.box(cx - w / 2 - 0.5, ya, z0, cx - w / 2, yb, z0 + h + 1.0).box(cx + w / 2, ya, z0, cx + w / 2 + 0.5, yb, z0 + h + 1.0)
+    ya, yb = yy(0.0, 0.25)
+    z = z0
+    while z < z0 + h - 0.2:
+        self.box(cx - w / 2, ya, z, cx + w / 2, yb, z + 0.42)
+        z += 0.5
+    ya, yb = yy(0.0, 0.9)
+    self.box(cx - w / 2 - 0.5, ya, z0 + h, cx + w / 2 + 0.5, yb, z0 + h + 1.4)                  # hood
+    ya, yb = yy(0.25, 0.5)
+    self.box(cx - w / 2, ya, z0, cx + w / 2, yb, z0 + 0.4)                                      # bottom bar
+    return self
+
+def _m_rollup_y(self, cy, x_face, sign, z0, w=12.0, h=14.0):
+    def xx(a, b):
+        return (x_face + a, x_face + b) if sign > 0 else (x_face - b, x_face - a)
+    xa, xb = xx(0.0, 0.5)
+    self.box(xa, cy - w / 2 - 0.5, z0, xb, cy - w / 2, z0 + h + 1.0).box(xa, cy + w / 2, z0, xb, cy + w / 2 + 0.5, z0 + h + 1.0)
+    xa, xb = xx(0.0, 0.25)
+    z = z0
+    while z < z0 + h - 0.2:
+        self.box(xa, cy - w / 2, z, xb, cy + w / 2, z + 0.42)
+        z += 0.5
+    xa, xb = xx(0.0, 0.9)
+    self.box(xa, cy - w / 2 - 0.5, z0 + h, xb, cy + w / 2 + 0.5, z0 + h + 1.4)
+    return self
+
+def _m_stiff_ring(self, cx, cy, z, r, h=0.45, out=0.3, n=28):
+    self.cyl(cx, cy, z, r + out, h, n)
+    return self
+
+MeshAcc.rail = _m_rail
+MeshAcc.ladder = _m_ladder
+MeshAcc.ribs_x = _m_ribs_x
+MeshAcc.ribs_y = _m_ribs_y
+MeshAcc.louvre_x = _m_louvre_x
+MeshAcc.louvre_y = _m_louvre_y
+MeshAcc.door_x = _m_door_x
+MeshAcc.door_y = _m_door_y
+MeshAcc.rollup_x = _m_rollup_x
+MeshAcc.rollup_y = _m_rollup_y
+MeshAcc.stiff_ring = _m_stiff_ring
+
+
+def apron(name, x0, y0, x1, y1, mat="CONC"):
+    """small concrete landing / apron slab (top at pad level)."""
+    MeshAcc(name, mat).box(x0, y0, 0.0, x1, y1, GZ + 0.05).build()
+
+
+def blocked(x, y, margin=2.5, zmax=25.0):
+    """True if (x, y) lies inside the plan bbox of any built solid (used to keep site furniture clear of equipment)."""
+    for r in REG:
+        if r["kind"] == "anchor" or r["below_grade"]:
+            continue
+        n = r["name"]
+        if n.startswith(("SITE-BACKDROP", "SITE-GROUND", "SITE-PAD", "SITE-ROAD", "SITE-EARTHGRID", "FUELGAS-GROUND", "SWYD-PAD",
+                         "SWYD-GRID", "GENTIE-CONDUCTORS", "GENTIE-SHIELD", "GENTIE-UG", "WATER-POND")):
+            continue
+        b = r["bbox"]
+        if b[2] > zmax:
+            continue
+        if b[0] - margin <= x <= b[3] + margin and b[1] - margin <= y <= b[4] + margin and b[5] > 0.6:
+            # long thin objects (fences, trays, pipes) only block at their own footprint; bbox test is conservative
+            return True
+    return False
+
+
+# ---- turbine hall ------------------------------------------------------------------------
+def detail_hall():
+    x0, y0, x1, y1 = HX0, HY0, HX1, HY1
+    ipb_x = [(ax - 8, ax + 8) for ax in GSU_X]
+    inlet_x = [(ax + P["inlet_offset_x_ft"] - 7.5, ax + P["inlet_offset_x_ft"] + 7.5) for ax in GT_X]
+    gas_x = [(x1 - 12, x1 - 6)]
+    exh_x = [(ax - 11, ax + 11) for ax in GT_X] + [(ST_X - 6, ST_X + 6)]
+    HH_ = HH
+    # cladding ribs on every wall (south ones belong to the removable south-wall part)
+    MeshAcc("HALL-WALL-S-RIBS", "ENCL", cutaway=True).ribs_x(y0, -1, x0, x1, GZ, HH_ - 0.5, 6.0, 0.5, 0.4, ipb_x + inlet_x + gas_x + [(555, 565), (685, 695), (795, 805), (968, 982)]).build()
+    MeshAcc("HALL-WALL-N-RIBS", "ENCL").ribs_x(y1, 1, x0, x1, GZ, HH_ - 0.5, 6.0, 0.5, 0.4, exh_x).build()
+    MeshAcc("HALL-WALL-W-RIBS", "ENCL").ribs_y(x0, -1, y0, y1, GZ, HH_ - 0.5, 6.0, 0.5, 0.4, [(674, 686), (714, 726), (754, 766)]).build()
+    MeshAcc("HALL-WALL-E-RIBS", "ENCL").ribs_y(x1, 1, y0, y1, GZ, HH_ - 0.5, 6.0, 0.5, 0.4, [(715, 745), (674, 686), (774, 786)]).build()
+    # base course and eaves band
+    for nm, pts in (("S", (x0, y0 - 0.5, x1, y0)), ("N", (x0, y1, x1, y1 + 0.5))):
+        MeshAcc("HALL-WALL-%s-PLINTH" % nm, "CONC", cutaway=(nm == "S")).box(pts[0], pts[1], GZ, pts[2], pts[3], GZ + 3.0).box(pts[0], pts[1] - (0.1 if nm == "S" else 0), HH_ - 2.0, pts[2], pts[3] + (0.1 if nm == "N" else 0), HH_).build()
+    # doors
+    dS = MeshAcc("HALL-WALL-S-DOORS", "STEEL", cutaway=True)
+    for cx in (560, 690, 800):
+        dS.door_x(cx, y0, -1, GZ)
+    dS.rollup_x(975, y0, -1, GZ, 14.0, 16.0)
+    dS.build()
+    dW = MeshAcc("HALL-WALL-W-DOORS", "STEEL")
+    dW.door_y(680, x0, -1, GZ).door_y(760, x0, -1, GZ).rollup_y(720, x0, -1, GZ, 12.0, 15.0)
+    dW.build()
+    dE = MeshAcc("HALL-WALL-E-DOORS", "STEEL")
+    dE.door_y(680, x1, 1, GZ).door_y(780, x1, 1, GZ)
+    dE.build()
+    for (nx_, ny_, sx, sy) in ((560, y0 - 5, 6, 4), (690, y0 - 5, 6, 4), (800, y0 - 5, 6, 4), (975, y0 - 9, 18, 8)):
+        apron("HALL-APRON-S-%d" % nx_, nx_ - sx / 2, ny_ - sy / 2, nx_ + sx / 2, ny_ + sy / 2)
+    # louvres high on the long walls
+    lS = MeshAcc("HALL-WALL-S-LOUVRES", "STEEL", cutaway=True)
+    lN = MeshAcc("HALL-WALL-N-LOUVRES", "STEEL")
+    for k in range(9):
+        xs = x0 + 30 + k * 60
+        lS.louvre_x(xs, xs + 24, y0, -1, HH_ - 22, HH_ - 8)
+        lN.louvre_x(xs, xs + 24, y1, 1, HH_ - 22, HH_ - 8)
+    lS.build(); lN.build()
+    # standing-seam roof ribs, eaves gutters and downpipes
+    ym = (y0 + y1) / 2.0
+    ridge = HH_ + 8
+    rr = MeshAcc("HALL-ROOF-RIBS", "ENCL", cutaway=True)
+    x = x0 + 3
+    while x < x1:
+        rr.hexa([(x, y0 - 1, HH_ + 1), (x + 0.4, y0 - 1, HH_ + 1), (x + 0.4, ym, ridge), (x, ym, ridge),
+                 (x, y0 - 1, HH_ + 1.35), (x + 0.4, y0 - 1, HH_ + 1.35), (x + 0.4, ym, ridge + 0.35), (x, ym, ridge + 0.35)])
+        rr.hexa([(x, ym, ridge), (x + 0.4, ym, ridge), (x + 0.4, y1 + 1, HH_ + 1), (x, y1 + 1, HH_ + 1),
+                 (x, ym, ridge + 0.35), (x + 0.4, ym, ridge + 0.35), (x + 0.4, y1 + 1, HH_ + 1.35), (x, y1 + 1, HH_ + 1.35)])
+        x += 5.0
+    rr.build()
+    gu = MeshAcc("HALL-ROOF-GUTTER", "STEEL", cutaway=True)
+    gu.box(x0 - 1, y0 - 2.4, HH_ - 0.6, x1 + 1, y0 - 1, HH_ + 0.4).box(x0 - 1, y1 + 1, HH_ - 0.6, x1 + 1, y1 + 2.4, HH_ + 0.4)
+    gu.build()
+    dpS = MeshAcc("HALL-WALL-S-DOWNPIPES", "STEEL", cutaway=True)
+    dpN = MeshAcc("HALL-WALL-N-DOWNPIPES", "STEEL")
+    for x in range(int(x0) + 30, int(x1), 60):
+        dpS.cyl(x + 0.5, y0 - 1.6, GZ, 0.32, HH_ - 0.5, 8)
+        dpN.cyl(x + 0.5, y1 + 1.6, GZ, 0.32, HH_ - 0.5, 8)
+    dpS.build(); dpN.build()
+    # roof-top hatches and a ridge walkway rail
+    hb = MeshAcc("HALL-ROOF-HATCHES", "STEEL", cutaway=True)
+    for x in range(int(x0) + 60, int(x1) - 40, 120):
+        hb.box(x, ym - 12, ridge + 0.3, x + 6, ym - 8, ridge + 2.0)
+        hb.rail([(x - 3, ym - 15), (x + 9, ym - 15), (x + 9, ym - 5), (x - 3, ym - 5), (x - 3, ym - 15)], ridge + 0.3, 3.0, 4.0)
+    hb.build()
+    # interior: cable-tray drops and lighting fixtures along the trusses
+    li = MeshAcc("HALL-LIGHTS", "STEEL_DK")
+    for x in range(int(x0) + 15, int(x1), 30):
+        for y in (y0 + 40, (y0 + y1) / 2, y1 - 40):
+            li.seg((x, y, HH_ - 6.0), (x, y, HH_ - 12.0), 0.05, 4)
+            li.cyl(x, y, HH_ - 13.5, 1.3, 1.5, 12, r2=2.0)
+    li.build()
+
+# ---- gas turbine trains and steam turbine -------------------------------------------------
+def detail_gt(i):
+    g = gt_train_geometry(i)
+    ax, ye0, yg0, yg1, yd0 = g["ax"], g["y_enc0"], g["y_gen0"], g["y_gen1"], g["y_diff0"]
+    n = i + 1
+    pre = "GT-%d-" % n
+    zb = GZ + 6.0
+    # enclosure cladding: vertical ribs on both sides, roof ribs, louvre panels, service door
+    r = MeshAcc(pre + "ENCLOSURE-RIBS", "ENCL")
+    for side in (-1, 1):
+        xf = ax + side * 9
+        y = ye0 + 1.5
+        while y < ye0 + 47:
+            xa, xb = (xf, xf + 0.3) if side > 0 else (xf - 0.3, xf)
+            r.box(xa, y, zb + 0.3, xb, y + 0.3, GZ + 24)
+            y += 3.0
+    y = ye0 + 1.0
+    while y < ye0 + 47:
+        r.box(ax - 9, y, GZ + 24, ax + 9, y + 0.3, GZ + 24.3)
+        y += 3.0
+    r.build()
+    lv = MeshAcc(pre + "ENCLOSURE-LOUVRES", "STEEL")
+    lv.louvre_y(ye0 + 26, ye0 + 44, ax + 9, 1, GZ + 12, GZ + 21)
+    lv.louvre_y(ye0 + 26, ye0 + 44, ax - 9, -1, GZ + 12, GZ + 21)
+    lv.door_y(ye0 + 8, ax + 9, 1, zb + 0.3, 3.2, 6.6)
+    lv.build()
+    # walkway along the east side of the train with handrail, stair to grade and posts
+    wz = GZ + 8.0
+    wy0, wy1 = yg0 - 6.0, ye0 + 47.0
+    wk = MeshAcc(pre + "WALKWAY", "STEEL")
+    wk.box(ax + 17, wy0, wz - 0.25, ax + 9.3, wy1, wz)
+    for y in range(int(wy0), int(wy1), 10):
+        wk.box(ax + 17.2, y, GZ, ax + 16.8, y + 0.4, wz - 0.25)
+        wk.box(ax + 17.2, y, wz - 0.9, ax + 9.3, y + 0.35, wz - 0.25)
+    wk.rail([(ax + 17, wy0), (ax + 17, wy1), (ax + 9.3, wy1)], wz, 3.5, 5.0)
+    wk.rail([(ax + 9.3, wy0), (ax + 17, wy0)], wz, 3.5, 5.0, toe=False)
+    wk.stair(ax + 13.5, wy0 - 12.0, GZ, wz, run_dir=(0, 1), width=3.0)
+    wk.rail([(ax + 17, wy0 - 12.0), (ax + 17, wy0)], GZ, 3.5, 5.0, toe=False)
+    wk.build()
+    # lube-oil skid, fuel-gas valve skid, fire-protection cylinders, seal-oil skid
+    sk = MeshAcc(pre + "SKID-LUBE-OIL", "ENCL")
+    sk.box(ax + 33, yg0 + 6, GZ, ax + 21, yg0 + 34, GZ + 0.6)
+    sk.box(ax + 32.5, yg0 + 6.5, GZ + 0.6, ax + 21.5, yg0 + 22, GZ + 6.5)               # tank
+    for k in range(3):
+        sk.cyl(ax + 30 + k * 3.2, yg0 + 27, GZ + 0.6, 0.9, 3.2, 12)                        # pumps
+        sk.box(ax + 31.2 + k * 3.2, yg0 + 30, GZ + 0.6, ax + 28.8 + k * 3.2, yg0 + 33, GZ + 3.2)   # motors
+    sk.cyl_between((ax + 32, yg0 + 24, GZ + 5.0), (ax + 22, yg0 + 24, GZ + 5.0), 1.1, 14)  # cooler
+    sk.build()
+    fv = MeshAcc(pre + "SKID-FUEL-GAS", "STEEL")
+    fv.box(ax + 33, ye0 + 6, GZ, ax + 22, ye0 + 26, GZ + 0.6)
+    for k in range(4):
+        fv.box(ax + 31.5 + k * 2.4, ye0 + 9, GZ + 0.6, ax + 30.3 + k * 2.4, ye0 + 23, GZ + 3.4)      # valve trains
+        fv.cyl(ax + 30.9 + k * 2.4, ye0 + 16, GZ + 3.4, 0.55, 0.9, 10)                                # actuators
+        fv.cyl(ax + 30.9 + k * 2.4, ye0 + 16, GZ + 4.3, 0.85, 0.12, 12)                               # handwheels
+    fv.cyl_between((ax + 32.5, ye0 + 8, GZ + 4.2), (ax + 22.5, ye0 + 8, GZ + 4.2), 0.7, 10)
+    fv.build()
+    fp = MeshAcc(pre + "SKID-FIRE-PROTECTION", "STEEL_DK")
+    fp.box(ax + 33, ye0 + 30, GZ, ax + 21, ye0 + 42, GZ + 0.5)
+    for k in range(6):
+        for row in range(2):
+            fp.cyl(ax + 31.8 + k * 1.9, ye0 + 33 + row * 4, GZ + 0.5, 0.65, 4.2, 12)
+            fp.cyl(ax + 31.8 + k * 1.9, ye0 + 33 + row * 4, GZ + 4.7, 0.3, 0.5, 8)
+    fp.box(ax + 32.5, ye0 + 31, GZ + 3.6, ax + 21.5, ye0 + 31.3, GZ + 3.8).box(ax + 32.5, ye0 + 38, GZ + 3.6, ax + 21.5, ye0 + 38.3, GZ + 3.8)
+    fp.build()
+    so = MeshAcc(pre + "SKID-SEAL-OIL", "ENCL")
+    so.box(ax - 11, yg0 + 18, GZ, ax - 19, yg0 + 38, GZ + 0.5)
+    so.box(ax - 11.5, yg0 + 18.5, GZ + 0.5, ax - 18.5, yg0 + 30, GZ + 5.5)
+    for k in range(2):
+        so.cyl(ax - 14 + k * 3, yg0 + 34, GZ + 0.5, 0.8, 3.0, 10)
+    so.build()
+    # interconnecting piping from the skids to the enclosure and generator
+    pp = CurveAcc(pre + "SKID-PIPING", "STEEL", 0.32)
+    for k in range(3):
+        pp.add([(ax + 21.5, yg0 + 12 + k * 3, GZ + 3.0), (ax + 19, yg0 + 12 + k * 3, GZ + 3.0), (ax + 19, yg0 + 12 + k * 3, GZ + 6.9), (ax + 9.2, yg0 + 12 + k * 3, GZ + 6.9)])
+    for k in range(2):
+        pp.add([(ax + 22.5, ye0 + 12 + k * 4, GZ + 4.2), (ax + 19.5, ye0 + 12 + k * 4, GZ + 4.2), (ax + 19.5, ye0 + 12 + k * 4, GZ + 6.9), (ax + 9.2, ye0 + 12 + k * 4, GZ + 6.9)])
+    for k in range(2):
+        pp.add([(ax - 11, yg0 + 24 + k * 3, GZ + 3.5), (ax - 8, yg0 + 24 + k * 3, GZ + 3.5), (ax - 7.5, yg0 + 24 + k * 3, GZ + 8.5)])
+    pp.build()
+    fl = MeshAcc(pre + "SKID-PIPE-FLANGES", "STEEL_DK")
+    for k in range(3):
+        for dx in (-20.5, -12.0):
+            fl.cyl_between((ax + dx, yg0 + 12 + k * 3, GZ + 6.9), (ax + dx + 0.18, yg0 + 12 + k * 3, GZ + 6.9), 0.6, 12)
+    fl.build()
+    # generator: bearing bands, cooler fins, end bell, foot plates
+    ge = MeshAcc(pre + "GENERATOR-DETAIL", "STEEL")
+    for yy in (yg0 + 3, yg0 + 12, yg0 + 21, yg0 + 30, yg0 + 39):
+        if yy < yg1 - 1:
+            ge.cyl_between((ax, yy, GZ + 14), (ax, yy + 0.5, GZ + 14), 7.8, 24)
+    for k in range(9):
+        ge.box(ax - 6 + k * 1.5, yg0 + 7, GZ + 25, ax - 5.75 + k * 1.5, yg1 - 7, GZ + 27.2)
+    ge.box(ax - 6.2, yg0 + 2, GZ + 6, ax + 6.2, yg0 + 4, GZ + 6.4)
+    ge.box(ax - 9, yg0 + 1, GZ + 0.6, ax - 6, yg0 + 3, GZ + 6).box(ax + 6, yg0 + 1, GZ + 0.6, ax + 9, yg0 + 3, GZ + 6)
+    ge.build()
+    # exhaust expansion joints (bellows) on the diffuser
+    ej = MeshAcc(pre + "EXPJOINT", "STEEL_DK")
+    for yy in (yd0 - 1.2, yd0 + 6.0):
+        ej.box(ax - 7.6, yy, GZ + 7.6, ax + 7.6, yy + 0.8, GZ + 8.3).box(ax - 7.6, yy, GZ + 21.8, ax + 7.6, yy + 0.8, GZ + 22.5)
+        ej.box(ax - 7.6, yy, GZ + 8.3, ax - 6.8, yy + 0.8, GZ + 21.8).box(ax + 6.8, yy, GZ + 8.3, ax + 7.6, yy + 0.8, GZ + 21.8)
+    ej.build()
+    # cable drops: power tray branch to the control module and skids
+    tr = MeshAcc(pre + "TRAY-BRANCH", "STEEL")
+    tr.tray([(ax - 22.5, ye0 + 18), (ax - 26, ye0 + 18), (ax - 26, HY0 + 8)], GZ + 10.0, width=1.5, posts=False)
+    tr.build()
+    anchor(pre + "WALKWAY", ax + 13, (wy0 + wy1) / 2, wz + 3.8, "Access walkway and stair", 7)
+    anchor(pre + "SKID-LUBE-OIL", ax + 27, yg0 + 20, GZ + 7.5, "Lube-oil skid", 7)
+    anchor(pre + "SKID-FUEL-GAS", ax + 28, ye0 + 16, GZ + 6.0, "Fuel-gas valve skid", 7)
+
+
+def detail_st():
+    ax = ST_X
+    y0, y1 = 660, 800
+    deck = 30
+    # tabletop guard rail, stair from grade, lube-oil console, stop valves and gland steam
+    dk = MeshAcc("ST-DECK-DETAIL", "STEEL")
+    dk.rail([(ax - 22.5, y0), (ax - 22.5, y1), (ax + 22.5, y1), (ax + 22.5, y0), (ax - 22.5, y0)], deck, 3.5, 5.0,
+            skip=lambda x, y: (abs(x - (ax - 22.5)) < 0.1 and 735 < y < 740))
+    dk.box(ax - 26.5, 733, deck - 0.25, ax - 22.5, 741, deck)
+    dk.stair(ax - 27.0, 690, GZ, deck, run_dir=(0, 1), width=3.0)
+    dk.rail([(ax - 27.2, 690), (ax - 27.2, 735)], GZ, 3.5, 5.0, toe=False)
+    dk.build()
+    lc = MeshAcc("ST-LUBE-CONSOLE", "ENCL")
+    lc.box(ax + 24, 676, GZ, ax + 36, 700, GZ + 0.5)
+    lc.box(ax + 24.5, 676.5, GZ + 0.5, ax + 35.5, 690, GZ + 7.5)
+    for k in range(3):
+        lc.cyl(ax + 27 + k * 3.2, 695, GZ + 0.5, 0.9, 3.4, 12)
+    lc.cyl_between((ax + 25, 686, GZ + 6.5), (ax + 35, 686, GZ + 6.5), 1.2, 14)
+    lc.build()
+    vv = MeshAcc("ST-STOP-VALVES", "STEEL_DK")
+    vv.box(ax - 2.5, 786, deck + 11, ax + 2.5, 792, deck + 15)
+    vv.cyl(ax, 789, deck + 15, 0.8, 1.2, 10)
+    vv.box(ax - 2.5, 768, deck + 11, ax + 2.5, 774, deck + 15)
+    vv.cyl(ax, 771, deck + 15, 0.8, 1.2, 10)
+    vv.build()
+    gs = MeshAcc("ST-GLAND-STEAM", "ENCL")
+    gs.cyl_between((ax + 8, 700, GZ + 4), (ax + 8, 720, GZ + 4), 2.2, 16)
+    gs.box(ax + 6, 702, GZ, ax + 10, 704, GZ + 4).box(ax + 6, 716, GZ, ax + 10, 718, GZ + 4)
+    gs.build()
+    # rings on the LP exhaust duct, expansion joint and supports
+    ex = MeshAcc("ST-EXHAUST-FLANGES", "STEEL_DK")
+    for xx in (ax + 22, ax + 36, ax + 52):
+        ex.box(xx, 723.2, 21.2, xx + 0.5, 736.8, 22.8)
+    ex.build()
+    anchor("ST-DECK", ax, y0 + 20, deck + 3.5, "ST tabletop with guard rail and stair", 7)
+    anchor("ST-LUBE-CONSOLE", ax + 30, 685, GZ + 8.5, "ST lube-oil console", 7)
+
+def switchback(m, tx, ty, z0, z1, lane_w=2.2, run=9.0, riser=0.6):
+    """four-flight switchback stair inside a tower footprint centred on (tx, ty)."""
+    lanes = 4
+    rise = (z1 - z0) / lanes
+    n = max(1, int(round(rise / riser)))
+    tread = run / n
+    x_start = tx - lane_w * lanes / 2.0
+    for k in range(lanes):
+        xl = x_start + k * lane_w
+        up = (k % 2 == 0)
+        zb = z0 + k * rise
+        for j in range(n):
+            yy = (ty - run / 2 + j * tread) if up else (ty + run / 2 - (j + 1) * tread)
+            m.box(xl + 0.1, yy, zb + j * (rise / n), xl + lane_w - 0.1, yy + tread, zb + j * (rise / n) + 0.14)
+        # landing at the end of each flight
+        ly = ty + run / 2 if up else ty - run / 2 - 1.0
+        m.box(xl - 0.05, ly, zb + rise - 0.2, xl + lane_w * 2 + 0.05 if k < lanes - 1 else xl + lane_w, ly + 1.0, zb + rise)
+
+
+# ---- HRSG, stack, inlet houses, GSUs -----------------------------------------------------------
+def detail_hrsg(i):
+    ax = GT_X[i]
+    n = i + 1
+    pre = "HRSG-%d-" % n
+    hw = HRSG_W / 2.0
+    y0, y1 = HRSG_Y0, HRSG_Y1
+    yc0, yc1 = y0 + 30, y1 - 24
+    cas_h = 150.0
+    top = HRSG_H
+    r = STACK_D / 2.0
+    # insulation-panel stiffeners: horizontal bands + vertical ribs on both sides and the rear face
+    st = MeshAcc(pre + "CASING-STIFFENERS", "STEEL")
+    for side in (-1, 1):
+        xf = ax + side * hw
+        xa, xb = (xf, xf + 0.6) if side > 0 else (xf - 0.6, xf)
+        z = 20.0
+        while z < cas_h:
+            st.box(xa, yc0, z, xb, yc1, z + 0.7)
+            z += 10.0
+        y = yc0 + 5.5
+        while y < yc1:
+            st.box(xa, y, GZ + 8, xb, y + 0.7, cas_h)
+            y += 11.0
+    z = 20.0
+    while z < cas_h:
+        st.box(ax - hw, yc1, z, ax + hw, yc1 + 0.6, z + 0.7)
+        z += 10.0
+    x = ax - hw + 6
+    while x < ax + hw:
+        st.box(x, yc1, GZ + 8, x + 0.7, yc1 + 0.6, cas_h)
+        x += 11.5
+    st.build()
+    # expansion joints at the inlet and outlet of the casing
+    ej = MeshAcc(pre + "EXPJOINT", "STEEL_DK")
+    for yy in (yc0 - 1.0, yc1 - 0.2):
+        ej.box(ax - hw - 0.8, yy, GZ + 7.5, ax + hw + 0.8, yy + 1.2, GZ + 8.6).box(ax - hw - 0.8, yy, cas_h - 0.4, ax + hw + 0.8, yy + 1.2, cas_h + 0.8)
+        ej.box(ax - hw - 0.8, yy, GZ + 8.6, ax - hw + 0.4, yy + 1.2, cas_h).box(ax + hw - 0.4, yy, GZ + 8.6, ax + hw + 0.8, yy + 1.2, cas_h)
+    ej.build()
+    # access platforms on both sides at six levels, with rails, brackets and caged ladders
+    levels = [25.0, 50.0, 75.0, 100.0, 125.0, 150.0]
+    pf = MeshAcc(pre + "PLATFORMS", "STEEL")
+    tower_y = (y0 + 60 - 7, y0 + 60 + 7)
+    for side in (1, -1):
+        xin = ax + side * (hw + 2.5)
+        xout = ax + side * (hw + 7.5)
+        lo, hi = min(xin, xout), max(xin, xout)
+        for z in levels:
+            pf.box(lo, yc0 + 6, z - 0.25, hi, yc1 - 6, z)
+            pf.rail([(xout, yc0 + 6), (xout, yc1 - 6)], z, 3.5, 5.0,
+                    skip=(lambda px, py: side > 0 and tower_y[0] < py < tower_y[1]))
+            pf.rail([(xout, yc0 + 6), (xin, yc0 + 6)], z, 3.5, 5.0, toe=False)
+            pf.rail([(xout, yc1 - 6), (xin, yc1 - 6)], z, 3.5, 5.0, toe=False)
+            yb = yc0 + 6.0
+            while yb <= yc1 - 6:
+                pf.seg((ax + side * (hw + 1.9), yb, z - 4.0), (xout, yb, z - 0.3), 0.14, 4)
+                yb += 11.0
+        prev = GZ
+        for k, z in enumerate(levels):
+            yl = yc0 + 24 if (k % 2 == 0) else yc1 - 24
+            pf.ladder(xout - side * 0.4, yl, prev, z, face=(-side, 0), cage=True)
+            prev = z
+    pf.build()
+    # access tower: landings at each level plus switchback stairs
+    tx, ty = ax + hw + 10, y0 + 60
+    tl = MeshAcc(pre + "STAIR-LANDINGS", "STEEL")
+    for z in levels:
+        tl.box(tx - 5.6, ty - 5.6, z - 0.25, tx + 5.6, ty + 5.6, z)
+        tl.rail([(tx + 5.6, ty - 5.6), (tx + 5.6, ty + 5.6), (tx - 5.6, ty + 5.6)], z, 3.5, 5.0, toe=False)
+    prev = GZ
+    for z in levels:
+        switchback(tl, tx, ty, prev, z)
+        prev = z
+    tl.build()
+    # roof: open steel frame + perimeter grating and rail, so the drums are visible from above
+    rf = MeshAcc(pre + "ROOF-FRAME", "STEEL")
+    xL, xR = ax - hw - 2.5, ax + hw + 2.5
+    rf.box(xL, yc0, top - 1.5, xL + 0.8, yc1, top).box(xR - 0.8, yc0, top - 1.5, xR, yc1, top)
+    rf.box(xL, yc0, top - 1.5, xR, yc0 + 0.8, top).box(xL, yc1 - 0.8, top - 1.5, xR, yc1, top)
+    y = yc0 + 10
+    while y < yc1:
+        rf.box(xL, y, top - 1.2, xR, y + 0.6, top - 0.2)
+        y += 10.0
+    for xx in (ax - 22, ax + 22):
+        rf.box(xx - 0.4, yc0, top - 1.2, xx + 0.4, yc1, top - 0.2)
+    rf.box(xL, yc0, top - 0.25, xL + 3.5, yc1, top).box(xR - 3.5, yc0, top - 0.25, xR, yc1, top)       # grating walkways
+    rf.box(xL, yc0, top - 0.25, xR, yc0 + 3.5, top).box(xL, yc1 - 3.5, top - 0.25, xR, yc1, top)
+    rf.rail([(xL, yc0), (xL, yc1), (xR, yc1), (xR, yc0), (xL, yc0)], top, 3.5, 5.0)
+    rf.build()
+    # drum nozzles, safety valves and silencers
+    sv = MeshAcc(pre + "DRUM-VALVES", "STEEL")
+    sil = MeshAcc(pre + "DRUM-SILENCERS", "INSUL")
+    for dy, rr in ((y0 + 50, 4.5), (y0 + 85, 3.5), (y0 + 115, 3.0)):
+        zt = cas_h + 9 + rr
+        for dx in (-14, -6, 6, 14):
+            sv.cyl(ax + dx, dy, zt - 0.3, 0.5, 4.3, 8)
+            sv.cyl(ax + dx, dy, zt + 4.0, 0.9, 0.35, 10)
+            sv.cyl(ax + dx, dy, zt + 4.35, 0.7, 4.0, 10)
+        sil.cyl(ax + 10, dy, zt, 0.6, 6.0, 8)
+        sil.cyl(ax + 10, dy, zt + 6.0, 1.5, 5.0, 12)
+        sil.cyl(ax + 10, dy, zt + 11.0, 1.0, 1.0, 12, r2=0.3)
+        for xx in (-26.5, 26.5):
+            sv.box(ax + xx - 0.6, dy - 1.2, zt - 1.5, ax + xx + 0.6, dy + 1.2, zt + 1.5)
+    sv.build(); sil.build()
+    # rear vertical piping rack (feed / blowdown / vents) with supports and flanges
+    pr = CurveAcc(pre + "PIPING-RACK", "INSUL", 0.7)
+    fl = MeshAcc(pre + "PIPING-FLANGES", "STEEL_DK")
+    for k in range(6):
+        px = ax - 25 + k * 10
+        pr.add([(px, yc1 + 2.5, GZ + 3), (px, yc1 + 2.5, cas_h - 8)])
+        zf = 20.0
+        while zf < cas_h - 8:
+            fl.cyl(px, yc1 + 2.5, zf, 1.05, 0.3, 12)
+            zf += 20.0
+    pr.add([(ax - 25, yc1 + 2.5, GZ + 3), (ax - 25, yc1 + 12, GZ + 3), (ax + 25, yc1 + 12, GZ + 3), (ax + 25, yc1 + 2.5, GZ + 3)])
+    pr.build(); fl.build()
+    sup = MeshAcc(pre + "PIPING-SUPPORTS", "STEEL_DK")
+    for zf in (30.0, 70.0, 110.0):
+        sup.box(ax - 27, yc1 + 1.8, zf, ax + 27, yc1 + 3.2, zf + 0.5)
+    sup.build()
+    # stack: stiffener rings, base flange, cap, lightning rod, aviation lights, caged ladder
+    sd = MeshAcc(pre + "STACK-DETAIL", "STEEL")
+    zz = 20.0
+    while zz < STACK_H - 12:
+        sd.stiff_ring(ax, STACK_Y, zz, r, 0.5, 0.35, 40)
+        zz += 25.0
+    sd.cyl(ax, STACK_Y, GZ, r + 1.2, 1.1, 40)
+    sd.cyl(ax, STACK_Y, GZ + STACK_H - 0.6, r + 0.7, 1.2, 40)
+    sd.cyl(ax, STACK_Y, GZ + STACK_H, 0.12, 12, 6)
+    for a_ in range(4):
+        aa = a_ * math.pi / 2
+        sd.cyl(ax + (r + 0.4) * math.cos(aa), STACK_Y + (r + 0.4) * math.sin(aa), GZ + STACK_H - 12, 0.4, 0.7, 8)
+        sd.cyl(ax + (r + 0.4) * math.cos(aa), STACK_Y + (r + 0.4) * math.sin(aa), GZ + STACK_H / 2, 0.4, 0.7, 8)
+    sd.ladder(ax, STACK_Y - r - 0.3, GZ, STACK_H - 8, face=(0, -1), cage=True)
+    for pz in (60.0, 140.0, 220.0):
+        sd.box(ax - 1.2, STACK_Y - r - 4.5, pz - 0.25, ax + 1.2, STACK_Y - r - 0.2, pz)      # ladder landing
+    sd.build()
+
+
+def detail_inlet(i):
+    ax = GT_X[i]
+    n = i + 1
+    pre = "INLET-%d-" % n
+    L, W, H = P["inlet_ft"]
+    base = P["inlet_base_ft"]
+    cx = ax + P["inlet_offset_x_ft"]
+    cy = 590.0
+    x0, x1 = cx - L / 2, cx + L / 2
+    y0, y1 = cy - W / 2, cy + W / 2
+    # louvred weather hoods, roof rail and ladder, support-deck rail
+    lv = MeshAcc(pre + "HOOD-LOUVRES", "STEEL")
+    for k in range(6):
+        hx = x0 + 4 + k * 9
+        lv.louvre_x(hx + 0.6, hx + 6.4, y0 - 3, -1, base + 3, base + H - 4, 0.6, 0.4)
+        lv.louvre_x(hx + 0.6, hx + 6.4, y1 + 3, 1, base + 3, base + H - 4, 0.6, 0.4)
+    lv.build()
+    rl = MeshAcc(pre + "ROOF-RAIL", "STEEL")
+    rl.rail([(x0, y0), (x1, y0), (x1, y1), (x0, y1), (x0, y0)], base + H, 3.5, 5.0)
+    rl.rail([(x0, y0), (x1, y0), (x1, y1), (x0, y1), (x0, y0)], base - 2 + 0.0, 3.5, 5.0, toe=True)
+    rl.ladder(x1 + 0.3, cy, GZ, base + H, face=(1, 0), cage=True)
+    rl.build()
+    ri = MeshAcc(pre + "ROOF-DETAIL", "ENCL")
+    x = x0 + 2
+    while x < x1:
+        ri.box(x, y0, base + H, x + 0.4, y1, base + H + 0.35)
+        x += 4.0
+    ri.box(x0 + 8, y0 + 8, base + H + 0.3, x0 + 14, y0 + 14, base + H + 2.5)      # roof hatch
+    ri.build()
+
+
+def detail_gsu(i):
+    ax = GSU_X[i]
+    n = i + 1
+    pre = "GSU-%d-" % n
+    y0 = GSU_Y0
+    y1 = y0 + GSU_W
+    hx = GSU_L / 2
+    sk = MeshAcc(pre + "BUSHING-SHEDS", "PORCELAIN")
+    for dx in (-8, 0, 8):                                   # 230 kV bushings: skirts every foot
+        for k in range(9):
+            sk.cyl(ax + dx, y0 + 8, GZ + GSU_H - 6 + 1.2 + k * 1.0, 1.75, 0.18, 12)
+    for dx in (-5, 0, 5):
+        for k in range(5):
+            sk.cyl(ax + dx, y1 - 4, GZ + GSU_H - 6 + 0.8 + k * 1.05, 1.1, 0.15, 10)
+    sk.build()
+    tx = MeshAcc(pre + "TANK-DETAIL", "STEEL")
+    for z in (GZ + 6, GZ + 12, GZ + 18):                    # tank stiffener bands
+        tx.box(ax - hx + 8 - 0.3, y0 + 2 - 0.3, z, ax + hx - 8 + 0.3, y1 - 2 + 0.3, z + 0.5)
+    tx.ladder(ax - hx + 7.6, y0 + 6, GZ + 1, GZ + GSU_H - 6, face=(-1, 0), cage=False)
+    tx.cyl(ax + hx - 9.5, y0 + 6, GZ + GSU_H - 6.0, 0.9, 1.4, 10)                  # pressure relief device
+    for k in range(3):
+        tx.box(ax - 8 + k * 8 - 0.6, y0 + 6, GZ + GSU_H - 6.4, ax - 8 + k * 8 + 0.6, y0 + 10, GZ + GSU_H - 6.0)
+    tx.box(ax + 4, y0 + 1.4, GZ + 5, ax + 8, y0 + 2, GZ + 9)                        # marshalling box
+    tx.build()
+    # radiator fans: shrouds
+    fs = MeshAcc(pre + "COOLER-FANS", "STEEL_DK")
+    for side in (-1, 1):
+        for yy in (y0 + 8, y1 - 8):
+            cx_ = ax + side * (hx - 4)
+            fs.cyl(cx_, yy, GZ + GSU_H - 9, 2.6, 0.35, 16)
+            for k in range(4):
+                fs.boxc(cx_, yy, GZ + GSU_H - 8.6, 4.6, 0.5, 0.12, rot=math.radians(k * 45))
+    fs.build()
+
+def stair_rails(m, x, y, z0, z1, run_dir=(1, 0), width=3.0, riser=0.6, tread=0.9):
+    """sloped handrails (with posts) on both sides of a straight stair built by MeshAcc.stair()."""
+    n = max(1, int((z1 - z0) / riser))
+    dx, dy = run_dir
+    px, py = (0.0, 1.0) if dx else (1.0, 0.0)
+    for s in (0.0, width):
+        a = (x + px * s, y + py * s, z0 + 3.2)
+        b = (x + px * s + dx * n * tread, y + py * s + dy * n * tread, z0 + n * riser + 3.2)
+        m.seg(a, b, 0.07, 4)
+        a2 = (a[0], a[1], a[2] - 1.5); b2 = (b[0], b[1], b[2] - 1.5)
+        m.seg(a2, b2, 0.05, 4)
+        for k in range(0, n + 1, 3):
+            t = k / float(n)
+            p = (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t)
+            m.seg((p[0], p[1], p[2] - 3.2), p, 0.06, 4)
+
+
+def clad_building(pre, x0, y0, x1, y1, zb, ztop, s_cut=False, roof_top=None, doors=None, louvres=None, avoid=None,
+                  roof_ribs=True, parapet=True, plinth=True, downpipes=True, rib_pitch=5.0):
+    """cladding ribs, doors, louvres, roof ribs, eaves trim and downpipes for a rectangular building.
+    Sides: S = -y face, N = +y face, W = -x face, E = +x face.  With s_cut the south wall and roof are separate,
+    removable parts (named <pre>WALL-S-* and <pre>ROOF-*)."""
+    doors = doors or {}
+    louvres = louvres or {}
+    avoid = avoid or {}
+    rt = roof_top if roof_top is not None else ztop
+    # ribs
+    def av(side, extra=()):
+        out = list(avoid.get(side, [])) + list(extra)
+        for d in doors.get(side, []):
+            w = d[2] if d[1] == "r" else 3.4
+            out.append((d[0] - w / 2 - 0.6, d[0] + w / 2 + 0.6))
+        for l in louvres.get(side, []):
+            out.append((l[0], l[1]))
+        return out
+    top = ztop - (0.8 if parapet else 0.0)
+    MeshAcc(pre + "WALL-S-RIBS" if s_cut else pre + "WALLS-RIBS-S", "ENCL", cutaway=s_cut).ribs_x(y0, -1, x0, x1, zb + (0.7 if plinth else 0), top, rib_pitch, 0.45, 0.35, av("S")).build()
+    walls = MeshAcc(pre + "WALLS-RIBS", "ENCL")
+    walls.ribs_x(y1, 1, x0, x1, zb + (0.7 if plinth else 0), top, rib_pitch, 0.45, 0.35, av("N"))
+    walls.ribs_y(x0, -1, y0, y1, zb + (0.7 if plinth else 0), top, rib_pitch, 0.45, 0.35, av("W"))
+    walls.ribs_y(x1, 1, y0, y1, zb + (0.7 if plinth else 0), top, rib_pitch, 0.45, 0.35, av("E"))
+    walls.build()
+    if plinth:
+        MeshAcc(pre + "WALL-S-PLINTH" if s_cut else pre + "PLINTH-S", "CONC", cutaway=s_cut).box(x0 - 0.3, y0 - 0.3, zb, x1 + 0.3, y0, zb + 0.7).build()
+        pl = MeshAcc(pre + "PLINTH", "CONC")
+        pl.box(x0 - 0.3, y1, zb, x1 + 0.3, y1 + 0.3, zb + 0.7).box(x0 - 0.3, y0 - 0.3, zb, x0, y1 + 0.3, zb + 0.7).box(x1, y0 - 0.3, zb, x1 + 0.3, y1 + 0.3, zb + 0.7)
+        pl.build()
+    # doors and louvres per side
+    for side in ("S", "N", "W", "E"):
+        ds = doors.get(side, [])
+        ls = louvres.get(side, [])
+        if not ds and not ls:
+            continue
+        nm = (pre + "WALL-S-DOORS") if (side == "S" and s_cut) else (pre + "DOORS-" + side)
+        acc = MeshAcc(nm, "STEEL", cutaway=(side == "S" and s_cut))
+        for d in ds:
+            pos, kind = d[0], d[1]
+            if side == "S":
+                (acc.door_x(pos, y0, -1, zb) if kind == "p" else acc.rollup_x(pos, y0, -1, zb, d[2], d[3]))
+            elif side == "N":
+                (acc.door_x(pos, y1, 1, zb) if kind == "p" else acc.rollup_x(pos, y1, 1, zb, d[2], d[3]))
+            elif side == "W":
+                (acc.door_y(pos, x0, -1, zb) if kind == "p" else acc.rollup_y(pos, x0, -1, zb, d[2], d[3]))
+            else:
+                (acc.door_y(pos, x1, 1, zb) if kind == "p" else acc.rollup_y(pos, x1, 1, zb, d[2], d[3]))
+        for l in ls:
+            a, b, zl, zh = l
+            if side == "S":
+                acc.louvre_x(a, b, y0, -1, zl, zh)
+            elif side == "N":
+                acc.louvre_x(a, b, y1, 1, zl, zh)
+            elif side == "W":
+                acc.louvre_y(a, b, x0, -1, zl, zh)
+            else:
+                acc.louvre_y(a, b, x1, 1, zl, zh)
+        acc.build()
+        # landing apron in front of each door
+        for d in ds:
+            pos, kind = d[0], d[1]
+            w = 4.5 if kind == "p" else (d[2] + 3)
+            dpt = 3.5 if kind == "p" else 6.0
+            if side == "S":
+                apron(pre + "APRON-S-%d" % int(pos), pos - w / 2, y0 - dpt - 0.3, pos + w / 2, y0 - 0.3)
+            elif side == "N":
+                apron(pre + "APRON-N-%d" % int(pos), pos - w / 2, y1 + 0.3, pos + w / 2, y1 + dpt + 0.3)
+            elif side == "W":
+                apron(pre + "APRON-W-%d" % int(pos), x0 - dpt - 0.3, pos - w / 2, x0 - 0.3, pos + w / 2)
+            else:
+                apron(pre + "APRON-E-%d" % int(pos), x1 + 0.3, pos - w / 2, x1 + dpt + 0.3, pos + w / 2)
+    # roof ribs, eaves trim / parapet, downpipes
+    nm_r = pre + "ROOF-RIBS" if s_cut else pre + "ROOF-DETAIL"
+    rr = MeshAcc(nm_r, "ENCL", cutaway=s_cut)
+    if roof_ribs:
+        x = x0 + 2.0
+        while x < x1 - 1:
+            rr.box(x, y0 + 0.4, rt, x + 0.4, y1 - 0.4, rt + 0.3)
+            x += 4.0
+    if parapet:
+        rr.box(x0 - 0.3, y0 - 0.3, rt, x1 + 0.3, y0 + 0.3, rt + 0.9).box(x0 - 0.3, y1 - 0.3, rt, x1 + 0.3, y1 + 0.3, rt + 0.9)
+        rr.box(x0 - 0.3, y0 + 0.3, rt, x0 + 0.3, y1 - 0.3, rt + 0.9).box(x1 - 0.3, y0 + 0.3, rt, x1 + 0.3, y1 - 0.3, rt + 0.9)
+    rr.build()
+    if downpipes:
+        dp = MeshAcc(pre + "DOWNPIPES", "STEEL")
+        for (px, py) in ((x0 - 0.5, y1 + 0.5), (x1 + 0.5, y1 + 0.5), (x1 + 0.5, y0 - 0.5), (x0 - 0.5, y0 - 0.5)):
+            dp.cyl(px, py, zb, 0.28, ztop - zb - 0.5, 8)
+        dp.build()
+
+
+def tank_detail(pre, cx, cy, z0, r, h, roof_h=3.0, spiral=True):
+    """ring stiffeners, wind girder, roof rail and vent, manway, nozzles, spiral stair and ring-wall foundation."""
+    t = MeshAcc(pre + "TANK-DETAIL", "STEEL")
+    zz = z0 + 8.0
+    while zz < z0 + h - 3:
+        t.stiff_ring(cx, cy, zz, r, 0.35, 0.22, 36)
+        zz += 9.0
+    t.cyl(cx, cy, z0 + h - 1.2, r + 1.2, 0.35, 36)                           # wind girder
+    for a in range(0, 360, 20):
+        aa = math.radians(a)
+        t.seg((cx + (r + 1.2) * math.cos(aa), cy + (r + 1.2) * math.sin(aa), z0 + h - 1.2), (cx + r * math.cos(aa), cy + r * math.sin(aa), z0 + h - 3.0), 0.08, 4)
+    # roof rail, vent, manway, nozzles
+    pts = [(cx + (r - 0.6) * math.cos(math.radians(a)), cy + (r - 0.6) * math.sin(math.radians(a))) for a in range(0, 361, 15)]
+    t.rail(pts, z0 + h, 3.5, 6.0, toe=False)
+    t.cyl(cx, cy, z0 + h + roof_h - 0.3, 0.6, 2.2, 10)
+    t.cyl(cx, cy, z0 + h + roof_h + 1.9, 1.1, 0.3, 12)
+    t.cyl(cx + r * 0.45, cy - r * 0.15, z0 + h + roof_h * 0.55, 1.4, 1.5, 12)          # roof manway
+    ang = math.radians(210)
+    t.cyl_between((cx + r * math.cos(ang), cy + r * math.sin(ang), z0 + 3.0), (cx + (r + 2.2) * math.cos(ang), cy + (r + 2.2) * math.sin(ang), z0 + 3.0), 1.3, 12)   # shell manway
+    for k, a in enumerate((20, 55, 300)):
+        aa = math.radians(a)
+        t.cyl_between((cx + r * math.cos(aa), cy + r * math.sin(aa), z0 + 2.0 + k * 0.4), (cx + (r + 3.0) * math.cos(aa), cy + (r + 3.0) * math.sin(aa), z0 + 2.0 + k * 0.4), 0.55, 10)
+        t.cyl_between((cx + (r + 2.8) * math.cos(aa), cy + (r + 2.8) * math.sin(aa), z0 + 2.0 + k * 0.4), (cx + (r + 3.05) * math.cos(aa), cy + (r + 3.05) * math.sin(aa), z0 + 2.0 + k * 0.4), 0.85, 12)
+    t.cyl(cx, cy, z0 - 0.2, r + 1.4, 0.6, 36)                                        # ring-wall foundation lip
+    t.build()
+    if spiral:
+        sp = MeshAcc(pre + "TANK-STAIR", "STEEL")
+        rs = r + 0.4
+        n = max(12, int((h - 1.0) / 0.62))
+        turn = 1.15
+        for k in range(n):
+            a0 = math.radians(300) + 2 * math.pi * turn * k / n
+            zc = z0 + 0.5 + k * ((h - 0.5) / n)
+            sp.boxc(cx + (rs + 1.5) * math.cos(a0), cy + (rs + 1.5) * math.sin(a0), zc, 3.0, 2 * math.pi * (rs + 1.5) * turn / n + 0.05, 0.16, rot=a0)
+        prevp = None
+        for k in range(n + 1):
+            a0 = math.radians(300) + 2 * math.pi * turn * k / n
+            zc = z0 + 0.5 + k * ((h - 0.5) / n) + 3.4
+            p = (cx + (rs + 3.0) * math.cos(a0), cy + (rs + 3.0) * math.sin(a0), zc)
+            if prevp:
+                sp.seg(prevp, p, 0.07, 4)
+                sp.seg((prevp[0], prevp[1], prevp[2] - 1.6), (p[0], p[1], p[2] - 1.6), 0.05, 4)
+            if k % 3 == 0:
+                sp.seg((p[0], p[1], p[2] - 3.4), p, 0.06, 4)
+            prevp = p
+        sp.build()
+
+
+def column_detail(pre, cx, cy, z0, r, h, platforms=None):
+    """process column: stiffener rings, platforms with rails, caged ladder, riser pipes, top vent."""
+    c = MeshAcc(pre + "COLUMN-DETAIL", "STEEL")
+    zz = z0 + 6.0
+    while zz < z0 + h - 4:
+        c.stiff_ring(cx, cy, zz, r, 0.4, 0.3, 32)
+        zz += 14.0
+    levels = platforms or [z0 + h * f for f in (0.25, 0.5, 0.75, 0.97)]
+    prev = z0
+    for k, zl in enumerate(levels):
+        pts = [(cx + (r + 4.5) * math.cos(math.radians(a)), cy + (r + 4.5) * math.sin(math.radians(a))) for a in range(-70, 71, 14)]
+        for a in range(-70, 70, 14):
+            a0, a1 = math.radians(a), math.radians(a + 14)
+            c.boxc(cx + (r + 2.2) * math.cos((a0 + a1) / 2), cy + (r + 2.2) * math.sin((a0 + a1) / 2), zl - 0.25, 4.6, 2 * (r + 2.2) * math.sin(math.radians(7)) + 0.2, 0.25, rot=(a0 + a1) / 2)
+        c.rail(pts, zl, 3.5, 5.0)
+        lx, ly = cx + (r + 0.3) * math.cos(math.radians(-15)), cy + (r + 0.3) * math.sin(math.radians(-15))
+        c.ladder(lx, ly, prev, zl, face=(math.cos(math.radians(-15)), math.sin(math.radians(-15))), cage=True)
+        prev = zl
+    for k, a in enumerate((100, 128)):
+        aa = math.radians(a)
+        c.seg((cx + (r + 0.9) * math.cos(aa), cy + (r + 0.9) * math.sin(aa), z0 + 4), (cx + (r + 0.9) * math.cos(aa), cy + (r + 0.9) * math.sin(aa), z0 + h - 6), 0.55, 8)
+        zc = z0 + 10
+        while zc < z0 + h - 6:
+            c.seg((cx + (r + 0.3) * math.cos(aa), cy + (r + 0.3) * math.sin(aa), zc), (cx + (r + 0.9) * math.cos(aa), cy + (r + 0.9) * math.sin(aa), zc), 0.12, 4)
+            zc += 12
+    c.cyl(cx, cy, z0 + h + 5, 0.9, 9, 10)
+    c.build()
+
+
+def detail_buildings():
+    # ---- e-house ---------------------------------------------------------------------------------------
+    x0, y0 = P["ehouse_origin_ft"]
+    L, W, H = P["ehouse_ft"]
+    zf = GZ + P["ehouse_floor_ft"]
+    x1, y1 = x0 + L, y0 + W
+    clad_building("ELEC-EHOUSE-", x0, y0, x1, y1, zf, zf + H, s_cut=True, roof_top=zf + H + 0.6,
+                  doors={"S": [(x0 + 6, "p")], "E": [((y0 + y1) / 2, "p")]}, avoid={"S": [(x0 + 3, x0 + 9)]},
+                  louvres={"N": [(x0 + 100, x0 + 112, zf + 6, zf + 12)]}, plinth=False)
+    st = MeshAcc("ELEC-EHOUSE-STAIR-RAILS", "STEEL")
+    stair_rails(st, x0 - 14, y0 + 2, GZ, zf, (1, 0), 4.0)
+    st.build()
+    rh = MeshAcc("ELEC-EHOUSE-ROOF-HVAC-DETAIL", "STEEL_DK", cutaway=True)
+    for x in (x0 + 20, x0 + 70):
+        rh.cyl(x + 4, y1 - 6, zf + H + 4.6, 2.6, 0.25, 20)
+        for k in range(6):
+            rh.boxc(x + 4, y1 - 6, zf + H + 4.85, 4.8, 0.35, 0.1, rot=math.radians(k * 30))
+        rh.louvre_x(x + 0.6, x + 7.4, y1 - 10, -1, zf + H + 1.3, zf + H + 3.8, 0.5, 0.25)
+        rh.seg((x + 8, y1 - 6, zf + H + 2), (x + 20, y1 - 6, zf + H + 2), 0.12, 6)
+    rh.build()
+    # ---- MCC / VFD / UPS building ----------------------------------------------------------------------
+    x0, y0 = P["mcc_origin_ft"]
+    L, W, H = P["mcc_ft"]
+    z0 = GZ + 0.5
+    x1, y1 = x0 + L, y0 + W
+    clad_building("ELEC-MCC-", x0, y0, x1, y1, z0, z0 + H, s_cut=True, roof_top=z0 + H + 0.6,
+                  doors={"S": [(x0 + 7, "p"), (x0 + 63, "p")], "E": [((y0 + y1) / 2, "p")], "N": [(x0 + 20, "p")]},
+                  avoid={"S": [(x0 + 3, x0 + 11), (x0 + 59, x0 + 67)]}, louvres={"N": [(x0 + 45, x0 + 57, z0 + 5, z0 + 11)]})
+    rh = MeshAcc("ELEC-MCC-ROOF-HVAC-DETAIL", "STEEL_DK", cutaway=True)
+    for x in (x0 + 10, x0 + 40):
+        rh.cyl(x + 4, y1 - 8, z0 + H + 4.6, 2.6, 0.25, 20)
+        for k in range(6):
+            rh.boxc(x + 4, y1 - 8, z0 + H + 4.85, 4.8, 0.35, 0.1, rot=math.radians(k * 30))
+        rh.louvre_x(x + 0.6, x + 7.4, y1 - 12, -1, z0 + H + 1.3, z0 + H + 3.8, 0.5, 0.25)
+    rh.build()
+    # ---- admin building: mullions, sun fins, parapet, entrance steps and ramp ---------------------------
+    x0, y0 = P["admin_origin_ft"]
+    L, W, H = P["admin_ft"]
+    x1, y1 = x0 + L, y0 + W
+    mu = MeshAcc("ADMIN-MULLIONS", "STEEL")
+    for zl in (GZ + 4, GZ + 16):
+        for sy, sg in ((y0, -1), (y1, 1)):
+            xx = x0 + 4
+            while xx <= x1 - 4 + 0.01:
+                ya, yb = (sy - 0.6, sy + 0.1) if sg < 0 else (sy - 0.1, sy + 0.6)
+                mu.box(xx - 0.12, ya, zl - 0.2, xx + 0.12, yb, zl + 6.2)
+                xx += 4.0
+            for zz in (zl - 0.2, zl + 3.0, zl + 6.0):
+                ya, yb = (sy - 0.6, sy + 0.1) if sg < 0 else (sy - 0.1, sy + 0.6)
+                mu.box(x0 + 4, ya, zz, x1 - 4, yb, zz + 0.2)
+    mu.build()
+    fn = MeshAcc("ADMIN-SUN-FINS", "ENCL")
+    for zl in (GZ + 4, GZ + 16):
+        xx = x0 + 6
+        while xx < x1 - 6:
+            fn.box(xx, y0 - 1.8, zl, xx + 0.25, y0 - 0.1, zl + 6.0)
+            xx += 8.0
+        fn.box(x0 + 4, y0 - 1.8, zl + 6.0, x1 - 4, y0 - 0.1, zl + 6.25)
+    fn.build()
+    pr = MeshAcc("ADMIN-PARAPET", "ENCL")
+    pr.box(x0 - 0.4, y0 - 0.4, GZ + H, x1 + 0.4, y0 + 0.4, GZ + H + 1.2).box(x0 - 0.4, y1 - 0.4, GZ + H, x1 + 0.4, y1 + 0.4, GZ + H + 1.2)
+    pr.box(x0 - 0.4, y0 + 0.4, GZ + H, x0 + 0.4, y1 - 0.4, GZ + H + 1.2).box(x1 - 0.4, y0 + 0.4, GZ + H, x1 + 0.4, y1 - 0.4, GZ + H + 1.2)
+    for k in range(3):
+        pr.box(x0 + 8 + k * 14, y1 - 14, GZ + H, x0 + 16 + k * 14, y1 - 6, GZ + H + 3.5)
+        pr.cyl(x0 + 12 + k * 14, y1 - 10, GZ + H + 3.5, 2.2, 0.2, 18)
+    pr.build()
+    en = MeshAcc("ADMIN-ENTRANCE", "STEEL")
+    en.door_x(x0 + 50, y0, -1, GZ, 6.0, 8.0)
+    for k in range(4):
+        en.box(x0 + 46, y0 - 1.5 - k * 0.6, GZ, x0 + 54, y0 - 0.9 - k * 0.6 + 0.6, GZ + 0.5 - k * 0.12)
+    en.rail([(x0 + 44, y0 - 4), (x0 + 44, y0 - 0.5)], GZ, 3.0, 4.0, toe=False)
+    en.rail([(x0 + 56, y0 - 4), (x0 + 56, y0 - 0.5)], GZ, 3.0, 4.0, toe=False)
+    en.build()
+    ba = MeshAcc("ADMIN-BOLLARDS", "STEEL_DK")
+    for k in range(7):
+        ba.cyl(x0 + 30 + k * 6, y0 - 16, GZ, 0.4, 3.0, 8)
+    ba.build()
+    # ---- water treatment building + tanks -------------------------------------------------------------------
+    wx, wy = P["water_origin_ft"]
+    bL, bW, bH = P["water_treatment_ft"]
+    pL, pW, pD = P["pond_ft"]
+    by = wy + pW + 40
+    clad_building("WATER-BLDG-", wx, by, wx + bL, by + bW, GZ, GZ + bH,
+                  doors={"S": [(wx + 12, "p"), (wx + 50, "r", 12.0, 14.0)], "E": [(by + 25, "p")]}, avoid={"S": [(wx + 44, wx + 56)]},
+                  louvres={"N": [(wx + 20, wx + 32, GZ + 10, GZ + 16), (wx + 46, wx + 58, GZ + 10, GZ + 16)]})
+    n, td, th = P["water_tank_n_d_h_ft"]
+    for k in range(n):
+        tank_detail("WATER-T%d-" % (k + 1), wx + bL + 40 + k * 60, by + bW / 2, GZ, td / 2, th)
+    # ---- gas metering house + process tanks --------------------------------------------------------------------
+    gx, gy = P["gasmet_origin_ft"]
+    hL, hW, hH = P["gas_meter_ft"]
+    clad_building("GASMET-HOUSE-", gx, gy + 40, gx + hL, gy + 40 + hW, GZ, GZ + hH,
+                  doors={"S": [(gx + 10, "p")], "E": [(gy + 40 + hW / 2, "p")]}, avoid={"S": [(gx + 6, gx + 14)]},
+                  louvres={"N": [(gx + 22, gx + 34, GZ + 7, GZ + 13)], "W": [(gy + 48, gy + 56, GZ + 7, GZ + 13)]})
+    n2, td2, th2 = P["process_tank_n_d_h_ft"]
+    for k in range(n2):
+        tank_detail("GASMET-T%d-" % (k + 1), gx + 75 + k * 35, gy + 80, GZ, td2 / 2, th2, roof_h=2.0)
+    # ---- CCS compressor building, amine tank ---------------------------------------------------------------------------
+    cx0, cy0 = P["ccs_origin_ft"]
+    clad_building("CCS-COMP-", cx0, cy0, cx0 + 80, cy0 + 40, GZ, GZ + 24,
+                  doors={"S": [(cx0 + 12, "p"), (cx0 + 50, "r", 14.0, 16.0)], "E": [(cy0 + 20, "p")]}, avoid={"S": [(cx0 + 43, cx0 + 57)]},
+                  louvres={"N": [(cx0 + 15, cx0 + 27, GZ + 14, GZ + 21), (cx0 + 40, cx0 + 52, GZ + 14, GZ + 21), (cx0 + 60, cx0 + 72, GZ + 14, GZ + 21)]})
+    tank_detail("CCS-AMINE-", cx0 + 140, cy0 + 40, GZ, 15, 30, roof_h=2.5)
+    # ---- ACC condensate tank (south side) -------------------------------------------------------------------------------------
+    tank_detail("ACC-CT-", ACC_X0 + 80, ACC_Y0 - 22, GZ, 10, 24, roof_h=2.0)
+    # ---- gate house, site office, switchyard control house -------------------------------------------------------------
+    clad_building("SITE-GATEHOUSE-", 224, FENCE_IN - 6, 236, FENCE_IN + 6, GZ, GZ + 10, doors={"N": [(230, "p")]}, roof_ribs=False, plinth=False, downpipes=False)
+    lx, ly = P["laydown_origin_ft"]
+    clad_building("LAYDOWN-OFFICE-", lx + 140, ly + 20, lx + 160, ly + 28, GZ, GZ + 8.5, doors={"S": [(lx + 146, "p")]}, roof_ribs=False, plinth=False)
+    sx, sy = SY_X0, SY_Y0
+    clad_building("SWYD-CH-", sx + 20, sy + SY_W - 45, sx + 50, sy + SY_W - 25, GZ, GZ + 12, doors={"S": [(sx + 28, "p")], "E": [(sy + SY_W - 35, "p")]},
+                  louvres={"N": [(sx + 34, sx + 44, GZ + 5, GZ + 10)]})
+    # ---- absorber / regenerator / DCC columns --------------------------------------------------------------------------------
+    ox, oy = P["ccs_origin_ft"]
+    dd, dh = P["dcc_d_h_ft"]
+    rd, rh_ = P["regenerator_d_h_ft"]
+    column_detail("CCS-DCC-", ox + 28, oy + 300, GZ + 4, dd / 2, dh)
+    column_detail("CCS-REGEN-", ox + 130, oy + 190, GZ + 4, rd / 2, rh_)
+    aL, aW, aH = P["absorber_ft"]
+    abx, aby = ox + 10, oy + 120
+    ap = MeshAcc("CCS-ABSORBER-PLATFORMS", "STEEL")
+    zz = 40.0
+    prev = GZ
+    while zz < aH:
+        ap.box(abx + aL + 1.5, aby + 8, GZ + zz - 0.25, abx + aL + 7.5, aby + aW - 8, GZ + zz)
+        ap.rail([(abx + aL + 7.5, aby + 8), (abx + aL + 7.5, aby + aW - 8), (abx + aL + 1.5, aby + aW - 8)], GZ + zz, 3.5, 5.0)
+        ap.rail([(abx + aL + 1.5, aby + 8), (abx + aL + 7.5, aby + 8)], GZ + zz, 3.5, 5.0, toe=False)
+        ap.ladder(abx + aL + 7.1, aby + 12 + (int(zz / 40) % 2) * 20, GZ + prev if prev > 0 else GZ, GZ + zz, face=(-1, 0), cage=True)
+        prev = zz
+        zz += 40.0
+    yy = aby + 10
+    while yy < aby + aW:
+        for zg in range(40, int(aH), 40):
+            ap.box(abx - 0.3, yy, GZ + zg - 0.35, abx + aL + 0.3, yy + 0.6, GZ + zg)
+        yy += 14
+    ap.build()
+    ab_top = MeshAcc("CCS-ABSORBER-TOP", "STEEL")
+    ztop = P["ccs_outlet_z_ft"]
+    ab_top.box(abx + aL / 2 - 12, aby + aW / 2 - 12, GZ + aH - 0.25, abx + aL / 2 + 12, aby + aW / 2 + 12, GZ + aH)
+    ab_top.rail([(abx + aL / 2 - 12, aby + aW / 2 - 12), (abx + aL / 2 + 12, aby + aW / 2 - 12), (abx + aL / 2 + 12, aby + aW / 2 + 12), (abx + aL / 2 - 12, aby + aW / 2 + 12), (abx + aL / 2 - 12, aby + aW / 2 - 12)], GZ + aH, 3.5, 6.0)
+    ab_top.box(abx + aL / 2 - 10.5, aby + aW / 2 - 10.5, GZ + ztop, abx + aL / 2 + 10.5, aby + aW / 2 + 10.5, GZ + ztop + 0.8)
+    ab_top.build()
+
+# ---- switchyard ---------------------------------------------------------------------------------------
+def detail_switchyard():
+    x0, y0 = SY_X0, SY_Y0
+    x1, y1 = x0 + SY_L, y0 + SY_W
+    pl = MeshAcc("SWYD-PLINTHS", "CONC")
+    lg = MeshAcc("SWYD-GROUND-LUGS", "COPPER")
+    for bx in (170, 250, 330, 410):
+        for dy in (-15, 0, 15):
+            pl.box(bx - 4.5, 1180 + dy - 2.0, GZ, bx + 4.5, 1180 + dy + 2.0, GZ + 0.6)
+            for yd in (1152, 1208):
+                pl.box(bx - 4.5, yd + dy - 1.0, GZ, bx + 4.5, yd + dy + 1.0, GZ + 0.5)
+            pl.box(bx - 1.5, 1196 + dy - 1.5, GZ, bx + 1.5, 1196 + dy + 1.5, GZ + 0.5)
+            for sx in (-1, 1):
+                lg.box(bx + sx * 3.4 - 0.25, 1180 + dy - 2.0, GZ + 0.6, bx + sx * 3.4 + 0.25, 1180 + dy - 1.6, GZ + 1.6)
+    for x in (230, 250, 270):
+        pl.box(x - 1.5, y1 - 30 - 1.5, GZ, x + 1.5, y1 - 30 + 1.5, GZ + 0.5)
+    pl.build(); lg.build()
+    # insulator strings at the dead-ends (line entry and grid exit)
+    ins = MeshAcc("SWYD-INSULATOR-STRINGS", "PORCELAIN")
+    for (xs, ys, zt) in [(405 + pi * 12 + ci * 6, 1090, 56) for pi in range(3) for ci in range(2)] + [(x, y1 - 10, 56) for x in (230, 250, 270)]:
+        for k in range(16):
+            ins.cyl(xs, ys, zt - 0.5 - (k + 1) * 0.36, 0.65, 0.14, 12)
+        ins.seg((xs, ys, zt), (xs, ys, zt - 0.6), 0.09, 4)
+    ins.build()
+    # bus spacers / clamps
+    cl = MeshAcc("SWYD-BUS-CLAMPS", "STEEL_DK")
+    for yb in (1130, 1230):
+        for x in range(int(x0) + 30, int(x1) - 20, 60):
+            for dy in (-15, 0, 15):
+                cl.box(x - 0.6, yb + dy - 0.6, 39.6, x + 0.6, yb + dy + 0.6, 40.8)
+            cl.box(x - 0.2, yb - 15, 40.0, x + 0.2, yb + 15, 40.3)
+    cl.build()
+    # cable trench with cover plates + marshalling kiosks + lighting masts
+    tr = MeshAcc("SWYD-TRENCH", "CONC")
+    tr.box(x0 + 20, 1262, GZ, x1 - 20 - 0, 1264.5, GZ + 0.5)
+    tr.box(x0 + 20, 1262, GZ, x0 + 22, 1300, GZ + 0.5)
+    tr.build()
+    cv = MeshAcc("SWYD-TRENCH-COVERS", "STEEL")
+    x = x0 + 22
+    while x < x1 - 22:
+        cv.box(x, 1262.2, GZ + 0.5, x + 3.6, 1264.3, GZ + 0.62)
+        x += 4.0
+    cv.build()
+    mk = MeshAcc("SWYD-MARSHALLING-KIOSKS", "ENCL")
+    for bx in (170, 250, 330, 410):
+        mk.box(bx - 1.5, 1266, GZ, bx + 1.5, 1268.5, GZ + 5.5)
+        mk.box(bx - 1.6, 1265.9, GZ + 5.5, bx + 1.6, 1268.6, GZ + 5.8)
+        mk.box(bx - 1.2, 1265.95, GZ + 0.4, bx + 1.2, 1266.0, GZ + 5.0)
+    mk.build()
+    mt = MeshAcc("SWYD-LIGHTS", "STEEL_DK")
+    for (x, y) in ((x0 + 10, y0 + 10), (x1 - 10, y0 + 10), (x0 + 10, y1 - 10), (x1 - 10, y1 - 10)):
+        for zz in (70.0, 84.0):
+            mt.box(x - 1.2, y - 0.5, zz, x + 1.2, y + 0.5, zz + 0.9)
+    mt.build()
+
+
+# ---- BESS, modular yard, laydown ---------------------------------------------------------------------------
+def detail_bess():
+    x0, y0 = P["bess_origin_ft"]
+    cL, cW, cH = P["bess_ft"]
+    pL, pW, pH = P["pcs_tx_ft"]
+    co = MeshAcc("BESS-CONTAINER-DETAIL", "ENCL")
+    dr = MeshAcc("BESS-DOORS", "STEEL")
+    hv = MeshAcc("BESS-HVAC-DETAIL", "STEEL_DK")
+    ps = MeshAcc("BESS-PCS-DETAIL", "STEEL")
+    fin = MeshAcc("BESS-TX-FINS", "STEEL_DK")
+    cur = MeshAcc("BESS-SKID-CURBS", "CONC")
+    for row in range(2):
+        for col in range(4):
+            cx0 = x0 + 10 + col * 50
+            cy0 = y0 + 10 + row * 50
+            zb = GZ + 0.5
+            # corrugation on both long faces
+            co.ribs_x(cy0, -1, cx0 + 0.5, cx0 + cL - 0.5, zb + 0.5, zb + cH - 0.4, 1.4, 0.5, 0.12)
+            co.ribs_x(cy0 + cW, 1, cx0 + 0.5, cx0 + cL - 0.5, zb + 0.5, zb + cH - 0.4, 1.4, 0.5, 0.12, avoid=[(cx0 + 3, cx0 + 10), (cx0 + cL - 10, cx0 + cL - 3)])
+            # roof ribs and vents
+            xr = cx0 + 1.0
+            while xr < cx0 + cL - 1:
+                co.box(xr, cy0 + 0.3, zb + cH, xr + 0.25, cy0 + cW - 0.3, zb + cH + 0.12)
+                xr += 3.0
+            co.box(cx0 + 12, cy0 + 2, zb + cH, cx0 + 16, cy0 + 6, zb + cH + 0.9).box(cx0 + 24, cy0 + 2, zb + cH, cx0 + 28, cy0 + 6, zb + cH + 0.9)
+            # corner castings
+            for xx in (cx0 - 0.3, cx0 + cL - 0.3):
+                for yy in (cy0 - 0.3, cy0 + cW - 0.3):
+                    for zz in (zb - 0.3, zb + cH - 0.3):
+                        co.box(xx, yy, zz, xx + 0.6, yy + 0.6, zz + 0.6)
+            # end doors with locking bars, hinges and handles
+            for xf, sg in ((cx0, -1), (cx0 + cL, 1)):
+                for half in range(2):
+                    ya = cy0 + 0.3 + half * 3.85
+                    xa, xb = (xf - 0.16, xf) if sg < 0 else (xf, xf + 0.16)
+                    dr.box(xa, ya, zb + 0.9, xb, ya + 3.7, zb + cH - 0.5)
+                    for lr in (0.9, 2.4):
+                        xc = xf + sg * 0.22
+                        dr.cyl_between((xc, ya + lr, zb + 1.0), (xc, ya + lr, zb + cH - 0.6), 0.05, 5)
+                    dr.box(min(xf, xf + sg * 0.3), ya + (3.0 if half == 0 else 0.4), zb + 4.0, max(xf, xf + sg * 0.3), ya + (3.3 if half == 0 else 0.7), zb + 5.0)
+            # HVAC fan grilles on the service face
+            for hx in (cx0 + 6.5, cx0 + cL - 6.5):
+                yy = cy0 + cW + 2.0
+                hv.cyl_between((hx, yy, GZ + 4.5), (hx, yy + 0.18, GZ + 4.5), 1.6, 18)
+                hv.cyl_between((hx, yy + 0.18, GZ + 4.5), (hx, yy + 0.3, GZ + 4.5), 0.3, 8)
+                for a in (0, 60, 120):
+                    hv.boxc(hx, yy + 0.24, GZ + 4.5, 3.0, 0.08, 0.12, rot=math.radians(a))
+            # PCS skid: louvres, doors, fins, curb
+            py0 = cy0 + cW + 6
+            ps.louvre_x(cx0 + 10.5, cx0 + 17.5, py0 + pW - 1, 1, GZ + 2.0, GZ + 8.0, 0.5, 0.3)
+            ps.door_x(cx0 + 12, py0 + 1, -1, GZ + 0.8, 3.4, 7.0)
+            for sx, sgx in ((cx0 + 21, -1), (cx0 + 31, 1)):
+                yy = py0 + 2.0
+                while yy < py0 + pW - 2.0:
+                    fin.box(min(sx, sx + sgx * 0.8), yy, GZ + 1.6, max(sx, sx + sgx * 0.8), yy + 0.13, GZ + pH - 2.4)
+                    yy += 0.55
+            cur.box(cx0 + 7.6, py0 - 0.4, GZ + 0.8, cx0 + 8 + pL + 0.4, py0, GZ + 1.3).box(cx0 + 7.6, py0 + pW, GZ + 0.8, cx0 + 8 + pL + 0.4, py0 + pW + 0.4, GZ + 1.3)
+            cur.box(cx0 + 7.6, py0, GZ + 0.8, cx0 + 8, py0 + pW, GZ + 1.3).box(cx0 + 8 + pL, py0, GZ + 0.8, cx0 + 8 + pL + 0.4, py0 + pW, GZ + 1.3)
+    co.build(); dr.build(); hv.build(); ps.build(); fin.build(); cur.build()
+    # switchgear container detail
+    clad_building("BESS-SWGR-", x0 + 226, y0 + 88, x0 + 246, y0 + 96, GZ, GZ + 9, doors={"S": [(x0 + 233, "p"), (x0 + 240, "p")]}, avoid={"S": [(x0 + 230, x0 + 244)]}, roof_ribs=False, plinth=False, parapet=False, downpipes=False)
+
+
+def detail_modular():
+    x0, y0 = P["modular_origin_ft"]
+    gL, gW, gH = P["genset_ft"]
+    fL, fW, fH = P["fuel_cell_ft"]
+    co = MeshAcc("MODPWR-CONTAINER-DETAIL", "ENCL")
+    dr = MeshAcc("MODPWR-DOORS", "STEEL")
+    lv = MeshAcc("MODPWR-LOUVRES", "STEEL_DK")
+    ex = MeshAcc("MODPWR-EXHAUST-DETAIL", "STEEL_DK")
+    for k in range(3):
+        gx, gy = x0 + 10, y0 + 10 + k * 22
+        zb = GZ + 0.5
+        co.ribs_x(gy, -1, gx + 0.5, gx + gL - 0.5, zb + 0.6, zb + gH - 0.4, 1.6, 0.5, 0.12, avoid=[(gx + 4, gx + 9)])
+        co.ribs_x(gy + gW, 1, gx + 0.5, gx + gL - 0.5, zb + 0.6, zb + gH - 0.4, 1.6, 0.5, 0.12, avoid=[(gx + 12, gx + 30)])
+        dr.door_x(gx + 6.5, gy, -1, zb, 3.2, 6.6)
+        lv.louvre_x(gx + 12, gx + 30, gy + gW, 1, zb + 3.0, zb + gH - 3.0, 0.5, 0.25)
+        lv.louvre_y(gy + 1, gy + gW - 1, gx + gL + 2, 1, zb + 2.0, zb + gH - 2.0, 0.5, 0.35)
+        for xx in (gx - 0.3, gx + gL - 0.3):
+            for yy in (gy - 0.3, gy + gW - 0.3):
+                for zz in (zb - 0.3, zb + gH - 0.3):
+                    co.box(xx, yy, zz, xx + 0.6, yy + 0.6, zz + 0.6)
+        ex.stiff_ring(gx + 20, gy + gW / 2, GZ + gH + 1.5, 0.6, 0.3, 0.12, 12)
+        ex.cyl(gx + 20, gy + gW / 2, GZ + gH + 7.5, 1.0, 1.4, 10, r2=0.6)
+        ex.cyl(gx + 20, gy + gW / 2, GZ + gH + 6.6, 0.8, 0.25, 10)
+        for xx in (gx + 8, gx + 14):
+            ex.cyl(xx, gy + gW / 2, GZ + gH + 0.9, 0.9, 0.3, 10)
+    co.build(); dr.build(); lv.build(); ex.build()
+    fc = MeshAcc("MODPWR-FUELCELL-DETAIL", "ENCL")
+    fd = MeshAcc("MODPWR-FUELCELL-FINS", "STEEL_DK")
+    for k in range(4):
+        fx, fy = x0 + 80 + k * 26, y0 + 12
+        fc.ribs_x(fy, -1, fx + 0.5, fx + fL - 0.5, GZ + 0.6, GZ + fH - 0.3, 1.5, 0.5, 0.1)
+        xx = fx + 8
+        while xx < fx + fL - 1:
+            fd.box(xx, fy + 1, GZ + fH, xx + 0.12, fy + fW - 1, GZ + fH + 1.8)
+            xx += 0.6
+    fc.build(); fd.build()
+    clad_building("MODPWR-SWGR-", x0 + 100, y0 + 70, x0 + 120, y0 + 78, GZ, GZ + 9, doors={"S": [(x0 + 106, "p"), (x0 + 114, "p")]}, avoid={"S": [(x0 + 103, x0 + 117)]}, roof_ribs=False, plinth=False, parapet=False, downpipes=False)
+
+
+def detail_laydown():
+    x0, y0 = P["laydown_origin_ft"]
+    rd, rw = P["reel_d_w_ft"]
+    wc = MeshAcc("LAYDOWN-REEL-WINDINGS", "CABLE")
+    sp = MeshAcc("LAYDOWN-REEL-SPOKES", "STEEL_DK")
+    for k in range(P["counts"]["reels"]):
+        cx, cy = x0 + 20 + k * 22, y0 + 24
+        r = rd / 2 + (1.0 if k % 2 else 0.0)
+        z = r + 1.5
+        wc.cyl_between((cx - rw / 2 + 0.5, cy, z), (cx + rw / 2 - 0.1, cy, z), r * 0.82, 28)
+        for a in range(0, 360, 30):
+            aa = math.radians(a)
+            for xf in (cx - rw / 2 - 0.25, cx + rw / 2 + 0.05):
+                sp.seg((xf, cy + r * 0.5 * math.cos(aa), z + r * 0.5 * math.sin(aa)), (xf, cy + r * 0.95 * math.cos(aa), z + r * 0.95 * math.sin(aa)), 0.1, 4)
+        sp.cyl_between((cx - rw / 2 - 0.45, cy, z), (cx + rw / 2 + 0.45, cy, z), 0.7, 12)          # hub / arbor
+    wc.build(); sp.build()
+    # sheave rollers under the pulled cables, on stands
+    cx3 = x0 + 20 + 2 * 22
+    ro = MeshAcc("LAYDOWN-ROLLERS", "STEEL")
+    y = y0 + 24 + 12
+    sy = y0 + 70
+    while y < sy - 8:
+        for xo in (-1.5, -0.5, 0.5, 1.5):
+            pass
+        ro.cyl_between((cx3 - 3.0, y, GZ + 1.1), (cx3 + 3.0, y, GZ + 1.1), 0.4, 10)
+        ro.box(cx3 - 3.3, y - 0.4, GZ, cx3 - 2.9, y + 0.4, GZ + 1.1).box(cx3 + 2.9, y - 0.4, GZ, cx3 + 3.3, y + 0.4, GZ + 1.1)
+        y += 4.0
+    ro.build()
+    # canopy frame over the prefab spine (open frame + hanging lights + monorail)
+    sx0, sy = x0 + 40, y0 + 70
+    cp = MeshAcc("LAYDOWN-CANOPY", "STEEL")
+    L = P["prefab_spine_l_ft"] + 12
+    xs0 = sx0 - 6
+    for xx in (xs0, xs0 + L / 2, xs0 + L):
+        for yy in (sy - 6, sy + 6):
+            cp.box(xx - 0.4, yy - 0.4, GZ, xx + 0.4, yy + 0.4, GZ + 14)
+        cp.box(xx - 0.3, sy - 6.4, GZ + 13.4, xx + 0.3, sy + 6.4, GZ + 14.0)
+    for yy in (sy - 6, sy, sy + 6):
+        cp.box(xs0 - 0.3, yy - 0.2, GZ + 14.0, xs0 + L + 0.3, yy + 0.2, GZ + 14.5)
+    xx = xs0
+    while xx <= xs0 + L:
+        cp.box(xx - 0.15, sy - 6.4, GZ + 14.0, xx + 0.15, sy + 6.4, GZ + 14.3)
+        xx += 4.0
+    for xx in (xs0, xs0 + L):
+        cp.seg((xx, sy - 6, GZ), (xx, sy + 6, GZ + 13.4), 0.12, 4)
+        cp.seg((xx, sy + 6, GZ), (xx, sy - 6, GZ + 13.4), 0.12, 4)
+    cp.box(xs0 + 3, sy - 0.4, GZ + 12.0, xs0 + L - 3, sy + 0.4, GZ + 12.5)               # monorail with hoist
+    cp.box(xs0 + L / 2 - 1.5, sy - 1.0, GZ + 10.5, xs0 + L / 2 + 1.5, sy + 1.0, GZ + 12.0)
+    for xx in range(int(xs0) + 5, int(xs0 + L), 10):
+        cp.seg((xx, sy - 3, GZ + 14.0), (xx, sy - 3, GZ + 12.5), 0.05, 4)
+        cp.cyl(xx, sy - 3, GZ + 11.9, 0.9, 0.6, 12, r2=1.3)
+    cp.build()
+    # workbench with cable cutter, barrier panels, pallets, telehandler
+    wb = MeshAcc("LAYDOWN-WORKBENCH", "STEEL")
+    wb.box(sx0 + 46, sy - 3, GZ + 2.8, sx0 + 54, sy + 3, GZ + 3.2)
+    for xx in (sx0 + 46.4, sx0 + 53.6):
+        for yy in (sy - 2.6, sy + 2.6):
+            wb.box(xx - 0.2, yy - 0.2, GZ, xx + 0.2, yy + 0.2, GZ + 2.8)
+    wb.box(sx0 + 48, sy - 1.5, GZ + 3.2, sx0 + 51, sy + 1.5, GZ + 4.2)
+    wb.build()
+    bar = MeshAcc("LAYDOWN-BARRIERS", "STEEL_DK")
+    bpts = [(x0 + 4, y0 + 8), (x0 + 4, y0 + 46), (x0 + 140, y0 + 46), (x0 + 140, y0 + 8)]
+    bar.rail(bpts, GZ, 3.5, 6.0, toe=False)
+    bar.build()
+    pa = MeshAcc("LAYDOWN-PALLETS", "ENCL")
+    for k in range(4):
+        px, py = x0 + 100 + k * 9, y0 + 88
+        pa.box(px, py, GZ, px + 6, py + 5, GZ + 0.5)
+        pa.box(px + 0.3, py + 0.3, GZ + 0.5, px + 5.7, py + 4.7, GZ + 3.5)
+    pa.build()
+    th = MeshAcc("LAYDOWN-TELEHANDLER", "STEEL")
+    tx, ty = x0 + 150, y0 + 55
+    th.box(tx, ty, GZ + 1.5, tx + 14, ty + 6, GZ + 4.5)
+    th.box(tx + 9, ty + 0.5, GZ + 4.5, tx + 13, ty + 5.5, GZ + 8.0)
+    th.seg((tx + 2, ty + 3, GZ + 4.0), (tx - 12, ty + 3, GZ + 11), 0.6, 6)
+    th.box(tx - 14, ty + 1.2, GZ + 10.5, tx - 11.5, ty + 4.8, GZ + 11.2)
+    for wx, wy in ((tx + 2.5, ty - 0.3), (tx + 11, ty - 0.3), (tx + 2.5, ty + 6.3), (tx + 11, ty + 6.3)):
+        th.cyl_between((wx, wy - 0.3, GZ + 1.6), (wx, wy + 0.3, GZ + 1.6), 1.6, 14)
+    th.build()
+    anchor("LAYDOWN-CANOPY", sx0 + 20, sy, GZ + 15, "Canopy frame with monorail hoist", 3)
+    anchor("LAYDOWN-ROLLERS", cx3, y0 + 55, GZ + 2.5, "Sheave rollers under the cable pull", 3)
+
+# ---- ACC, cooling, gas, corridor, site furniture ----------------------------------------------------------
+def detail_acc():
+    x0, y0 = ACC_X0, ACC_Y0
+    x1, y1 = x0 + ACC_L, y0 + ACC_W
+    nx, ny = P["acc_cells"]
+    deck = P["acc_fan_deck_ft"]
+    cw = ACC_L / nx
+    fr = P["acc_fan_d_ft"] / 2
+    ym = (y0 + y1) / 2
+    # column base plates with anchor bolts
+    bp = MeshAcc("ACC-BASE-PLATES", "STEEL_DK")
+    for i in range(nx + 1):
+        for j in range(ny + 1):
+            x, y = x0 + i * cw, y0 + j * cw
+            bp.box(x - 1.7, y - 1.7, GZ, x + 1.7, y + 1.7, GZ + 0.5)
+            for sx in (-1.2, 1.2):
+                for sy in (-1.2, 1.2):
+                    bp.cyl(x + sx, y + sy, GZ + 0.5, 0.14, 0.5, 6)
+    bp.build()
+    # fan-deck perimeter rail, walkway grating between rows, access ladder
+    dk = MeshAcc("ACC-DECK-RAIL", "STEEL")
+    dk.rail([(x0, y0), (x1, y0), (x1, y1), (x0, y1), (x0, y0)], deck, 3.5, 5.0)
+    for j in range(ny + 1):
+        yy = y0 + j * cw
+        dk.box(x0, yy - 1.0, deck, x1, yy + 1.0, deck + 0.2)
+    dk.ladder(x0 + 3, y0 - 0.3, GZ, deck, face=(0, -1), cage=True)
+    dk.ladder(x1 - 3, y1 + 0.3, GZ, deck, face=(0, 1), cage=True)
+    dk.build()
+    # per-fan detail: gearbox, hub, shroud lip, motor cooling fins
+    gb = MeshAcc("ACC-FAN-DETAIL", "STEEL_DK")
+    for i in range(nx):
+        for j in range(ny):
+            cx, cy = x0 + (i + 0.5) * cw, y0 + (j + 0.5) * cw
+            gb.cyl(cx, cy, deck + 0.4, 1.1, 1.8, 12)
+            gb.cyl(cx, cy, deck + 5.0, fr + 0.45, 0.3, 28)
+            for k in range(6):
+                gb.box(cx + 1.6, cy - 1.0 + k * 0.4, deck + 0.8, cx + 1.75, cy - 0.85 + k * 0.4, deck + 2.6)
+    gb.build()
+    # steam duct expansion bellows and supports
+    bl = MeshAcc("ACC-STEAM-DUCT-BELLOWS", "STEEL_DK")
+    xx = HX1 + 25
+    while xx < 1375:
+        bl.cyl_between((xx, 730, 30), (xx + 0.5, 730, 30), 6.6, 24)
+        xx += 45
+    bl.build()
+    clad_building("ACC-MCC-", x0 + 20, y0 - 32, x0 + 48, y0 - 24, GZ, GZ + 9, doors={"N": [(x0 + 30, "p"), (x0 + 38, "p")]}, avoid={"N": [(x0 + 26, x0 + 42)]}, roof_ribs=False, plinth=False, parapet=False, downpipes=False)
+
+
+def detail_cooling():
+    x0, y0 = P["chill_origin_ft"]
+    cL, cW, cH = P["chiller_ft"]
+    tL, tW, tH = P["tower_cell_ft"]
+    ch = MeshAcc("CHILL-CHILLER-DETAIL", "STEEL")
+    for k in range(P["counts"]["chiller"]):
+        cx = x0 + 10 + k * 40
+        yc = y0 + 20 + cW / 2
+        for xe in (cx + 2, cx + cL - 2):
+            ch.cyl_between((xe, yc, GZ + 6), (xe + 0.4, yc, GZ + 6), 3.5, 20)
+            ch.cyl_between((xe, yc, GZ + 9.5), (xe + 0.4, yc, GZ + 9.5), 2.9, 18)
+        ch.cyl_between((cx + 8, yc, GZ + 6), (cx + 8.3, yc, GZ + 6), 3.3, 20)
+        ch.cyl(cx + 22, yc, GZ + 12.0, 1.7, 2.0, 16)                       # compressor motor
+        ch.box(cx + 11, yc - 4.6, GZ + 3, cx + 15, yc - 4.5, GZ + 7.4)      # control panel door
+        for zz in (GZ + 4.0, GZ + 8.0):
+            ch.cyl_between((cx + 15, yc - 3, zz), (cx + 15, yc - 6.5, zz), 0.4, 8)
+        ch.cyl(cx + 26, yc - 4.5, GZ + 3.0, 0.5, 2.2, 8)
+        ch.cyl(cx + 26, yc - 4.5, GZ + 5.2, 0.9, 0.12, 12)                # valve handwheel
+    ch.build()
+    tl = MeshAcc("CHILL-TOWER-LOUVRES", "STEEL_DK")
+    fanb = MeshAcc("CHILL-TOWER-FAN-BLADES", "STEEL")
+    for k in range(P["counts"]["tower"]):
+        tx = x0 + 10 + k * tL
+        tl.louvre_x(tx + 2, tx + tL - 2, y0 + 80, -1, GZ + 4, GZ + 22, 0.5, 0.45)
+        tl.louvre_x(tx + 2, tx + tL - 2, y0 + 80 + tW, 1, GZ + 4, GZ + 22, 0.5, 0.45)
+        for a in range(0, 180, 30):
+            fanb.boxc(tx + tL / 2, y0 + 80 + tW / 2, GZ + tH + 0.8, 14.0, 1.6, 0.14, rot=math.radians(a))
+        fanb.cyl(tx + tL / 2, y0 + 80 + tW / 2, GZ + tH + 0.6, 1.0, 1.0, 10)
+    tl.louvre_y(y0 + 82, y0 + 80 + tW - 2, x0 + 10, -1, GZ + 4, GZ + 22, 0.5, 0.45)
+    tl.louvre_y(y0 + 82, y0 + 80 + tW - 2, x0 + 10 + P["counts"]["tower"] * tL, 1, GZ + 4, GZ + 22, 0.5, 0.45)
+    tl.build(); fanb.build()
+    tr = MeshAcc("CHILL-TOWER-DECK-RAIL", "STEEL")
+    xe = x0 + 10 + P["counts"]["tower"] * tL
+    tr.rail([(x0 + 10, y0 + 80), (xe, y0 + 80), (xe, y0 + 80 + tW), (x0 + 10, y0 + 80 + tW), (x0 + 10, y0 + 80)], GZ + tH, 3.5, 6.0)
+    tr.ladder(xe + 0.3, y0 + 80 + tW / 2, GZ, GZ + tH, face=(1, 0), cage=True)
+    tr.build()
+
+
+def detail_gas():
+    x0, y0 = P["gasmet_origin_ft"]
+    yp = P["pipeline_y_ft"]
+    pr = P["pipeline_d_ft"] / 2
+    fl = MeshAcc("GASMET-FLANGES", "STEEL_DK")
+    vv = MeshAcc("GASMET-VALVES", "STEEL_DK")
+    ins = MeshAcc("GASMET-INSTRUMENTS", "ENCL")
+    # flange rings along the ground run of the main pipeline
+    xx = x0 + 100
+    while xx < SW - PR_IN - 22:
+        fl.cyl_between((xx, yp, GZ + 3), (xx + 0.28, yp, GZ + 3), pr * 1.75, 14)
+        xx += 24
+    xx = SW - FENCE_IN + 4
+    # meter runs: valves with stems and hand wheels, orifice flanges, transmitters
+    for k in range(3):
+        yr = yp - 8 + k * 8
+        for xv in (x0 + 90, x0 + 58):
+            vv.box(xv - 1.4, yr - 1.1, GZ + 1.9, xv + 1.4, yr + 1.1, GZ + 4.1)
+            vv.cyl(xv, yr, GZ + 4.1, 0.16, 2.2, 6)
+            vv.cyl(xv, yr, GZ + 6.3, 0.9, 0.12, 14)
+        for xf in (x0 + 66, x0 + 84):
+            fl.cyl_between((xf, yr, GZ + 3), (xf + 0.22, yr, GZ + 3), 1.4, 12)
+        ins.box(x0 + 74.5, yr - 0.6, GZ + 3.7, x0 + 75.5, yr + 0.6, GZ + 5.8)                    # DP transmitter
+        ins.cyl(x0 + 75, yr, GZ + 5.8, 0.55, 0.6, 10)
+        vv.cyl_between((x0 + 75, yr, GZ + 3.7), (x0 + 75, yr, GZ + 4.2), 0.08, 4)
+        ins.box(x0 + 73.6, yr - 0.3, GZ, x0 + 76.4, yr + 0.3, GZ + 0.3)
+    # pressure gauges + isolation valves on the header, sample points
+    for xg in (x0 + 100, x0 + 50, x0 + 30):
+        ins.cyl(xg, yp + 5.5, GZ + 4.5, 0.5, 0.25, 12)
+        vv.cyl(xg, yp + 5.5, GZ + 3.0, 0.12, 1.5, 6)
+    # ESD valve actuator flange + hand wheel; pig receiver door and pig signaller
+    vv.cyl(x0 + 153, yp, GZ + 9.0, 0.5, 1.2, 10)
+    vv.cyl_between((x0 + 142, yp - 12, GZ + 3), (x0 + 142.6, yp - 12, GZ + 3), 2.4, 16)
+    vv.box(x0 + 141.8, yp - 9.9, GZ + 2.4, x0 + 142.4, yp - 9.5, GZ + 3.6)
+    ins.cyl(x0 + 132, yp - 12, GZ + 4.5, 0.4, 0.8, 8)
+    fl.build(); vv.build(); ins.build()
+    # bollards around the pig receiver and the outside supply skids
+    bo = MeshAcc("GASMET-BOLLARDS", "STEEL_DK")
+    for k in range(6):
+        bo.cyl(x0 + 118 + k * 5, yp - 17, GZ, 0.4, 3.0, 8)
+    bo.build()
+    # LNG vessel: saddle plates, top platform, relief stack; H2 module: manifold, gauges
+    xl = SW
+    lc = (xl + 140, 700)
+    ld, lh = P["lng_d_h_ft"]
+    lg = MeshAcc("FUELGAS-LNG-DETAIL", "STEEL")
+    zc = GZ + ld / 2 + 3
+    for dx in (-lh / 3, lh / 3):
+        lg.box(lc[0] + dx - 2.4, lc[1] - ld / 2 - 0.8, GZ, lc[0] + dx + 2.4, lc[1] + ld / 2 + 0.8, GZ + 0.7)
+    lg.box(lc[0] - 8, lc[1] - 3, zc + ld / 2 - 0.2, lc[0] + 8, lc[1] + 3, zc + ld / 2 + 0.1)
+    lg.rail([(lc[0] - 8, lc[1] - 3), (lc[0] + 8, lc[1] - 3), (lc[0] + 8, lc[1] + 3), (lc[0] - 8, lc[1] + 3), (lc[0] - 8, lc[1] - 3)], zc + ld / 2 + 0.1, 3.5, 5.0)
+    lg.ladder(lc[0] + lh / 3 + 3.2, lc[1] - ld / 2 - 1.2, GZ, zc + ld / 2, face=(0, -1), cage=True)
+    lg.cyl(lc[0] + 4, lc[1], zc + ld / 2 + 0.1, 0.5, 6.0, 8)
+    lg.cyl(lc[0] + 4, lc[1], zc + ld / 2 + 6.1, 0.9, 0.4, 10)
+    lg.build()
+    hc = (xl + 130, 470)
+    hL, hW, hH = P["h2_module_ft"]
+    hg = MeshAcc("FUELGAS-H2-DETAIL", "STEEL")
+    for k in range(4):
+        for rr in range(2):
+            hg.cyl_between((hc[0] + hL - 1, hc[1] + 1.5 + k * 1.7, GZ + 2 + rr * 3.4), (hc[0] + hL + 0.6, hc[1] + 1.5 + k * 1.7, GZ + 2 + rr * 3.4), 0.35, 8)
+    hg.cyl_between((hc[0] + hL + 0.6, hc[1] + 1.0, GZ + 2), (hc[0] + hL + 0.6, hc[1] + hW - 1.0, GZ + 5.4), 0.45, 8)
+    hg.cyl(hc[0] + hL + 0.6, hc[1] + hW / 2, GZ + 3.6, 0.5, 0.25, 10)
+    hg.rail([(hc[0] - 0.5, hc[1] - 0.5), (hc[0] + hL + 1.2, hc[1] - 0.5)], GZ, 3.0, 8.0, toe=False)
+    hg.build()
+
+
+def detail_corridor():
+    y0 = CORR_Y
+    yt = y0 + 8
+    yd = y0 + 16
+    zp, zc = P["tray_power_control_z_ft"]
+    x0, x1 = CORR_X0, CORR_X1
+    mk = MeshAcc("CORR-MARKER-POSTS", "CONC")
+    lb = MeshAcc("CORR-CABLE-LABELS", "ENCL")
+    ct = MeshAcc("CORR-CABLE-TIES", "CABLE")
+    bj = MeshAcc("CORR-BONDING-JUMPERS", "COPPER")
+    jb = MeshAcc("CORR-JUNCTION-BOXES", "ENCL")
+    x = x0 + 30
+    while x < x1:
+        if not on_road(x, yd, 3.0):
+            mk.box(x - 0.3, yd - 0.3, GZ, x + 0.3, yd + 0.3, GZ + 2.6)
+            mk.box(x - 0.5, yd - 0.5, GZ, x + 0.5, yd + 0.5, GZ + 0.4)
+        x += 60
+    x = x0 + 25
+    while x < x1 - 10:
+        if not on_road(x, yt, 3.0):
+            lb.box(x, yt - 1.62, zp + 0.05, x + 0.5, yt - 1.5, zp + 0.4)
+            lb.box(x, yt - 1.12, zc + 0.05, x + 0.5, yt - 1.0, zc + 0.4)
+            for kk in range(3):
+                ct.box(x + 3 + kk * 1.6, yt - 1.4, zp + 0.3, x + 3.15 + kk * 1.6, yt + 1.5, zp + 0.42)
+            ct.box(x + 3, yt - 0.9, zc + 0.25, x + 3.15, yt + 0.9, zc + 0.35)
+            if int(x) % 10 == 5:
+                bj.cyl_between((x + 5, yt - 1.5, zp + 0.5), (x + 5, yt + 1.5, zp + 0.5), 0.07, 5)
+        x += 20
+    x = x0 + 40
+    while x < x1:
+        if not on_road(x, yt, 3.0):
+            jb.box(x - 0.8, yt + 2.2, GZ, x + 0.8, yt + 2.9, GZ + 3.0)
+            jb.box(x - 0.9, yt + 2.1, GZ + 3.0, x + 0.9, yt + 3.0, GZ + 3.2)
+        x += 120
+    mk.build(); lb.build(); ct.build(); bj.build(); jb.build()
+    # MV kiosks: doors, hoods, plinths; pad-mount transformer: cooling fins, dead-front door, bushing covers
+    kd = MeshAcc("CORR-KIOSK-DETAIL", "ENCL")
+    tf = MeshAcc("CORR-PADMOUNT-DETAIL", "STEEL_DK")
+    for lx in P["mv_laterals_x_ft"]:
+        ky = y0 + CORR_W + 6
+        kd.box(lx - 4.1, ky - 0.1, GZ, lx + 4.1, ky + 4.1, GZ + 0.5)
+        kd.box(lx - 4.15, ky - 0.15, GZ + 8, lx + 4.15, ky + 4.15, GZ + 8.3)
+        for d in (-2, 2):
+            kd.box(lx + d - 1.5, ky - 0.08, GZ + 0.8, lx + d + 1.5, ky, GZ + 7.2)
+            kd.box(lx + d + 1.1, ky - 0.18, GZ + 3.5, lx + d + 1.3, ky, GZ + 4.5)
+        yy = ky + 0.7
+        while yy < ky + 5.5:
+            tf.box(lx + 14, yy, GZ + 0.8, lx + 14.6, yy + 0.15, GZ + 5.2)
+            yy += 0.6
+        tf.box(lx + 8, ky - 0.1, GZ + 0.6, lx + 14, ky, GZ + 5.4)
+        tf.box(lx + 7.9, ky + 6.0, GZ + 6, lx + 14.1, ky + 6.1, GZ + 6.5)
+    kd.build(); tf.build()
+
+
+def detail_site():
+    poles = MeshAcc("SITE-LIGHT-POLES", "STEEL")
+    heads = MeshAcc("SITE-LIGHT-HEADS", "STEEL_DK")
+    hyd = MeshAcc("SITE-HYDRANTS", "STEEL")
+    cb = MeshAcc("SITE-CATCH-BASINS", "STEEL_DK")
+    def pole(x, y, arm):
+        if blocked(x, y, 3.0, 40.0) or on_road(x, y, 0.5):
+            return
+        poles.box(x - 0.8, y - 0.8, GZ - 0.2, x + 0.8, y + 0.8, GZ + 0.8)
+        poles.cyl(x, y, GZ + 0.8, 0.5, 32, 10, r2=0.28)
+        ax_, ay_ = arm
+        poles.seg((x, y, GZ + 31.5), (x + ax_ * 6.0, y + ay_ * 6.0, GZ + 33.0), 0.16, 6)
+        heads.box(x + ax_ * 6.0 - 1.4, y + ay_ * 6.0 - 0.7, GZ + 32.5, x + ax_ * 6.0 + 1.4, y + ay_ * 6.0 + 0.7, GZ + 33.3)
+    rw = ROAD_W / 2
+    y = 120.0
+    while y < SH - 100:
+        for xr in P["ns_roads_x_ft"]:
+            pole(xr + rw + 2.5, y, (-1, 0))
+            pole(xr - rw - 2.5, y + 55, (1, 0))
+        y += 110.0
+    x = 100.0
+    while x < SW - 100:
+        pole(x, SPINE_Y + rw + 2.5, (0, -1))
+        pole(x + 55, SPINE_Y - rw - 2.5, (0, 1))
+        x += 110.0
+    for k in range(int((SW - 200) / 140)):
+        pole(150 + k * 140, PR_IN + rw + 3.0, (0, -1))
+        pole(150 + k * 140, SH - PR_IN - rw - 3.0, (0, 1))
+    for k in range(int((SH - 200) / 140)):
+        pole(PR_IN + rw + 3.0, 150 + k * 140, (-1, 0))
+        pole(SW - PR_IN - rw - 3.0, 150 + k * 140, (1, 0))
+    # hydrants and catch basins along the N-S roads, bollards at the gate
+    for xr in P["ns_roads_x_ft"]:
+        yy = 200.0
+        while yy < SH - 150:
+            hx_, hy_ = xr - rw - 1.8, yy
+            if not blocked(hx_, hy_, 2.0, 10.0) and not on_road(hx_, hy_, 0.3):
+                hyd.cyl(hx_, hy_, GZ, 0.5, 2.8, 10)
+                hyd.cyl(hx_, hy_, GZ + 2.8, 0.7, 0.3, 10)
+                hyd.cyl_between((hx_ - 0.9, hy_, GZ + 2.0), (hx_ + 0.9, hy_, GZ + 2.0), 0.3, 8)
+            cb.box(xr + rw - 1.6, yy + 40, 0.12, xr + rw - 0.1, yy + 41.5, 0.22)
+            yy += 300.0
+    poles.build(); heads.build(); hyd.build(); cb.build()
+    # fence outriggers (barbed-wire arms) every 20 ft along the straight runs, and the sliding gate
+    fo = MeshAcc("SITE-FENCE-OUTRIGGERS", "STEEL_DK")
+    f = FENCE_IN
+    h = P["fence_h_ft"]
+    runs = [((f, f), (180, f)), ((220, f), (SW - f, f)), ((SW - f, f), (SW - f, SH - f)), ((SW - f, SH - f), (f, SH - f)), ((f, SH - f), (f, f))]
+    for (a, b) in runs:
+        L = math.hypot(b[0] - a[0], b[1] - a[1])
+        n = int(L / 20)
+        ux, uy = (b[0] - a[0]) / L, (b[1] - a[1]) / L
+        ox, oy = uy, -ux                   # push the arms toward the outside of the site
+        if a[1] == f and b[1] == f:
+            ox, oy = 0.0, -1.0
+        elif a[0] == SW - f and b[0] == SW - f:
+            ox, oy = 1.0, 0.0
+        elif a[1] == SH - f and b[1] == SH - f:
+            ox, oy = 0.0, 1.0
+        else:
+            ox, oy = -1.0, 0.0
+        for i in range(n + 1):
+            px, py = a[0] + ux * i * 20, a[1] + uy * i * 20
+            fo.seg((px, py, h), (px + ox * 1.6, py + oy * 1.6, h + 1.6), 0.06, 4)
+        for dz in (0.0, 0.8):
+            fo.seg((a[0] + ox * 1.6, a[1] + oy * 1.6, h + 1.6 - dz * 0.0), (b[0] + ox * 1.6, b[1] + oy * 1.6, h + 1.6), 0.03, 3)
+    fo.build()
+    gt = MeshAcc("SITE-GATE", "STEEL")
+    gt.box(178.5, f - 0.5, 0, 180.5, f + 0.5, h + 1.0).box(219.5, f - 0.5, 0, 221.5, f + 0.5, h + 1.0)
+    gt.box(180.5, f - 0.25, 0.8, 200, f + 0.25, 1.1).box(180.5, f - 0.25, h - 0.6, 200, f + 0.25, h - 0.3)
+    for k in range(10):
+        gt.box(181 + k * 2, f - 0.2, 1.1, 181.25 + k * 2, f + 0.2, h - 0.6)
+    gt.seg((180.5, f, 1.1), (200, f, h - 0.6), 0.1, 4)
+    gt.build()
+    br = MeshAcc("SITE-GATE-BARRIER", "STEEL_DK")
+    br.box(214.0, 44.6, GZ, 215.0, 45.6, GZ + 4.0)
+    br.box(214.0, 44.6, GZ + 3.0, 226.0, 45.6, GZ + 3.5)
+    br.build()
+
+
+
+def detail_interiors():
+    # ---- e-house: control / relay panel rows, floor plates, overhead-tray gantries, wall boards ---------------
+    x0, y0 = P["ehouse_origin_ft"]
+    L, W, H = P["ehouse_ft"]
+    zf = GZ + P["ehouse_floor_ft"]
+    x1, y1 = x0 + L, y0 + W
+    ym = (y0 + y1) / 2.0
+    cp = MeshAcc("ELEC-EHOUSE-CONTROL-PANELS", "ENCL")
+    cabinet_row(cp, x0 + 8, ym - 2.6, zf, 22, 2.6, 2.4, 7.5, "x", "both")
+    cp.build()
+    dc = MeshAcc("ELEC-EHOUSE-DC-CHARGERS", "ENCL")
+    cabinet_row(dc, x0 + 68, ym - 2.6, zf, 4, 3.0, 2.6, 7.5, "x", "both")
+    dc.build()
+    fp = MeshAcc("ELEC-EHOUSE-FLOOR-PLATES", "STEEL")
+    for (xa, xb, ya, yb) in ((x0 + 6, x0 + 66, ym - 6.0, ym - 3.0), (x0 + 6, x0 + 66, ym + 3.0, ym + 6.0), (x0 + 6, x0 + 62, y1 - 12, y1 - 9),
+                            (x0 + 38, x0 + 68, y1 - 12, y1 - 8), (x0 + 6, x0 + 30, y0 + 4, y0 + 7)):
+        fp.box(xa, ya, zf, xb, yb, zf + 0.12)
+        xx = xa + 3
+        while xx < xb:
+            fp.box(xx, ya, zf + 0.12, xx + 0.08, yb, zf + 0.2)
+            xx += 3.0
+    fp.build()
+    tg = MeshAcc("ELEC-EHOUSE-TRAY-GANTRIES", "STEEL")
+    for xx in range(int(x0) + 10, int(x1) - 8, 22):
+        for yy in (ym - 3.2, ym + 3.2):
+            tg.box(xx - 0.2, yy - 0.2, zf, xx + 0.2, yy + 0.2, zf + 11.0)
+        tg.box(xx - 0.25, ym - 3.4, zf + 10.4, xx + 0.25, ym + 3.4, zf + 10.9)
+    tg.build()
+    wb = MeshAcc("ELEC-EHOUSE-WALL-BOARDS", "ENCL")
+    for k in range(5):
+        xx = x1 - 30 + k * 5.5
+        wb.box(xx, y1 - 1.0, zf + 1.8, xx + 3.5, y1 - 0.6, zf + 6.4)
+        wb.box(xx + 0.25, y1 - 1.04, zf + 2.2, xx + 3.25, y1 - 1.0, zf + 6.0)
+    wb.box(x0 + 100, y1 - 1.2, zf + 2.0, x0 + 103, y1 - 0.6, zf + 5.5)
+    wb.build()
+    fs = MeshAcc("ELEC-EHOUSE-FIRE-SYSTEM", "STEEL_DK")
+    for k in range(6):
+        fs.cyl(x0 + 112, y1 - 3 - k * 1.0, zf, 0.4, 3.6, 8)
+    fs.cyl_between((x0 + 105, y1 - 1.5, zf + 6.5), (x0 + 118, y1 - 1.5, zf + 6.5), 0.18, 6)
+    fs.build()
+    # ---- MCC room: motor control rows, drive lineup and UPS with floor plates -----------------------------
+    x0, y0 = P["mcc_origin_ft"]
+    L, W, H = P["mcc_ft"]
+    z0 = GZ + 0.5
+    x1, y1 = x0 + L, y0 + W
+    mc = MeshAcc("ELEC-MCC-MCC-ROW-B", "ENCL")
+    cabinet_row(mc, x0 + 3, y0 + 27, z0, 12, 2.0, 1.7, 7.5, "x", "both")
+    mc.build()
+    vf = MeshAcc("ELEC-MCC-VFD-ROW-B", "ENCL")
+    cabinet_row(vf, x0 + 33, y0 + 20, z0, 5, 4.0, 3.0, 8.0, "x", "both")
+    vf.build()
+    fp = MeshAcc("ELEC-MCC-FLOOR-PLATES", "STEEL")
+    for (xa, xb, ya, yb) in ((x0 + 3, x0 + 27, y1 - 8, y1 - 5.4), (x0 + 33, x0 + 53, y1 - 10, y1 - 6), (x0 + 3, x0 + 27, y0 + 22, y0 + 25), (x0 + 58, x0 + 76, y1 - 8, y1 - 5.5)):
+        fp.box(xa, ya, z0, xb, yb, z0 + 0.12)
+        xx = xa + 3
+        while xx < xb:
+            fp.box(xx, ya, z0 + 0.12, xx + 0.08, yb, z0 + 0.2)
+            xx += 3.0
+    fp.build()
+    tg = MeshAcc("ELEC-MCC-TRAY-GANTRIES", "STEEL")
+    for xx in range(int(x0) + 8, int(x1) - 4, 18):
+        for yy in (y0 + 10.5, y0 + 13.5):
+            tg.box(xx - 0.2, yy - 0.2, z0, xx + 0.2, yy + 0.2, z0 + 12.0)
+        tg.box(xx - 0.25, y0 + 10.3, z0 + 11.4, xx + 0.25, y0 + 13.7, z0 + 11.9)
+    tg.build()
+    wb = MeshAcc("ELEC-MCC-WALL-BOARDS", "ENCL")
+    for k in range(4):
+        xx = x0 + 4 + k * 6
+        wb.box(xx, y0 + 0.9, z0 + 1.8, xx + 3.5, y0 + 1.4, z0 + 6.4)
+    wb.build()
+
+
+def car(body, cab, wheels, cx, cy, rot=0.0, L=15.0, W=6.2, H=2.3, truck=False):
+    """simple generic vehicle: lower body, glazed cabin, four wheels (no brand cues)."""
+    body.boxc(cx, cy, GZ + 0.7, L, W, H * 0.55, rot)
+    cl = L * (0.30 if not truck else 0.34)
+    off = -L * (0.06 if not truck else 0.2)
+    ox, oy = _rotz(cx + off, cy, cx, cy, rot)
+    cab.boxc(ox, oy, GZ + 0.7 + H * 0.55, cl, W * 0.9, H * 0.5, rot)
+    if truck:
+        px, py = _rotz(cx - L * 0.28, cy, cx, cy, rot)
+        body.boxc(px, py, GZ + 0.7 + H * 0.55, L * 0.42, W * 0.96, 0.35, rot)
+    for dx in (-L * 0.32, L * 0.32):
+        for dy in (-W * 0.5, W * 0.5):
+            wx, wy = _rotz(cx + dx, cy + dy, cx, cy, rot)
+            ax_, ay_ = _rotz(cx + dx, cy + dy + (0.25 if dy > 0 else -0.25), cx, cy, rot)
+            bx_, by_ = _rotz(cx + dx, cy + dy - (0.25 if dy > 0 else -0.25), cx, cy, rot)
+            wheels.cyl_between((ax_, ay_, GZ + 1.1), (bx_, by_, GZ + 1.1), 1.1, 14)
+
+
+def detail_props():
+    # ---- parking at the admin building, pickups at the gate and laydown --------------------------------------
+    x0, y0 = P["admin_origin_ft"]
+    L, W, H = P["admin_ft"]
+    body = MeshAcc("SITE-VEHICLES-BODY", "ENCL")
+    dark = MeshAcc("SITE-VEHICLES-BODY-DK", "STEEL")
+    cab = MeshAcc("SITE-VEHICLES-CABINS", "GLASS")
+    wh = MeshAcc("SITE-VEHICLES-WHEELS", "CABLE")
+    ln = MeshAcc("SITE-PARKING-LINES", "CONC")
+    for k in range(16):
+        cx = x0 + 5 + k * 7.0
+        ln.box(cx - 3.5, y0 - 37, 0.1, cx - 3.4, y0 - 20, 0.16)
+        ln.box(cx - 3.5, y0 - 21.4, 0.1, cx - 3.0, y0 - 20.9, 0.3)
+        if k not in (3, 7, 11):
+            car(body if k % 3 else dark, cab, wh, cx, y0 - 29, math.radians(90), 15.0, 6.2, 4.6 if k % 4 == 0 else 4.0, truck=(k % 4 == 0))
+    ln.box(x0 + 5 + 16 * 7.0 - 3.5, y0 - 37, 0.1, x0 + 5 + 16 * 7.0 - 3.4, y0 - 20, 0.16)
+    car(dark, cab, wh, 205, 60, math.radians(90), 16.0, 6.4, 4.6, truck=True)
+    lx, ly = P["laydown_origin_ft"]
+    car(body, cab, wh, lx + 120, ly - 8, 0.0, 16.0, 6.4, 4.6, truck=True)
+    body.build(); dark.build(); cab.build(); wh.build(); ln.build()
+    # ---- laydown extras: tray rack, conduit stacks, light tower, skips, drums on flat ---------------------------------
+    rk = MeshAcc("LAYDOWN-TRAY-RACK", "STEEL")
+    tl = MeshAcc("LAYDOWN-TRAY-STOCK", "STEEL_DK")
+    for xx in (lx + 112, lx + 120, lx + 128, lx + 136):
+        for yy in (ly + 8, ly + 22):
+            rk.box(xx - 0.15, yy - 0.15, GZ, xx + 0.15, yy + 0.15, GZ + 7.0)
+    for zz in (GZ + 1.0, GZ + 3.2, GZ + 5.4):
+        rk.box(lx + 111.8, ly + 7.8, zz, lx + 136.2, ly + 8.2, zz + 0.25).box(lx + 111.8, ly + 21.8, zz, lx + 136.2, ly + 22.2, zz + 0.25)
+        for kk in range(4):
+            tl.box(lx + 112.5 + kk * 6.0, ly + 8.3, zz + 0.25, lx + 117.5 + kk * 6.0, ly + 21.7, zz + 0.9)
+    rk.build(); tl.build()
+    cs = MeshAcc("LAYDOWN-CONDUIT-STACKS", "STEEL")
+    for row in range(4):
+        for col in range(5):
+            cs.cyl_between((lx + 100, ly + 40 + col * 0.9 + (row % 2) * 0.45, GZ + 0.6 + row * 0.8), (lx + 124, ly + 40 + col * 0.9 + (row % 2) * 0.45, GZ + 0.6 + row * 0.8), 0.42, 8)
+    for xx in (lx + 101, lx + 112, lx + 123):
+        cs.box(xx, ly + 39.4, GZ, xx + 0.4, ly + 44.4, GZ + 0.35)
+    cs.build()
+    lt = MeshAcc("LAYDOWN-LIGHT-TOWER", "STEEL")
+    lt.box(lx + 160, ly + 36, GZ + 0.5, lx + 168, ly + 40, GZ + 3.5)
+    lt.cyl(lx + 164, ly + 38, GZ + 3.5, 0.3, 24, 8)
+    lt.box(lx + 161.5, ly + 37.5, GZ + 27.4, lx + 166.5, ly + 38.5, GZ + 28.6)
+    for wxx in (lx + 160.6, lx + 167.4):
+        lt.cyl_between((wxx, ly + 36.2, GZ + 0.4), (wxx, ly + 36.2 + 0.4, GZ + 0.4), 0.5, 10)
+    lt.build()
+    sk = MeshAcc("LAYDOWN-SKIPS", "STEEL_DK")
+    for k in range(2):
+        sx_ = lx + 145 + k * 12
+        sk.hexa([(sx_, ly + 90, GZ + 0.4), (sx_ + 9, ly + 90, GZ + 0.4), (sx_ + 9, ly + 96, GZ + 0.4), (sx_, ly + 96, GZ + 0.4),
+                 (sx_ - 0.4, ly + 89.6, GZ + 4.2), (sx_ + 9.4, ly + 89.6, GZ + 4.2), (sx_ + 9.4, ly + 96.4, GZ + 4.2), (sx_ - 0.4, ly + 96.4, GZ + 4.2)])
+    sk.build()
+
+
+def detail_hrsg_transition(i):
+    ax = GT_X[i]
+    pre = "HRSG-%d-" % (i + 1)
+    hw = HRSG_W / 2.0
+    y0 = HRSG_Y0
+    cas_h = 150.0
+    tr = MeshAcc(pre + "TRANSITION-RIBS", "STEEL")
+    for k in range(1, 10):
+        f = k / 10.0
+        y = y0 + 30 * f
+        w = 11 + (hw - 11) * f
+        zb = GZ + 4 + 4 * f
+        zt = GZ + 26 + (cas_h - GZ - 26) * f
+        for sg in (-1, 1):
+            tr.box(ax + sg * w, y - 0.35, zb, ax + sg * (w + 0.5), y + 0.35, zt - 0.4)
+    tr.build()
+
+
+def detail_anchors():
+    ax = GT_X[1]
+    hw = HRSG_W / 2.0
+    y0 = HRSG_Y0
+    anchor("HRSG-2-PLATFORMS", ax + hw + 5, y0 + 120, 101.0, "Access platforms with handrails and caged ladders", 6)
+    anchor("HRSG-2-DRUM-SILENCERS", ax + 10, y0 + 85, 176.0, "Drum safety valves and silencers under the open roof frame", 6)
+    anchor("HRSG-2-ROOF-FRAME", ax - hw - 2.5, y0 + 90, HRSG_H + 1.0, "Open roof frame with perimeter grating and rail", 6)
+    cx0, cy0 = P["bess_origin_ft"][0] + 10, P["bess_origin_ft"][1] + 10
+    anchor("BESS-DOOR", cx0 + 40.2, cy0 + 4, GZ + 6.2, "Container end doors with locking bars", 2)
+    anchor("BESS-TX-FINS", cx0 + 31.8, cy0 + 8 + 6 + 5, GZ + 6.0, "Transformer cooling fins", 2)
+    lx, ly = P["laydown_origin_ft"]
+    anchor("LAYDOWN-TRAY-RACK", lx + 124, ly + 15, GZ + 8.5, "Cable-tray stock on racking", 3)
+    anchor("CORR-MARKER", 1230, CORR_Y + 16, GZ + 3.2, "Duct-bank route marker post", 16)
+    anchor("CCS-ABSORBER-PLATFORMS", P["ccs_origin_ft"][0] + 10 + P["absorber_ft"][0] + 6, P["ccs_origin_ft"][1] + 140, GZ + 122.0, "Absorber platforms and ladders", 14)
+    anchor("WATER-T1-STAIR", P["water_origin_ft"][0] + P["water_treatment_ft"][0] + 40 + 24, P["water_origin_ft"][1] + P["pond_ft"][1] + 40 + 25, GZ + 20.0, "Tank spiral stair", 13)
+
+def build_detail():
+    """detail pass: run after every package exists so site furniture can avoid the equipment."""
+    detail_hall()
+    for i in range(P["counts"]["GT"]):
+        detail_gt(i)
+    detail_st()
+    for i in range(P["counts"]["HRSG"]):
+        detail_hrsg(i)
+    for i in range(P["counts"]["GT"]):
+        detail_inlet(i)
+    for i in range(P["counts"]["GSU"]):
+        detail_gsu(i)
+    detail_switchyard()
+    detail_buildings()
+    detail_interiors()
+    detail_bess()
+    detail_modular()
+    detail_laydown()
+    detail_acc()
+    detail_cooling()
+    detail_gas()
+    detail_corridor()
+    detail_site()
+    detail_props()
+    for i in range(P["counts"]["HRSG"]):
+        detail_hrsg_transition(i)
+    detail_anchors()
+
 # =============================================================================
 # MAIN
 # =============================================================================
@@ -2345,6 +4145,7 @@ def build_all():
     build_gasmet()
     build_fuelgas()
     build_corridor()
+    build_detail()
 
 
 def _overlap(a, b, tol=0.5):
@@ -2378,7 +4179,12 @@ def preflight(views_path=None):
                   "CRANE", "BRACKET", "RISER", "CONNECTOR", "CAP", "WALL", "ROOF", "FLOOR", "SLAB", "PIPING", "LEADS",
                   "IPB", "FEEDER", "WIRE", "BRIDGE", "BRANCH", "TIE-IN", "PIPELINE", "RUNS", "EXHAUST", "TRANSITION",
                   "BERM", "LINER", "POND", "CURB", "CONTAINMENT", "FIREWALL", "GLAZING", "CANOPY", "PARKING", "HOODS",
-                  "INSULATOR", "ARRESTER", "SEALING", "TERMINATION", "COVER", "MANHOLE", "DEADEND", "MAST", "FLANGE", "GRID")
+                  "INSULATOR", "ARRESTER", "SEALING", "TERMINATION", "COVER", "MANHOLE", "DEADEND", "MAST", "FLANGE", "GRID",
+                  "RIB", "LADDER", "RAIL", "LOUVRE", "DOOR", "LIGHT", "POLE", "BOLLARD", "DETAIL", "PLATFORM", "STIFF", "MARKER",
+                  "LABEL", "TIES", "SHED", "FINS", "CURB", "APRON", "PLINTH", "SKID", "TRENCH", "STRING", "CLAMP", "HYDRANT",
+                  "CATCH", "OUTRIGGER", "GATE", "BARRIER", "PALLET", "BARRIERS", "CANOPY", "ROLLERS", "WINDINGS", "SPOKES", "MULLION",
+                  "PARAPET", "STAIR", "TANK-DETAIL", "COLUMN", "WALKWAY", "BRACKET", "VALVE", "SILENCER", "PILING", "GRATING",
+                  "TELEHANDLER", "WORKBENCH", "FRAME", "BELLOWS", "PLATES", "LUGS", "INSTRUMENTS", "ENTRANCE", "FINS")
     solids = [r for r in REG if r["kind"] == "mesh" and not r["below_grade"] and r["pkg"] not in ("SITE", "ANCHOR")
               and not any(w in r["name"] for w in skip_words)]
     def fam(n):

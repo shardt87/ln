@@ -279,7 +279,11 @@
     },
     {
      "tag": "I",
-     "anchor": "ANCHOR-CCS-FLUE-DUCT"
+     "anchor": "ANCHOR-HRSG-2-DRUM-SILENCERS"
+    },
+    {
+     "tag": "J",
+     "anchor": "ANCHOR-HRSG-2-PLATFORMS"
     }
    ],
    "footnote": "Explains the gas path from turbine exhaust to stack and where the flue gas can be diverted to the capture block."
@@ -429,7 +433,7 @@
     },
     {
      "tag": "I",
-     "anchor": "ANCHOR-ELEC-EHOUSE-HVAC"
+     "anchor": "ANCHOR-ELEC-EHOUSE-AUX-TX"
     },
     {
      "tag": "J",
@@ -492,10 +496,6 @@
     {
      "tag": "H",
      "anchor": "ANCHOR-ELEC-MCC-PARTITION"
-    },
-    {
-     "tag": "I",
-     "anchor": "ANCHOR-ELEC-MCC-HVAC"
     }
    ],
    "footnote": "Explains where motor feeders, drive outputs and DC supplies are terminated, and how the entry pit feeds the overhead tray."
@@ -552,6 +552,14 @@
     {
      "tag": "G",
      "anchor": "ANCHOR-BESS-HVAC"
+    },
+    {
+     "tag": "H",
+     "anchor": "ANCHOR-BESS-DOOR"
+    },
+    {
+     "tag": "I",
+     "anchor": "ANCHOR-BESS-TX-FINS"
     }
    ],
    "footnote": "Explains the DC-to-AC-to-MV chain: container to PCS, PCS to collector tray, collector to switchgear and one feeder to the e-house."
@@ -629,13 +637,7 @@
     "crop_top": 0.12,
     "pad": 1.05
    },
-   "frame": [
-    "GASMET-",
-    "FUELGAS-LNG",
-    "FUELGAS-H2",
-    "FUELGAS-BLOCK",
-    "FUELGAS-PIPE-SUPPORTS"
-   ],
+   "frame": [],
    "hidden": [
     "CCS-CO2-EXPORT"
    ],
@@ -682,7 +684,15 @@
      "anchor": "ANCHOR-FUELGAS-H2-MODULE"
     }
    ],
-   "footnote": "Explains the primary pipeline supply through metering and pressure reduction, and where alternative LNG or hydrogen supply would tie in."
+   "footnote": "Explains the primary pipeline supply through metering and pressure reduction, and where alternative LNG or hydrogen supply would tie in.",
+   "frame_box_ft": [
+    1690,
+    420,
+    -2,
+    2270,
+    790,
+    42
+   ]
   },
   {
    "id": "10",
@@ -743,6 +753,10 @@
     {
      "tag": "I",
      "anchor": "ANCHOR-CCS-CO2-EXPORT"
+    },
+    {
+     "tag": "J",
+     "anchor": "ANCHOR-CCS-ABSORBER-PLATFORMS"
     }
    ],
    "footnote": "Explains one representative capture train: quench, absorb, regenerate, compress and export; not a proven three-GT capture design."
@@ -942,6 +956,10 @@
     {
      "tag": "I",
      "anchor": "ANCHOR-LAYDOWN-SITE-OFFICE"
+    },
+    {
+     "tag": "J",
+     "anchor": "ANCHOR-LAYDOWN-TRAY-RACK"
     }
    ],
    "footnote": "Explains how cable leaves the reel under control, is dressed into the spine and secured, and why the copper ends stay capped until termination."
