@@ -85,8 +85,22 @@ def xray_material():
     bsdf = m.node_tree.nodes.get("Principled BSDF")
     bsdf.inputs["Base Color"].default_value = (*hex_to_lin(RENDER.get("xray_color", "#C9C6BF")), 1.0)
     bsdf.inputs["Roughness"].default_value = 0.9
-    bsdf.inputs["Alpha"].default_value = float(RENDER.get("xray_alpha", 0.3))
-    m.blend_method = "BLEND"
+    bsdf.inputs["Alpha"].default_value = float(RENDER.get("xray_alpha", 0.22))
+    try:
+        m.blend_method = "BLEND"          # removed in Blender 5.x, harmless to skip
+    except Exception:
+        pass
+    # count FRONT faces only: back faces (slab undersides) become fully transparent, so stacked
+    # ground / pad / road slabs do not add up to a solid floor.
+    nt = m.node_tree
+    out = next(n for n in nt.nodes if n.type == "OUTPUT_MATERIAL")
+    geo = nt.nodes.new("ShaderNodeNewGeometry")
+    tr = nt.nodes.new("ShaderNodeBsdfTransparent")
+    mix = nt.nodes.new("ShaderNodeMixShader")
+    nt.links.new(geo.outputs["Backfacing"], mix.inputs["Fac"])
+    nt.links.new(bsdf.outputs["BSDF"], mix.inputs[1])
+    nt.links.new(tr.outputs["BSDF"], mix.inputs[2])
+    nt.links.new(mix.outputs["Shader"], out.inputs["Surface"])
     return m
 
 # -----------------------------------------------------------------------------
@@ -171,8 +185,14 @@ def setup_scene():
     setup_compositor()
 
 def setup_compositor():
-    scene.use_nodes = True
-    nt = scene.node_tree
+    """AO multiply + mist fade in the compositor (Blender 4.x API). On 5.x the compositor API differs:
+    the step is skipped and the look relies on Cycles global illumination alone."""
+    try:
+        scene.use_nodes = True
+        nt = scene.node_tree
+    except Exception as e:
+        print("compositor step skipped (API differs in this Blender version):", e)
+        return
     for n in list(nt.nodes):
         nt.nodes.remove(n)
     rl = nt.nodes.new("CompositorNodeRLayers")
@@ -193,6 +213,7 @@ def setup_compositor():
 # visibility / x-ray per view
 # -----------------------------------------------------------------------------
 _orig_mats = {}
+_moved = {}
 
 def apply_visibility(view):
     hidden = list(view.get("hidden", []))
@@ -215,9 +236,19 @@ def apply_visibility(view):
             xm = xray_material()
             for i in range(len(ob.data.materials)):
                 ob.data.materials[i] = xm
+    # X-ray views: drop the backdrop slab below the buried work so it does not hide it
+    bd = bpy.data.objects.get("SITE-BACKDROP")
+    if bd is not None and xray and show_below:
+        _moved[bd.name] = bd.location.z
+        bd.location.z = bd.location.z - float(view.get("xray_backdrop_drop_ft", 14)) * FT
     bpy.context.view_layer.update()
 
 def restore_materials():
+    for name, z in _moved.items():
+        ob = bpy.data.objects.get(name)
+        if ob:
+            ob.location.z = z
+    _moved.clear()
     for name, mats in _orig_mats.items():
         ob = bpy.data.objects.get(name)
         if ob and ob.data:

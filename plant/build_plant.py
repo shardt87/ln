@@ -135,6 +135,7 @@ MATERIALS = {
     "INSUL":    (C["INSUL"], 0.8, 0.0, None),
     "PORCELAIN": (C["PORCELAIN"], 0.35, 0.0, None),
     "XRAY":     (C["CONC"], 0.9, 0.0, "xray"),
+    "DUCT":     ("#8A8882", 0.9, 0.0, None),
 }
 _MAT_CACHE = {}
 
@@ -650,13 +651,18 @@ def build_site():
     road("SITE-ROAD-PERIM-E", SW - ri - rw, ri + rw, SW - ri + rw, SH - ri - rw)
     road("SITE-ROAD-SPINE", ri + rw, SPINE_Y - rw, SW - ri - rw, SPINE_Y + rw)
     for i, x in enumerate(P["ns_roads_x_ft"]):
-        road("SITE-ROAD-NS-%d" % (i + 1), x - rw, ri + rw, x + rw, SH - ri - rw)
+        road("SITE-ROAD-NS-%dS" % (i + 1), x - rw, ri + rw, x + rw, SPINE_Y - rw)
+        road("SITE-ROAD-NS-%dN" % (i + 1), x - rw, SPINE_Y + rw, x + rw, SH - ri - rw)
     road("SITE-ROAD-GATE", 188, FENCE_IN, 212, ri - rw)
     # concrete pads per zone (ground tiles)
     for z, (label, r) in ZONES.items():
         if z in (7, 6, 8):          # power block: one common pad
             continue
-        if z == 16:
+        if z in (1, 16):            # zone 1 is padded by SWYD-PAD; zone 16 by the corridor pad
+            continue
+        if z == 13:                 # pad starts north of the pond so the basin is not covered
+            wx, wy = P["water_origin_ft"]
+            pad("SITE-PAD-Z13", r[0] - 10, wy + P["pond_ft"][1] + 12, r[2] + 10, r[3] + 10)
             continue
         pad("SITE-PAD-Z%02d" % z, r[0] - 10, r[1] - 10, r[2] + 10, r[3] + 10, "GRAVEL" if z in (1, 3, 10) else "CONC")
     pad("SITE-PAD-POWERBLOCK", HX0 - 20, GSU_Y0 - 50, HX1 + 30, STACK_Y + STACK_D / 2 + 20)
@@ -1215,7 +1221,7 @@ def build_gentie():
         pc.build()
         MeshAcc("GENTIE-UG-LINKBOX-" + name, "ENCL").box(x + 8, y - 1.5, GZ, x + 11, y + 1.5, GZ + 3).build()
     route = [(585, 528), (490, 528), (490, 1050), (430, 1050)]
-    db = MeshAcc("GENTIE-UG-DUCTBANK", "CONC", below=True)
+    db = MeshAcc("GENTIE-UG-DUCTBANK", "DUCT", below=True)
     for a, b in zip(route[:-1], route[1:]):
         x0, x1 = min(a[0], b[0]) - 3, max(a[0], b[0]) + 3
         y0, y1 = min(a[1], b[1]) - 3, max(a[1], b[1]) + 3
@@ -1921,14 +1927,13 @@ def build_water():
     n, td, th = P["water_tank_n_d_h_ft"]
     # pond: berm ring + water surface (visible; the excavation is a depression, not below-grade equipment)
     bm = MeshAcc(pre + "POND-BERM", "GRAVEL")
-    bm.box(x0 - 6, y0 - 6, GZ, x0 + pL + 6, y0, GZ + 2.5)
-    bm.box(x0 - 6, y0 + pW, GZ, x0 + pL + 6, y0 + pW + 6, GZ + 2.5)
-    bm.box(x0 - 6, y0, GZ, x0, y0 + pW, GZ + 2.5)
-    bm.box(x0 + pL, y0, GZ, x0 + pL + 6, y0 + pW, GZ + 2.5)
+    bm.box(x0 - 6, y0 - 6, 0.0, x0 + pL + 6, y0, GZ + 3.0)
+    bm.box(x0 - 6, y0 + pW, 0.0, x0 + pL + 6, y0 + pW + 6, GZ + 3.0)
+    bm.box(x0 - 6, y0, 0.0, x0, y0 + pW, GZ + 3.0)
+    bm.box(x0 + pL, y0, 0.0, x0 + pL + 6, y0 + pW, GZ + 3.0)
     bm.build()
-    MeshAcc(pre + "POND-LINER", "STEEL_DK").box(x0, y0, -pD, x0 + pL, y0 + pW, -pD + 0.3).build()
-    MeshAcc(pre + "POND-WATER", "WATER").box(x0 + 0.1, y0 + 0.1, -1.0, x0 + pL - 0.1, y0 + pW - 0.1, -0.6).build()
-    MeshAcc(pre + "POND-WALLS", "CONC").box(x0 - 0.5, y0 - 0.5, -pD, x0 + pL + 0.5, y0 + pW + 0.5, GZ).build()   # visible pond walls above water (interior faces)
+    MeshAcc(pre + "POND-LINER", "STEEL_DK").box(x0, y0, 0.0, x0 + pL, y0 + pW, 0.25).build()
+    MeshAcc(pre + "POND-WATER", "WATER").box(x0 + 0.3, y0 + 0.3, 0.25, x0 + pL - 0.3, y0 + pW - 0.3, 1.9).build()
     # building + tanks
     by = y0 + pW + 40
     MeshAcc(pre + "BUILDING", "ENCL").box(x0, by, GZ, x0 + bL, by + bW, GZ + bH).build()
@@ -1948,7 +1953,7 @@ def build_water():
         cx = x0 + bL + 40 + k * 60
         pp.add([(cx - td / 2, by + bW / 2, GZ + 3), (x0 + bL + 10, by + bW / 2, GZ + 3), (x0 + bL + 10, by + 14, GZ + 3)])
     pp.add([(x0 + bL, by + 10, GZ + 3), (x0 + bL + 10, by + 10, GZ + 3)])
-    pp.add([(x0 + 40, by, GZ + 3), (x0 + 40, y0 + pW + 6, GZ + 3), (x0 + 40, y0 + pW - 2, GZ + 3), (x0 + 40, y0 + pW - 2, -0.5)])
+    pp.add([(x0 + 40, by, GZ + 3), (x0 + 40, y0 + pW + 6, GZ + 3), (x0 + 40, y0 + pW - 2, GZ + 3), (x0 + 40, y0 + pW - 2, GZ + 1.2)])
     pp.build()
     anchor(pre + "BUILDING", x0 + bL / 2, by + bW / 2, GZ + bH + 1, "Water treatment building", 13)
     anchor(pre + "TANK", x0 + bL + 40, by + bW / 2, GZ + th + 4, "Raw / demineralised water tanks", 13)
@@ -2249,8 +2254,8 @@ def build_corridor():
     # duct bank below grade with conduits, manholes every 200 ft (covers visible)
     zd = P["duct_z_ft"]
     yd = y0 + 16
-    MeshAcc(pre + "DUCTBANK", "CONC", below=True).box(x0, yd - 3, zd - 2, x1, yd + 3, zd + 1).build()
-    cd = CurveAcc(pre + "CONDUITS", "STEEL", 0.25, below=True)
+    MeshAcc(pre + "DUCTBANK", "DUCT", below=True).box(x0, yd - 3, zd - 2, x1, yd + 3, zd + 1).build()
+    cd = CurveAcc(pre + "CONDUITS", "STEEL_DK", 0.25, below=True)
     for r in range(2):
         for k in range(4):
             cd.add([(x0, yd - 2.2 + k * 1.4, zd - 1.2 + r * 1.4), (x1, yd - 2.2 + k * 1.4, zd - 1.2 + r * 1.4)])

@@ -45,7 +45,7 @@
   "mist_start_factor": 1.1,
   "mist_depth_factor": 2.5,
   "exposure": 1.0,
-  "xray_alpha": 0.3,
+  "xray_alpha": 0.14,
   "xray_color": "#C9C6BF"
  },
  "zones": {
@@ -77,15 +77,14 @@
     "el": 38,
     "lens": 85,
     "crop_top": 0.12,
-    "pad": 1.03,
+    "pad": 1.0,
     "target_height_frac": 0.15
    },
    "frame": [
     "SITE-GROUND",
     "FUELGAS-GROUND",
     "HRSG-",
-    "CCS-ABSORBER",
-    "SWYD-GRID-TOWER"
+    "CCS-ABSORBER"
    ],
    "hidden": [],
    "xray": [],
@@ -294,14 +293,17 @@
     "az": 45,
     "el": 35,
     "lens": 65,
-    "crop_top": 0.12,
-    "pad": 1.05,
+    "crop_top": 0.05,
+    "pad": 1.0,
     "target_height_frac": 0.1
    },
    "frame": [
-    "SWYD-",
-    "GSU-",
-    "GENTIE-"
+    "SWYD-PAD",
+    "GSU-1-TANK",
+    "GSU-4-TANK",
+    "GENTIE-GANTRY",
+    "GENTIE-UG-TERMINATION-A",
+    "GENTIE-TOWERS"
    ],
    "hidden": [
     "SITE-EARTHGRID",
@@ -310,7 +312,6 @@
     "SWYD-GRID-LINE"
    ],
    "xray": [
-    "SITE-BACKDROP",
     "SITE-GROUND",
     "SITE-PAD",
     "SITE-ROAD",
@@ -801,20 +802,20 @@
    "subtitle": "Cable routing | two-tier tray, duct bank below (X-ray), MV ring-main kiosks and a lateral to a building",
    "camera": {
     "az": 40,
-    "el": 28,
+    "el": 34,
     "lens": 55,
-    "crop_top": 0.1,
-    "pad": 1.05,
+    "crop_top": 0.06,
+    "pad": 1.02,
     "target_height_frac": 0.3
    },
    "frame": [],
    "frame_box_ft": [
-    1120,
+    1150,
     326,
-    -8,
-    1460,
-    430,
-    12
+    -9,
+    1400,
+    440,
+    14
    ],
    "hidden": [
     "ACC-STEAM-DUCT",
@@ -822,7 +823,6 @@
     "MODPWR-"
    ],
    "xray": [
-    "SITE-BACKDROP",
     "SITE-GROUND",
     "SITE-PAD",
     "SITE-ROAD",
