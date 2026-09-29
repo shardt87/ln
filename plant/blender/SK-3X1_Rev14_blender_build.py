@@ -44,7 +44,7 @@ PLANT = os.path.dirname(HERE)
 argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else sys.argv[1:]
 ap = argparse.ArgumentParser()
 ap.add_argument("--views", default="")
-ap.add_argument("--style", default="drawing", choices=["drawing", "photo"])
+ap.add_argument("--style", default="drawing", choices=["drawing", "photo", "pro"])
 ap.add_argument("--samples", type=int, default=64)
 ap.add_argument("--scale", type=int, default=100)
 ap.add_argument("--out", default=os.path.join(PLANT, "renders", "blender"))
@@ -53,6 +53,8 @@ ap.add_argument("--no-render", action="store_true")
 args = ap.parse_args(argv)
 
 model = json.load(open(os.path.join(PLANT, "sk3x1_model.json")))
+sys.path.insert(0, HERE)
+import pro_look  # noqa: E402  (professional presentation look, --style pro)
 palette = json.load(open(os.path.join(PLANT, "palette.json")))
 items = {it["id"]: it for it in model["items"]}
 
@@ -82,6 +84,8 @@ def srgb_to_lin(c):
 
 
 def material(key):
+    if args.style == "pro":
+        return pro_look.material(key)
     if key in mats:
         return mats[key]
     hx = palette.get(key, palette["equip"])["hex"].lstrip("#")
@@ -246,55 +250,62 @@ for (layer, rtype), geos in route_geos.items():
     make_object(f"routes {layer} {rtype}", layer, geos)
 
 # ground beyond the compound
-me = bpy.data.meshes.new("surround")
-S = 6000
-me.from_pydata([(-S * FT, -S * FT, -.6 * FT), ((2420 + S) * FT, -S * FT, -.6 * FT),
-                ((2420 + S) * FT, (1920 + S) * FT, -.6 * FT), (-S * FT, (1920 + S) * FT, -.6 * FT)], [], [(0, 1, 2, 3)])
-surround = bpy.data.objects.new("surround", me)
-coll("SITE").objects.link(surround)
-gm = bpy.data.materials.new("surround")
-gm.use_nodes = True
-gm.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = \
-    (.93, .93, .92, 1) if args.style == "drawing" else (.20, .26, .14, 1)
-gm.node_tree.nodes["Principled BSDF"].inputs["Roughness"].default_value = .95
-me.materials.append(gm)
+if args.style == "pro":
+    n_trees = pro_look.landscape(scene, coll("LANDSCAPE"))
+    print(f"landscape: {n_trees} trees")
+else:
+    me = bpy.data.meshes.new("surround")
+    S = 6000
+    me.from_pydata([(-S * FT, -S * FT, -.6 * FT), ((2420 + S) * FT, -S * FT, -.6 * FT),
+                    ((2420 + S) * FT, (1920 + S) * FT, -.6 * FT), (-S * FT, (1920 + S) * FT, -.6 * FT)], [], [(0, 1, 2, 3)])
+    surround = bpy.data.objects.new("surround", me)
+    coll("SITE").objects.link(surround)
+    gm = bpy.data.materials.new("surround")
+    gm.use_nodes = True
+    gm.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = \
+        (.93, .93, .92, 1) if args.style == "drawing" else (.20, .26, .14, 1)
+    gm.node_tree.nodes["Principled BSDF"].inputs["Roughness"].default_value = .95
+    me.materials.append(gm)
 print(f"scene built: {len(bpy.data.objects)} objects in {len(collections)} collections, {time.time()-t0:.1f}s")
 
 # ---------------------------------------------------------------------------
 # World, light, render settings
 # ---------------------------------------------------------------------------
-world = bpy.data.worlds.new("world")
-scene.world = world
-world.use_nodes = True
-wn = world.node_tree.nodes
-bg = wn["Background"]
-if args.style == "drawing":
-    # camera sees white; lighting comes from a softer grey world
-    lp = wn.new("ShaderNodeLightPath")
-    mix = wn.new("ShaderNodeMixShader")
-    white = wn.new("ShaderNodeBackground")
-    white.inputs["Color"].default_value = (1, 1, 1, 1)
-    white.inputs["Strength"].default_value = 1.0
-    world.node_tree.links.new(lp.outputs["Is Camera Ray"], mix.inputs["Fac"])
-    world.node_tree.links.new(bg.outputs["Background"], mix.inputs[1])
-    world.node_tree.links.new(white.outputs["Background"], mix.inputs[2])
-    world.node_tree.links.new(mix.outputs["Shader"], wn["World Output"].inputs["Surface"])
-    bg.inputs["Color"].default_value = (1, 1, 1, 1)
-    bg.inputs["Strength"].default_value = .55
+if args.style == "pro":
+    pro_look.world_and_sun(scene)
 else:
-    sky = wn.new("ShaderNodeTexSky")
-    sky.sky_type = "NISHITA"
-    sky.sun_elevation = math.radians(38)
-    sky.sun_rotation = math.radians(215)
-    world.node_tree.links.new(sky.outputs["Color"], bg.inputs["Color"])
-    bg.inputs["Strength"].default_value = .1
+    world = bpy.data.worlds.new("world")
+    scene.world = world
+    world.use_nodes = True
+    wn = world.node_tree.nodes
+    bg = wn["Background"]
+    if args.style == "drawing":
+        # camera sees white; lighting comes from a softer grey world
+        lp = wn.new("ShaderNodeLightPath")
+        mix = wn.new("ShaderNodeMixShader")
+        white = wn.new("ShaderNodeBackground")
+        white.inputs["Color"].default_value = (1, 1, 1, 1)
+        white.inputs["Strength"].default_value = 1.0
+        world.node_tree.links.new(lp.outputs["Is Camera Ray"], mix.inputs["Fac"])
+        world.node_tree.links.new(bg.outputs["Background"], mix.inputs[1])
+        world.node_tree.links.new(white.outputs["Background"], mix.inputs[2])
+        world.node_tree.links.new(mix.outputs["Shader"], wn["World Output"].inputs["Surface"])
+        bg.inputs["Color"].default_value = (1, 1, 1, 1)
+        bg.inputs["Strength"].default_value = .55
+    else:
+        sky = wn.new("ShaderNodeTexSky")
+        sky.sky_type = "NISHITA"
+        sky.sun_elevation = math.radians(38)
+        sky.sun_rotation = math.radians(215)
+        world.node_tree.links.new(sky.outputs["Color"], bg.inputs["Color"])
+        bg.inputs["Strength"].default_value = .1
 
-sun = bpy.data.lights.new("sun", "SUN")
-sun.energy = 2.6 if args.style == "drawing" else 3.0
-sun.angle = math.radians(2.5)
-sun_ob = bpy.data.objects.new("sun", sun)
-sun_ob.rotation_euler = (math.radians(50), 0, math.radians(215))
-scene.collection.objects.link(sun_ob)
+    sun = bpy.data.lights.new("sun", "SUN")
+    sun.energy = 2.6 if args.style == "drawing" else 3.0
+    sun.angle = math.radians(2.5)
+    sun_ob = bpy.data.objects.new("sun", sun)
+    sun_ob.rotation_euler = (math.radians(50), 0, math.radians(215))
+    scene.collection.objects.link(sun_ob)
 
 scene.render.engine = "CYCLES"
 scene.cycles.device = "CPU"
@@ -308,6 +319,9 @@ scene.view_settings.view_transform = "AgX"
 scene.view_settings.look = "AgX - Medium High Contrast"
 scene.view_settings.exposure = -0.4 if args.style == "photo" else 0
 scene.render.image_settings.file_format = "PNG"
+if args.style == "pro":
+    pro_look.render_settings(scene, args.samples)
+    pro_look.compositor(scene)
 if args.style == "drawing":
     scene.render.use_freestyle = True
     scene.render.line_thickness_mode = "ABSOLUTE"
@@ -378,7 +392,7 @@ def make_camera(v, margin=.03):
 def set_visibility(show):
     """Exclude hidden collections from the view layer, so they neither
     render nor block the label visibility rays."""
-    show = set(show) | {"SITE"}
+    show = set(show) | {"SITE", "LANDSCAPE"}
     for lc in bpy.context.view_layer.layer_collection.children:
         lc.exclude = lc.name not in show
 
@@ -417,9 +431,32 @@ def labels_for(v, cam_ob, show):
 
 
 os.makedirs(args.out, exist_ok=True)
-keys = [k for k in args.views.split(",") if k] or [v["k"] for v in model["views"] if v["k"] != "ALL"]
 manifest = []
-for v in model["views"]:
+if args.style == "pro":
+    keys = [k for k in args.views.split(",") if k] or [h["k"] for h in pro_look.HEROES]
+    ALL = [l for l in model["layers"] if l not in ("R1_INTERIOR", "R4_INTERIOR")]
+    BASE = [l for l in ALL if not l.startswith(("OPT_", "HV_CORRIDOR", "SWYD_FUTURE"))]
+    for h in pro_look.HEROES:
+        if h["k"] not in keys:
+            continue
+        cam_ob = pro_look.hero_camera(scene, h)
+        scene.camera = cam_ob
+        show = BASE if h["show"] == "base" else ALL
+        set_visibility(show)
+        info = dict(k=h["k"], name=h["n"], show=show, style="pro", samples=args.samples, lens=h["lens"],
+                    ortho_ft=0, margin_lr=0, margin_tb=0)
+        base = os.path.join(args.out, f"{h['k']}_pro")
+        json.dump(dict(view=info, labels=[]), open(base + ".labels.json", "w"), indent=1)
+        if not args.no_render:
+            t1 = time.time()
+            scene.render.filepath = base + ".png"
+            bpy.ops.render.render(write_still=True)
+            info["seconds"] = round(time.time() - t1, 1)
+            print(f"rendered {h['k']:<3} {h['n']:<40} {h['lens']} mm  {info['seconds']}s")
+        manifest.append(info)
+else:
+    keys = [k for k in args.views.split(",") if k] or [v["k"] for v in model["views"] if v["k"] != "ALL"]
+for v in (model["views"] if args.style != "pro" else []):
     if v["k"] not in keys:
         continue
     cam_ob, info = make_camera(v)

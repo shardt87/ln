@@ -64,6 +64,9 @@ jobs:
           - { style: drawing, views: "O2,O3,O4,O5" }
           - { style: photo, views: "A,H" }
           - { style: photo, views: "O3,O5" }
+          - { style: pro, views: "P1,P2", samples: "128" }
+          - { style: pro, views: "P3,P4", samples: "128" }
+          - { style: pro, views: "P5,P6", samples: "128" }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -80,7 +83,7 @@ jobs:
       - name: Render
         env:
           VIEWS: ${{ github.event.inputs.views || matrix.views }}
-          SAMPLES: ${{ github.event.inputs.samples || '64' }}
+          SAMPLES: ${{ github.event.inputs.samples || matrix.samples || '64' }}
           SCALE: ${{ github.event.inputs.scale || '100' }}
         run: |
           python plant/blender/SK-3X1_Rev14_blender_build.py \
@@ -114,6 +117,10 @@ jobs:
           merge-multiple: true
       - name: Contact sheets
         run: python plant/blender/contact_sheet.py renders
+      - name: Finish the pro renders and compose the presentation board
+        run: |
+          python plant/blender/finish_pro.py renders
+          python plant/blender/board.py renders
       - name: Save the Blender scene (all collections, all cameras)
         run: |
           python plant/blender/SK-3X1_Rev14_blender_build.py --no-render --views A,B,B2,C,H,O1,O2,O3,O4,O5,ALL \

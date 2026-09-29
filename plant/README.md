@@ -104,6 +104,24 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 | Stormwater basin appeared black | Build the ground slab around the basin and recalculate normals. |
 | Photo style overexposed | Lower the sky and exposure and use real-world albedos. |
 
+## Professional renders and presentation board
+
+`--style pro` switches the Blender build to a presentation look:
+
+- **Materials** (`blender/pro_look.py`): procedural and physically based, with bevelled edges. They include ribbed metal cladding, broken-up concrete, galvanised steel with varied roughness, gravel, asphalt, porcelain insulators, safety-yellow rails and a see-through chain-link fence.
+- **Landscape:** grass, about 550 trees in clusters and windbreak rows, and the public road to the main gate.
+- **Light:** a late-afternoon Nishita sky with the sun at 24° altitude, azimuth 258°.
+- **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field.
+- **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
+
+`blender/finish_pro.py` adds a smooth vignette, fine grain and the burned-in credit caption. `blender/board.py` composes the presentation board: one sheet, 4800 x 3200 px plus a PDF, with a hairline key plan drawn from the verified model, the view cone of every plate, a sun-angle diagram, scale and north. The board follows the design philosophy in `renders/pro/design-philosophy.md` ("Measured Light"). Fonts are in `blender/fonts` (SIL Open Font License).
+
+```sh
+python plant/blender/SK-3X1_Rev14_blender_build.py --style pro --samples 128 --out plant/renders/pro
+python plant/blender/finish_pro.py plant/renders/pro
+python plant/blender/board.py plant/renders/pro
+```
+
 ## Coordinates and sources
 
 X east, Y north, Z up, in feet. The origin is the SW corner of the 2,420 x 1,920 ft compound.

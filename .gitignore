@@ -5,3 +5,6 @@
 plant/renders/blender/*.png
 plant/renders/blender/*.json
 __pycache__/
+plant/renders/pro/*.png
+plant/renders/pro/*.json
+plant/renders/pro/*_clean.jpg
