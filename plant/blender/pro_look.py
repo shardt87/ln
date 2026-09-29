@@ -56,7 +56,7 @@ LOOK = {
     "door": ("paint", "#4f6f86", .4, .1), "rollup": ("clad", "#9ca3a7", .5, .3),
     "louvre": ("fins", "#7c8489", .5, .3), "lamp": ("paint", "#f2efe4", .3, 0),
     "insulator": ("ceramic", "#6a3a28", .12, 0), "conductor": ("galv", "#aeb3b6", .3, .9),
-    "water": ("water", "#2c464e", .04, 0), "conditional": ("paint", "#d9bd7b", .6, 0),
+    "water": ("water", "#2c464e", .04, 0), "conditional": ("paint", "#aab2b6", .5, .1),   # real finish, not the drawing tint
     "bess": ("paint", "#e3e5e3", .45, 0), "cabinet": ("paint", "#b9c1c6", .4, .1),
     "swgr": ("paint", "#a3adb3", .4, .1), "panel": ("paint", "#c9cfd2", .4, .1),
     "battery": ("paint", "#4c6b58", .5, 0), "equip": ("paint", "#b0b8bc", .5, .1),
@@ -443,6 +443,8 @@ HEROES = [
          show="all"),
     dict(k="P9", n="Complete plant from overhead", eye=(1210, 180, 4300), target=(1210, 900, 0), lens=34,
          show="all"),
+    dict(k="P11", n="Modular power yard: RICE engine halls and simple-cycle units", eye=(1420, 330, 560),
+         target=(2060, 940, 20), lens=30, show="all"),
     dict(k="P10", n="Complete plant from the south gate road", eye=(1200, -640, 240), target=(1200, 900, 70),
          lens=26, show="all"),
 ]

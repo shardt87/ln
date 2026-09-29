@@ -111,7 +111,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Materials** (`blender/pro_look.py`): procedural and physically based, with bevelled edges. They include ribbed metal cladding, broken-up concrete, galvanised steel with varied roughness, gravel, asphalt, porcelain insulators, safety-yellow rails and a see-through chain-link fence.
 - **Landscape:** grass, about 550 trees in clusters and windbreak rows, and the public road to the main gate.
 - **Light:** a late-afternoon Nishita sky with the sun at 24° altitude, azimuth 258°.
-- **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road).
+- **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
 `blender/finish_pro.py` adds a smooth vignette, fine grain and the burned-in credit caption. `blender/board.py` composes the presentation board: one sheet, 4800 x 3200 px plus a PDF, with a hairline key plan drawn from the verified model, the view cone of every plate, a sun-angle diagram, scale and north. The board follows the design philosophy in `renders/pro/design-philosophy.md` ("Measured Light"). Fonts are in `blender/fonts` (SIL Open Font License).
@@ -124,18 +124,20 @@ python plant/blender/board.py plant/renders/pro
 
 ## Modular expansion (design change beyond Rev 14)
 
-Rev 14 leaves several plots of the compound empty. Layer `OPT_MODX` fills them with more of the modular technologies from sheets 07 and 08. It is a design change: none of it is on the drawing, every item is tagged `basis: design change`, and the layer can be switched off like any other.
+Rev 14 leaves several plots of the compound empty. Layer `OPT_MODX` adds more of the modular technologies from sheets 07 and 08. It is a design change: none of it is on the drawing, every item is tagged `basis: design change`, and the layer can be switched off.
 
-| Plot | Added |
-|---|---|
-| South-east corner, beside the switchyard east end | **SC-3 and SC-4**, LM6000-class simple-cycle units built like SC-1/SC-2 (four simple-cycle units in total). Each has its own 13.8/230 kV GSU and dead-end gantry, and they share a fuel-gas skid, a water-injection skid and an ammonia tank. |
-| East strip, south of the modular collector | RICE engine hall 2: engines **RICE-9 to RICE-15**, with SCR and stacks and radiators. |
-| North-west corner | RICE engine hall 3: engines **RICE-16 to RICE-21**, its PCM, and containerized gensets **CONT-13 to CONT-18**. |
-| South of the portable pad | **TM-1 to TM-4**, trailer-mounted aeroderivatives (TM2500 class). |
-| Beside the portable pad lane | **CONT-3 to CONT-12**, containerized gas gensets, plus a paralleling e-house. |
-| North of SC-1/SC-2 | Fuel-cell modules **FC-5 to FC-16** with their inverter cabinet, and microturbines **MT-4 to MT-9**. |
+The numbers are kept realistic for a modular yard beside a ~1.7 GW 3×1, with room left for access and laydown:
 
-The plots were picked from an occupancy map of the verified model, keeping 10 ft clear of every part and route. `verify.py` still passes: 211/211 footprints, 21/21 heights, 10/10 sheet 09 clearances, 0 clashes. The grid connection of the added units (switchyard bays, collector feeders) is not designed and needs a system impact study.
+| Technology | Rev 14 | Added | Total | Approx. MW |
+|---|---|---|---|---|
+| Aeroderivative simple cycle (LM6000 class) | SC-1, SC-2 | SC-3, SC-4 (south-east corner), each with GSU and gantry | 4 | ~200 |
+| RICE engines (18V50 class) | 8 (hall 1) | 6 in hall 2, RICE-9 to RICE-14 (east strip) | 14 | ~260 |
+| Trailer-mounted aeroderivatives (TM2500 class) | – | TM-1, TM-2 | 2 | ~70 |
+| Containerized gas gensets | 2 | CONT-3 to CONT-8, plus a paralleling e-house | 8 | ~16 |
+| Fuel-cell modules (SOFC) | 4 | FC-5 to FC-12 | 12 | ~3 |
+| Microturbines (1 MW) | 3 | MT-4 to MT-6 | 6 | 6 |
+
+The north-west corner is kept open as a maintenance laydown for engine and turbine exchanges. The plots were picked from an occupancy map of the verified model, keeping 10 ft clear of every part and route. `verify.py` still passes: 211/211 footprints, 21/21 heights, 10/10 sheet 09 clearances, 0 clashes. The grid connection of the added units (switchyard bays, collector feeders) is not designed and needs a system impact study. In the presentation renders, items the drawing marks conditional get a normal equipment finish instead of the drawing's tan tint.
 
 ## Coastal variant: LNG marine terminal (sheet 15)
 

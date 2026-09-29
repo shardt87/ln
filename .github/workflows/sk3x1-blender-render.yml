@@ -75,7 +75,7 @@ jobs:
           - { style: pro, views: "P3,P4", samples: "128" }
           - { style: pro, views: "P5,P6", samples: "128" }
           - { style: pro, views: "P7,P8", samples: "128" }
-          - { style: pro, views: "P9,P10", samples: "128" }
+          - { style: pro, views: "P9,P10,P11", samples: "128" }
           - { style: pro, views: "C1,C2,C3", samples: "128", overlay: "A" }
           - { style: pro, views: "C4,C5", samples: "128", overlay: "A" }
           - { style: pro, views: "F1,F2,F3", samples: "128", overlay: "B" }
