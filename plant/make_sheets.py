@@ -32,6 +32,20 @@ DPI = S["dpi"]
 MARGIN = S.get("margin_px", 200)
 COL = S["colors"]
 os.makedirs(A.out, exist_ok=True)
+def measure_backdrop():
+    """sample a pure-backdrop pixel (top-left corner of the overview render); fall back to views.json."""
+    for vid in ("01", "03", "07"):
+        p = os.path.join(A.renders, vid + ".png")
+        if os.path.exists(p):
+            im = Image.open(p).convert("RGB")
+            ct = 0
+            return im.getpixel((4, int(im.size[1] * 0.02) + 4))
+    return None
+
+_bd = measure_backdrop()
+if _bd:
+    COL["page"] = "#%02X%02X%02X" % _bd
+    print("page colour matched to render backdrop:", COL["page"])
 CALL_PATH = os.path.join(A.renders, "callouts.json")
 CALLOUTS = json.load(open(CALL_PATH)) if os.path.exists(CALL_PATH) else {"views": {}, "render_px": V["render"]["px"]}
 
@@ -220,16 +234,29 @@ def auto_offset(px, py, r, tf, placed):
         best = (px + dist, py - dist)
     return best
 
+def legend_labels(view):
+    proj = CALLOUTS["views"].get(view["id"], {}).get("anchors", {})
+    out = []
+    for c in view.get("callouts", []):
+        a = proj.get(c["anchor"], {})
+        out.append((c["tag"], c.get("label") or label_for(view, c, a) or c["anchor"].replace("ANCHOR-", "")))
+    return out
+
+def legend_geometry(labels):
+    d = ImageDraw.Draw(Image.new("RGB", (10, 10)))
+    f_l = font(pt(S["legend_pt"]))
+    ncol = 3 if len(labels) <= 6 else S.get("legend_columns", 4)
+    col_w = (W - 2 * MARGIN) / ncol
+    r = int(pt(S["legend_pt"]) * 0.62)
+    two = any(len(wrap(d, l, f_l, col_w - 3 * r - 20)) > 1 for _, l in labels)
+    line_h = int(pt(S["legend_pt"]) * (3.3 if two else 1.9))
+    rows = int(math.ceil(len(labels) / ncol))
+    return ncol, col_w, r, line_h, rows
+
 def draw_legend(draw, legend, y, y_max):
     f_l = font(pt(S["legend_pt"]))
     f_b = font(int(pt(S["legend_pt"]) * 0.95), bold=True)
-    ncol = S.get("legend_columns", 4)
-    if len(legend) <= 6:
-        ncol = 3
-    col_w = (W - 2 * MARGIN) / ncol
-    rows = int(math.ceil(len(legend) / ncol))
-    r = int(pt(S["legend_pt"]) * 0.62)
-    line_h = int(pt(S["legend_pt"]) * 1.9)
+    ncol, col_w, r, line_h, rows = legend_geometry(legend)
     for i, (tag, label) in enumerate(legend):
         col, row = i // rows, i % rows
         x = MARGIN + col * col_w
@@ -241,7 +268,8 @@ def draw_legend(draw, legend, y, y_max):
         bb = draw.textbbox((0, 0), tag, font=f_b)
         draw.text((x + r - tw / 2, yy + r - (bb[3] - bb[1]) / 2 - bb[1]), tag, fill=COL["title"], font=f_b)
         lines = wrap(draw, label, f_l, col_w - 3 * r - 20)
-        draw.text((x + 2 * r + 18, yy + r - pt(S["legend_pt"]) * 0.6), lines[0] + (" ..." if len(lines) > 1 else ""), fill=COL["text"], font=f_l)
+        for k, ln in enumerate(lines[:2]):
+            draw.text((x + 2 * r + 18, yy + r - pt(S["legend_pt"]) * 0.6 + k * pt(S["legend_pt"]) * 1.3), ln, fill=COL["text"], font=f_l)
     return y + rows * line_h
 
 # ---- text-only sheet ---------------------------------------------------------
@@ -334,9 +362,8 @@ def main():
             y_end = footer(d, v, page_no, total)
             legend_h = 0
             if tagged:
-                n = len(v.get("callouts", []))
-                ncol = 3 if n <= 6 else S.get("legend_columns", 4)
-                legend_h = int(math.ceil(n / ncol)) * int(pt(S["legend_pt"]) * 1.9) + MARGIN * 0.3
+                _, _, _, lh, rows = legend_geometry(legend_labels(v))
+                legend_h = rows * lh + MARGIN * 0.3
             tf = place_render(page, d, v, y, int(y_end - legend_h))
             if tagged:
                 legend = draw_callouts(page, v, tf)

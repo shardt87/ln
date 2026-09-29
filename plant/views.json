@@ -45,7 +45,7 @@
   "mist_start_factor": 1.1,
   "mist_depth_factor": 2.5,
   "exposure": 1.0,
-  "xray_alpha": 0.14,
+  "xray_alpha": 0.1,
   "xray_color": "#C9C6BF"
  },
  "zones": {
@@ -291,20 +291,13 @@
    "subtitle": "Power export | GSU transformers, the overhead gen-tie and the underground HV getaway option (ground shown X-ray)",
    "camera": {
     "az": 45,
-    "el": 35,
+    "el": 48,
     "lens": 65,
     "crop_top": 0.05,
     "pad": 1.0,
     "target_height_frac": 0.1
    },
-   "frame": [
-    "SWYD-PAD",
-    "GSU-1-TANK",
-    "GSU-4-TANK",
-    "GENTIE-GANTRY",
-    "GENTIE-UG-TERMINATION-A",
-    "GENTIE-TOWERS"
-   ],
+   "frame": [],
    "hidden": [
     "SITE-EARTHGRID",
     "CORR-",
@@ -322,19 +315,19 @@
    "callouts": [
     {
      "tag": "A",
-     "anchor": "ANCHOR-GSU-2-TANK"
+     "anchor": "ANCHOR-GSU-1-TANK"
     },
     {
      "tag": "B",
-     "anchor": "ANCHOR-GSU-2-HV-BUSHINGS"
+     "anchor": "ANCHOR-GSU-1-HV-BUSHINGS"
     },
     {
      "tag": "C",
-     "anchor": "ANCHOR-GSU-2-LV-BUSHINGS"
+     "anchor": "ANCHOR-GSU-1-LV-BUSHINGS"
     },
     {
      "tag": "D",
-     "anchor": "ANCHOR-GENTIE-GANTRY"
+     "anchor": "ANCHOR-GSU-1-ARRESTER"
     },
     {
      "tag": "E",
@@ -361,7 +354,22 @@
      "anchor": "ANCHOR-GENTIE-UG-DUCTBANK"
     }
    ],
-   "footnote": "Explains the two ways the 230 kV connection can leave the GSUs: overhead on towers, or underground in a duct bank with sealing ends at each end."
+   "footnote": "Explains the two ways the 230 kV connection can leave the GSUs: overhead on towers, or underground in a duct bank with sealing ends at each end.",
+   "xray_duct": [
+    "CORR-DUCTBANK",
+    "GENTIE-UG-DUCTBANK",
+    "CORR-MANHOLES",
+    "GENTIE-UG-MANHOLES",
+    "CORR-ROAD-CROSSING-PITS"
+   ],
+   "frame_box_ft": [
+    60,
+    470,
+    -10,
+    720,
+    1310,
+    110
+   ]
   },
   {
    "id": "05",
@@ -552,10 +560,10 @@
    "id": "08",
    "kind": "camera",
    "title": "Air-cooled condenser",
-   "subtitle": "Main condenser | steam duct from the ST, A-frame bundles, fan cells and the fan motor feeders",
+   "subtitle": "Main condenser | fan cells, fan motors and their feeder cables, with the tube bundles and wind wall lifted off",
    "camera": {
-    "az": 50,
-    "el": 33,
+    "az": 20,
+    "el": 36,
     "lens": 65,
     "crop_top": 0.1,
     "pad": 1.05,
@@ -567,7 +575,11 @@
     "ACC-MCC",
     "ACC-CONDENSATE-TANK"
    ],
-   "hidden": [],
+   "hidden": [
+    "ACC-TUBE-BUNDLES",
+    "ACC-STEAM-HEADERS",
+    "ACC-WINDWALL"
+   ],
    "xray": [],
    "callouts": [
     {
@@ -600,18 +612,10 @@
     },
     {
      "tag": "H",
-     "anchor": "ANCHOR-ACC-STEAM-HEADER"
-    },
-    {
-     "tag": "I",
-     "anchor": "ANCHOR-ACC-TUBE-BUNDLES"
-    },
-    {
-     "tag": "J",
-     "anchor": "ANCHOR-ACC-WINDWALL"
+     "anchor": "ANCHOR-ACC-CONDENSATE-TANK"
     }
    ],
-   "footnote": "Explains the condensing path and the electrical path to the sixty-four fan motors: MCC, riser, deck trays, one drop per motor."
+   "footnote": "Explains the electrical path to the sixty-four fan motors: MCC, riser, deck trays and one drop per motor, and where the steam duct arrives."
   },
   {
    "id": "09",
@@ -686,8 +690,8 @@
    "title": "Carbon capture block",
    "subtitle": "Post-combustion capture | flue gas from the stacks through the DCC and absorber, solvent regeneration and CO2 compression",
    "camera": {
-    "az": 45,
-    "el": 32,
+    "az": 78,
+    "el": 30,
     "lens": 60,
     "crop_top": 0.08,
     "pad": 1.05,
@@ -872,7 +876,14 @@
      "anchor": "ANCHOR-CORR-ROAD-CROSSING"
     }
    ],
-   "footnote": "Explains the separation of power (lower tier) from controls (upper tier), where cables go underground to cross a road, and how MV is tapped along the spine."
+   "footnote": "Explains the separation of power (lower tier) from controls (upper tier), where cables go underground to cross a road, and how MV is tapped along the spine.",
+   "xray_duct": [
+    "CORR-DUCTBANK",
+    "GENTIE-UG-DUCTBANK",
+    "CORR-MANHOLES",
+    "GENTIE-UG-MANHOLES",
+    "CORR-ROAD-CROSSING-PITS"
+   ]
   },
   {
    "id": "13",

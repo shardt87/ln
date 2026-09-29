@@ -76,16 +76,16 @@ def emission_material(name, hexcol):
     nt.links.new(em.outputs["Emission"], out.inputs["Surface"])
     return m
 
-def xray_material():
-    m = bpy.data.materials.get("MAT-XRAY-VIEW")
+def xray_material(color=None, alpha=None, name="MAT-XRAY-VIEW"):
+    m = bpy.data.materials.get(name)
     if m:
         return m
-    m = bpy.data.materials.new("MAT-XRAY-VIEW")
+    m = bpy.data.materials.new(name)
     m.use_nodes = True
     bsdf = m.node_tree.nodes.get("Principled BSDF")
-    bsdf.inputs["Base Color"].default_value = (*hex_to_lin(RENDER.get("xray_color", "#C9C6BF")), 1.0)
+    bsdf.inputs["Base Color"].default_value = (*hex_to_lin(color or RENDER.get("xray_color", "#C9C6BF")), 1.0)
     bsdf.inputs["Roughness"].default_value = 0.9
-    bsdf.inputs["Alpha"].default_value = float(RENDER.get("xray_alpha", 0.22))
+    bsdf.inputs["Alpha"].default_value = float(alpha if alpha is not None else RENDER.get("xray_alpha", 0.22))
     try:
         m.blend_method = "BLEND"          # removed in Blender 5.x, harmless to skip
     except Exception:
@@ -230,10 +230,11 @@ def apply_visibility(view):
         ob.hide_render = hide
         ob.hide_viewport = hide
         # x-ray material swap
-        if ob.type in ("MESH", "CURVE") and ob.data and starts_any(ob.name, xray):
+        xduct = list(view.get("xray_duct", []))
+        if ob.type in ("MESH", "CURVE") and ob.data and (starts_any(ob.name, xray) or starts_any(ob.name, xduct)):
             if ob.name not in _orig_mats:
                 _orig_mats[ob.name] = [m for m in ob.data.materials]
-            xm = xray_material()
+            xm = xray_material("#3F3D3A", 0.65, "MAT-XRAY-DUCT") if starts_any(ob.name, xduct) else xray_material()
             for i in range(len(ob.data.materials)):
                 ob.data.materials[i] = xm
     # X-ray views: drop the backdrop slab below the buried work so it does not hide it
@@ -410,6 +411,14 @@ def project_anchors(cam, view):
 def main():
     setup_scene()
     callouts = dict(render_px=[scene.render.resolution_x, scene.render.resolution_y], scale=SCALE, views={})
+    prev = os.path.join(OUT_DIR, "callouts.json")
+    if ONLY and os.path.exists(prev):            # partial run: keep the other views' entries
+        try:
+            old = json.load(open(prev))
+            if old.get("render_px") == callouts["render_px"]:
+                callouts["views"].update(old.get("views", {}))
+        except Exception:
+            pass
     only = set(ONLY.split(",")) if ONLY else None
     for view in VIEWS["views"]:
         if view.get("kind", "camera") != "camera":

@@ -152,3 +152,10 @@ Options: `--only 01,04` renders a subset; `--no-render` only places cameras and 
 `python3 tools/mock_bpy.py --out out/mock` produces wireframe previews for layout checks
 (`python3 make_sheets.py --renders out/mock --out out/mock_sheets --placeholders`).
 Hide any package in Blender by prefix, for example `GT-`, `HRSG-2-`, `ACC-`, `ELEC-EHOUSE-`.
+
+## 8. Backdrop and page colour
+
+The backdrop plane and world are specified as #D9D8D5, but a lit, shadow-free plane renders lighter
+(about #EDEBE5 with the default sun and world strength). make_sheets.py therefore samples a pure-backdrop
+pixel from the overview render and uses it as the page colour, so the image fades into the page exactly.
+To darken the whole look, lower `sun_energy` and `world_strength` in views.json and re-render.

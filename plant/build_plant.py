@@ -1220,7 +1220,7 @@ def build_gentie():
             pc.cyl(x + k, y, GZ + 12, 0.9, 9, 10)
         pc.build()
         MeshAcc("GENTIE-UG-LINKBOX-" + name, "ENCL").box(x + 8, y - 1.5, GZ, x + 11, y + 1.5, GZ + 3).build()
-    route = [(585, 528), (490, 528), (490, 1050), (430, 1050)]
+    route = [(585, 528), (442, 528), (442, 1050), (430, 1050)]
     db = MeshAcc("GENTIE-UG-DUCTBANK", "DUCT", below=True)
     for a, b in zip(route[:-1], route[1:]):
         x0, x1 = min(a[0], b[0]) - 3, max(a[0], b[0]) + 3
@@ -1235,16 +1235,16 @@ def build_gentie():
     mh = MeshAcc("GENTIE-UG-MANHOLES", "CONC", below=True)
     cov = MeshAcc("GENTIE-UG-MANHOLE-COVERS", "STEEL_DK")
     for y in (640, 840, 1040):
-        mh.box(490 - 4, y - 4, -10, 490 + 4, y + 4, GZ)
-        cov.cyl(490, y, GZ, 1.6, 0.2, 16)
+        mh.box(442 - 4, y - 4, -10, 442 + 4, y + 4, GZ)
+        cov.cyl(442, y, GZ, 1.6, 0.2, 16)
     mh.build(); cov.build()
     anchor("GENTIE-GANTRY", 850, gy, H + 2, "Gen-tie take-off gantry and strain buses", 1)
     anchor("GENTIE-TOWER", ROUTE_X, 700, 94, "230 kV double-circuit gen-tie towers", 1)
     anchor("GENTIE-CONDUCTORS", ROUTE_X + 13, 800, 62, "Overhead gen-tie conductors", 1)
     anchor("GENTIE-UG-TERMINATION", 585, 528, GZ + 22, "Underground option: cable sealing ends (plant end)", 1)
     anchor("GENTIE-UG-TERMINATION-B", 430, 1050, GZ + 22, "Underground option: sealing ends (switchyard end)", 1)
-    anchor("GENTIE-UG-DUCTBANK", 490, 780, -5, "Underground option: 230 kV XLPE duct bank (below grade)", 1)
-    anchor("GENTIE-UG-MANHOLE", 490, 840, GZ + 0.5, "Underground option: splice manhole", 1)
+    anchor("GENTIE-UG-DUCTBANK", 442, 780, -5, "Underground option: 230 kV XLPE duct bank (below grade)", 1)
+    anchor("GENTIE-UG-MANHOLE", 442, 840, GZ + 0.5, "Underground option: splice manhole", 1)
     anchor("GENTIE-UG-LINKBOX", 594, 528, GZ + 3.5, "Sheath link box", 1)
 
 
