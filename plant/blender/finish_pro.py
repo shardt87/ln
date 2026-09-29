@@ -82,8 +82,9 @@ def finish(png, meta):
     x = tracked(d, (m, base - int(40 * k)), v["k"], title, copper, 3 * k)
     d.line([(x + 12 * k, base - int(29 * k)), (x + 34 * k, base - int(29 * k))], fill=copper, width=max(1, int(1.2 * k)))
     tracked(d, (x + 44 * k, base - int(40 * k)), v["name"].upper(), title, ink, 2.6 * k)
-    tracked(d, (m, base - int(10 * k)), f"SK-3X1 · REV 14 · {v['lens']} MM · {SUN} · CYCLES {v['samples']} SPP",
-            mono, soft, 1.2 * k)
+    sun = f"SUN {v['sun'][0]}° ALT / {v['sun'][1]}° AZ" if v.get("sun") else SUN
+    tracked(d, (m, base - int(10 * k)), f"{v.get('sheet', 'SK-3X1')} · REV 14 · {v['lens']} MM · {sun} · "
+            f"CYCLES {v['samples']} SPP", mono, soft, 1.2 * k)
     # right: credit and status
     r1 = "STEPHAN HARDT  |  POWER GENERATION SOLUTIONS"
     r2 = "CONCEPTUAL ILLUSTRATION · NOT ENGINEERED · NOT FOR CONSTRUCTION"
@@ -96,7 +97,7 @@ def finish(png, meta):
 
 def main():
     root = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "..", "renders", "pro")
-    for lj in sorted(glob.glob(os.path.join(root, "P*_pro.labels.json"))):
+    for lj in sorted(glob.glob(os.path.join(root, "*_pro.labels.json"))):
         png = lj.replace(".labels.json", ".png")
         if os.path.exists(png):
             print("finished", finish(png, json.load(open(lj))))

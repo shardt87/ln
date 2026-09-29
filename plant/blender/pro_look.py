@@ -60,6 +60,15 @@ LOOK = {
     "bess": ("paint", "#e3e5e3", .45, 0), "cabinet": ("paint", "#b9c1c6", .4, .1),
     "swgr": ("paint", "#a3adb3", .4, .1), "panel": ("paint", "#c9cfd2", .4, .1),
     "battery": ("paint", "#4c6b58", .5, 0), "equip": ("paint", "#b0b8bc", .5, .1),
+    # coastal variant (sheet 15): terminal, marine structures and vessels
+    "tankwall": ("concrete", "#c9c5bb", .8, 0), "tankroof": ("paint", "#d9d8d2", .55, 0),
+    "lngpipe": ("paint", "#e7e6e0", .5, 0), "seawater": ("paint", "#4d7d93", .45, .05),
+    "pile": ("paint", "#4d4f4f", .6, .2), "rope": ("paint", "#d8cfa9", .8, 0),
+    "hull": ("paint", "#23282d", .4, .15), "antifoul": ("paint", "#8a2d25", .5, 0),
+    "deck": ("paint", "#6b4a3a", .6, 0), "super": ("paint", "#ecebe5", .4, 0),
+    "glass": ("paint", "#1f2d36", .08, .2), "mosscover": ("paint", "#d7cfbd", .5, 0),
+    "tug": ("paint", "#b03a26", .45, 0), "sea": ("sea", "#27434c", .05, 0),
+    "sand": ("gravel", "#c2b28f", .95, 0), "rock": ("concrete", "#6f6c66", .9, 0),
 }
 _mats = {}
 
@@ -150,6 +159,21 @@ def material(key):
         bump = _node(nt, "ShaderNodeBump", (-350, -300), Strength=.08)
         L.new(wv.outputs["Fac"], bump.inputs["Height"])
         normal_src = bump
+    elif kind == "sea":
+        # open water: two wave scales in the bump, darker and bluer with depth of view
+        b.inputs["IOR"].default_value = 1.333
+        b.inputs["Coat Weight"].default_value = .3
+        w1 = _node(nt, "ShaderNodeTexNoise", (-800, -300), Scale=.9, Detail=6, Roughness=.55)
+        w2 = _node(nt, "ShaderNodeTexWave", (-800, -500), Scale=.35, Distortion=6, Detail=4)
+        w2.bands_direction = "DIAGONAL"
+        L.new(geo.outputs["Position"], w1.inputs["Vector"])
+        L.new(geo.outputs["Position"], w2.inputs["Vector"])
+        add = _node(nt, "ShaderNodeMath", (-550, -400))
+        L.new(w1.outputs["Fac"], add.inputs[0])
+        L.new(w2.outputs["Fac"], add.inputs[1])
+        bump = _node(nt, "ShaderNodeBump", (-350, -300), Strength=.22, Distance=.12)
+        L.new(add.outputs[0], bump.inputs["Height"])
+        normal_src = bump
     elif kind == "ceramic":
         b.inputs["Coat Weight"].default_value = .6
     elif kind == "fence":
@@ -171,8 +195,10 @@ def material(key):
 
 
 # ---------------------------------------------------------------------------
-def landscape(scene, coll):
-    """Grass surround, tree clusters outside the fence and the public road."""
+def landscape(scene, coll, coastal=None):
+    """Grass surround, tree clusters outside the fence and the public road.
+    coastal: the variant metadata of a sheet 15 overlay; the land then ends at the
+    shoreline with a sand strip and a rock revetment, and the sea runs east."""
     def mesh_obj(name, verts, faces, mat):
         me = bpy.data.meshes.new(name)
         me.from_pydata(verts, [], faces)
@@ -203,8 +229,25 @@ def landscape(scene, coll):
 
     S = 9000
     z = -.6 * FT
-    mesh_obj("pro surround", [(-S * FT, -S * FT, z), ((2420 + S) * FT, -S * FT, z), ((2420 + S) * FT, (1920 + S) * FT, z),
+    east = 2420 + S if not coastal else coastal["shoreline_x"] - 30
+    mesh_obj("pro surround", [(-S * FT, -S * FT, z), (east * FT, -S * FT, z), (east * FT, (1920 + S) * FT, z),
                               (-S * FT, (1920 + S) * FT, z)], [(0, 1, 2, 3)], grass)
+    if coastal:
+        sh, sea = coastal["shoreline_x"], coastal["sea_level"]
+        y0, y1 = -S * FT, (1920 + S) * FT
+        mesh_obj("pro beach", [(east * FT, y0, z), (sh * FT, y0, -.9 * FT), (sh * FT, y1, -.9 * FT), (east * FT, y1, z)],
+                 [(0, 1, 2, 3)], material("sand"))
+        mesh_obj("pro revetment", [(sh * FT, y0, -.9 * FT), ((sh + 45) * FT, y0, (sea - 7) * FT),
+                                   ((sh + 45) * FT, y1, (sea - 7) * FT), (sh * FT, y1, -.9 * FT)], [(0, 1, 2, 3)],
+                 material("rock"))
+        far = 90000
+        mesh_obj("pro sea", [((sh + 5) * FT, -far * FT, sea * FT), (far * FT, -far * FT, sea * FT),
+                             (far * FT, far * FT, sea * FT), ((sh + 5) * FT, far * FT, sea * FT)], [(0, 1, 2, 3)],
+                 material("sea"))
+        # the sea floor below the water keeps the shallows from reading as a void
+        mesh_obj("pro seabed", [((sh + 45) * FT, -far * FT, (sea - 7) * FT), (far * FT, -far * FT, (sea - 60) * FT),
+                                (far * FT, far * FT, (sea - 60) * FT), ((sh + 45) * FT, far * FT, (sea - 7) * FT)],
+                 [(0, 1, 2, 3)], material("sand"))
     # public road to the main gate (west), and a county road running north-south
     asphalt = material("road")
     mesh_obj("pro gate road", [(-900 * FT, 270 * FT, -.3 * FT), (0, 270 * FT, -.3 * FT), (0, 300 * FT, -.3 * FT),
@@ -259,6 +302,9 @@ def landscape(scene, coll):
             x, y = cx + rng.gauss(0, 90), cy + rng.gauss(0, 90)
             if -80 < x < 2500 and -80 < y < 2000:          # keep the compound and its margin clear
                 continue
+            if coastal and (x > coastal["shoreline_x"] - 90 or (2400 < x and 180 < y < 1760)
+                            or (1650 < x and 1900 < y < 1990)):
+                continue                                    # sea, beach, terminal plot, pipeline right of way
             if -960 < x < -860 or (-900 < x < 0 and 250 < y < 320):
                 continue                                    # roads
             ob = bpy.data.objects.new("tree", protos[rng.randrange(3)].data)
@@ -269,7 +315,7 @@ def landscape(scene, coll):
             coll.objects.link(ob)
             placed += 1
     # a windbreak row along the south and west fence lines
-    for x in range(-60, 2480, 38):
+    for x in range(-60, 2480 if not coastal else 2380, 38):
         ob = bpy.data.objects.new("tree", protos[x % 3].data)
         ob.location = ((x + rng.uniform(-6, 6)) * FT, (-70 + rng.uniform(-8, 8)) * FT, -.6 * FT)
         s = rng.uniform(.8, 1.1)
@@ -417,3 +463,33 @@ def hero_camera(scene, h):
     ob.rotation_euler = (eye - tgt).to_track_quat("Z", "Y").to_euler()
     scene.collection.objects.link(ob)
     return ob
+
+# Coastal variant (sheet SK-3X1-15). Morning sun from the south-east so the sea-side
+# views are front lit. A: onshore import terminal and jetty; B: FSRU ~21,000 ft offshore.
+COASTAL_A = [
+    dict(k="C1", n="Onshore LNG import terminal beside the plant", eye=(4750, -1150, 1050),
+         target=(2700, 950, 40), lens=30, show="coastal"),
+    dict(k="C2", n="LNG carrier at the berth, unloading arms connected", eye=(5190, 640, 58), target=(5470, 1010, 48), lens=28,
+         show="coastal"),
+    dict(k="C3", n="LNG tank, regasification and send-out", eye=(2350, 120, 190), target=(3150, 950, 70),
+         lens=30, show="coastal"),
+    dict(k="C4", n="Plant, terminal and jetty from overhead", eye=(2950, -520, 5300), target=(2950, 1000, 0),
+         lens=30, show="coastal"),
+    dict(k="C5", n="Jetty trestle from the tank roof", eye=(3190, 1150, 190), target=(5400, 960, 40), lens=32,
+         show="coastal"),
+]
+COASTAL_B = [
+    dict(k="F1", n="FSRU and LNG carrier, ship-to-ship transfer", eye=(25300, -300, 300), target=(24300, 950, 40),
+         lens=32, show="coastal"),
+    dict(k="F2", n="Landfall valve station and plant from the sea", eye=(4900, 2900, 700), target=(2300, 900, 20),
+         lens=30, show="coastal"),
+    dict(k="F3", n="FSRU 6.4 km offshore, the plant on the horizon", eye=(27800, 1500, 150), target=(1400, 950, 70),
+         lens=70, show="coastal"),
+]
+
+
+def hero_set(coastal=None):
+    """Cameras, sun (elevation, azimuth) and sheet reference for the scene being rendered."""
+    if not coastal:
+        return dict(heroes=HEROES, sun=(24, 258), sheet="SK-3X1")
+    return dict(heroes=COASTAL_A if coastal["variant"] == "A" else COASTAL_B, sun=(28, 140), sheet="SK-3X1-15")

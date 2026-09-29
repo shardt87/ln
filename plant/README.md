@@ -122,6 +122,37 @@ python plant/blender/finish_pro.py plant/renders/pro
 python plant/blender/board.py plant/renders/pro
 ```
 
+## Coastal variant: LNG marine terminal (sheet 15)
+
+Sheet SK-3X1-15 shows where a coastal plant gets its gas when there is no pipeline. The inland model stays as it is (its trucked LNG satellite from sheet 14 is unchanged). The coastal variant is a separate scene, built as an overlay on the same verified plant and rendered on its own:
+
+| Variant | What is modelled |
+|---|---|
+| **A: onshore import terminal** beside the plant (EcoElectrica / AES Andres class) | 160,000 m³ full-containment tank (270 ft × 160 ft), 4 open-rack vaporizers, HP send-out pumps, BOG compressors, terminal substation, control building and fire water, send-out metering and ESD, seawater intake, flare, 1,740 ft jetty trestle on piles, berth with 4 unloading arms (3 LNG + 1 vapour), breasting and mooring dolphins, a 294 m Moss-type carrier and two tugs. LNG lines run from the tank to the jetty and the send-out pumps as drawn. The buried send-out pipeline runs to the plant's pipeline M&R. |
+| **B: FSRU moored offshore** (Porto de Sergipe class) | Landfall valve station (ESD, pig receiver, metering), buried pipeline to the M&R, a soft-yoke mooring tower with its gas riser, a 170,000 m³ FSRU with a regas module on the fore deck, and an LNG carrier alongside for ship-to-ship transfer with fenders and hoses. |
+
+- `coastal/extract_sheet15.py` reads sheet 15 (both panels draw the compound to scale, 7.61 ft per point). It matches every numbered key item to its drawn shape and writes `reference/sk3x1_rev14_sheet15.json`, which is committed.
+- `coastal/build_coastal.py` writes the overlays `coastal/sk3x1_coastal_A.json` and `_B.json`. Sheet 15 draws the FSRU closer than it is ("distance NOT to scale"), so the model places it at the stated ~21,000 ft (6.4 km) pipeline length.
+- `coastal/verify_coastal.py` checks the overlays. It currently passes:
+  - all 15 keyed footprints are within 0.6 ft of sheet 15;
+  - no clashes;
+  - nothing new inside the compound;
+  - vessels and all piles are in the water;
+  - the carrier is 294 m LOA, with a 15 ft gap to the berth face;
+  - the jetty is 1,740 ft;
+  - the ship-to-ship fender gap is 50 ft;
+  - the landfall to yoke run is 6.4 km.
+- Renders use `--overlay` and a morning sun from the south-east, so the sea-side views are front lit. There are five views for A (C1–C5) and three for B (F1–F3). `board.py … coastal` composes the sheet 15 board.
+
+```sh
+python plant/coastal/build_coastal.py && python plant/coastal/verify_coastal.py
+python plant/blender/SK-3X1_Rev14_blender_build.py --style pro --overlay plant/coastal/sk3x1_coastal_A.json --samples 128 --out plant/renders/coastal
+python plant/blender/SK-3X1_Rev14_blender_build.py --style pro --overlay plant/coastal/sk3x1_coastal_B.json --samples 128 --out plant/renders/coastal
+python plant/blender/finish_pro.py plant/renders/coastal && python plant/blender/board.py plant/renders/coastal coastal
+```
+
+Heights, pile spacing, vessel superstructure and everything marked `typical` are assumptions. Marine, siting and permitting are not addressed.
+
 ## Coordinates and sources
 
 X east, Y north, Z up, in feet. The origin is the SW corner of the 2,420 x 1,920 ft compound.

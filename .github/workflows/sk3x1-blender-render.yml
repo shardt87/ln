@@ -45,10 +45,17 @@ jobs:
           git diff --exit-code -- plant/sk3x1_model.json || (echo "::error::sk3x1_model.json is stale; run plant/build_model.py" && exit 1)
       - name: Verify (footprints, heights, sheet-09 screen, clashes, bounds)
         run: python3 plant/verify.py
+      - name: Coastal variant (sheet 15) overlays are current and pass their checks
+        run: |
+          python3 plant/coastal/build_coastal.py
+          git diff --exit-code -- plant/coastal/*.json || (echo "::error::coastal overlays are stale; run plant/coastal/build_coastal.py" && exit 1)
+          python3 plant/coastal/verify_coastal.py
       - uses: actions/upload-artifact@v4
         with:
           name: verify-report
-          path: plant/verify_report.json
+          path: |
+            plant/verify_report.json
+            plant/coastal/verify_coastal_report.json
 
   render:
     name: Render ${{ matrix.style }} ${{ matrix.views }}
@@ -69,6 +76,9 @@ jobs:
           - { style: pro, views: "P5,P6", samples: "128" }
           - { style: pro, views: "P7,P8", samples: "128" }
           - { style: pro, views: "P9,P10", samples: "128" }
+          - { style: pro, views: "C1,C2,C3", samples: "128", overlay: "A" }
+          - { style: pro, views: "C4,C5", samples: "128", overlay: "A" }
+          - { style: pro, views: "F1,F2,F3", samples: "128", overlay: "B" }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -87,9 +97,11 @@ jobs:
           VIEWS: ${{ github.event.inputs.views || matrix.views }}
           SAMPLES: ${{ github.event.inputs.samples || matrix.samples || '64' }}
           SCALE: ${{ github.event.inputs.scale || '100' }}
+          OVERLAY: ${{ matrix.overlay }}
         run: |
           python plant/blender/SK-3X1_Rev14_blender_build.py \
             --views "$VIEWS" --style ${{ matrix.style }} --samples "$SAMPLES" --scale "$SCALE" \
+            ${OVERLAY:+--overlay plant/coastal/sk3x1_coastal_$OVERLAY.json} \
             --out out 2>&1 | grep -E "^(scene built|rendered)|Error|Traceback"
           python plant/blender/annotate.py out
       - uses: actions/upload-artifact@v4
@@ -123,6 +135,7 @@ jobs:
         run: |
           python plant/blender/finish_pro.py renders
           python plant/blender/board.py renders
+          python plant/blender/board.py renders coastal
       - name: Save the Blender scene (all collections, all cameras)
         run: |
           python plant/blender/SK-3X1_Rev14_blender_build.py --no-render --views A,B,B2,C,H,O1,O2,O3,O4,O5,ALL \

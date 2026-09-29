@@ -50,9 +50,17 @@ ap.add_argument("--scale", type=int, default=100)
 ap.add_argument("--out", default=os.path.join(PLANT, "renders", "blender"))
 ap.add_argument("--blend", default="")
 ap.add_argument("--no-render", action="store_true")
+ap.add_argument("--overlay", default="", help="coastal variant overlay (plant/coastal/sk3x1_coastal_A.json or _B)")
 args = ap.parse_args(argv)
 
 model = json.load(open(os.path.join(PLANT, "sk3x1_model.json")))
+coastal = None
+if args.overlay:
+    ov = json.load(open(args.overlay))
+    model["layers"].update(ov["layers"])
+    model["items"] += ov["items"]
+    model["parts"] += ov["parts"]
+    coastal = ov["coastal"]
 sys.path.insert(0, HERE)
 import pro_look  # noqa: E402  (professional presentation look, --style pro)
 palette = json.load(open(os.path.join(PLANT, "palette.json")))
@@ -251,7 +259,7 @@ for (layer, rtype), geos in route_geos.items():
 
 # ground beyond the compound
 if args.style == "pro":
-    n_trees = pro_look.landscape(scene, coll("LANDSCAPE"))
+    n_trees = pro_look.landscape(scene, coll("LANDSCAPE"), coastal)
     print(f"landscape: {n_trees} trees")
 else:
     me = bpy.data.meshes.new("surround")
@@ -271,8 +279,9 @@ print(f"scene built: {len(bpy.data.objects)} objects in {len(collections)} colle
 # ---------------------------------------------------------------------------
 # World, light, render settings
 # ---------------------------------------------------------------------------
+HERO_SET = pro_look.hero_set(coastal)
 if args.style == "pro":
-    pro_look.world_and_sun(scene)
+    pro_look.world_and_sun(scene, *HERO_SET["sun"])
 else:
     world = bpy.data.worlds.new("world")
     scene.world = world
@@ -433,18 +442,21 @@ def labels_for(v, cam_ob, show):
 os.makedirs(args.out, exist_ok=True)
 manifest = []
 if args.style == "pro":
-    keys = [k for k in args.views.split(",") if k] or [h["k"] for h in pro_look.HEROES]
+    heroes = HERO_SET["heroes"]
+    keys = [k for k in args.views.split(",") if k] or [h["k"] for h in heroes]
     ALL = [l for l in model["layers"] if l not in ("R1_INTERIOR", "R4_INTERIOR")]
-    BASE = [l for l in ALL if not l.startswith(("OPT_", "HV_CORRIDOR", "SWYD_FUTURE"))]
-    for h in pro_look.HEROES:
+    COAST = [l for l, v in model["layers"].items() if v.get("group", "").startswith("Coastal")]
+    BASE = [l for l in ALL if not l.startswith(("OPT_", "HV_CORRIDOR", "SWYD_FUTURE")) and l not in COAST]
+    ALL = [l for l in ALL if l not in COAST]
+    for h in heroes:
         if h["k"] not in keys:
             continue
         cam_ob = pro_look.hero_camera(scene, h)
         scene.camera = cam_ob
-        show = BASE if h["show"] == "base" else ALL
+        show = {"base": BASE, "all": ALL, "coastal": BASE + COAST}[h["show"]]
         set_visibility(show)
         info = dict(k=h["k"], name=h["n"], show=show, style="pro", samples=args.samples, lens=h["lens"],
-                    ortho_ft=0, margin_lr=0, margin_tb=0)
+                    ortho_ft=0, margin_lr=0, margin_tb=0, sun=list(HERO_SET["sun"]), sheet=HERO_SET["sheet"])
         base = os.path.join(args.out, f"{h['k']}_pro")
         json.dump(dict(view=info, labels=[]), open(base + ".labels.json", "w"), indent=1)
         if not args.no_render:

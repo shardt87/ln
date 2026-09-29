@@ -1,0 +1,42 @@
+{
+ "A": {
+  "fails": 0,
+  "lines": [
+   "   ok     key  1 1 LNG tank 160,000 m3, full containment (Sabine Pass class dev  0.00 ft",
+   "   ok     key  2 2 Vaporizers x4, 2 duty + 2 standby (open rack, seawater)  dev  0.00 ft",
+   "   ok     key  3 3 HP send-out pumps, MV motors                             dev  0.00 ft",
+   "   ok     key  4 4 Boil-off gas compressors                                 dev  0.00 ft",
+   "   ok     key  5 5 Terminal substation + MCC e-house                        dev  0.00 ft",
+   "   ok     key  6 6 Control building + fire water                            dev  0.00 ft",
+   "   ok     key  7 7 Send-out metering + ESD                                  dev  0.00 ft",
+   "   ok     key  8 8 Seawater intake + pump house                             dev  0.00 ft",
+   "   ok     key  9 9 Vent / flare                                             dev  0.00 ft",
+   "   ok     key 10 10 Jetty trestle ~1,700 ft                                 dev  0.00 ft",
+   "   ok     key 11 11 Berth platform: 4 unloading arms, 3 LNG + 1 vapour      dev  0.00 ft",
+   "   ok     clashes: 0 item pairs (382 part pairs tested)",
+   "   ok     nothing new inside the 2,420 x 1,920 ft compound []",
+   "   ok     vessels and mooring on the sea side of the shoreline (x > 3600.6) []",
+   "   ok     terminal / landfall items on the land side []",
+   "   ok     jetty and berth piles all in the water (0 on land)",
+   "   ok     carrier side to berth face 15.0 ft (fenders and arm reach, >= 10 ft)",
+   "   ok     carrier LOA 964 ft = 294 m (294 m on sheet 15)",
+   "   ok     jetty trestle 1740 ft (~1,700 ft)"
+  ]
+ },
+ "B": {
+  "fails": 0,
+  "lines": [
+   "   ok     key 12 12 Landfall valve station: ESD, pig receiver, metering     dev  0.00 ft",
+   "   ok     key 14 14 Soft-yoke mooring tower + gas riser                     dev  0.30 ft",
+   "   ok     key 15 15 FSRU 170,000 m3, regas onboard 14-21 million m3/day     dev  0.30 ft",
+   "   ok     key 16 16 LNG carrier, ship-to-ship transfer                      dev  0.30 ft",
+   "   ok     clashes: 0 item pairs (115 part pairs tested)",
+   "   ok     nothing new inside the 2,420 x 1,920 ft compound []",
+   "   ok     vessels and mooring on the sea side of the shoreline (x > 3300.5) []",
+   "   ok     terminal / landfall items on the land side []",
+   "   ok     jetty and berth piles all in the water (0 on land)",
+   "   ok     STS fender gap FSRU to carrier 50 ft",
+   "   ok     landfall to yoke 21,038 ft = 6.4 km (6-6.5 km on sheet 15)"
+  ]
+ }
+}

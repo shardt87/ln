@@ -8,3 +8,6 @@ __pycache__/
 plant/renders/pro/*.png
 plant/renders/pro/*.json
 plant/renders/pro/*_clean.jpg
+plant/renders/coastal/*.png
+plant/renders/coastal/*.json
+plant/renders/coastal/*_clean.jpg
