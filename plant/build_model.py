@@ -1102,6 +1102,131 @@ ehouse(L, "PAD-EH 13.8 kV switchgear e-house", 2160, 2200, 470, 484, 14, tag="PA
 solid(L, "Portable pad gas-conditioning skid", 2310, 2340, 430, 440, 0, 8, "equip", area="I")
 
 # ---------------------------------------------------------------------------
+# I+ MODULAR EXPANSION: design change beyond Rev 14 (not on the drawing)
+# Fills the empty plots of the compound with more of the sheet 07/08 technologies:
+# SC-3/SC-4 (four simple-cycle units in total), a second 7-engine RICE hall,
+# four trailer-mounted aeroderivatives, ten more containerized gensets, twelve
+# more fuel-cell modules and six more microturbines. Plots were chosen from an
+# occupancy map of the verified model with a 10 ft clearance to every part and route.
+# ---------------------------------------------------------------------------
+L = "OPT_MODX"
+DC = dict(area="I", basis="design change", sheet="beyond Rev 14")
+# SC-3 / SC-4 in the south-east corner, same package as SC-1/SC-2, with GSU and line gantry
+for k, x in ((3, 2045), (4, 2225)):
+    y = 130
+    item(L, f"SC-{k}: aeroderivative simple-cycle unit (LM6000 class)", (x, x + 90, y, y + 30), (0, 35),
+         tag=f"SC-{k}", info="Design change: as SC-1/SC-2 (package, SCR/CO catalyst, 80 ft stack, PCM + GCB, "
+         "fin-fan, inlet chiller), tied to the switchyard east end through its own GSU (requires study).", **DC)
+    B(x, x + 70, y + 2, y + 28, 0, 22, "machine")
+    B(x + 70, x + 90, y, y + 30, 0, 32, "filter")
+    B(x - 20, x, y + 6, y + 24, 8, 26, "duct")
+    solid(L, f"SC-{k} SCR / CO catalyst", x + 90, x + 130, y, y + 30, 0, 35, "equip", register=False, **DC)
+    item(L, f"SC-{k} stack (80 ft)", (x + 135.5, x + 148.5, y + 8, y + 21), (0, 80), shape="circle",
+         register=False, **DC)
+    V(x + 142, y + 14.5, 6.5, 0, 80, "stack", seg=20)
+    ehouse(L, f"SC-{k} PCM + 15 kV GCB", x, x + 40, y + 55, y + 69, 12, register=False, **DC)
+    solid(L, f"SC-{k} lube-oil fin-fan cooler", x + 50, x + 70, y + 55, y + 69, 0, 10, "bundle", register=False, **DC)
+    solid(L, f"SC-{k} inlet chiller / evaporative cooler", x, x + 60, y - 55, y - 20, 0, 14, "equip",
+          register=False, **DC)
+    xfmr(L, f"T-SC{k}: 13.8/230 kV GSU", x + 88, x + 118, y + 50, y + 80, 22, bushing=12, tag=f"T-SC{k}",
+         register=False, **DC)
+    item(L, f"SC-{k} 230 kV dead-end gantry", (x + 126, x + 142, y + 52, y + 78), (0, 50), register=False, **DC)
+    for yy in (y + 54, y + 76):
+        R((x + 128, yy, 0), (x + 128, yy, 50), 0.8, "steel", seg=8)
+        R((x + 140, yy, 0), (x + 140, yy, 50), 0.8, "steel", seg=8)
+    B(x + 127, x + 141, y + 53, y + 77, 48, 50, "steel")
+    for i in range(3):
+        R((x + 110, y + 57 + 8 * i, 34), (x + 134, y + 57 + 8 * i, 44), 0.3, "conductor", seg=6)
+solid(L, "SC-3/4 fuel-gas filter-heater skid", 2045, 2095, 35, 55, 0, 10, "equip", register=False, **DC)
+tank(L, "Aqueous ammonia (SC-3/4)", 2125, 45, 10, 12, register=False, **DC)
+solid(L, "SC-3/4 water-injection skid", 2160, 2185, 35, 55, 0, 8, "equip", register=False, **DC)
+# RICE hall 2: seven more engines in the east strip, laid out as hall 1
+x0, y0, n = 2166, 720, 7
+item(L, f"RICE engine hall 2 ({n} engines)", (x0, x0 + 28 * n + 16, y0 + 40, y0 + 130), (0, 40), tag="RICE-2H",
+     info="Design change: second hall of 18V50-class engines, as hall 1 (SK-3X1-07).", **DC)
+B(x0, x0 + 28 * n + 16, y0 + 40, y0 + 130, 0, 34, "hall"); P(x0, x0 + 28 * n + 16, y0 + 40, y0 + 130, 34, 40, "roof", ridge="x")
+for k in range(n):
+    x = x0 + 11 + 28 * k
+    item(L, f"RICE engine-generator {k + 9}", (x, x + 19, y0 + 55, y0 + 115), (0, 20), tag=f"RICE-{k + 9}",
+         register=False, **DC)
+    B(x, x + 19, y0 + 55, y0 + 115, 0, 3, "concrete"); B(x + 2, x + 17, y0 + 60, y0 + 95, 3, 20, "machine")
+    R((x + 9.5, y0 + 96, 11), (x + 9.5, y0 + 112, 11), 7, "machine", seg=20)
+    item(L, f"RICE {k + 9} SCR + oxidation catalyst and stack", (x - 1, x + 21, y0, y0 + 40), (0, 90),
+         register=False, **DC)
+    B(x - 1, x + 21, y0, y0 + 30, 0, 25, "equip")
+    V(x + 10, y0 + 37, 3, 0, 90, "stack", seg=14)
+    item(L, f"RICE {k + 9} radiators (4)", (x - 1, x + 21, y0 + 140, y0 + 204), (0, 14), register=False, **DC)
+    for r_ in range(4):
+        column_grid((x, x + 20), (y0 + 141 + 16 * r_, y0 + 151 + 16 * r_), 4, s=0.5)
+        B(x - 1, x + 21, y0 + 140 + 16 * r_, y0 + 152 + 16 * r_, 4, 7, "bundle")
+        V(x + 10, y0 + 146 + 16 * r_, 5, 7, 9, "fan", seg=14)
+# RICE hall 3 (six engines) and six containerized gensets in the empty north-west corner
+x0, y0, n = 45, 1700, 6
+item(L, f"RICE engine hall 3 ({n} engines)", (x0, x0 + 28 * n + 16, y0 + 40, y0 + 130), (0, 40), tag="RICE-3H",
+     info="Design change: third hall of 18V50-class engines.", **DC)
+B(x0, x0 + 28 * n + 16, y0 + 40, y0 + 130, 0, 34, "hall"); P(x0, x0 + 28 * n + 16, y0 + 40, y0 + 130, 34, 40, "roof", ridge="x")
+for k in range(n):
+    x = x0 + 11 + 28 * k
+    item(L, f"RICE engine-generator {k + 16}", (x, x + 19, y0 + 55, y0 + 115), (0, 20), tag=f"RICE-{k + 16}",
+         register=False, **DC)
+    B(x, x + 19, y0 + 55, y0 + 115, 0, 3, "concrete"); B(x + 2, x + 17, y0 + 60, y0 + 95, 3, 20, "machine")
+    R((x + 9.5, y0 + 96, 11), (x + 9.5, y0 + 112, 11), 7, "machine", seg=20)
+    item(L, f"RICE {k + 16} SCR + oxidation catalyst and stack", (x - 1, x + 21, y0, y0 + 40), (0, 90),
+         register=False, **DC)
+    B(x - 1, x + 21, y0, y0 + 30, 0, 25, "equip")
+    V(x + 10, y0 + 37, 3, 0, 90, "stack", seg=14)
+    item(L, f"RICE {k + 16} radiators (3)", (x - 1, x + 21, y0 + 140, y0 + 188), (0, 14), register=False, **DC)
+    for r_ in range(3):
+        column_grid((x, x + 20), (y0 + 141 + 16 * r_, y0 + 151 + 16 * r_), 4, s=0.5)
+        B(x - 1, x + 21, y0 + 140 + 16 * r_, y0 + 152 + 16 * r_, 4, 7, "bundle")
+        V(x + 10, y0 + 146 + 16 * r_, 5, 7, 9, "fan", seg=14)
+ehouse(L, "RICE hall 3 PCM: power control module", 250, 290, 1740, 1830, 14, tag="PCM-3", **DC)
+for k in range(6):
+    col, i = divmod(k, 3)
+    x, y = 305 + 48 * col, 1720 + 50 * i
+    solid(L, f"CONT-{k + 13}: containerized gas genset 13.8 kV (40 ft)", x, x + 40, y, y + 8, 0, 9.5, "machine",
+          tag=f"CONT-{k + 13}", **DC)
+    B(x + 2, x + 38, y + 0.5, y + 7.5, 9.5, 11, "radiator")
+    V(x + 12, y + 4, 2.2, 11, 12, "fan", seg=12); V(x + 28, y + 4, 2.2, 11, 12, "fan", seg=12)
+    R((x + 36, y + 6, 11), (x + 36, y + 6, 18), 0.8, "stack", seg=10)
+# four trailer-mounted aeroderivatives (TM2500 class) south of the portable pad
+for k in range(4):
+    x, y = 1935 + 98 * k, 335
+    item(L, f"TM-{k + 1}: trailer-mounted aeroderivative GT (TM2500 class, ~35 MW)", (x, x + 78, y, y + 55),
+         (0, 42), tag=f"TM-{k + 1}", info="Design change: gas turbine + generator trailer, control/aux trailer, "
+         "inlet filter on the trailer, exhaust stack.", **DC)
+    B(x, x + 64, y + 30, y + 42, 0, 4.5, "steel")                    # main trailer deck
+    B(x + 2, x + 60, y + 31, y + 41, 4.5, 16, "machine")             # GT + generator enclosure
+    B(x + 44, x + 60, y + 29, y + 43, 16, 24, "filter")              # inlet filter house
+    V(x + 8, y + 36, 5, 16, 42, "stack", seg=16)                     # exhaust stack
+    B(x + 4, x + 52, y + 8, y + 17, 0, 4.5, "steel")                 # aux / control trailer
+    B(x + 6, x + 50, y + 9, y + 16, 4.5, 13, "ehouse")
+    for (xx, yy) in ((x + 6, y + 30), (x + 20, y + 30), (x + 54, y + 30), (x + 6, y + 42), (x + 20, y + 42),
+                     (x + 54, y + 42), (x + 10, y + 8), (x + 46, y + 8), (x + 10, y + 17), (x + 46, y + 17)):
+        R((xx, yy, 1.8), (xx, yy + (1 if yy in (y + 30, y + 8) else -1), 1.8), 1.8, "conductor", seg=12)
+    B(x + 66, x + 78, y + 30, y + 42, 0, 9, "cabinet")               # fuel-gas / water skid
+# ten more containerized gensets with a paralleling e-house
+for k in range(10):
+    row, i = divmod(k, 5)
+    x, y = 1932 + 52 * i, 505 + 55 * row
+    solid(L, f"CONT-{k + 3}: containerized gas genset 13.8 kV (40 ft)", x, x + 40, y, y + 8, 0, 9.5, "machine",
+          tag=f"CONT-{k + 3}", **DC)
+    B(x + 2, x + 38, y + 0.5, y + 7.5, 9.5, 11, "radiator")
+    V(x + 12, y + 4, 2.2, 11, 12, "fan", seg=12); V(x + 28, y + 4, 2.2, 11, 12, "fan", seg=12)
+    R((x + 36, y + 6, 11), (x + 36, y + 6, 18), 0.8, "stack", seg=10)
+ehouse(L, "CONT paralleling switchgear e-house", 2195, 2240, 527, 545, 12, tag="CONT-EH", **DC)
+# twelve more fuel-cell modules and six more microturbines north of SC-1/SC-2
+for k in range(12):
+    x = 1845 + 14 * k
+    solid(L, f"FC-{k + 5}: SOFC module (Bloom ES5 class, 200-300 kW)", x, x + 9, 1290, 1316, 0, 7, "bess",
+          tag=f"FC-{k + 5}", **DC)
+ehouse(L, "FC-5..16 inverter / AC cabinet / desulfurizer", 2016, 2056, 1292, 1316, 8, **DC)
+for k in range(6):
+    x = 2072 + 14 * k
+    solid(L, f"MT-{k + 4}: microturbine 1 MW (Capstone C1000 class)", x, x + 8, 1289, 1317, 0, 9.5, "machine",
+          tag=f"MT-{k + 4}", **DC)
+
+# ---------------------------------------------------------------------------
 # J GT INLET CHILLING (SK-3X1-02), optional
 # ---------------------------------------------------------------------------
 L = "OPT_IC"
@@ -1328,6 +1453,7 @@ LAYERS = {
     "OPT_BESS": ("H BESS", "Optional / adjacent"),
     "OPT_MOD": ("I Modular generation + black start", "Optional / adjacent"),
     "OPT_TMP": ("I Portable / containerized power pad", "Optional / adjacent"),
+    "OPT_MODX": ("I+ Modular expansion (design change beyond Rev 14)", "Optional / adjacent"),
     "OPT_IC": ("J GT inlet chilling", "Optional / adjacent"),
     "OPT_LNG": ("K LNG satellite", "Optional / adjacent"),
     "OPT_H2": ("K 25 MW green hydrogen", "Optional / adjacent"),
@@ -1355,7 +1481,7 @@ VIEWS = [
          "ROUTES_BASE", "PROCESS_PIPING"], t=[1250, 800, 20], c=[1190, 1070, 190]),
     dict(k="H", n="Turbine hall (roof off)", show=["SITE", "BASE_POWER_BLOCK", "BASE_INLET_AIR", "BASE_ELECTRICAL",
          "ROUTES_BASE", "PROCESS_PIPING"], t=[790, 480, 25], c=[600, 250, 260]),
-    dict(k="O1", n="O1 Modular / portable", show=BASE_SHOW + ["OPT_MOD", "OPT_TMP", "OPT_MOD_ROUTES", "OPT_TMP_ROUTES",
+    dict(k="O1", n="O1 Modular / portable", show=BASE_SHOW + ["OPT_MOD", "OPT_TMP", "OPT_MODX", "OPT_MOD_ROUTES", "OPT_TMP_ROUTES",
          "HV_CORRIDOR", "SWYD_FUTURE"], t=[1960, 880, 20], c=[1520, 300, 760]),
     dict(k="O2", n="O2 BESS", show=BASE_SHOW + ["OPT_BESS", "OPT_BESS_ROUTES"], t=[1740, 560, 5], c=[1480, 200, 420]),
     dict(k="O3", n="O3 Carbon capture", show=BASE_SHOW + ["OPT_CCS", "OPT_CCSU", "OPT_CCS_ROUTES", "OPT_CCSU_ROUTES"],
@@ -1377,7 +1503,7 @@ FIT = {
     "B2": dict(box=[1135, 1310, 308, 368, 0, 16]),
     "C": dict(box=[1130, 1450, 790, 850, 0, 40]),
     "H": dict(box=[480, 1100, 370, 560, 0, 60]),
-    "O1": dict(layers=["OPT_MOD", "OPT_TMP"]),
+    "O1": dict(layers=["OPT_MOD", "OPT_TMP", "OPT_MODX"]),
     "O2": dict(layers=["OPT_BESS"]),
     "O3": dict(layers=["OPT_CCS", "OPT_CCSU"]),
     "O4": dict(layers=["OPT_IC"]),

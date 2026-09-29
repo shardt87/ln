@@ -122,6 +122,21 @@ python plant/blender/finish_pro.py plant/renders/pro
 python plant/blender/board.py plant/renders/pro
 ```
 
+## Modular expansion (design change beyond Rev 14)
+
+Rev 14 leaves several plots of the compound empty. Layer `OPT_MODX` fills them with more of the modular technologies from sheets 07 and 08. It is a design change: none of it is on the drawing, every item is tagged `basis: design change`, and the layer can be switched off like any other.
+
+| Plot | Added |
+|---|---|
+| South-east corner, beside the switchyard east end | **SC-3 and SC-4**, LM6000-class simple-cycle units built like SC-1/SC-2 (four simple-cycle units in total). Each has its own 13.8/230 kV GSU and dead-end gantry, and they share a fuel-gas skid, a water-injection skid and an ammonia tank. |
+| East strip, south of the modular collector | RICE engine hall 2: engines **RICE-9 to RICE-15**, with SCR and stacks and radiators. |
+| North-west corner | RICE engine hall 3: engines **RICE-16 to RICE-21**, its PCM, and containerized gensets **CONT-13 to CONT-18**. |
+| South of the portable pad | **TM-1 to TM-4**, trailer-mounted aeroderivatives (TM2500 class). |
+| Beside the portable pad lane | **CONT-3 to CONT-12**, containerized gas gensets, plus a paralleling e-house. |
+| North of SC-1/SC-2 | Fuel-cell modules **FC-5 to FC-16** with their inverter cabinet, and microturbines **MT-4 to MT-9**. |
+
+The plots were picked from an occupancy map of the verified model, keeping 10 ft clear of every part and route. `verify.py` still passes: 211/211 footprints, 21/21 heights, 10/10 sheet 09 clearances, 0 clashes. The grid connection of the added units (switchyard bays, collector feeders) is not designed and needs a system impact study.
+
 ## Coastal variant: LNG marine terminal (sheet 15)
 
 Sheet SK-3X1-15 shows where a coastal plant gets its gas when there is no pipeline. The inland model stays as it is (its trucked LNG satellite from sheet 14 is unchanged). The coastal variant is a separate scene, built as an overlay on the same verified plant and rendered on its own:
