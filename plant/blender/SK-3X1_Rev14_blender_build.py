@@ -453,7 +453,10 @@ if args.style == "pro":
             continue
         cam_ob = pro_look.hero_camera(scene, h)
         scene.camera = cam_ob
-        show = {"base": BASE, "all": ALL, "coastal": BASE + COAST}[h["show"]]
+        # coastal: the whole plant with its optional systems, except the trucked LNG satellite (sheet 14),
+        # which the marine terminal replaces
+        show = {"base": BASE, "all": ALL,
+                "coastal": [l for l in ALL if not l.startswith("OPT_LNG")] + COAST}[h["show"]]
         set_visibility(show)
         info = dict(k=h["k"], name=h["n"], show=show, style="pro", samples=args.samples, lens=h["lens"],
                     ortho_ft=0, margin_lr=0, margin_tb=0, sun=list(HERO_SET["sun"]), sheet=HERO_SET["sheet"])

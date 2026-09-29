@@ -108,7 +108,7 @@ def key_plan(d, box, B):
         if (fx1 - fx0) * (fy1 - fy0) < 120 and not it.get("key"):
             continue
         opt = it["layer"].startswith(("OPT_", "HV_", "SWYD_FUTURE"))
-        if coastal and opt:
+        if coastal and it["layer"].startswith("OPT_LNG"):   # trucked satellite, replaced by the terminal
             continue
         if it.get("key") or sheet15:                          # sheet 15 item: base-plant weight
             opt = False
@@ -214,7 +214,8 @@ def main():
     legend = f("Jura-Light.ttf", 17)
     keys = ((((120, 128, 132), "BASE PLANT"), ((192, 193, 188), "OPTIONAL SYSTEMS"), (COPPER, "PLATE VIEWPOINT"))
             if not B["overlay"] else
-            (((120, 128, 132), "PLANT + TERMINAL"), ((226, 231, 232), "SEA"), (COPPER, "PLATE VIEWPOINT")))
+            (((120, 128, 132), "PLANT + TERMINAL"), ((192, 193, 188), "OPTIONAL SYSTEMS"), ((226, 231, 232), "SEA"),
+             (COPPER, "PLATE VIEWPOINT")))
     for i, (sw, t) in enumerate(keys):
         y = (2640 + i * 40) * S
         d.rectangle([(R - 250) * S, y + 4 * S, (R - 226) * S, y + 20 * S], outline=sw, width=S * 2,

@@ -790,9 +790,15 @@ ehouse(L, "RH: switchyard relay / control house (52 x 70 ft)", 420, 490, 180, 23
        sheet="SK-3X1-03",
        info="Protection, SCADA and communications for the 230 kV yard; 125 V DC and fibre to R1 via DB-S.")
 L = "HV_CORRIDOR"
-for (x0, x1, y0, y1) in [(1490, 1540, 237, 830), (1490, 2120, 780, 830), (2070, 2120, 780, 860),
-                         (1490, 1715, 237, 287), (1665, 1715, 225, 287)]:
-    pad(L, "Reserved 230 kV corridor COR-HMOD", x0, x1, y0, y1, "corridor", z1=0.2, sheet="SK-3X1-01", area="I")
+# footprints as drawn; the slabs are trimmed where the strips overlap (overlapping flat pads render black)
+for (x0, x1, y0, y1), (sx0, sx1, sy0, sy1) in [
+        ((1490, 1540, 237, 830), (1490, 1540, 287, 780)), ((1490, 2120, 780, 830), (1490, 2120, 780, 830)),
+        ((2070, 2120, 780, 860), (2070, 2120, 830, 860)), ((1490, 1715, 237, 287), (1490, 1715, 237, 287)),
+        ((1665, 1715, 225, 287), (1665, 1715, 225, 237))]:
+    z1 = 0.2 + 0.008 * (len(items) % 30)
+    item(L, "Reserved 230 kV corridor COR-HMOD", (x0, x1, y0, y1), (0, z1), register=False, sheet="SK-3X1-01",
+         area="I")
+    B(sx0, sx1, sy0, sy1, 0, z1, "corridor")
 
 # ---------------------------------------------------------------------------
 # F CONTROLS / SERVICE and E WATER / UTILITIES
