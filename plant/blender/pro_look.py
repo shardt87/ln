@@ -425,13 +425,13 @@ def compositor(scene):
 # Hero cameras: model feet (X east, Y north, Z up)
 HEROES = [
     dict(k="P1", n="Aerial three-quarter, late afternoon", eye=(-160, -560, 640), target=(860, 560, 20), lens=36,
-         show="base"),
+         show="all"),
     dict(k="P2", n="Transformer bays and filter houses from the access road", eye=(470, 238, 36),
-         target=(1000, 372, 40), lens=30, show="base", dof=(320, 8.0)),
+         target=(1000, 372, 40), lens=30, show="all", dof=(320, 8.0)),
     dict(k="P3", n="HRSGs and stacks from the north-west", eye=(420, 1110, 130), target=(790, 690, 95), lens=34,
-         show="base"),
+         show="all"),
     dict(k="P4", n="Air-cooled condenser and turbine hall", eye=(1760, 1140, 250), target=(1160, 560, 60), lens=32,
-         show="base"),
+         show="all"),
     dict(k="P5", n="Full site with optional systems", eye=(-720, -980, 1650), target=(1260, 1020, 0), lens=30,
          show="all"),
     dict(k="P6", n="Carbon capture island (optional)", eye=(200, 1720, 420), target=(900, 1180, 120), lens=34,
