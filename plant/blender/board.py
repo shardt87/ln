@@ -46,7 +46,7 @@ BOARDS = {
                    subtitle="SK-3X1  ·  REVISION 14  ·  PRESENTATION PLATES", sheet="SHEET 01 / 01",
                    names={"P2": "Transformer bays from the access road"}),
     "coastal": dict(main="C1", right=("C2", "C3"), row=("C5", "F1", "F3"), cones=("C1", "C2", "C3", "C5"),
-                    window=(-300, 5900, -700, 2300), overlay="sk3x1_coastal_A.json", sun=(28, 140),
+                    window=(-300, 5900, -700, 2300), overlay="sk3x1_coastal_A.json", sun=(28, 140), bar=500,
                     out="SK-3X1-15_coastal_board",
                     subtitle="SK-3X1-15  ·  REVISION 14  ·  LNG MARINE TERMINAL, COASTAL VARIANT", sheet="SHEET 15 / 16",
                     names={"C2": "LNG carrier at the berth", "F1": "Variant B: FSRU and carrier, ship to ship",
@@ -101,7 +101,8 @@ def key_plan(d, box, B):
     d.rectangle([P(0, 1920), P(2420, 0)], outline=GRAPHITE, width=S)
     # footprints of register items, base plant solid hairline, optional systems fainter
     for it in model["items"]:
-        if not it["register"] or it["layer"] in ("SITE", "R1_INTERIOR", "R4_INTERIOR"):
+        sheet15 = it.get("tag") == "LNGC" or it["name"].startswith("Terminal plot")
+        if (not it["register"] and not sheet15) or it["layer"] in ("SITE", "R1_INTERIOR", "R4_INTERIOR"):
             continue
         fx0, fx1, fy0, fy1 = it["fp"]
         if (fx1 - fx0) * (fy1 - fy0) < 120 and not it.get("key"):
@@ -109,7 +110,7 @@ def key_plan(d, box, B):
         opt = it["layer"].startswith(("OPT_", "HV_", "SWYD_FUTURE"))
         if coastal and opt:
             continue
-        if it.get("key"):                                     # sheet 15 item: base-plant weight
+        if it.get("key") or sheet15:                          # sheet 15 item: base-plant weight
             opt = False
         col = (192, 193, 188) if opt else (120, 128, 132)
         if it["shape"] == "hull":
@@ -140,14 +141,15 @@ def key_plan(d, box, B):
         d.ellipse([a[0] - r, a[1] - r, a[0] + r, a[1] + r], fill=COPPER)
         lx, ly = a[0] - 30 * S * math.cos(ang), a[1] + 30 * S * math.sin(ang)
         d.text((lx - d.textlength(k, font=lab) / 2, ly - 11 * S), k, font=lab, fill=COPPER)
-    # scale bar: 0-500 ft
+    # scale bar: two segments
     bx, by = P(0, 0)[0], (oy + (wy1 - wy0) * sc + 30) * S
-    seg = 250 * sc * S
+    step = B.get("bar", 250)
+    seg = step * sc * S
     for i in range(2):
         d.rectangle([bx + i * seg, by - 8 * S, bx + (i + 1) * seg, by], outline=INK, width=S,
                     fill=INK if i == 0 else None)
     small = f("IBMPlexMono-Regular.ttf", 16)
-    for i, t in enumerate(("0", "250", "500 FT")):
+    for i, t in enumerate(("0", f"{step:,}", f"{2 * step:,} FT")):
         d.text((bx + i * seg - (0 if i == 0 else d.textlength(t, font=small) / 2), by + 8 * S), t, font=small,
                fill=GRAPHITE)
     return sc
