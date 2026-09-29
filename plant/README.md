@@ -111,7 +111,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Materials** (`blender/pro_look.py`): procedural and physically based, with bevelled edges. They include ribbed metal cladding, broken-up concrete, galvanised steel with varied roughness, gravel, asphalt, porcelain insulators, safety-yellow rails and a see-through chain-link fence.
 - **Landscape:** grass, about 550 trees in clusters and windbreak rows, and the public road to the main gate.
 - **Light:** a late-afternoon Nishita sky with the sun at 24° altitude, azimuth 258°.
-- **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field.
+- **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road).
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
 `blender/finish_pro.py` adds a smooth vignette, fine grain and the burned-in credit caption. `blender/board.py` composes the presentation board: one sheet, 4800 x 3200 px plus a PDF, with a hairline key plan drawn from the verified model, the view cone of every plate, a sun-angle diagram, scale and north. The board follows the design philosophy in `renders/pro/design-philosophy.md` ("Measured Light"). Fonts are in `blender/fonts` (SIL Open Font License).

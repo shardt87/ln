@@ -91,6 +91,8 @@ def key_plan(d, box):
     # view cones
     lab = f("IBMPlexMono-Regular.ttf", 17)
     for k, h in HERO.items():
+        if k not in ("P1", "P2", "P3", "P4", "P5", "P6"):
+            continue
         ex, ey, _ = h["eye"]
         tx, ty, _ = h["target"]
         # far viewpoints are pulled onto the plan window edge, keeping their bearing

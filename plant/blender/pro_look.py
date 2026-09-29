@@ -390,6 +390,15 @@ HEROES = [
          show="all"),
     dict(k="P6", n="Carbon capture island (optional)", eye=(200, 1720, 420), target=(900, 1180, 120), lens=34,
          show="all"),
+    # complete-plant angles (not on the board)
+    dict(k="P7", n="Complete plant from the north-east", eye=(3100, 2700, 900), target=(1150, 900, 40), lens=32,
+         show="all"),
+    dict(k="P8", n="Complete plant from the south-east", eye=(3000, -700, 700), target=(1150, 950, 40), lens=32,
+         show="all"),
+    dict(k="P9", n="Complete plant from overhead", eye=(1210, 180, 4300), target=(1210, 900, 0), lens=34,
+         show="all"),
+    dict(k="P10", n="Complete plant from the south gate road", eye=(1200, -640, 240), target=(1200, 900, 70),
+         lens=26, show="all"),
 ]
 
 

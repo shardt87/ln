@@ -67,6 +67,8 @@ jobs:
           - { style: pro, views: "P1,P2", samples: "128" }
           - { style: pro, views: "P3,P4", samples: "128" }
           - { style: pro, views: "P5,P6", samples: "128" }
+          - { style: pro, views: "P7,P8", samples: "128" }
+          - { style: pro, views: "P9,P10", samples: "128" }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
