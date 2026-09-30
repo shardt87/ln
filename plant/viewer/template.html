@@ -387,11 +387,26 @@ MODEL.routes.forEach((r,ri)=>{
   const m = new THREE.Mesh(toThree(THREE.BufferGeometryUtils.mergeBufferGeometries(geos,false)), surfMat(cls==='copper'?'copper':cls));
   m.castShadow = r.z>0; m.receiveShadow = true; m.userData.route = ri; grp(r.layer).add(m); pickables.push(m);
 });
-// surroundings: grass beyond the fence
-{ const g = new THREE.PlaneGeometry(16000, 16000); g.rotateX(-Math.PI/2);
-  const uv=g.attributes.uv; for(let i=0;i<uv.count;i++) uv.setXY(i, uv.getX(i)*16000/90, uv.getY(i)*16000/90);
-  const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({color:new THREE.Color('#9fb07a').convertSRGBToLinear(), map:TEX.grass, roughness:1}));
-  m.position.y = -0.7; m.receiveShadow = true; scene.add(m); }
+// surroundings: grass beyond the fence; with the coastal variant the land east of the shoreline
+// is a separate strip that gives way to the sea when the coastal layers are on
+let grassEast = null;
+{ const grassMat = new THREE.MeshStandardMaterial({color:new THREE.Color('#9fb07a').convertSRGBToLinear(), map:TEX.grass, roughness:1});
+  const strip = (x0, x1, y0, y1, z, mat) => { const g = new THREE.PlaneGeometry(x1-x0, y1-y0); g.rotateX(-Math.PI/2);
+    const uv=g.attributes.uv; for(let i=0;i<uv.count;i++) uv.setXY(i, uv.getX(i)*(x1-x0)/90, uv.getY(i)*(y1-y0)/90);
+    const m = new THREE.Mesh(g, mat); const c = P((x0+x1)/2, (y0+y1)/2, z); m.position.copy(c); m.receiveShadow = true; return m; };
+  const W0 = CX-8000, W1 = CX+8000, S0 = CY-8000, S1 = CY+8000;
+  if(MODEL.coastal){
+    const sh = MODEL.coastal.shoreline_x, sea = MODEL.coastal.sea_level;
+    scene.add(strip(W0, sh-30, S0, S1, -0.7, grassMat));
+    grassEast = strip(sh-30, W1+6000, S0, S1, -0.7, grassMat); scene.add(grassEast);
+    const g = grp('COASTAL_SEA');
+    g.add(strip(sh-30, sh, S0, S1, -0.8, new THREE.MeshStandardMaterial({color:new THREE.Color(PALETTE.sand.hex).convertSRGBToLinear(), map:TEX.gravel, roughness:1})));
+    const rev = new THREE.Mesh(toThree(paint(fromTris([[sh,S0,-0.9],[sh+45,S0,sea-7],[sh+45,S1,sea-7],[sh,S1,-0.9]], [[0,1,2],[0,2,3]]), col.rock)), surfMat('concrete'));
+    rev.receiveShadow = true; g.add(rev);
+    const water = strip(sh, W1+6000, S0, S1, sea, new THREE.MeshStandardMaterial({color:new THREE.Color(PALETTE.sea.hex).convertSRGBToLinear(), roughness:.12, metalness:.1}));
+    g.add(water);
+    g.add(strip(sh+45, W1+6000, S0, S1, sea-40, new THREE.MeshStandardMaterial({color:new THREE.Color('#5b6a60').convertSRGBToLinear(), roughness:1})));
+  } else scene.add(strip(W0, W1, S0, S1, -0.7, grassMat)); }
 const gridH = new THREE.GridHelper(2400, 24, 0x000000, 0x000000); gridH.material.transparent=true; gridH.material.opacity=.04; gridH.position.y=.05; scene.add(gridH);
 document.getElementById('loading').hidden = true;
 
@@ -407,7 +422,8 @@ for(const [g, ls] of Object.entries(byGroup)){
     lab.append(cb, document.createTextNode(MODEL.layers[l].label)); layersEl.appendChild(lab); layerBoxes[l]=cb;
   }
 }
-function setLayer(l,on){ if(layerGroups[l]) layerGroups[l].visible=on; if(layerBoxes[l]) layerBoxes[l].checked=on; }
+function setLayer(l,on){ if(layerGroups[l]) layerGroups[l].visible=on; if(layerBoxes[l]) layerBoxes[l].checked=on;
+  if(l==='COASTAL_SEA' && grassEast) grassEast.visible = !on; }
 function setLayers(show){ const s=new Set(show); for(const l in MODEL.layers) setLayer(l, s.has(l)); syncOpt(); }
 const bOpt=document.getElementById('bOpt');
 function syncOpt(){ bOpt.setAttribute('aria-pressed', Object.keys(layerBoxes).filter(OPT).every(l=>layerBoxes[l].checked)); }
@@ -584,7 +600,7 @@ function skyTex(top, mid, bottom){ const c=document.createElement('canvas'); c.w
 function applyTheme(){ const cs=getComputedStyle(document.documentElement);
   const dark = cs.getPropertyValue('color-scheme').includes('dark') || new THREE.Color(cs.getPropertyValue('--scene').trim()||'#e7ebe8').getHSL({}).l<.4;
   scene.background = dark ? skyTex('#0e1822','#27384a','#4a5a63') : skyTex('#7fa7cf','#c9dcec','#e9eef0');
-  scene.fog = new THREE.Fog(dark ? 0x3d4c55 : 0xdfe7ec, 2600, 9000);
+  scene.fog = new THREE.Fog(dark ? 0x3d4c55 : 0xdfe7ec, MODEL.coastal ? 4200 : 2600, MODEL.coastal ? 15000 : 9000);
   hemi.intensity = dark ? .55 : .95; sun.intensity = dark ? 1.2 : 2.1; renderer.toneMappingExposure = dark ? .9 : 1.05;
   edgeMat.color.set(dark?0x05080a:0x27313a); edgeMat.opacity=dark?.45:.22; gridH.material.color.set(dark?0xffffff:0x000000);
   document.getElementById('north').style.color=cs.getPropertyValue('--ink'); }

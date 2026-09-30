@@ -258,5 +258,69 @@
 "louvre": {
 "hex": "#6f7a82",
 "opacity": 1
+},
+"tankwall": {
+"hex": "#cfcbc2",
+"opacity": 1
+},
+"tankroof": {
+"hex": "#dcdbd5",
+"opacity": 1
+},
+"lngpipe": {
+"hex": "#ecebe6",
+"opacity": 1
+},
+"seawater": {
+"hex": "#5a8aa0",
+"opacity": 1
+},
+"pile": {
+"hex": "#55585a",
+"opacity": 1
+},
+"rope": {
+"hex": "#d8cfa9",
+"opacity": 1
+},
+"hull": {
+"hex": "#2a3036",
+"opacity": 1
+},
+"antifoul": {
+"hex": "#8d3228",
+"opacity": 1
+},
+"deck": {
+"hex": "#74503f",
+"opacity": 1
+},
+"super": {
+"hex": "#efeee8",
+"opacity": 1
+},
+"glass": {
+"hex": "#2b3a44",
+"opacity": 1
+},
+"mosscover": {
+"hex": "#ddd5c3",
+"opacity": 1
+},
+"tug": {
+"hex": "#b8452e",
+"opacity": 1
+},
+"sea": {
+"hex": "#3f6878",
+"opacity": 1
+},
+"sand": {
+"hex": "#cdbd98",
+"opacity": 1
+},
+"rock": {
+"hex": "#7a766f",
+"opacity": 1
 }
 }
