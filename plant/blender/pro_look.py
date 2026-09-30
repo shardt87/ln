@@ -490,8 +490,32 @@ COASTAL_B = [
 ]
 
 
-def hero_set(coastal=None):
+# Epic set: golden hour (sun 11 deg, from the west-south-west), low and dramatic viewpoints,
+# wide lenses near the ground and long lenses for compression.
+EPIC = [
+    dict(k="E1", n="The three HRSG stacks from beside the absorbers", eye=(700, 1100, 150), target=(790, 780, 110), lens=24,
+         show="all"),
+    dict(k="E2", n="Long lens from the west road: stacks and absorbers stacked up", eye=(-1500, 880, 120),
+         target=(800, 1000, 130), lens=135, show="all"),
+    dict(k="E3", n="Low pass over the air-cooled condenser", eye=(1500, 300, 165), target=(1100, 800, 90),
+         lens=20, show="all"),
+    dict(k="E4", n="Along the 230 kV switchyard at eye level", eye=(560, 150, 7), target=(1600, 175, 40),
+         lens=35, show="all"),
+    dict(k="E5", n="Beneath the carbon-capture absorbers", eye=(880, 1115, 6), target=(790, 1220, 210), lens=16,
+         show="all"),
+    dict(k="E6", n="Drone dive over the power block", eye=(820, 330, 560), target=(800, 660, 0), lens=20,
+         show="all"),
+    dict(k="E7", n="Into the sun: the plant in silhouette across the fields", eye=(1926, 3519, 110),
+         target=(900, 700, 330), lens=40, show="all"),
+    dict(k="E8", n="RICE engine hall stacks at golden hour", eye=(1545, 905, 10), target=(1700, 1045, 30),
+         lens=24, show="all"),
+]
+
+
+def hero_set(coastal=None, name=""):
     """Cameras, sun (elevation, azimuth) and sheet reference for the scene being rendered."""
+    if name == "epic":
+        return dict(heroes=EPIC, sun=(11, 250), sheet="SK-3X1")
     if not coastal:
         return dict(heroes=HEROES, sun=(24, 258), sheet="SK-3X1")
     return dict(heroes=COASTAL_A if coastal["variant"] == "A" else COASTAL_B, sun=(28, 140), sheet="SK-3X1-15")

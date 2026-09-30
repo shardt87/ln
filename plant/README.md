@@ -114,6 +114,18 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
+**Epic set (`--set epic`, E1–E8):** golden hour, with the sun at 11°. The shots are:
+- E1: the three stacks from beside the absorbers;
+- E2: a long-lens compression from the west road;
+- E3: a low pass over the ACC;
+- E4: along the switchyard at eye level;
+- E5: looking up beneath the absorbers;
+- E6: a drone dive over the power block;
+- E7: into the sun, with the plant in silhouette;
+- E8: the RICE hall stacks.
+
+Output goes to `renders/epic/`.
+
 `blender/finish_pro.py` adds a smooth vignette, fine grain and the burned-in credit caption. `blender/board.py` composes the presentation board: one sheet, 4800 x 3200 px plus a PDF, with a hairline key plan drawn from the verified model, the view cone of every plate, a sun-angle diagram, scale and north. The board follows the design philosophy in `renders/pro/design-philosophy.md` ("Measured Light"). Fonts are in `blender/fonts` (SIL Open Font License).
 
 ```sh

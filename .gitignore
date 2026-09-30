@@ -11,3 +11,6 @@ plant/renders/pro/*_clean.jpg
 plant/renders/coastal/*.png
 plant/renders/coastal/*.json
 plant/renders/coastal/*_clean.jpg
+plant/renders/epic/*.png
+plant/renders/epic/*.json
+plant/renders/epic/*_clean.jpg

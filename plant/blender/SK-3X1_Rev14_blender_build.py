@@ -50,6 +50,7 @@ ap.add_argument("--scale", type=int, default=100)
 ap.add_argument("--out", default=os.path.join(PLANT, "renders", "blender"))
 ap.add_argument("--blend", default="")
 ap.add_argument("--no-render", action="store_true")
+ap.add_argument("--set", default="", help="camera set for --style pro: '' (plates P1-P11) or 'epic' (E1-E8)")
 ap.add_argument("--overlay", default="", help="coastal variant overlay (plant/coastal/sk3x1_coastal_A.json or _B)")
 args = ap.parse_args(argv)
 
@@ -279,7 +280,7 @@ print(f"scene built: {len(bpy.data.objects)} objects in {len(collections)} colle
 # ---------------------------------------------------------------------------
 # World, light, render settings
 # ---------------------------------------------------------------------------
-HERO_SET = pro_look.hero_set(coastal)
+HERO_SET = pro_look.hero_set(coastal, args.set)
 if args.style == "pro":
     pro_look.world_and_sun(scene, *HERO_SET["sun"])
 else:
