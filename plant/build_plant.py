@@ -2322,7 +2322,7 @@ def build_corridor():
     y0 = CORR_Y
     x0, x1 = CORR_X0, CORR_X1
     zp, zc = P["tray_power_control_z_ft"]
-    yt = y0 + 8
+    yt = y0 + 18
     # tray segments between the N-S road crossings; at each crossing the cables dive into the duct bank
     cuts = sorted(rx for rx in P["ns_roads_x_ft"] if x0 < rx < x1)
     segs, cur = [], x0
@@ -2360,7 +2360,7 @@ def build_corridor():
     cc.build()
     # duct bank below grade with conduits, manholes every 200 ft (covers visible)
     zd = P["duct_z_ft"]
-    yd = y0 + 16
+    yd = y0 + 8
     MeshAcc(pre + "DUCTBANK", "DUCT", below=True).box(x0, yd - 3, zd - 2, x1, yd + 3, zd + 1).build()
     cd = CurveAcc(pre + "CONDUITS", "STEEL_DK", 0.25, below=True)
     for r in range(2):
@@ -3776,8 +3776,8 @@ def detail_gas():
 
 def detail_corridor():
     y0 = CORR_Y
-    yt = y0 + 8
-    yd = y0 + 16
+    yt = y0 + 18
+    yd = y0 + 8
     zp, zc = P["tray_power_control_z_ft"]
     x0, x1 = CORR_X0, CORR_X1
     mk = MeshAcc("CORR-MARKER-POSTS", "CONC")
@@ -3826,6 +3826,19 @@ def detail_corridor():
         tf.box(lx + 8, ky - 0.1, GZ + 0.6, lx + 14, ky, GZ + 5.4)
         tf.box(lx + 7.9, ky + 6.0, GZ + 6, lx + 14.1, ky + 6.1, GZ + 6.5)
     kd.build(); tf.build()
+    # local earth-grid patch under the kiosks (the whole-site grid is hidden on the corridor sheet)
+    zg = P["earth_z_pitch_ft"][0]
+    eg = CurveAcc("CORR-EARTH-PATCH", "CABLE", 0.09, below=True)
+    gx = 1100.0
+    while gx <= 1450.0:
+        eg.add([(gx, y0 - 30, zg), (gx, y0 + 90, zg)])
+        gx += 25.0
+    gy = y0 - 30.0
+    while gy <= y0 + 90:
+        eg.add([(1100, gy, zg), (1450, gy, zg)])
+        gy += 25.0
+    eg.build()
+    anchor("CORR-EARTH-PATCH", 1215, y0 + 30, zg, "Earth grid (copper riser bonds to it)", 16)
 
 
 def detail_site():
@@ -4038,11 +4051,11 @@ def detail_props():
         cs.box(xx, ly + 39.4, GZ, xx + 0.4, ly + 44.4, GZ + 0.35)
     cs.build()
     lt = MeshAcc("LAYDOWN-LIGHT-TOWER", "STEEL")
-    lt.box(lx + 160, ly + 36, GZ + 0.5, lx + 168, ly + 40, GZ + 3.5)
-    lt.cyl(lx + 164, ly + 38, GZ + 3.5, 0.3, 24, 8)
-    lt.box(lx + 161.5, ly + 37.5, GZ + 27.4, lx + 166.5, ly + 38.5, GZ + 28.6)
+    lt.box(lx + 160, ly + 4, GZ + 0.5, lx + 168, ly + 8, GZ + 3.5)
+    lt.cyl(lx + 164, ly + 6, GZ + 3.5, 0.3, 24, 8)
+    lt.box(lx + 161.5, ly + 5.5, GZ + 27.4, lx + 166.5, ly + 6.5, GZ + 28.6)
     for wxx in (lx + 160.6, lx + 167.4):
-        lt.cyl_between((wxx, ly + 36.2, GZ + 0.4), (wxx, ly + 36.2 + 0.4, GZ + 0.4), 0.5, 10)
+        lt.cyl_between((wxx, ly + 4.2, GZ + 0.4), (wxx, ly + 4.6, GZ + 0.4), 0.5, 10)
     lt.build()
     sk = MeshAcc("LAYDOWN-SKIPS", "STEEL_DK")
     for k in range(2):
@@ -4067,6 +4080,17 @@ def detail_hrsg_transition(i):
         zt = GZ + 26 + (cas_h - GZ - 26) * f
         for sg in (-1, 1):
             tr.box(ax + sg * w, y - 0.35, zb, ax + sg * (w + 0.5), y + 0.35, zt - 0.4)
+    # front face (toward the hall): horizontal stiffeners and diagonal braces on the sloped panel
+    def wf(f):
+        return 11 + (hw - 11) * f
+    for k in range(1, 12):
+        f = k / 12.0
+        y = y0 + 30 * f - 0.25
+        z = GZ + 26 + (cas_h - GZ - 26) * f
+        tr.box(ax - wf(f), y - 0.3, z - 0.3, ax + wf(f), y + 0.3, z + 0.3)
+    for u in (-0.75, -0.4, 0.0, 0.4, 0.75):
+        f0, f1 = 0.03, 0.97
+        tr.seg((ax + u * wf(f0), y0 + 30 * f0 - 0.35, GZ + 26 + (cas_h - GZ - 26) * f0), (ax + u * wf(f1), y0 + 30 * f1 - 0.35, GZ + 26 + (cas_h - GZ - 26) * f1), 0.28, 4)
     tr.build()
 
 

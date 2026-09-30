@@ -160,27 +160,28 @@
    "id": "02",
    "kind": "camera",
    "title": "Turbine hall cutaway",
-   "subtitle": "GT train | gas turbine, generator, generator leads and isophase bus to the GSU",
+   "subtitle": "GT train | one gas turbine train: turbine, generator, leads and isophase bus to the GSU, with its skids and walkway",
    "camera": {
     "az": 38,
-    "el": 28,
+    "el": 33,
     "lens": 60,
-    "crop_top": 0.14,
-    "pad": 1.05
+    "crop_top": 0.08,
+    "pad": 0.92
    },
-   "frame": [
-    "GT-",
-    "ST-",
-    "HALL-FLOOR"
-   ],
+   "frame": [],
    "hidden": [
-    "HALL-ROOF",
-    "HALL-WALL-S",
-    "INLET-",
     "GENTIE-GANTRY",
     "GENTIE-INSULATORS",
     "GENTIE-STRAIN-BUS",
-    "GSU-"
+    "GSU-",
+    "HALL-COLUMNS",
+    "HALL-CRANE",
+    "HALL-LIGHTS",
+    "HALL-ROOF",
+    "HALL-TRAY-BRACKETS",
+    "HALL-TRUSSES",
+    "HALL-WALL-S",
+    "INLET-"
    ],
    "xray": [],
    "callouts": [
@@ -210,22 +211,30 @@
     },
     {
      "tag": "G",
-     "anchor": "ANCHOR-ST-TURBINE"
+     "anchor": "ANCHOR-GT-2-WALKWAY"
     },
     {
      "tag": "H",
-     "anchor": "ANCHOR-ST-GENERATOR"
+     "anchor": "ANCHOR-GT-2-SKID-LUBE-OIL"
     },
     {
      "tag": "I",
-     "anchor": "ANCHOR-HALL-CRANE"
+     "anchor": "ANCHOR-GT-2-SKID-FUEL-GAS"
     },
     {
      "tag": "J",
-     "anchor": "ANCHOR-HALL-TRAY"
+     "anchor": "ANCHOR-GT-2-CONTROL-MODULE"
     }
    ],
-   "footnote": "Explains the generator connection: leads at the terminal box, isophase bus out through the wall, and the tray tiers that carry auxiliaries."
+   "footnote": "Explains one train end to end: the generator connection (leads, terminal box, isophase bus) and the skids and walkway that serve the turbine.",
+   "frame_box_ft": [
+    715,
+    636,
+    0,
+    835,
+    804,
+    70
+   ]
   },
   {
    "id": "03",
@@ -294,11 +303,11 @@
    "title": "Switchyard and GSUs",
    "subtitle": "Power export | GSU transformers, the overhead gen-tie and the underground HV getaway option (ground shown X-ray)",
    "camera": {
-    "az": 45,
-    "el": 48,
+    "az": 16,
+    "el": 42,
     "lens": 65,
-    "crop_top": 0.05,
-    "pad": 1.0,
+    "crop_top": 0.06,
+    "pad": 0.98,
     "target_height_frac": 0.1
    },
    "frame": [],
@@ -367,12 +376,12 @@
     "CORR-ROAD-CROSSING-PITS"
    ],
    "frame_box_ft": [
-    60,
-    470,
+    150,
+    480,
     -10,
-    720,
+    780,
     1310,
-    110
+    100
    ]
   },
   {
@@ -635,7 +644,7 @@
     "el": 35,
     "lens": 60,
     "crop_top": 0.12,
-    "pad": 1.05
+    "pad": 0.92
    },
    "frame": [],
    "hidden": [
@@ -686,12 +695,12 @@
    ],
    "footnote": "Explains the primary pipeline supply through metering and pressure reduction, and where alternative LNG or hydrogen supply would tie in.",
    "frame_box_ft": [
-    1690,
-    420,
+    1720,
+    440,
     -2,
-    2270,
-    790,
-    42
+    2262,
+    775,
+    40
    ]
   },
   {
@@ -771,11 +780,9 @@
     "el": 35,
     "lens": 65,
     "crop_top": 0.12,
-    "pad": 1.05
+    "pad": 0.95
    },
-   "frame": [
-    "MODPWR-"
-   ],
+   "frame": [],
    "hidden": [
     "ACC-STEAM-DUCT",
     "ACC-STEAM-DUCT-SUPPORTS"
@@ -811,7 +818,15 @@
      "anchor": "ANCHOR-MODPWR-CABLES"
     }
    ],
-   "footnote": "Explains which sources can start the plant with the grid down and how they are paralleled onto the auxiliary system."
+   "footnote": "Explains which sources can start the plant with the grid down and how they are paralleled onto the auxiliary system.",
+   "frame_box_ft": [
+    1200,
+    515,
+    -2,
+    1400,
+    610,
+    22
+   ]
   },
   {
    "id": "12",
@@ -819,11 +834,11 @@
    "title": "Site cable corridor",
    "subtitle": "Cable routing | two-tier tray, duct bank below (X-ray), MV ring-main kiosks and a lateral to a building",
    "camera": {
-    "az": 40,
-    "el": 34,
+    "az": 32,
+    "el": 30,
     "lens": 55,
-    "crop_top": 0.06,
-    "pad": 1.02,
+    "crop_top": 0.08,
+    "pad": 0.95,
     "target_height_frac": 0.3
    },
    "frame": [],
@@ -836,9 +851,10 @@
     14
    ],
    "hidden": [
-    "ACC-STEAM-DUCT",
     "ACC-STEAM-DUCT-SUPPORTS",
-    "MODPWR-"
+    "SITE-EARTHGRID",
+    "MODPWR-",
+    "ACC-STEAM-DUCT"
    ],
    "xray": [
     "SITE-GROUND",
@@ -883,7 +899,7 @@
     },
     {
      "tag": "I",
-     "anchor": "ANCHOR-CORR-GROUND-RISER"
+     "anchor": "ANCHOR-CORR-EARTH-PATCH"
     },
     {
      "tag": "J",
@@ -908,12 +924,10 @@
     "az": 45,
     "el": 33,
     "lens": 60,
-    "crop_top": 0.12,
-    "pad": 1.05
+    "crop_top": 0.08,
+    "pad": 0.95
    },
-   "frame": [
-    "LAYDOWN-"
-   ],
+   "frame": [],
    "hidden": [
     "GENTIE-TOWERS",
     "GENTIE-CONDUCTORS",
@@ -962,7 +976,15 @@
      "anchor": "ANCHOR-LAYDOWN-TRAY-RACK"
     }
    ],
-   "footnote": "Explains how cable leaves the reel under control, is dressed into the spine and secured, and why the copper ends stay capped until termination."
+   "footnote": "Explains how cable leaves the reel under control, is dressed into the spine and secured, and why the copper ends stay capped until termination.",
+   "frame_box_ft": [
+    115,
+    735,
+    -2,
+    300,
+    850,
+    32
+   ]
   },
   {
    "id": "14",
