@@ -429,7 +429,7 @@ function goView(v, instant){
   if(instant || matchMedia('(prefers-reduced-motion: reduce)').matches){ controls.target.copy(t); camera.position.copy(c); return; }
   anim={t0:performance.now(), ft:controls.target.clone(), fc:camera.position.clone(), t, c};
 }
-for(const v of MODEL.views){ const b=document.createElement('button'); b.textContent=v.n; b.dataset.k=v.k; b.onclick=()=>goView(v); viewsEl.appendChild(b); }
+for(const v of [...MODEL.views].sort((a,b)=>(b.k==='ALL')-(a.k==='ALL'))){ const b=document.createElement('button'); b.textContent=v.n; b.dataset.k=v.k; b.onclick=()=>goView(v); viewsEl.appendChild(b); }
 function envelope(it){ return {c:[(it.fp[0]+it.fp[1])/2,(it.fp[2]+it.fp[3])/2,(it.z[0]+it.z[1])/2], s:Math.max(it.fp[1]-it.fp[0], it.fp[3]-it.fp[2], it.z[1]-it.z[0])}; }
 function flyTo(id){
   const it=items[id], e=envelope(it); (itemMeshes[id]||[]).forEach(m=>{ m.parent.visible=true; if(layerBoxes[m.parent.name]) layerBoxes[m.parent.name].checked=true; });
@@ -607,7 +607,7 @@ function tick(now){
       L.el.hidden=!on; if(on){ L.el.style.left=((v3.x+1)/2*w)+'px'; L.el.style.top=((1-v3.y)/2*h)+'px'; } } }
   requestAnimationFrame(tick);
 }
-goView(MODEL.views[0], true);
+goView(MODEL.views.find(v=>v.k==='ALL') || MODEL.views[0], true);   // open on the complete plant
 requestAnimationFrame(tick);
 document.getElementById('foot').textContent=`${MODEL.items.length} items · ${MODEL.parts.length} parts · ${MODEL.routes.length} routes`;
 </script>

@@ -1415,7 +1415,8 @@ VIEWS = [
     dict(k="O4", n="O4 Inlet chilling", show=BASE_SHOW + ["OPT_IC", "OPT_IC_ROUTES"], t=[180, 1160, 20], c=[-150, 820, 420]),
     dict(k="O5", n="O5 Gas, LNG, H2", show=BASE_SHOW + ["OPT_LNG", "OPT_H2", "OPT_LNG_ROUTES", "OPT_H2_ROUTES",
          "SWYD_FUTURE"], t=[1980, 1650, 10], c=[1650, 1150, 700]),
-    dict(k="ALL", n="Everything", show=list(LAYERS), t=[1210, 960, 60], c=[-500, -900, 2000]),
+    dict(k="ALL", n="Complete plant", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR")],
+         t=[1210, 900, 40], c=[-350, -750, 1400]),
 ]
 
 
