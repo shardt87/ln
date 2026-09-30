@@ -443,7 +443,7 @@ HEROES = [
          show="all"),
     dict(k="P9", n="Complete plant from overhead", eye=(1210, 180, 4300), target=(1210, 900, 0), lens=34,
          show="all"),
-    dict(k="P11", n="Modular power yard: RICE engine halls and simple-cycle units", eye=(1420, 330, 560),
+    dict(k="P11", n="Modular power yard: RICE engine hall and simple-cycle units", eye=(1420, 330, 560),
          target=(2060, 940, 20), lens=30, show="all"),
     dict(k="P10", n="Complete plant from the south gate road", eye=(1200, -640, 240), target=(1200, 900, 70),
          lens=26, show="all"),

@@ -130,8 +130,8 @@ The numbers are kept realistic for a modular yard beside a ~1.7 GW 3×1, with ro
 
 | Technology | Rev 14 | Added | Total | Approx. MW |
 |---|---|---|---|---|
-| Aeroderivative simple cycle (LM6000 class) | SC-1, SC-2 | SC-3, SC-4 (south-east corner), each with GSU and gantry | 4 | ~200 |
-| RICE engines (18V50 class) | 8 (hall 1) | 6 in hall 2, RICE-9 to RICE-14 (east strip) | 14 | ~260 |
+| Aeroderivative simple cycle (LM6000 class) | SC-1, SC-2 | SC-3, SC-4 in the east strip beside SC-1/SC-2 and the modular collector, each with GSU and gantry | 4 | ~200 |
+| RICE engines (18V50 class) | 8 (hall 1) | 6 in hall 2, RICE-9 to RICE-14 (south-east corner by the switchyard, own PCM and GSU) | 14 | ~260 |
 | Trailer-mounted aeroderivatives (TM2500 class) | – | TM-1, TM-2 | 2 | ~70 |
 | Containerized gas gensets | 2 | CONT-3 to CONT-8, plus a paralleling e-house | 8 | ~16 |
 | Fuel-cell modules (SOFC) | 4 | FC-5 to FC-12 | 12 | ~3 |

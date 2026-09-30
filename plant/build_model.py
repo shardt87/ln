@@ -1104,8 +1104,9 @@ solid(L, "Portable pad gas-conditioning skid", 2310, 2340, 430, 440, 0, 8, "equi
 # ---------------------------------------------------------------------------
 # I+ MODULAR EXPANSION: design change beyond Rev 14 (not on the drawing)
 # Adds more of the sheet 07/08 technologies at realistic scale for a modular
-# yard beside a ~1.7 GW 3x1: SC-3/SC-4 (four LM6000-class simple-cycle units,
-# ~200 MW), a second RICE hall of 6 engines (14 x 18V50 class, ~260 MW), two
+# yard beside a ~1.7 GW 3x1: SC-3/SC-4 next to SC-1/SC-2 (four LM6000-class
+# simple-cycle units, ~200 MW), a second RICE hall of 6 engines in the south-east
+# corner (14 x 18V50 class, ~260 MW), two
 # trailer-mounted aeroderivatives, six containerized gensets, eight fuel-cell
 # modules and three microturbines. Plots were chosen from an occupancy map of the
 # verified model with a 10 ft clearance to every part and route; the north-west
@@ -1113,12 +1114,13 @@ solid(L, "Portable pad gas-conditioning skid", 2310, 2340, 430, 440, 0, 8, "equi
 # ---------------------------------------------------------------------------
 L = "OPT_MODX"
 DC = dict(area="I", basis="design change", sheet="beyond Rev 14")
-# SC-3 / SC-4 in the south-east corner, same package as SC-1/SC-2, with GSU and line gantry
-for k, x in ((3, 2045), (4, 2225)):
-    y = 130
+# SC-3 / SC-4 in the east strip beside SC-1/SC-2 and the modular collector, stacked north-south;
+# same package as SC-1/SC-2 with GSU and line gantry (inlet chilling is conditional and not shown here)
+for k, y in ((3, 735), (4, 845)):
+    x = 2195
     item(L, f"SC-{k}: aeroderivative simple-cycle unit (LM6000 class)", (x, x + 90, y, y + 30), (0, 35),
          tag=f"SC-{k}", info="Design change: as SC-1/SC-2 (package, SCR/CO catalyst, 80 ft stack, PCM + GCB, "
-         "fin-fan, inlet chiller), tied to the switchyard east end through its own GSU (requires study).", **DC)
+         "fin-fan), next to the modular collector; own GSU and gantry to the 230 kV yard (requires study).", **DC)
     B(x, x + 70, y + 2, y + 28, 0, 22, "machine")
     B(x + 70, x + 90, y, y + 30, 0, 32, "filter")
     B(x - 20, x, y + 6, y + 24, 8, 26, "duct")
@@ -1126,26 +1128,24 @@ for k, x in ((3, 2045), (4, 2225)):
     item(L, f"SC-{k} stack (80 ft)", (x + 135.5, x + 148.5, y + 8, y + 21), (0, 80), shape="circle",
          register=False, **DC)
     V(x + 142, y + 14.5, 6.5, 0, 80, "stack", seg=20)
-    ehouse(L, f"SC-{k} PCM + 15 kV GCB", x, x + 40, y + 55, y + 69, 12, register=False, **DC)
-    solid(L, f"SC-{k} lube-oil fin-fan cooler", x + 50, x + 70, y + 55, y + 69, 0, 10, "bundle", register=False, **DC)
-    solid(L, f"SC-{k} inlet chiller / evaporative cooler", x, x + 60, y - 55, y - 20, 0, 14, "equip",
-          register=False, **DC)
-    xfmr(L, f"T-SC{k}: 13.8/230 kV GSU", x + 88, x + 118, y + 50, y + 80, 22, bushing=12, tag=f"T-SC{k}",
+    ehouse(L, f"SC-{k} PCM + 15 kV GCB", x, x + 40, y + 50, y + 64, 12, register=False, **DC)
+    solid(L, f"SC-{k} lube-oil fin-fan cooler", x + 50, x + 70, y + 50, y + 64, 0, 10, "bundle", register=False, **DC)
+    xfmr(L, f"T-SC{k}: 13.8/230 kV GSU", x + 88, x + 118, y + 45, y + 75, 22, bushing=12, tag=f"T-SC{k}",
          register=False, **DC)
-    item(L, f"SC-{k} 230 kV dead-end gantry", (x + 126, x + 142, y + 52, y + 78), (0, 50), register=False, **DC)
-    for yy in (y + 54, y + 76):
+    item(L, f"SC-{k} 230 kV dead-end gantry", (x + 126, x + 142, y + 47, y + 73), (0, 50), register=False, **DC)
+    for yy in (y + 49, y + 71):
         R((x + 128, yy, 0), (x + 128, yy, 50), 0.8, "steel", seg=8)
         R((x + 140, yy, 0), (x + 140, yy, 50), 0.8, "steel", seg=8)
-    B(x + 127, x + 141, y + 53, y + 77, 48, 50, "steel")
+    B(x + 127, x + 141, y + 48, y + 72, 48, 50, "steel")
     for i in range(3):
-        R((x + 110, y + 57 + 8 * i, 34), (x + 134, y + 57 + 8 * i, 44), 0.3, "conductor", seg=6)
-solid(L, "SC-3/4 fuel-gas filter-heater skid", 2045, 2095, 35, 55, 0, 10, "equip", register=False, **DC)
-tank(L, "Aqueous ammonia (SC-3/4)", 2125, 45, 10, 12, register=False, **DC)
-solid(L, "SC-3/4 water-injection skid", 2160, 2185, 35, 55, 0, 8, "equip", register=False, **DC)
-# RICE hall 2: six more engines in the east strip, laid out as hall 1
-x0, y0, n = 2180, 720, 6
+        R((x + 110, y + 52 + 8 * i, 34), (x + 134, y + 52 + 8 * i, 44), 0.3, "conductor", seg=6)
+solid(L, "SC-3/4 fuel-gas filter-heater skid", 2352, 2380, 740, 770, 0, 10, "equip", register=False, **DC)
+solid(L, "SC-3/4 water-injection skid", 2352, 2380, 800, 820, 0, 8, "equip", register=False, **DC)
+tank(L, "Aqueous ammonia (SC-3/4)", 2366, 880, 10, 12, register=False, **DC)
+# RICE hall 2: six more engines in the south-east corner beside the switchyard east end, laid out as hall 1
+x0, y0, n = 2120, 40, 6
 item(L, f"RICE engine hall 2 ({n} engines)", (x0, x0 + 28 * n + 16, y0 + 40, y0 + 130), (0, 40), tag="RICE-2H",
-     info="Design change: second hall of 18V50-class engines, as hall 1 (SK-3X1-07).", **DC)
+     info="Design change: second hall of 18V50-class engines, as hall 1 (SK-3X1-07), with its own GSU.", **DC)
 B(x0, x0 + 28 * n + 16, y0 + 40, y0 + 130, 0, 34, "hall"); P(x0, x0 + 28 * n + 16, y0 + 40, y0 + 130, 34, 40, "roof", ridge="x")
 for k in range(n):
     x = x0 + 11 + 28 * k
@@ -1162,6 +1162,8 @@ for k in range(n):
         column_grid((x, x + 20), (y0 + 141 + 16 * r_, y0 + 151 + 16 * r_), 4, s=0.5)
         B(x - 1, x + 21, y0 + 140 + 16 * r_, y0 + 152 + 16 * r_, 4, 7, "bundle")
         V(x + 10, y0 + 146 + 16 * r_, 5, 7, 9, "fan", seg=14)
+ehouse(L, "RICE hall 2 PCM: power control module", 2320, 2360, 60, 110, 14, tag="PCM-2", **DC)
+xfmr(L, "T-RICE2: 13.8/230 kV GSU", 2320, 2355, 125, 160, 24, bushing=13, tag="T-RICE2", register=False, **DC)
 # the north-west corner stays open: maintenance laydown for engine and turbine exchanges
 pad(L, "Maintenance laydown (gravel)", 45, 405, 1705, 1880, "gravel", z1=0.25, area="I", basis="design change",
     sheet="beyond Rev 14")
