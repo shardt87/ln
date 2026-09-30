@@ -183,6 +183,11 @@ Kd 0.718 0.757 0.780
 Ka 0 0 0
 d 1
 
+newmtl hull
+Kd 0.165 0.188 0.212
+Ka 0 0 0
+d 1
+
 newmtl hydrogen
 Kd 0.180 0.545 0.435
 Ka 0 0 0
@@ -293,6 +298,11 @@ Kd 0.435 0.478 0.510
 Ka 0 0 0
 d 1
 
+newmtl super
+Kd 0.937 0.933 0.910
+Ka 0 0 0
+d 1
+
 newmtl swgr
 Kd 0.620 0.667 0.698
 Ka 0 0 0
@@ -310,6 +320,11 @@ d 1
 
 newmtl water
 Kd 0.498 0.651 0.722
+Ka 0 0 0
+d 1
+
+newmtl window
+Kd 0.231 0.294 0.337
 Ka 0 0 0
 d 1
 
