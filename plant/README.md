@@ -66,7 +66,8 @@ Detail parts carry `d: 1`. None of them come from the drawing; all are typical. 
 - **Simple-cycle and trailer turbines:** ventilation fans and filter hoods.
 - **BESS containers:** HVAC units and door seams.
 - **Stacks and absorbers:** aviation warning lights.
-- **Site:** lane markings and cars in the parking lot.
+- **Buildings by use:** offices (the gatehouse and the control/admin building) get window bands and a glazed entrance with a canopy. R1 (electrical) stays closed, with louvres. Industrial buildings (warehouse, workshop, water treatment, compressor and pump houses, and so on) get ribbed metal cladding, a high translucent strip, wall louvres, roll-up doors with bollards, and skylights and ridge vents on the warehouse and workshop.
+- **Site:** lane markings and cars in the parking lot, plus a solar carport over the two middle rows. It has an EV charger pedestal at every bay, green EV bay markings, and a DC fast-charger cabinet with its transformer.
 
 Like the first detail layer, these parts carry `d: 1`, are typical rather than from the drawing, and are only bounds-checked. Windows use a tinted, glossy glazing material in the renders and the viewer. The epic set gains E9 (water tanks) and E10 (control building across the car park).
 

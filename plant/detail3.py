@@ -50,7 +50,14 @@ class Detail3:
         return len(self.parts) - self.n0
 
     # ---------------------------------------------------------------------------------
+    OFFICE = ("Gatehouse", "Control / admin building")
+    ELECTRICAL = ("R1:",)
+    WORKSHOP = ("Warehouse", "Maintenance building")
+
     def buildings(self):
+        """Style each building by use: offices get window bands and an entrance canopy; the
+        electrical building stays closed (louvres, doors); industrial buildings get ribbed
+        metal cladding, a high translucent strip, roll-up doors, wall louvres and roof vents."""
         for it in self.items:
             if it["layer"].startswith(("R1_INTERIOR", "R4_INTERIOR")):
                 continue
@@ -61,36 +68,77 @@ class Detail3:
             W, D, h = x1 - x0, y1 - y0, top
             if W < 12 or D < 12 or h < 9:
                 continue
+            nm = it["name"]
+            kind = ("office" if nm.startswith(self.OFFICE) else "electrical" if nm.startswith(self.ELECTRICAL)
+                    else "industrial")
             e = .12
             # concrete base band (wainscot) all round
             self.box(it, x0 - e, x1 + e, y0 - e, y0, 0, 2.6, "concrete")
             self.box(it, x0 - e, x1 + e, y1, y1 + e, 0, 2.6, "concrete")
             self.box(it, x0 - e, x0, y0, y1, 0, 2.6, "concrete")
             self.box(it, x1, x1 + e, y0, y1, 0, 2.6, "concrete")
-            # window bands: one row of windows per storey on all four faces
-            rows = [z for z in (h * .5 - 2,) if z > 4] if h < 22 else [6.5, 6.5 + 12]
-            for zb in rows:
-                zt = zb + 4 if h >= 12 else zb + 3
-                if zt > h - 1.5:
-                    continue
-                for (a0, a1, fixed, axis, sgn) in ((x0, x1, y0, "x", -1), (x0, x1, y1, "x", 1),
-                                                   (y0, y1, x0, "y", -1), (y0, y1, x1, "y", 1)):
+            faces = ((x0, x1, y0, "x", -1), (x0, x1, y1, "x", 1), (y0, y1, x0, "y", -1), (y0, y1, x1, "y", 1))
+
+            def band(zb, zt, w, pitch, c, faces=faces):
+                for (a0, a1, fixed, axis, sgn) in faces:
                     L = a1 - a0
-                    n = int((L - 8) // 11)
+                    n = int((L - 8) // pitch)
                     if n < 1:
                         continue
-                    pad = (L - n * 11 + 5) / 2
+                    pad = (L - n * pitch + (pitch - w)) / 2
                     for k in range(n):
-                        s = a0 + pad + 11 * k
+                        s0 = a0 + pad + pitch * k
                         if axis == "x":
-                            self.box(it, s, s + 6, fixed, fixed + sgn * .14, zb, zt, "window")
+                            self.box(it, s0, s0 + w, fixed, fixed + sgn * .14, zb, zt, c)
                         else:
-                            self.box(it, fixed, fixed + sgn * .14, s, s + 6, zb, zt, "window")
-            # rooftop HVAC units with fan discs
-            n = max(1, min(4, int(W * D / 3500)))
+                            self.box(it, fixed, fixed + sgn * .14, s0, s0 + w, zb, zt, c)
+
+            if kind == "office":
+                rows = [z for z in (h * .5 - 2,) if z > 4] if h < 22 else [6.5, 6.5 + 12]
+                for zb in rows:
+                    zt = zb + 4 if h >= 12 else zb + 3
+                    if zt <= h - 1.5:
+                        band(zb, zt, 6, 11, "window")
+                # glazed entrance with a canopy on the south face
+                xm = (x0 + x1) / 2
+                self.box(it, xm - 5, xm + 5, y0 - .16, y0, 0, 9, "window")
+                self.box(it, xm - 9, xm + 9, y0 - 8, y0, 10, 10.8, "roof")
+                for xx in (xm - 8.3, xm + 8.3):
+                    self.rod(it, (xx, y0 - 7.3, 0), (xx, y0 - 7.3, 10), .3, "steel", seg=8)
+            elif kind == "electrical":
+                band(h * .55, h * .55 + 3, 5, 24, "louvre")
+            else:
+                # industrial: ribbed metal cladding (recolour the primary walls and parapets)
+                for p in self.own.get(it["id"], []):
+                    if p["color"] == "building":
+                        p["color"] = "rollup"
+                # high translucent strip under the eaves, wall louvres at mid height
+                band(h - 5.5, h - 3.2, 9, 10, "panel")
+                band(h * .45, h * .45 + 3, 6, 30, "louvre", faces=faces[2:])
+                # roll-up doors on the south face (more and bigger on the warehouse and workshop)
+                big = nm.startswith(self.WORKSHOP)
+                nd = (3 if W > 110 else 2) if big else (1 if W > 40 else 0)
+                dw, dh = (16, min(18, h - 6)) if big else (12, min(12, h - 4))
+                for k in range(nd):
+                    xd = x0 + W * (k + 1) / (nd + 1) - dw / 2
+                    self.box(it, xd, xd + dw, y0 - .2, y0, 0, dh, "rollup")
+                    self.box(it, xd - .5, xd + dw + .5, y0 - .35, y0, dh, dh + 1, "steel")   # door head
+                    for xx in (xd - 1.2, xd + dw + 1.2):                                     # bollards
+                        self.rod(it, (xx, y0 - 2, 0), (xx, y0 - 2, 4), .35, "rail", seg=8)
+                if big:
+                    # skylight rows on the roof and ridge ventilators
+                    for k in range(int((W - 20) // 24)):
+                        xs = x0 + 14 + 24 * k
+                        self.box(it, xs, xs + 8, y0 + D * .25, y1 - D * .25, top - 1.4, top - 1.0, "panel")
+                    for k in range(3):
+                        xv = x0 + W * (k + 1) / 4
+                        self.box(it, xv - 2, xv + 2, (y0 + y1) / 2 - 2, (y0 + y1) / 2 + 2, top - 1.5, top + 2.5, "louvre")
+                        self.box(it, xv - 2.6, xv + 2.6, (y0 + y1) / 2 - 2.6, (y0 + y1) / 2 + 2.6, top + 2.5, top + 3, "roof")
+            # rooftop HVAC units with fan discs (offices and electrical rooms carry more)
+            n = max(1, min(4, int(W * D / 3500))) if kind != "industrial" else 1
             for k in range(n):
                 cx = x0 + W * (k + 1) / (n + 1)
-                cy = y0 + D * .5
+                cy = y0 + D * .5 + (D * .2 if kind == "industrial" else 0)
                 self.box(it, cx - 4, cx + 4, cy - 2.6, cy + 2.6, top, top + 3.8, "machine")
                 self.rod(it, (cx - 1.8, cy, top + 3.8), (cx - 1.8, cy, top + 4.2), 1.5, "fan", seg=14)
                 self.rod(it, (cx + 1.8, cy, top + 3.8), (cx + 1.8, cy, top + 4.2), 1.5, "fan", seg=14)
@@ -281,3 +329,30 @@ class Detail3:
                 # painted bay lines
                 for x in range(int(x0) + 10, int(x1) - 9, 10):
                     self.box(park, x - .15, x + .15, yb - 1, yb + 17, zt, zt + .03, "lamp")
+            # EV charging: the two middle rows face a solar carport with a charger pedestal per bay
+            ya, yb2 = y0 + 70, y0 + 110            # front edges of the two rows (cars at +0..+15)
+            yc0, yc1 = ya + 17.5, yb2 - 2.5         # carport spans the aisle between them
+            for x in range(int(x0) + 10, int(x1) - 9, 10):
+                for (yp, s) in ((ya - .8, -1), (yb2 + 15.8, 1)):
+                    # charger pedestal with a screen and a holstered cable
+                    self.box(park, x + 3.9, x + 5.1, yp - .45, yp + .45, zt, zt + 5, "super")
+                    self.box(park, x + 4.0, x + 5.0, yp + s * .47, yp + s * .5, zt + 3.3, zt + 4.4, "window")
+                    self.box(park, x + 3.9, x + 5.1, yp - .47, yp + .47, zt + 4.6, zt + 5.0, "battery")
+                    self.rod(park, (x + 5.1, yp, zt + 3.5), (x + 5.4, yp, zt + 1.2), .12, "fanhub", seg=6)
+                # green EV bay marking
+                for yy in (ya, yb2):
+                    self.box(park, x + 1, x + 9, yy + 5, yy + 10, zt, zt + .035, "battery")
+            # solar carport: columns down the aisle, tilted PV canopy over both rows of chargers
+            for x in range(int(x0) + 20, int(x1) - 9, 30):
+                self.rod(park, (x, (ya + yb2 + 15) / 2, zt), (x, (ya + yb2 + 15) / 2, zt + 11), .5, "steel", seg=10)
+            ym = (ya + yb2 + 15) / 2
+            for (y_lo, y_hi, z_lo, z_hi) in ((ya + 1, ym, zt + 10.2, zt + 11.6), (ym, yb2 + 14, zt + 11.6, zt + 10.2)):
+                self.parts.append(dict(kind="hex", v=[[x0 + 10, y_lo, z_lo - .3], [x1 - 10, y_lo, z_lo - .3],
+                                                      [x1 - 10, y_hi, z_hi - .3], [x0 + 10, y_hi, z_hi - .3],
+                                                      [x0 + 10, y_lo, z_lo], [x1 - 10, y_lo, z_lo],
+                                                      [x1 - 10, y_hi, z_hi], [x0 + 10, y_hi, z_hi]],
+                                       color="window", item=park["id"], layer=park["layer"], d=1))
+            self.box(park, x0 + 10, x1 - 10, ym - .4, ym + .4, zt + 10.6, zt + 11.8, "steel")
+            # DC fast-charger cabinet and its transformer at the east end of the carport
+            self.box(park, x1 - 8, x1 - 2, ym - 4, ym + 4, zt, zt + 7, "ehouse")
+            self.box(park, x1 - 8, x1 - 2, ym + 6, ym + 12, zt, zt + 5.5, "xfmr")

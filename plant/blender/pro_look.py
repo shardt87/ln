@@ -517,7 +517,7 @@ EPIC = [
          lens=24, show="all"),
     dict(k="E9", n="Water tanks and their spiral stairs", eye=(690, 1662, 12), target=(525, 1590, 30), lens=24,
          show="all"),
-    dict(k="E10", n="Control and admin building across the car park", eye=(175, 150, 9), target=(205, 370, 14),
+    dict(k="E10", n="EV charging carport and the admin building", eye=(150, 98, 6), target=(215, 330, 12),
          lens=28, show="all"),
 ]
 
