@@ -55,6 +55,21 @@ The checks corrected the model in several places:
 
 Detail parts carry `d: 1`. None of them come from the drawing; all are typical. `verify.py` therefore checks the primary geometry against the drawing and runs only the bounds check on the detail parts. In the viewer, the Detail button toggles them.
 
+## Detail layer 3 (close views)
+
+`detail3.py` runs after `detail.py` and adds dressing for close views:
+
+- **Buildings:** window bands, a concrete base band, rooftop HVAC units with fans, downspouts.
+- **E-houses:** wall panel seams and a roof overhang.
+- **Tanks:** spiral stairs with handrails, a roof rail and vent, nozzles, a manway.
+- **RICE hall:** roof ventilators, a charge-air filter per engine, roll-up doors.
+- **Simple-cycle and trailer turbines:** ventilation fans and filter hoods.
+- **BESS containers:** HVAC units and door seams.
+- **Stacks and absorbers:** aviation warning lights.
+- **Site:** lane markings and cars in the parking lot.
+
+Like the first detail layer, these parts carry `d: 1`, are typical rather than from the drawing, and are only bounds-checked. Windows use a tinted, glossy glazing material in the renders and the viewer. The epic set gains E9 (water tanks) and E10 (control building across the car park).
+
 ## GitHub Pages
 
 `.github/workflows/sk3x1-pages.yml` rebuilds and verifies the model, then assembles the site with `plant/site/build_site.py`. The site has the viewer as `index.html`, the GT1 bay close-up as `bay.html`, and a render gallery as `renders.html`.

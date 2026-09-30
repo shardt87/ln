@@ -322,5 +322,9 @@
 "rock": {
 "hex": "#7a766f",
 "opacity": 1
+},
+"window": {
+"hex": "#3b4b56",
+"opacity": 1
 }
 }

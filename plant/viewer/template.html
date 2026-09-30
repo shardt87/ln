@@ -284,14 +284,15 @@ const SURF = {
   grating:{map:TEX.grating, tile:6, r:.6, m:.4}, fins:{map:TEX.fins, tile:6, r:.55, m:.3},
   louvre:{map:TEX.louvre, tile:4, r:.6, m:.3},
   metal:{r:.42, m:.55}, paint:{r:.55, m:.15}, ceramic:{r:.28, m:0}, copper:{r:.38, m:.7},
-  water:{r:.08, m:0}, glass:{r:.3, m:.1},
+  water:{r:.08, m:0}, glass:{r:.3, m:.1}, window:{r:.12, m:.65},
 };
 const CLASS = {hall:'glass', building:'panel', ehouse:'clad', windwall:'clad', filter:'clad', hrsg:'clad', roof:'clad', tower:'clad',
   concrete:'concrete', pad:'concrete', basement:'concrete', partition:'panel', gravel:'gravel', corridor:'gravel', road:'road', ground:'ground',
   grating:'grating', bundle:'fins', radiator:'fins', louvre:'louvre', water:'water', insulator:'ceramic', copper:'copper', copper_dark:'copper',
   steel:'metal', rail:'paint', pipe:'metal', stack:'metal', duct:'metal', machine:'metal', xfmr:'paint', fan:'metal', fanhub:'metal', crane:'paint',
   conductor:'metal', stair:'paint', door:'paint', rollup:'clad', motor:'paint', pump:'paint', tank:'paint', ccs:'clad', acc:'clad', bess:'paint',
-  cabinet:'paint', swgr:'paint', panel:'paint', battery:'paint', lamp:'paint', fence:'metal'};
+  cabinet:'paint', swgr:'paint', panel:'paint', battery:'paint', lamp:'paint', fence:'metal', window:'window',
+  hull:'paint', super:'paint', mosscover:'paint', lngpipe:'paint', sea:'water'};
 const mats = {};
 function surfMat(cls){
   if(mats[cls]) return mats[cls];

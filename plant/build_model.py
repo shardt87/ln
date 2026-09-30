@@ -1444,6 +1444,9 @@ for v in VIEWS:
 # Detail pass (LOD 2): stairs, rails, ladders, sheds, lattice, rack piping, doors, poles
 import detail as _detail
 N_DETAIL = _detail.Detail(items, parts).run()
+# LOD 3: building and equipment dressing for close views
+import detail3 as _detail3
+N_DETAIL += _detail3.Detail3(items, parts).run()
 
 
 def validate():

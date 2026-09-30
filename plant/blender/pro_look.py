@@ -69,6 +69,7 @@ LOOK = {
     "glass": ("paint", "#1f2d36", .08, .2), "mosscover": ("paint", "#d7cfbd", .5, 0),
     "tug": ("paint", "#b03a26", .45, 0), "sea": ("sea", "#27434c", .05, 0),
     "sand": ("gravel", "#c2b28f", .95, 0), "rock": ("concrete", "#6f6c66", .9, 0),
+    "window": ("window", "#2c3a44", .06, .55),
 }
 _mats = {}
 
@@ -174,6 +175,11 @@ def material(key):
         bump = _node(nt, "ShaderNodeBump", (-350, -300), Strength=.22, Distance=.12)
         L.new(add.outputs[0], bump.inputs["Height"])
         normal_src = bump
+    elif kind == "window":
+        # tinted glazing: dark, glossy, with a clear coat so it picks up the sky
+        b.inputs["Coat Weight"].default_value = 1
+        b.inputs["Coat Roughness"].default_value = .02
+        b.inputs["Specular IOR Level"].default_value = .8
     elif kind == "ceramic":
         b.inputs["Coat Weight"].default_value = .6
     elif kind == "fence":
@@ -509,6 +515,10 @@ EPIC = [
          target=(900, 700, 330), lens=40, show="all"),
     dict(k="E8", n="RICE engine hall stacks at golden hour", eye=(1545, 905, 10), target=(1700, 1045, 30),
          lens=24, show="all"),
+    dict(k="E9", n="Water tanks and their spiral stairs", eye=(690, 1662, 12), target=(525, 1590, 30), lens=24,
+         show="all"),
+    dict(k="E10", n="Control and admin building across the car park", eye=(175, 150, 9), target=(205, 370, 14),
+         lens=28, show="all"),
 ]
 
 

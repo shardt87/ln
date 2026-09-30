@@ -81,6 +81,7 @@ jobs:
           - { style: pro, views: "F1,F2,F3", samples: "128", overlay: "B" }
           - { style: pro, views: "E1,E2,E3,E4", samples: "128", set: "epic" }
           - { style: pro, views: "E5,E6,E7,E8", samples: "128", set: "epic" }
+          - { style: pro, views: "E9,E10", samples: "128", set: "epic" }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
