@@ -124,20 +124,16 @@ python plant/blender/board.py plant/renders/pro
 
 ## Modular expansion (design change beyond Rev 14)
 
-Rev 14 leaves several plots of the compound empty. Layer `OPT_MODX` adds more of the modular technologies from sheets 07 and 08. It is a design change: none of it is on the drawing, every item is tagged `basis: design change`, and the layer can be switched off.
+Layer `OPT_MODX` adds some of the smaller modular technologies from sheets 07 and 08 beside the Rev 14 modular yard. It is a design change: none of it is on the drawing, every item is tagged `basis: design change`, and the layer can be switched off. The simple-cycle units (SC-1, SC-2) and the RICE engine hall (8 engines) stay exactly as drawn.
 
-The numbers are kept realistic for a modular yard beside a ~1.7 GW 3×1, with room left for access and laydown:
+| Technology | Rev 14 | Added | Total |
+|---|---|---|---|
+| Trailer-mounted aeroderivatives (TM2500 class, ~35 MW each) | – | TM-1, TM-2 | 2 |
+| Containerized gas gensets (~2 MW each) | 2 | CONT-3 to CONT-8, plus a paralleling e-house | 8 |
+| Fuel-cell modules (SOFC, 200–300 kW) | 4 | FC-5 to FC-12 | 12 |
+| Microturbines (1 MW) | 3 | MT-4 to MT-6 | 6 |
 
-| Technology | Rev 14 | Added | Total | Approx. MW |
-|---|---|---|---|---|
-| Aeroderivative simple cycle (LM6000 class) | SC-1, SC-2 | SC-3, SC-4 in the east strip beside SC-1/SC-2 and the modular collector, each with GSU and gantry | 4 | ~200 |
-| RICE engines (18V50 class) | 8 (hall 1) | 6 in hall 2, RICE-9 to RICE-14 (south-east corner by the switchyard, own PCM and GSU) | 14 | ~260 |
-| Trailer-mounted aeroderivatives (TM2500 class) | – | TM-1, TM-2 | 2 | ~70 |
-| Containerized gas gensets | 2 | CONT-3 to CONT-8, plus a paralleling e-house | 8 | ~16 |
-| Fuel-cell modules (SOFC) | 4 | FC-5 to FC-12 | 12 | ~3 |
-| Microturbines (1 MW) | 3 | MT-4 to MT-6 | 6 | 6 |
-
-The north-west corner is kept open as a maintenance laydown for engine and turbine exchanges. The plots were picked from an occupancy map of the verified model, keeping 10 ft clear of every part and route. `verify.py` still passes: 211/211 footprints, 21/21 heights, 10/10 sheet 09 clearances, 0 clashes. The grid connection of the added units (switchyard bays, collector feeders) is not designed and needs a system impact study. In the presentation renders, items the drawing marks conditional get a normal equipment finish instead of the drawing's tan tint.
+The north-west corner is kept open as a maintenance laydown. The plots were picked from an occupancy map of the verified model, keeping 10 ft clear of every part and route. `verify.py` still passes: 211/211 footprints, 21/21 heights, 10/10 sheet 09 clearances, 0 clashes. In the presentation renders, items the drawing marks conditional get a normal equipment finish instead of the drawing's tan tint.
 
 ## Coastal variant: LNG marine terminal (sheet 15)
 
