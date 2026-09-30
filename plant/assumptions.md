@@ -159,3 +159,18 @@ The backdrop plane and world are specified as #D9D8D5, but a lit, shadow-free pl
 (about #EDEBE5 with the default sun and world strength). make_sheets.py therefore samples a pure-backdrop
 pixel from the overview render and uses it as the page colour, so the image fades into the page exactly.
 To darken the whole look, lower `sun_energy` and `world_strength` in views.json and re-render.
+
+## 9. Detail pass (what the model draws beyond the envelopes)
+
+Cladding ribs, doors, roller shutters, louvres, roof ribs, eaves trim and downpipes on every building;
+platforms, handrails and caged ladders on the HRSGs, stacks, tanks, columns, ACC deck and cooling towers;
+open steel roof frames on the HRSGs so the drums, safety valves and silencers show; skids, walkways,
+piping and expansion joints on the gas-turbine trains; back-to-back cabinet rows with door panels in the
+e-house and MCC room; ladder-type trays with rungs and splice plates; insulator strings, plinths and a
+cable trench in the switchyard; corrugated BESS containers with doors, fan grilles and transformer fins;
+light poles, hydrants, catch basins, fence outriggers, a sliding gate, vehicles and laydown props.
+All of it is generic and illustrative. None of it is vendor or as-built detail, and equipment counts,
+platform levels and skid contents are drawing conventions to be replaced by real arrangement drawings.
+
+Verified in Blender 5.0.1 (pip `bpy`): model build, Cycles renders at 2800 px with 48 samples, and all
+27 sheets. The compositor AO/mist step is skipped on 5.x (API change) and untested on 4.x.

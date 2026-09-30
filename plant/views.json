@@ -76,8 +76,8 @@
     "az": 45,
     "el": 38,
     "lens": 85,
-    "crop_top": 0.12,
-    "pad": 1.0,
+    "crop_top": 0.1,
+    "pad": 0.8,
     "target_height_frac": 0.15
    },
    "frame": [
@@ -448,11 +448,11 @@
    "title": "MCC / VFD / UPS room cutaway",
    "subtitle": "Motor control | MCC, drives and UPS in separated rooms with a common overhead tray",
    "camera": {
-    "az": 35,
-    "el": 30,
+    "az": 8,
+    "el": 42,
     "lens": 55,
     "crop_top": 0.12,
-    "pad": 1.06
+    "pad": 1.0
    },
    "frame": [
     "ELEC-MCC-"
