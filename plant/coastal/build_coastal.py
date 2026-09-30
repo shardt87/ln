@@ -387,6 +387,26 @@ def build_A():
     S.item(L_P, "MV cable trench, substation to pumps, BOG and intake", (K["5"][1], K["8"][0], 600, 610), (-.2, .4))
     S.box(K["5"][1], K["4"][0], 604, 610, -.2, .4, "concrete")
     S.box(K["4"][0] - 6, K["4"][0], 610, K["4"][2], -.2, .4, "concrete")
+    # branches to the HP send-out pumps and on to the seawater intake pumps
+    S.box(K["3"][0] + 50, K["3"][0] + 56, K["3"][3], 604, -.2, .4, "concrete")
+    S.box(K["4"][1], K["8"][0] + 40, 604, 610, -.2, .4, "concrete")
+    S.box(K["8"][0] + 34, K["8"][0] + 40, K["8"][3], 604, -.2, .4, "concrete")
+    # terminal power: buried cable from the plant 230 kV yard (east end) to the terminal substation
+    S.item(L_P, "Terminal power supply: buried cable from the plant switchyard (right of way)",
+           (1940, K["5"][0], 140, 690), (-.2, .4))
+    S.row_strip([(1940, 150), (2450, 150), (2450, 680), (K["5"][0], 680)], 6, color="corridor", markers=300)
+    # relief / vent header from the tank roof to the flare knock-out drum, on T-bents over the roads
+    ra = math.radians(45)
+    rx, ry = cx + (R + 5) * math.cos(ra), cy + (R + 5) * math.sin(ra)
+    S.item(L_P, "Relief header, tank to flare knock-out drum", (rx - 2, fx - 15, ry - 2, fy + 2), (0, 150))
+    S.rod((rx, ry, 150), (rx, ry, 18), 1.2, "pipe")
+    S.rod((cx + (R - 8) * math.cos(ra), cy + (R - 8) * math.sin(ra), 152), (rx, ry, 150), 1.2, "pipe")
+    S.pipe_path([(rx, ry), (rx, fy), (fx - 45, fy)], 18, 1.2, "pipe", bents=40)
+    S.rod((fx - 45, fy, 18), (fx - 45, fy, 8), 1.2, "pipe")
+    # seawater outfall: vaporizer discharge back to the sea, south of the pumps and the intake
+    S.item(L_P, "Seawater outfall, vaporizers to the sea", (K["2"][1] - 25, shore + 120, 334, K["2"][2]), (SEA - 10, 6))
+    S.pipe_path([(K["2"][1] - 20, K["2"][2]), (K["2"][1] - 20, 340), (shore - 5, 340)], 3, 2.6, "seawater")
+    S.rod((shore - 5, 340, 3), (shore + 120, 340, SEA - 8), 2.6, "seawater")
 
     # 10 jetty trestle ~1,700 ft (EcoElectrica)
     fp = K["10"]

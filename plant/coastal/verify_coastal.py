@@ -25,7 +25,8 @@ CONNECT = [("unloading lines", "tank"), ("unloading lines", "jetty"), ("send-out
            ("lng to the send-out", "tank"), ("seawater supply", "vaporizers"), ("seawater supply", "intake"),
            ("send-out gas", "vaporizers"), ("send-out gas", "metering"), ("mooring lines", ""),
            ("sts fenders", ""), ("jetty trestle", "berth"), ("dolphins", "berth"), ("knock-out", "flare"),
-           ("yoke", "fsru"), ("dolphins", "lng carrier")]
+           ("yoke", "fsru"), ("dolphins", "lng carrier"),
+           ("relief header", "tank"), ("relief header", "knock-out"), ("outfall", "vaporizers")]
 
 
 def bbox(p):
@@ -110,7 +111,7 @@ def check(variant):
     wet = [it["name"] for it in ov["items"] if it["layer"] == "MARINE" and it["fp"][0] < shore]
     out(not wet, f"vessels and mooring on the sea side of the shoreline (x > {shore}) {wet[:3]}")
     dry = [it["name"] for it in ov["items"] if it["layer"] not in marine and it["fp"][1] > shore + 1
-           and "landfall" not in it["name"].lower()]
+           and "landfall" not in it["name"].lower() and "outfall" not in it["name"].lower()]
     out(not dry, f"terminal / landfall items on the land side {dry[:3]}")
     piles = [p for p in ov["parts"] if p["color"] == "pile" and min(p["a"][0], p["b"][0]) < shore]
     out(not piles, f"jetty and berth piles all in the water ({len(piles)} on land)")

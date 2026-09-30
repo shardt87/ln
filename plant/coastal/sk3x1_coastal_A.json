@@ -449,6 +449,75 @@
 },
 {
 "id": "coastala-0018",
+"layer": "LNG_PIPING",
+"name": "Terminal power supply: buried cable from the plant switchyard (right of way)",
+"tag": "",
+"area": "COAST",
+"fp": [
+1940,
+2560.4,
+140,
+690
+],
+"z": [
+-0.2,
+0.4
+],
+"shape": "rect",
+"info": "",
+"basis": "typical",
+"sheet": "SK-3X1-15",
+"register": false,
+"key": ""
+},
+{
+"id": "coastala-0019",
+"layer": "LNG_PIPING",
+"name": "Relief header, tank to flare knock-out drum",
+"tag": "",
+"area": "COAST",
+"fp": [
+3277.49,
+3405.6,
+1276.94,
+1522.0
+],
+"z": [
+0,
+150
+],
+"shape": "rect",
+"info": "",
+"basis": "typical",
+"sheet": "SK-3X1-15",
+"register": false,
+"key": ""
+},
+{
+"id": "coastala-0020",
+"layer": "LNG_PIPING",
+"name": "Seawater outfall, vaporizers to the sea",
+"tag": "",
+"area": "COAST",
+"fp": [
+2775.4,
+3720.6,
+334,
+379.8
+],
+"z": [
+-18.0,
+6
+],
+"shape": "rect",
+"info": "",
+"basis": "typical",
+"sheet": "SK-3X1-15",
+"register": false,
+"key": ""
+},
+{
+"id": "coastala-0021",
 "layer": "LNG_JETTY",
 "name": "10 Jetty trestle ~1,700 ft",
 "tag": "JETTY",
@@ -471,7 +540,7 @@
 "key": "10"
 },
 {
-"id": "coastala-0019",
+"id": "coastala-0022",
 "layer": "LNG_JETTY",
 "name": "11 Berth platform: 4 unloading arms, 3 LNG + 1 vapour",
 "tag": "BERTH",
@@ -494,7 +563,7 @@
 "key": "11"
 },
 {
-"id": "coastala-0020",
+"id": "coastala-0023",
 "layer": "LNG_JETTY",
 "name": "Breasting and mooring dolphins, walkways (typical)",
 "tag": "",
@@ -517,7 +586,7 @@
 "key": ""
 },
 {
-"id": "coastala-0021",
+"id": "coastala-0024",
 "layer": "MARINE",
 "name": "LNG carrier ~294 m LOA, Moss type, at the berth",
 "tag": "LNGC",
@@ -540,7 +609,7 @@
 "key": ""
 },
 {
-"id": "coastala-0022",
+"id": "coastala-0025",
 "layer": "MARINE",
 "name": "Mooring lines",
 "tag": "",
@@ -563,7 +632,7 @@
 "key": ""
 },
 {
-"id": "coastala-0023",
+"id": "coastala-0026",
 "layer": "MARINE",
 "name": "Harbour tug 1 (illustrative)",
 "tag": "",
@@ -586,7 +655,7 @@
 "key": ""
 },
 {
-"id": "coastala-0024",
+"id": "coastala-0027",
 "layer": "MARINE",
 "name": "Harbour tug 2 (illustrative)",
 "tag": "",
@@ -5241,6 +5310,480 @@
 {
 "kind": "box",
 "min": [
+2880.4,
+479.8,
+-0.2
+],
+"max": [
+2886.4,
+604,
+0.4
+],
+"color": "concrete",
+"item": "coastala-0017",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "box",
+"min": [
+3470.6,
+604,
+-0.2
+],
+"max": [
+3520.6,
+610,
+0.4
+],
+"color": "concrete",
+"item": "coastala-0017",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "box",
+"min": [
+3514.6,
+479.8,
+-0.2
+],
+"max": [
+3520.6,
+604,
+0.4
+],
+"color": "concrete",
+"item": "coastala-0017",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "box",
+"min": [
+1937.0,
+147.0,
+-0.2
+],
+"max": [
+2453.0,
+153.0,
+0.05
+],
+"color": "corridor",
+"item": "coastala-0018",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "rod",
+"a": [
+1942.0,
+152.0,
+0
+],
+"b": [
+1942.0,
+152.0,
+4
+],
+"r": 0.3,
+"r2": 0.3,
+"color": "amber",
+"item": "coastala-0018",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "rod",
+"a": [
+2242.0,
+152.0,
+0
+],
+"b": [
+2242.0,
+152.0,
+4
+],
+"r": 0.3,
+"r2": 0.3,
+"color": "amber",
+"item": "coastala-0018",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "box",
+"min": [
+2447.0,
+147.0,
+-0.2
+],
+"max": [
+2453.0,
+683.0,
+0.05
+],
+"color": "corridor",
+"item": "coastala-0018",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "rod",
+"a": [
+2452.0,
+152.0,
+0
+],
+"b": [
+2452.0,
+152.0,
+4
+],
+"r": 0.3,
+"r2": 0.3,
+"color": "amber",
+"item": "coastala-0018",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "rod",
+"a": [
+2452.0,
+452.0,
+0
+],
+"b": [
+2452.0,
+452.0,
+4
+],
+"r": 0.3,
+"r2": 0.3,
+"color": "amber",
+"item": "coastala-0018",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "box",
+"min": [
+2447.0,
+677.0,
+-0.2
+],
+"max": [
+2563.4,
+683.0,
+0.05
+],
+"color": "corridor",
+"item": "coastala-0018",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "rod",
+"a": [
+2452.0,
+682.0,
+0
+],
+"b": [
+2452.0,
+682.0,
+4
+],
+"r": 0.3,
+"r2": 0.3,
+"color": "amber",
+"item": "coastala-0018",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "rod",
+"a": [
+3279.49,
+1278.94,
+150
+],
+"b": [
+3279.49,
+1278.94,
+18
+],
+"r": 1.2,
+"r2": 1.2,
+"color": "pipe",
+"item": "coastala-0019",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "rod",
+"a": [
+3270.3,
+1269.75,
+152
+],
+"b": [
+3279.49,
+1278.94,
+150
+],
+"r": 1.2,
+"r2": 1.2,
+"color": "pipe",
+"item": "coastala-0019",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "rod",
+"a": [
+3279.49,
+1278.94,
+18
+],
+"b": [
+3279.49,
+1520.0,
+18
+],
+"r": 1.2,
+"r2": 1.2,
+"color": "pipe",
+"item": "coastala-0019",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "rod",
+"a": [
+3279.49,
+1520.0,
+18
+],
+"b": [
+3375.6,
+1520.0,
+18
+],
+"r": 1.2,
+"r2": 1.2,
+"color": "pipe",
+"item": "coastala-0019",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "rod",
+"a": [
+3279.49,
+1318.94,
+0
+],
+"b": [
+3279.49,
+1318.94,
+16.5
+],
+"r": 0.45,
+"r2": 0.45,
+"color": "steel",
+"item": "coastala-0019",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "rod",
+"a": [
+3279.49,
+1358.94,
+0
+],
+"b": [
+3279.49,
+1358.94,
+16.5
+],
+"r": 0.45,
+"r2": 0.45,
+"color": "steel",
+"item": "coastala-0019",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "rod",
+"a": [
+3279.49,
+1398.94,
+0
+],
+"b": [
+3279.49,
+1398.94,
+16.5
+],
+"r": 0.45,
+"r2": 0.45,
+"color": "steel",
+"item": "coastala-0019",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "rod",
+"a": [
+3279.49,
+1438.94,
+0
+],
+"b": [
+3279.49,
+1438.94,
+16.5
+],
+"r": 0.45,
+"r2": 0.45,
+"color": "steel",
+"item": "coastala-0019",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "rod",
+"a": [
+3279.49,
+1478.94,
+0
+],
+"b": [
+3279.49,
+1478.94,
+16.5
+],
+"r": 0.45,
+"r2": 0.45,
+"color": "steel",
+"item": "coastala-0019",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "rod",
+"a": [
+3279.49,
+1518.94,
+0
+],
+"b": [
+3279.49,
+1518.94,
+16.5
+],
+"r": 0.45,
+"r2": 0.45,
+"color": "steel",
+"item": "coastala-0019",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "rod",
+"a": [
+3319.49,
+1520.0,
+0
+],
+"b": [
+3319.49,
+1520.0,
+16.5
+],
+"r": 0.45,
+"r2": 0.45,
+"color": "steel",
+"item": "coastala-0019",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "rod",
+"a": [
+3359.49,
+1520.0,
+0
+],
+"b": [
+3359.49,
+1520.0,
+16.5
+],
+"r": 0.45,
+"r2": 0.45,
+"color": "steel",
+"item": "coastala-0019",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "rod",
+"a": [
+3375.6,
+1520.0,
+18
+],
+"b": [
+3375.6,
+1520.0,
+8
+],
+"r": 1.2,
+"r2": 1.2,
+"color": "pipe",
+"item": "coastala-0019",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "rod",
+"a": [
+2780.4,
+379.8,
+3
+],
+"b": [
+2780.4,
+340,
+3
+],
+"r": 2.6,
+"r2": 2.6,
+"color": "seawater",
+"item": "coastala-0020",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "rod",
+"a": [
+2780.4,
+340,
+3
+],
+"b": [
+3595.6,
+340,
+3
+],
+"r": 2.6,
+"r2": 2.6,
+"color": "seawater",
+"item": "coastala-0020",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "rod",
+"a": [
+3595.6,
+340,
+3
+],
+"b": [
+3720.6,
+340,
+-16.0
+],
+"r": 2.6,
+"r2": 2.6,
+"color": "seawater",
+"item": "coastala-0020",
+"layer": "LNG_PIPING"
+},
+{
+"kind": "box",
+"min": [
 3520.6,
 949.9,
 10
@@ -5251,7 +5794,7 @@
 13
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5267,7 +5810,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5285,7 +5828,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5303,7 +5846,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5319,7 +5862,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5337,7 +5880,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5355,7 +5898,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5371,7 +5914,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5389,7 +5932,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5407,7 +5950,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5423,7 +5966,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5441,7 +5984,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5459,7 +6002,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5475,7 +6018,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5493,7 +6036,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5511,7 +6054,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5527,7 +6070,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5545,7 +6088,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5563,7 +6106,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5579,7 +6122,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5597,7 +6140,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5615,7 +6158,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5631,7 +6174,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5649,7 +6192,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5667,7 +6210,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5683,7 +6226,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5701,7 +6244,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5719,7 +6262,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5735,7 +6278,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5753,7 +6296,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5771,7 +6314,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5787,7 +6330,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5805,7 +6348,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5823,7 +6366,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5839,7 +6382,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5857,7 +6400,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5875,7 +6418,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5891,7 +6434,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5909,7 +6452,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5927,7 +6470,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5943,7 +6486,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5961,7 +6504,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5979,7 +6522,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -5995,7 +6538,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6013,7 +6556,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6031,7 +6574,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6047,7 +6590,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6065,7 +6608,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6083,7 +6626,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6099,7 +6642,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6117,7 +6660,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6135,7 +6678,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6151,7 +6694,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6169,7 +6712,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6187,7 +6730,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6203,7 +6746,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6221,7 +6764,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6239,7 +6782,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6255,7 +6798,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6273,7 +6816,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6291,7 +6834,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6307,7 +6850,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6325,7 +6868,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6343,7 +6886,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6359,7 +6902,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6377,7 +6920,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6395,7 +6938,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6411,7 +6954,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6429,7 +6972,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6447,7 +6990,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6463,7 +7006,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6481,7 +7024,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6499,7 +7042,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6515,7 +7058,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6533,7 +7076,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6551,7 +7094,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6567,7 +7110,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6585,7 +7128,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6603,7 +7146,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6619,7 +7162,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6637,7 +7180,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6655,7 +7198,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6671,7 +7214,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6689,7 +7232,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6707,7 +7250,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6723,7 +7266,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6741,7 +7284,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6759,7 +7302,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6775,7 +7318,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6793,7 +7336,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6811,7 +7354,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6827,7 +7370,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6845,7 +7388,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6863,7 +7406,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6879,7 +7422,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6897,7 +7440,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6915,7 +7458,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6931,7 +7474,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6949,7 +7492,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6967,7 +7510,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -6983,7 +7526,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7001,7 +7544,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7019,7 +7562,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7035,7 +7578,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7053,7 +7596,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7071,7 +7614,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7087,7 +7630,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7105,7 +7648,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7123,7 +7666,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7139,7 +7682,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7157,7 +7700,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7175,7 +7718,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7191,7 +7734,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7209,7 +7752,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7227,7 +7770,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7243,7 +7786,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7261,7 +7804,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7279,7 +7822,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7295,7 +7838,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7313,7 +7856,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7331,7 +7874,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7347,7 +7890,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7365,7 +7908,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7383,7 +7926,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7399,7 +7942,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7417,7 +7960,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7435,7 +7978,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7451,7 +7994,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7469,7 +8012,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7487,7 +8030,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7503,7 +8046,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7521,7 +8064,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7539,7 +8082,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7555,7 +8098,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7573,7 +8116,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7591,7 +8134,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7607,7 +8150,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7625,7 +8168,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7643,7 +8186,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7659,7 +8202,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7677,7 +8220,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7695,7 +8238,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7711,7 +8254,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7729,7 +8272,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7747,7 +8290,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7763,7 +8306,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7781,7 +8324,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7799,7 +8342,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7815,7 +8358,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7833,7 +8376,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7851,7 +8394,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7867,7 +8410,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7885,7 +8428,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7903,7 +8446,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7919,7 +8462,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7937,7 +8480,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7955,7 +8498,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7971,7 +8514,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -7989,7 +8532,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8007,7 +8550,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8023,7 +8566,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8041,7 +8584,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8059,7 +8602,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8075,7 +8618,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8093,7 +8636,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8111,7 +8654,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8127,7 +8670,7 @@
 10
 ],
 "color": "concrete",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8145,7 +8688,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8163,7 +8706,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8179,7 +8722,7 @@
 21
 ],
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8197,7 +8740,7 @@
 "r": 1.8,
 "r2": 1.8,
 "color": "lngpipe",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8215,7 +8758,7 @@
 "r": 1.8,
 "r2": 1.8,
 "color": "lngpipe",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8233,7 +8776,7 @@
 "r": 1.8,
 "r2": 1.8,
 "color": "lngpipe",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8251,7 +8794,7 @@
 "r": 1.3,
 "r2": 1.3,
 "color": "lngpipe",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8269,7 +8812,7 @@
 "r": 1.6,
 "r2": 1.6,
 "color": "lngpipe",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8287,7 +8830,7 @@
 "r": 1.6,
 "r2": 1.6,
 "color": "lngpipe",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8305,7 +8848,7 @@
 "r": 1.6,
 "r2": 1.6,
 "color": "lngpipe",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8323,7 +8866,7 @@
 "r": 1.6,
 "r2": 1.6,
 "color": "lngpipe",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8339,7 +8882,7 @@
 16.5
 ],
 "color": "rail",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8355,7 +8898,7 @@
 16.5
 ],
 "color": "rail",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8373,7 +8916,7 @@
 "r": 0.35,
 "r2": 0.35,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8389,7 +8932,7 @@
 40
 ],
 "color": "lamp",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8407,7 +8950,7 @@
 "r": 0.35,
 "r2": 0.35,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8423,7 +8966,7 @@
 40
 ],
 "color": "lamp",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8441,7 +8984,7 @@
 "r": 0.35,
 "r2": 0.35,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8457,7 +9000,7 @@
 40
 ],
 "color": "lamp",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8475,7 +9018,7 @@
 "r": 0.35,
 "r2": 0.35,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8491,7 +9034,7 @@
 40
 ],
 "color": "lamp",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8509,7 +9052,7 @@
 "r": 0.35,
 "r2": 0.35,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8525,7 +9068,7 @@
 40
 ],
 "color": "lamp",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8543,7 +9086,7 @@
 "r": 0.35,
 "r2": 0.35,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8559,7 +9102,7 @@
 40
 ],
 "color": "lamp",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8577,7 +9120,7 @@
 "r": 0.35,
 "r2": 0.35,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8593,7 +9136,7 @@
 40
 ],
 "color": "lamp",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8611,7 +9154,7 @@
 "r": 0.35,
 "r2": 0.35,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8627,7 +9170,7 @@
 40
 ],
 "color": "lamp",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8645,7 +9188,7 @@
 "r": 0.35,
 "r2": 0.35,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8661,7 +9204,7 @@
 40
 ],
 "color": "lamp",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8679,7 +9222,7 @@
 "r": 0.35,
 "r2": 0.35,
 "color": "steel",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8695,7 +9238,7 @@
 40
 ],
 "color": "lamp",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8711,7 +9254,7 @@
 14.2
 ],
 "color": "copper_dark",
-"item": "coastala-0018",
+"item": "coastala-0021",
 "layer": "LNG_JETTY"
 },
 {
@@ -8727,7 +9270,7 @@
 16
 ],
 "color": "concrete",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -8745,7 +9288,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -8763,7 +9306,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -8781,7 +9324,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -8799,7 +9342,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -8817,7 +9360,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -8835,7 +9378,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -8853,7 +9396,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -8871,7 +9414,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -8889,7 +9432,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -8907,7 +9450,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -8925,7 +9468,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -8943,7 +9486,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -8961,7 +9504,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -8979,7 +9522,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -8997,7 +9540,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9015,7 +9558,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9033,7 +9576,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9051,7 +9594,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9069,7 +9612,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9087,7 +9630,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9105,7 +9648,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9123,7 +9666,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9141,7 +9684,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9159,7 +9702,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9177,7 +9720,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9195,7 +9738,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9213,7 +9756,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9231,7 +9774,7 @@
 "r": 1.5,
 "r2": 1.5,
 "color": "pile",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9249,7 +9792,7 @@
 "r": 1.6,
 "r2": 1.6,
 "color": "lngpipe",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9267,7 +9810,7 @@
 "r": 1.1,
 "r2": 1.1,
 "color": "lngpipe",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9285,7 +9828,7 @@
 "r": 1.0,
 "r2": 1.0,
 "color": "lngpipe",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9301,7 +9844,7 @@
 84
 ],
 "color": "amber",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9317,7 +9860,7 @@
 20
 ],
 "color": "equip",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9335,7 +9878,7 @@
 "r": 1.6,
 "r2": 1.6,
 "color": "lngpipe",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9353,7 +9896,7 @@
 "r": 1.1,
 "r2": 1.1,
 "color": "lngpipe",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9371,7 +9914,7 @@
 "r": 1.0,
 "r2": 1.0,
 "color": "lngpipe",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9387,7 +9930,7 @@
 84
 ],
 "color": "amber",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9403,7 +9946,7 @@
 20
 ],
 "color": "equip",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9421,7 +9964,7 @@
 "r": 1.6,
 "r2": 1.6,
 "color": "lngpipe",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9439,7 +9982,7 @@
 "r": 1.1,
 "r2": 1.1,
 "color": "lngpipe",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9457,7 +10000,7 @@
 "r": 1.0,
 "r2": 1.0,
 "color": "lngpipe",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9473,7 +10016,7 @@
 84
 ],
 "color": "amber",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9489,7 +10032,7 @@
 20
 ],
 "color": "equip",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9507,7 +10050,7 @@
 "r": 1.6,
 "r2": 1.6,
 "color": "steel",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9525,7 +10068,7 @@
 "r": 1.1,
 "r2": 1.1,
 "color": "steel",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9543,7 +10086,7 @@
 "r": 1.0,
 "r2": 1.0,
 "color": "steel",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9559,7 +10102,7 @@
 84
 ],
 "color": "amber",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9575,7 +10118,7 @@
 20
 ],
 "color": "equip",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9593,7 +10136,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9611,7 +10154,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9629,7 +10172,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9647,7 +10190,7 @@
 "r": 0.5,
 "r2": 0.5,
 "color": "steel",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9663,7 +10206,7 @@
 14.0
 ],
 "color": "grating",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9681,7 +10224,7 @@
 "r": 0.25,
 "r2": 0.25,
 "color": "steel",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9697,7 +10240,7 @@
 28.0
 ],
 "color": "grating",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9715,7 +10258,7 @@
 "r": 0.25,
 "r2": 0.25,
 "color": "steel",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9731,7 +10274,7 @@
 42.0
 ],
 "color": "grating",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9749,7 +10292,7 @@
 "r": 0.25,
 "r2": 0.25,
 "color": "steel",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9765,7 +10308,7 @@
 56.0
 ],
 "color": "grating",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9783,7 +10326,7 @@
 "r": 0.25,
 "r2": 0.25,
 "color": "steel",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9799,7 +10342,7 @@
 62
 ],
 "color": "grating",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9817,7 +10360,7 @@
 "r": 0.6,
 "r2": 0.6,
 "color": "rail",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9835,7 +10378,7 @@
 "r": 0.8,
 "r2": 0.8,
 "color": "red",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9851,7 +10394,7 @@
 63
 ],
 "color": "red",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9869,7 +10412,7 @@
 "r": 0.8,
 "r2": 0.8,
 "color": "red",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9885,7 +10428,7 @@
 63
 ],
 "color": "red",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9901,7 +10444,7 @@
 28
 ],
 "color": "ehouse",
-"item": "coastala-0019",
+"item": "coastala-0022",
 "layer": "LNG_JETTY"
 },
 {
@@ -9917,7 +10460,7 @@
 18
 ],
 "color": "concrete",
-"item": "coastala-0020",
+"item": "coastala-0023",
 "layer": "LNG_JETTY"
 },
 {
@@ -9933,7 +10476,7 @@
 16
 ],
 "color": "fanhub",
-"item": "coastala-0020",
+"item": "coastala-0023",
 "layer": "LNG_JETTY"
 },
 {
@@ -9949,7 +10492,7 @@
 18
 ],
 "color": "grating",
-"item": "coastala-0020",
+"item": "coastala-0023",
 "layer": "LNG_JETTY"
 },
 {
@@ -9965,7 +10508,7 @@
 18
 ],
 "color": "concrete",
-"item": "coastala-0020",
+"item": "coastala-0023",
 "layer": "LNG_JETTY"
 },
 {
@@ -9981,7 +10524,7 @@
 16
 ],
 "color": "fanhub",
-"item": "coastala-0020",
+"item": "coastala-0023",
 "layer": "LNG_JETTY"
 },
 {
@@ -9997,7 +10540,7 @@
 18
 ],
 "color": "grating",
-"item": "coastala-0020",
+"item": "coastala-0023",
 "layer": "LNG_JETTY"
 },
 {
@@ -10013,7 +10556,7 @@
 16
 ],
 "color": "concrete",
-"item": "coastala-0020",
+"item": "coastala-0023",
 "layer": "LNG_JETTY"
 },
 {
@@ -10031,7 +10574,7 @@
 "r": 2,
 "r2": 2,
 "color": "fanhub",
-"item": "coastala-0020",
+"item": "coastala-0023",
 "layer": "LNG_JETTY"
 },
 {
@@ -10047,7 +10590,7 @@
 16
 ],
 "color": "grating",
-"item": "coastala-0020",
+"item": "coastala-0023",
 "layer": "LNG_JETTY"
 },
 {
@@ -10063,7 +10606,7 @@
 16
 ],
 "color": "concrete",
-"item": "coastala-0020",
+"item": "coastala-0023",
 "layer": "LNG_JETTY"
 },
 {
@@ -10081,7 +10624,7 @@
 "r": 2,
 "r2": 2,
 "color": "fanhub",
-"item": "coastala-0020",
+"item": "coastala-0023",
 "layer": "LNG_JETTY"
 },
 {
@@ -10097,7 +10640,7 @@
 16
 ],
 "color": "grating",
-"item": "coastala-0020",
+"item": "coastala-0023",
 "layer": "LNG_JETTY"
 },
 {
@@ -10113,7 +10656,7 @@
 40.0
 ],
 "color": "hull",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10129,7 +10672,7 @@
 -3.0
 ],
 "color": "antifoul",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10145,7 +10688,7 @@
 40.4
 ],
 "color": "deck",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10193,7 +10736,7 @@
 ]
 ],
 "color": "hull",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10241,7 +10784,7 @@
 ]
 ],
 "color": "hull",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10289,7 +10832,7 @@
 ]
 ],
 "color": "hull",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10337,7 +10880,7 @@
 ]
 ],
 "color": "hull",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10385,7 +10928,7 @@
 ]
 ],
 "color": "hull",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10433,7 +10976,7 @@
 ]
 ],
 "color": "hull",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10449,7 +10992,7 @@
 45.0
 ],
 "color": "deck",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10467,7 +11010,7 @@
 "r": 0.8,
 "r2": 0.8,
 "color": "super",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10515,7 +11058,7 @@
 ]
 ],
 "color": "hull",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10531,7 +11074,7 @@
 102.0
 ],
 "color": "super",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10547,7 +11090,7 @@
 102.0
 ],
 "color": "super",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10563,7 +11106,7 @@
 98.0
 ],
 "color": "glass",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10579,7 +11122,7 @@
 128.0
 ],
 "color": "super",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10595,7 +11138,7 @@
 128.0
 ],
 "color": "hull",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10613,7 +11156,7 @@
 "r": 0.6,
 "r2": 0.6,
 "color": "super",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10632,7 +11175,7 @@
 "r2": 49.5,
 "color": "mosscover",
 "seg": 64,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10651,7 +11194,7 @@
 "r2": 48.220667768084674,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10670,7 +11213,7 @@
 "r2": 46.512443496337625,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10689,7 +11232,7 @@
 "r2": 44.32576902886176,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10708,7 +11251,7 @@
 "r2": 41.58523776534168,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10727,7 +11270,7 @@
 "r2": 38.171743476032105,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10746,7 +11289,7 @@
 "r2": 33.8824999077695,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10765,7 +11308,7 @@
 "r2": 28.322383374285433,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10784,7 +11327,7 @@
 "r2": 20.481279256921447,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10803,7 +11346,7 @@
 "r2": 0.6,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10821,7 +11364,7 @@
 "r": 5,
 "r2": 5,
 "color": "steel",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10840,7 +11383,7 @@
 "r2": 49.5,
 "color": "mosscover",
 "seg": 64,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10859,7 +11402,7 @@
 "r2": 48.220667768084674,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10878,7 +11421,7 @@
 "r2": 46.512443496337625,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10897,7 +11440,7 @@
 "r2": 44.32576902886176,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10916,7 +11459,7 @@
 "r2": 41.58523776534168,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10935,7 +11478,7 @@
 "r2": 38.171743476032105,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10954,7 +11497,7 @@
 "r2": 33.8824999077695,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10973,7 +11516,7 @@
 "r2": 28.322383374285433,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -10992,7 +11535,7 @@
 "r2": 20.481279256921447,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11011,7 +11554,7 @@
 "r2": 0.6,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11029,7 +11572,7 @@
 "r": 5,
 "r2": 5,
 "color": "steel",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11048,7 +11591,7 @@
 "r2": 49.5,
 "color": "mosscover",
 "seg": 64,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11067,7 +11610,7 @@
 "r2": 48.220667768084674,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11086,7 +11629,7 @@
 "r2": 46.512443496337625,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11105,7 +11648,7 @@
 "r2": 44.32576902886176,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11124,7 +11667,7 @@
 "r2": 41.58523776534168,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11143,7 +11686,7 @@
 "r2": 38.171743476032105,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11162,7 +11705,7 @@
 "r2": 33.8824999077695,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11181,7 +11724,7 @@
 "r2": 28.322383374285433,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11200,7 +11743,7 @@
 "r2": 20.481279256921447,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11219,7 +11762,7 @@
 "r2": 0.6,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11237,7 +11780,7 @@
 "r": 5,
 "r2": 5,
 "color": "steel",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11256,7 +11799,7 @@
 "r2": 49.5,
 "color": "mosscover",
 "seg": 64,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11275,7 +11818,7 @@
 "r2": 48.220667768084674,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11294,7 +11837,7 @@
 "r2": 46.512443496337625,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11313,7 +11856,7 @@
 "r2": 44.32576902886176,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11332,7 +11875,7 @@
 "r2": 41.58523776534168,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11351,7 +11894,7 @@
 "r2": 38.171743476032105,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11370,7 +11913,7 @@
 "r2": 33.8824999077695,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11389,7 +11932,7 @@
 "r2": 28.322383374285433,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11408,7 +11951,7 @@
 "r2": 20.481279256921447,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11427,7 +11970,7 @@
 "r2": 0.6,
 "color": "mosscover",
 "seg": 48,
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11445,7 +11988,7 @@
 "r": 5,
 "r2": 5,
 "color": "steel",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11461,7 +12004,7 @@
 100.61
 ],
 "color": "grating",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11479,7 +12022,7 @@
 "r": 1.4,
 "r2": 1.4,
 "color": "lngpipe",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11497,7 +12040,7 @@
 "r": 1.4,
 "r2": 1.4,
 "color": "lngpipe",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11513,7 +12056,7 @@
 50.0
 ],
 "color": "steel",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11531,7 +12074,7 @@
 "r": 1,
 "r2": 1,
 "color": "lngpipe",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11549,7 +12092,7 @@
 "r": 1,
 "r2": 1,
 "color": "lngpipe",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11567,7 +12110,7 @@
 "r": 1,
 "r2": 1,
 "color": "lngpipe",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11585,7 +12128,7 @@
 "r": 1,
 "r2": 1,
 "color": "lngpipe",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11603,7 +12146,7 @@
 "r": 1,
 "r2": 1,
 "color": "lngpipe",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11621,7 +12164,7 @@
 "r": 1,
 "r2": 1,
 "color": "lngpipe",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11639,7 +12182,7 @@
 "r": 1,
 "r2": 1,
 "color": "lngpipe",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11657,7 +12200,7 @@
 "r": 1,
 "r2": 1,
 "color": "lngpipe",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11675,7 +12218,7 @@
 "r": 4,
 "r2": 4,
 "color": "amber",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11693,7 +12236,7 @@
 "r": 4,
 "r2": 4,
 "color": "amber",
-"item": "coastala-0021",
+"item": "coastala-0024",
 "layer": "MARINE"
 },
 {
@@ -11711,7 +12254,7 @@
 "r": 0.25,
 "r2": 0.25,
 "color": "rope",
-"item": "coastala-0022",
+"item": "coastala-0025",
 "layer": "MARINE"
 },
 {
@@ -11729,7 +12272,7 @@
 "r": 0.25,
 "r2": 0.25,
 "color": "rope",
-"item": "coastala-0022",
+"item": "coastala-0025",
 "layer": "MARINE"
 },
 {
@@ -11747,7 +12290,7 @@
 "r": 0.25,
 "r2": 0.25,
 "color": "rope",
-"item": "coastala-0022",
+"item": "coastala-0025",
 "layer": "MARINE"
 },
 {
@@ -11765,7 +12308,7 @@
 "r": 0.25,
 "r2": 0.25,
 "color": "rope",
-"item": "coastala-0022",
+"item": "coastala-0025",
 "layer": "MARINE"
 },
 {
@@ -11813,7 +12356,7 @@
 ]
 ],
 "color": "tug",
-"item": "coastala-0023",
+"item": "coastala-0026",
 "layer": "MARINE"
 },
 {
@@ -11861,7 +12404,7 @@
 ]
 ],
 "color": "tug",
-"item": "coastala-0023",
+"item": "coastala-0026",
 "layer": "MARINE"
 },
 {
@@ -11877,7 +12420,7 @@
 9.0
 ],
 "color": "super",
-"item": "coastala-0023",
+"item": "coastala-0026",
 "layer": "MARINE"
 },
 {
@@ -11893,7 +12436,7 @@
 18.0
 ],
 "color": "super",
-"item": "coastala-0023",
+"item": "coastala-0026",
 "layer": "MARINE"
 },
 {
@@ -11909,7 +12452,7 @@
 17.0
 ],
 "color": "glass",
-"item": "coastala-0023",
+"item": "coastala-0026",
 "layer": "MARINE"
 },
 {
@@ -11927,7 +12470,7 @@
 "r": 1.4,
 "r2": 1.4,
 "color": "hull",
-"item": "coastala-0023",
+"item": "coastala-0026",
 "layer": "MARINE"
 },
 {
@@ -11945,7 +12488,7 @@
 "r": 1.4,
 "r2": 1.4,
 "color": "hull",
-"item": "coastala-0023",
+"item": "coastala-0026",
 "layer": "MARINE"
 },
 {
@@ -11963,7 +12506,7 @@
 "r": 3.5,
 "r2": 3.5,
 "color": "fanhub",
-"item": "coastala-0023",
+"item": "coastala-0026",
 "layer": "MARINE"
 },
 {
@@ -12011,7 +12554,7 @@
 ]
 ],
 "color": "tug",
-"item": "coastala-0024",
+"item": "coastala-0027",
 "layer": "MARINE"
 },
 {
@@ -12059,7 +12602,7 @@
 ]
 ],
 "color": "tug",
-"item": "coastala-0024",
+"item": "coastala-0027",
 "layer": "MARINE"
 },
 {
@@ -12075,7 +12618,7 @@
 9.0
 ],
 "color": "super",
-"item": "coastala-0024",
+"item": "coastala-0027",
 "layer": "MARINE"
 },
 {
@@ -12091,7 +12634,7 @@
 18.0
 ],
 "color": "super",
-"item": "coastala-0024",
+"item": "coastala-0027",
 "layer": "MARINE"
 },
 {
@@ -12107,7 +12650,7 @@
 17.0
 ],
 "color": "glass",
-"item": "coastala-0024",
+"item": "coastala-0027",
 "layer": "MARINE"
 },
 {
@@ -12125,7 +12668,7 @@
 "r": 1.4,
 "r2": 1.4,
 "color": "hull",
-"item": "coastala-0024",
+"item": "coastala-0027",
 "layer": "MARINE"
 },
 {
@@ -12143,7 +12686,7 @@
 "r": 1.4,
 "r2": 1.4,
 "color": "hull",
-"item": "coastala-0024",
+"item": "coastala-0027",
 "layer": "MARINE"
 },
 {
@@ -12161,7 +12704,7 @@
 "r": 3.5,
 "r2": 3.5,
 "color": "fanhub",
-"item": "coastala-0024",
+"item": "coastala-0027",
 "layer": "MARINE"
 }
 ]

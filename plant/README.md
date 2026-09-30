@@ -55,6 +55,29 @@ The checks corrected the model in several places:
 
 Detail parts carry `d: 1`. None of them come from the drawing; all are typical. `verify.py` therefore checks the primary geometry against the drawing and runs only the bounds check on the detail parts. In the viewer, the Detail button toggles them.
 
+## Site audit (connections and leftovers)
+
+`audit.py` complements `verify.py`. It checks that:
+- every route end lands on equipment or on another route (switchyard buses and future bays, the gas yard pad and the fence entry count as valid ends);
+- every generating and electrical unit is connected, directly or through its own auxiliaries;
+- nothing floats;
+- nothing remains from removed options (SC-3/SC-4, RICE hall 2);
+- tags are unique.
+
+The first run found connections the drawing leaves open. They are now routed as typical:
+
+- **GT fuel gas:** the drawn header stopped over HRSG 1. It now ends at the GT1 branch, and each GT gets a branch between the HRSGs to its fuel skid, clear of the feed pumps and the ST.
+- **SC-1/SC-2 fuel gas:** a line from the fuel-gas compressor building to both packages.
+- **CCS circulating water:** carried from the utilities road to absorber B.
+- **Modular expansion:** `OPT_MODX_ROUTES` connects the gensets to the paralleling e-house and on to PAD-EH, and the trailer turbines to PAD-EH. It runs the fuel cells (a tail each) and microturbines to MOD-LV, and gas stubs from the portable-pad skid and the modular gas header.
+- **LNG terminal (coastal A):**
+  - a buried power cable from the plant switchyard to the terminal substation;
+  - the MV trench extended to the send-out pumps and the seawater intake;
+  - a relief header from the tank to the flare knock-out drum, on T-bents;
+  - a seawater outfall back to the sea.
+
+The audit now reports CLEAN and runs in CI.
+
 ## Detail layer 3 (close views)
 
 `detail3.py` runs after `detail.py` and adds dressing for close views:

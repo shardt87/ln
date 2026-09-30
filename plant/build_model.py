@@ -1350,6 +1350,51 @@ for fname, src, optional in [("routes_base.json", "SK-3X1-01", False), ("routes_
 HMOD = [[2095, 870], [2095, 805], [1515, 805], [1515, 262], [1690, 262], [1690, 237], [1720, 130]]
 routes.append(dict(type="hmod", layer="HV_CORRIDOR", label=ROUTE_STYLE["hmod"][4], z=45, w=0.8, h=0.8,
                    color="conductor", points=HMOD, sheet="SK-3X1-08"))
+# ---------------------------------------------------------------------------
+# Connections the drawing leaves open (site audit, plant/audit.py): typical routing
+# ---------------------------------------------------------------------------
+def add_route(rtype, points, layer=None, sheet="typical (site audit)"):
+    z, w, h, colour, label, default = ROUTE_STYLE[rtype]
+    routes.append(dict(type=rtype, layer=layer or default, label=label, z=z, w=w, h=h, color=colour,
+                       points=[[float(x), float(y)] for x, y in points], sheet=sheet))
+
+
+# GT fuel gas: the drawn header stops over HRSG 1 (x 600); it now ends at the GT1 branch and
+# each GT gets a branch between the HRSGs to its fuel / auxiliary skid (clear of the BFPs and the ST)
+for r in routes:
+    if r["type"] == "fuel_gas" and r["points"][-1] == [600.0, 885.0]:
+        r["points"][-1] = [715.0, 885.0]
+for (xb, xg) in ((715, 670), (875, 830), (1034, 990)):
+    add_route("fuel_gas", [(xb, 885), (xb, 570), (xg, 570), (xg, 506)], layer="PROCESS_PIPING")
+# CCS circulating water: the drawn line stops on the utilities road; carry it to absorber B's foot
+for r in routes:
+    if r["type"] == "cw" and r["points"][-1] == [770.0, 1360.0]:
+        r["points"].append([770.0, 1255.0])
+# modular expansion (OPT_MODX): MV cables to the portable-pad and modular collectors, gas stubs
+MX = "OPT_MODX_ROUTES"
+for row, y in ((0, 505), (1, 560)):                       # CONT-3..8 -> CONT-EH (paralleling e-house)
+    ys = y - 4 if row == 0 else y + 12
+    add_route("mvlv_cable", [(2010, y), (2010, ys), (2190, ys), (2190, 536), (2195, 536)], MX)
+add_route("mvlv_cable", [(2217, 527), (2217, 492), (2185, 492), (2185, 484)], MX)          # CONT-EH -> PAD-EH
+add_route("mvlv_cable", [(2050, 390), (2050, 410), (2165, 410), (2165, 470)], MX)         # TM-1 -> PAD-EH
+add_route("mvlv_cable", [(2170, 390), (2170, 403), (2205, 403), (2205, 477), (2200, 477)], MX)   # TM-2
+add_route("mvlv_cable", [(1904, 1290), (1904, 1285), (2030, 1285), (2030, 1292)], MX)     # FC-5..12 -> inverter
+add_route("mvlv_cable", [(2056, 1304), (2064, 1304), (2064, 1322), (2285, 1322), (2285, 1003),
+                         (2250, 1003), (2250, 982)], MX)                                    # inverter -> MOD-LV
+add_route("mvlv_cable", [(2114, 1303), (2124, 1303), (2124, 1322)], MX)                   # MT-4..6 join
+add_route("fuel_gas", [(2340, 440), (2340, 452), (1985, 452), (1985, 536), (2130, 536)], MX)   # pad skid -> TM / CONT
+for x in (2082, 2202):
+    add_route("fuel_gas", [(x, 452), (x, 377)], MX)
+for x in (2010, 2070, 2130):
+    add_route("fuel_gas", [(x, 536), (x, 513)], MX)
+    add_route("fuel_gas", [(x, 536), (x, 560)], MX)
+add_route("fuel_gas", [(1955, 1350), (1955, 1316)], MX)                                    # header -> FC-5..12
+for k in range(8):                                                                          # FC tails to the DC feeder
+    add_route("mvlv_cable", [(1904 + 14 * k, 1290), (1904 + 14 * k, 1285)], MX)
+# SC-1 / SC-2 fuel gas from the fuel-gas compressor building (not drawn on sheet 07)
+add_route("fuel_gas", [(2290, 1182), (1940, 1182), (1940, 1190)], "OPT_MOD_ROUTES")
+add_route("fuel_gas", [(2140, 1182), (2140, 1190)], "OPT_MOD_ROUTES")
+add_route("fuel_gas", [(2093, 1350), (2093, 1317)], MX)                                    # header -> MT-4..6
 item("HV_CORRIDOR", "H-MOD 230 kV monopoles in COR-HMOD", (1505, 2105, 255, 815), (0, 50), area="I",
      basis="typical", sheet="SK-3X1-08", info="Overhead tie from T-MOD-1/2 to the D4 lower position (future).")
 for (x, y) in [(2095, 815), (1950, 805), (1800, 805), (1650, 805), (1515, 805), (1515, 650), (1515, 500),
@@ -1380,6 +1425,7 @@ LAYERS = {
     "OPT_MOD": ("I Modular generation + black start", "Optional / adjacent"),
     "OPT_TMP": ("I Portable / containerized power pad", "Optional / adjacent"),
     "OPT_MODX": ("I+ Modular expansion (design change beyond Rev 14)", "Optional / adjacent"),
+    "OPT_MODX_ROUTES": ("I+ modular expansion routes", "Optional routes"),
     "OPT_IC": ("J GT inlet chilling", "Optional / adjacent"),
     "OPT_LNG": ("K LNG satellite", "Optional / adjacent"),
     "OPT_H2": ("K 25 MW green hydrogen", "Optional / adjacent"),
@@ -1407,7 +1453,7 @@ VIEWS = [
          "ROUTES_BASE", "PROCESS_PIPING"], t=[1250, 800, 20], c=[1190, 1070, 190]),
     dict(k="H", n="Turbine hall (roof off)", show=["SITE", "BASE_POWER_BLOCK", "BASE_INLET_AIR", "BASE_ELECTRICAL",
          "ROUTES_BASE", "PROCESS_PIPING"], t=[790, 480, 25], c=[600, 250, 260]),
-    dict(k="O1", n="O1 Modular / portable", show=BASE_SHOW + ["OPT_MOD", "OPT_TMP", "OPT_MODX", "OPT_MOD_ROUTES", "OPT_TMP_ROUTES",
+    dict(k="O1", n="O1 Modular / portable", show=BASE_SHOW + ["OPT_MOD", "OPT_TMP", "OPT_MODX", "OPT_MOD_ROUTES", "OPT_TMP_ROUTES", "OPT_MODX_ROUTES",
          "HV_CORRIDOR", "SWYD_FUTURE"], t=[1960, 880, 20], c=[1520, 300, 760]),
     dict(k="O2", n="O2 BESS", show=BASE_SHOW + ["OPT_BESS", "OPT_BESS_ROUTES"], t=[1740, 560, 5], c=[1480, 200, 420]),
     dict(k="O3", n="O3 Carbon capture", show=BASE_SHOW + ["OPT_CCS", "OPT_CCSU", "OPT_CCS_ROUTES", "OPT_CCSU_ROUTES"],
