@@ -1256,6 +1256,8 @@ for y in (110, 150, 190):
 # Fuel systems at LOD 3 (gas yard, M&R train, GT gas fuel modules, ULSD area, modular gas skids)
 import fuel as _fuel
 _fuel.build(dict(item=item, items=items, parts=parts))
+import modular as _modular
+_modular.build()     # RICE hall and simple-cycle units at LOD 3
 
 # ---------------------------------------------------------------------------
 # Routes: drawn centrelines lifted to their tiers

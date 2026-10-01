@@ -28,6 +28,7 @@ The checks corrected the model in several places:
 |---|---|
 | `build_model.py` | Model source: 338 register items built from about 3,000 primary parts (boxes, cylinders/cones, A-frames, lofts). Writes `sk3x1_model.json`. |
 | `detail.py` | Detail pass (about 9,100 parts). See "Detail layer" below. |
+| `modular.py` | RICE engine hall and simple-cycle units at LOD 3. See "Modular power yard" below. |
 | `fuel.py` | Fuel systems at LOD 3 (gas yard, M&R train, GT gas fuel modules, ULSD area), pipe supports and road-crossing sleeves. See "Fuel systems" below. |
 | `routes_base.json`, `routes_optional.json` | Tray, bus, duct-bank, 230 kV and process-pipe centrelines from the vector geometry of sheets 01 and 02. |
 | `extract_reference.py` | Pulls reference geometry from the drawing PDF into `reference/sk3x1_rev14_reference.json` (committed, so the PDF is not needed to verify). |
@@ -118,6 +119,27 @@ The drawing's LV trays inside the gas yard and the M&R station now run in buried
 - **Viewer:** a "Fuel systems: M&R, gas yard, ULSD" view.
 - **Epic set:** E11 (plant gas yard), E12 (M&R station) and E13 (the fuel systems from above).
 
+## Modular power yard (LOD 3)
+
+`modular.py` runs after `fuel.py`. It rebuilds the RICE engine hall and the two simple-cycle units inside their drawn footprints, keeping the sheet-13 heights (RICE stacks 90 ft, aero stacks 80 ft). The equipment is typical, not engineered.
+
+- **RICE engine-generators (x8):**
+  - **Engine:** V18 block on a common base frame, two banks of nine cylinder heads, charge-air manifold in the V, two turbochargers at the free end.
+  - **Generator:** flywheel housing, generator with terminal box and feet.
+  - **Hall:** an overhead crane with a runway, and eave gutters.
+- **RICE exhaust trains (x8):**
+  - **Path to the SCR:** turbocharger risers through the south wall, then an expansion joint, then the SCR + oxidation catalyst on a steel stand.
+  - **Downstream:** silencer, then the stack with a platform, handrail, caged ladder and stiffener rings.
+  - **Ancillaries:** urea dosing cabinet, SCR access platform and ladder.
+- **RICE radiators:** fan shrouds and motors, bundle headers, jacket-water supply and return from the hall.
+- **Simple-cycle units (x2):**
+  - **Inlet:** filter house on legs, with a filter-change platform and ladder.
+  - **Package:** generator and turbine enclosures on one skid, doors and CO2 cylinders.
+  - **Exhaust:** collector lofted into the SCR / CO catalyst housing. The housing has casing stiffeners, an ammonia injection grid, two access platforms with a stair, an outlet duct and a stack platform.
+  - **Lube oil:** fin-fan cooler with two fans.
+
+New epic cameras: E14 (the RICE exhaust trains and stacks) and E15 (a simple-cycle unit).
+
 ## GitHub Pages
 
 `.github/workflows/sk3x1-pages.yml` rebuilds and verifies the model, then assembles the site with `plant/site/build_site.py`. The site has the viewer as `index.html`, the GT1 bay close-up as `bay.html`, and a render gallery as `renders.html`.
@@ -177,7 +199,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
-**Epic set (`--set epic`, E1–E13):** golden hour, with the sun at 11°. The shots are:
+**Epic set (`--set epic`, E1–E15):** golden hour, with the sun at 11°. The shots are:
 - E1: the three stacks from beside the absorbers;
 - E2: a long-lens compression from the west road;
 - E3: a low pass over the ACC;
@@ -187,7 +209,8 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - E7: into the sun, with the plant in silhouette;
 - E8: the RICE hall stacks;
 - E9 and E10: the water tanks and the EV carport;
-- E11 to E13: the plant gas yard, the M&R station and the fuel systems from above.
+- E11 to E13: the plant gas yard, the M&R station and the fuel systems from above;
+- E14 and E15: the RICE exhaust trains and a simple-cycle unit.
 
 Output goes to `renders/epic/`.
 

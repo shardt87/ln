@@ -528,6 +528,10 @@ EPIC = [
          target=(1640, 1858, 3), lens=24, show="all"),
     dict(k="E13", n="Fuel systems from above: M&R station, gas yard and the ULSD backup area", eye=(1260, 1300, 260),
          target=(1620, 1640, 0), lens=30, show="all"),
+    dict(k="E14", n="RICE engine hall: exhaust trains, SCRs and 90 ft stacks", eye=(1840, 955, 26),
+         target=(1700, 1035, 24), lens=24, show="all"),
+    dict(k="E15", n="Simple-cycle units: filter house, enclosure, SCR and 80 ft stack", eye=(2085, 1120, 30),
+         target=(2010, 1205, 16), lens=24, show="all"),
 ]
 
 
