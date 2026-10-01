@@ -326,5 +326,9 @@
 "window": {
 "hex": "#3b4b56",
 "opacity": 1
+},
+"fueloil": {
+"hex": "#7a5537",
+"opacity": 1
 }
 }

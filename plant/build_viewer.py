@@ -24,6 +24,8 @@ full = next(v for v in model["views"] if v["k"] == "ALL")
 model["views"].append(dict(k="COAST", n="Coastal: LNG terminal",
                            show=[l for l in full["show"] if not l.startswith("OPT_LNG")] + coast,
                            t=[3500, 1000, 20], c=[1300, -2900, 2900]))
+model["views"].append(dict(k="FUEL", n="Fuel systems: M&R, gas yard, ULSD", show=list(full["show"]),
+                           t=[1640, 1660, 4], c=[1330, 1330, 330]))
 for key, data in (("MODEL", json.dumps(model, separators=(",", ":"))),
                   ("PALETTE", open(os.path.join(HERE, "palette.json")).read()),
                   ("REPORT", open(os.path.join(HERE, "verify_report.json")).read())):

@@ -1253,6 +1253,10 @@ for y in (110, 150, 190):
          register=False)
     B(2002, 2018, y - 8, y + 8, 0, 1, "future")
 
+# Fuel systems at LOD 3 (gas yard, M&R train, GT gas fuel modules, ULSD area, modular gas skids)
+import fuel as _fuel
+_fuel.build(dict(item=item, items=items, parts=parts))
+
 # ---------------------------------------------------------------------------
 # Routes: drawn centrelines lifted to their tiers
 # ---------------------------------------------------------------------------
@@ -1275,6 +1279,7 @@ ROUTE_STYLE = {
     "chw":          (3, 2, 2, "chw", "Chilled water", "OPT_IC_ROUTES"),
     "hydrogen":     (4, 1, 1, "hydrogen", "Hydrogen", "OPT_H2_ROUTES"),
     "lng":          (4, 1.5, 1.5, "lng", "LNG (cryogenic)", "OPT_LNG_ROUTES"),
+    "fuel_oil":     (6.5, 1, 1, "fueloil", "Backup fuel oil (ULSD), conditional", "PROCESS_PIPING"),
     "hmod":         (45, 0.8, 0.8, "conductor", "230 kV overhead tie H-MOD (reserved corridor)", "HV_CORRIDOR"),
 }
 OPT_AREAS = [  # (layer, x0, x1, y0, y1) from sheet 02
@@ -1364,8 +1369,19 @@ def add_route(rtype, points, layer=None, sheet="typical (site audit)"):
 for r in routes:
     if r["type"] == "fuel_gas" and r["points"][-1] == [600.0, 885.0]:
         r["points"][-1] = [715.0, 885.0]
-for (xb, xg) in ((715, 670), (875, 830), (1034, 990)):
-    add_route("fuel_gas", [(xb, 885), (xb, 570), (xg, 570), (xg, 506)], layer="PROCESS_PIPING")
+# (they rise at the hall's north wall to the GT gas fuel modules GFM-1..3 on the deck)
+for k, xb in enumerate((715, 875, 1034)):
+    add_route("fuel_gas", [(xb, 885), (xb, 570), (686 + 160 * k, 570), (686 + 160 * k, 559)], layer="PROCESS_PIPING")
+# conditional backup fuel oil: forwarding pumps -> GT liquid-fuel modules, one tier above the gas
+add_route("fuel_oil", [(1475, 1465), (1505, 1465), (1505, 889), (711, 889)], sheet="typical (fuel detail)")
+for k, xb in enumerate((715, 875, 1034)):
+    add_route("fuel_oil", [(xb - 4, 889), (xb - 4, 574), (682 + 160 * k, 574), (682 + 160 * k, 559)],
+              sheet="typical (fuel detail)")
+# IP feedwater supply / return between HRSG 3 and the fuel-gas performance heater
+add_route("feedwater", [(985, 740), (1000, 740), (1000, 877), (1518, 877), (1518, 1493), (1712, 1493)],
+          sheet="typical (fuel detail)")
+add_route("feedwater", [(985, 748), (1004, 748), (1004, 873), (1522, 873), (1522, 1497), (1729, 1497),
+                        (1729, 1493)], sheet="typical (fuel detail)")
 # CCS circulating water: the drawn line stops on the utilities road; carry it to absorber B's foot
 for r in routes:
     if r["type"] == "cw" and r["points"][-1] == [770.0, 1360.0]:
@@ -1487,6 +1503,18 @@ for v in VIEWS:
     v["fit"] = FIT[v["k"]]
 
 
+# Low pipe routes: road crossings go below grade in sleeves; sleepers / T-posts under the rest
+# LV / instrument cables inside the gas yard and the M&R station run buried in conduit (hazardous
+# area), not on 30 ft trays
+for r in routes:
+    if r["type"] == "lv_tray" and all(any(x0 <= x <= x1 and y0 <= y <= y1 for (x0, x1, y0, y1) in _fuel.GAS_AREAS)
+                                      for x, y in r["points"]):
+        r["z"], r["h"] = -2, 0.6
+        r["label"] = "LV / instrument cable, buried conduit (gas area)"
+N_XING = _fuel.road_crossings(routes)
+N_SUPPORTS = _fuel.supports(routes)
+
+
 # Detail pass (LOD 2): stairs, rails, ladders, sheds, lattice, rack piping, doors, poles
 import detail as _detail
 N_DETAIL = _detail.Detail(items, parts).run()
@@ -1530,4 +1558,4 @@ if __name__ == "__main__":
         json.dump(_r(model), f, separators=(",", ":"))
     reg = sum(1 for it in items if it["register"])
     print(f"wrote {out}: {len(items)} items ({reg} in the register), {len(parts)} parts "
-          f"({N_DETAIL} detail), {len(routes)} route polylines")
+          f"({N_DETAIL} detail), {len(routes)} route polylines; {N_XING} road crossings, {N_SUPPORTS} pipe supports")

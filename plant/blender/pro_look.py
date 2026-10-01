@@ -70,6 +70,9 @@ LOOK = {
     "tug": ("paint", "#b03a26", .45, 0), "sea": ("sea", "#27434c", .05, 0),
     "sand": ("gravel", "#c2b28f", .95, 0), "rock": ("concrete", "#6f6c66", .9, 0),
     "window": ("window", "#2c3a44", .06, .55),
+    # fuel systems: gas lines in safety yellow, backup fuel oil in brown
+    "fuelgas": ("paint", "#c9a12e", .4, 0), "fueloil": ("paint", "#6d4a30", .45, 0),
+    "feedwater": ("galv", "#b7bdc0", .35, .8),      # insulated, aluminium-jacketed
 }
 _mats = {}
 
@@ -519,6 +522,12 @@ EPIC = [
          show="all"),
     dict(k="E10", n="EV charging carport and the admin building", eye=(150, 98, 6), target=(215, 330, 12),
          lens=28, show="all"),
+    dict(k="E11", n="Plant gas yard: metering, regulation, heater and filter-separators", eye=(1800, 1428, 34),
+         target=(1688, 1522, 2), lens=26, show="all"),
+    dict(k="E12", n="Pipeline M&R station: pig receiver, filter-separator and line heaters", eye=(1572, 1792, 24),
+         target=(1640, 1858, 3), lens=24, show="all"),
+    dict(k="E13", n="Fuel systems from above: M&R station, gas yard and the ULSD backup area", eye=(1260, 1300, 260),
+         target=(1620, 1640, 0), lens=30, show="all"),
 ]
 
 

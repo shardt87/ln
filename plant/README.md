@@ -28,6 +28,7 @@ The checks corrected the model in several places:
 |---|---|
 | `build_model.py` | Model source: 338 register items built from about 3,000 primary parts (boxes, cylinders/cones, A-frames, lofts). Writes `sk3x1_model.json`. |
 | `detail.py` | Detail pass (about 9,100 parts). See "Detail layer" below. |
+| `fuel.py` | Fuel systems at LOD 3 (gas yard, M&R train, GT gas fuel modules, ULSD area), pipe supports and road-crossing sleeves. See "Fuel systems" below. |
 | `routes_base.json`, `routes_optional.json` | Tray, bus, duct-bank, 230 kV and process-pipe centrelines from the vector geometry of sheets 01 and 02. |
 | `extract_reference.py` | Pulls reference geometry from the drawing PDF into `reference/sk3x1_rev14_reference.json` (committed, so the PDF is not needed to verify). |
 | `verify.py` | Runs the checks above and writes `verify_report.json`. Exits 1 on failure. |
@@ -94,6 +95,29 @@ The audit now reports CLEAN and runs in CI.
 
 Like the first detail layer, these parts carry `d: 1`, are typical rather than from the drawing, and are only bounds-checked. Windows use a tinted, glossy glazing material in the renders and the viewer. The epic set gains E9 (water tanks) and E10 (control building across the car park).
 
+## Fuel systems (LOD 3)
+
+`fuel.py` runs inside `build_model.py` and models the fuel train in process order. It keeps the drawn footprints and envelopes; what sits inside them is typical, not engineered.
+
+| Area | What is modelled |
+|---|---|
+| Pipeline M&R (SK-3X1-14, keys 1-9) | **Pig receiver:** barrel, quick-opening closure and davit, reducer, saddles, pig signaller.<br>**ESD valve:** with its insulating joint.<br>**Horizontal filter-separator:** sump boot, relief valve, nozzles.<br>**Three water-bath line heaters:** burner ends, exhaust stacks, expansion tanks, burner panels.<br>**Two ultrasonic custody meter runs:** under a sunshade.<br>**Interconnecting piping on sleepers:** inlet and outlet heater manifolds, a liquids line to the condensate tank, a sample line to the gas quality building. |
+| Plant gas yard (SK-3X1-12) | **New inlet station:** ESD valve, block valve and insulating joint.<br>**Conditional compressor tie-ins:** suction, discharge and bypass valve.<br>**Check-metering skid:** 2 x 100% ultrasonic runs, flow conditioners, block valves, flow computer, sunshade.<br>**Regulation skid:** slam-shut, monitor and active control valves on 2 runs, plus a relief vent.<br>**Shell-and-tube performance heater:** heated by IP feedwater (new insulated supply and return from HRSG 3, on T-posts).<br>**Two 100% final filter-separators.**<br>**Outlet to the GTs:** motor-operated valve and an ESD valve.<br>**Maintenance vent stack:** with its vent header.<br>**Tie-ins:** for the LNG, H2, simple-cycle and temporary-power options. |
+| Conditional fuel-gas compressors | Three motor-driven packages with cylinders, suction scrubbers, relief vents and fin-fan aftercoolers. |
+| GTs | **GFM-1..3:** gas fuel modules (stop/control valves, final strainer) on the turbine deck. The fuel-gas branches now rise at the hall's north wall to these modules instead of stopping under the deck. |
+| Backup fuel (ULSD, conditional) | **Containment dike:** with step-overs.<br>**Truck unloading station:** canopy, curb, tanker and unloading arm.<br>**Pump skid:** unloading and forwarding pumps, duplex strainers.<br>**Fuel-oil route:** a new route type, one tier above the gas, to each GFM. |
+| Modular yard | Gas-conditioning skids for the simple-cycle units and the portable pad: coalescing filters, control and slam-shut valves. |
+
+**Pipe supports and road crossings.** Low pipe routes (fuel gas, fuel oil, feedwater, cooling and chilled water, hydrogen, LNG) used to hang in the air. Two changes fix this:
+- **Supports:** the routes now sit on concrete sleepers (up to EL 5.5) or steel T-posts every 20 ft, kept clear of equipment and roads.
+- **Road crossings:** where a low route crosses a road, the 18 crossings drop into a sleeve below grade, with a headwall at each edge.
+
+The drawing's LV trays inside the gas yard and the M&R station now run in buried conduit (hazardous area) rather than on 30 ft trays.
+
+**New views:**
+- **Viewer:** a "Fuel systems: M&R, gas yard, ULSD" view.
+- **Epic set:** E11 (plant gas yard), E12 (M&R station) and E13 (the fuel systems from above).
+
 ## GitHub Pages
 
 `.github/workflows/sk3x1-pages.yml` rebuilds and verifies the model, then assembles the site with `plant/site/build_site.py`. The site has the viewer as `index.html`, the GT1 bay close-up as `bay.html`, and a render gallery as `renders.html`.
@@ -153,7 +177,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
-**Epic set (`--set epic`, E1–E8):** golden hour, with the sun at 11°. The shots are:
+**Epic set (`--set epic`, E1–E13):** golden hour, with the sun at 11°. The shots are:
 - E1: the three stacks from beside the absorbers;
 - E2: a long-lens compression from the west road;
 - E3: a low pass over the ACC;
@@ -161,7 +185,9 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - E5: looking up beneath the absorbers;
 - E6: a drone dive over the power block;
 - E7: into the sun, with the plant in silhouette;
-- E8: the RICE hall stacks.
+- E8: the RICE hall stacks;
+- E9 and E10: the water tanks and the EV carport;
+- E11 to E13: the plant gas yard, the M&R station and the fuel systems from above.
 
 Output goes to `renders/epic/`.
 
