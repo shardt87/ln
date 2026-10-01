@@ -16,7 +16,50 @@ data and stay pickable. Renderers draw these instead of the old route boxes.
 import math
 
 TRAYS = {"mv_tray": (4, .32, "cable"), "lv_tray": (6, .22, "cable"), "control_tray": (8, .12, "cable")}
+
+# Cable schedule (typical selection, not engineered; Southwire families named as the requested supplier,
+# part numbers to be confirmed with the supplier): per tray class, the cable types laid in the tray,
+# in the order they lie across it: (description, colour key, radius ft, count).
+CABLES = {
+    "mv_tray": [
+        ("15 kV MV-105 power, 1/C Cu, 133% EPR, copper-tape shield, PVC jacket, triplexed "
+         "(Southwire MV-105 type; ICEA S-93-639 / UL 1072)", "cable_mv", .30, 3),
+        ("15 kV ARMOR-X MC-HL / MV-105, 3/C Cu EPR, continuous corrugated welded armor, red PVC jacket "
+         "(Southwire ARMOR-X)", "cable_mv", .38, 1),
+    ],
+    "lv_tray": [
+        ("600 V power, Cu XHHW-2, Type TC-ER, black PVC jacket (Southwire Type TC-ER; UL 1277)", "cable_tc", .20, 3),
+        ("600 V ARMOR-X MC-HL power and VFD cable, Cu XHHW-2 with grounds, continuous corrugated welded "
+         "aluminium armor, black PVC jacket, for Class I Div 2 areas (Southwire ARMOR-X MC-HL; UL 2225)",
+         "cable_mc", .22, 2),
+        ("600 V control, 14 AWG multiconductor, Type TC-ER (Southwire control cable; ICEA S-73-532)",
+         "cable_tc", .10, 2),
+    ],
+    "control_tray": [
+        ("600 V control, 14 AWG multiconductor, Type TC-ER, black (Southwire; ICEA S-73-532)", "cable_tc", .12, 2),
+        ("Instrumentation, 16/18 AWG shielded pairs and triads, Type TC-ER / PLTC, blue jacket for "
+         "intrinsically safe circuits (Southwire instrumentation; ICEA S-73-532)", "cable_inst", .11, 3),
+        ("Thermocouple extension, type KX (exhaust and wheel-space thermocouples), yellow jacket "
+         "(ANSI MC96.1 colour code; ICEA S-73-532)", "cable_tcx", .09, 2),
+        ("Fire alarm, FPLR shielded, red jacket (NEC 760)", "cable_fa", .08, 1),
+        ("Fibre optic (DCS / turbine control network), orange jacket", "cable_fo", .07, 1),
+    ],
+}
+BUILDING_WIRE = ("Lighting, receptacles and small power: Cu THHN/THWN-2 building wire in rigid / EMT conduit "
+                 "(Southwire SIMpull THHN; UL 83)")
 GALV = "pipe"
+
+
+def _pbox(p):
+    if p["kind"] in ("box", "prism"):
+        return p["min"] + p["max"]
+    if p["kind"] == "rod":
+        a, b, r = p["a"], p["b"], max(p["r"], p["r2"])
+        ax = [i for i in range(3) if a[i] != b[i]]
+        pad = [0 if i in ax else r for i in range(3)] if len(ax) == 1 else [r] * 3
+        return [min(a[i], b[i]) - pad[i] for i in range(3)] + [max(a[i], b[i]) + pad[i] for i in range(3)]
+    xs, ys, zs = zip(*p["v"])
+    return [min(xs), min(ys), min(zs), max(xs), max(ys), max(zs)]
 
 
 class Trays:
@@ -29,10 +72,53 @@ class Trays:
         self.n0 = len(parts)
         self.hall = next(i for i in items if i["name"] == "Common turbine hall")["fp"]
         self.deck = next(i for i in items if i["name"].startswith("Turbine deck EL 20"))["fp"]
-        self.racks = [i["fp"] + [i["z"][1]] for i in items if "rack" in i["name"].lower() and i["z"][1] > 20]
+        is_rack = lambda i: "pipe rack" in i["name"].lower() or "pipe and cable rack" in i["name"].lower()
+        self.racks = [i["fp"] + [i["z"][1]] for i in items if is_rack(i) and i["z"][1] > 20]
         skip = ("Common turbine hall", "Turbine deck", "Pipe ", "Cable trays", "Laydown bay")
         self.solid = [i for i in items if i["layer"] != "SITE" and i["z"][1] > 1.5 and
-                      not i["name"].startswith(skip) and "rack" not in i["name"].lower()]
+                      not i["name"].startswith(skip) and not is_rack(i)]
+        # obstacle index: every part already in the model that a support, drop or frame must not pass
+        # through (walls, deck, pads and the ground are what supports stand on, so they are left out)
+        byid = {i["id"]: i for i in items}
+        free_of = ("Common turbine hall", "Turbine deck", "Laydown", "230 kV switchyard", "Pipe supports")
+        self.obs, self.grid = [], {}
+        for p in parts:
+            it = byid[p["item"]]
+            if it["layer"] == "SITE" or it["z"][1] < 1 or it["name"].startswith(free_of):
+                continue
+            b = _pbox(p)
+            k = len(self.obs)
+            self.obs.append(b)
+            for gx in range(int(b[0] // 10), int(b[3] // 10) + 1):
+                for gy in range(int(b[1] // 10), int(b[4] // 10) + 1):
+                    self.grid.setdefault((gx, gy), []).append(k)
+
+    def free(self, *boxes):
+        for (x0, x1, y0, y1, z0, z1) in boxes:
+            seen = set()
+            for gx in range(int(min(x0, x1) // 10), int(max(x0, x1) // 10) + 1):
+                for gy in range(int(min(y0, y1) // 10), int(max(y0, y1) // 10) + 1):
+                    for k in self.grid.get((gx, gy), ()):
+                        if k in seen:
+                            continue
+                        seen.add(k)
+                        b = self.obs[k]
+                        if (min(max(x0, x1), b[3]) - max(min(x0, x1), b[0]) > .05 and
+                                min(max(y0, y1), b[4]) - max(min(y0, y1), b[1]) > .05 and
+                                min(z1, b[5]) - max(z0, b[2]) > .05):
+                            return False
+        return True
+
+    def highest_below(self, x0, x1, y0, y1, z):
+        """Top of the highest part under a footprint, below z."""
+        top = 0.0
+        for gx in range(int(x0 // 10), int(x1 // 10) + 1):
+            for gy in range(int(y0 // 10), int(y1 // 10) + 1):
+                for k in self.grid.get((gx, gy), ()):
+                    b = self.obs[k]
+                    if b[0] < x1 and b[3] > x0 and b[1] < y1 and b[4] > y0 and b[5] < z:
+                        top = max(top, b[5])
+        return top
 
     # ---------------------------------------------------------------------------------
     def add(self, kind, layer, **kw):
@@ -61,14 +147,23 @@ class Trays:
     def on_rack(self, x, y, z):
         return any(f[0] <= x <= f[1] and f[2] <= y <= f[3] and f[4] >= z - 2 for f in self.racks)
 
+    def side_entry(self, x, y, z):
+        """The tray ends at the face of equipment or a building it enters from the side."""
+        return any(i["fp"][0] - 4 <= x <= i["fp"][1] + 4 and i["fp"][2] - 4 <= y <= i["fp"][3] + 4
+                   and i["z"][0] < z < i["z"][1] - .5 and not (i["fp"][0] < x < i["fp"][1] and i["fp"][2] < y < i["fp"][3])
+                   for i in self.solid)
+
     def top_under(self, x, y, z):
         """Top of the equipment under a drop point (below the tray), else the floor."""
         tops = [i["z"][1] for i in self.solid if i["fp"][0] <= x <= i["fp"][1] and i["fp"][2] <= y <= i["fp"][3]
-                and i["z"][1] < z - 1]
+                and i["z"][1] <= z + .5]
         return max(tops) if tops else self.floor(x, y)
 
     # ---------------------------------------------------------------------------------
     def run(self):
+        for r in self.routes:                                   # the schedule rides on each tray route
+            if r["type"] in CABLES:
+                r["cables"] = [d for (d, _, _, _) in CABLES[r["type"]]]
         runs, ends = {}, {}
         for r in self.routes:
             if r["type"] in TRAYS and r["z"] > 0:
@@ -91,7 +186,30 @@ class Trays:
                     merged.append([a, b])
             for a, b in merged:
                 self.tray(k, a, b)
+        # junctions: an end that lies on another tray run at the same tier continues there, no drop
+        segs = [(r["z"], r["points"][k], r["points"][k + 1]) for r in self.routes if r["type"] in TRAYS and r["z"] > 0
+                for k in range(len(r["points"]) - 1)]
+
+        def on_run(x, y, z):
+            n = 0
+            for (zz, a, b) in segs:
+                if abs(zz - z) > .1:
+                    continue
+                if min(a[0], b[0]) - .1 <= x <= max(a[0], b[0]) + .1 and min(a[1], b[1]) - .1 <= y <= max(a[1], b[1]) + .1:
+                    n += 1
+            return n > 1                     # the run it ends on, plus at least one other
+
+        # pipe routes below a drop point (a drop never passes through a pipe; the cables continue in conduit)
+        pipes = [(r["z"], r["w"], a, b) for r in self.routes if r["type"] not in TRAYS and r["type"] != "ipb"
+                 and 0 < r["z"] for a, b in zip(r["points"], r["points"][1:])]
+
+        def over_pipe(x, y, z, hw):
+            return any(zz < z and min(a[0], b[0]) - w / 2 - hw <= x <= max(a[0], b[0]) + w / 2 + hw and
+                       min(a[1], b[1]) - w / 2 - hw <= y <= max(a[1], b[1]) + w / 2 + hw for (zz, w, a, b) in pipes)
+
         for (x, y, t), key in ends.items():
+            if on_run(x, y, key[2]) or self.side_entry(x, y, key[2]) or over_pipe(x, y, key[2], key[3] / 2):
+                continue
             self.drop(key, x, y)
         for r in self.routes:
             if r["type"] == "ipb" and r["z"] > 0:
@@ -101,7 +219,7 @@ class Trays:
     def tray(self, key, a, b):
         layer, rtype, z, w, h, axis, c = key
         n_cab, rc, ccol = TRAYS[rtype]
-        hw, zb = w / 2, z - h / 2
+        hw, zb = w / 2, z            # the tray sits ON its tier: route z is the bottom (rack beam top)
 
         def B(s0, s1, v0, v1, z0, z1, col):
             if axis == "x":
@@ -111,64 +229,101 @@ class Trays:
 
         a0, b0 = a - hw, b + hw
         for s in (-1, 1):                                                       # side rails
-            B(a0, b0, s * hw - (.12 if s > 0 else 0), s * hw + (0 if s > 0 else .12), zb, z + h / 2, GALV)
+            B(a0, b0, s * hw - (.12 if s > 0 else 0), s * hw + (0 if s > 0 else .12), zb, zb + h, GALV)
         s = a0 + 1
         while s < b0 - .5:                                                       # rungs
             B(s - .08, s + .08, -hw, hw, zb, zb + .12, GALV)
             s += 2
-        for m in range(n_cab):                                                   # cables
-            v = -hw + .2 + rc + (w - .4 - 2 * rc) * m / max(1, n_cab - 1)
-            zc = zb + .12 + rc
-            pa = (a0 + .3, c + v, zc) if axis == "x" else (c + v, a0 + .3, zc)
-            pb = (b0 - .3, c + v, zc) if axis == "x" else (c + v, b0 - .3, zc)
-            self.rod(pa, pb, rc, ccol, layer, seg=6)
-        # supports about every 10 ft
+        # cables in schedule order, packed across the tray width in layers (never past the side rails)
+        cabs = [(col, r) for (_, col, r, n) in CABLES[rtype] for _ in range(n)]
+        span = w - .4
+        rows, row, used = [], [], 0.0
+        for (col, r) in cabs:
+            if row and used + 2 * r > span:
+                rows.append(row)
+                row, used = [], 0.0
+            row.append((col, r))
+            used += 2 * r
+        rows.append(row)
+        zbase = zb + .12
+        for row in rows:
+            used = sum(2 * r for _, r in row)
+            gap = max(0.0, (span - used) / max(1, len(row) - 1)) if len(row) > 1 else 0
+            v = -hw + .2 + (0 if len(row) > 1 else (span - used) / 2)
+            for (col, r) in row:
+                zc = zbase + r
+                pa = (a0 + .3, c + v + r, zc) if axis == "x" else (c + v + r, a0 + .3, zc)
+                pb = (b0 - .3, c + v + r, zc) if axis == "x" else (c + v + r, b0 - .3, zc)
+                self.rod(pa, pb, r, col, layer, seg=6)
+                v += 2 * r + gap
+            zbase += 2 * max(r for _, r in row) * .85
+        # supports about every 10 ft; each one checks the geometry around it and shifts up to 5 ft
+        # along the run, or is left out, rather than pass through steel, pipes or equipment
         L = b0 - a0
         nsup = max(1, int(L // 10))
         for m in range(nsup + 1):
-            s = a0 + .5 + (L - 1) * m / max(1, nsup)
-            x, y = (s, c) if axis == "x" else (c, s)
-            if self.on_rack(x, y, z):
-                continue
-            if self.in_hall(x, y):
-                f = self.hall
-                dw = min(abs(y - (f[2] + 34)), abs(y - (f[3] - 4))) if axis == "x" else 99
-                if dw <= 14:                                                     # wall bracket from the column line
-                    yw = f[3] - 4 if abs(y - (f[3] - 4)) < abs(y - (f[2] + 34)) else f[2] + 34
-                    self.box(x - .2, x + .2, min(y - hw - .5, yw), max(y + hw + .5, yw), zb - .45, zb, "steel",
-                             layer)
-                    yk = yw + (y - yw) * .7
-                    self.rod((x, yw, zb - 6), (x, yk, zb - .45), .12, "steel", layer, seg=4)
-                    continue
-            if self.blocked(x, y, z):
-                continue
-            base = self.floor(x, y)
-            if z - base < 3:
-                continue
-            for sgn in (-1, 1):                                                  # trapeze stanchion pair
-                px, py = (x, y + sgn * (hw + .4)) if axis == "x" else (x + sgn * (hw + .4), y)
-                self.box(px - .22, px + .22, py - .22, py + .22, base, zb, "steel", layer)
-            if axis == "x":
-                self.box(x - .25, x + .25, y - hw - .6, y + hw + .6, zb - .4, zb, "steel", layer)
-            else:
-                self.box(x - hw - .6, x + hw + .6, y - .25, y + .25, zb - .4, zb, "steel", layer)
+            s0 = a0 + .5 + (L - 1) * m / max(1, nsup)
+            for ds in (0, 2.5, -2.5, 5, -5):
+                s = min(max(s0 + ds, a0 + .3), b0 - .3)
+                x, y = (s, c) if axis == "x" else (c, s)
+                if self.on_rack(x, y, z):
+                    break
+                parts = self.support(x, y, z, zb, hw, axis)
+                if parts is None:
+                    break
+                if self.free(*[q[:6] for q in parts]):
+                    for q in parts:
+                        if q[6] == "rod":
+                            self.rod(q[7], q[8], .12, "steel", layer, seg=4)
+                        else:
+                            self.box(*q[:6], "steel", layer)
+                    break
+
+    def support(self, x, y, z, zb, hw, axis):
+        """Boxes (x0, x1, y0, y1, z0, z1, kind, ...) for one support, or None where none is needed / possible."""
+        if self.in_hall(x, y) and axis == "x":
+            f = self.hall
+            yn, ys = f[3] - 4, f[2] + 34
+            if min(abs(y - yn), abs(y - ys)) <= 14:                              # wall bracket from the columns
+                yw = yn if abs(y - yn) < abs(y - ys) else ys
+                yk = yw + (y - yw) * .7
+                arm = (x - .2, x + .2, min(y - hw - .5, yw), max(y + hw + .5, yw), zb - .45, zb, "box")
+                brace = (x - .12, x + .12, min(yw, yk), max(yw, yk), zb - 5.5, zb - .45, "rod", (x, yw, zb - 5.5),
+                         (x, yk, zb - .45))
+                return [arm, brace]
+        if self.blocked(x, y, z):
+            return None
+        base = self.floor(x, y)
+        if z - base < 3:
+            return None
+        out = []
+        for sgn in (-1, 1):                                                      # trapeze stanchion pair
+            px, py = (x, y + sgn * (hw + .4)) if axis == "x" else (x + sgn * (hw + .4), y)
+            out.append((px - .22, px + .22, py - .22, py + .22, base, zb, "box"))
+        if axis == "x":
+            out.append((x - .25, x + .25, y - hw - .6, y + hw + .6, zb - .4, zb, "box"))
+        else:
+            out.append((x - hw - .6, x + hw + .6, y - .25, y + .25, zb - .4, zb, "box"))
+        return out
 
     def drop(self, key, x, y):
         layer, rtype, z, w, h = key
         n_cab, rc, ccol = TRAYS[rtype]
-        bottom = self.top_under(x, y, z) + .5
-        if z - bottom < 2:
-            return
         hw = w / 2
+        # the drop lands on whatever is below it (equipment top, pipe, platform), never passes through
+        bottom = max(self.top_under(x, y, z), self.highest_below(x - hw, x + hw, y - hw, y + hw, z)) + .3
+        if z - bottom < 2 or not self.free((x - hw, x + hw, y - hw, y + hw, bottom + .05, z)):
+            return
         for s in (-1, 1):                                                       # vertical rails
             self.box(x - hw, x + hw, y + s * hw - .06, y + s * hw + .06, bottom, z, GALV, layer)
         zz = bottom + 1
         while zz < z - .5:
             self.box(x - hw, x + hw, y + hw - .1, y + hw, zz - .08, zz + .08, GALV, layer)
             zz += 2
-        for m in range(min(n_cab, 4)):
-            v = -hw + .25 + (w - .5) * m / max(1, min(n_cab, 4) - 1)
-            self.rod((x + v, y + hw - .25 - rc, bottom), (x + v, y + hw - .25 - rc, z), rc, ccol, layer, seg=6)
+        cabs = [(col, r) for (_, col, r, n) in CABLES[rtype] for _ in range(n)][:5]
+        for m, (col, r) in enumerate(cabs):
+            v = -hw + .25 + (w - .5) * m / max(1, len(cabs) - 1)
+            self.rod((x + v, y + hw - .25 - r, bottom), (x + v, y + hw - .25 - r, z), r, col, layer, seg=6)
 
     def ipb(self, r):
         z, layer = r["z"], r["layer"]
@@ -181,14 +336,14 @@ class Trays:
                     pa, pb = (a[0], a[1] + off, z), (b[0], b[1] + off, z)
                 else:
                     pa, pb = (a[0] + off, a[1], z), (b[0] + off, b[1], z)
-                self.rod(pa, pb, 1.1, "ipb", layer, seg=16)
+                self.rod(pa, pb, 1.0, "ipb", layer, seg=16)
                 L = abs(b[0] - a[0]) + abs(b[1] - a[1])
                 n = int(L // 10)
                 for m in range(1, n + 1):                                         # joint bands
                     t = m / (n + 1)
                     q = [pa[j] + (pb[j] - pa[j]) * t for j in range(3)]
                     d = [(pb[j] - pa[j]) / L * .2 for j in range(3)]
-                    self.rod([q[j] - d[j] for j in range(3)], [q[j] + d[j] for j in range(3)], 1.25, "steel", layer,
+                    self.rod([q[j] - d[j] for j in range(3)], [q[j] + d[j] for j in range(3)], 1.12, "steel", layer,
                              seg=16)
             # support frames about every 12 ft
             L = abs(b[0] - a[0]) + abs(b[1] - a[1])
@@ -198,6 +353,14 @@ class Trays:
                 x, y = a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t
                 base = self.floor(x, y)
                 if self.blocked(x, y, z) and not self.in_hall(x, y):
+                    continue
+                if ax == "x":
+                    fr = [(x - .3, x + .3, y - 4.8, y + 4.8, z - 1.6, z - 1.1)] + \
+                         [(x - .25, x + .25, y + s * 4.8 - .25, y + s * 4.8 + .25, base, z - 1.1) for s in (-1, 1)]
+                else:
+                    fr = [(x - 4.8, x + 4.8, y - .3, y + .3, z - 1.6, z - 1.1)] + \
+                         [(x + s * 4.8 - .25, x + s * 4.8 + .25, y - .25, y + .25, base, z - 1.1) for s in (-1, 1)]
+                if not self.free(*fr):
                     continue
                 if ax == "x":
                     self.box(x - .3, x + .3, y - 4.8, y + 4.8, z - 1.6, z - 1.1, "steel", layer)

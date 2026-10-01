@@ -100,6 +100,19 @@ def gas_turbines():
             box(cx + 9.4, cx + 10.6, y - 1.2, y + 1.2, zj - 1.5, zj + 1.5, "panel")
             pipe([(cx + 10.6, y, zj), (cx + 12.5, y, zj), (cx + 12.5, y, 30.5), (cx + 12.5, 487, 30.5),
                   (678 + dx, 487, 30.5)], 30.5, .1, "steel")
+        # exhaust thermocouples: 16 heads around the diffuser, wheel-space thermocouples on the
+        # turbine casing, yellow type KX extension cable rings to the junction box at y 515
+        for (yt, rt, n) in ((536, 8.6, 16), (516, 7.3, 8)):
+            for m in range(n):
+                a = 2 * math.pi * (m + .5) / n
+                ca, sa = math.cos(a), math.sin(a)
+                rod((cx + rt * ca, yt, cz + rt * sa), (cx + (rt + .9) * ca, yt, cz + (rt + .9) * sa), .12, "steel", seg=6)
+                rod((cx + (rt + .9) * ca, yt - .25, cz + (rt + .9) * sa), (cx + (rt + .9) * ca, yt + .25, cz + (rt + .9) * sa),
+                    .22, "steel", seg=8)                                          # thermocouple head
+            ring(cx, yt + .6, cz, rt + 1.1, .09, "cable_tcx", n=32)
+        pipe([(cx + 9.7, 536.6, cz), (cx + 10.2, 536.6, cz), (cx + 10.2, 515, cz + .5), (cx + 9.4, 515, 31)], cz, .09,
+             "cable_tcx")
+        pipe([(cx + 8.4, 516.6, cz), (cx + 9.4, 516.6, cz), (cx + 9.4, 515.5, 30.5)], cz, .09, "cable_tcx")
         dress(False)
 
         # generator

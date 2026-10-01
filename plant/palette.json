@@ -338,5 +338,33 @@
 "ipb": {
 "hex": "#9aa3a8",
 "opacity": 1
+},
+"cable_mv": {
+"hex": "#8e2b23",
+"opacity": 1
+},
+"cable_tc": {
+"hex": "#1e2225",
+"opacity": 1
+},
+"cable_mc": {
+"hex": "#5b6266",
+"opacity": 1
+},
+"cable_inst": {
+"hex": "#2d4f80",
+"opacity": 1
+},
+"cable_tcx": {
+"hex": "#d1ae1f",
+"opacity": 1
+},
+"cable_fa": {
+"hex": "#b2352b",
+"opacity": 1
+},
+"cable_fo": {
+"hex": "#d9792a",
+"opacity": 1
 }
 }

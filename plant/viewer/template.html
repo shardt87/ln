@@ -493,6 +493,7 @@ function showRoute(r){
   const len=r.points.reduce((s,p,i,a)=>i?s+Math.hypot(p[0]-a[i-1][0],p[1]-a[i-1][1]):0,0);
   insp.innerHTML=`<p class="lbl">${esc(MODEL.layers[r.layer].label)}</p><h2>${esc(r.label)}</h2>
    <dl class="kv" style="margin-top:8px"><dt>Elevation</dt><dd>${r.z<0?'below grade':'EL '+r.z+' ft'}</dd><dt>Vertices</dt><dd>${r.points.length}</dd><dt>Plan length</dt><dd>${fmt(len)} ft</dd><dt>Source</dt><dd>${esc(r.sheet)}</dd></dl>
+   ${r.cables?`<p class="lbl" style="margin-top:10px">Cable schedule (typical)</p><ul class="muted" style="margin:4px 0 0 16px;padding:0">${r.cables.map(c=>`<li style="margin-bottom:4px">${esc(c)}</li>`).join('')}</ul>`:''}
    <p class="muted" style="margin-top:8px">Route centreline taken from the drawing, not a conductor quantity.</p>`;
 }
 function showDefault(){

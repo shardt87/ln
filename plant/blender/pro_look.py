@@ -74,6 +74,10 @@ LOOK = {
     "fuelgas": ("paint", "#c9a12e", .4, 0), "fueloil": ("paint", "#6d4a30", .45, 0),
     "feedwater": ("galv", "#b7bdc0", .35, .8),      # insulated, aluminium-jacketed
     "cable": ("paint", "#1d2124", .55, 0), "ipb": ("galv", "#a9b0b4", .35, .8),
+    "cable_mv": ("paint", "#7e241d", .5, 0), "cable_tc": ("paint", "#1b1f22", .55, 0),
+    "cable_mc": ("galv", "#6d7377", .45, .6), "cable_inst": ("paint", "#26467a", .5, 0),
+    "cable_tcx": ("paint", "#cfa818", .45, 0), "cable_fa": ("paint", "#a52e25", .5, 0),
+    "cable_fo": ("paint", "#d36f22", .45, 0),
 }
 _mats = {}
 

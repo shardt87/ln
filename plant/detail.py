@@ -255,7 +255,19 @@ class Detail:
             x0, x1, y0, y1 = it["fp"]
             iid, ly = it["id"], it["layer"]
             along_x = (x1 - x0) > (y1 - y0)
-            specs = [(24, 2.0, .20), (24, 1.2, .30), (24, 1.6, .78), (30, 1.4, .22), (30, .9, .72), (30, 2.2, .86)]
+            specs = [(24, 2.0, .20), (24, 1.2, .30), (24, 1.6, .78), (30, 1.4, .66), (30, .9, .76), (30, 2.2, .88)]
+            # (tier-30 pipes on the north half: the LV tray rides tier 30 at y 838 and its legs leave south)
+            # a rack that runs into another rack stops its pipes at that rack's edge (they turn in at the junction)
+            for o in self.find(r"pipe and cable rack|N-S pipe rack"):
+                if o is it:
+                    continue
+                ox0, ox1, oy0, oy1 = o["fp"]
+                if along_x and ox0 < x1 and ox1 > x0 and oy0 < y1 and oy1 > y0:
+                    x1 = min(x1, ox0) if ox0 > x0 else x1
+                    x0 = max(x0, ox1) if ox1 < x1 else x0
+                elif not along_x and oy0 < y1 and oy1 > y0 and ox0 < x1 and ox1 > x0:
+                    y1 = min(y1, oy0) if oy0 > y0 else y1
+                    y0 = max(y0, oy1) if oy1 < y1 else y0
             for (z, dia, f) in specs:
                 if along_x:
                     y = y0 + (y1 - y0) * f

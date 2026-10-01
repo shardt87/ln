@@ -6,6 +6,7 @@
   or belongs to a group that has one (e.g. engines inside their hall);
 - no item floats: its lowest primary part touches grade or a supporting item below;
 - no leftovers from removed design options (SC-3/SC-4, RICE hall 2, RICE-9+);
+- cable trays and the IPB do not pass through structures or equipment;
 - tags are unique; every part and route layer is a declared layer.
 
     python3 plant/audit.py        # writes audit_report.json, exits 1 on findings
@@ -98,7 +99,42 @@ def main():
     for r in routes:
         if REMOVED.search(r.get("label", "")):
             findings["leftover from a removed option"].append(f"route {r['layer']} {r['label'][:70]}")
-    # 5. tags and layers
+    # 5. cable trays and IPB must not pass through structures or equipment (generated geometry);
+    #    allowed: the IPB entering its GCB and generator terminals, trays through the R1 wall sleeves
+    tray = next((i["id"] for i in M["items"] if i["name"].startswith("Cable trays")), None)
+    allowed = re.compile(r"^GCB-|^GTG-\d|R1 east-wall tray exits|^Common turbine hall|^Turbine deck|^Laydown|"
+                         r"^230 kV switchyard|^Pipe supports")
+
+    def pbox(p):
+        if p["kind"] in ("box", "prism"):
+            return p["min"] + p["max"]
+        if p["kind"] == "rod":
+            a, b, r = p["a"], p["b"], max(p["r"], p["r2"])
+            ax = [i for i in range(3) if a[i] != b[i]]
+            pad = [0 if i in ax else r for i in range(3)] if len(ax) == 1 else [r] * 3
+            return [min(a[i], b[i]) - pad[i] for i in range(3)] + [max(a[i], b[i]) + pad[i] for i in range(3)]
+        xs, ys, zs = zip(*p["v"])
+        return [min(xs), min(ys), min(zs), max(xs), max(ys), max(zs)]
+    if tray:
+        T = [pbox(p) for p in M["parts"] if p["item"] == tray]
+        O = [(p["item"], pbox(p)) for p in M["parts"] if p["item"] != tray and items[p["item"]]["layer"] != "SITE"
+             and not allowed.search(items[p["item"]]["name"])]
+        grid = defaultdict(list)
+        for k, (_, b) in enumerate(O):
+            for gx in range(int(b[0] // 20), int(b[3] // 20) + 1):
+                for gy in range(int(b[1] // 20), int(b[4] // 20) + 1):
+                    grid[(gx, gy)].append(k)
+        clash = set()
+        for b in T:
+            for gx in range(int(b[0] // 20), int(b[3] // 20) + 1):
+                for gy in range(int(b[1] // 20), int(b[4] // 20) + 1):
+                    for k in grid.get((gx, gy), ()):
+                        c = O[k][1]
+                        if min(min(b[i + 3], c[i + 3]) - max(b[i], c[i]) for i in range(3)) > .1:
+                            clash.add(items[O[k][0]]["name"][:60])
+        for n in sorted(clash):
+            findings["cable tray / IPB through equipment"].append(n)
+    # 6. tags and layers
     tags = Counter(it["tag"] for it in M["items"] if it["tag"])
     for t, n in tags.items():
         if n > 1:

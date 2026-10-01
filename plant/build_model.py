@@ -137,7 +137,7 @@ def ehouse(layer, name, x0, x1, y0, y1, h, **meta):
         B((x0 + x1) / 2 - 3, (x0 + x1) / 2 + 3, y1, y1 + 2.5, 4, 10, "machine")
 
 
-def xfmr(layer, name, x0, x1, y0, y1, h, *, bushing=0.0, fins="x", c="xfmr", hv=None, **meta):
+def xfmr(layer, name, x0, x1, y0, y1, h, *, bushing=0.0, fins="x", c="xfmr", hv=None, lv_dx=0.0, **meta):
     """Liquid-filled transformer: tank, radiator banks on two sides,
     conservator, HV bushings (height `bushing` above the tank) and LV throat.
     fins='x' puts radiators on the east and west faces. hv='s' (generator step-up units)
@@ -169,7 +169,7 @@ def xfmr(layer, name, x0, x1, y0, y1, h, *, bushing=0.0, fins="x", c="xfmr", hv=
     rc = max(1.0, min(W, D) * 0.07)
     zc = th + 0.6 + rc + 1.2
     if hv == "s":
-        gsu_hv_south(tx0, tx1, ty0, ty1, th, top, rc, zc, bushing, c, x0, x1, y0)
+        gsu_hv_south(tx0, tx1, ty0, ty1, th, top, rc, zc, bushing, c, x0, x1, y0, lv_dx)
         return
     if fins == "x":
         R((tx1 - rc, ty0 + 1, zc), (tx1 - rc, ty1 - 1, zc), rc, c)
@@ -184,7 +184,7 @@ def xfmr(layer, name, x0, x1, y0, y1, h, *, bushing=0.0, fins="x", c="xfmr", hv=
             R((px, py, th + 0.6), (px, py, top), max(0.6, bushing * 0.06), "insulator", r2=0.35, seg=10)
 
 
-def gsu_hv_south(tx0, tx1, ty0, ty1, th, top, rc, zc, bushing, c, x0, x1, y0):
+def gsu_hv_south(tx0, tx1, ty0, ty1, th, top, rc, zc, bushing, c, x0, x1, y0, lv_dx=0.0):
     """GSU arrangement: HV faces the switchyard (south), LV faces the generator (north)."""
     _cur["z"][1] = 45
     cx = (tx0 + tx1) / 2
@@ -192,7 +192,7 @@ def gsu_hv_south(tx0, tx1, ty0, ty1, th, top, rc, zc, bushing, c, x0, x1, y0):
     R((tx0 + 1, ty1 - rc - .5, zc), (tx1 - 1, ty1 - rc - .5, zc), rc, c)               # conservator, north
     for xs in (tx0 + 3, tx1 - 3):
         B(xs - .3, xs + .3, ty1 - rc - 1, ty1 - rc, th + .6, zc - rc + .2, "steel")
-    B(cx - 5, cx + 5, ty1 - 1, ty1 + 2.2, th - 6, th + 1.5, c)                         # LV throat to the IPB
+    B(cx + lv_dx - 5, cx + lv_dx + 5, ty1 - 1, ty1 + 2.2, th - 6, th + 1.5, c)         # LV throat to the IPB
     span = (tx1 - tx0) * 0.32
     yb = ty0 + 2.2
     for k in (-1, 0, 1):                                                                 # HV bushings, E-W row
@@ -512,7 +512,7 @@ L = "BASE_ELECTRICAL"
 for i, gx in enumerate(GX, start=1):
     dx = gx - 630
     xfmr(L, f"GSU-{i}: 21/230 kV generator step-up transformer", 610 + dx, 650 + dx, 325, 365, 24,
-         bushing=14, fins="x", hv="s", tag=f"GSU-{i}", area="A", sheet="SK-3X1-04",
+         bushing=14, fins="x", hv="s", lv_dx=7, tag=f"GSU-{i}", area="A", sheet="SK-3X1-04",
          info="21/230 kV (assumed), 350-450 MVA typical; bushings add 12-15 ft. HV connects by "
          f"230 kV overhead to diameter D{i}; the unit pulls to the access road for replacement.")
     xfmr(L, f"UAT-{i}: 21/13.8 kV unit auxiliary transformer", 658 + dx, 676 + dx, 330, 352, 16,
@@ -1480,23 +1480,32 @@ add_route("hv_cable", [(1756, 352), (1756, 170)], "OPT_BESS_ROUTES", sheet="typi
 # gallery), the LV feeders to every motor load on the deck, the excitation transformer tap and
 # the DC field cables to the generator collector end.
 HC = "typical (hall cabling)"
-add_route("control_tray", [(474, 724), (500, 724), (500, 552), (1079, 552)], "ROUTES_BASE", sheet=HC)
+
+
+def hall_lv(points, layer="ROUTES_BASE", sheet=HC):
+    """LV branch off the hall LV run, which rides at EL +44 above the GT exhaust ducts."""
+    add_route("lv_tray", points, layer, sheet=sheet)
+    routes[-1]["z"] = 44
+
+
+add_route("control_tray", [(474, 724), (500, 724), (500, 552), (1017, 552)], "ROUTES_BASE", sheet=HC)
 for k in range(3):
     dx = 160 * k
     add_route("control_tray", [(606 + dx, 552), (606 + dx, 512)], "ROUTES_BASE", sheet=HC)       # -> TCP
     add_route("control_tray", [(645 + dx, 552), (645 + dx, 480)], "ROUTES_BASE", sheet=HC)       # -> GT junction boxes
     add_route("control_tray", [(650 + dx, 552), (650 + dx, 414)], "ROUTES_BASE", sheet=HC)       # -> NGT, GCB
     add_route("control_tray", [(655 + dx, 552), (655 + dx, 398)], "ROUTES_BASE", sheet=HC)       # -> EXC / SPC
-    add_route("lv_tray", [(668 + dx, 548), (668 + dx, 530)], "ROUTES_BASE", sheet=HC)            # -> CO2 skid
-    add_route("lv_tray", [(590 + dx, 548), (590 + dx, 493)], "ROUTES_BASE", sheet=HC)            # -> water wash
-    add_route("lv_tray", [(690 + dx, 548), (690 + dx, 526)], "ROUTES_BASE", sheet=HC)            # -> gas fuel module
-    add_route("lv_tray", [(605 + dx, 548), (605 + dx, 513)], "ROUTES_BASE", sheet=HC)            # -> TCP (UPS)
-    add_route("lv_tray", [(612 + dx, 548), (612 + dx, 440)], "ROUTES_BASE", sheet=HC)            # -> generator aux
+    hall_lv([(668 + dx, 544), (668 + dx, 530)], "ROUTES_BASE", sheet=HC)            # -> CO2 skid
+    hall_lv([(590 + dx, 544), (590 + dx, 493)], "ROUTES_BASE", sheet=HC)            # -> water wash
+    hall_lv([(690 + dx, 544), (690 + dx, 526)], "ROUTES_BASE", sheet=HC)            # -> gas fuel module
+    hall_lv([(605 + dx, 544), (605 + dx, 513)], "ROUTES_BASE", sheet=HC)            # -> TCP (UPS)
+    hall_lv([(612 + dx, 544), (612 + dx, 440)], "ROUTES_BASE", sheet=HC)            # -> generator aux
     add_route("lv_tray", [(612 + dx, 397), (642 + dx, 397)], "ROUTES_BASE", sheet=HC)            # ET -> EXC
     add_route("lv_tray", [(648 + dx, 399), (648 + dx, 407), (636 + dx, 407)], "ROUTES_BASE", sheet=HC)   # DC field
-    add_route("mv_tray", [(609 + dx, 396), (609 + dx, 386), (624 + dx, 386)], "ROUTES_BASE", sheet=HC)   # ET tap
-add_route("control_tray", [(1079, 552), (1079, 431), (1082, 431)], "ROUTES_BASE", sheet=HC)      # -> TCP-ST
-add_route("control_tray", [(1079, 431), (1079, 414), (1068, 414)], "ROUTES_BASE", sheet=HC)      # -> NGT-ST
+    add_route("mv_tray", [(609 + dx, 396), (609 + dx, 386), (622 + dx, 386)], "ROUTES_BASE", sheet=HC)   # ET tap
+# ST: down the west side of the ST (the 26 ft exhaust duct blocks the east side), then over the STG
+add_route("control_tray", [(1017, 552), (1017, 431), (1082, 431)], "ROUTES_BASE", sheet=HC)      # -> TCP-ST
+add_route("control_tray", [(1064, 431), (1064, 417)], "ROUTES_BASE", sheet=HC)                    # -> NGT-ST
 add_route("lv_tray", [(1068, 401), (1068, 407), (1052, 407)], "ROUTES_BASE", sheet=HC)            # ST DC field
 for k in range(3):                                                                         # GCB control
     add_route("control_tray", [(655 + 160 * k, 398), (655 + 160 * k, 385), (636 + 160 * k, 385)], "ROUTES_BASE",
@@ -1597,6 +1606,87 @@ for v in VIEWS:
     v["fit"] = FIT[v["k"]]
 
 
+# the LV branch north off the rack to the heat-trace panel rides just above the tier-30 pipes
+for r in routes:
+    if r["type"] == "lv_tray" and [tuple(p) for p in r["points"]] == [(572.0, 838.0), (572.0, 852.0)]:
+        r["z"] = 33.0
+
+# IPB around the filter-house columns: the drawing puts the middle FH-n columns (x 630, y 366-369 and
+# 400-403) on the GT centreline, where the IPB and the GCB also sit. Coordination fix (typical): the
+# IPB jogs 7 ft east past each column line and returns to the centreline through the GCB; the UAT
+# tap leaves the GSU-side leg and drops to the UAT clear of the east column (x 670).
+_ipb = []
+for r in routes:
+    if r["type"] != "ipb":
+        continue
+    pts = [tuple(p) for p in r["points"]]
+    for k, x in enumerate((630.0, 790.0, 950.0)):
+        if pts == [(x, 410.0), (x, 365.0)]:
+            r["points"] = [[x, 410.0], [x, 407.5], [x + 7, 407.5], [x + 7, 395.5], [x, 395.5], [x, 375.0],
+                           [x + 7, 375.0], [x + 7, 363.0]]
+        elif pts == [(x, 375.0), (x + 37, 375.0)]:
+            r["points"] = [[x + 7, 366.0], [x + 34, 366.0]]
+        elif pts == [(x + 37, 375.0), (x + 37, 352.0)]:
+            r["points"] = [[x + 34, 366.0], [x + 34, 352.0]]
+    _ipb.append(r)
+
+# Hall cable tiers: the drawn MV and LV hall runs (from R1 along the north wall at y 544 / 548) would
+# pass through the GT exhaust ducts (EL 21-38) at EL +36 / +30; inside the hall they ride above
+# them, LV at EL +44 and MV at EL +48 (control stays at EL +42). The drawing splits each run into
+# pieces, so the whole connected chain from R1 is raised. The LV run's tail to the ST aux skid
+# drops back to EL +30 to pass under the 26 ft ST exhaust duct (bottom EL 31).
+_tails = []
+for r in list(routes):
+    if r["type"] == "lv_tray" and [1010.0, 556.0] in r["points"] and [1010.0, 544.0] in r["points"]:
+        k = r["points"].index([1010.0, 544.0])
+        _tails.append(dict(r, points=r["points"][k:]))
+        r["points"] = r["points"][:k + 1]
+routes += _tails
+
+
+def _chain(rtype, seed):
+    """Routes of one type connected (by shared end points) to any route touching `seed`."""
+    rs = [r for r in routes if r["type"] == rtype and r["z"] > 0 and not any(t is r for t in _tails)]
+    key = lambda p: (round(p[0], 1), round(p[1], 1))
+    hit = [r for r in rs if any(seed(p) for p in r["points"])]
+    ends = {key(p) for r in hit for p in (r["points"][0], r["points"][-1])}
+    grown = True
+    while grown:
+        grown = False
+        for r in rs:
+            if r in hit:
+                continue
+            if key(r["points"][0]) in ends or key(r["points"][-1]) in ends:
+                hit.append(r)
+                ends |= {key(r["points"][0]), key(r["points"][-1])}
+                grown = True
+    return hit
+
+
+_in_hall = lambda p: 555 < p[0] < 1015 and 410 < p[1] < 559
+for r in _chain("lv_tray", _in_hall):
+    r["z"] = 44
+for r in routes:                       # the tail east of x 1010 to the ST aux skid stays under the ST exhaust duct
+    if r["type"] == "lv_tray" and r["z"] == 44 and all(p[0] >= 1010 and p[1] >= 505 for p in r["points"]):
+        r["z"] = 30
+for r in _chain("mv_tray", _in_hall):
+    r["z"] = 48
+# drawn tray legs that sit on column lines: the MV legs off the HRSG stair towers (x 672 / 832 / 992)
+# and off the ACC column line and main-steam duct supports (x 1150 -> 1157, y 580 -> 585)
+for r in routes:
+    if r["type"] in ("lv_tray", "mv_tray") and r["z"] > 0:
+        for p in r["points"]:
+            if r["type"] == "mv_tray" and p[0] in (672.0, 832.0, 992.0) and 600 <= p[1] <= 840:
+                p[0] += -4.85 if p[0] == 832.0 else 5       # clear of the rack bent at x 835 and the HRSG 2 column and stair
+            elif r["type"] == "lv_tray" and p[0] in (672.0, 832.0, 992.0) and 700 <= p[1] <= 840:
+                p[0] -= 0.6                                  # between the HRSG platform rail and the stair-tower posts
+            if r["type"] == "mv_tray" and p[0] == 561.0 and 670 <= p[1] <= 840:
+                p[0] = 565.0
+            if r["type"] == "lv_tray" and p[0] == 1150.0 and 370 <= p[1] <= 585:
+                p[0] = 1157.0
+            if r["type"] == "lv_tray" and p[1] == 580.0 and 1149 <= p[0] <= 1441:
+                p[1] = 585.0
+
 # Low pipe routes: road crossings go below grade in sleeves; sleepers / T-posts under the rest
 # LV / instrument cables inside the gas yard and the M&R station run buried in conduit (hazardous
 # area), not on 30 ft trays
@@ -1609,8 +1699,6 @@ N_XING = _fuel.road_crossings(routes)
 N_SUPPORTS = _fuel.supports(routes)
 import pipes as _pipes
 N_PIPE = _pipes.build(item, items, parts, routes)     # round pipes, elbows, flanges, jackets
-import trays as _trays
-N_TRAY = _trays.build(item, items, parts, routes)     # ladder trays, cables, supports, drops, IPB
 
 
 # Detail pass (LOD 2): stairs, rails, ladders, sheds, lattice, rack piping, doors, poles
@@ -1619,6 +1707,9 @@ N_DETAIL = _detail.Detail(items, parts).run()
 # LOD 3: building and equipment dressing for close views
 import detail3 as _detail3
 N_DETAIL += _detail3.Detail3(items, parts).run()
+# trays last, so their supports and drops see every stair, platform and pipe already in the model
+import trays as _trays
+N_TRAY = _trays.build(item, items, parts, routes)     # ladder trays, cables, supports, drops, IPB
 
 
 def validate():

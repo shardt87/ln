@@ -245,6 +245,37 @@ The epic set gains E18: fuel gas, fuel oil and feedwater crossing the east spine
   - E25: the south gallery with its excitation and IPB cubicles and the cable drops.
 - **Viewer:** the "X-ray hall" toggle shows the same detail.
 
+## Cable schedule and tray coordination
+
+**Cable schedule.** Every tray class carries a typical cable schedule.
+- **Where it shows:** in the model data, and in the viewer's inspector when you click a tray. The cables lie in the trays in schedule order and colour, packed in layers inside the side rails.
+- **Basis:** this is a selection, not an engineered schedule. Southwire product families are named as the requested supplier; confirm part numbers and sizes with the supplier.
+
+| Tray | Cable types | Jacket in the model |
+|---|---|---|
+| MV (EL +36, +48 in the hall) | 15 kV MV-105 1/C Cu, 133% EPR, copper-tape shield, triplexed (ICEA S-93-639 / UL 1072); 15 kV ARMOR-X MC-HL / MV-105 3/C (continuous corrugated welded armor) | red |
+| LV (EL +30, +44 in the hall) | 600 V power, Cu XHHW-2, Type TC-ER (UL 1277); 600 V ARMOR-X MC-HL power / VFD cable for Class I Div 2 areas (UL 2225); 600 V control, Type TC-ER | black; grey (armored) |
+| Control / instrument (EL +42) | 600 V control, 14 AWG Type TC-ER (ICEA S-73-532); instrumentation shielded pairs / triads, Type TC-ER / PLTC (blue for intrinsically safe circuits); thermocouple extension, type KX (ANSI MC96.1 yellow); fire alarm FPLR; fibre optic | black; blue; yellow; red; orange |
+| Lighting and small power | Cu THHN/THWN-2 building wire in conduit (UL 83) | in conduit |
+
+**GT thermocouples.** Each GT carries 16 exhaust thermocouples around the diffuser and 8 wheel-space thermocouples on the turbine casing. Rings of yellow type KX extension cable run from them to the junction box.
+
+**Tray coordination fixes.** These come from a clash review of the generated trays.
+- **Seating:** trays sit on their rack tier (the route elevation is the tray bottom) instead of passing through the tier beams.
+- **Turbine hall:** the MV and LV runs ride above the GT exhaust ducts, LV at EL +44 and MV at +48. Each connected chain from R1 is raised together, and the tail to the ST aux skid stays at +30 under the ST exhaust duct.
+- **Legs shifted off structure:** drawn tray legs that sat on column lines move a few feet clear: the HRSG stair towers, the ACC column line, the main-steam duct supports and the rack bents.
+- **Other runs re-routed:**
+  - the ST control run goes down the west side of the ST;
+  - the rack tier-30 pipes moved to the north half of the rack;
+  - a crossing rack stops its pipes at the junction.
+- **Drops:** junction ends of split drawing runs no longer drop to grade. Drops land on whatever is below them and are omitted over pipes.
+- **Supports:** every support, bracket and IPB frame checks the surrounding geometry, and shifts up to 5 ft or is left out.
+- **Drawing conflict found:** sheet 01 puts the middle filter-house columns (x 630 / 790 / 950, y 366-369 and 400-403) on the GT centreline, where the IPB and the GCB also sit.
+  - The columns stay as drawn.
+  - The IPB jogs 7 ft east past each column line and returns to the centreline through the GCB.
+  - The UAT tap leaves the GSU-side leg, and the GSU LV throat is offset to meet it.
+- **New audit check:** `audit.py` now checks that no tray, cable, support, drop or IPB part passes through structures or equipment. The allowed exceptions are the IPB entering its GCB and generator terminals, and trays through the R1 wall sleeves.
+
 ## GitHub Pages
 
 `.github/workflows/sk3x1-pages.yml` rebuilds and verifies the model, then assembles the site with `plant/site/build_site.py`. The site has the viewer as `index.html`, the GT1 bay close-up as `bay.html`, and a render gallery as `renders.html`.

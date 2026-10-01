@@ -43,6 +43,41 @@ Kd 0.141 0.161 0.173
 Ka 0 0 0
 d 1
 
+newmtl cable_fa
+Kd 0.698 0.208 0.169
+Ka 0 0 0
+d 1
+
+newmtl cable_fo
+Kd 0.851 0.475 0.165
+Ka 0 0 0
+d 1
+
+newmtl cable_inst
+Kd 0.176 0.310 0.502
+Ka 0 0 0
+d 1
+
+newmtl cable_mc
+Kd 0.357 0.384 0.400
+Ka 0 0 0
+d 1
+
+newmtl cable_mv
+Kd 0.557 0.169 0.137
+Ka 0 0 0
+d 1
+
+newmtl cable_tc
+Kd 0.118 0.133 0.145
+Ka 0 0 0
+d 1
+
+newmtl cable_tcx
+Kd 0.820 0.682 0.122
+Ka 0 0 0
+d 1
+
 newmtl ccs
 Kd 0.835 0.867 0.875
 Ka 0 0 0
