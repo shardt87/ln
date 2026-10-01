@@ -486,6 +486,7 @@ function showItem(it){
    <p style="margin:8px 0"><span class="pill b-${it.basis}">${esc(it.basis)}</span> <span class="muted" style="margin-left:6px">${esc(it.sheet)} · ${esc(it.layer)}</span></p>
    <dl class="kv"><dt>Plan X / Y</dt><dd>${d.xy}</dd><dt>Size</dt><dd>${d.plan} ft</dd><dt>Elevation</dt><dd>EL ${d.el} ft</dd><dt>Parts</dt><dd>${nParts}</dd></dl>
    ${it.info?`<p class="info" style="margin-top:10px">${esc(it.info)}</p>`:''}
+   ${it.wiring?`<p class="lbl" style="margin-top:10px">Wiring applications (typical)</p><ul class="muted" style="margin:4px 0 0 16px;padding:0">${it.wiring.map(c=>`<li style="margin-bottom:4px">${esc(c)}</li>`).join('')}</ul>`:''}
    <div class="views" style="margin-top:10px"><button id="bFly">Fly to</button></div>`;
   document.getElementById('bFly').onclick=()=>flyTo(it.id);
 }

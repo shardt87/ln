@@ -34,6 +34,7 @@ The checks corrected the model in several places:
 | `hall.py` | Turbine hall machines and skids at LOD 3. |
 | `trays.py` | Ladder trays with cables, supports and drops, and the IPB phase enclosures, from the routes. |
 | `hrsg.py` | HRSG casing, SCR, drums, steam leads and blowdown tanks at LOD 3. |
+| `wiring.py` | Wiring applications per item and buried feeders to every powered item. |
 | `fuel.py` | Fuel systems at LOD 3 (gas yard, M&R train, GT gas fuel modules, ULSD area), pipe supports and road-crossing sleeves. See "Fuel systems" below. |
 | `routes_base.json`, `routes_optional.json` | Tray, bus, duct-bank, 230 kV and process-pipe centrelines from the vector geometry of sheets 01 and 02. |
 | `extract_reference.py` | Pulls reference geometry from the drawing PDF into `reference/sk3x1_rev14_reference.json` (committed, so the PDF is not needed to verify). |
@@ -276,6 +277,30 @@ The epic set gains E18: fuel gas, fuel oil and feedwater crossing the east spine
 - **Other:** the GT exhaust expansion joint, inlet-duct stiffener frames, stack stiffener rings and CEMS sampling ports, and a blowdown tank per HRSG.
 
 New epic cameras: E26 (HRSG 1 and its stack from the north-west) and E27 (the HRSG roofs).
+
+## Wiring applications
+
+`wiring.py` gives every powered or instrumented item its cable applications (`wiring` in the model). The viewer's inspector lists them when you click the item. The selection is typical, not engineered; Southwire families are named as the requested supplier.
+
+| Equipment class | Applications |
+|---|---|
+| Transformers (GSU, UAT, station, rectifier, collector) | MV power, control / marshalling, instrumentation (temperature, gas, level), grounding |
+| Switchgear, e-houses, MCCs, PCMs, control cubicles | MV and LV power, control, data / fibre, fire alarm, lighting, grounding |
+| MV motors (boiler feed pumps, CO2 compression, CW pumps, fuel-gas and BOG compressors) | MV power, control, instrumentation, grounding |
+| Generating units (gensets, RICE, aero units, microturbines, fuel cells, BESS) | MV power out, LV auxiliaries, control, instrumentation, type KX thermocouples, data, fire alarm, grounding |
+| Analyzers, CEMS, SWAS, metering | LV power, instrumentation, data, lighting, grounding |
+| Buildings and shelters | LV power, control, lighting (THHN in conduit), fire alarm, data, grounding |
+| Tanks, sumps, separators | LV power, instrumentation (level), heat tracing, grounding |
+| Pumps, fans, coolers, skids, heaters, valves, process vessels | LV power, control, instrumentation, grounding |
+
+**Gas areas.** Items in Class I Div 2 areas use ARMOR-X MC-HL power cable and intrinsically safe instrumentation (Type ITC / PLTC, blue jacket). These areas are the gas yard, M&R, fuel-gas compressors, gas conditioning, LNG, H2, the gensets and the ULSD area.
+
+**Feeders.** The check first found about 100 such items that no cable route reached, for example the CEMS shelters, gas yard skids, fire pump house, tanks, chillers, CCS pumps, BESS e-houses and gensets.
+- **Buried feeders:** each now gets an L-shaped buried feeder from its nearest edge to the nearest point of the underground cable network, preferring its own system's route layer. That adds 101 feeders, averaging about 70 ft and at most 355 ft.
+- **Inside R1:** items are fed through the cable basement.
+- **Bridge crane:** fed from its conductor bar.
+
+`audit.py` now checks that every item with wiring applications has a cable route ending at it or passing it.
 
 ## Cable schedule and tray coordination
 

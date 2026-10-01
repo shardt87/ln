@@ -1700,6 +1700,11 @@ for r in routes:
             if r["type"] == "lv_tray" and p[1] == 580.0 and 1149 <= p[0] <= 1441:
                 p[1] = 585.0
 
+# Wiring applications: every powered / instrumented item gets its cable applications, and a buried
+# feeder to the nearest underground cable network where no cable route reached it
+import wiring as _wiring
+N_WAPPS, N_FEEDERS = _wiring.build(items, routes, LAYERS, add_route)
+
 # Low pipe routes: road crossings go below grade in sleeves; sleepers / T-posts under the rest
 # LV / instrument cables inside the gas yard and the M&R station run buried in conduit (hazardous
 # area), not on 30 ft trays
@@ -1760,4 +1765,4 @@ if __name__ == "__main__":
         json.dump(_r(model), f, separators=(",", ":"))
     reg = sum(1 for it in items if it["register"])
     print(f"wrote {out}: {len(items)} items ({reg} in the register), {len(parts)} parts "
-          f"({N_DETAIL} detail), {len(routes)} route polylines; {N_XING} road crossings, {N_SUPPORTS} pipe supports, {N_PIPE} pipe parts, {N_TRAY} tray / IPB parts")
+          f"({N_DETAIL} detail), {len(routes)} route polylines; {N_XING} road crossings, {N_SUPPORTS} pipe supports, {N_PIPE} pipe parts, {N_TRAY} tray / IPB parts; wiring on {N_WAPPS} items, {N_FEEDERS} new feeders")

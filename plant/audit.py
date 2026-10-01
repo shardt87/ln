@@ -7,6 +7,7 @@
 - no item floats: its lowest primary part touches grade or a supporting item below;
 - no leftovers from removed design options (SC-3/SC-4, RICE hall 2, RICE-9+);
 - cable trays and the IPB do not pass through structures or equipment;
+- every item with wiring applications has a cable route ending at it or passing it;
 - tags are unique; every part and route layer is a declared layer.
 
     python3 plant/audit.py        # writes audit_report.json, exits 1 on findings
@@ -134,7 +135,18 @@ def main():
                             clash.add(items[O[k][0]]["name"][:60])
         for n in sorted(clash):
             findings["cable tray / IPB through equipment"].append(n)
-    # 6. tags and layers
+    # 6. wiring applications: every item that needs wiring has a cable route ending at it or passing it
+    elec = ("mv_tray", "lv_tray", "control_tray", "duct_bank", "mvlv_cable", "hv_cable", "hv_overhead", "ipb", "hmod")
+    segs = [(a, b) for r in routes if r["type"] in elec for a, b in zip(r["points"], r["points"][1:])]
+    for it in M["items"]:
+        if not it.get("wiring") or it["layer"] == "R1_INTERIOR" or it["tag"] == "CRANE":
+            continue
+        f = it["fp"]
+        hit = any(min(a[0], b[0]) - TOL <= f[1] and max(a[0], b[0]) + TOL >= f[0] and
+                  min(a[1], b[1]) - TOL <= f[3] and max(a[1], b[1]) + TOL >= f[2] for a, b in segs)
+        if not hit:
+            findings["item needing wiring with no cable"].append(f"{it['layer']} {it['name'][:60]}")
+    # 7. tags and layers
     tags = Counter(it["tag"] for it in M["items"] if it["tag"])
     for t, n in tags.items():
         if n > 1:
