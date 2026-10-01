@@ -370,5 +370,41 @@
 "hrsg_b": {
 "hex": "#aeb8be",
 "opacity": 1
+},
+"firewater": {
+"hex": "#b8322a",
+"opacity": 1
+},
+"sign": {
+"hex": "#f2f2ee",
+"opacity": 1
+},
+"label": {
+"hex": "#f2f2ee",
+"opacity": 1
+},
+"hivis": {
+"hex": "#c8dc2a",
+"opacity": 1
+},
+"hivis_o": {
+"hex": "#e8742a",
+"opacity": 1
+},
+"hardhat": {
+"hex": "#f4f4f0",
+"opacity": 1
+},
+"workwear": {
+"hex": "#2c3a52",
+"opacity": 1
+},
+"skin": {
+"hex": "#c79a7a",
+"opacity": 1
+},
+"truck": {
+"hex": "#e9ebec",
+"opacity": 1
 }
 }

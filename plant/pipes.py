@@ -115,12 +115,14 @@ class Pipes:
                     s = a + L * k / (n + 1)
                     self.flange(pt(s), i, rad, ins, layer)
                     nflange += 1
-                if ins:                                         # coloured ID bands
-                    s = a + 20
-                    while s < b - 10:
-                        lo, hi = list(pt(s - .9)), list(pt(s + .9))
-                        self.rod(lo, hi, rad * 1.025, color, layer)
-                        s += 60
+                # pipe markers every 60 ft (ASME A13.1 style): a white legend band with the
+                # service colour on both sides; insulated lines carry them on the jacket
+                s = a + 20
+                while s < b - 10:
+                    for (o0, o1, c) in ((-1.5, -.9, color), (-.9, .9, "label"), (.9, 1.5, color)):
+                        lo, hi = list(pt(s + o0)), list(pt(s + o1))
+                        self.rod(lo, hi, rad * 1.03, c, layer)
+                    s += 60
         for (key, p, d1, d2), R in corners.items():
             layer, rtype, color, rad, ins = key
             self.elbow(p, d1, d2, R, rad, color if not ins else JACKET, layer)

@@ -35,6 +35,7 @@ The checks corrected the model in several places:
 | `trays.py` | Ladder trays with cables, supports and drops, and the IPB phase enclosures, from the routes. |
 | `hrsg.py` | HRSG casing, SCR, drums, steam leads and blowdown tanks at LOD 3. |
 | `wiring.py` | Wiring applications per item and buried feeders to every powered item. |
+| `realism.py` | Firewater, small-bore piping, signage, people, vehicles, scaffolding and HRSG tube harps. |
 | `fuel.py` | Fuel systems at LOD 3 (gas yard, M&R train, GT gas fuel modules, ULSD area), pipe supports and road-crossing sleeves. See "Fuel systems" below. |
 | `routes_base.json`, `routes_optional.json` | Tray, bus, duct-bank, 230 kV and process-pipe centrelines from the vector geometry of sheets 01 and 02. |
 | `extract_reference.py` | Pulls reference geometry from the drawing PDF into `reference/sk3x1_rev14_reference.json` (committed, so the PDF is not needed to verify). |
@@ -327,6 +328,27 @@ New epic cameras:
 
 `audit.py` now checks that every item with wiring applications has a cable route ending at it or passing it.
 
+## Realism pass
+
+`realism.py` runs last, so every placement is tested against the finished geometry. Anything that would pass through something is skipped. Everything here is typical, not engineered.
+
+- **Firewater:**
+  - **Mains:** a buried ring main round the power block, with branches to the BOP / gas / modular areas and the switchyard side, and a feed from the fire pump house.
+  - **Hydrants:** 44, about every 200 ft.
+  - **Valves and stations:** post-indicator valves at the loop corners, a GSU water-spray deluge valve station by each GSU, and fixed monitors at the GSUs and the gas yard.
+- **Small-bore piping:**
+  - **Rack lines:** instrument-air, service-water and nitrogen headers on the rack tiers, broken where a tray drop crosses the tier.
+  - **HRSG drains:** drain headers to the blowdown tanks.
+- **Pipe markers:** in the ASME A13.1 style, a white legend band between two service-colour bands every 60 ft on every round pipe.
+- **Signage:** equipment ID signs on buildings and e-houses, and hazard signs on transformers (48).
+- **Weathering:** every painted, clad, galvanised and concrete surface gets grime in the splash zone near grade, faint vertical rain streaks, and light rust bloom on bare and galvanised steel. It is all done in the shaders, by world position, so it changes nothing in the model.
+- **Scale:**
+  - **People:** 33 people in hard hats and hi-vis, at work positions at grade, on the turbine deck, on the HRSG platforms, on the CEMS platform, in the gas yard and in the switchyard.
+  - **Vehicles:** pickups, a flatbed at the laydown bay, a forklift and a mobile crane.
+  - **Scaffolding:** on an HRSG wall.
+- **HRSG 3 tube harps:** finned-tube harps with upper and lower headers and hanger rods, in gas-flow order, plus the SCR / CO catalyst blocks, for the cutaway camera E29.
+- **New cameras:** E29 (the cutaway, with a per-camera sun override, since HRSG 2 shades it at golden hour) and E30 (the access road by the hall: crews, pickups, hydrants, the deluge stations).
+
 ## Cable schedule and tray coordination
 
 **Cable schedule.** Every tray class carries a typical cable schedule.
@@ -417,7 +439,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
-**Epic set (`--set epic`, E1–E28):** golden hour, with the sun at 11°. The shots are:
+**Epic set (`--set epic`, E1–E30):** golden hour, with the sun at 11°. The shots are:
 - E1: the three stacks from beside the absorbers;
 - E2: a long-lens compression from the west road;
 - E3: a low pass over the ACC;
@@ -433,7 +455,8 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - E18: the process pipes crossing the east spine road;
 - E19 and E20: the GSUs facing the yard, and the complete switchyard;
 - E21 to E25: turbine-hall cutaways (the GTs, a GT1 close-up, the cable trays, the IPB, the gallery);
-- E26 to E28: HRSG 1 from the north-west, the HRSG roofs, and the stack with its breeching and CEMS.
+- E26 to E28: HRSG 1 from the north-west, the HRSG roofs, and the stack with its breeching and CEMS;
+- E29 and E30: the HRSG 3 tube-harp cutaway, and the access road by the hall.
 
 Output goes to `renders/epic/`.
 

@@ -1354,6 +1354,7 @@ ROUTE_STYLE = {
     "hydrogen":     (4, 1, 1, "hydrogen", "Hydrogen", "OPT_H2_ROUTES"),
     "lng":          (4, 1.5, 1.5, "lng", "LNG (cryogenic)", "OPT_LNG_ROUTES"),
     "fuel_oil":     (6.5, 1, 1, "fueloil", "Backup fuel oil (ULSD), conditional", "PROCESS_PIPING"),
+    "firewater":    (-4, 1.2, 1.2, "firewater", "Firewater ring main (buried)", "PROCESS_PIPING"),
     "hmod":         (45, 0.8, 0.8, "conductor", "230 kV overhead tie H-MOD (reserved corridor)", "HV_CORRIDOR"),
 }
 OPT_AREAS = [  # (layer, x0, x1, y0, y1) from sheet 02
@@ -1733,6 +1734,9 @@ N_DETAIL += _detail3.Detail3(items, parts).run()
 # trays last, so their supports and drops see every stair, platform and pipe already in the model
 import trays as _trays
 N_TRAY = _trays.build(item, items, parts, routes)     # ladder trays, cables, supports, drops, IPB
+# realism pass last: firewater, small-bore piping, signage, people, vehicles, scaffolding, HRSG harps
+import realism as _realism
+N_REAL = _realism.build(item, items, parts, routes)
 
 
 def validate():
@@ -1770,4 +1774,4 @@ if __name__ == "__main__":
         json.dump(_r(model), f, separators=(",", ":"))
     reg = sum(1 for it in items if it["register"])
     print(f"wrote {out}: {len(items)} items ({reg} in the register), {len(parts)} parts "
-          f"({N_DETAIL} detail), {len(routes)} route polylines; {N_XING} road crossings, {N_SUPPORTS} pipe supports, {N_PIPE} pipe parts, {N_TRAY} tray / IPB parts; wiring on {N_WAPPS} items, {N_FEEDERS} new feeders")
+          f"({N_DETAIL} detail), {len(routes)} route polylines; {N_XING} road crossings, {N_SUPPORTS} pipe supports, {N_PIPE} pipe parts, {N_TRAY} tray / IPB parts; wiring on {N_WAPPS} items, {N_FEEDERS} new feeders; realism {N_REAL}")

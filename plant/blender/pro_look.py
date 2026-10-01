@@ -74,12 +74,19 @@ LOOK = {
     "fuelgas": ("paint", "#c9a12e", .4, 0), "fueloil": ("paint", "#6d4a30", .45, 0),
     "feedwater": ("galv", "#b7bdc0", .35, .8),      # insulated, aluminium-jacketed
     "cable": ("paint", "#1d2124", .55, 0), "ipb": ("galv", "#a9b0b4", .35, .8),
+    "firewater": ("paint", "#a52a22", .45, 0), "sign": ("paint", "#efefea", .35, 0), "label": ("paint", "#efefea", .4, 0),
+    "hivis": ("paint", "#bfd424", .55, 0), "hivis_o": ("paint", "#e06a22", .55, 0), "hardhat": ("paint", "#f1f1ec", .3, 0),
+    "workwear": ("paint", "#26324a", .7, 0), "skin": ("paint", "#b88c6c", .6, 0), "truck": ("paint", "#e4e6e7", .25, .1),
     "cable_mv": ("paint", "#7e241d", .5, 0), "cable_tc": ("paint", "#1b1f22", .55, 0),
     "cable_mc": ("galv", "#6d7377", .45, .6), "cable_inst": ("paint", "#26467a", .5, 0),
     "cable_tcx": ("paint", "#cfa818", .45, 0), "cable_fa": ("paint", "#a52e25", .5, 0),
     "cable_fo": ("paint", "#d36f22", .45, 0),
 }
 _mats = {}
+# materials kept clean: glass, lamps, people, signs, labels, cables and the like
+WEATHER_SKIP = {"lamp", "sign", "label", "hivis", "hivis_o", "hardhat", "workwear", "skin", "glass",
+                "window", "insulator", "rail", "cable_mv", "cable_tc", "cable_mc", "cable_inst", "cable_tcx",
+                "cable_fa", "cable_fo", "cable", "truck", "sea", "water"}
 
 
 def _node(nt, t, loc, **inputs):
@@ -117,7 +124,58 @@ def material(key):
     mix.inputs["Factor"].default_value = 1
     mix.inputs[6].default_value = lin(hexc)
     L.new(ramp.outputs["Color"], mix.inputs[7])
-    L.new(mix.outputs[2], b.inputs["Base Color"])
+    base_out = mix.outputs[2]
+    if kind in ("paint", "clad", "galv", "concrete", "fins", "louvre") and key not in WEATHER_SKIP:
+        # weathering: grime near grade (splash zone, first ~2 m), vertical rain streaks, and light
+        # rust bloom on bare / galvanised steel; all a few percent, varied by world position
+        sep = _node(nt, "ShaderNodeSeparateXYZ", (-1200, 650))
+        L.new(geo.outputs["Position"], sep.inputs[0])
+        gnd = _node(nt, "ShaderNodeMapRange", (-1000, 650))
+        gnd.inputs["From Min"].default_value = 0.0
+        gnd.inputs["From Max"].default_value = 2.2
+        gnd.inputs["To Min"].default_value = 0.55
+        gnd.inputs["To Max"].default_value = 0.0
+        L.new(sep.outputs["Z"], gnd.inputs["Value"])
+        vm = _node(nt, "ShaderNodeVectorMath", (-1000, 820))
+        vm.operation = "MULTIPLY"
+        vm.inputs[1].default_value = (5.0, 5.0, .18)
+        L.new(geo.outputs["Position"], vm.inputs[0])
+        st = _node(nt, "ShaderNodeTexNoise", (-800, 820), Scale=1.0, Detail=4.0)
+        L.new(vm.outputs[0], st.inputs["Vector"])
+        sm = _node(nt, "ShaderNodeMapRange", (-600, 820))
+        sm.inputs["From Min"].default_value = .55
+        sm.inputs["From Max"].default_value = .75
+        sm.inputs["To Min"].default_value = 0.0
+        sm.inputs["To Max"].default_value = .32
+        L.new(st.outputs["Fac"], sm.inputs["Value"])
+        mx = _node(nt, "ShaderNodeMath", (-400, 700))
+        mx.operation = "MAXIMUM"
+        L.new(gnd.outputs["Result"], mx.inputs[0])
+        L.new(sm.outputs["Result"], mx.inputs[1])
+        grime = _node(nt, "ShaderNodeMix", (-250, 500))
+        grime.data_type = "RGBA"
+        grime.blend_type = "MULTIPLY"
+        L.new(mx.outputs[0], grime.inputs["Factor"])
+        L.new(base_out, grime.inputs[6])
+        grime.inputs[7].default_value = (.42, .38, .33, 1)
+        base_out = grime.outputs[2]
+        if kind == "galv" or key in ("steel", "stair", "grating"):
+            rn = _node(nt, "ShaderNodeTexNoise", (-800, 1000), Scale=1.6, Detail=8.0)
+            L.new(geo.outputs["Position"], rn.inputs["Vector"])
+            rm = _node(nt, "ShaderNodeMapRange", (-600, 1000))
+            rm.inputs["From Min"].default_value = .64
+            rm.inputs["From Max"].default_value = .78
+            rm.inputs["To Min"].default_value = 0.0
+            rm.inputs["To Max"].default_value = .45
+            L.new(rn.outputs["Fac"], rm.inputs["Value"])
+            rust = _node(nt, "ShaderNodeMix", (-100, 650))
+            rust.data_type = "RGBA"
+            rust.blend_type = "MIX"
+            L.new(rm.outputs["Result"], rust.inputs["Factor"])
+            L.new(base_out, rust.inputs[6])
+            rust.inputs[7].default_value = (.23, .1, .04, 1)
+            base_out = rust.outputs[2]
+    L.new(base_out, b.inputs["Base Color"])
     normal_src = None
     if kind in ("clad", "fins", "louvre"):
         # ribs: wave bands on (x + y), so every wall orientation gets vertical ribs
@@ -371,6 +429,17 @@ def world_and_sun(scene, elevation=24, azimuth=258):
     scene.collection.objects.link(ob)
 
 
+def set_sun(scene, elevation, azimuth):
+    """Re-aim the sky and the sun lamp (per-camera override)."""
+    sky = next(n for n in scene.world.node_tree.nodes if n.type == "TEX_SKY")
+    sky.sun_elevation = math.radians(elevation)
+    sky.sun_rotation = math.radians(90 - azimuth)
+    ob = bpy.data.objects["pro sun"]
+    el, az = math.radians(elevation), math.radians(azimuth)
+    towards_sun = Vector((math.sin(az) * math.cos(el), math.cos(az) * math.cos(el), math.sin(el)))
+    ob.rotation_euler = towards_sun.to_track_quat("Z", "Y").to_euler()
+
+
 def render_settings(scene, samples):
     c = scene.cycles
     c.samples = samples
@@ -565,6 +634,11 @@ EPIC = [
          target=(645, 705, 92), lens=24, show="all"),
     dict(k="E28", n="HRSG 1 stack: breeching joint, CEMS probes and sample line, caged ladder, CEMS shelter",
          eye=(712, 900, 128), target=(632, 792, 70), lens=30, show="base"),
+    dict(k="E29", n="HRSG 3 cutaway: tube harps, headers and the SCR / CO catalyst in gas-flow order",
+         eye=(872, 560, 96), target=(950, 684, 34), lens=24, show="all", hide=("HRSG 3 + SCR",),
+         sun=(42, 200)),
+    dict(k="E30", n="Access road by the turbine hall: crews, pickups, mobile crane, hydrants and GSU deluge",
+         eye=(520, 268, 9), target=(760, 330, 18), lens=28, show="all"),
 ]
 
 

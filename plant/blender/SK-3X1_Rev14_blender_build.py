@@ -230,6 +230,8 @@ runs, risers = {}, {}
 PIPE_TYPES = ("steam", "condensate", "feedwater", "ccw", "fuel_gas", "fuel_oil", "cw", "chw", "hydrogen", "lng",
               "mv_tray", "lv_tray", "control_tray", "ipb")
 for r in model["routes"]:
+    if r["type"] == "firewater":
+        continue                      # buried main: hydrants and monitors show it, a ground strip would read as paint
     if r["z"] > 0 and r["type"] in PIPE_TYPES:
         continue                      # drawn as parts: round pipes (pipes.py), ladder trays and IPB (trays.py)
     z = .3 if r["z"] < 0 else r["z"]
@@ -469,8 +471,10 @@ if args.style == "pro":
                   for pfx in h.get("hide", ())) for ob in obs]
         for ob in hidden:
             ob.hide_render = True
+        sun = h.get("sun", HERO_SET["sun"])          # per-camera sun override (e.g. a cutaway in shade)
+        pro_look.set_sun(scene, *sun)
         info = dict(k=h["k"], name=h["n"], show=show, style="pro", samples=args.samples, lens=h["lens"],
-                    ortho_ft=0, margin_lr=0, margin_tb=0, sun=list(HERO_SET["sun"]), sheet=HERO_SET["sheet"])
+                    ortho_ft=0, margin_lr=0, margin_tb=0, sun=list(h.get("sun", HERO_SET["sun"])), sheet=HERO_SET["sheet"])
         base = os.path.join(args.out, f"{h['k']}_pro")
         json.dump(dict(view=info, labels=[]), open(base + ".labels.json", "w"), indent=1)
         if not args.no_render:

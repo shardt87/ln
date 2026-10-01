@@ -188,6 +188,11 @@ Kd 0.667 0.706 0.729
 Ka 0 0 0
 d 1
 
+newmtl firewater
+Kd 0.722 0.196 0.165
+Ka 0 0 0
+d 1
+
 newmtl fuelgas
 Kd 0.612 0.478 0.235
 Ka 0 0 0
@@ -223,6 +228,21 @@ Kd 0.788 0.835 0.863
 Ka 0 0 0
 d 0.25
 
+newmtl hardhat
+Kd 0.957 0.957 0.941
+Ka 0 0 0
+d 1
+
+newmtl hivis
+Kd 0.784 0.863 0.165
+Ka 0 0 0
+d 1
+
+newmtl hivis_o
+Kd 0.910 0.455 0.165
+Ka 0 0 0
+d 1
+
 newmtl hrsg
 Kd 0.718 0.757 0.780
 Ka 0 0 0
@@ -250,6 +270,11 @@ d 1
 
 newmtl ipb
 Kd 0.604 0.639 0.659
+Ka 0 0 0
+d 1
+
+newmtl label
+Kd 0.949 0.949 0.933
 Ka 0 0 0
 d 1
 
@@ -333,6 +358,16 @@ Kd 0.725 0.761 0.780
 Ka 0 0 0
 d 1
 
+newmtl sign
+Kd 0.949 0.949 0.933
+Ka 0 0 0
+d 1
+
+newmtl skin
+Kd 0.780 0.604 0.478
+Ka 0 0 0
+d 1
+
 newmtl stack
 Kd 0.600 0.639 0.663
 Ka 0 0 0
@@ -373,6 +408,16 @@ Kd 0.706 0.769 0.792
 Ka 0 0 0
 d 1
 
+newmtl truck
+Kd 0.914 0.922 0.925
+Ka 0 0 0
+d 1
+
+newmtl tug
+Kd 0.722 0.271 0.180
+Ka 0 0 0
+d 1
+
 newmtl water
 Kd 0.498 0.651 0.722
 Ka 0 0 0
@@ -385,6 +430,11 @@ d 1
 
 newmtl windwall
 Kd 0.804 0.827 0.816
+Ka 0 0 0
+d 1
+
+newmtl workwear
+Kd 0.173 0.227 0.322
 Ka 0 0 0
 d 1
 

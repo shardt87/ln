@@ -43,7 +43,7 @@ def seg_dist(p, a, b):
 def main():
     findings = defaultdict(list)
     equip = [it for it in M["items"] if it["layer"] != "SITE" and it["z"][1] > 1.5
-             and not it["name"].startswith(("Pipe supports", "Pipe runs", "Cable trays"))]
+             and not it["name"].startswith(("Pipe supports", "Pipe runs", "Cable trays", "Firewater hydrants", "Small-bore piping", "HRSG 3 tube harps", "Equipment ID", "People", "Vehicles"))]
     routes = M["routes"]
     # 1. route ends
     ends_at = defaultdict(list)

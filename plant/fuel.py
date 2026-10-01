@@ -583,7 +583,7 @@ def supports(routes):
     global D
     roads = _roads()
     solid = [it["fp"] for it in G["items"] if it["layer"] != "SITE" and it["z"][1] > 1.5 and it["z"][0] < 1
-             and not it["name"].startswith(("Pipe supports", "Pipe runs", "Cable trays"))]
+             and not it["name"].startswith(("Pipe supports", "Pipe runs", "Cable trays", "Firewater hydrants", "Small-bore piping", "HRSG 3 tube harps", "Equipment ID", "People", "Vehicles"))]
     xs = [p[0] for r in routes for p in r["points"]]
     ys = [p[1] for r in routes for p in r["points"]]
     new_item("PROCESS_PIPING", "Pipe supports and road-crossing sleeves (low pipe routes, typical)",
