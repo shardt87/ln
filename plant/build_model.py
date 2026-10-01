@@ -1517,6 +1517,8 @@ for r in routes:
         r["label"] = "LV / instrument cable, buried conduit (gas area)"
 N_XING = _fuel.road_crossings(routes)
 N_SUPPORTS = _fuel.supports(routes)
+import pipes as _pipes
+N_PIPE = _pipes.build(item, items, parts, routes)     # round pipes, elbows, flanges, jackets
 
 
 # Detail pass (LOD 2): stairs, rails, ladders, sheds, lattice, rack piping, doors, poles
@@ -1562,4 +1564,4 @@ if __name__ == "__main__":
         json.dump(_r(model), f, separators=(",", ":"))
     reg = sum(1 for it in items if it["register"])
     print(f"wrote {out}: {len(items)} items ({reg} in the register), {len(parts)} parts "
-          f"({N_DETAIL} detail), {len(routes)} route polylines; {N_XING} road crossings, {N_SUPPORTS} pipe supports")
+          f"({N_DETAIL} detail), {len(routes)} route polylines; {N_XING} road crossings, {N_SUPPORTS} pipe supports, {N_PIPE} pipe parts")

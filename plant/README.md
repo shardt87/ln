@@ -30,6 +30,7 @@ The checks corrected the model in several places:
 | `detail.py` | Detail pass (about 9,100 parts). See "Detail layer" below. |
 | `modular.py` | RICE engine hall and simple-cycle units at LOD 3. See "Modular power yard" below. |
 | `yard.py` | Gensets, trailers, fuel cells, microturbines and skids in the modular yard at LOD 3. |
+| `pipes.py` | Round pipes, elbows, flanges and insulation jackets generated from the process-pipe routes. |
 | `fuel.py` | Fuel systems at LOD 3 (gas yard, M&R train, GT gas fuel modules, ULSD area), pipe supports and road-crossing sleeves. See "Fuel systems" below. |
 | `routes_base.json`, `routes_optional.json` | Tray, bus, duct-bank, 230 kV and process-pipe centrelines from the vector geometry of sheets 01 and 02. |
 | `extract_reference.py` | Pulls reference geometry from the drawing PDF into `reference/sk3x1_rev14_reference.json` (committed, so the PDF is not needed to verify). |
@@ -159,6 +160,24 @@ New epic cameras: E14 (the RICE exhaust trains and stacks) and E15 (a simple-cyc
 
 New epic cameras: E16 (the portable power pad) and E17 (the fuel cells and microturbines).
 
+## Round pipes (LOD 3)
+
+`pipes.py` runs after the supports pass. It turns every above-grade process-pipe route into round pipe geometry: steam, condensate, feedwater, closed cooling water, fuel gas, fuel oil, circulating and chilled water, hydrogen and LNG.
+
+- **Straight runs:** cylinders. Where several drawn circuits share one line they merge into a single pipe.
+- **Elbows:** a long-radius bend (1.5 D) at every change of direction, mitred in four segments.
+- **Drops to grade:** elevated lines drop to grade at their free ends, with a closing flange.
+- **Flanges:** weld-neck flange pairs about every 40 ft.
+- **Insulated lines** (steam, condensate, feedwater, chilled water, LNG): an aluminium jacket with seam bands every 12 ft and a coloured identification band every 60 ft.
+- **Bare lines:** painted in their service colour, with fuel gas in safety yellow.
+
+The route centrelines stay in the model for the register, the legend and picking. Renderers use the round geometry and no longer draw boxes for these routes:
+- **Blender:** draws only the round pipes.
+- **Viewer:** keeps an invisible box so a click still selects the route.
+- **OBJ:** exports the round pipes.
+
+The epic set gains E18: fuel gas, fuel oil and feedwater crossing the east spine road.
+
 ## GitHub Pages
 
 `.github/workflows/sk3x1-pages.yml` rebuilds and verifies the model, then assembles the site with `plant/site/build_site.py`. The site has the viewer as `index.html`, the GT1 bay close-up as `bay.html`, and a render gallery as `renders.html`.
@@ -218,7 +237,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
-**Epic set (`--set epic`, E1–E17):** golden hour, with the sun at 11°. The shots are:
+**Epic set (`--set epic`, E1–E18):** golden hour, with the sun at 11°. The shots are:
 - E1: the three stacks from beside the absorbers;
 - E2: a long-lens compression from the west road;
 - E3: a low pass over the ACC;
@@ -230,7 +249,8 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - E9 and E10: the water tanks and the EV carport;
 - E11 to E13: the plant gas yard, the M&R station and the fuel systems from above;
 - E14 and E15: the RICE exhaust trains and a simple-cycle unit;
-- E16 and E17: the portable power pad, and the fuel cells and microturbines.
+- E16 and E17: the portable power pad, and the fuel cells and microturbines;
+- E18: the process pipes crossing the east spine road.
 
 Output goes to `renders/epic/`.
 

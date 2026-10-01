@@ -536,6 +536,8 @@ EPIC = [
          target=(2085, 470, 6), lens=24, show="all"),
     dict(k="E17", n="Fuel cells, microturbines and the simple-cycle units", eye=(1872, 1345, 24),
          target=(2030, 1262, 5), lens=24, show="all"),
+    dict(k="E18", n="Process pipes: fuel gas, fuel oil and feedwater crossing the east spine road", eye=(1395, 795, 48),
+         target=(1500, 900, 6), lens=26, show="all"),
 ]
 
 

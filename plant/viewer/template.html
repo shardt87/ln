@@ -353,8 +353,9 @@ const buckets = {};
 for(const p of MODEL.parts){
   let cls = CLASS[p.color] || 'paint';
   if(p.kind==='rod' && ['clad','panel','concrete','fins','grating','louvre'].includes(cls)) cls = 'paint'; // box-projected textures only suit flat faces
-  const k = p.item+'|'+p.layer+'|'+cls+'|'+(p.d?1:0);
-  (buckets[k] ||= {item:p.item, layer:p.layer, cls, d:!!p.d, geos:[]}).geos.push(partGeo(p));
+  const dd = !!p.d && !p.pipe;   // round pipes are dressing in the model but always shown
+  const k = p.item+'|'+p.layer+'|'+cls+'|'+(dd?1:0);
+  (buckets[k] ||= {item:p.item, layer:p.layer, cls, d:dd, geos:[]}).geos.push(partGeo(p));
 }
 for(const b of Object.values(buckets)){
   let merged = THREE.BufferGeometryUtils.mergeBufferGeometries(b.geos, false);
@@ -372,6 +373,8 @@ for(const b of Object.values(buckets)){
   }
 }
 // routes: one mesh per route polyline
+const PIPE_TYPES=['steam','condensate','feedwater','ccw','fuel_gas','fuel_oil','cw','chw','hydrogen','lng'];
+const pickOnly=new THREE.MeshBasicMaterial({visible:false});
 MODEL.routes.forEach((r,ri)=>{
   const z = r.z<0 ? 0.3 : r.z, h = r.z<0 ? 0.35 : r.h, geos=[];
   for(let i=0;i<r.points.length-1;i++){
@@ -385,8 +388,11 @@ MODEL.routes.forEach((r,ri)=>{
   }
   if(!geos.length) return;
   const cls = CLASS[r.color] || 'paint';
-  const m = new THREE.Mesh(toThree(THREE.BufferGeometryUtils.mergeBufferGeometries(geos,false)), surfMat(cls==='copper'?'copper':cls));
-  m.castShadow = r.z>0; m.receiveShadow = true; m.userData.route = ri; grp(r.layer).add(m); pickables.push(m);
+  // above-grade pipe routes are drawn as round pipes (parts); the box stays as an invisible pick target
+  const pipe = r.z>0 && PIPE_TYPES.includes(r.type);
+  const m = new THREE.Mesh(toThree(THREE.BufferGeometryUtils.mergeBufferGeometries(geos,false)),
+                           pipe ? pickOnly : surfMat(cls==='copper'?'copper':cls));
+  m.castShadow = r.z>0 && !pipe; m.receiveShadow = !pipe; m.userData.route = ri; grp(r.layer).add(m); pickables.push(m);
 });
 // surroundings: grass beyond the fence; with the coastal variant the land east of the shoreline
 // is a separate strip that gives way to the sea when the coastal layers are on

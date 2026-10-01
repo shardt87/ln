@@ -227,7 +227,10 @@ for (iid, layer), ps in buckets.items():
 # segments overlap; coincident faces render black in Cycles. Merge them into
 # one run per (layer, type, line) and lift N-S runs slightly above E-W runs.
 runs, risers = {}, {}
+PIPE_TYPES = ("steam", "condensate", "feedwater", "ccw", "fuel_gas", "fuel_oil", "cw", "chw", "hydrogen", "lng")
 for r in model["routes"]:
+    if r["z"] > 0 and r["type"] in PIPE_TYPES:
+        continue                      # drawn as round pipes, elbows and flanges (parts from pipes.py)
     z = .3 if r["z"] < 0 else r["z"]
     key0 = (r["layer"], r["type"], r["color"], z, r["w"], .35 if r["z"] < 0 else r["h"])
     for (ax, ay), (bx, by) in zip(r["points"], r["points"][1:]):
