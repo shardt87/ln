@@ -289,7 +289,7 @@ const SURF = {
 const CLASS = {hall:'glass', building:'panel', ehouse:'clad', windwall:'clad', filter:'clad', hrsg:'clad', roof:'clad', tower:'clad',
   concrete:'concrete', pad:'concrete', basement:'concrete', partition:'panel', gravel:'gravel', corridor:'gravel', road:'road', ground:'ground',
   grating:'grating', bundle:'fins', radiator:'fins', louvre:'louvre', water:'water', insulator:'ceramic', copper:'copper', copper_dark:'copper',
-  steel:'metal', rail:'paint', pipe:'metal', stack:'metal', duct:'metal', machine:'metal', xfmr:'paint', fan:'metal', fanhub:'metal', crane:'paint',
+  steel:'metal', rail:'paint', pipe:'metal', ipb:'metal', stack:'metal', duct:'metal', machine:'metal', xfmr:'paint', fan:'metal', fanhub:'metal', crane:'paint',
   conductor:'metal', stair:'paint', door:'paint', rollup:'clad', motor:'paint', pump:'paint', tank:'paint', ccs:'clad', acc:'clad', bess:'paint',
   cabinet:'paint', swgr:'paint', panel:'paint', battery:'paint', lamp:'paint', fence:'metal', window:'window',
   hull:'paint', super:'paint', mosscover:'paint', lngpipe:'paint', sea:'water'};
@@ -373,7 +373,7 @@ for(const b of Object.values(buckets)){
   }
 }
 // routes: one mesh per route polyline
-const PIPE_TYPES=['steam','condensate','feedwater','ccw','fuel_gas','fuel_oil','cw','chw','hydrogen','lng'];
+const PIPE_TYPES=['steam','condensate','feedwater','ccw','fuel_gas','fuel_oil','cw','chw','hydrogen','lng','mv_tray','lv_tray','control_tray','ipb'];
 const pickOnly=new THREE.MeshBasicMaterial({visible:false});
 MODEL.routes.forEach((r,ri)=>{
   const z = r.z<0 ? 0.3 : r.z, h = r.z<0 ? 0.35 : r.h, geos=[];

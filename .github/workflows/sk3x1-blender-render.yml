@@ -89,6 +89,8 @@ jobs:
           - { style: pro, views: "E14,E15", samples: "128", set: "epic" }
           - { style: pro, views: "E16,E17,E18", samples: "128", set: "epic" }
           - { style: pro, views: "E19,E20", samples: "128", set: "epic" }
+          - { style: pro, views: "E21,E22", samples: "128", set: "epic" }
+          - { style: pro, views: "E23,E24", samples: "128", set: "epic" }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

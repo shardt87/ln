@@ -330,5 +330,13 @@
 "fueloil": {
 "hex": "#7a5537",
 "opacity": 1
+},
+"cable": {
+"hex": "#24292c",
+"opacity": 1
+},
+"ipb": {
+"hex": "#9aa3a8",
+"opacity": 1
 }
 }

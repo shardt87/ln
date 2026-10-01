@@ -227,10 +227,11 @@ for (iid, layer), ps in buckets.items():
 # segments overlap; coincident faces render black in Cycles. Merge them into
 # one run per (layer, type, line) and lift N-S runs slightly above E-W runs.
 runs, risers = {}, {}
-PIPE_TYPES = ("steam", "condensate", "feedwater", "ccw", "fuel_gas", "fuel_oil", "cw", "chw", "hydrogen", "lng")
+PIPE_TYPES = ("steam", "condensate", "feedwater", "ccw", "fuel_gas", "fuel_oil", "cw", "chw", "hydrogen", "lng",
+              "mv_tray", "lv_tray", "control_tray", "ipb")
 for r in model["routes"]:
     if r["z"] > 0 and r["type"] in PIPE_TYPES:
-        continue                      # drawn as round pipes, elbows and flanges (parts from pipes.py)
+        continue                      # drawn as parts: round pipes (pipes.py), ladder trays and IPB (trays.py)
     z = .3 if r["z"] < 0 else r["z"]
     key0 = (r["layer"], r["type"], r["color"], z, r["w"], .35 if r["z"] < 0 else r["h"])
     for (ax, ay), (bx, by) in zip(r["points"], r["points"][1:]):
@@ -461,7 +462,13 @@ if args.style == "pro":
         # which the marine terminal replaces
         show = {"base": BASE, "all": ALL,
                 "coastal": [l for l in ALL if not l.startswith("OPT_LNG")] + COAST}[h["show"]]
+        show = [l for l in show if l not in h.get("hide_layers", ())]
         set_visibility(show)
+        # cutaway cameras: hide named items (e.g. the turbine-hall walls) for this render only
+        hidden = [ob for iid, obs in item_objs.items() if any(items[iid]["name"].startswith(pfx)
+                  for pfx in h.get("hide", ())) for ob in obs]
+        for ob in hidden:
+            ob.hide_render = True
         info = dict(k=h["k"], name=h["n"], show=show, style="pro", samples=args.samples, lens=h["lens"],
                     ortho_ft=0, margin_lr=0, margin_tb=0, sun=list(HERO_SET["sun"]), sheet=HERO_SET["sheet"])
         base = os.path.join(args.out, f"{h['k']}_pro")
@@ -472,6 +479,8 @@ if args.style == "pro":
             bpy.ops.render.render(write_still=True)
             info["seconds"] = round(time.time() - t1, 1)
             print(f"rendered {h['k']:<3} {h['n']:<40} {h['lens']} mm  {info['seconds']}s")
+        for ob in hidden:
+            ob.hide_render = False
         manifest.append(info)
 else:
     keys = [k for k in args.views.split(",") if k] or [v["k"] for v in model["views"] if v["k"] != "ALL"]

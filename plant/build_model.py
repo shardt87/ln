@@ -330,7 +330,7 @@ for i, gx in enumerate(GX, start=1):
           info="Detection, release and interlocks; 480 V + 24 V DC; hall control tray.")
     solid(L, f"WASH-GT{i}: compressor water-wash skid", 584 + dx, 596 + dx, 475, 495, 20, 27,
           "equip", tag=f"WASH-GT{i}", area="A", sheet="SK-3X1-03")
-    solid(L, f"GT{i} removable plenum spool", 643 + dx, 658 + dx, 440, 466, 23, 37, "amber",
+    solid(L, f"GT{i} removable plenum spool", 643 + dx, 658 + dx, 440, 466, 23, 37, "duct",
           tag=f"SPOOL-{i}", area="A", sheet="SK-3X1-10",
           info="Removed before any GT lift; touches the GT lift column by design.")
 
@@ -1314,6 +1314,8 @@ import modular as _modular
 _modular.build()     # RICE hall and simple-cycle units at LOD 3
 import yard as _yard
 _yard.build()        # gensets, trailers, fuel cells, microturbines, skids in the modular yard
+import hall as _hall
+_hall.build()        # turbine hall: GTs, generators, ST, skids, fit-out
 
 # ---------------------------------------------------------------------------
 # Routes: drawn centrelines lifted to their tiers
@@ -1575,6 +1577,8 @@ N_XING = _fuel.road_crossings(routes)
 N_SUPPORTS = _fuel.supports(routes)
 import pipes as _pipes
 N_PIPE = _pipes.build(item, items, parts, routes)     # round pipes, elbows, flanges, jackets
+import trays as _trays
+N_TRAY = _trays.build(item, items, parts, routes)     # ladder trays, cables, supports, drops, IPB
 
 
 # Detail pass (LOD 2): stairs, rails, ladders, sheds, lattice, rack piping, doors, poles
@@ -1620,4 +1624,4 @@ if __name__ == "__main__":
         json.dump(_r(model), f, separators=(",", ":"))
     reg = sum(1 for it in items if it["register"])
     print(f"wrote {out}: {len(items)} items ({reg} in the register), {len(parts)} parts "
-          f"({N_DETAIL} detail), {len(routes)} route polylines; {N_XING} road crossings, {N_SUPPORTS} pipe supports, {N_PIPE} pipe parts")
+          f"({N_DETAIL} detail), {len(routes)} route polylines; {N_XING} road crossings, {N_SUPPORTS} pipe supports, {N_PIPE} pipe parts, {N_TRAY} tray / IPB parts")

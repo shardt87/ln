@@ -73,6 +73,7 @@ LOOK = {
     # fuel systems: gas lines in safety yellow, backup fuel oil in brown
     "fuelgas": ("paint", "#c9a12e", .4, 0), "fueloil": ("paint", "#6d4a30", .45, 0),
     "feedwater": ("galv", "#b7bdc0", .35, .8),      # insulated, aluminium-jacketed
+    "cable": ("paint", "#1d2124", .55, 0), "ipb": ("galv", "#a9b0b4", .35, .8),
 }
 _mats = {}
 
@@ -542,6 +543,15 @@ EPIC = [
          target=(640, 340, 22), lens=24, show="all"),
     dict(k="E20", n="The complete 230 kV switchyard: six breaker-and-a-half diameters", eye=(2140, 15, 95),
          target=(1450, 160, 10), lens=28, show="all"),
+    # turbine-hall cutaways: walls and roofs hidden for these renders
+    dict(k="E21", n="Turbine hall cutaway: the three H-class GTs and generators on the EL 20 deck", eye=(552, 470, 72),
+         target=(720, 497, 25), lens=24, show="all", hide=("Common turbine hall",), hide_layers=("HALL_ROOF",)),
+    dict(k="E22", n="GT1 close-up: compressor, combustor cans, fuel manifold, lube-oil and cable drops", eye=(604, 466, 46),
+         target=(634, 506, 28), lens=24, show="all", hide=("Common turbine hall",), hide_layers=("HALL_ROOF",)),
+    dict(k="E23", n="Cable trays along the hall north wall and their drops to the GT skids", eye=(574, 528, 52),
+         target=(800, 546, 29), lens=22, show="all", hide=("Common turbine hall",), hide_layers=("HALL_ROOF",)),
+    dict(k="E24", n="Isolated-phase bus: generator terminals, GCB, UAT tap and GSU", eye=(694, 326, 42),
+         target=(636, 384, 21), lens=24, show="all", hide=("Common turbine hall",), hide_layers=("HALL_ROOF",)),
 ]
 
 

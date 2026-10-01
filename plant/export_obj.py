@@ -91,8 +91,8 @@ for n, r in enumerate(model["routes"]):
     if BASE_ONLY and r["layer"].startswith(("OPT_", "HV_CORRIDOR")):
         continue
     if r["z"] > 0 and r["type"] in ("steam", "condensate", "feedwater", "ccw", "fuel_gas", "fuel_oil", "cw",
-                                    "chw", "hydrogen", "lng"):
-        continue                      # exported as round pipes (parts)
+                                    "chw", "hydrogen", "lng", "mv_tray", "lv_tray", "control_tray", "ipb"):
+        continue                      # exported as parts (round pipes, ladder trays, IPB)
     f = groups.setdefault((f"{r['layer']}__route_{n:03d}_{r['type']}", r["color"]), [])
     z = 0.2 if r["z"] < 0 else r["z"]
     h = 0.4 if r["z"] < 0 else r["h"]

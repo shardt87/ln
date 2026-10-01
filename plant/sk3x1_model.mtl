@@ -38,6 +38,11 @@ Kd 0.722 0.761 0.784
 Ka 0 0 0
 d 1
 
+newmtl cable
+Kd 0.141 0.161 0.173
+Ka 0 0 0
+d 1
+
 newmtl ccs
 Kd 0.835 0.867 0.875
 Ka 0 0 0
@@ -195,6 +200,11 @@ d 1
 
 newmtl insulator
 Kd 0.788 0.635 0.478
+Ka 0 0 0
+d 1
+
+newmtl ipb
+Kd 0.604 0.639 0.659
 Ka 0 0 0
 d 1
 

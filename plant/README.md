@@ -31,6 +31,8 @@ The checks corrected the model in several places:
 | `modular.py` | RICE engine hall and simple-cycle units at LOD 3. See "Modular power yard" below. |
 | `yard.py` | Gensets, trailers, fuel cells, microturbines and skids in the modular yard at LOD 3. |
 | `pipes.py` | Round pipes, elbows, flanges and insulation jackets generated from the process-pipe routes. |
+| `hall.py` | Turbine hall machines and skids at LOD 3. |
+| `trays.py` | Ladder trays with cables, supports and drops, and the IPB phase enclosures, from the routes. |
 | `fuel.py` | Fuel systems at LOD 3 (gas yard, M&R train, GT gas fuel modules, ULSD area), pipe supports and road-crossing sleeves. See "Fuel systems" below. |
 | `routes_base.json`, `routes_optional.json` | Tray, bus, duct-bank, 230 kV and process-pipe centrelines from the vector geometry of sheets 01 and 02. |
 | `extract_reference.py` | Pulls reference geometry from the drawing PDF into `reference/sk3x1_rev14_reference.json` (committed, so the PDF is not needed to verify). |
@@ -192,6 +194,44 @@ The epic set gains E18: fuel gas, fuel oil and feedwater crossing the east spine
   - **Before the change:** the bushings stood in a north-south row on the tank centreline, so the HV side read as facing east.
 - **New epic cameras:** E19 (GSUs facing the yard) and E20 (the complete switchyard).
 
+## Turbine hall, cable trays and IPB (LOD 3)
+
+`hall.py` rebuilds the machines on the EL 20 deck. It keeps the footprints and the envelope tops that the sheet-09 crane screen measures (GT EL 38, generator EL 36, ST EL 46), so 10/10 still reproduce. The detail inside is typical, not engineered.
+
+- **H-class GTs (cold-end drive):**
+  - **Front end:** baseplate, inlet plenum, bellmouth, and a compressor casing with horizontal-joint flanges, stiffener rings and the VGV actuator ring with its actuators.
+  - **Hot section:** a combustor section with 16 can covers on a fuel-gas manifold ring with pigtails, fed from the gas fuel module. Then the turbine casing, strut flange and exhaust diffuser.
+  - **Supports and services:** front and rear supports, lube-oil supply and drain lines to both bearings, and junction boxes with conduits to the LV tray drop.
+- **H2-cooled generators:** stator frame with ribs, end shields, hydrogen cooler housings with cooling water, bearing pedestals, collector end, coupling guard. A line-side terminal box under the south end feeds the IPB.
+- **Steam turbine (HP-IP-LP-generator):**
+  - **Casings:** an LP casing with its east side-exhaust hood and a transition to the 26 ft duct, and a combined HP/IP casing.
+  - **Steam path:** a crossover pipe, and main stop / control valve chests fed from the main steam line.
+  - **Generator:** the STG.
+- **Skids:**
+  - **Lube-oil skids:** reservoir, AC/DC pumps, duplex filters, coolers, mist eliminator.
+  - **CO2 fire suppression:** cylinder racks with a discharge manifold.
+  - **Compressor water wash:** a tank and pumps piped to the inlet.
+- **Plenum spools:** flanged ducts. The amber drawing highlight is gone.
+- **Hall fit-out:** crane rails, high-bay lights, wall girts.
+
+`trays.py` generates the cable trays and the isolated-phase bus from the routes, and the renderers draw these in place of the old boxes.
+- **Ladder trays:** MV at EL +36, LV at +30 and control at +42. Each has galvanised rails and rungs with cables laid in, and collinear runs merge.
+- **Tray supports:**
+  - carried by the pipe racks where one runs under the tray;
+  - wall brackets with knee braces near the hall walls;
+  - trapeze stanchions from the deck or grade elsewhere.
+- **Tray drops:** vertical drops at the free ends down to the equipment they feed.
+- **IPB:** three round phase enclosures with joint bands on steel frames, running from the generator terminals through the GCB to the GSU, with the UAT tap.
+
+**Cutaways and cameras:**
+- **Cutaway renders:** pro cameras can hide named items for one render (`hide`, `hide_layers`). The four new turbine-hall cameras render with the hall walls and roofs removed.
+- **New cameras:**
+  - E21: the hall from the laydown bay;
+  - E22: a GT1 close-up;
+  - E23: the north-wall trays;
+  - E24: the IPB, GCB and GSU.
+- **Viewer:** the "X-ray hall" toggle shows the same detail.
+
 ## GitHub Pages
 
 `.github/workflows/sk3x1-pages.yml` rebuilds and verifies the model, then assembles the site with `plant/site/build_site.py`. The site has the viewer as `index.html`, the GT1 bay close-up as `bay.html`, and a render gallery as `renders.html`.
@@ -251,7 +291,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
-**Epic set (`--set epic`, E1–E20):** golden hour, with the sun at 11°. The shots are:
+**Epic set (`--set epic`, E1–E24):** golden hour, with the sun at 11°. The shots are:
 - E1: the three stacks from beside the absorbers;
 - E2: a long-lens compression from the west road;
 - E3: a low pass over the ACC;
@@ -265,7 +305,8 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - E14 and E15: the RICE exhaust trains and a simple-cycle unit;
 - E16 and E17: the portable power pad, and the fuel cells and microturbines;
 - E18: the process pipes crossing the east spine road;
-- E19 and E20: the GSUs facing the yard, and the complete switchyard.
+- E19 and E20: the GSUs facing the yard, and the complete switchyard;
+- E21 to E24: turbine-hall cutaways (the GTs, a GT1 close-up, the cable trays, the IPB).
 
 Output goes to `renders/epic/`.
 
