@@ -538,6 +538,10 @@ EPIC = [
          target=(2030, 1262, 5), lens=24, show="all"),
     dict(k="E18", n="Process pipes: fuel gas, fuel oil and feedwater crossing the east spine road", eye=(1395, 795, 48),
          target=(1500, 900, 6), lens=26, show="all"),
+    dict(k="E19", n="GSUs facing the switchyard: HV bushings, arresters and take-off gantries", eye=(705, 255, 34),
+         target=(640, 340, 22), lens=24, show="all"),
+    dict(k="E20", n="The complete 230 kV switchyard: six breaker-and-a-half diameters", eye=(2140, 15, 95),
+         target=(1450, 160, 10), lens=28, show="all"),
 ]
 
 

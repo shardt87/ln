@@ -137,10 +137,13 @@ def ehouse(layer, name, x0, x1, y0, y1, h, **meta):
         B((x0 + x1) / 2 - 3, (x0 + x1) / 2 + 3, y1, y1 + 2.5, 4, 10, "machine")
 
 
-def xfmr(layer, name, x0, x1, y0, y1, h, *, bushing=0.0, fins="x", c="xfmr", **meta):
+def xfmr(layer, name, x0, x1, y0, y1, h, *, bushing=0.0, fins="x", c="xfmr", hv=None, **meta):
     """Liquid-filled transformer: tank, radiator banks on two sides,
     conservator, HV bushings (height `bushing` above the tank) and LV throat.
-    fins='x' puts radiators on the east and west faces."""
+    fins='x' puts radiators on the east and west faces. hv='s' (generator step-up units)
+    turns the HV side to the south: bushings in an east-west row along the south edge,
+    surge arresters and a take-off gantry facing the switchyard, conservator and the LV
+    (isolated-phase bus) throat on the north side, towards the generator."""
     top = h + bushing
     item(layer, name, (x0, x1, y0, y1), (0, top), **meta)
     W, D = x1 - x0, y1 - y0
@@ -165,6 +168,9 @@ def xfmr(layer, name, x0, x1, y0, y1, h, *, bushing=0.0, fins="x", c="xfmr", **m
     # conservator along the long axis of the tank
     rc = max(1.0, min(W, D) * 0.07)
     zc = th + 0.6 + rc + 1.2
+    if hv == "s":
+        gsu_hv_south(tx0, tx1, ty0, ty1, th, top, rc, zc, bushing, c, x0, x1, y0)
+        return
     if fins == "x":
         R((tx1 - rc, ty0 + 1, zc), (tx1 - rc, ty1 - 1, zc), rc, c)
     else:
@@ -176,6 +182,33 @@ def xfmr(layer, name, x0, x1, y0, y1, h, *, bushing=0.0, fins="x", c="xfmr", **m
         for k in (-1, 0, 1):
             px, py = (cx, cy + k * span) if fins == "x" else (cx + k * span, cy)
             R((px, py, th + 0.6), (px, py, top), max(0.6, bushing * 0.06), "insulator", r2=0.35, seg=10)
+
+
+def gsu_hv_south(tx0, tx1, ty0, ty1, th, top, rc, zc, bushing, c, x0, x1, y0):
+    """GSU arrangement: HV faces the switchyard (south), LV faces the generator (north)."""
+    _cur["z"][1] = 45
+    cx = (tx0 + tx1) / 2
+    R((tx0 + 1, ty1 - rc - .5, zc), (tx1 - 1, ty1 - rc - .5, zc), rc, c)               # conservator, north
+    for xs in (tx0 + 3, tx1 - 3):
+        B(xs - .3, xs + .3, ty1 - rc - 1, ty1 - rc, th + .6, zc - rc + .2, "steel")
+    B(cx - 5, cx + 5, ty1 - 1, ty1 + 2.2, th - 6, th + 1.5, c)                         # LV throat to the IPB
+    span = (tx1 - tx0) * 0.32
+    yb = ty0 + 2.2
+    for k in (-1, 0, 1):                                                                 # HV bushings, E-W row
+        px = cx + k * span
+        R((px, yb, th + 0.6), (px, yb - 1.2, top), max(0.6, bushing * 0.06), "insulator", r2=0.35, seg=10)
+        R((px, yb - 1.2, top), (px, yb - 1.2, top + .8), .45, "steel", seg=8)              # terminal
+        # surge arrester on a stand in front of each bushing
+        ya = y0 + 1.6
+        B(px - .4, px + .4, ya - .4, ya + .4, .6, 18, "steel")
+        R((px, ya, 18), (px, ya, 27), .45, "insulator", seg=8)
+        R((px, yb - 1.2, top + .8), (px, ya, 41.5), .14, "conductor", seg=6)            # dropper to the gantry
+    # take-off gantry along the south edge: the 230 kV overhead to the diameter leaves from here
+    for xs in (x0 + 1, x1 - 1):
+        R((xs, y0 + 1, 0.6), (xs, y0 + 1, 45), 0.7, "steel", r2=0.5, seg=8)
+    B(x0 + 0.5, x1 - 0.5, y0 + 0.4, y0 + 1.6, 43, 45, "steel")
+    for k in (-1, 0, 1):
+        R((cx + k * span, y0 + 1.6, 43), (cx + k * span, y0 + 1.6, 41.5), .3, "insulator", seg=6)
 
 
 def column_grid(xs, ys, z1, s=1.5, c="steel"):
@@ -478,7 +511,7 @@ L = "BASE_ELECTRICAL"
 for i, gx in enumerate(GX, start=1):
     dx = gx - 630
     xfmr(L, f"GSU-{i}: 21/230 kV generator step-up transformer", 610 + dx, 650 + dx, 325, 365, 24,
-         bushing=14, fins="x", tag=f"GSU-{i}", area="A", sheet="SK-3X1-04",
+         bushing=14, fins="x", hv="s", tag=f"GSU-{i}", area="A", sheet="SK-3X1-04",
          info="21/230 kV (assumed), 350-450 MVA typical; bushings add 12-15 ft. HV connects by "
          f"230 kV overhead to diameter D{i}; the unit pulls to the access road for replacement.")
     xfmr(L, f"UAT-{i}: 21/13.8 kV unit auxiliary transformer", 658 + dx, 676 + dx, 330, 352, 16,
@@ -498,7 +531,7 @@ for i, gx in enumerate(GX, start=1):
            "ammonia injection, HRSG valves and drains.")
     xfmr(L, f"T-R2{'ABC'[i-1]}: 13.8/0.48 kV", 555 + dx, 567 + dx, 664, 676, 10, bushing=0,
          area="A", sheet="SK-3X1-04")
-xfmr(L, "GSU-ST: 21/230 kV (one ST GSU, baseline)", 1030, 1072, 320, 370, 24, bushing=14, fins="x",
+xfmr(L, "GSU-ST: 21/230 kV (one ST GSU, baseline)", 1030, 1072, 320, 370, 24, bushing=14, fins="x", hv="s",
      tag="GSU-ST", area="A", sheet="SK-3X1-04",
      info="One ST GSU shown; 2 x 50% is a real option (Okeechobee). No UAT on the ST unit; ST "
      "auxiliaries are fed from the 13.8 kV buses.")
@@ -719,8 +752,9 @@ for (x0, x1, y0, y1, n) in [(460, 1300, 826, 850, "Main E-W pipe and cable rack 
 L = "BASE_SWITCHYARD"
 pad(L, "230 kV switchyard (gravel)", 400, 1940, 50, 250, "gravel", z1=0.4, area="C", sheet="SK-3X1-04",
     register=True,
-    info="Breaker-and-a-half: 5 diameters x 3 breakers = 15 positions, 9 installed. D1 GTG-1 + "
-    "Line 1, D2 GTG-2 + Line 2, D3 STG + GTG-3; D4 (BESS / modular) and D5 (CCS) future. "
+    info="Breaker-and-a-half: 5 diameters x 3 breakers = 15 positions, 9 installed in the base plant. D1 "
+    "GTG-1 + Line 1, D2 GTG-2 + Line 2, D3 STG + GTG-3; D4 (BESS / modular) and D5 (CCS) are shown built "
+    "out with the optional systems, plus D6 (green H2) on a bus extension: 18 breakers. "
     "345 or 500 kV is common at ~1.6 GW (Okeechobee and Greensville use 500 kV).")
 PH = (-7, 0, 7)                        # phase spacing, ft
 for yb, n in [(237, "230 kV bus 1"), (65, "230 kV bus 2")]:
@@ -740,14 +774,18 @@ for x in (530, 1300, 1925):
             R((x, yb + ph, 43), (x, yb + ph, 40.5), 0.3, "insulator", seg=6)
 
 
-def diameter(d, x, installed=True, lines=()):
-    L = "BASE_SWITCHYARD" if installed else "SWYD_FUTURE"
+def diameter(d, x, installed=True, lines=(), buildout=None):
+    """One breaker-and-a-half diameter. buildout: circuits text for the D4-D6 build-out, which
+    is drawn complete on the SWYD_FUTURE layer (shown with the optional systems)."""
+    L = "BASE_SWITCHYARD" if installed and not buildout else "SWYD_FUTURE"
     c = "xfmr" if installed else "future"
     for k, y in enumerate((110, 150, 190), 1):
-        item(L, f"{d} 230 kV breaker {k}" + ("" if installed else " (position, not installed)"),
+        item(L, f"{d} 230 kV breaker {k}" + ("" if installed else " (position, not installed)")
+             + (" (build-out)" if buildout else ""),
              (x - 8, x + 8, y - 8, y + 8), (0, 28 if installed else 1), tag=f"{d}-CB{k}", area="C",
-             sheet="SK-3X1-04", info="Dead-tank SF6 breaker (typical)." if installed else
-             "Future position; breakers not installed.")
+             sheet="SK-3X1-04", info=("Dead-tank SF6 breaker (typical)." if installed else
+             "Future position; breakers not installed.") + (f" Build-out of the future diameter: {buildout}."
+                                                             if buildout else ""))
         B(x - 8, x + 8, y - 8, y + 8, 0, 1, "concrete")
         if not installed:
             continue
@@ -758,7 +796,8 @@ def diameter(d, x, installed=True, lines=()):
                 R((x + ph, y + 1.2 * s, 10), (x + ph, y + 4 * s, 26), 0.55, "insulator", r2=0.35, seg=8)
     if not installed:
         return
-    item(L, f"{d} disconnect switches, supports and conductors", (x - 10, x + 10, 65, 237), (0, 40),
+    item(L, f"{d} disconnect switches, supports and conductors" + (" (build-out)" if buildout else ""),
+         (x - 10, x + 10, 65, 237), (0, 40),
          area="C", sheet="SK-3X1-04", register=False)
     for y in (90, 130, 170, 210):                                    # switch / support stands
         B(x - 9, x + 9, y - 0.8, y + 0.8, 14, 15.5, "steel")
@@ -777,7 +816,27 @@ def diameter(d, x, installed=True, lines=()):
 
 
 diameter("D1", 700); diameter("D2", 900); diameter("D3", 1100)
-diameter("D4", 1720, installed=False); diameter("D5", 1860, installed=False)
+# complete yard: the D4 / D5 future diameters built out, and D6 (green H2 import) on a bus extension
+diameter("D4", 1720, buildout="T-MOD-1/2 modular yard (lower) + BESS MPT (upper)")
+diameter("D5", 1860, buildout="CCS 230 kV cable, 2 circuits")
+L = "SWYD_FUTURE"
+pad(L, "230 kV switchyard extension for D6 (gravel)", 1940, 2060, 50, 250, "gravel", z1=0.4, area="C",
+    basis="typical", info="Bus extension and the D6 diameter for the green-hydrogen import (SK-3X1-14).")
+for yb, n in [(237, "230 kV bus 1"), (65, "230 kV bus 2")]:
+    item(L, n + " extension to D6 (build-out)", (1925, 2045, yb - 8, yb + 8), (0, 47), area="C",
+         basis="typical", register=False)
+    for ph in PH:
+        R((1925, yb + ph, 40), (2045, yb + ph, 40), 0.35, "conductor", seg=6)
+for yb in (62, 242):
+    item(L, "230 kV dead-end structure (47 ft), D6 extension", (2043, 2047, yb - 12, yb + 12), (0, 47), area="C",
+         basis="typical", register=False)
+    for yy in (yb - 11, yb + 11):
+        R((2045, yy, 0), (2045, yy, 47), 1.1, "steel", r2=0.7, seg=8)
+    B(2044.2, 2045.8, yb - 12, yb + 12, 43, 45, "steel")
+    for ph in PH:
+        R((2045, yb + ph, 43), (2045, yb + ph, 40.5), 0.3, "insulator", seg=6)
+diameter("D6", 2010, buildout="green-H2 import cable (T-H2) + spare")
+L = "BASE_SWITCHYARD"
 for x, n in [(670, "Line 1"), (870, "Line 2")]:
     item(L, f"{n} 230 kV terminal tower", (x - 8, x + 8, 10, 26), (0, 90), tag=n.replace(" ", "-"),
          area="C", basis="typical", sheet="SK-3X1-01", info="Line exits south to the grid.")
@@ -1247,11 +1306,6 @@ item(L, "H2 29: vent stack", (2378, 2382, 1595, 1599), (0, 40), area="K", basis=
 V(2380, 1597, 1.2, 0, 40, "stack")
 solid(L, "H2 30: H2 / gas blending skid (plant gas yard)", 1800, 1840, 1470, 1500, 0, 10, "equip", area="K",
       sheet="SK-3X1-14", info="Blends into the GT-1 fuel branch (5% by volume pilot, as FPL tested one of three units).")
-L = "SWYD_FUTURE"
-for y in (110, 150, 190):
-    item(L, f"D6 future (H2) breaker position", (2002, 2018, y - 8, y + 8), (0, 1), area="K", sheet="SK-3X1-14",
-         register=False)
-    B(2002, 2018, y - 8, y + 8, 0, 1, "future")
 
 # Fuel systems at LOD 3 (gas yard, M&R train, GT gas fuel modules, ULSD area, modular gas skids)
 import fuel as _fuel
@@ -1415,6 +1469,8 @@ for k in range(8):                                                              
 add_route("fuel_gas", [(2290, 1182), (1940, 1182), (1940, 1190)], "OPT_MOD_ROUTES")
 add_route("fuel_gas", [(2140, 1182), (2140, 1190)], "OPT_MOD_ROUTES")
 add_route("fuel_gas", [(2093, 1350), (2093, 1317)], MX)                                    # header -> MT-4..6
+# BESS main power transformer to the D4 upper position (230 kV cable to the take-off gantry)
+add_route("hv_cable", [(1756, 352), (1756, 170)], "OPT_BESS_ROUTES", sheet="typical (switchyard build-out)")
 item("HV_CORRIDOR", "H-MOD 230 kV monopoles in COR-HMOD", (1505, 2105, 255, 815), (0, 50), area="I",
      basis="typical", sheet="SK-3X1-08", info="Overhead tie from T-MOD-1/2 to the D4 lower position (future).")
 for (x, y) in [(2095, 815), (1950, 805), (1800, 805), (1650, 805), (1515, 805), (1515, 650), (1515, 500),
@@ -1437,7 +1493,7 @@ LAYERS = {
     "BASE_SERVICES": ("F Controls / service", "Base plant"),
     "ROUTES_BASE": ("Cable trays, IPB, duct banks, 230 kV", "Routes"),
     "PROCESS_PIPING": ("Process piping", "Routes"),
-    "SWYD_FUTURE": ("D4 / D5 / D6 future positions", "Optional / adjacent"),
+    "SWYD_FUTURE": ("D4 / D5 / D6 switchyard build-out", "Optional / adjacent"),
     "HV_CORRIDOR": ("Reserved 230 kV corridor + H-MOD tie", "Optional / adjacent"),
     "OPT_CCS": ("G Carbon capture, 3 trains", "Optional / adjacent"),
     "OPT_CCSU": ("G CCS utilities (cooling tower)", "Optional / adjacent"),

@@ -178,6 +178,20 @@ The route centrelines stay in the model for the register, the legend and picking
 
 The epic set gains E18: fuel gas, fuel oil and feedwater crossing the east spine road.
 
+## Complete switchyard and GSU orientation
+
+- **Complete 230 kV yard:** Rev 14 installs 9 of the 15 breaker positions (D1-D3). The model now also shows the build-out on the `SWYD_FUTURE` layer, which appears with the optional systems and in the complete-plant view. That build-out adds 9 more breakers, for 18 in total:
+  - **D4:** T-MOD-1/2 (modular yard) on the lower position and the BESS main power transformer on the upper position. The BESS connection is a new 230 kV cable to the take-off gantry.
+  - **D5:** the CCS 230 kV cable.
+  - **D6:** the green-H2 import and a spare. D6 sits on a 120 ft extension of both buses, with dead-ends at x 2,045 and its own gravel pad.
+
+  Each built-out diameter carries three dead-tank SF6 breakers, disconnect stands and take-off gantries.
+- **GSU orientation:** the GSUs (GSU-1..3 and GSU-ST) now face the switchyard.
+  - **South (HV) side:** the 230 kV bushings stand in an east-west row along the south edge. Each has a surge arrester in front, and conductors drop to a 45 ft take-off gantry where the overhead line to the diameter leaves.
+  - **North (LV) side:** the conservator and the isolated-phase bus throat sit on the north side, towards the generator and the GCB.
+  - **Before the change:** the bushings stood in a north-south row on the tank centreline, so the HV side read as facing east.
+- **New epic cameras:** E19 (GSUs facing the yard) and E20 (the complete switchyard).
+
 ## GitHub Pages
 
 `.github/workflows/sk3x1-pages.yml` rebuilds and verifies the model, then assembles the site with `plant/site/build_site.py`. The site has the viewer as `index.html`, the GT1 bay close-up as `bay.html`, and a render gallery as `renders.html`.
@@ -237,7 +251,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
-**Epic set (`--set epic`, E1–E18):** golden hour, with the sun at 11°. The shots are:
+**Epic set (`--set epic`, E1–E20):** golden hour, with the sun at 11°. The shots are:
 - E1: the three stacks from beside the absorbers;
 - E2: a long-lens compression from the west road;
 - E3: a low pass over the ACC;
@@ -250,7 +264,8 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - E11 to E13: the plant gas yard, the M&R station and the fuel systems from above;
 - E14 and E15: the RICE exhaust trains and a simple-cycle unit;
 - E16 and E17: the portable power pad, and the fuel cells and microturbines;
-- E18: the process pipes crossing the east spine road.
+- E18: the process pipes crossing the east spine road;
+- E19 and E20: the GSUs facing the yard, and the complete switchyard.
 
 Output goes to `renders/epic/`.
 
