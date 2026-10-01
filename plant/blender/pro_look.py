@@ -532,6 +532,10 @@ EPIC = [
          target=(1700, 1035, 24), lens=24, show="all"),
     dict(k="E15", n="Simple-cycle units: filter house, enclosure, SCR and 80 ft stack", eye=(2085, 1120, 30),
          target=(2010, 1205, 16), lens=24, show="all"),
+    dict(k="E16", n="Portable power pad: trailer turbines and containerized gensets", eye=(1925, 615, 30),
+         target=(2085, 470, 6), lens=24, show="all"),
+    dict(k="E17", n="Fuel cells, microturbines and the simple-cycle units", eye=(1872, 1345, 24),
+         target=(2030, 1262, 5), lens=24, show="all"),
 ]
 
 

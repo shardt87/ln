@@ -29,6 +29,7 @@ The checks corrected the model in several places:
 | `build_model.py` | Model source: 338 register items built from about 3,000 primary parts (boxes, cylinders/cones, A-frames, lofts). Writes `sk3x1_model.json`. |
 | `detail.py` | Detail pass (about 9,100 parts). See "Detail layer" below. |
 | `modular.py` | RICE engine hall and simple-cycle units at LOD 3. See "Modular power yard" below. |
+| `yard.py` | Gensets, trailers, fuel cells, microturbines and skids in the modular yard at LOD 3. |
 | `fuel.py` | Fuel systems at LOD 3 (gas yard, M&R train, GT gas fuel modules, ULSD area), pipe supports and road-crossing sleeves. See "Fuel systems" below. |
 | `routes_base.json`, `routes_optional.json` | Tray, bus, duct-bank, 230 kV and process-pipe centrelines from the vector geometry of sheets 01 and 02. |
 | `extract_reference.py` | Pulls reference geometry from the drawing PDF into `reference/sk3x1_rev14_reference.json` (committed, so the PDF is not needed to verify). |
@@ -140,6 +141,24 @@ The drawing's LV trays inside the gas yard and the M&R station now run in buried
 
 New epic cameras: E14 (the RICE exhaust trains and stacks) and E15 (a simple-cycle unit).
 
+`yard.py` runs after `modular.py` and details the rest of the modular yard inside the drawn footprints:
+
+- **Containerized and enclosed gensets** (CONT-1..8, GEN-E, the black-start gensets): an enclosure on sleepers with corrugation ribs, corner castings, end and side doors, intake louvres, a roof radiator with fans, and a roof silencer and stack.
+- **Trailers:**
+  - MOB-1 genset and the load bank: chassis, axle sets, landing legs, gooseneck, roof fans.
+  - TM-1/2 turbines: gooseneck, landing legs, walkway and stair, exhaust collector, doors.
+- **Open engine skid (GEN-O):** radiator and fan, engine, generator, panel.
+- **Fuel cells (FC-1..12):** four power-module cabinets each, with doors, handles and roof exhaust vents.
+- **Microturbines (MT-1..6):** ribbed enclosures with roof intake hoods and exhaust outlets.
+- **Conditional systems:**
+  - BESS black-start alternative: two battery containers with HVAC and a PCS.
+  - SC inlet chillers: chiller packages with roof fin-fans and a chilled-water line.
+- **Small skids:**
+  - water-injection skid: pumps, filter, sunshade;
+  - aqueous-ammonia tank: on saddles, in a curbed containment.
+
+New epic cameras: E16 (the portable power pad) and E17 (the fuel cells and microturbines).
+
 ## GitHub Pages
 
 `.github/workflows/sk3x1-pages.yml` rebuilds and verifies the model, then assembles the site with `plant/site/build_site.py`. The site has the viewer as `index.html`, the GT1 bay close-up as `bay.html`, and a render gallery as `renders.html`.
@@ -199,7 +218,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
-**Epic set (`--set epic`, E1–E15):** golden hour, with the sun at 11°. The shots are:
+**Epic set (`--set epic`, E1–E17):** golden hour, with the sun at 11°. The shots are:
 - E1: the three stacks from beside the absorbers;
 - E2: a long-lens compression from the west road;
 - E3: a low pass over the ACC;
@@ -210,7 +229,8 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - E8: the RICE hall stacks;
 - E9 and E10: the water tanks and the EV carport;
 - E11 to E13: the plant gas yard, the M&R station and the fuel systems from above;
-- E14 and E15: the RICE exhaust trains and a simple-cycle unit.
+- E14 and E15: the RICE exhaust trains and a simple-cycle unit;
+- E16 and E17: the portable power pad, and the fuel cells and microturbines.
 
 Output goes to `renders/epic/`.
 

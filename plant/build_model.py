@@ -1258,6 +1258,8 @@ import fuel as _fuel
 _fuel.build(dict(item=item, items=items, parts=parts))
 import modular as _modular
 _modular.build()     # RICE hall and simple-cycle units at LOD 3
+import yard as _yard
+_yard.build()        # gensets, trailers, fuel cells, microturbines, skids in the modular yard
 
 # ---------------------------------------------------------------------------
 # Routes: drawn centrelines lifted to their tiers
