@@ -368,7 +368,8 @@ for i, gx in enumerate(GX, start=1):
     loft_y(560, (620 + dx, 640 + dx, 21, 38), 600, (598 + dx, 662 + dx, 3, 77), "hrsg")
     item(L, f"HRSG {i} outlet breeching", (605 + dx, 655 + dx, 759, 779), (48, 78), area="A",
          register=False)
-    loft_y(759, (605 + dx, 655 + dx, 48, 78), 780, (621 + dx, 639 + dx, 54, 74), "hrsg")
+    # into the stack: the loft ends inside the shell (chord at y 786 is wider than the duct), no corners poke out
+    loft_y(759, (605 + dx, 655 + dx, 48, 78), 786, (621 + dx, 639 + dx, 54, 74), "hrsg")
     # --- stack with CEMS platform
     item(L, f"HRSG {i} stack", (619 + dx, 641 + dx, 779, 801), (0, 180), tag=f"STK-{i}", area="A",
          sheet="SK-3X1-13", shape="circle",
@@ -378,7 +379,6 @@ for i, gx in enumerate(GX, start=1):
     V(gx, 790, 11.6, 178, 180, "steel", seg=36)
     for zp in (100, 168):
         V(gx, 790, 14.5, zp, zp + 1.2, "grating", seg=36)
-    B(gx + 10, gx + 13, 787, 793, 0, 100, "stair")
     solid(L, f"CEMS shelter, HRSG {i}", 648 + dx, 664 + dx, 806, 820, 0, 12, "ehouse", tag=f"CEMS-{i}",
           area="A", sheet="SK-3X1-03")
     # --- pumps and blowers at the HRSG
@@ -1523,6 +1523,11 @@ add_route("lv_tray", [(1068, 401), (1068, 407), (1052, 407)], "ROUTES_BASE", she
 for k in range(3):                                                                         # GCB control
     add_route("control_tray", [(655 + 160 * k, 398), (655 + 160 * k, 385), (636 + 160 * k, 385)], "ROUTES_BASE",
               sheet=HC)
+# HRSG instrument / control cabling: from the rack control tier (EL 42) down the east side of each
+# HRSG to the riser at its south-east corner (clear of the stair towers and the rack bents)
+for k, xr in enumerate((674.5, 837.0, 994.5)):
+    add_route("control_tray", [(xr, 842), (xr, 605.5), (668.0 + 160 * k, 605.5)], "ROUTES_BASE",
+              sheet="typical (HRSG detail)")
 # GSU / UAT marshalling cabinets to the existing duct bank (protection, monitoring, cooling control)
 for x in (612, 772, 932):
     add_route("duct_bank", [(x, 330), (x, 312)], "ROUTES_BASE", sheet=HC)

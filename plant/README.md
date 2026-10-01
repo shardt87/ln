@@ -276,7 +276,32 @@ The epic set gains E18: fuel gas, fuel oil and feedwater crossing the east spine
   - feedwater runs from the boiler feed pumps up the east face to the economizer.
 - **Other:** the GT exhaust expansion joint, inlet-duct stiffener frames, stack stiffener rings and CEMS sampling ports, and a blowdown tank per HRSG.
 
-New epic cameras: E26 (HRSG 1 and its stack from the north-west) and E27 (the HRSG roofs).
+**Stacks and the HRSG-to-stack connection.**
+- **Breeching:**
+  - **Into the stack:** the outlet breeching now lofts into the stack shell. Before, its corners stood out beside the stack.
+  - **Joint:** it carries an expansion joint and stiffener frames.
+- **Stair box removed:** an unexplained full-height stair box beside each stack, the "weird stuff on the side" near the CEMS, is gone.
+- **Each stack now has:**
+  - a foundation plinth and access door;
+  - a caged ladder with rest platforms to the CEMS platform (EL 100) and the top platform (EL 168);
+  - platform handrails;
+  - four CEMS probes with junction boxes;
+  - a heated sample umbilical and analyzer cable on a small ladder tray down the stack, then supported to the CEMS shelter;
+  - aviation-light conduit;
+  - lightning air terminals and down conductors.
+- **CCS diverter damper (optional layer):** a duct connection to the stack shell, support steel and an actuator.
+
+**HRSG cabling and auxiliaries.**
+- **Control / instrument trays:** a tray from the rack control tier runs down the east side of each HRSG to a ladder riser at the south-east corner, up to a roof junction box.
+- **Drum level:** cables run along the drum frame to the drum-level bridles and transmitters.
+- **Steam leads:** motor-operated stop valves on the leads.
+- **Chemical feed:** a skid per HRSG (phosphate / amine) beside the boiler feed pumps.
+- **Wiring applications:** these feed the new items, and every item still has a cable reaching it.
+
+New epic cameras:
+- E26: HRSG 1 and its stack from the north-west;
+- E27: the HRSG roofs;
+- E28: the stack, breeching and CEMS.
 
 ## Wiring applications
 
@@ -392,7 +417,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
-**Epic set (`--set epic`, E1–E27):** golden hour, with the sun at 11°. The shots are:
+**Epic set (`--set epic`, E1–E28):** golden hour, with the sun at 11°. The shots are:
 - E1: the three stacks from beside the absorbers;
 - E2: a long-lens compression from the west road;
 - E3: a low pass over the ACC;
@@ -408,7 +433,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - E18: the process pipes crossing the east spine road;
 - E19 and E20: the GSUs facing the yard, and the complete switchyard;
 - E21 to E25: turbine-hall cutaways (the GTs, a GT1 close-up, the cable trays, the IPB, the gallery);
-- E26 and E27: HRSG 1 from the north-west, and the HRSG roofs.
+- E26 to E28: HRSG 1 from the north-west, the HRSG roofs, and the stack with its breeching and CEMS.
 
 Output goes to `renders/epic/`.
 

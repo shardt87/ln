@@ -563,6 +563,8 @@ EPIC = [
          eye=(452, 905, 92), target=(628, 690, 52), lens=28, show="all"),
     dict(k="E27", n="HRSG roofs: drums, risers, safety valves and silencers, steam leads", eye=(560, 618, 122),
          target=(645, 705, 92), lens=24, show="all"),
+    dict(k="E28", n="HRSG 1 stack: breeching joint, CEMS probes and sample line, caged ladder, CEMS shelter",
+         eye=(712, 900, 128), target=(632, 792, 70), lens=30, show="base"),
 ]
 
 
