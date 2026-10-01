@@ -214,6 +214,18 @@ The epic set gains E18: fuel gas, fuel oil and feedwater crossing the east spine
 - **Plenum spools:** flanged ducts. The amber drawing highlight is gone.
 - **Hall fit-out:** crane rails, high-bay lights, wall girts.
 
+**Unit electrical equipment and hall cabling (typical; the drawing leaves these to the vendor):**
+- **Per GT unit:**
+  - **South gallery:** static excitation cubicles (EXC-n), a dry-type excitation transformer (ET-n) and a surge-protection / VT cubicle on the IPB (SPC-n).
+  - **Deck:** a neutral grounding cubicle at the generator neutral (NGT-n) and turbine control and protection cabinets (TCP-n).
+- **ST:** EXC-ST, NGT-ST and TCP-ST.
+- **Control / instrument backbone:** runs from R1 along the hall north wall at EL +42.
+  - **Control drops per unit:** to the TCP, the GT junction boxes, the NGT and GCB, and the excitation / IPB cubicles.
+  - **LV feeders:** to the CO2 skid, water wash, gas fuel module, TCP UPS and generator auxiliaries.
+  - **Excitation connections:** the ET tap from the IPB, the ET to EXC link, and the DC field cables to the generator collector end.
+  - **GSU and UAT marshalling cabinets:** tied into the duct bank.
+- **Hall services:** a crane conductor bar, lighting circuits, grounding risers on the columns, and a ladder-tray riser to each filter-house platform for the pulse-jet and anti-icing controls.
+
 `trays.py` generates the cable trays and the isolated-phase bus from the routes, and the renderers draw these in place of the old boxes.
 - **Ladder trays:** MV at EL +36, LV at +30 and control at +42. Each has galvanised rails and rungs with cables laid in, and collinear runs merge.
 - **Tray supports:**
@@ -229,7 +241,8 @@ The epic set gains E18: fuel gas, fuel oil and feedwater crossing the east spine
   - E21: the hall from the laydown bay;
   - E22: a GT1 close-up;
   - E23: the north-wall trays;
-  - E24: the IPB, GCB and GSU.
+  - E24: the IPB, GCB and GSU;
+  - E25: the south gallery with its excitation and IPB cubicles and the cable drops.
 - **Viewer:** the "X-ray hall" toggle shows the same detail.
 
 ## GitHub Pages
@@ -291,7 +304,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
-**Epic set (`--set epic`, E1–E24):** golden hour, with the sun at 11°. The shots are:
+**Epic set (`--set epic`, E1–E25):** golden hour, with the sun at 11°. The shots are:
 - E1: the three stacks from beside the absorbers;
 - E2: a long-lens compression from the west road;
 - E3: a low pass over the ACC;
@@ -306,7 +319,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - E16 and E17: the portable power pad, and the fuel cells and microturbines;
 - E18: the process pipes crossing the east spine road;
 - E19 and E20: the GSUs facing the yard, and the complete switchyard;
-- E21 to E24: turbine-hall cutaways (the GTs, a GT1 close-up, the cable trays, the IPB).
+- E21 to E25: turbine-hall cutaways (the GTs, a GT1 close-up, the cable trays, the IPB, the gallery).
 
 Output goes to `renders/epic/`.
 

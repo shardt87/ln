@@ -552,6 +552,9 @@ EPIC = [
          target=(800, 546, 29), lens=22, show="all", hide=("Common turbine hall",), hide_layers=("HALL_ROOF",)),
     dict(k="E24", n="Isolated-phase bus: generator terminals, GCB, UAT tap and GSU", eye=(694, 326, 42),
          target=(636, 384, 21), lens=24, show="all", hide=("Common turbine hall",), hide_layers=("HALL_ROOF",)),
+    dict(k="E25", n="South gallery: excitation cubicles, excitation transformer, IPB cubicles, GCB and cable drops",
+         eye=(596, 388, 52), target=(646, 396, 4), lens=20, show="all", hide=("Common turbine hall",),
+         hide_layers=("HALL_ROOF",)),
 ]
 
 

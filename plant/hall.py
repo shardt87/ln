@@ -254,9 +254,105 @@ def hall_fitout():
     dress(False)
 
 
+def cubicle(x0, x1, y0, y1, z0, z1, c="cabinet", face="y0", n=None):
+    """Lineup of cubicles: plinth, body, roof, door seams and louvres on one face (dressing)."""
+    box(x0, x1, y0, y1, z0, z0 + .4, "concrete")
+    box(x0 + .1, x1 - .1, y0 + .1, y1 - .1, z0 + .4, z1 - .3, c)
+    box(x0, x1, y0, y1, z1 - .3, z1, "roof")
+    dress(True)
+    along_x = face in ("y0", "y1")
+    L = (x1 - x0) if along_x else (y1 - y0)
+    n = n or max(1, int(L // 3))
+    for m in range(n):
+        a0 = (x0 if along_x else y0) + .1 + (L - .2) * m / n
+        a1 = a0 + (L - .2) / n
+        if face == "y0":
+            box(a0 + .08, a1 - .08, y0, y0 + .1, z0 + .8, z1 - .8, "door")
+            box(a0 + .5, a1 - .5, y0 - .02, y0 + .1, z1 - 2, z1 - 1.2, "louvre")
+        elif face == "y1":
+            box(a0 + .08, a1 - .08, y1 - .1, y1, z0 + .8, z1 - .8, "door")
+            box(a0 + .5, a1 - .5, y1 - .1, y1 + .02, z1 - 2, z1 - 1.2, "louvre")
+        elif face == "x0":
+            box(x0, x0 + .1, a0 + .08, a1 - .08, z0 + .8, z1 - .8, "door")
+        else:
+            box(x1 - .1, x1, a0 + .08, a1 - .08, z0 + .8, z1 - .8, "door")
+    dress(False)
+
+
+def unit_electrical():
+    """Per-unit electrical equipment the drawing leaves to the vendor (typical): static
+    excitation cubicles and their dry-type excitation transformer, surge-protection / VT
+    cubicle on the IPB and the GCB control cabinet in the south gallery; neutral grounding
+    cubicle at the generator neutral and turbine control / protection cabinets on the deck."""
+    L = "BASE_ELECTRICAL"
+    units = [(k, 160 * (k - 1), f"GTG-{k}", f"GT{k}") for k in (1, 2, 3)]
+    for k, dx, gen, gt in units:
+        meta = dict(area="A", basis="typical", sheet="typical (hall cabling)")
+        fuel.new_item(L, f"EXC-{k}: static excitation cubicles ({gen})", (640 + dx, 657 + dx, 393, 401), (0, 8),
+                      tag=f"EXC-{k}", info="Thyristor bridges, field breaker, AVR and protection; DC field "
+                      "cables to the generator collector end.", **meta)
+        cubicle(640 + dx, 657 + dx, 393, 401, 0, 8, face="y0")
+        fuel.new_item(L, f"ET-{k}: excitation transformer (dry type, {gen} terminals)", (604 + dx, 614 + dx, 392, 401),
+                      (0, 9), tag=f"ET-{k}", info="Fed from the IPB at the generator terminals (typical).", **meta)
+        cubicle(604 + dx, 614 + dx, 392, 401, 0, 9, c="xfmr", face="x0", n=2)
+        fuel.new_item(L, f"SPC-{k}: surge-protection and VT cubicle on the IPB ({gen})", (616 + dx, 623 + dx, 394, 401),
+                      (0, 8), tag=f"SPC-{k}", info="Surge capacitors, arresters and voltage transformers for metering, "
+                      "protection and synchronising.", **meta)
+        cubicle(616 + dx, 623 + dx, 394, 401, 0, 8, face="y0", n=2)
+        fuel.new_item(L, f"NGT-{k}: neutral grounding cubicle ({gen})", (646 + dx, 653 + dx, 410, 417), (20, 27),
+                      tag=f"NGT-{k}", info="Distribution-type grounding transformer and secondary resistor "
+                      "(high-resistance grounding, typical).", **meta)
+        cubicle(646 + dx, 653 + dx, 410, 417, 20, 27, face="x1", n=2)
+        fuel.new_item(L, f"TCP-{k}: {gt} turbine control and protection cabinets", (598 + dx, 612 + dx, 505, 515), (20, 28),
+                      tag=f"TCP-{k}", info="Turbine controller, overspeed and generator protection, fire and gas "
+                      "panel; fibre to the DCS in the control room (typical).", **meta)
+        cubicle(598 + dx, 612 + dx, 505, 515, 20, 28, face="y0")
+    meta = dict(area="A", basis="typical", sheet="typical (hall cabling)")
+    fuel.new_item(L, "EXC-ST: static excitation cubicles (STG)", (1060, 1077, 393, 401), (0, 8), tag="EXC-ST", **meta)
+    cubicle(1060, 1077, 393, 401, 0, 8, face="y0")
+    fuel.new_item(L, "NGT-ST: neutral grounding cubicle (STG)", (1061, 1068, 410, 417), (20, 27), tag="NGT-ST", **meta)
+    cubicle(1061, 1068, 410, 417, 20, 27, face="x1", n=2)
+    fuel.new_item(L, "TCP-ST: ST turbine control and protection cabinets", (1082, 1096, 426, 436), (20, 28),
+                  tag="TCP-ST", **meta)
+    cubicle(1082, 1096, 426, 436, 20, 28, face="y1")
+
+
+def hall_services():
+    """Hall services as dressing: crane conductor bar, lighting circuits, grounding risers,
+    and a control-tray riser to each filter-house platform (pulse-jet and anti-icing controls)."""
+    hall = find("Common turbine hall")
+    on(hall)
+    dress(True)
+    box(482, 1098, 556.9, 557.3, 81, 81.8, "copper_dark")                          # crane conductor bar
+    for x in range(500, 1100, 15):
+        box(x - .1, x + .1, 556.9, 557.3, 81.8, 82, "insulator")
+    for y in (430, 480, 530):                                                      # lighting circuit conduits
+        rod((520, y, 96.6), (1092, y, 96.6), .08, "steel", seg=4)
+    for x in range(520, 1100, 44):                                                 # grounding risers on the columns
+        for y in (405.3, 554.6):
+            box(x + 1.3, x + 1.5, y - .1, y + .1, 0, 6, "copper")
+    dress(False)
+    for k in range(3):
+        dx = 160 * k
+        fh = find(f"FH-{k + 1}:")
+        on(fh)
+        dress(True)
+        x, y = 690 + dx, 361                                                       # ladder tray riser to EL 108
+        for s in (-1, 1):
+            box(x + s * .75 - .06, x + s * .75 + .06, y - .2, y + .2, 0, 108, "pipe")
+        for z in range(1, 108, 2):
+            box(x - .75, x + .75, y + .1, y + .2, z - .08, z + .08, "pipe")
+        for m in range(4):
+            rod((x - .5 + m * .33, y - .05, 0), (x - .5 + m * .33, y - .05, 108), .1, "cable", seg=6)
+        box(x - 2, x + 2, y - 1.5, y + 1.5, 108, 112, "panel")                     # pulse-jet / anti-icing panel
+        dress(False)
+
+
 def build():
     gas_turbines()
     steam_turbine()
     skids()
     spools()
     hall_fitout()
+    unit_electrical()
+    hall_services()

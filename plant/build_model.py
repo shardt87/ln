@@ -188,6 +188,7 @@ def gsu_hv_south(tx0, tx1, ty0, ty1, th, top, rc, zc, bushing, c, x0, x1, y0):
     """GSU arrangement: HV faces the switchyard (south), LV faces the generator (north)."""
     _cur["z"][1] = 45
     cx = (tx0 + tx1) / 2
+    B(x0 + .5, x0 + 3.5, y0 + 3, y0 + 7, 0.6, 7, "panel")                               # marshalling cabinet
     R((tx0 + 1, ty1 - rc - .5, zc), (tx1 - 1, ty1 - rc - .5, zc), rc, c)               # conservator, north
     for xs in (tx0 + 3, tx1 - 3):
         B(xs - .3, xs + .3, ty1 - rc - 1, ty1 - rc, th + .6, zc - rc + .2, "steel")
@@ -1473,6 +1474,37 @@ add_route("fuel_gas", [(2140, 1182), (2140, 1190)], "OPT_MOD_ROUTES")
 add_route("fuel_gas", [(2093, 1350), (2093, 1317)], MX)                                    # header -> MT-4..6
 # BESS main power transformer to the D4 upper position (230 kV cable to the take-off gantry)
 add_route("hv_cable", [(1756, 352), (1756, 170)], "OPT_BESS_ROUTES", sheet="typical (switchyard build-out)")
+# Turbine-hall cabling the drawing leaves to the vendor (typical): a control / instrument backbone
+# from R1 along the hall north wall at EL +42, and per unit the control drops (turbine control
+# cabinets, GT junction boxes, generator neutral cubicle, excitation and IPB cubicles in the
+# gallery), the LV feeders to every motor load on the deck, the excitation transformer tap and
+# the DC field cables to the generator collector end.
+HC = "typical (hall cabling)"
+add_route("control_tray", [(474, 724), (500, 724), (500, 552), (1079, 552)], "ROUTES_BASE", sheet=HC)
+for k in range(3):
+    dx = 160 * k
+    add_route("control_tray", [(606 + dx, 552), (606 + dx, 512)], "ROUTES_BASE", sheet=HC)       # -> TCP
+    add_route("control_tray", [(645 + dx, 552), (645 + dx, 480)], "ROUTES_BASE", sheet=HC)       # -> GT junction boxes
+    add_route("control_tray", [(650 + dx, 552), (650 + dx, 414)], "ROUTES_BASE", sheet=HC)       # -> NGT, GCB
+    add_route("control_tray", [(655 + dx, 552), (655 + dx, 398)], "ROUTES_BASE", sheet=HC)       # -> EXC / SPC
+    add_route("lv_tray", [(668 + dx, 548), (668 + dx, 530)], "ROUTES_BASE", sheet=HC)            # -> CO2 skid
+    add_route("lv_tray", [(590 + dx, 548), (590 + dx, 493)], "ROUTES_BASE", sheet=HC)            # -> water wash
+    add_route("lv_tray", [(690 + dx, 548), (690 + dx, 526)], "ROUTES_BASE", sheet=HC)            # -> gas fuel module
+    add_route("lv_tray", [(605 + dx, 548), (605 + dx, 513)], "ROUTES_BASE", sheet=HC)            # -> TCP (UPS)
+    add_route("lv_tray", [(612 + dx, 548), (612 + dx, 440)], "ROUTES_BASE", sheet=HC)            # -> generator aux
+    add_route("lv_tray", [(612 + dx, 397), (642 + dx, 397)], "ROUTES_BASE", sheet=HC)            # ET -> EXC
+    add_route("lv_tray", [(648 + dx, 399), (648 + dx, 407), (636 + dx, 407)], "ROUTES_BASE", sheet=HC)   # DC field
+    add_route("mv_tray", [(609 + dx, 396), (609 + dx, 386), (624 + dx, 386)], "ROUTES_BASE", sheet=HC)   # ET tap
+add_route("control_tray", [(1079, 552), (1079, 431), (1082, 431)], "ROUTES_BASE", sheet=HC)      # -> TCP-ST
+add_route("control_tray", [(1079, 431), (1079, 414), (1068, 414)], "ROUTES_BASE", sheet=HC)      # -> NGT-ST
+add_route("lv_tray", [(1068, 401), (1068, 407), (1052, 407)], "ROUTES_BASE", sheet=HC)            # ST DC field
+for k in range(3):                                                                         # GCB control
+    add_route("control_tray", [(655 + 160 * k, 398), (655 + 160 * k, 385), (636 + 160 * k, 385)], "ROUTES_BASE",
+              sheet=HC)
+# GSU / UAT marshalling cabinets to the existing duct bank (protection, monitoring, cooling control)
+for x in (612, 772, 932):
+    add_route("duct_bank", [(x, 330), (x, 312)], "ROUTES_BASE", sheet=HC)
+add_route("duct_bank", [(1034, 324), (1034, 312), (987, 312)], "ROUTES_BASE", sheet=HC)
 item("HV_CORRIDOR", "H-MOD 230 kV monopoles in COR-HMOD", (1505, 2105, 255, 815), (0, 50), area="I",
      basis="typical", sheet="SK-3X1-08", info="Overhead tie from T-MOD-1/2 to the D4 lower position (future).")
 for (x, y) in [(2095, 815), (1950, 805), (1800, 805), (1650, 805), (1515, 805), (1515, 650), (1515, 500),
