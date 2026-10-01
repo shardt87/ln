@@ -559,6 +559,10 @@ EPIC = [
     dict(k="E25", n="South gallery: excitation cubicles, excitation transformer, IPB cubicles, GCB and cable drops",
          eye=(596, 388, 52), target=(646, 396, 4), lens=20, show="all", hide=("Common turbine hall",),
          hide_layers=("HALL_ROOF",)),
+    dict(k="E26", n="HRSG 1 west wall: buckstays, SCR doors, ammonia injection grid, downcomers, blowdown tank",
+         eye=(452, 905, 92), target=(628, 690, 52), lens=28, show="all"),
+    dict(k="E27", n="HRSG roofs: drums, risers, safety valves and silencers, steam leads", eye=(560, 618, 122),
+         target=(645, 705, 92), lens=24, show="all"),
 ]
 
 

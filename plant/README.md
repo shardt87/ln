@@ -33,6 +33,7 @@ The checks corrected the model in several places:
 | `pipes.py` | Round pipes, elbows, flanges and insulation jackets generated from the process-pipe routes. |
 | `hall.py` | Turbine hall machines and skids at LOD 3. |
 | `trays.py` | Ladder trays with cables, supports and drops, and the IPB phase enclosures, from the routes. |
+| `hrsg.py` | HRSG casing, SCR, drums, steam leads and blowdown tanks at LOD 3. |
 | `fuel.py` | Fuel systems at LOD 3 (gas yard, M&R train, GT gas fuel modules, ULSD area), pipe supports and road-crossing sleeves. See "Fuel systems" below. |
 | `routes_base.json`, `routes_optional.json` | Tray, bus, duct-bank, 230 kV and process-pipe centrelines from the vector geometry of sheets 01 and 02. |
 | `extract_reference.py` | Pulls reference geometry from the drawing PDF into `reference/sk3x1_rev14_reference.json` (committed, so the PDF is not needed to verify). |
@@ -245,6 +246,30 @@ The epic set gains E18: fuel gas, fuel oil and feedwater crossing the east spine
   - E25: the south gallery with its excitation and IPB cubicles and the cable drops.
 - **Viewer:** the "X-ray hall" toggle shows the same detail.
 
+## HRSGs (LOD 3)
+
+`hrsg.py` details the three HRSGs: three-pressure reheat, horizontal gas flow, with SCR. They stay inside the drawn 70 x 160 ft envelope and the sheet-13 top of EL 100, so 21/21 heights still reproduce. The detail is typical, not engineered.
+
+- **Casing:**
+  - external buckstays every 8 ft and wale bands;
+  - module seams at the coil-section breaks (HP SH / RH, HP evaporator, SCR + CO catalyst, HP economizer / IP SH, IP evaporator, LP evaporator / IP economizer, LP economizer);
+  - access doors per section.
+- **SCR:**
+  - catalyst-loading doors on three levels and a CO catalyst door;
+  - an ammonia injection grid (riser, lances and balancing valves);
+  - an ammonia vaporization / dilution-air skid at grade;
+  - a catalyst-handling monorail with a hoist, cantilevered over the west wall.
+- **Drums (HP, IP, LP):**
+  - dished heads with manways, two rows of risers from the roof headers, and downcomers at both ends down the west wall;
+  - two spring safety valves per drum, with vent pipes and silencers to about EL 109;
+  - level gauges and a roof handrail.
+- **Steam and water:**
+  - main steam, hot reheat and LP steam leads run over the east roof edge and down the north face beside the breeching to the pipe rack;
+  - feedwater runs from the boiler feed pumps up the east face to the economizer.
+- **Other:** the GT exhaust expansion joint, inlet-duct stiffener frames, stack stiffener rings and CEMS sampling ports, and a blowdown tank per HRSG.
+
+New epic cameras: E26 (HRSG 1 and its stack from the north-west) and E27 (the HRSG roofs).
+
 ## Cable schedule and tray coordination
 
 **Cable schedule.** Every tray class carries a typical cable schedule.
@@ -335,7 +360,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
-**Epic set (`--set epic`, E1–E25):** golden hour, with the sun at 11°. The shots are:
+**Epic set (`--set epic`, E1–E27):** golden hour, with the sun at 11°. The shots are:
 - E1: the three stacks from beside the absorbers;
 - E2: a long-lens compression from the west road;
 - E3: a low pass over the ACC;
@@ -350,7 +375,8 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - E16 and E17: the portable power pad, and the fuel cells and microturbines;
 - E18: the process pipes crossing the east spine road;
 - E19 and E20: the GSUs facing the yard, and the complete switchyard;
-- E21 to E25: turbine-hall cutaways (the GTs, a GT1 close-up, the cable trays, the IPB, the gallery).
+- E21 to E25: turbine-hall cutaways (the GTs, a GT1 close-up, the cable trays, the IPB, the gallery);
+- E26 and E27: HRSG 1 from the north-west, and the HRSG roofs.
 
 Output goes to `renders/epic/`.
 

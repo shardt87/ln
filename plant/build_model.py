@@ -1317,6 +1317,8 @@ import yard as _yard
 _yard.build()        # gensets, trailers, fuel cells, microturbines, skids in the modular yard
 import hall as _hall
 _hall.build()        # turbine hall: GTs, generators, ST, skids, fit-out
+import hrsg as _hrsg
+_hrsg.build()        # HRSG casing, SCR, drums, steam leads, blowdown
 
 # ---------------------------------------------------------------------------
 # Routes: drawn centrelines lifted to their tiers

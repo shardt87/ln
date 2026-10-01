@@ -218,10 +218,7 @@ class Detail:
                 self.rail_line(iid, ly, (x1 + 5, y0 + 12), (x1 + 5, y1 - 30), z)
                 for yy in range(int(y0 + 12), int(y1 - 30) + 1, 20):
                     self.rod(iid, ly, (x1, yy, z - .4), (x1 + 5, yy, z - 3.5), .15, "steel", seg=4)
-            # downcomers and risers along the west face
-            for k, yy in enumerate((650, 690, 730)):
-                self.rod(iid, ly, (x0 - 1.5, yy, 4), (x0 - 1.5, yy, 94), .9, "duct", seg=10)
-                self.rod(iid, ly, (x0 - 1.5, yy, 94), (x0 + 6, yy, 94), .9, "duct", seg=10)
+            # (downcomers are drawn per drum in hrsg.py)
             # corner columns
             for (x, y) in ((x0, y0), (x1, y0), (x0, y1), (x1, y1)):
                 self.box(iid, ly, x - .6, x + .6, y - .6, y + .6, 0, 89, "steel")
