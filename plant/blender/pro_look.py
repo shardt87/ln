@@ -38,7 +38,7 @@ LOOK = {
     "basement": ("concrete", "#8f8c86", .9, 0), "future": ("gravel", "#b3afa4", .95, 0),
     "building": ("clad", "#c2bfb7", .55, .05), "hall": ("clad", "#aeb7bd", .45, .3),
     "roof": ("clad", "#9da5ab", .5, .3), "ehouse": ("clad", "#bfc4c2", .5, .1),
-    "hrsg": ("clad", "#a2a8ab", .5, .4), "filter": ("clad", "#b8bec1", .5, .25),
+    "hrsg": ("clad", "#a2a8ab", .5, .4), "hrsg_b": ("clad", "#9aa1a4", .5, .4), "filter": ("clad", "#b8bec1", .5, .25),
     "windwall": ("clad", "#adb4b8", .5, .3), "tower": ("clad", "#b3bab7", .6, 0),
     "ccs": ("clad", "#d2d6d6", .55, .1), "acc": ("clad", "#c4c9cb", .5, .2),
     "partition": ("paint", "#e4e4df", .7, 0),

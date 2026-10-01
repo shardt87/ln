@@ -42,22 +42,31 @@ def build():
         for y in range(604, 758, 8):
             if any(abs(y - b) < 1.5 for b in bands):
                 continue
-            box(x0 - .8, x0, y - .35, y + .35, 1.5, 88, "steel")
-            box(x1, x1 + .8, y - .35, y + .35, 1.5, 88, "steel")
-        for z in (22, 47, 72):
+            box(x0 - .8, x0, y - .35, y + .35, 1.5, 78, "steel")
+            box(x1, x1 + .8, y - .35, y + .35, 1.5, 78, "steel")
+        for z in (20, 40, 60):
             box(x0 - 1.0, x0 - .8, 601, 759, z - .5, z + .5, "steel")
+        # insulated casing panels: thin skins between the buckstays and wale bands, two tones
+        ys = [y for y in range(604, 758, 8) if not any(abs(y - b) < 1.5 for b in bands)]
+        edges = sorted(set([601] + ys + [759]))
+        zs = [1.5, 20, 40, 60, 78]
+        for i, (ya, yb) in enumerate(zip(edges, edges[1:])):
+            for j, (za, zb) in enumerate(zip(zs, zs[1:])):
+                c = "hrsg" if (i + j) % 2 else "hrsg_b"
+                box(x0 - .12, x0 - .05, ya + .4, yb - .4, za + .55, zb - .55, c)
+                box(x1 + .05, x1 + .12, ya + .4, yb - .4, za + .55, zb - .55, c)
         for y in SECTIONS:                                                      # module seams
-            box(x0 - .25, x0, y - .15, y + .15, 1.5, 88, "machine")
-            box(x0, x1, y - .15, y + .15, 89.2, 89.5, "machine")
+            box(x0 - .25, x0, y - .15, y + .15, 1.5, 78, "machine")
+            box(x0, x1, y - .15, y + .15, 79, 79.3, "machine")
         # access doors per section (west wall, at grade)
         for y in (622, 655, 700, 735, 752):
             box(x0 - .15, x0, y - 1.5, y + 1.5, 2, 6.5, "door")
         # SCR: catalyst loading doors (three levels), AIG header and lances, CO catalyst door
-        for z in (18, 42, 66):
+        for z in (14, 34, 54):
             box(x0 - .2, x0, 673, 683, z, z + 7, "door")
             box(x0 - .3, x0 - .2, 672.6, 683.4, z - .3, z + 7.3, "steel")
-        rod((x0 - 2.2, 664, 6), (x0 - 2.2, 664, 84), .55, "pipe", seg=10)       # AIG riser
-        for z in range(10, 84, 8):
+        rod((x0 - 2.2, 664, 6), (x0 - 2.2, 664, 74), .55, "pipe", seg=10)       # AIG riser
+        for z in range(10, 74, 8):
             rod((x0 - 2.2, 664, z), (x0 + .4, 664, z), .18, "pipe", seg=6)    # lances
             rod((x0 - 1.4, 664, z - .3), (x0 - 1.4, 664, z + .3), .3, "amber", seg=8)   # balancing valves
         box(x0 - .2, x0, 644, 650, 30, 36, "door")                               # CO catalyst access
@@ -69,7 +78,7 @@ def build():
         pipe([(x0 - 7, 664.5, 2.5), (x0 - 4, 664.5, 2.5), (x0 - 4, 664, 6), (x0 - 2.2, 664, 6)], 2.5, .35, "pipe")
         # catalyst-handling monorail over the SCR section, cantilevered west
         for y in (672, 684):
-            box(x0 + 2, x0 + 2.6, y - .3, y + .3, 89.2, 95, "steel")
+            box(x0 + 2, x0 + 2.6, y - .3, y + .3, 79, 95, "steel")
         box(x0 - 12, x1 - 4, 677.7, 678.3, 95, 96.2, "steel")
         box(x0 - 11, x0 - 9, 676.5, 679.5, 92, 95, "crane")                      # hoist trolley
         # drums: dished heads, manways, risers, downcomers, safety valves and silencers, gauges
@@ -80,10 +89,10 @@ def build():
                 rod((xb, yy, zc), (xb + (.3 if xb > xa else -.3), yy, zc), rr * .32, "steel", seg=14)   # manway
             for m in range(8):                                                       # risers
                 x = 610 + dx + m * 5.7
-                rod((x, yy - rr * .55, 89.2), (x, yy - rr * .55, zc - rr * .8), .32, "hrsg", seg=8)
-                rod((x, yy + rr * .55, 89.2), (x, yy + rr * .55, zc - rr * .8), .32, "hrsg", seg=8)
+                rod((x, yy - rr * .55, 79), (x, yy - rr * .55, zc - rr * .8), .32, "hrsg", seg=8)
+                rod((x, yy + rr * .55, 79), (x, yy + rr * .55, zc - rr * .8), .32, "hrsg", seg=8)
             for xd in (603 + dx, 657 + dx):                                         # downcomers to the lower headers
-                pipe([(xd, yy, zc - rr + .3), (xd, yy, 88.6), (x0 - 2, yy, 88.6), (x0 - 2, yy, 3)], 88.6,
+                pipe([(xd, yy, zc - rr + .3), (xd, yy, 84), (x0 - 2, yy, 84), (x0 - 2, yy, 3)], 84,
                      .9 if rr > 4 else .7, "hrsg")
             for xs in (614 + dx, 646 + dx):                                         # spring safety valves
                 rod((xs, yy, zc + rr), (xs, yy, zc + rr + 1.2), .5, "steel", seg=10)
@@ -93,25 +102,25 @@ def build():
             rod((628 + dx, yy + rr + .8, zc - 2), (628 + dx, yy + rr + .8, zc + 2), .25, "glass", seg=8)  # level gauge
         # roof handrail
         for (a, b) in (((x0, 601), (x1, 601)), ((x0, 759), (x1, 759)), ((x0, 601), (x0, 759)), ((x1, 601), (x1, 759))):
-            rod((a[0], a[1], 92.6), (b[0], b[1], 92.6), .07, "rail", seg=4)
-            rod((a[0], a[1], 90.9), (b[0], b[1], 90.9), .05, "rail", seg=4)
+            rod((a[0], a[1], 82.4), (b[0], b[1], 82.4), .07, "rail", seg=4)
+            rod((a[0], a[1], 80.7), (b[0], b[1], 80.7), .05, "rail", seg=4)
         for x in range(int(x0), int(x1) + 1, 6):
             for y in (601, 759):
-                rod((x, y, 89.2), (x, y, 92.6), .05, "rail", seg=4)
+                rod((x, y, 79), (x, y, 82.4), .05, "rail", seg=4)
         for y in range(601, 760, 6):
             for x in (x0, x1):
-                rod((x, y, 89.2), (x, y, 92.6), .05, "rail", seg=4)
+                rod((x, y, 79), (x, y, 82.4), .05, "rail", seg=4)
         # steam leads: over the east roof edge, down the north face beside the breeching, to the rack
         for (xl, zr, r, zt) in ((662.2 + dx, 91, 1.25, 27), (659.4 + dx, 92.2, 1.45, 25.5),
                                 (656.8 + dx, 93.4, .8, 24)):
-            pipe([(xl, 612, 89.2), (xl, 612, zr), (xl, 762, zr), (xl, 762, zt), (xl, 824, zt)], zr, r, "pipe")
+            pipe([(xl, 612, 79), (xl, 612, zr), (xl, 762, zr), (xl, 762, zt), (xl, 824, zt)], zr, r, "pipe")
         # feedwater from the boiler feed pumps up the east face to the economizer inlet
-        pipe([(676 + dx, 652, 8), (664.6 + dx, 652, 8), (664.6 + dx, 652, 84), (664.6 + dx, 734, 84), (x1, 734, 84)], 84,
+        pipe([(676 + dx, 652, 8), (664.6 + dx, 652, 8), (664.6 + dx, 652, 70), (664.6 + dx, 734, 70), (x1, 734, 70)], 70,
              .55, "pipe")
         # GT exhaust expansion joint and inlet-duct stiffener frames
         box(617.6 + dx, 642.4 + dx, 557.5, 560.5, 20.4, 38.6, "fanhub")
         on(find(f"HRSG {k + 1} inlet transition duct"))
-        for (yf, x_a, x_b, z_a, z_b) in ((572, 613, 647, 14, 60), (586, 605, 655, 8, 75)):
+        for (yf, x_a, x_b, z_a, z_b) in ((572, 613, 647, 14, 52), (586, 605, 655, 8, 67)):
             box(x_a + dx, x_a + dx + .6, yf - .3, yf + .3, z_a, z_b, "steel")
             box(x_b + dx - .6, x_b + dx, yf - .3, yf + .3, z_a, z_b, "steel")
             box(x_a + dx, x_b + dx, yf - .3, yf + .3, z_b, z_b + .6, "steel")

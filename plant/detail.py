@@ -213,7 +213,7 @@ class Detail:
             x0, x1, y0, y1 = it["fp"]
             iid, ly = it["id"], it["layer"]
             # side access platforms (east face) with rails, at three levels
-            for z in (30, 55, 80):
+            for z in (25, 50, 74):
                 self.box(iid, ly, x1, x1 + 5, y0 + 12, y1 - 30, z - .4, z, "grating")
                 self.rail_line(iid, ly, (x1 + 5, y0 + 12), (x1 + 5, y1 - 30), z)
                 for yy in range(int(y0 + 12), int(y1 - 30) + 1, 20):
@@ -221,7 +221,7 @@ class Detail:
             # (downcomers are drawn per drum in hrsg.py)
             # corner columns
             for (x, y) in ((x0, y0), (x1, y0), (x0, y1), (x1, y1)):
-                self.box(iid, ly, x - .6, x + .6, y - .6, y + .6, 0, 89, "steel")
+                self.box(iid, ly, x - .6, x + .6, y - .6, y + .6, 0, 79, "steel")
 
     def switchyard(self):
         # lattice bracing on dead-end structures (columns at yb +/- 11)

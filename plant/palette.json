@@ -366,5 +366,9 @@
 "cable_fo": {
 "hex": "#d9792a",
 "opacity": 1
+},
+"hrsg_b": {
+"hex": "#aeb8be",
+"opacity": 1
 }
 }

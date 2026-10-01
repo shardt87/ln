@@ -228,6 +228,11 @@ Kd 0.718 0.757 0.780
 Ka 0 0 0
 d 1
 
+newmtl hrsg_b
+Kd 0.682 0.722 0.745
+Ka 0 0 0
+d 1
+
 newmtl hull
 Kd 0.165 0.188 0.212
 Ka 0 0 0

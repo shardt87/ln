@@ -341,23 +341,34 @@ for i, gx in enumerate(GX, start=1):
          info="70 x 160 ft, top EL 100 (501G HRSG ~70 ft; largest casing 85 ft). Three-pressure "
          "reheat with SCR. HP, IP and LP drums on the roof steel.")
     B(595 + dx, 665 + dx, 600, 760, 0, 1.5, "concrete")
-    B(597 + dx, 663 + dx, 601, 759, 1.5, 88, "hrsg")
+    # casing about 78 ft tall (the sheet-13 note gives ~70 ft for a 501G HRSG, 85 ft the largest);
+    # the drums stand on an open steel frame above it, so the overall top stays at EL 100
+    B(597 + dx, 663 + dx, 601, 759, 1.5, 78, "hrsg")
     for yy in range(620, 760, 20):                            # casing stiffener bands
-        B(596.5 + dx, 663.5 + dx, yy - 0.6, yy + 0.6, 1.5, 88, "steel")
-    B(597 + dx, 663 + dx, 601, 759, 88, 89.2, "grating")
+        B(596.5 + dx, 663.5 + dx, yy - 0.6, yy + 0.6, 1.5, 78, "steel")
+    B(596.6 + dx, 663.4 + dx, 600.6, 759.4, 78, 79, "roof")    # casing roof (headers below)
+    for fx in (600, 630, 660):                                 # open drum-support frame, EL 79-89
+        for fy in (650, 670, 690, 710, 724, 740):
+            B(fx + dx - .6, fx + dx + .6, fy - .6, fy + .6, 79, 88.6, "steel")
+        B(fx + dx - .5, fx + dx + .5, 649, 741, 88.6, 89.2, "steel")
+    for fy in (650, 670, 690, 710, 724, 740):
+        B(600 + dx, 660 + dx, fy - .4, fy + .4, 88.6, 89.2, "steel")
     for (yy, rr) in ((660, 3.4), (700, 4.6), (732, 3.2)):     # IP, HP, LP drums
         R((600 + dx, yy, 89.2 + rr + 1), (660 + dx, yy, 89.2 + rr + 1), rr, "hrsg", seg=20)
         for sx in (606, 654):
             B(sx + dx - 1, sx + dx + 1, yy - 2, yy + 2, 89.2, 90.2, "steel")
+        for side in (-1, 1):                                   # drum walkways
+            ya = yy + side * (rr + 1.2)
+            B(600 + dx, 660 + dx, min(ya, ya + side * 3), max(ya, ya + side * 3), 88.9, 89.2, "grating")
     for sx in (612, 648):                                     # safety-valve silencers
         R((sx + dx, 715, 89.2), (sx + dx, 715, 100), 1.0, "steel", seg=10)
     B(665 + dx, 673 + dx, 738, 752, 0, 92, "stair")
     item(L, f"HRSG {i} inlet transition duct", (595 + dx, 665 + dx, 560, 600), (2, 96), area="A",
          sheet="SK-3X1-01", info="Expands the GT exhaust into the HRSG face (SK-3X1-09 'exhaust transition').")
-    loft_y(560, (620 + dx, 640 + dx, 21, 38), 600, (598 + dx, 662 + dx, 3, 87), "hrsg")
-    item(L, f"HRSG {i} outlet breeching", (605 + dx, 655 + dx, 759, 779), (58, 88), area="A",
+    loft_y(560, (620 + dx, 640 + dx, 21, 38), 600, (598 + dx, 662 + dx, 3, 77), "hrsg")
+    item(L, f"HRSG {i} outlet breeching", (605 + dx, 655 + dx, 759, 779), (48, 78), area="A",
          register=False)
-    loft_y(759, (605 + dx, 655 + dx, 58, 88), 780, (621 + dx, 639 + dx, 62, 82), "hrsg")
+    loft_y(759, (605 + dx, 655 + dx, 48, 78), 780, (621 + dx, 639 + dx, 54, 74), "hrsg")
     # --- stack with CEMS platform
     item(L, f"HRSG {i} stack", (619 + dx, 641 + dx, 779, 801), (0, 180), tag=f"STK-{i}", area="A",
          sheet="SK-3X1-13", shape="circle",

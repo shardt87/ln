@@ -248,6 +248,13 @@ The epic set gains E18: fuel gas, fuel oil and feedwater crossing the east spine
 
 ## HRSGs (LOD 3)
 
+**Proportions (typical large horizontal HRSG, as on GE Vernova-class units).**
+- **Casing:** about 78 ft tall. The sheet-13 note gives ~70 ft for a 501G HRSG and 85 ft for the largest.
+- **Drums:** HP, IP and LP stand on an open steel frame from EL 79 to 89, with walkways, so the risers show between the casing roof and the drums. The overall top stays at the drawn EL 100.
+- **Casing face:** shows its insulated panel modules in two tones between the buckstays and wale bands.
+- **Ducts:** the inlet transition and the outlet breeching follow the lower casing.
+- **East-face platforms:** sit at EL 25, 50 and 74.
+
 `hrsg.py` details the three HRSGs: three-pressure reheat, horizontal gas flow, with SCR. They stay inside the drawn 70 x 160 ft envelope and the sheet-13 top of EL 100, so 21/21 heights still reproduce. The detail is typical, not engineered.
 
 - **Casing:**

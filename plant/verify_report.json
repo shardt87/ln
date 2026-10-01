@@ -223,7 +223,7 @@
   "ok": true
  },
  "clashes": {
-  "pairs_tested": 65707,
+  "pairs_tested": 67538,
   "clashes": [],
   "ok": true
  },
@@ -234,7 +234,7 @@
  "summary": {
   "ok": true,
   "items": 541,
-  "parts": 40154,
+  "parts": 40379,
   "routes": 385
  }
 }
