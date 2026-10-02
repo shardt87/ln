@@ -39,6 +39,7 @@ The checks corrected the model in several places:
 | `switchyard.py` | Switchyard trenches, breaker and disconnect detail, line entrances, masts and fence (cycle 1). |
 | `station.py` | Transformer, e-house and EDG detail; duct-bank manholes (cycle 2). |
 | `acc.py` | ACC fans, drives, cable ladders, condensate drains, deck steel, vacuum pumps, dry coolers (cycle 3). |
+| `coastal/coastal_detail.py` | Coastal terminal and landfall dressing and wiring applications (cycle 10). |
 | `lng_h2.py` | LNG satellite and green hydrogen detail, H2 piping, electrolyzer cabling (cycle 9). |
 | `inletchill.py` | GT inlet chilling: CW / CHW loops, chillers, tower fans, pump sets (cycle 8). |
 | `bess.py` | BESS yard, container and PCS skid detail, DC trenches, 34.5 kV collector feeders (cycle 7). |
@@ -347,6 +348,17 @@ The model is improved zone by zone, one cycle per zone (`DETAIL_CYCLES.md` has t
 5. render close-ups;
 6. re-export and republish.
 
+**Cycle 10: coastal variant (`coastal/coastal_detail.py`).**
+- **Wiring:** every keyed terminal item (tank, vaporizers, HP pumps, BOG, substation, control building, metering, intake, flare, jetty, berth) and the landfall valve station now carry their cable applications (MV-105, ARMOR-X MC-HL in the hazardous areas, IS instrumentation, thermocouple extension, fibre ship-shore link, fire and gas, grounding).
+- **LNG tank:** water-curtain / deluge rings with risers, roof-platform handrail, level and temperature gauge housings, ID band, gas detectors round the tank.
+- **HP pumps:** suction and discharge headers with drops, junction boxes, gas detectors.
+- **BOG building, substation, control building:** louvres, roll-up door and roof vents; e-house doors, landings and HVAC; entrance canopy, door, rooftop HVAC and antenna mast.
+- **Seawater intake:** travelling screens and trash-rake rail.
+- **Jetty and berth:** fire-water main, life-ring stands, signs; emergency-release couplers on the unloading arms, ESD stations, crew on the berth.
+- **Landfall valve station (B):** ESD actuators, CP rectifier, SCADA dish, a pickup and an operator.
+- **Realism:** pickups on the terminal roads, staff at the control building and BOG house.
+- **Cameras:** C6 and C7.
+
 **Cycle 9: LNG satellite and green hydrogen (`lng_h2.py`).**
 - **LNG tanks:** dished heads, valve / instrument cabinets with frosted fill and withdrawal lines into a liquid header, PSVs with a vent header, level gauges, ID plates.
 - **Unloading:** two articulated loading arms over the truck bays with counterweights, hose rack, ESD button; an LNG trailer at bay 2.
@@ -609,7 +621,7 @@ Sheet SK-3X1-15 shows where a coastal plant gets its gas when there is no pipeli
   - the jetty is 1,740 ft;
   - the ship-to-ship fender gap is 50 ft;
   - the landfall to yoke run is 6.4 km.
-- Renders use `--overlay` and a morning sun from the south-east, so the sea-side views are front lit. There are five views for A (C1–C5) and three for B (F1–F3). `board.py … coastal` composes the sheet 15 board.
+- Renders use `--overlay` and a morning sun from the south-east, so the sea-side views are front lit. There are seven views for A (C1–C7) and three for B (F1–F3). `board.py … coastal` composes the sheet 15 board.
 
 ```sh
 python plant/coastal/build_coastal.py && python plant/coastal/verify_coastal.py

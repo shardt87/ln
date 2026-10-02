@@ -81,6 +81,7 @@ jobs:
           - { style: pro, views: "P9,P10,P11", samples: "128" }
           - { style: pro, views: "C1,C2,C3", samples: "128", overlay: "A" }
           - { style: pro, views: "C4,C5", samples: "128", overlay: "A" }
+          - { style: pro, views: "C6,C7", samples: "128", overlay: "A" }
           - { style: pro, views: "F1,F2,F3", samples: "128", overlay: "B" }
           - { style: pro, views: "E1,E2,E3,E4", samples: "128", set: "epic" }
           - { style: pro, views: "E5,E6,E7,E8", samples: "128", set: "epic" }

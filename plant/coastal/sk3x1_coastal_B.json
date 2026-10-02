@@ -45,7 +45,14 @@
 "basis": "typical",
 "sheet": "SK-3X1-15",
 "register": true,
-"key": "12"
+"key": "12",
+"wiring": [
+"LV 480 V: Cu XHHW-2, Type TC-ER (UL 1277)",
+"Instrumentation (intrinsically safe): 16 AWG shielded pairs, blue jacket, Type PLTC",
+"Data / DCS: single-mode fibre, orange jacket (SCADA)",
+"Cathodic protection: rectifier DC cable, HMWPE",
+"Grounding: bare Cu 4/0 to the terminal grid"
+]
 },
 {
 "id": "coastalb-0001",
@@ -4508,6 +4515,273 @@
 "color": "rope",
 "item": "coastalb-0006",
 "layer": "MARINE"
+},
+{
+"kind": "box",
+"min": [
+3049.0,
+1178.3,
+12
+],
+"max": [
+3052.0,
+1181.3,
+14
+],
+"color": "panel",
+"item": "coastalb-0000",
+"layer": "LNG_LANDFALL"
+},
+{
+"kind": "box",
+"min": [
+3079.0,
+1178.3,
+12
+],
+"max": [
+3082.0,
+1181.3,
+14
+],
+"color": "panel",
+"item": "coastalb-0000",
+"layer": "LNG_LANDFALL"
+},
+{
+"kind": "box",
+"min": [
+3121.5,
+1213.8,
+0
+],
+"max": [
+3123.5,
+1217.8,
+6
+],
+"color": "cabinet",
+"item": "coastalb-0000",
+"layer": "LNG_LANDFALL"
+},
+{
+"kind": "rod",
+"a": [
+3130.5,
+1219.8,
+40
+],
+"b": [
+3133.5,
+1219.8,
+40
+],
+"r": 1.6,
+"r2": 1.6,
+"color": "lamp",
+"seg": 12,
+"item": "coastalb-0000",
+"layer": "LNG_LANDFALL"
+},
+{
+"kind": "box",
+"min": [
+3001.5,
+1228.6,
+1.2
+],
+"max": [
+3019.5,
+1235.0,
+4
+],
+"color": "truck",
+"item": "coastalb-0000",
+"layer": "LNG_LANDFALL"
+},
+{
+"kind": "box",
+"min": [
+3007.5,
+1228.8,
+4
+],
+"max": [
+3014.0,
+1234.8,
+6.4
+],
+"color": "truck",
+"item": "coastalb-0000",
+"layer": "LNG_LANDFALL"
+},
+{
+"kind": "box",
+"min": [
+3013.9,
+1229.2,
+4.4
+],
+"max": [
+3014.1,
+1234.4,
+6.1
+],
+"color": "glass",
+"item": "coastalb-0000",
+"layer": "LNG_LANDFALL"
+},
+{
+"kind": "rod",
+"a": [
+3004.5,
+1228.8,
+1.2
+],
+"b": [
+3004.5,
+1229.2,
+1.2
+],
+"r": 1.2,
+"r2": 1.2,
+"color": "fanhub",
+"seg": 12,
+"item": "coastalb-0000",
+"layer": "LNG_LANDFALL"
+},
+{
+"kind": "rod",
+"a": [
+3004.5,
+1234.4,
+1.2
+],
+"b": [
+3004.5,
+1234.8,
+1.2
+],
+"r": 1.2,
+"r2": 1.2,
+"color": "fanhub",
+"seg": 12,
+"item": "coastalb-0000",
+"layer": "LNG_LANDFALL"
+},
+{
+"kind": "rod",
+"a": [
+3016.5,
+1228.8,
+1.2
+],
+"b": [
+3016.5,
+1229.2,
+1.2
+],
+"r": 1.2,
+"r2": 1.2,
+"color": "fanhub",
+"seg": 12,
+"item": "coastalb-0000",
+"layer": "LNG_LANDFALL"
+},
+{
+"kind": "rod",
+"a": [
+3016.5,
+1234.4,
+1.2
+],
+"b": [
+3016.5,
+1234.8,
+1.2
+],
+"r": 1.2,
+"r2": 1.2,
+"color": "fanhub",
+"seg": 12,
+"item": "coastalb-0000",
+"layer": "LNG_LANDFALL"
+},
+{
+"kind": "rod",
+"a": [
+3044.5,
+1185.8,
+0
+],
+"b": [
+3044.5,
+1185.8,
+2.8
+],
+"r": 0.32,
+"r2": 0.32,
+"color": "workwear",
+"seg": 8,
+"item": "coastalb-0000",
+"layer": "LNG_LANDFALL"
+},
+{
+"kind": "rod",
+"a": [
+3044.5,
+1185.8,
+2.8
+],
+"b": [
+3044.5,
+1185.8,
+4.6
+],
+"r": 0.42,
+"r2": 0.42,
+"color": "hivis",
+"seg": 8,
+"item": "coastalb-0000",
+"layer": "LNG_LANDFALL"
+},
+{
+"kind": "rod",
+"a": [
+3044.5,
+1185.8,
+4.6
+],
+"b": [
+3044.5,
+1185.8,
+5.3
+],
+"r": 0.3,
+"r2": 0.3,
+"color": "skin",
+"seg": 8,
+"item": "coastalb-0000",
+"layer": "LNG_LANDFALL"
+},
+{
+"kind": "rod",
+"a": [
+3044.5,
+1185.8,
+5.3
+],
+"b": [
+3044.5,
+1185.8,
+5.7
+],
+"r": 0.36,
+"r2": 0.36,
+"color": "hardhat",
+"seg": 8,
+"item": "coastalb-0000",
+"layer": "LNG_LANDFALL"
 },
 {
 "kind": "hex",

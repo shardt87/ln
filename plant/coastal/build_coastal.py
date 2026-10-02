@@ -23,6 +23,8 @@ import json
 import math
 import os
 
+import coastal_detail
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 PLANT = os.path.dirname(HERE)
 REF = json.load(open(os.path.join(PLANT, "reference", "sk3x1_rev14_sheet15.json")))
@@ -482,6 +484,7 @@ def build_A():
     for (tx, ty) in ((fp[0] + 35, hull[2] - 120), (fp[0] + 35, hull[3] + 120)):
         for dy in (-4, 4):
             S.rod((tx, ty, 18), (hull[0] + 6, (hull[2] + 40 if ty < hull[2] else hull[3] - 60) + dy, 44), .25, "rope")
+    coastal_detail.detail_A(S, K)
     tug(S, hull[1] + 140, hull[2] + 160, 0)
     tug(S, hull[1] + 90, hull[3] + 60, 1)
     return S, dict(variant="A", shoreline_x=shore, sea_level=SEA, terminal=P["boundary"],
@@ -568,6 +571,7 @@ def build_B():
     ym = (sorted(d[1] for d in domes if d[0] < K["15"][1])[1] + sorted(d[1] for d in domes if d[0] < K["15"][1])[2]) / 2
     for k in range(3):
         S.rod((fsru[1] + 1, ym - 6 + 6 * k, 46), (lngc[0] - 1, ym - 6 + 6 * k, 46), .9, "rope")
+    coastal_detail.detail_B(S, K)
     tug(S, lngc[1] + 160, lngc[2] + 140, 0)
     return S, dict(variant="B", shoreline_x=shore, sea_level=SEA, fsru_offset_ft=round(dx), yoke=[round(yx), round(yy)],
                    label="FSRU moored offshore (sheet 15, panel B; distance to scale in the model)")

@@ -562,6 +562,10 @@ COASTAL_A = [
          lens=30, show="coastal"),
     dict(k="C5", n="Jetty trestle from the tank roof", eye=(3190, 1150, 190), target=(5400, 960, 40), lens=32,
          show="coastal"),
+    dict(k="C6", n="HP send-out pumps and the LNG tank with its deluge rings", eye=(2800, 352, 15),
+         target=(2965, 560, 22), lens=24, show="coastal"),
+    dict(k="C7", n="Berth: unloading arms with emergency-release couplers, crew, the carrier alongside",
+         eye=(5346, 815, 40), target=(5420, 985, 46), lens=24, show="coastal"),
 ]
 COASTAL_B = [
     dict(k="F1", n="FSRU and LNG carrier, ship-to-ship transfer", eye=(25300, -300, 300), target=(24300, 950, 40),
