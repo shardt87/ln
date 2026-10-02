@@ -11,7 +11,7 @@ One zone per cycle. Each cycle:
 | # | Zone | Status | What changed |
 |---|---|---|---|
 | 1 | C Switchyard (230 kV breaker-and-a-half, line exits, relay house) | done | Precast control-cable trenches from the relay house down every diameter; breaker operating mechanisms, bushing CTs, ground leads; disconnect blades and motor operators; line-entrance arresters, CCVTs and line traps; lighting masts and fence with gate. The wiring check now counts routes that pass an item, not only route ends, which removed 19 redundant feeders. Camera E31. |
-| 2 | Station electrical: R1-R4 e-houses, station / load-centre transformers, EDGs, duct-bank manholes | todo | |
+| 2 | Station electrical: R1-R4 e-houses, station / load-centre transformers, EDGs, duct-bank manholes | done | Auxiliary / station transformers: MV air terminal chambers with bushings, LV cable boxes and conduit, marshalling cabinets, nameplates and hazard signs, ground leads. E-houses R2A-C, R3, R4: lifting lugs, door landings and stairs, emergency lights, extinguisher cabinets, bottom cable-entry transits with cables, rooftop HVAC condensers, ground leads. EDG-1/2: weatherproof enclosures with radiator, silencer and stack, sub-base day tank, fuel fill, output breaker. Duct-bank manholes at bends and every ~300 ft, handholes at feeder ends. Cameras E32, E33. |
 | 3 | B Air-cooled condenser: fans, motors and gearboxes, steam ducts, condensate tank, vacuum pumps, VFD cabling | todo | |
 | 4 | E Water and BOP utilities: tanks, water treatment, fire pump house, aux boiler, air compressors, aux coolers | todo | |
 | 5 | F Controls and services: control / admin, warehouse, workshop, gatehouse, parking, site lighting, fence, drainage | todo | |

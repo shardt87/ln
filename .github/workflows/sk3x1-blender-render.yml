@@ -93,6 +93,7 @@ jobs:
           - { style: pro, views: "E23,E24,E25", samples: "128", set: "epic" }
           - { style: pro, views: "E26,E27,E28", samples: "128", set: "epic" }
           - { style: pro, views: "E29,E30,E31", samples: "128", set: "epic" }
+          - { style: pro, views: "E32,E33", samples: "128", set: "epic" }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

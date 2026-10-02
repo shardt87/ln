@@ -1330,6 +1330,8 @@ import hall as _hall
 _hall.build()        # turbine hall: GTs, generators, ST, skids, fit-out
 import hrsg as _hrsg
 _hrsg.build()        # HRSG casing, SCR, drums, steam leads, blowdown
+import station as _station
+_station.build()     # cycle 2: transformers, e-houses, EDGs
 
 # ---------------------------------------------------------------------------
 # Routes: drawn centrelines lifted to their tiers
@@ -1716,6 +1718,8 @@ _swyd.build(routes)       # trenches, breaker mechanisms, disconnect blades, lin
 # feeder to the nearest underground cable network where no cable route reached it
 import wiring as _wiring
 N_WAPPS, N_FEEDERS = _wiring.build(items, routes, LAYERS, add_route)
+_fuel.G['routes'] = routes
+_station.build_late()  # duct-bank manholes and handholes (after the feeders exist)
 
 # Low pipe routes: road crossings go below grade in sleeves; sleepers / T-posts under the rest
 # LV / instrument cables inside the gas yard and the M&R station run buried in conduit (hazardous

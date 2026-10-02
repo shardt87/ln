@@ -641,6 +641,10 @@ EPIC = [
          eye=(520, 268, 9), target=(760, 330, 18), lens=28, show="all"),
     dict(k="E31", n="Switchyard bay D2: breakers with mechanisms, disconnect blades, trench to the relay house",
          eye=(862, 102, 30), target=(905, 160, 14), lens=24, show="all"),
+    dict(k="E32", n="Station electrical: R2 e-houses with stairs and cable entries, unit transformers, manholes",
+         eye=(512, 596, 20), target=(568, 642, 7), lens=24, show="all"),
+    dict(k="E33", n="Emergency diesel generators beside the turbine-hall gallery", eye=(498, 312, 18),
+         target=(450, 346, 9), lens=24, show="all"),
 ]
 
 
