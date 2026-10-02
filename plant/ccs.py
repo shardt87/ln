@@ -78,10 +78,14 @@ def trains():
         # ---- absorber: lean-amine and wash risers, rich bottoms, sample panel
         on(find(f"Absorber {t}"))
         dress(True)
-        pipe([(668 + dx, 1100, 10), (668 + dx, 1228, 10), (663.5 + dx, 1228, 10), (663.5 + dx, 1228, 200),
-              (660 + dx, 1228, 200)], 10, .7, "pipe")                           # lean amine to the upper bed
-        pipe([(690 + dx, 1195, 6), (690 + dx, 1236, 6), (661.5 + dx, 1236, 6), (661.5 + dx, 1236, 246),
-              (658 + dx, 1236, 246)], 6, .45, "waterline")                     # water wash
+        pipe([(668 + dx, 1100, 10), (668 + dx, 1228, 10), (666 + dx, 1228, 10), (666 + dx, 1228, 204),
+              (660 + dx, 1228, 204)], 10, .7, "pipe")                           # lean amine to the upper bed
+        pipe([(690 + dx, 1195, 6), (690 + dx, 1236, 6), (665 + dx, 1236, 6), (665 + dx, 1236, 246),
+              (656 + dx, 1236, 246)], 6, .45, "waterline")                     # water wash
+        for zg in range(30, 240, 30):                                           # pipe guides off the shell
+            if zg not in (60, 120, 210):
+                box(659 + dx, 666.6 + dx, 1227.6, 1228.4, zg - .3, zg + .3, "steel")
+                box(655 + dx, 665.5 + dx, 1235.6, 1236.4, zg - .3, zg + .3, "steel")
         pipe([(650 + dx, 1196, 3), (650 + dx, 1104, 3), (662 + dx, 1104, 3)], 3, .8, "pipe")   # rich amine
         box(652 + dx, 656 + dx, 1180, 1182, 0, 6, "panel")                      # sample / analyser panel
         box(651 + dx, 657 + dx, 1179, 1183, 6, 6.3, "roof")
