@@ -39,6 +39,7 @@ The checks corrected the model in several places:
 | `switchyard.py` | Switchyard trenches, breaker and disconnect detail, line entrances, masts and fence (cycle 1). |
 | `station.py` | Transformer, e-house and EDG detail; duct-bank manholes (cycle 2). |
 | `acc.py` | ACC fans, drives, cable ladders, condensate drains, deck steel, vacuum pumps, dry coolers (cycle 3). |
+| `inletchill.py` | GT inlet chilling: CW / CHW loops, chillers, tower fans, pump sets (cycle 8). |
 | `bess.py` | BESS yard, container and PCS skid detail, DC trenches, 34.5 kV collector feeders (cycle 7). |
 | `ccs.py` | Carbon capture flue-gas path, amine piping and rack, regeneration, CO2 header, cooling-tower fans (cycle 6). |
 | `services.py` | Main gate, fence wire and CCTV, drainage, lighting handholes, admin / warehouse / workshop dressing (cycle 5). |
@@ -345,6 +346,15 @@ The model is improved zone by zone, one cycle per zone (`DETAIL_CYCLES.md` has t
 5. render close-ups;
 6. re-export and republish.
 
+**Cycle 8: GT inlet chilling (`inletchill.py`).**
+- **Loops closed:** condenser water from the tower basin to the CW pumps, into the chillers and back up to the tower; chilled water from the chillers to the CHW pumps and the TES tank (new `cw` / `chw` routes, drawn as round pipe).
+- **Chiller building:** six chiller packages (evaporator, condenser, compressor, motor, starter), relief vent stacks, roof exhaust fans, wall louvres, roll-up door.
+- **Chiller tower (12 cells):** open fan stacks with visible blades and hubs, gearboxes, shafts and motors, partition walls, intake louvres, deck handrail, access stair, hot-water riser and header. The CCS tower's fan stacks get the same open look.
+- **Pumps:** the CW and CHW pump blocks are replaced by pump sets on plinths (pump, coupling guard, motor, spools).
+- **E-house:** landings, stairs, doors, HVAC.
+- **Wiring:** the chiller tower had no cable applications (the name matched a skip rule); added, with a fan-cable route from the e-house round the tower.
+- **Cameras:** E43 and E44.
+
 **Cycle 7: battery energy storage (`bess.py`).**
 - **Yard:** crushed-stone surface, its own security fence with an open double gate on the west, NFPA 855 hazard signs, aisle lighting.
 - **Containers (30):** six battery-rack doors on the north face, roof deflagration vents, a gas-detection exhaust fan, strobe / horn, suppression release and E-stop panel, ground leads.
@@ -517,7 +527,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
-**Epic set (`--set epic`, E1–E42):** golden hour, with the sun at 11°. The shots are:
+**Epic set (`--set epic`, E1–E44):** golden hour, with the sun at 11°. The shots are:
 - E1: the three stacks from beside the absorbers;
 - E2: a long-lens compression from the west road;
 - E3: a low pass over the ACC;
@@ -542,6 +552,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - E37 and E38: the main gate with the gatehouse and control building, and the warehouse / workshop yard.
 - E39 and E40: carbon-capture train A (DCC, booster fan, duct, absorber, rack), and the regenerators.
 - E41 and E42: a BESS aisle, and the collector e-house with the main power transformer.
+- E43 and E44: the GT inlet-chilling plant, and its cooling tower.
 
 Output goes to `renders/epic/`.
 

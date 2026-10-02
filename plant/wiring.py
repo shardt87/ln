@@ -57,7 +57,7 @@ RULES = [   # (pattern, applications), first match wins
 TEXT = {"mv": MV, "lv": LV, "ctrl": CTRL, "inst": INST, "tcx": TCX, "fa": FA, "light": LIGHT, "data": DATA,
         "gnd": GND, "ht": HT}
 SKIP = re.compile(r"pad\b|lane|road|corridor|apron|landing|laydown|floor|deck|foundation|^Common turbine hall|"
-                  r"stack \(|breeching|transition duct|exhaust duct|inlet duct|dead-end|bus \d|(?<!Comms )(?<!cooling )tower \(|monopole|"
+                  r"stack \(|breeching|transition duct|exhaust duct|inlet duct|dead-end|bus \d|(?<!Comms )(?<!cooling )(?<!chilling )tower \(|monopole|"
                   r"Pipe |Cable trays|fence|compound|containment dike|right of way|future|reserved", re.I)
 
 

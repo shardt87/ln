@@ -1725,6 +1725,9 @@ _util.build()             # cycle 4: fire pump house, ammonia, aux boiler, air c
 import services as _services
 _services.routes(add_route)
 N_DRAIN = _services.build()
+import inletchill as _ic
+_ic.routes(add_route)
+_ic.build()               # cycle 8: GT inlet chilling tower, chillers, pumps, CW / CHW loops
 import bess as _bess
 _bess.routes(add_route)
 _bess.build()             # cycle 7: BESS yard, containers, PCS skids, collector, buildings

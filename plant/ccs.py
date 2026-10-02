@@ -160,9 +160,10 @@ def cooling_tower():
             cx, cy = 465 + 50 * c, 1770 + 60 * r_
             for b in range(8):
                 a = 2 * math.pi * b / 8 + .3 * c
-                rod((cx + 2 * math.cos(a), cy + 2 * math.sin(a), 45.5),
-                    (cx + 16.5 * math.cos(a), cy + 16.5 * math.sin(a), 45.8), .55, "fan", r2=.35, seg=6)
-            rod((cx, cy, 44.8), (cx, cy, 46.4), 2.2, "fanhub", seg=16)
+                rod((cx + 2 * math.cos(a), cy + 2 * math.sin(a), 50.25),
+                    (cx + 17.5 * math.cos(a), cy + 17.5 * math.sin(a), 50.35), .55, "fan", r2=.35, seg=6)
+            rod((cx, cy, 50), (cx, cy, 50.03), 18.6, "fanhub", seg=28)                   # open stack (dark throat)
+            rod((cx, cy, 50.03), (cx, cy, 50.6), 2.2, "fan", seg=16)                     # hub
             rod((cx, cy, 42), (cx, cy, 44.8), .45, "steel", seg=8)
             box(cx - 1.8, cx + 1.8, cy - 1.8, cy + 1.8, 42, 44, "machine")          # gearbox
             rod((cx + 1.8, cy, 43), (cx + 20, cy, 43), .35, "steel", seg=8)         # drive shaft

@@ -663,6 +663,10 @@ EPIC = [
          eye=(1548, 596, 28), target=(1672, 538, 4), lens=24, show="all"),
     dict(k="E42", n="BESS collector e-house, main power transformer and EMS, with the container rows behind",
          eye=(1700, 318, 42), target=(1800, 420, 8), lens=24, show="all"),
+    dict(k="E43", n="GT inlet chilling: chiller building, CW pumps and e-house, the chiller cooling tower behind",
+         eye=(345, 1015, 58), target=(175, 1195, 16), lens=24, show="all"),
+    dict(k="E44", n="Inlet-chilling tower: fans, louvres, stair, CHW pumps and the TES tank",
+         eye=(22, 1372, 72), target=(185, 1235, 18), lens=24, show="all"),
 ]
 
 

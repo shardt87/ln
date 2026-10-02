@@ -263,6 +263,7 @@ class Realism:
             (656, 1176, 0, 1.6), (716, 1110, 0, 3.1), (1092, 1222, 0, 4.7),     # CCS train A, rack, strippers
             (900, 1726, 0, 1.6), (1300, 1372, 0, 3.1),                           # CCS cooling tower, CO2 coolers
             (1690, 512, 0, 1.6), (1700, 514, 0, 4.7), (1810, 385, 0, 3.1),      # BESS aisle, collector e-house
+            (246, 1095, 0, 0), (158, 1232, 0, 1.6),                              # inlet chilling pumps, tower
         ]
         for (x, y, z, a) in spots:
             for (dx, dy) in ((0, 0), (2, 0), (-2, 0), (0, 2), (0, -2), (3, 3), (-3, -3)):
