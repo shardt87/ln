@@ -1809,6 +1809,8 @@ _dc.build()               # BTM data centre: dressing, BESS / genset / substatio
 import ccs as _ccs
 _ccs.routes(add_route)
 _ccs.build()              # cycle 6: carbon capture flue-gas path, amine piping and rack, regeneration, CT   # cycle 5: gate, fence wire and CCTV, drainage, lighting, admin / workshop dressing
+import placeholders as _ph
+_ph.build()               # single-box placeholders rebuilt as equipment (CCS, LNG, H2, BTM)
 
 # Wiring applications: every powered / instrumented item gets its cable applications, and a buried
 # feeder to the nearest underground cable network where no cable route reached it

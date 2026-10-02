@@ -39,6 +39,7 @@ The checks corrected the model in several places:
 | `switchyard.py` | Switchyard trenches, breaker and disconnect detail, line entrances, masts and fence (cycle 1). |
 | `station.py` | Transformer, e-house and EDG detail; duct-bank manholes (cycle 2). |
 | `acc.py` | ACC fans, drives, cable ladders, condensate drains, deck steel, vacuum pumps, dry coolers (cycle 3). |
+| `placeholders.py` | Rebuilds the last single-box placeholders as equipment: kettle reboilers, reclaimer, amine skids with plate exchangers, pump sets, carbon filters, instrument air, CO2 export compressor, LNG metering and sump, H2 purification and blending, BTM tie breaker, conditional items (kept tan). |
 | `datacenter.py` | BTM data-centre campus routes and dressing (design option, area L). |
 | `coastal/coastal_detail.py` | Coastal terminal and landfall dressing and wiring applications (cycle 10). |
 | `lng_h2.py` | LNG satellite and green hydrogen detail, H2 piping, electrolyzer cabling (cycle 9). |
