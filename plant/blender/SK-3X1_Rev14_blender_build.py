@@ -485,7 +485,7 @@ if args.style == "pro":
         scene.camera = cam_ob
         # coastal: the whole plant with its optional systems, except the trucked LNG satellite (sheet 14),
         # which the marine terminal replaces
-        show = {"base": BASE, "all": ALL, "dc": ALL + DCL,
+        show = {"base": BASE, "all": ALL, "dc": ALL + DCL, "everything": ALL + DCL + COAST,
                 "coastal": [l for l in ALL if not l.startswith("OPT_LNG")] + COAST}[h["show"]]
         show = [l for l in show if l not in h.get("hide_layers", ())]
         set_visibility(show)

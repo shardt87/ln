@@ -18,6 +18,10 @@ Plant plus the BTM data centre (design option, an add-on to the plant; the plant
 
     python plant/blender/export_model.py plant/model SK-3X1_plant_datacenter SK-3X1_plant
 
+Everything (plant, LNG satellite and marine terminal, BTM data centre):
+
+    python plant/blender/export_model.py plant/model SK-3X1_everything_datacenter SK-3X1_coastal_A
+
 GLB and USDZ hold the plant and site (no trees or surrounding ground), Y-up,
 with each material's base colour, roughness and metalness.
 """

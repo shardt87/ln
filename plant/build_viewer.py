@@ -24,6 +24,9 @@ full = next(v for v in model["views"] if v["k"] == "ALL")
 model["views"].append(dict(k="COAST", n="Coastal: LNG terminal",
                            show=[l for l in full["show"] if not l.startswith("OPT_LNG")] + coast,
                            t=[1450, 2900, 20], c=[3900, 100, 3100]))
+model["views"].append(dict(k="EVERY", n="Everything: plant + all LNG + BTM data centre",
+                           show=[l for l in model["layers"] if l not in ("R1_INTERIOR", "R4_INTERIOR")],
+                           t=[1700, 1800, 20], c=[-900, -2600, 4300]))
 model["views"].append(dict(k="FUEL", n="Fuel systems: M&R, gas yard, ULSD", show=list(full["show"]),
                            t=[1640, 1660, 4], c=[1330, 1330, 330]))
 for key, data in (("MODEL", json.dumps(model, separators=(",", ":"))),

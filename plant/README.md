@@ -608,6 +608,7 @@ The north-west corner is kept open as a maintenance laydown. The plots were pick
 A ~150 MW data-centre campus outside the east fence, beside the modular yard, supplied behind the meter (`datacenter.py`, layers `OPT_DC` / `OPT_DC_ROUTES`). It is a design option beyond Rev 14, typical and not engineered, and it is an **add-on**: the plant views, renders and exports show the plant alone, and the campus appears only when it is added:
 - **Viewer:** "Complete plant" and every other view leave it off; the view **"Add-on: plant + BTM data centre"** (O6) turns it on, or tick its layers.
 - **Blender:** the plant cameras leave it out; the cameras E47 and E48 (`show="dc"`) include it.
+- **Everything:** the viewer view "Everything: plant + all LNG + BTM data centre", the camera C8 (`show="everything"`) and the export `SK-3X1_everything_datacenter` show the plant with the LNG satellite, the coastal LNG terminal and the data centre together.
 - **Exports:** `SK-3X1_plant` and `SK-3X1_coastal_A` are plant only; `SK-3X1_plant_datacenter.glb / .usdz / .blend` is the plant plus the campus (`export_model.py plant/model SK-3X1_plant_datacenter SK-3X1_plant`).
 
 | Part | What is modelled |
@@ -656,7 +657,7 @@ Sheet SK-3X1-15 shows where a coastal plant gets its gas when there is no pipeli
   - the jetty is 1,740 ft;
   - the ship-to-ship fender gap is 50 ft;
   - the landfall to yoke run is 6.4 km.
-- Renders use `--overlay` and a morning sun from the south-east. The sheet-15 cameras are rotated onto the site with the layout; C4 is framed north-up in the site frame. There are seven views for A (C1–C7) and three for B (F1–F3). `board.py … coastal` composes the sheet 15 board.
+- Renders use `--overlay` and a morning sun from the south-east. The sheet-15 cameras are rotated onto the site with the layout; C4 is framed north-up in the site frame. There are eight views for A (C1–C8; C8 shows everything, with the data centre) and three for B (F1–F3). `board.py … coastal` composes the sheet 15 board.
 
 ```sh
 python plant/coastal/build_coastal.py && python plant/coastal/verify_coastal.py
