@@ -1332,6 +1332,8 @@ import hrsg as _hrsg
 _hrsg.build()        # HRSG casing, SCR, drums, steam leads, blowdown
 import station as _station
 _station.build()     # cycle 2: transformers, e-houses, EDGs
+import acc as _acc
+_acc.build()         # cycle 3: ACC fans, drives, cable ladders, condensate drains, deck steel
 
 # ---------------------------------------------------------------------------
 # Routes: drawn centrelines lifted to their tiers

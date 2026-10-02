@@ -645,6 +645,8 @@ EPIC = [
          eye=(512, 596, 20), target=(568, 642, 7), lens=24, show="all"),
     dict(k="E33", n="Emergency diesel generators beside the turbine-hall gallery", eye=(498, 312, 18),
          target=(450, 346, 9), lens=24, show="all"),
+    dict(k="E34", n="ACC south-east corner: street risers, wind wall, stair tower, fan bells under the deck", eye=(1506, 322, 58),
+         target=(1388, 470, 92), lens=24, show="all"),
 ]
 
 

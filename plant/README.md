@@ -38,6 +38,7 @@ The checks corrected the model in several places:
 | `realism.py` | Firewater, small-bore piping, signage, people, vehicles, scaffolding and HRSG tube harps. |
 | `switchyard.py` | Switchyard trenches, breaker and disconnect detail, line entrances, masts and fence (cycle 1). |
 | `station.py` | Transformer, e-house and EDG detail; duct-bank manholes (cycle 2). |
+| `acc.py` | ACC fans, drives, cable ladders, condensate drains, deck steel, vacuum pumps, dry coolers (cycle 3). |
 | `fuel.py` | Fuel systems at LOD 3 (gas yard, M&R train, GT gas fuel modules, ULSD area), pipe supports and road-crossing sleeves. See "Fuel systems" below. |
 | `routes_base.json`, `routes_optional.json` | Tray, bus, duct-bank, 230 kV and process-pipe centrelines from the vector geometry of sheets 01 and 02. |
 | `extract_reference.py` | Pulls reference geometry from the drawing PDF into `reference/sk3x1_rev14_reference.json` (committed, so the PDF is not needed to verify). |
@@ -340,6 +341,13 @@ The model is improved zone by zone, one cycle per zone (`DETAIL_CYCLES.md` has t
 5. render close-ups;
 6. re-export and republish.
 
+**Cycle 3: air-cooled condenser (`acc.py`).**
+- **Each of the 80 cells:** inlet bell, 9-blade fan, gearbox and motor on a fan bridge, vibration switch, cable drop.
+- **Cabling and drains:** fan-bridge cable ladders per street fed from R4, and condensate drain headers along every A-frame.
+- **Structure:** deck girders, X-bracing and a deck handrail.
+- **Auxiliaries:** vacuum-pump skids, and aux dry-cooler fans with their headers.
+- **Camera:** E34.
+
 **Cycle 2: station electrical (`station.py`).**
 - **Auxiliary and station transformers:** MV air terminal chambers, LV cable boxes, marshalling cabinets, nameplates and hazard signs, ground leads.
 - **E-houses:** door landings and stairs, emergency lights, extinguisher cabinets, bottom cable-entry transits, rooftop HVAC.
@@ -466,7 +474,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
-**Epic set (`--set epic`, E1–E33):** golden hour, with the sun at 11°. The shots are:
+**Epic set (`--set epic`, E1–E34):** golden hour, with the sun at 11°. The shots are:
 - E1: the three stacks from beside the absorbers;
 - E2: a long-lens compression from the west road;
 - E3: a low pass over the ACC;
@@ -485,7 +493,8 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - E26 to E28: HRSG 1 from the north-west, the HRSG roofs, and the stack with its breeching and CEMS;
 - E29 and E30: the HRSG 3 tube-harp cutaway, and the access road by the hall;
 - E31: switchyard bay D2;
-- E32 and E33: an R2 e-house, and the emergency diesels.
+- E32 and E33: an R2 e-house, and the emergency diesels;
+- E34: the ACC's south-east corner.
 
 Output goes to `renders/epic/`.
 
