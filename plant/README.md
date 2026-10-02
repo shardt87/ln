@@ -39,6 +39,7 @@ The checks corrected the model in several places:
 | `switchyard.py` | Switchyard trenches, breaker and disconnect detail, line entrances, masts and fence (cycle 1). |
 | `station.py` | Transformer, e-house and EDG detail; duct-bank manholes (cycle 2). |
 | `acc.py` | ACC fans, drives, cable ladders, condensate drains, deck steel, vacuum pumps, dry coolers (cycle 3). |
+| `services.py` | Main gate, fence wire and CCTV, drainage, lighting handholes, admin / warehouse / workshop dressing (cycle 5). |
 | `utilities.py` | Tank-farm water and aux-steam routes; fire pump house, ammonia, aux boiler, air compressor, OWS detail (cycle 4). |
 | `fuel.py` | Fuel systems at LOD 3 (gas yard, M&R train, GT gas fuel modules, ULSD area), pipe supports and road-crossing sleeves. See "Fuel systems" below. |
 | `routes_base.json`, `routes_optional.json` | Tray, bus, duct-bank, 230 kV and process-pipe centrelines from the vector geometry of sheets 01 and 02. |
@@ -342,6 +343,16 @@ The model is improved zone by zone, one cycle per zone (`DETAIL_CYCLES.md` has t
 5. render close-ups;
 6. re-export and republish.
 
+**Cycle 5: controls and services (`services.py`).**
+- **Main gate:** sliding gate parked open, inbound and outbound barrier arms, card readers, speed table, entrance sign; a buried duct bank from the gatehouse feeds the gate, and another feeds the gatehouse from the control / admin building.
+- **Perimeter security:** barbed-wire arms with three strands on every fence post, and nine CCTV poles (corners, gate, access road).
+- **Drainage:** catch basins along every road about every 150 ft, and the stormwater basin's inlet headwall with riprap and its outlet riser.
+- **Site lighting:** a handhole and a photocell box at every pole; wiring for the pole circuits, CCTV and access control.
+- **Buildings:** a SCADA / radio mast with antennas and a dish on the control room, flagpoles, bike rack, bollards; a paved service yard round the warehouse and workshop, with roll-up and personnel doors, dumpsters, a gas-cylinder cage and stock racks; wheel stops in the parking bays.
+- **Wiring:** the gatehouse, the comms tower and the EDGs now carry their cable applications.
+- **Realism:** a guard at the gate, a pickup at the barrier, a delivery flatbed at the warehouse, workers in the workshop yard.
+- **Cameras:** E37 and E38.
+
 **Cycle 4: water and BOP utilities (`utilities.py`).**
 - **Pipe routes:** water headers from the tank farm to water treatment and the fire pump house, and insulated auxiliary steam to the rack.
 - **Fire pump house:** diesel stack, test header with hose valves, jockey-pump controller.
@@ -484,7 +495,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
-**Epic set (`--set epic`, E1–E36):** golden hour, with the sun at 11°. The shots are:
+**Epic set (`--set epic`, E1–E38):** golden hour, with the sun at 11°. The shots are:
 - E1: the three stacks from beside the absorbers;
 - E2: a long-lens compression from the west road;
 - E3: a low pass over the ACC;
@@ -506,6 +517,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - E32 and E33: an R2 e-house, and the emergency diesels;
 - E34: the ACC's south-east corner;
 - E35 and E36: the tank farm, and the ammonia storage with the aux boiler.
+- E37 and E38: the main gate with the gatehouse and control building, and the warehouse / workshop yard.
 
 Output goes to `renders/epic/`.
 

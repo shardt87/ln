@@ -43,8 +43,9 @@ RULES = [   # (pattern, applications), first match wins
                                                                             "gnd"]),
     (r"BFP|boiler feed|CO2 compression|export compressor|circulating-water pump|fuel-gas compressors|"
      r"boil-off|CW pumps", ["mv", "ctrl", "inst", "gnd"]),
-    (r"genset|RICE|SC-\d|TM-\d|GEN-|MOB-|CONT-\d|MT-\d|FC-\d|fuel-cell|SOFC|BESS|black-start",
+    (r"genset|diesel generator|EDG-|RICE|SC-\d|TM-\d|GEN-|MOB-|CONT-\d|MT-\d|FC-\d|fuel-cell|SOFC|BESS|black-start",
      ["mv", "lv", "ctrl", "inst", "tcx", "data", "fa", "gnd"]),
+    (r"Comms tower", ["lv", "data", "light", "gnd"]),               # radio / microwave, aviation light
     (r"CEMS|analy|SWAS|metering|gas quality|EMS", ["lv", "inst", "data", "light", "gnd"]),
     (r"building|house|shelter|warehouse|workshop|gatehouse|control room|admin", ["lv", "ctrl", "light", "fa", "data",
                                                                                "gnd"]),
@@ -56,7 +57,7 @@ RULES = [   # (pattern, applications), first match wins
 TEXT = {"mv": MV, "lv": LV, "ctrl": CTRL, "inst": INST, "tcx": TCX, "fa": FA, "light": LIGHT, "data": DATA,
         "gnd": GND, "ht": HT}
 SKIP = re.compile(r"pad\b|lane|road|corridor|apron|landing|laydown|floor|deck|foundation|^Common turbine hall|"
-                  r"stack \(|breeching|transition duct|exhaust duct|inlet duct|dead-end|bus \d|tower \(|monopole|"
+                  r"stack \(|breeching|transition duct|exhaust duct|inlet duct|dead-end|bus \d|(?<!Comms )tower \(|monopole|"
                   r"Pipe |Cable trays|fence|compound|containment dike|right of way|future|reserved", re.I)
 
 
@@ -112,7 +113,7 @@ def build(items, routes, layers, add_route):
     segs = [(a, b) for r in routes if r["type"] in ELEC for a, b in zip(r["points"], r["points"][1:])]
     n_feed, n_apps = 0, 0
     for it in list(items):
-        if not it.get("register") or it["layer"] in ("SITE",) or it["z"][1] < 1 or SKIP.search(it["name"]):
+        if not it.get("register") or (it["layer"] == "SITE" and not it["name"].startswith("Gatehouse")) or it["z"][1] < 1 or SKIP.search(it["name"]):
             continue
         apps = applications(it)
         if not apps:

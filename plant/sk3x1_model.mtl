@@ -348,6 +348,11 @@ Kd 0.776 0.788 0.780
 Ka 0 0 0
 d 1
 
+newmtl rock
+Kd 0.478 0.463 0.435
+Ka 0 0 0
+d 1
+
 newmtl rollup
 Kd 0.553 0.596 0.620
 Ka 0 0 0

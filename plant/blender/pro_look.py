@@ -651,6 +651,10 @@ EPIC = [
          eye=(668, 1668, 46), target=(560, 1578, 14), lens=24, show="all"),
     dict(k="E36", n="Ammonia storage and the auxiliary boiler: bund, scrubber, safety shower, burner and FD fan",
          eye=(866, 1418, 34), target=(915, 1478, 16), lens=24, show="all"),
+    dict(k="E37", n="Main gate and gatehouse: barrier arms, card readers, CCTV, entrance sign, control / admin building",
+         eye=(352, 246, 34), target=(240, 322, 6), lens=24, show="all"),
+    dict(k="E38", n="Warehouse and workshop yard: dumpsters, stock racks, gas-cylinder cage, delivery flatbed",
+         eye=(96, 690, 40), target=(190, 585, 6), lens=24, show="all"),
 ]
 
 

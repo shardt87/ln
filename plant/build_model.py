@@ -1722,6 +1722,9 @@ import switchyard as _swyd
 _swyd.routes(add_route)
 _swyd.build(routes)       # trenches, breaker mechanisms, disconnect blades, line entrances, masts, fence
 _util.build()             # cycle 4: fire pump house, ammonia, aux boiler, air compressors, OWS
+import services as _services
+_services.routes(add_route)
+N_DRAIN = _services.build()   # cycle 5: gate, fence wire and CCTV, drainage, lighting, admin / workshop dressing
 
 # Wiring applications: every powered / instrumented item gets its cable applications, and a buried
 # feeder to the nearest underground cable network where no cable route reached it

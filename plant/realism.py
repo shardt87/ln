@@ -258,6 +258,8 @@ class Realism:
             (1470, 600, 0, 1.6), (1300, 700, 0, 3.1), (1180, 520, 0, 0),        # ACC area
             (600, 1590, 0, 0), (710, 1570, 0, 4.7),                              # tank farm, fire pumps
             (1452, 360, 0, 1.6), (1210, 330, 0, 4.7),                            # R4, ACC stair
+            (288, 302, 0, 3.1), (262, 268, 0, 1.6),                              # guard at the gate, card reader
+            (190, 596, 0, 4.7), (165, 628, 0, 0),                                # workshop yard
         ]
         for (x, y, z, a) in spots:
             for (dx, dy) in ((0, 0), (2, 0), (-2, 0), (0, 2), (0, -2), (3, 3), (-3, -3)):
@@ -340,6 +342,8 @@ class Realism:
                           (1700, 1662, 0), (385, 1300, -math.pi / 2), (2050, 1385, math.pi)):
             self.place_vehicle(x, y, a, "pickup", 10)
         self.place_vehicle(440, 485, math.pi / 2, "flatbed", 6)
+        self.place_vehicle(248, 278, 0, "pickup", 8)                  # inbound at the barrier
+        self.place_vehicle(118, 535, math.pi / 2, "flatbed", 6)       # delivery at the warehouse
         for (x, y) in ((345, 520), (350, 600)):
             if self.place_vehicle(x, y, 0, "forklift", 4.5):
                 break
