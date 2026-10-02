@@ -61,7 +61,8 @@ if sea is not None:
 for o in bpy.data.objects:
     o.select_set(o.type == "MESH" and (o.name not in skip or o in extra))
 bpy.ops.export_scene.gltf(filepath=os.path.join(out, name + ".glb"), export_format="GLB",
-                          use_selection=True, export_apply=True, export_yup=True, export_materials="EXPORT")
+                          use_selection=True, export_apply=True, export_yup=True, export_materials="EXPORT",
+                          export_extras=True)
 bpy.ops.wm.usd_export(filepath=os.path.join(out, name + ".usdz"), selected_objects_only=True,
                       export_materials=True, generate_preview_surface=True, export_textures=False)
 print("exported", sorted(os.listdir(out)))

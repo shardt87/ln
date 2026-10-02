@@ -74,7 +74,7 @@ for p in model["parts"]:
     it = items[p["item"]]
     if BASE_ONLY and p["layer"].startswith(("OPT_", "HV_CORRIDOR", "SWYD_FUTURE")):
         continue
-    safe = "".join(ch if ch.isalnum() else "_" for ch in it["name"])[:56]
+    safe = "".join(ch if ch.isalnum() else "_" for ch in it["name"])
     key = (f"{p['layer']}__{it['id']}_{safe}", p["color"])
     f = groups.setdefault(key, [])
     k = p["kind"]

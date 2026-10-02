@@ -212,6 +212,21 @@ def make_object(name, layer, geos):
     return ob
 
 
+def object_name(it, iid, layer, used=set()):
+    """Blender caps names at 63 bytes: keep the id whole and trim the label at a word boundary.
+    An item split over two layers gets the layer as a suffix instead of Blender's .001."""
+    tail = f" [{iid}]"
+    if (iid, ) in used:
+        tail = f" [{iid} {layer}]"
+    used.add((iid, ))
+    label = it["tag"] or it["name"]
+    room = 63 - len(tail.encode())
+    if len(label.encode()) > room:
+        cut = label.encode()[:room - 3].decode("utf-8", "ignore")
+        label = (cut.rsplit(" ", 1)[0] if " " in cut[10:] else cut).rstrip(" ,;:(/-") + "..."
+    return label + tail
+
+
 t0 = time.time()
 buckets = {}
 for p in model["parts"]:
@@ -220,8 +235,15 @@ item_objs = {}
 for (iid, layer), ps in buckets.items():
     it = items[iid]
     geos = [(*part_geo(p), p["color"]) for p in ps]
-    ob = make_object(f"{it['tag'] or it['name'][:40]} [{iid}]", layer, geos)
+    ob = make_object(object_name(it, iid, layer), layer, geos)
     ob["item"] = iid
+    ob["full_name"] = it["name"]                       # exported to glTF extras: names are never cut
+    ob["layer"] = layer
+    for k in ("tag", "area", "sheet", "basis", "info"):
+        if it.get(k):
+            ob[k] = str(it[k])
+    if it.get("wiring"):
+        ob["wiring"] = "; ".join(it["wiring"])
     item_objs.setdefault(iid, []).append(ob)
 # Routes. The drawing runs many circuits along one tray path, so collinear
 # segments overlap; coincident faces render black in Cycles. Merge them into
