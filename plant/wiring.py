@@ -37,9 +37,9 @@ HAZ = re.compile(r"gas yard|gas metering|regulation|filter-separator|performance
                  r"fuel-gas compressor|gas conditioning|ESD|LNG|H2 |hydrogen|genset|RICE|SC-\d|TM-\d|GEN-|"
                  r"MOB-|CONT-\d|MT-\d|ULSD|fuel|blending|condensate tank", re.I)
 RULES = [   # (pattern, applications), first match wins
-    (r"230 kV breaker|entrance: surge|CCVT", ["ctrl", "inst", "gnd"]),     # CT / VT secondaries, trip / close, alarms
-    (r"transformer|GSU|UAT|CCS T-\d|T4-|LCT-|T-R\d|T-MOD|T-H2|MPT|rectifier", ["mv", "ctrl", "inst", "gnd"]),
-    (r"switchgear|e-house|PCM|MCC|load-centre|EMS|SCADA|cubicle|board|PDC", ["mv", "lv", "ctrl", "data", "fa", "light",
+    (r"230 kV breaker|230 kV tie breaker|entrance: surge|CCVT", ["ctrl", "inst", "gnd"]),     # CT / VT secondaries, trip / close, alarms
+    (r"transformer|step-up|GSU|UAT|CCS T-\d|T4-|LCT-|T-R\d|T-MOD|T-H2|MPT|rectifier", ["mv", "ctrl", "inst", "gnd"]),
+    (r"data hall|electrical gallery|switchgear|e-house|PCM|MCC|load-centre|EMS|SCADA|cubicle|board|PDC", ["mv", "lv", "ctrl", "data", "fa", "light",
                                                                             "gnd"]),
     (r"BFP|boiler feed|CO2 compression|export compressor|circulating-water pump|fuel-gas compressors|"
      r"boil-off|CW pumps", ["mv", "ctrl", "inst", "gnd"]),

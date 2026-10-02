@@ -39,6 +39,7 @@ The checks corrected the model in several places:
 | `switchyard.py` | Switchyard trenches, breaker and disconnect detail, line entrances, masts and fence (cycle 1). |
 | `station.py` | Transformer, e-house and EDG detail; duct-bank manholes (cycle 2). |
 | `acc.py` | ACC fans, drives, cable ladders, condensate drains, deck steel, vacuum pumps, dry coolers (cycle 3). |
+| `datacenter.py` | BTM data-centre campus routes and dressing (design option, area L). |
 | `coastal/coastal_detail.py` | Coastal terminal and landfall dressing and wiring applications (cycle 10). |
 | `lng_h2.py` | LNG satellite and green hydrogen detail, H2 piping, electrolyzer cabling (cycle 9). |
 | `inletchill.py` | GT inlet chilling: CW / CHW loops, chillers, tower fans, pump sets (cycle 8). |
@@ -550,7 +551,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
-**Epic set (`--set epic`, E1–E46):** golden hour, with the sun at 11°. The shots are:
+**Epic set (`--set epic`, E1–E48):** golden hour, with the sun at 11°. The shots are:
 - E1: the three stacks from beside the absorbers;
 - E2: a long-lens compression from the west road;
 - E3: a low pass over the ACC;
@@ -577,6 +578,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - E41 and E42: a BESS aisle, and the collector e-house with the main power transformer.
 - E43 and E44: the GT inlet-chilling plant, and its cooling tower.
 - E45 and E46: the LNG satellite, and the green-hydrogen plant.
+- E47 and E48: the BTM data-centre campus, and its BTM substation.
 
 Output goes to `renders/epic/`.
 
@@ -600,6 +602,26 @@ Layer `OPT_MODX` adds some of the smaller modular technologies from sheets 07 an
 | Microturbines (1 MW) | 3 | MT-4 to MT-6 | 6 |
 
 The north-west corner is kept open as a maintenance laydown. The plots were picked from an occupancy map of the verified model, keeping 10 ft clear of every part and route. `verify.py` still passes: 211/211 footprints, 21/21 heights, 10/10 sheet 09 clearances, 0 clashes. In the presentation renders, items the drawing marks conditional get a normal equipment finish instead of the drawing's tan tint.
+
+## BTM data centre (design option, area L)
+
+A ~150 MW data-centre campus outside the east fence, beside the modular yard, supplied behind the meter (`datacenter.py`, layers `OPT_DC` / `OPT_DC_ROUTES`, viewer view O6). It is a design option beyond Rev 14, typical and not engineered.
+
+| Part | What is modelled |
+|---|---|
+| Campus | 920 × 1,080 ft (x 2,460–3,380, y 300–1,380): crushed stone, internal 30 ft roads, security fence, entrance from the south with gatehouse, admin / security / NOC building with diverse fibre entries |
+| Data halls A and B | 560 × 300 ft, 45 ft, ~60 MW IT each, liquid-cooled racks on a closed loop; rooftop dry-cooler banks with fans and headers; west electrical galleries with 8 × 34.5/0.48 kV unit substations, UPS and battery rooms; east loading docks |
+| BTM substation | BTM-T1 / T2 13.8/34.5 kV step-ups (90 MVA) fed from the modular yard's 13.8 kV collector (MOD-EH); BTM-TIE 230/34.5 kV (100 MVA) with a normally-open 230 kV tie breaker; 34.5 kV main-tie-main switchgear with the transfer scheme and sync check |
+| BTM BESS | 40 MW / 80 MWh, 15 containers and 5 PCS / MV skids: absorbs AI training load steps so the engines follow slowly, and rides through mode transfers |
+| Backup generation | 24 × 2.5 MW diesel gensets (48 h belly tanks), 13.8 kV paralleling switchgear and a 13.8/34.5 kV step-up |
+
+**Three operating modes, selected by breakers at the BTM switchgear:**
+1. **Islanded:** T1 / T2 mains closed, 230 kV tie open. The modular yard supplies the campus: eight RICE engines, two aeroderivative SC units, fuel cells and microturbines, with the portable pad as a temporary source. The BTM BESS takes the load steps.
+2. **Islanded with backup:** the 230 kV tie from the plant switchyard (D6 bay) closes on loss of the modular supply (open transition) or for maintenance.
+3. **Grid-parallel co-location:** the tie is closed with sync check; the modular yard and the BESS firm the load. This mode carries the most regulatory exposure (co-location at grid-connected plants is under scrutiny), which the islanded modes avoid.
+
+**Routes (buried):** MOD-EH to T1 / T2; the 230 kV tie from D6, outside the east fence, to BTM-TIE; step-ups and tie to the switchgear; switchgear to a 34.5 kV ring through each hall gallery; BESS, genset bus and genset collectors to the switchgear; LV to the admin building and gate. Every campus item carries its cable applications (wiring audit clean, no new feeders needed), and `verify.py` allows the campus east of the compound.
+**Cameras:** E47 (campus) and E48 (BTM substation).
 
 ## Coastal variant: LNG marine terminal (sheet 15)
 

@@ -375,6 +375,8 @@ def landscape(scene, coll, coastal=None):
             x, y = cx + rng.gauss(0, 90), cy + rng.gauss(0, 90)
             if -80 < x < 2500 and -80 < y < 2000:          # keep the compound and its margin clear
                 continue
+            if 2420 < x < 3440 and -60 < y < 1440:         # BTM data-centre campus (design option)
+                continue
             if coastal:
                 tx0, tx1, ty0, ty1 = coastal.get("terminal") or (1150, 1450, 1900, 2700)
                 if (y > coastal["shoreline_y"] - 90 or (tx0 - 60 < x < tx1 + 60 and ty0 - 60 < y)
@@ -679,6 +681,10 @@ EPIC = [
          eye=(1862, 1655, 58), target=(2075, 1790, 6), lens=24, show="all"),
     dict(k="E46", n="Green hydrogen: electrolyzer building, dryer, compressors, tube banks, T-H2",
          eye=(1985, 1612, 72), target=(2215, 1500, 4), lens=24, show="all"),
+    dict(k="E47", n="BTM data centre: two data halls with rooftop dry coolers, BESS, gensets, modular yard beside",
+         eye=(2380, 140, 340), target=(2900, 900, 20), lens=24, show="all"),
+    dict(k="E48", n="BTM substation: 13.8/34.5 kV step-ups, 230 kV tie (normally open), switchgear, BTM BESS",
+         eye=(2470, 700, 60), target=(2610, 830, 12), lens=24, show="all"),
 ]
 
 

@@ -1323,6 +1323,65 @@ V(2380, 1597, 1.2, 0, 40, "stack")
 solid(L, "H2 30: H2 / gas blending skid (plant gas yard)", 1800, 1840, 1470, 1500, 0, 10, "equip", area="K",
       sheet="SK-3X1-14", info="Blends into the GT-1 fuel branch (5% by volume pilot, as FPL tested one of three units).")
 
+# ---------------------------------------------------------------------------
+# L BTM DATA CENTRE (design option beyond Rev 14): ~150 MW campus outside the east fence, beside
+# the modular yard, fed behind the meter. One BTM substation supports three operating modes,
+# selected by breakers: (1) islanded on the modular yard + BTM BESS; (2) islanded with the
+# normally-open 230 kV backup tie to the plant switchyard (D6); (3) grid-parallel, tie closed.
+# ---------------------------------------------------------------------------
+L = "OPT_DC"
+DC = dict(area="L", basis="typical", sheet="design option (BTM data centre)")
+pad(L, "BTM data-centre campus (crushed stone)", 2460, 3380, 300, 1380, "pad", z1=0.2, **DC)
+for (x0, x1, y0, y1, n) in ((2480, 3360, 380, 410, "south"), (2480, 2510, 380, 1360, "west"),
+                            (2730, 3360, 935, 965, "central"), (3330, 3360, 380, 1360, "east"),
+                            (2480, 3360, 1330, 1360, "north"), (3000, 3030, 0, 380, "entrance")):
+    pad(L, f"Campus road (30 ft), {n}", x0, x1, y0, y1, "road", z1=0.3, **DC)
+item(L, "Campus security fence (8 ft) and entrance gate", (2460, 3380, 300, 1380), (0, 8), register=False, **DC)
+for (x0, x1, y0, y1) in ((2460, 3000, 300, 300.5), (3030, 3380, 300, 300.5), (2460, 3380, 1379.5, 1380),
+                         (2460, 2460.5, 300, 1380), (3379.5, 3380, 300, 1380)):
+    B(x0, x1, y0, y1, 0, 8, "fence")
+B(2998.5, 3000, 299, 302, 0, 10, "fence"); B(3030, 3031.5, 299, 302, 0, 10, "fence")
+building(L, "DC admin / security / NOC building", 3060, 3180, 315, 370, 24, tag="DC-ADM", **DC)
+solid(L, "DC gatehouse", 3035, 3052, 318, 338, 0, 11, "building", **DC)
+# BTM substation: two 13.8/34.5 kV step-ups from the modular yard, the 230/34.5 kV tie, switchgear
+xfmr(L, "BTM-T1: 13.8/34.5 kV step-up from the modular yard (90 MVA)", 2530, 2565, 770, 810, 24, tag="BTM-T1", **DC)
+xfmr(L, "BTM-T2: 13.8/34.5 kV step-up from the modular yard (90 MVA)", 2580, 2615, 770, 810, 24, tag="BTM-T2", **DC)
+xfmr(L, "BTM-TIE: 230/34.5 kV backup / grid-parallel tie transformer (100 MVA)", 2630, 2675, 762, 815, 28, bushing=13,
+     tag="BTM-TIE", **DC)
+solid(L, "BTM 230 kV tie breaker (dead tank, normally open) + disconnect", 2650, 2668, 822, 845, 0, 22, "steel",
+      tag="BTM-52T", **DC)
+ehouse(L, "BTM 34.5 kV switchgear (main-tie-main, 3-mode transfer scheme, sync check)", 2530, 2650, 860, 900, 18,
+       tag="BTM-SWGR", **DC, info="Operating modes by breaker: (1) islanded: T1/T2 mains closed, tie open; (2) islanded "
+       "with backup: the 230 kV tie closes on loss of the modular supply (open transition) or for maintenance; "
+       "(3) grid-parallel: tie closed with sync check, modular yard and BESS firm the load. Typical, not engineered.")
+# BTM BESS for load steps and ride-through (AI training loads swing tens of percent in seconds)
+for r_ in range(5):
+    y = 440 + 60 * r_
+    for k in range(3):
+        x = 2530 + 50 * k
+        item(L, "BTM BESS container (ISO 40 ft)", (x, x + 40, y, y + 8), (0, 10.5), register=False, **DC)
+        B(x, x + 40, y, y + 8, 0, 1, "concrete"); B(x + 0.2, x + 39.8, y, y + 8, 1, 10.5, "bess")
+    xfmr(L, "BTM BESS PCS / MV skid", 2675, 2697, y + 14, y + 22, 9, fins="y", register=False, **DC)
+item(L, "BTM BESS 40 MW / 80 MWh: 15 containers + 5 PCS / MV skids", (2530, 2697, 440, 698), (0, 10.5), tag="BTM-BESS",
+     **DC, info="Absorbs the data-centre load steps so the engines follow slowly; ride-through on mode transfers.")
+# data halls (single storey, ~60 MW IT each) with west electrical galleries and rooftop dry coolers
+for (t, y0, y1) in (("A", 1000, 1300), ("B", 600, 900)):
+    building(L, f"Data hall {t}: ~60 MW IT, liquid-cooled racks (closed loop)", 2730, 3290, y0, y1, 45, c="hall",
+             tag=f"DH-{t}", **DC, info="Closed-loop liquid cooling to rooftop dry coolers; no evaporative water.")
+    building(L, f"Data hall {t} electrical gallery: 8 x 34.5/0.48 kV unit substations, UPS and battery rooms", 2700, 2728,
+             y0, y1, 30, c="ehouse", tag=f"DH-{t}-EG", **DC)
+# backup generation: 24 x 2.5 MW diesel gensets, 13.8 kV, paralleled and stepped up to 34.5 kV
+for row, y in enumerate((440, 500)):
+    for k in range(12):
+        x = 2740 + 46 * k
+        item(L, f"DC backup genset {row * 12 + k + 1} (2.5 MW diesel, 48 h belly tank)", (x, x + 40, y, y + 12), (0, 14),
+             register=False, **DC)
+        B(x, x + 40, y, y + 12, 0, 1.5, "concrete"); B(x + 0.5, x + 39.5, y + .5, y + 11.5, 1.5, 13, "ehouse")
+        R((x + 34, y + 6, 13), (x + 34, y + 6, 20), 0.9, "stack", seg=10)
+item(L, "DC backup gensets 24 x 2.5 MW (diesel)", (2740, 3286, 440, 512), (0, 20), tag="DC-GEN", **DC)
+ehouse(L, "DC genset paralleling switchgear (13.8 kV)", 3295, 3325, 440, 512, 14, tag="DC-PSG", **DC)
+xfmr(L, "DC-GSU: genset 13.8/34.5 kV step-up (75 MVA)", 3292, 3326, 525, 560, 22, tag="DC-GSU", **DC)
+
 # Fuel systems at LOD 3 (gas yard, M&R train, GT gas fuel modules, ULSD area, modular gas skids)
 import fuel as _fuel
 _fuel.build(dict(item=item, items=items, parts=parts))
@@ -1582,10 +1641,12 @@ LAYERS = {
     "OPT_BESS_ROUTES": ("H routes", "Optional routes"), "OPT_MOD_ROUTES": ("I modular routes", "Optional routes"),
     "OPT_TMP_ROUTES": ("I portable-pad routes", "Optional routes"), "OPT_IC_ROUTES": ("J routes", "Optional routes"),
     "OPT_LNG_ROUTES": ("K LNG routes", "Optional routes"), "OPT_H2_ROUTES": ("K H2 routes", "Optional routes"),
+    "OPT_DC": ("L BTM data centre (~150 MW, design option)", "Optional / adjacent"),
+    "OPT_DC_ROUTES": ("L BTM routes", "Optional routes"),
 }
 AREAS = {"A": "Power block", "B": "ACC", "C": "Grid interface", "D": "Fuel gas", "E": "Water / utilities",
          "F": "Controls / service", "G": "Carbon capture", "H": "BESS", "I": "Modular / portable power",
-         "J": "GT inlet chilling", "K": "Fuel supply (adjacent market)"}
+         "J": "GT inlet chilling", "K": "Fuel supply (adjacent market)", "L": "BTM data centre (design option)"}
 # Views from SK-3X1-11 (collections to show), plus two convenience views.
 BASE_SHOW = ["SITE", "BASE_POWER_BLOCK", "HALL_ROOF", "BASE_INLET_AIR", "BASE_ELECTRICAL", "R1_ROOF", "R1_WALL_E",
              "R4_ROOF", "R4_WALL_E", "BASE_SWITCHYARD", "BASE_UTILITIES", "BASE_SERVICES", "ROUTES_BASE",
@@ -1610,6 +1671,8 @@ VIEWS = [
     dict(k="O4", n="O4 Inlet chilling", show=BASE_SHOW + ["OPT_IC", "OPT_IC_ROUTES"], t=[180, 1160, 20], c=[-150, 820, 420]),
     dict(k="O5", n="O5 Gas, LNG, H2", show=BASE_SHOW + ["OPT_LNG", "OPT_H2", "OPT_LNG_ROUTES", "OPT_H2_ROUTES",
          "SWYD_FUTURE"], t=[1980, 1650, 10], c=[1650, 1150, 700]),
+    dict(k="O6", n="O6 BTM data centre", show=BASE_SHOW + ["OPT_MOD", "OPT_TMP", "OPT_DC", "OPT_MOD_ROUTES",
+         "OPT_DC_ROUTES", "SWYD_FUTURE"], t=[2850, 850, 20], c=[2050, -250, 950]),
     dict(k="ALL", n="Complete plant", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR")],
          t=[1210, 900, 40], c=[-350, -750, 1400]),
 ]
@@ -1630,6 +1693,7 @@ FIT = {
     "O3": dict(layers=["OPT_CCS", "OPT_CCSU"]),
     "O4": dict(layers=["OPT_IC"]),
     "O5": dict(layers=["OPT_LNG", "OPT_H2"], box=[1560, 2400, 1410, 1910, 0, 30]),
+    "O6": dict(layers=["OPT_DC"]),
     "ALL": dict(box=[0, 2420, 0, 1920, 0, 120]),
 }
 for v in VIEWS:
@@ -1738,6 +1802,9 @@ _ic.build()               # cycle 8: GT inlet chilling tower, chillers, pumps, C
 import bess as _bess
 _bess.routes(add_route)
 _bess.build()             # cycle 7: BESS yard, containers, PCS skids, collector, buildings
+import datacenter as _dc
+_dc.routes(add_route)
+_dc.build()               # BTM data centre: dressing, BESS / genset / substation detail
 import ccs as _ccs
 _ccs.routes(add_route)
 _ccs.build()              # cycle 6: carbon capture flue-gas path, amine piping and rack, regeneration, CT   # cycle 5: gate, fence wire and CCTV, drainage, lighting, admin / workshop dressing

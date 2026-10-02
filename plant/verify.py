@@ -243,7 +243,9 @@ for p, b in PB_ALL:
     if p["kind"] == "rod":
         b = (min(p["a"][0], p["b"][0]), max(p["a"][0], p["b"][0]), min(p["a"][1], p["b"][1]),
              max(p["a"][1], p["b"][1]), min(p["a"][2], p["b"][2]), max(p["a"][2], p["b"][2]))
-    if b[0] < -0.01 or b[1] > 2420.01 or b[2] < -0.01 or b[3] > 1920.01 or (b[4] < -0.01 and not below_ok.search(n)):
+    on_campus = items[p["item"]]["layer"].startswith("OPT_DC") or b[0] >= 2435      # BTM campus east of the fence
+    xmax = 3380.01 if on_campus else 2420.01
+    if b[0] < -0.01 or b[1] > xmax or b[2] < -0.01 or b[3] > 1920.01 or (b[4] < -0.01 and not below_ok.search(n)):
         oob.append(n)
 results["bounds"] = dict(out_of_bounds=sorted(set(oob)), ok=not oob)
 
