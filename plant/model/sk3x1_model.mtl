@@ -423,6 +423,11 @@ Kd 0.498 0.651 0.722
 Ka 0 0 0
 d 1
 
+newmtl waterline
+Kd 0.247 0.498 0.541
+Ka 0 0 0
+d 1
+
 newmtl window
 Kd 0.231 0.294 0.337
 Ka 0 0 0
