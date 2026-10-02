@@ -406,5 +406,9 @@
 "truck": {
 "hex": "#e9ebec",
 "opacity": 1
+},
+"waterline": {
+"hex": "#3f7f8a",
+"opacity": 1
 }
 }

@@ -517,7 +517,7 @@ def build(ns):
 
 
 # ---------------------------------------------------------------------------------------
-LOW = ("fuel_gas", "fuel_oil", "feedwater", "cw", "chw", "hydrogen", "lng")
+LOW = ("fuel_gas", "fuel_oil", "feedwater", "cw", "chw", "hydrogen", "lng", "water", "aux_steam")
 GAS_AREAS = ((1490, 1960, 1425, 1645), (1555, 1805, 1685, 1905))     # plant gas yard, M&R station
 
 

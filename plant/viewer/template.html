@@ -373,7 +373,7 @@ for(const b of Object.values(buckets)){
   }
 }
 // routes: one mesh per route polyline
-const PIPE_TYPES=['steam','condensate','feedwater','ccw','fuel_gas','fuel_oil','cw','chw','hydrogen','lng','mv_tray','lv_tray','control_tray','ipb','cable_trench'];
+const PIPE_TYPES=['steam','condensate','feedwater','ccw','fuel_gas','fuel_oil','cw','chw','hydrogen','lng','mv_tray','lv_tray','control_tray','ipb','cable_trench','water','aux_steam'];
 const pickOnly=new THREE.MeshBasicMaterial({visible:false});
 MODEL.routes.forEach((r,ri)=>{
   const z = r.z<0 ? 0.3 : r.z, h = r.z<0 ? 0.35 : r.h, geos=[];

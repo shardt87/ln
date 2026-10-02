@@ -74,7 +74,7 @@ LOOK = {
     "fuelgas": ("paint", "#c9a12e", .4, 0), "fueloil": ("paint", "#6d4a30", .45, 0),
     "feedwater": ("galv", "#b7bdc0", .35, .8),      # insulated, aluminium-jacketed
     "cable": ("paint", "#1d2124", .55, 0), "ipb": ("galv", "#a9b0b4", .35, .8),
-    "firewater": ("paint", "#a52a22", .45, 0), "sign": ("paint", "#efefea", .35, 0), "label": ("paint", "#efefea", .4, 0),
+    "firewater": ("paint", "#a52a22", .45, 0), "waterline": ("paint", "#3a7480", .45, 0), "sign": ("paint", "#efefea", .35, 0), "label": ("paint", "#efefea", .4, 0),
     "hivis": ("paint", "#bfd424", .55, 0), "hivis_o": ("paint", "#e06a22", .55, 0), "hardhat": ("paint", "#f1f1ec", .3, 0),
     "workwear": ("paint", "#26324a", .7, 0), "skin": ("paint", "#b88c6c", .6, 0), "truck": ("paint", "#e4e6e7", .25, .1),
     "cable_mv": ("paint", "#7e241d", .5, 0), "cable_tc": ("paint", "#1b1f22", .55, 0),
@@ -647,6 +647,10 @@ EPIC = [
          target=(450, 346, 9), lens=24, show="all"),
     dict(k="E34", n="ACC south-east corner: street risers, wind wall, stair tower, fan bells under the deck", eye=(1506, 322, 58),
          target=(1388, 470, 92), lens=24, show="all"),
+    dict(k="E35", n="Tank farm: raw, fire / service and demineralised water tanks, headers, fire pump house",
+         eye=(668, 1668, 46), target=(560, 1578, 14), lens=24, show="all"),
+    dict(k="E36", n="Ammonia storage and the auxiliary boiler: bund, scrubber, safety shower, burner and FD fan",
+         eye=(866, 1418, 34), target=(915, 1478, 16), lens=24, show="all"),
 ]
 
 

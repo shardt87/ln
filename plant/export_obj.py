@@ -93,7 +93,8 @@ for n, r in enumerate(model["routes"]):
     if r["type"] == "cable_trench":
         continue                      # exported as parts (switchyard.py)
     if r["z"] > 0 and r["type"] in ("steam", "condensate", "feedwater", "ccw", "fuel_gas", "fuel_oil", "cw",
-                                    "chw", "hydrogen", "lng", "mv_tray", "lv_tray", "control_tray", "ipb"):
+                                    "chw", "hydrogen", "lng", "mv_tray", "lv_tray", "control_tray", "ipb", "water",
+                                    "aux_steam"):
         continue                      # exported as parts (round pipes, ladder trays, IPB)
     f = groups.setdefault((f"{r['layer']}__route_{n:03d}_{r['type']}", r["color"]), [])
     z = 0.2 if r["z"] < 0 else r["z"]

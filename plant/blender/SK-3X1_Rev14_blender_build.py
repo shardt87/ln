@@ -228,7 +228,7 @@ for (iid, layer), ps in buckets.items():
 # one run per (layer, type, line) and lift N-S runs slightly above E-W runs.
 runs, risers = {}, {}
 PIPE_TYPES = ("steam", "condensate", "feedwater", "ccw", "fuel_gas", "fuel_oil", "cw", "chw", "hydrogen", "lng",
-              "mv_tray", "lv_tray", "control_tray", "ipb")
+              "mv_tray", "lv_tray", "control_tray", "ipb", "water", "aux_steam")
 for r in model["routes"]:
     if r["type"] in ("firewater", "cable_trench"):
         continue                      # buried main: hydrants and monitors show it, a ground strip would read as paint

@@ -16,7 +16,7 @@ import math
 PIPE = {   # type: (insulated, jacket radius factor)
     "steam": (True, 1.0), "condensate": (True, 1.0), "feedwater": (True, 1.0), "ccw": (False, 1.0),
     "fuel_gas": (False, 1.0), "fuel_oil": (False, 1.0), "cw": (False, 1.0), "chw": (True, 1.0),
-    "hydrogen": (False, 1.0), "lng": (True, 1.0),
+    "hydrogen": (False, 1.0), "lng": (True, 1.0), "water": (False, 1.0), "aux_steam": (True, 1.0),
 }
 JACKET = "pipe"
 
