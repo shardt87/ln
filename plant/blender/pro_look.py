@@ -655,6 +655,10 @@ EPIC = [
          eye=(352, 246, 34), target=(240, 322, 6), lens=24, show="all"),
     dict(k="E38", n="Warehouse and workshop yard: dumpsters, stock racks, gas-cylinder cage, delivery flatbed",
          eye=(96, 690, 40), target=(190, 585, 6), lens=24, show="all"),
+    dict(k="E39", n="Carbon capture train A: flue duct into the DCC, booster fan, overhead duct to the absorber, amine rack",
+         eye=(515, 1290, 105), target=(655, 1075, 30), lens=24, show="all"),
+    dict(k="E40", n="Regenerators: strippers with overhead lines, reboilers, reflux drums, CO2 header to compression",
+         eye=(1335, 1075, 85), target=(1140, 1195, 55), lens=24, show="all", sun=(28, 140)),
 ]
 
 

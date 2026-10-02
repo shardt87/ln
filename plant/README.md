@@ -39,6 +39,7 @@ The checks corrected the model in several places:
 | `switchyard.py` | Switchyard trenches, breaker and disconnect detail, line entrances, masts and fence (cycle 1). |
 | `station.py` | Transformer, e-house and EDG detail; duct-bank manholes (cycle 2). |
 | `acc.py` | ACC fans, drives, cable ladders, condensate drains, deck steel, vacuum pumps, dry coolers (cycle 3). |
+| `ccs.py` | Carbon capture flue-gas path, amine piping and rack, regeneration, CO2 header, cooling-tower fans (cycle 6). |
 | `services.py` | Main gate, fence wire and CCTV, drainage, lighting handholes, admin / warehouse / workshop dressing (cycle 5). |
 | `utilities.py` | Tank-farm water and aux-steam routes; fire pump house, ammonia, aux boiler, air compressor, OWS detail (cycle 4). |
 | `fuel.py` | Fuel systems at LOD 3 (gas yard, M&R train, GT gas fuel modules, ULSD area), pipe supports and road-crossing sleeves. See "Fuel systems" below. |
@@ -343,6 +344,16 @@ The model is improved zone by zone, one cycle per zone (`DETAIL_CYCLES.md` has t
 5. render close-ups;
 6. re-export and republish.
 
+**Cycle 6: carbon capture (`ccs.py`).**
+- **Flue-gas path closed:** the HRSG flue duct turns into the DCC, the DCC outlet feeds the booster fan, and the fan discharges into an overhead duct on steel bents to the absorber inlet, with an expansion joint.
+- **DCC:** quench-water riser and return, platform, caged ladder.
+- **Absorbers:** lean-amine riser to the upper bed, water-wash riser, rich-amine bottoms line to the pump skid, sample / analyser panel.
+- **CCS pipe rack:** two tiers along y 1115-1135 carrying rich and lean amine, LP steam, condensate and cooling water, with risers from each pump skid.
+- **Regeneration:** stripper overhead lines down the shell on guides to a CO2 product header into the compression building; reboiler vapour return and feed lines; a reflux drum per stripper; intercooler fin-fan banks and louvres at the compressor building.
+- **Cooling tower:** 30 fans with blades, hubs, gearboxes, shafts and motors; deck handrail; access stair; intake louvres; hot-water header with a riser per cell.
+- **Wiring:** CCS T-1 / T-2, F&G / control, instrument air, reclaimer, solvent storage, dampers and the cooling tower now carry cable applications; new 13.8 kV routes from the transformers into the CCS MV building, from it to the cooling-tower MCC, and fan cables along the tower.
+- **Cameras:** E39 and E40.
+
 **Cycle 5: controls and services (`services.py`).**
 - **Main gate:** sliding gate parked open, inbound and outbound barrier arms, card readers, speed table, entrance sign; a buried duct bank from the gatehouse feeds the gate, and another feeds the gatehouse from the control / admin building.
 - **Perimeter security:** barbed-wire arms with three strands on every fence post, and nine CCTV poles (corners, gate, access road).
@@ -495,7 +506,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
-**Epic set (`--set epic`, E1–E38):** golden hour, with the sun at 11°. The shots are:
+**Epic set (`--set epic`, E1–E40):** golden hour, with the sun at 11°. The shots are:
 - E1: the three stacks from beside the absorbers;
 - E2: a long-lens compression from the west road;
 - E3: a low pass over the ACC;
@@ -518,6 +529,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - E34: the ACC's south-east corner;
 - E35 and E36: the tank farm, and the ammonia storage with the aux boiler.
 - E37 and E38: the main gate with the gatehouse and control building, and the warehouse / workshop yard.
+- E39 and E40: carbon-capture train A (DCC, booster fan, duct, absorber, rack), and the regenerators.
 
 Output goes to `renders/epic/`.
 

@@ -38,7 +38,7 @@ HAZ = re.compile(r"gas yard|gas metering|regulation|filter-separator|performance
                  r"MOB-|CONT-\d|MT-\d|ULSD|fuel|blending|condensate tank", re.I)
 RULES = [   # (pattern, applications), first match wins
     (r"230 kV breaker|entrance: surge|CCVT", ["ctrl", "inst", "gnd"]),     # CT / VT secondaries, trip / close, alarms
-    (r"transformer|GSU|UAT|T4-|LCT-|T-R\d|T-MOD|T-H2|MPT|rectifier", ["mv", "ctrl", "inst", "gnd"]),
+    (r"transformer|GSU|UAT|CCS T-\d|T4-|LCT-|T-R\d|T-MOD|T-H2|MPT|rectifier", ["mv", "ctrl", "inst", "gnd"]),
     (r"switchgear|e-house|PCM|MCC|load-centre|EMS|SCADA|cubicle|board|PDC", ["mv", "lv", "ctrl", "data", "fa", "light",
                                                                             "gnd"]),
     (r"BFP|boiler feed|CO2 compression|export compressor|circulating-water pump|fuel-gas compressors|"
@@ -47,17 +47,17 @@ RULES = [   # (pattern, applications), first match wins
      ["mv", "lv", "ctrl", "inst", "tcx", "data", "fa", "gnd"]),
     (r"Comms tower", ["lv", "data", "light", "gnd"]),               # radio / microwave, aviation light
     (r"CEMS|analy|SWAS|metering|gas quality|EMS", ["lv", "inst", "data", "light", "gnd"]),
-    (r"building|house|shelter|warehouse|workshop|gatehouse|control room|admin", ["lv", "ctrl", "light", "fa", "data",
+    (r"F&G|building|house|shelter|warehouse|workshop|gatehouse|control room|admin", ["lv", "ctrl", "light", "fa", "data",
                                                                                "gnd"]),
     (r"tank|dike|sump|separator", ["lv", "inst", "ht", "gnd"]),
-    (r"pump|fan|blower|compressor|cooler|chiller|tower|heater|skid|vaporizer|crane|hoist|valve|station|filter|"
+    (r"instrument air|reclaimer|storage|damper|filter|pump|fan|blower|compressor|cooler|chiller|tower|heater|skid|vaporizer|crane|hoist|valve|station|filter|"
      r"electrolyzer|purification|dryer|scrubber|DCC|absorber|stripper|reboiler|exchanger",
      ["lv", "ctrl", "inst", "gnd"]),
 ]
 TEXT = {"mv": MV, "lv": LV, "ctrl": CTRL, "inst": INST, "tcx": TCX, "fa": FA, "light": LIGHT, "data": DATA,
         "gnd": GND, "ht": HT}
 SKIP = re.compile(r"pad\b|lane|road|corridor|apron|landing|laydown|floor|deck|foundation|^Common turbine hall|"
-                  r"stack \(|breeching|transition duct|exhaust duct|inlet duct|dead-end|bus \d|(?<!Comms )tower \(|monopole|"
+                  r"stack \(|breeching|transition duct|exhaust duct|inlet duct|dead-end|bus \d|(?<!Comms )(?<!cooling )tower \(|monopole|"
                   r"Pipe |Cable trays|fence|compound|containment dike|right of way|future|reserved", re.I)
 
 

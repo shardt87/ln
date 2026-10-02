@@ -260,6 +260,8 @@ class Realism:
             (1452, 360, 0, 1.6), (1210, 330, 0, 4.7),                            # R4, ACC stair
             (288, 302, 0, 3.1), (262, 268, 0, 1.6),                              # guard at the gate, card reader
             (190, 596, 0, 4.7), (165, 628, 0, 0),                                # workshop yard
+            (656, 1176, 0, 1.6), (716, 1110, 0, 3.1), (1092, 1222, 0, 4.7),     # CCS train A, rack, strippers
+            (900, 1726, 0, 1.6), (1300, 1372, 0, 3.1),                           # CCS cooling tower, CO2 coolers
         ]
         for (x, y, z, a) in spots:
             for (dx, dy) in ((0, 0), (2, 0), (-2, 0), (0, 2), (0, -2), (3, 3), (-3, -3)):
