@@ -1355,6 +1355,7 @@ ROUTE_STYLE = {
     "lng":          (4, 1.5, 1.5, "lng", "LNG (cryogenic)", "OPT_LNG_ROUTES"),
     "fuel_oil":     (6.5, 1, 1, "fueloil", "Backup fuel oil (ULSD), conditional", "PROCESS_PIPING"),
     "firewater":    (-4, 1.2, 1.2, "firewater", "Firewater ring main (buried)", "PROCESS_PIPING"),
+    "cable_trench": (-1, 3, .6, "concrete", "Control-cable trench (precast, covered)", "ROUTES_BASE"),
     "hmod":         (45, 0.8, 0.8, "conductor", "230 kV overhead tie H-MOD (reserved corridor)", "HV_CORRIDOR"),
 }
 OPT_AREAS = [  # (layer, x0, x1, y0, y1) from sheet 02
@@ -1705,6 +1706,11 @@ for r in routes:
                 p[0] = 1157.0
             if r["type"] == "lv_tray" and p[1] == 580.0 and 1149 <= p[0] <= 1441:
                 p[1] = 585.0
+
+# Switchyard control-cable trenches (routes; their concrete is drawn in switchyard.py)
+import switchyard as _swyd
+_swyd.routes(add_route)
+_swyd.build(routes)       # trenches, breaker mechanisms, disconnect blades, line entrances, masts, fence
 
 # Wiring applications: every powered / instrumented item gets its cable applications, and a buried
 # feeder to the nearest underground cable network where no cable route reached it

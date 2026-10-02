@@ -230,7 +230,7 @@ runs, risers = {}, {}
 PIPE_TYPES = ("steam", "condensate", "feedwater", "ccw", "fuel_gas", "fuel_oil", "cw", "chw", "hydrogen", "lng",
               "mv_tray", "lv_tray", "control_tray", "ipb")
 for r in model["routes"]:
-    if r["type"] == "firewater":
+    if r["type"] in ("firewater", "cable_trench"):
         continue                      # buried main: hydrants and monitors show it, a ground strip would read as paint
     if r["z"] > 0 and r["type"] in PIPE_TYPES:
         continue                      # drawn as parts: round pipes (pipes.py), ladder trays and IPB (trays.py)

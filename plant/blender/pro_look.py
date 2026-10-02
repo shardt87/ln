@@ -639,6 +639,8 @@ EPIC = [
          sun=(42, 200)),
     dict(k="E30", n="Access road by the turbine hall: crews, pickups, mobile crane, hydrants and GSU deluge",
          eye=(520, 268, 9), target=(760, 330, 18), lens=28, show="all"),
+    dict(k="E31", n="Switchyard bay D2: breakers with mechanisms, disconnect blades, trench to the relay house",
+         eye=(862, 102, 30), target=(905, 160, 14), lens=24, show="all"),
 ]
 
 

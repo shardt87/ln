@@ -90,6 +90,8 @@ for p in model["parts"]:
 for n, r in enumerate(model["routes"]):
     if BASE_ONLY and r["layer"].startswith(("OPT_", "HV_CORRIDOR")):
         continue
+    if r["type"] == "cable_trench":
+        continue                      # exported as parts (switchyard.py)
     if r["z"] > 0 and r["type"] in ("steam", "condensate", "feedwater", "ccw", "fuel_gas", "fuel_oil", "cw",
                                     "chw", "hydrogen", "lng", "mv_tray", "lv_tray", "control_tray", "ipb"):
         continue                      # exported as parts (round pipes, ladder trays, IPB)

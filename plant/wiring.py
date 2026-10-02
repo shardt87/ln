@@ -16,7 +16,8 @@ connection to the cable network.
 import math
 import re
 
-ELEC = ("mv_tray", "lv_tray", "control_tray", "duct_bank", "mvlv_cable", "hv_cable", "hv_overhead", "ipb", "hmod")
+ELEC = ("mv_tray", "lv_tray", "control_tray", "duct_bank", "mvlv_cable", "hv_cable", "hv_overhead", "ipb", "hmod",
+        "cable_trench")
 UNDER = ("duct_bank", "mvlv_cable")
 
 MV = "MV power 13.8 / 4.16 kV: MV-105 EPR shielded, or ARMOR-X MC-HL MV-105 (ICEA S-93-639)"
@@ -36,6 +37,7 @@ HAZ = re.compile(r"gas yard|gas metering|regulation|filter-separator|performance
                  r"fuel-gas compressor|gas conditioning|ESD|LNG|H2 |hydrogen|genset|RICE|SC-\d|TM-\d|GEN-|"
                  r"MOB-|CONT-\d|MT-\d|ULSD|fuel|blending|condensate tank", re.I)
 RULES = [   # (pattern, applications), first match wins
+    (r"230 kV breaker|entrance: surge|CCVT", ["ctrl", "inst", "gnd"]),     # CT / VT secondaries, trip / close, alarms
     (r"transformer|GSU|UAT|T4-|LCT-|T-R\d|T-MOD|T-H2|MPT|rectifier", ["mv", "ctrl", "inst", "gnd"]),
     (r"switchgear|e-house|PCM|MCC|load-centre|EMS|SCADA|cubicle|board|PDC", ["mv", "lv", "ctrl", "data", "fa", "light",
                                                                             "gnd"]),
@@ -80,6 +82,13 @@ def _near(it, p, t=15):
     return f[0] - t <= p[0] <= f[1] + t and f[2] - t <= p[1] <= f[3] + t
 
 
+def _passes(it, segs, t=15):
+    """A cable route passes within t of the item (a trench or tray running past it)."""
+    f = it["fp"]
+    return any(min(a[0], b[0]) - t <= f[1] and max(a[0], b[0]) + t >= f[0] and
+               min(a[1], b[1]) - t <= f[3] and max(a[1], b[1]) + t >= f[2] for a, b in segs)
+
+
 def _closest_on_seg(p, a, b):
     ax, ay = a
     bx, by = b
@@ -100,6 +109,7 @@ def route_layer(it, layers):
 
 def build(items, routes, layers, add_route):
     ends = [(p, r["type"]) for r in routes if r["type"] in ELEC for p in (r["points"][0], r["points"][-1])]
+    segs = [(a, b) for r in routes if r["type"] in ELEC for a, b in zip(r["points"], r["points"][1:])]
     n_feed, n_apps = 0, 0
     for it in list(items):
         if not it.get("register") or it["layer"] in ("SITE",) or it["z"][1] < 1 or SKIP.search(it["name"]):
@@ -115,7 +125,7 @@ def build(items, routes, layers, add_route):
         if it["tag"] == "CRANE":
             it["wiring"] = apps + ["Fed from the crane conductor bar along the runway girder"]
             continue
-        if any(_near(it, p) for p, t in ends):
+        if any(_near(it, p) for p, t in ends) or _passes(it, segs):
             continue
         # nearest point of the underground cable network, own system first
         lay = route_layer(it, layers)

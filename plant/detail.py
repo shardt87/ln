@@ -241,10 +241,7 @@ class Detail:
             yb = (it["fp"][2] + it["fp"][3]) / 2
             for yy in (yb - 11, yb + 11):
                 self.rod(it["id"], it["layer"], (530, yy, 55), (1925, yy, 55), .08, "conductor", seg=4)
-        # gravel pad edge curbs and control cable trench along the diameters
-        for it in self.find(r"disconnect switches"):
-            x = (it["fp"][0] + it["fp"][1]) / 2
-            self.box(it["id"], it["layer"], x - 14, x - 11, 65, 237, 0, .6, "concrete")
+        # (control-cable trenches: switchyard.py)
 
     def racks(self):
         # process pipes on the EL 24 and EL 30 tiers (the drawn routes carry the rest)

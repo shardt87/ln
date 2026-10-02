@@ -136,7 +136,8 @@ def main():
         for n in sorted(clash):
             findings["cable tray / IPB through equipment"].append(n)
     # 6. wiring applications: every item that needs wiring has a cable route ending at it or passing it
-    elec = ("mv_tray", "lv_tray", "control_tray", "duct_bank", "mvlv_cable", "hv_cable", "hv_overhead", "ipb", "hmod")
+    elec = ("mv_tray", "lv_tray", "control_tray", "duct_bank", "mvlv_cable", "hv_cable", "hv_overhead", "ipb", "hmod",
+            "cable_trench")
     segs = [(a, b) for r in routes if r["type"] in elec for a, b in zip(r["points"], r["points"][1:])]
     for it in M["items"]:
         if not it.get("wiring") or it["layer"] == "R1_INTERIOR" or it["tag"] == "CRANE":

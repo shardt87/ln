@@ -373,7 +373,7 @@ for(const b of Object.values(buckets)){
   }
 }
 // routes: one mesh per route polyline
-const PIPE_TYPES=['steam','condensate','feedwater','ccw','fuel_gas','fuel_oil','cw','chw','hydrogen','lng','mv_tray','lv_tray','control_tray','ipb'];
+const PIPE_TYPES=['steam','condensate','feedwater','ccw','fuel_gas','fuel_oil','cw','chw','hydrogen','lng','mv_tray','lv_tray','control_tray','ipb','cable_trench'];
 const pickOnly=new THREE.MeshBasicMaterial({visible:false});
 MODEL.routes.forEach((r,ri)=>{
   const z = r.z<0 ? 0.3 : r.z, h = r.z<0 ? 0.35 : r.h, geos=[];
@@ -389,7 +389,7 @@ MODEL.routes.forEach((r,ri)=>{
   if(!geos.length) return;
   const cls = CLASS[r.color] || 'paint';
   // above-grade pipe routes are drawn as round pipes (parts); the box stays as an invisible pick target
-  const pipe = r.z>0 && PIPE_TYPES.includes(r.type);
+  const pipe = (r.z>0 || r.type==='cable_trench') && PIPE_TYPES.includes(r.type);
   const m = new THREE.Mesh(toThree(THREE.BufferGeometryUtils.mergeBufferGeometries(geos,false)),
                            pipe ? pickOnly : surfMat(cls==='copper'?'copper':cls));
   m.castShadow = r.z>0 && !pipe; m.receiveShadow = !pipe; m.userData.route = ri; grp(r.layer).add(m); pickables.push(m);

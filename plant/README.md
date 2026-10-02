@@ -36,6 +36,7 @@ The checks corrected the model in several places:
 | `hrsg.py` | HRSG casing, SCR, drums, steam leads and blowdown tanks at LOD 3. |
 | `wiring.py` | Wiring applications per item and buried feeders to every powered item. |
 | `realism.py` | Firewater, small-bore piping, signage, people, vehicles, scaffolding and HRSG tube harps. |
+| `switchyard.py` | Switchyard trenches, breaker and disconnect detail, line entrances, masts and fence (cycle 1). |
 | `fuel.py` | Fuel systems at LOD 3 (gas yard, M&R train, GT gas fuel modules, ULSD area), pipe supports and road-crossing sleeves. See "Fuel systems" below. |
 | `routes_base.json`, `routes_optional.json` | Tray, bus, duct-bank, 230 kV and process-pipe centrelines from the vector geometry of sheets 01 and 02. |
 | `extract_reference.py` | Pulls reference geometry from the drawing PDF into `reference/sk3x1_rev14_reference.json` (committed, so the PDF is not needed to verify). |
@@ -328,6 +329,24 @@ New epic cameras:
 
 `audit.py` now checks that every item with wiring applications has a cable route ending at it or passing it.
 
+## Detail cycles
+
+The model is improved zone by zone, one cycle per zone (`DETAIL_CYCLES.md` has the plan and what each cycle changed). Each cycle runs the same steps:
+1. audit the zone's wiring and connections;
+2. detail the equipment, buildings, piping and cable runs;
+3. add realism;
+4. run every check;
+5. render close-ups;
+6. re-export and republish.
+
+**Cycle 1: switchyard (`switchyard.py`).**
+- **Cable trenches:** precast trenches with covers run from the relay house along the yard and down every diameter; the breakers' control cabling runs in them.
+- **Breakers:** operating-mechanism cabinets, bushing CTs and ground leads.
+- **Disconnect switches:** centre-break blades and motor operators.
+- **Line entrances:** arresters, CCVTs and line traps.
+- **Yard:** lighting masts, and a fence with a gate at the relay house.
+- **Camera:** E31.
+
 ## Realism pass
 
 `realism.py` runs last, so every placement is tested against the finished geometry. Anything that would pass through something is skipped. Everything here is typical, not engineered.
@@ -439,7 +458,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
-**Epic set (`--set epic`, E1–E30):** golden hour, with the sun at 11°. The shots are:
+**Epic set (`--set epic`, E1–E31):** golden hour, with the sun at 11°. The shots are:
 - E1: the three stacks from beside the absorbers;
 - E2: a long-lens compression from the west road;
 - E3: a low pass over the ACC;
@@ -456,7 +475,8 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - E19 and E20: the GSUs facing the yard, and the complete switchyard;
 - E21 to E25: turbine-hall cutaways (the GTs, a GT1 close-up, the cable trays, the IPB, the gallery);
 - E26 to E28: HRSG 1 from the north-west, the HRSG roofs, and the stack with its breeching and CEMS;
-- E29 and E30: the HRSG 3 tube-harp cutaway, and the access road by the hall.
+- E29 and E30: the HRSG 3 tube-harp cutaway, and the access road by the hall;
+- E31: switchyard bay D2.
 
 Output goes to `renders/epic/`.
 
