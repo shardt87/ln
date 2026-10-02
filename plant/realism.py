@@ -264,6 +264,7 @@ class Realism:
             (900, 1726, 0, 1.6), (1300, 1372, 0, 3.1),                           # CCS cooling tower, CO2 coolers
             (1690, 512, 0, 1.6), (1700, 514, 0, 4.7), (1810, 385, 0, 3.1),      # BESS aisle, collector e-house
             (246, 1095, 0, 0), (158, 1232, 0, 1.6),                              # inlet chilling pumps, tower
+            (1900, 1714, 0, 4.7), (2108, 1742, 0, 0), (2235, 1530, 0, 3.1),     # LNG unloading, tanks, H2 yard
         ]
         for (x, y, z, a) in spots:
             for (dx, dy) in ((0, 0), (2, 0), (-2, 0), (0, 2), (0, -2), (3, 3), (-3, -3)):
@@ -349,6 +350,7 @@ class Realism:
         self.place_vehicle(248, 278, 0, "pickup", 8)                  # inbound at the barrier
         self.place_vehicle(118, 535, math.pi / 2, "flatbed", 6)       # delivery at the warehouse
         self.place_vehicle(1660, 509, 0, "pickup", 8)                 # BESS technicians in the aisle
+        self.place_vehicle(1955, 1701, 0, "flatbed", 6)               # LNG trailer at unloading bay 2
         for (x, y) in ((345, 520), (350, 600)):
             if self.place_vehicle(x, y, 0, "forklift", 4.5):
                 break

@@ -667,6 +667,10 @@ EPIC = [
          eye=(345, 1015, 58), target=(175, 1195, 16), lens=24, show="all"),
     dict(k="E44", n="Inlet-chilling tower: fans, louvres, stair, CHW pumps and the TES tank",
          eye=(22, 1372, 72), target=(185, 1235, 18), lens=24, show="all"),
+    dict(k="E45", n="LNG satellite: unloading arms, ambient vaporizers, vacuum-jacketed tanks in the impoundment",
+         eye=(1862, 1655, 58), target=(2075, 1790, 6), lens=24, show="all"),
+    dict(k="E46", n="Green hydrogen: electrolyzer building, dryer, compressors, tube banks, T-H2",
+         eye=(1985, 1612, 72), target=(2215, 1500, 4), lens=24, show="all"),
 ]
 
 

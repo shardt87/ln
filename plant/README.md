@@ -39,6 +39,7 @@ The checks corrected the model in several places:
 | `switchyard.py` | Switchyard trenches, breaker and disconnect detail, line entrances, masts and fence (cycle 1). |
 | `station.py` | Transformer, e-house and EDG detail; duct-bank manholes (cycle 2). |
 | `acc.py` | ACC fans, drives, cable ladders, condensate drains, deck steel, vacuum pumps, dry coolers (cycle 3). |
+| `lng_h2.py` | LNG satellite and green hydrogen detail, H2 piping, electrolyzer cabling (cycle 9). |
 | `inletchill.py` | GT inlet chilling: CW / CHW loops, chillers, tower fans, pump sets (cycle 8). |
 | `bess.py` | BESS yard, container and PCS skid detail, DC trenches, 34.5 kV collector feeders (cycle 7). |
 | `ccs.py` | Carbon capture flue-gas path, amine piping and rack, regeneration, CO2 header, cooling-tower fans (cycle 6). |
@@ -346,6 +347,16 @@ The model is improved zone by zone, one cycle per zone (`DETAIL_CYCLES.md` has t
 5. render close-ups;
 6. re-export and republish.
 
+**Cycle 9: LNG satellite and green hydrogen (`lng_h2.py`).**
+- **LNG tanks:** dished heads, valve / instrument cabinets with frosted fill and withdrawal lines into a liquid header, PSVs with a vent header, level gauges, ID plates.
+- **Unloading:** two articulated loading arms over the truck bays with counterweights, hose rack, ESD button; an LNG trailer at bay 2.
+- **Vaporizers:** rebuilt as ambient finned columns (star fins, frosted) with inlet / outlet manifolds and the glycol trim heater.
+- **Send-out pumps and BOG compressor:** pump pots with heads and spools; compressor, motor and knock-out drum on a skid.
+- **Impoundment:** hi-ex foam generator, gas detectors, hazard signs.
+- **Hydrogen:** electrolyzer-building ridge vents, louvres, gas detectors, signs, roll-up door; twin-tower dryer with regeneration heater; compressor container doors, roof coolers and vents; tube-bank end frames, manifolds and valves.
+- **Routes and wiring:** H2 piping building → dryer → compressors → tube banks; floor-trench cables from each rectifier transformer to its rectifier and DC bus to its electrolyzer (electrolyzers and rectifiers had no cable routes or applications).
+- **Cameras:** E45 and E46.
+
 **Cycle 8: GT inlet chilling (`inletchill.py`).**
 - **Loops closed:** condenser water from the tower basin to the CW pumps, into the chillers and back up to the tower; chilled water from the chillers to the CHW pumps and the TES tank (new `cw` / `chw` routes, drawn as round pipe).
 - **Chiller building:** six chiller packages (evaporator, condenser, compressor, motor, starter), relief vent stacks, roof exhaust fans, wall louvres, roll-up door.
@@ -527,7 +538,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
-**Epic set (`--set epic`, E1–E44):** golden hour, with the sun at 11°. The shots are:
+**Epic set (`--set epic`, E1–E46):** golden hour, with the sun at 11°. The shots are:
 - E1: the three stacks from beside the absorbers;
 - E2: a long-lens compression from the west road;
 - E3: a low pass over the ACC;
@@ -553,6 +564,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - E39 and E40: carbon-capture train A (DCC, booster fan, duct, absorber, rack), and the regenerators.
 - E41 and E42: a BESS aisle, and the collector e-house with the main power transformer.
 - E43 and E44: the GT inlet-chilling plant, and its cooling tower.
+- E45 and E46: the LNG satellite, and the green-hydrogen plant.
 
 Output goes to `renders/epic/`.
 
