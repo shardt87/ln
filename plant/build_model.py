@@ -238,9 +238,13 @@ for (x0, x1, y0, y1, n) in [
 pad(L, "Removal apron", 400, 480, 410, 560, "road", z1=0.25, sheet="SK-3X1-10",
     info="GT, generator and ST leave the laydown bay through the west door onto a trailer.")
 item(L, "Perimeter fence (8 ft)", (0, 2420, 0, 1920), (0, 8), basis="typical", register=False)
-for (x0, x1, y0, y1) in [(0, 2420, 0, 0.5), (0, 2420, 1919.5, 1920), (0, 0.5, 0, 270), (0, 0.5, 300, 1920),
-                         (2419.5, 2420, 0, 1920)]:
+for (x0, x1, y0, y1) in [(0, 2420, 0, 0.5), (0, 1465, 1919.5, 1920), (1505, 2420, 1919.5, 1920), (0, 0.5, 0, 270),
+                         (0, 0.5, 300, 1920), (2419.5, 2420, 0, 1920)]:
     B(x0, x1, y0, y1, 0, 8, "fence")
+# north gate (x 1465-1505): link to the coastal LNG terminal (sheet 15 variant, placed north of the plant);
+# gate posts, and the two swing leaves parked open against the fence inside
+B(1464, 1465.5, 1918.5, 1920, 0, 10, "fence"); B(1504.5, 1506, 1918.5, 1920, 0, 10, "fence")
+B(1446, 1464, 1918.6, 1919, 0, 8, "fence"); B(1506, 1524, 1918.6, 1919, 0, 8, "fence")
 solid(L, "Gatehouse", 277, 300, 305, 325, 0, 12, "building", area="F", sheet="SK-3X1-12",
       info="Keadby 3 DCO: gatehouse 6 x 7 x 4 m.")
 B(0, 1.5, 270, 272, 0, 10, "fence"); B(0, 1.5, 298, 300, 0, 10, "fence")

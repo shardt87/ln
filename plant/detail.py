@@ -311,6 +311,8 @@ class Detail:
         # fence posts every 20 ft
         for x in [0.3] + list(range(20, 2420, 20)) + [2419.7]:
             for y in (0.25, 1919.75):
+                if y > 1 and 1462 < x < 1508:                  # north gate
+                    continue
                 self.box(sid, "SITE", x - .2, x + .2, y - .2, y + .2, 0, 8.5, "fence")
         for y in [0.3] + list(range(20, 1920, 20)) + [1919.7]:
             for x in (0.25, 2419.75):

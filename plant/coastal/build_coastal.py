@@ -30,6 +30,11 @@ PLANT = os.path.dirname(HERE)
 REF = json.load(open(os.path.join(PLANT, "reference", "sk3x1_rev14_sheet15.json")))
 BASE = json.load(open(os.path.join(PLANT, "sk3x1_model.json")))
 
+# Site placement: sheet 15 draws the terminal east of the plant with the sea further east. The model
+# places it NORTH of the plant (shoreline north, jetty running north): every sheet-15 shape is built in
+# the sheet frame and then rotated 90 deg counter-clockwise, x' = C - y, y' = x - D. The links into the
+# plant (access road, send-out pipeline, 230 kV cable) are built directly in the site frame.
+ROT_C, ROT_D = 2470.0, 500.0
 SEA = -8.0          # mean sea level, ft (plant grade is 0, the shore revetment drops to it)
 FSRU_OFFSET = 21000 - (REF["panels"]["B"]["keys"]["14"]["fp"][0] - REF["panels"]["B"]["keys"]["12"]["fp"][1])
 
@@ -211,6 +216,7 @@ def build_A():
     S = Scene("A")
     P = REF["panels"]["A"]
     K = {k: v["fp"] for k, v in P["keys"].items()}
+    S.K = K
     shore = P["shoreline_x"]
     L_T = S.layer("LNG_TERMINAL", "A LNG import terminal (onshore)")
     L_J = S.layer("LNG_JETTY", "A Jetty trestle and berth")
@@ -222,8 +228,8 @@ def build_A():
     S.box(bx0, bx1, by0, by1, -.3, .25, "gravel")
     S.fence(bx0, bx1, by0, by1, gap=((bx0, by1, bx0, by0), (.52, .6)))
     # internal roads and the connection to the plant's east ring road
-    S.item(L_T, "Terminal roads (30 ft)", (2420, bx1, by0, by1), (0, .32))
-    for (x0, x1, y0, y1) in ((2420, bx0 + 40, 560, 590), (bx0 + 10, bx0 + 40, by0 + 20, by1 - 20),
+    S.item(L_T, "Terminal roads (30 ft)", (bx0, bx1, by0, by1), (0, .32))
+    for (x0, x1, y0, y1) in ((bx0 + 10, bx0 + 40, by0 + 20, by1 - 20),
                              (bx0 + 10, 3440, 560, 590), (3400, 3430, by0 + 20, by1 - 20),
                              (bx0 + 10, 3430, 1390, 1420), (bx0 + 10, 3430, by0 + 20, by0 + 50)):
         S.box(x0, x1, y0, y1, -.1, .32, "road")
@@ -364,8 +370,6 @@ def build_A():
     jetty_lng = next(p for k, p in dashed.items() if k[0][0] > 5000)
     tank_to_pumps = next(p for k, p in dashed.items() if abs(k[0][0] - cx) < 2)
     vap_to_meter = next(p for k, p in dashed.items() if abs(k[0][1] - 449.8) < 2)
-    sendout = next(p for k, p in dashed.items() if abs(k[0][0] - K["7"][0]) < 2)
-    cable = next(p for k, p in dashed.items() if abs(k[0][1] - 941.9) < 2)
     # tank to the jetty root: along the drawn diagonal, on T-bents, 3 LNG + 1 vapour line
     onshore = [(jetty_lng[1][0], jetty_lng[1][1]), (jetty_lng[2][0] + 12, jetty_lng[2][1])]
     S.item(L_P, "LNG unloading lines, tank to jetty (3 LNG + 1 vapour)",
@@ -379,12 +383,6 @@ def build_A():
     S.item(L_P, "Send-out gas, vaporizers to metering", (vap_to_meter[1][0] - 4, K["2"][0], K["2"][2],
                                                          vap_to_meter[2][1]), (0, 8))
     S.pipe_path([tuple(p) for p in vap_to_meter], 4, 2.6, "pipe", bents=30)
-    # buried send-out pipeline to the plant's pipeline M&R (shown as its right of way)
-    S.item(L_P, "Buried send-out pipeline to the plant M&R (right of way)",
-           (sendout[-1][0] - 10, sendout[0][0], sendout[0][1] - 10, sendout[2][1] + 30), (-.2, 4))
-    row = [tuple(p) for p in sendout]
-    row = [row[0], row[1], (row[2][0], row[2][1] + 18), (row[3][0], row[3][1] + 18)]
-    S.row_strip(row, 16)
     # substation cable trench to pumps, BOG and intake (orange on the sheet)
     S.item(L_P, "MV cable trench, substation to pumps, BOG and intake", (K["5"][1], K["8"][0], 600, 610), (-.2, .4))
     S.box(K["5"][1], K["4"][0], 604, 610, -.2, .4, "concrete")
@@ -393,10 +391,6 @@ def build_A():
     S.box(K["3"][0] + 50, K["3"][0] + 56, K["3"][3], 604, -.2, .4, "concrete")
     S.box(K["4"][1], K["8"][0] + 40, 604, 610, -.2, .4, "concrete")
     S.box(K["8"][0] + 34, K["8"][0] + 40, K["8"][3], 604, -.2, .4, "concrete")
-    # terminal power: buried cable from the plant 230 kV yard (east end) to the terminal substation
-    S.item(L_P, "Terminal power supply: buried cable from the plant switchyard (right of way)",
-           (1940, K["5"][0], 140, 690), (-.2, .4))
-    S.row_strip([(1940, 150), (2450, 150), (2450, 680), (K["5"][0], 680)], 6, color="corridor", markers=300)
     # relief / vent header from the tank roof to the flare knock-out drum, on T-bents over the roads
     ra = math.radians(45)
     rx, ry = cx + (R + 5) * math.cos(ra), cy + (R + 5) * math.sin(ra)
@@ -510,6 +504,7 @@ def build_B():
     S = Scene("B")
     P = REF["panels"]["B"]
     K = {k: v["fp"] for k, v in P["keys"].items()}
+    S.K = K
     shore = P["shoreline_x"]
     L_T = S.layer("LNG_LANDFALL", "B Landfall valve station and buried pipeline")
     S.lay_marine = S.layer("MARINE", "FSRU, LNG carrier and mooring")
@@ -531,9 +526,7 @@ def build_B():
     S.box(fp[0] + 110, fp[0] + 140, fp[3] - 30, fp[3] - 10, 0, 10, "ehouse")        # control kiosk, CP rectifier
     S.rod((fp[0] + 150, fp[3] - 20, 0), (fp[0] + 150, fp[3] - 20, 45), .5, "steel")  # SCADA mast
     # buried pipeline to the plant M&R, and the landfall to the shoreline
-    land = next(d["pts"] for d in P["dashed"] if d["pts"] and d["pts"][0][0] < fp[0] + 2)
-    S.item(L_T, "Buried gas pipeline to the plant M&R (right of way)", (1720, fp[0], land[0][1] - 10, 1950), (-.2, 4))
-    S.row_strip([tuple(land[0]), tuple(land[1]), (land[2][0], land[2][1] + 18), (land[3][0], land[3][1] + 18)], 16)
+    # (the buried pipeline to the plant M&R is built in the site frame, see links_B)
     S.item(L_T, "Subsea pipeline landfall (shore approach, buried)", (fp[1], shore + 40, ym - 10, ym + 10), (-.2, 4))
     S.row_strip([(fp[1], ym), (shore - 8, ym)], 16)
     S.box(shore - 30, shore - 6, ym - 12, ym + 12, -.3, 2.5, "concrete")             # beach valve pit
@@ -577,8 +570,77 @@ def build_B():
                    label="FSRU moored offshore (sheet 15, panel B; distance to scale in the model)")
 
 
+def T(x, y):
+    """Sheet frame to site frame (90 deg counter-clockwise, terminal north of the plant)."""
+    return ROT_C - y, x - ROT_D
+
+
+def to_site(S):
+    for it in S.items:
+        x0, x1, y0, y1 = it["fp"]
+        it["fp"] = [round(ROT_C - y1, 2), round(ROT_C - y0, 2), round(x0 - ROT_D, 2), round(x1 - ROT_D, 2)]
+        it["frame"] = "sheet15+rot90"
+    for p in S.parts:
+        if p["kind"] in ("box", "prism"):
+            (x0, y0, z0), (x1, y1, z1) = p["min"], p["max"]
+            p["min"] = [round(ROT_C - y1, 2), round(x0 - ROT_D, 2), z0]
+            p["max"] = [round(ROT_C - y0, 2), round(x1 - ROT_D, 2), z1]
+            if p["kind"] == "prism":
+                p["ridge"] = "y" if p.get("ridge", "y") == "x" else "x"
+        elif p["kind"] == "rod":
+            for k in ("a", "b"):
+                x, y, z = p[k]
+                p[k] = [round(ROT_C - y, 2), round(x - ROT_D, 2), z]
+        elif p["kind"] == "hex":
+            p["v"] = [[round(ROT_C - y, 2), round(x - ROT_D, 2), z] for (x, y, z) in p["v"]]
+
+
+def links_A(S, K):
+    """Links from the terminal into the plant, in the site frame."""
+    L_T, L_P = "LNG_TERMINAL", "LNG_PIPING"
+    # access road: plant fuel road (y 1650-1675) north through the north gate to the terminal's south road
+    S.item(L_T, "Terminal link road (30 ft): plant fuel road, north gate, terminal", (1470, 1500, 1675, 1990), (0, .32))
+    S.box(1470, 1500, 1675, 1990, -.1, .32, "road")
+    for y in (1700, 1890):                                                    # stop lines and a speed table
+        S.box(1471, 1499, y, y + 1, .32, .34, "sign")
+    # send-out pipeline: metering (south face) to the plant's pipeline M&R pig-receiver end
+    mx0, mx1, my0, my1 = T(K["7"][1], K["7"][3])[0], T(K["7"][1], K["7"][2])[0], T(K["7"][0], 0)[1], T(K["7"][1], 0)[1]
+    mx = (mx0 + mx1) / 2
+    S.item(L_P, "Buried send-out pipeline to the plant M&R (right of way)", (mx - 10, 1616, 1890, my0), (-.2, 4))
+    S.row_strip([(mx, my0), (mx, 1950), (1606, 1950), (1606, 1900)], 16)
+    # 230 kV cable: plant switchyard (east end) along the east fence, outside it, and north to the substation
+    sx0, sx1 = T(0, K["5"][3])[0], T(0, K["5"][2])[0]
+    sy0 = T(K["5"][0], 0)[1]
+    sxc = (sx0 + sx1) / 2
+    S.item(L_P, "Terminal power supply: buried 230 kV cable from the plant switchyard (right of way)",
+           (sxc - 3, 2453, 147, sy0), (-.2, .4))
+    S.row_strip([(1940, 150), (2450, 150), (2450, 1960), (sxc, 1960), (sxc, sy0)], 6, color="corridor", markers=300)
+
+
+def links_B(S, K):
+    L_T = "LNG_LANDFALL"
+    lvs = next(it for it in S.items if it.get("key") == "12")["fp"]
+    lx = (lvs[0] + lvs[1]) / 2
+    S.item(L_T, "Buried gas pipeline to the plant M&R (right of way)", (min(lx, 1606) - 10, max(lx, 1606) + 10, 1890, lvs[2]),
+           (-.2, 4))
+    S.row_strip([(lx, lvs[2]), (lx, 1950), (1606, 1950), (1606, 1900)], 16)
+
+
 def write(S, meta):
     """An overlay on sk3x1_model.json: the Blender build merges it with --overlay."""
+    to_site(S)
+    n_sheet = len(S.items)
+    (links_A if S.variant == "A" else links_B)(S, S.K)
+    for it in S.items[n_sheet:]:
+        it["frame"] = "site"
+    sh = meta.pop("shoreline_x")
+    meta.update(shoreline_y=sh - ROT_D, shore_axis="y", sea_side="north",
+                transform=dict(c=ROT_C, d=ROT_D, note="site = (c - y_sheet, x_sheet - d)"))
+    if "terminal" in meta:
+        x0, x1, y0, y1 = meta["terminal"]
+        meta["terminal"] = [ROT_C - y1, ROT_C - y0, x0 - ROT_D, x1 - ROT_D]
+    if "yoke" in meta:
+        meta["yoke"] = [round(v) for v in T(*meta["yoke"])]
     m = dict(title=BASE["title"] + f" | coastal variant {S.variant} (SK-3X1-15)", base="sk3x1_model.json",
              disclaimer=BASE["disclaimer"], coastal=meta, layers=S.layers, items=S.items, parts=S.parts)
     path = os.path.join(HERE, f"sk3x1_coastal_{S.variant}.json")

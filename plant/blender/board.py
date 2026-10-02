@@ -46,7 +46,7 @@ BOARDS = {
                    subtitle="SK-3X1  ·  REVISION 14  ·  PRESENTATION PLATES", sheet="SHEET 01 / 01",
                    names={"P2": "Transformer bays from the access road"}),
     "coastal": dict(main="C1", right=("C2", "C3"), row=("C5", "F1", "F3"), cones=("C1", "C2", "C3", "C5"),
-                    window=(-300, 5900, -700, 2300), overlay="sk3x1_coastal_A.json", sun=(28, 140), bar=500,
+                    window=(-600, 3100, -300, 5500), overlay="sk3x1_coastal_A.json", sun=(28, 140), bar=500,
                     out="SK-3X1-15_coastal_board",
                     subtitle="SK-3X1-15  ·  REVISION 14  ·  LNG MARINE TERMINAL, COASTAL VARIANT", sheet="SHEET 15 / 16",
                     names={"C2": "LNG carrier at the berth", "F1": "Variant B: FSRU and carrier, ship to ship",
@@ -93,10 +93,11 @@ def key_plan(d, box, B):
     ox = x0 + ((x1 - x0) - (wx1 - wx0) * sc) / 2
     oy = y0 + ((y1 - y0) - (wy1 - wy0) * sc) / 2
     P = lambda x, y: ((ox + (x - wx0) * sc) * S, (oy + (wy1 - y) * sc) * S)
-    # sea, as a quiet tint east of the shoreline
+    # sea, as a quiet tint north of the shoreline
     if coastal:
-        d.rectangle([P(coastal["shoreline_x"], wy1), P(wx1, wy0)], fill=(226, 231, 232))
-        d.line([P(coastal["shoreline_x"], wy1), P(coastal["shoreline_x"], wy0)], fill=HAIR, width=S)
+        sh = coastal["shoreline_y"]
+        d.rectangle([P(wx0, wy1), P(wx1, sh)], fill=(226, 231, 232))
+        d.line([P(wx0, sh), P(wx1, sh)], fill=HAIR, width=S)
     # compound
     d.rectangle([P(0, 1920), P(2420, 0)], outline=GRAPHITE, width=S)
     # footprints of register items, base plant solid hairline, optional systems fainter
@@ -113,7 +114,10 @@ def key_plan(d, box, B):
         if it.get("key") or sheet15:                          # sheet 15 item: base-plant weight
             opt = False
         col = (192, 193, 188) if opt else (120, 128, 132)
-        if it["shape"] == "hull":
+        if it["shape"] == "hull" and coastal:                # placed north of the plant: bow west
+            d.polygon([P(fx1, fy0), P(fx1, fy1), P(fx0 + 60, fy1), P(fx0, (fy0 + fy1) / 2), P(fx0 + 60, fy0)],
+                      outline=col, width=S)
+        elif it["shape"] == "hull":
             d.polygon([P(fx0, fy0), P(fx1, fy0), P(fx1, fy1 - 60), P((fx0 + fx1) / 2, fy1), P(fx0, fy1 - 60)],
                       outline=col, width=S)
         elif it["shape"] == "circle":
@@ -122,11 +126,14 @@ def key_plan(d, box, B):
             d.rectangle([P(fx0, fy1), P(fx1, fy0)], outline=col, width=S)
     # view cones
     lab = f("IBMPlexMono-Regular.ttf", 17)
+    t = coastal.get("transform") if coastal else None
     for k, h in HERO.items():
         if k not in B["cones"]:
             continue
         ex, ey, _ = h["eye"]
         tx, ty, _ = h["target"]
+        if t and k[0] in "CF" and not h.get("site"):                                # sheet-15 cameras, rotated onto the site
+            ex, ey, tx, ty = t["c"] - ey, ex - t["d"], t["c"] - ty, tx - t["d"]
         # far viewpoints are pulled onto the plan window edge, keeping their bearing
         ex = min(max(ex, wx0 + 60), wx1 - 60)
         ey = min(max(ey, wy0 + 60), wy1 - 60)

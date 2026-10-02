@@ -394,7 +394,7 @@ MODEL.routes.forEach((r,ri)=>{
                            pipe ? pickOnly : surfMat(cls==='copper'?'copper':cls));
   m.castShadow = r.z>0 && !pipe; m.receiveShadow = !pipe; m.userData.route = ri; grp(r.layer).add(m); pickables.push(m);
 });
-// surroundings: grass beyond the fence; with the coastal variant the land east of the shoreline
+// surroundings: grass beyond the fence; with the coastal variant the land north of the shoreline
 // is a separate strip that gives way to the sea when the coastal layers are on
 let grassEast = null;
 { const grassMat = new THREE.MeshStandardMaterial({color:new THREE.Color('#9fb07a').convertSRGBToLinear(), map:TEX.grass, roughness:1});
@@ -403,16 +403,17 @@ let grassEast = null;
     const m = new THREE.Mesh(g, mat); const c = P((x0+x1)/2, (y0+y1)/2, z); m.position.copy(c); m.receiveShadow = true; return m; };
   const W0 = CX-8000, W1 = CX+8000, S0 = CY-8000, S1 = CY+8000;
   if(MODEL.coastal){
-    const sh = MODEL.coastal.shoreline_x, sea = MODEL.coastal.sea_level;
-    scene.add(strip(W0, sh-30, S0, S1, -0.7, grassMat));
-    grassEast = strip(sh-30, W1+6000, S0, S1, -0.7, grassMat); scene.add(grassEast);
+    // the coast runs east-west north of the plant; the sea is to the north
+    const sh = MODEL.coastal.shoreline_y, sea = MODEL.coastal.sea_level;
+    scene.add(strip(W0, W1, S0, sh-30, -0.7, grassMat));
+    grassEast = strip(W0, W1, sh-30, S1+6000, -0.7, grassMat); scene.add(grassEast);
     const g = grp('COASTAL_SEA');
-    g.add(strip(sh-30, sh, S0, S1, -0.8, new THREE.MeshStandardMaterial({color:new THREE.Color(PALETTE.sand.hex).convertSRGBToLinear(), map:TEX.gravel, roughness:1})));
-    const rev = new THREE.Mesh(toThree(paint(fromTris([[sh,S0,-0.9],[sh+45,S0,sea-7],[sh+45,S1,sea-7],[sh,S1,-0.9]], [[0,1,2],[0,2,3]]), col.rock)), surfMat('concrete'));
+    g.add(strip(W0, W1, sh-30, sh, -0.8, new THREE.MeshStandardMaterial({color:new THREE.Color(PALETTE.sand.hex).convertSRGBToLinear(), map:TEX.gravel, roughness:1})));
+    const rev = new THREE.Mesh(toThree(paint(fromTris([[W0,sh,-0.9],[W1,sh,-0.9],[W1,sh+45,sea-7],[W0,sh+45,sea-7]], [[0,1,2],[0,2,3]]), col.rock)), surfMat('concrete'));
     rev.receiveShadow = true; g.add(rev);
-    const water = strip(sh, W1+6000, S0, S1, sea, new THREE.MeshStandardMaterial({color:new THREE.Color(PALETTE.sea.hex).convertSRGBToLinear(), roughness:.12, metalness:.1}));
+    const water = strip(W0, W1, sh, S1+6000, sea, new THREE.MeshStandardMaterial({color:new THREE.Color(PALETTE.sea.hex).convertSRGBToLinear(), roughness:.12, metalness:.1}));
     g.add(water);
-    g.add(strip(sh+45, W1+6000, S0, S1, sea-40, new THREE.MeshStandardMaterial({color:new THREE.Color('#5b6a60').convertSRGBToLinear(), roughness:1})));
+    g.add(strip(W0, W1, sh+45, S1+6000, sea-40, new THREE.MeshStandardMaterial({color:new THREE.Color('#5b6a60').convertSRGBToLinear(), roughness:1})));
   } else scene.add(strip(W0, W1, S0, S1, -0.7, grassMat)); }
 const gridH = new THREE.GridHelper(2400, 24, 0x000000, 0x000000); gridH.material.transparent=true; gridH.material.opacity=.04; gridH.position.y=.05; scene.add(gridH);
 document.getElementById('loading').hidden = true;

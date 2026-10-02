@@ -2,6 +2,13 @@
  "A": {
   "fails": 0,
   "lines": [
+   "   ok     site: terminal / landfall placed north of the plant, nothing inside the compound []",
+   "   ok     site: shoreline at y 3101, north of every land item []",
+   "   ok     site: 3 links into the plant, all buried rights of way or the link road",
+   "   ok     site: link road clear of plant equipment, fence open at the north gate []",
+   "   ok     site: Buried send-out pipeline to the plant M&R (rig reaches the M&R station",
+   "   ok     site: 230 kV cable leaves the switchyard and runs outside the east fence",
+   "   ok     wiring: every keyed terminal item has cable applications []",
    "   ok     key  1 1 LNG tank 160,000 m3, full containment (Sabine Pass class dev  0.00 ft",
    "   ok     key  2 2 Vaporizers x4, 2 duty + 2 standby (open rack, seawater)  dev  0.00 ft",
    "   ok     key  3 3 HP send-out pumps, MV motors                             dev  0.00 ft",
@@ -26,6 +33,12 @@
  "B": {
   "fails": 0,
   "lines": [
+   "   ok     site: terminal / landfall placed north of the plant, nothing inside the compound []",
+   "   ok     site: shoreline at y 2800, north of every land item []",
+   "   ok     site: 1 links into the plant, all buried rights of way or the link road",
+   "   ok     site: link road clear of plant equipment, fence open at the north gate []",
+   "   ok     site: Buried gas pipeline to the plant M&R (right of reaches the M&R station",
+   "   ok     wiring: every keyed terminal item has cable applications []",
    "   ok     key 12 12 Landfall valve station: ESD, pig receiver, metering     dev  0.00 ft",
    "   ok     key 14 14 Soft-yoke mooring tower + gas riser                     dev  0.30 ft",
    "   ok     key 15 15 FSRU 170,000 m3, regas onboard 14-21 million m3/day     dev  0.30 ft",

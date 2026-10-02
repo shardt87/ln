@@ -65,12 +65,13 @@ def fence_and_cctv():
                     "Fence grounding: bare Cu tied to the station grid at every corner and gate post", W.GND]
     fuel.D = True
     posts = [(x, y, 0, -1) for x in list(range(20, 2420, 20)) for y in (0.25,)] + \
-            [(x, y, 0, 1) for x in list(range(20, 2420, 20)) for y in (1919.75,)] + \
+            [(x, y, 0, 1) for x in list(range(20, 2420, 20)) for y in (1919.75,) if not 1462 < x < 1508] + \
             [(x, y, -1, 0) for y in list(range(20, 1920, 20)) for x in (0.25,) if not (270 <= y <= 300)] + \
             [(x, y, 1, 0) for y in list(range(20, 1920, 20)) for x in (2419.75,)]
     for (x, y, dx, dy) in posts:
         rod((x, y, 8.4), (x - dx * 1.3, y - dy * 1.3, 9.7), .06, "steel", seg=4)            # arm (angled in)
-    for (ax, ay, bx, by, dx, dy) in ((0, .25, 2420, .25, 0, -1), (0, 1919.75, 2420, 1919.75, 0, 1),
+    for (ax, ay, bx, by, dx, dy) in ((0, .25, 2420, .25, 0, -1), (0, 1919.75, 1465, 1919.75, 0, 1),
+                                     (1505, 1919.75, 2420, 1919.75, 0, 1),
                                      (.25, 0, .25, 270, -1, 0), (.25, 300, .25, 1920, -1, 0),
                                      (2419.75, 0, 2419.75, 1920, 1, 0)):
         for k in (1, 2, 3):

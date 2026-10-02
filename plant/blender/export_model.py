@@ -47,12 +47,11 @@ skip = {o.name for o in land.all_objects} if land else set()
 extra = []
 sea = bpy.data.objects.get("pro sea")
 if sea is not None:
-    # the render sea runs for miles; export a plane trimmed to the terminal, berth and approach
+    # the render sea runs for miles; export a plane trimmed to the terminal, berth and approach (sea to the north)
     FT = 0.3048
-    xs = [v.co.x for v in sea.data.vertices]
-    z, x0 = sea.data.vertices[0].co.z, min(xs)
+    z, y0 = sea.data.vertices[0].co.z, min(v.co.y for v in sea.data.vertices)
     me = bpy.data.meshes.new("sea (export)")
-    me.from_pydata([(x0, -2500 * FT, z), (7200 * FT, -2500 * FT, z), (7200 * FT, 4400 * FT, z), (x0, 4400 * FT, z)],
+    me.from_pydata([(-2000 * FT, y0, z), (5000 * FT, y0, z), (5000 * FT, 6700 * FT, z), (-2000 * FT, 6700 * FT, z)],
                    [], [(0, 1, 2, 3)])
     me.materials.append(sea.data.materials[0])
     ob = bpy.data.objects.new("sea (export)", me)
