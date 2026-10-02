@@ -496,6 +496,7 @@ if args.style == "pro":
             ob.hide_render = True
         sun = h.get("sun", HERO_SET["sun"])          # per-camera sun override (e.g. a cutaway in shade)
         pro_look.set_sun(scene, *sun)
+        scene.render.resolution_x, scene.render.resolution_y = h.get("res", (1920, 1080))   # cover shots: own aspect
         info = dict(k=h["k"], name=h["n"], show=show, style="pro", samples=args.samples, lens=h["lens"],
                     ortho_ft=0, margin_lr=0, margin_tb=0, sun=list(h.get("sun", HERO_SET["sun"])), sheet=HERO_SET["sheet"])
         base = os.path.join(args.out, f"{h['k']}_pro")

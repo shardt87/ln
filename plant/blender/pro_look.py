@@ -574,6 +574,13 @@ COASTAL_A = [
          eye=(5346, 815, 40), target=(5420, 985, 46), lens=24, show="coastal"),
     dict(k="C8", n="Everything: plant, LNG satellite and marine terminal, BTM data centre", eye=(4300, -900, 2300),
          target=(1700, 1750, 20), lens=28, show="everything", site=True),
+    # cover shots (deck cover panel, ~1.07:1): the story from the sea to the data centre
+    dict(k="K1", n="LNG by sea, the 3x1 plant, the BTM data centre", eye=(-820, -620, 1450),
+         target=(1600, 1950, 40), lens=30, show="everything", site=True, res=(2400, 2240)),
+    dict(k="K2", n="LNG by sea, the 3x1 plant, the BTM data centre", eye=(3950, -650, 1100),
+         target=(1400, 2050, 50), lens=30, show="everything", site=True, res=(2400, 2240)),
+    dict(k="K3", n="LNG by sea, the 3x1 plant, the BTM data centre", eye=(1500, -1700, 950),
+         target=(1550, 1850, 80), lens=28, show="everything", site=True, res=(2400, 2240)),
 ]
 COASTAL_B = [
     dict(k="F1", n="FSRU and LNG carrier, ship-to-ship transfer", eye=(25300, -300, 300), target=(24300, 950, 40),
