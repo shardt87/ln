@@ -659,6 +659,10 @@ EPIC = [
          eye=(515, 1290, 105), target=(655, 1075, 30), lens=24, show="all"),
     dict(k="E40", n="Regenerators: strippers with overhead lines, reboilers, reflux drums, CO2 header to compression",
          eye=(1335, 1075, 85), target=(1140, 1195, 55), lens=24, show="all", sun=(28, 140)),
+    dict(k="E41", n="BESS aisle: containers with rack doors and vents, PCS / MV skids, DC trenches, collector feeders",
+         eye=(1548, 596, 28), target=(1672, 538, 4), lens=24, show="all"),
+    dict(k="E42", n="BESS collector e-house, main power transformer and EMS, with the container rows behind",
+         eye=(1700, 318, 42), target=(1800, 420, 8), lens=24, show="all"),
 ]
 
 

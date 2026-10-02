@@ -39,6 +39,7 @@ The checks corrected the model in several places:
 | `switchyard.py` | Switchyard trenches, breaker and disconnect detail, line entrances, masts and fence (cycle 1). |
 | `station.py` | Transformer, e-house and EDG detail; duct-bank manholes (cycle 2). |
 | `acc.py` | ACC fans, drives, cable ladders, condensate drains, deck steel, vacuum pumps, dry coolers (cycle 3). |
+| `bess.py` | BESS yard, container and PCS skid detail, DC trenches, 34.5 kV collector feeders (cycle 7). |
 | `ccs.py` | Carbon capture flue-gas path, amine piping and rack, regeneration, CO2 header, cooling-tower fans (cycle 6). |
 | `services.py` | Main gate, fence wire and CCTV, drainage, lighting handholes, admin / warehouse / workshop dressing (cycle 5). |
 | `utilities.py` | Tank-farm water and aux-steam routes; fire pump house, ammonia, aux boiler, air compressor, OWS detail (cycle 4). |
@@ -344,6 +345,16 @@ The model is improved zone by zone, one cycle per zone (`DETAIL_CYCLES.md` has t
 5. render close-ups;
 6. re-export and republish.
 
+**Cycle 7: battery energy storage (`bess.py`).**
+- **Yard:** crushed-stone surface, its own security fence with an open double gate on the west, NFPA 855 hazard signs, aisle lighting.
+- **Containers (30):** six battery-rack doors on the north face, roof deflagration vents, a gas-detection exhaust fan, strobe / horn, suppression release and E-stop panel, ground leads.
+- **PCS / MV skids (15):** inverter cabinet with cooling grilles and roof fans on its own pad beside the step-up transformer, LV bus link, DC combiner, ground leads, and a precast DC trench to the two containers it serves.
+- **Collector:** three buried 34.5 kV feeders, one per skid column, up the aisles to the collector e-house, and the e-house to the main power transformer.
+- **Collector e-house and EMS:** landings, stairs and doors, HVAC, bottom cable entries.
+- **Wiring:** containers carry 1,500 V DC, auxiliary 480 V, BMS data, fire alarm / gas detection and grounding; skids carry 34.5 kV MV-105 collector cable, DC, control and fibre.
+- **Realism:** technicians and a pickup in an aisle.
+- **Cameras:** E41 and E42.
+
 **Cycle 6: carbon capture (`ccs.py`).**
 - **Flue-gas path closed:** the HRSG flue duct turns into the DCC, the DCC outlet feeds the booster fan, and the fan discharges into an overhead duct on steel bents to the absorber inlet, with an expansion joint.
 - **DCC:** quench-water riser and return, platform, caged ladder.
@@ -506,7 +517,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
-**Epic set (`--set epic`, E1–E40):** golden hour, with the sun at 11°. The shots are:
+**Epic set (`--set epic`, E1–E42):** golden hour, with the sun at 11°. The shots are:
 - E1: the three stacks from beside the absorbers;
 - E2: a long-lens compression from the west road;
 - E3: a low pass over the ACC;
@@ -530,6 +541,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - E35 and E36: the tank farm, and the ammonia storage with the aux boiler.
 - E37 and E38: the main gate with the gatehouse and control building, and the warehouse / workshop yard.
 - E39 and E40: carbon-capture train A (DCC, booster fan, duct, absorber, rack), and the regenerators.
+- E41 and E42: a BESS aisle, and the collector e-house with the main power transformer.
 
 Output goes to `renders/epic/`.
 

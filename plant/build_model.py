@@ -1725,6 +1725,9 @@ _util.build()             # cycle 4: fire pump house, ammonia, aux boiler, air c
 import services as _services
 _services.routes(add_route)
 N_DRAIN = _services.build()
+import bess as _bess
+_bess.routes(add_route)
+_bess.build()             # cycle 7: BESS yard, containers, PCS skids, collector, buildings
 import ccs as _ccs
 _ccs.routes(add_route)
 _ccs.build()              # cycle 6: carbon capture flue-gas path, amine piping and rack, regeneration, CT   # cycle 5: gate, fence wire and CCTV, drainage, lighting, admin / workshop dressing
