@@ -476,7 +476,8 @@ if args.style == "pro":
     ALL = [l for l in model["layers"] if l not in ("R1_INTERIOR", "R4_INTERIOR")]
     COAST = [l for l, v in model["layers"].items() if v.get("group", "").startswith("Coastal")]
     BASE = [l for l in ALL if not l.startswith(("OPT_", "HV_CORRIDOR", "SWYD_FUTURE")) and l not in COAST]
-    ALL = [l for l in ALL if l not in COAST]
+    DCL = [l for l in ALL if l.startswith("OPT_DC")]      # BTM data centre: an add-on, shown only by "dc" cameras
+    ALL = [l for l in ALL if l not in COAST and l not in DCL]
     for h in heroes:
         if h["k"] not in keys:
             continue
@@ -484,7 +485,7 @@ if args.style == "pro":
         scene.camera = cam_ob
         # coastal: the whole plant with its optional systems, except the trucked LNG satellite (sheet 14),
         # which the marine terminal replaces
-        show = {"base": BASE, "all": ALL,
+        show = {"base": BASE, "all": ALL, "dc": ALL + DCL,
                 "coastal": [l for l in ALL if not l.startswith("OPT_LNG")] + COAST}[h["show"]]
         show = [l for l in show if l not in h.get("hide_layers", ())]
         set_visibility(show)

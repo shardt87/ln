@@ -12,6 +12,7 @@ Downloads:
   SK-3X1_plant_only.zip   plant only (inland, sheets 01-14): README, SK-3X1_plant.glb, SK-3X1_plant.blend
   SK-3X1_coastal_A.zip    coastal variant (sheet 15): the plant PLUS the LNG import terminal, jetty, berth and
                           carrier: README, SK-3X1_coastal_A.glb, SK-3X1_coastal_A.blend
+  SK-3X1_plant_datacenter.zip  add-on: the plant PLUS the ~150 MW BTM data centre beside the modular yard
   SK-3X1_3D_model.zip     everything above plus USDZ and OBJ / MTL
 Object names: "<tag or name> [<item id>]", at most 63 characters (a Blender limit). Long names are shortened
 with "..." but the item id is always complete; the full name, layer, tag, area, sheet, info and wiring of every

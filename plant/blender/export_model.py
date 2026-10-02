@@ -14,6 +14,10 @@ Coastal variant A (onshore LNG terminal, jetty and carrier), with a trimmed sea 
         --overlay plant/coastal/sk3x1_coastal_A.json --blend plant/model/SK-3X1_coastal_A.blend
     python plant/blender/export_model.py plant/model SK-3X1_coastal_A
 
+Plant plus the BTM data centre (design option, an add-on to the plant; the plant and coastal exports leave it out):
+
+    python plant/blender/export_model.py plant/model SK-3X1_plant_datacenter SK-3X1_plant
+
 GLB and USDZ hold the plant and site (no trees or surrounding ground), Y-up,
 with each material's base colour, roughness and metalness.
 """
@@ -29,15 +33,17 @@ import pro_look  # noqa: E402
 argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else sys.argv[1:]
 out = os.path.abspath(argv[0])
 name = argv[1] if len(argv) > 1 else "SK-3X1_plant"
+src = argv[2] if len(argv) > 2 else name
+with_dc = "datacenter" in name               # the BTM data centre is an add-on: only its own export carries it
 blend = os.path.join(out, name + ".blend")
-bpy.ops.wm.open_mainfile(filepath=blend)
+bpy.ops.wm.open_mainfile(filepath=os.path.join(out, src + ".blend"))
 scene = bpy.context.scene
 have = {o.name for o in bpy.data.objects if o.type == "CAMERA"}
 for h in pro_look.EPIC:
     if f"cam {h['k']}" not in have:
         pro_look.hero_camera(scene, h)
 for lc in bpy.context.view_layer.layer_collection.children:
-    lc.exclude = False
+    lc.exclude = lc.name.startswith("OPT_DC") and not with_dc
 bpy.ops.wm.save_as_mainfile(filepath=blend, compress=True)
 if os.path.exists(blend + "1"):
     os.remove(blend + "1")
@@ -58,7 +64,8 @@ if sea is not None:
     scene.collection.objects.link(ob)
     extra.append(ob)
 for o in bpy.data.objects:
-    o.select_set(o.type == "MESH" and (o.name not in skip or o in extra))
+    dc = any(c.name.startswith("OPT_DC") for c in o.users_collection)
+    o.select_set(o.type == "MESH" and (o.name not in skip or o in extra) and (with_dc or not dc))
 bpy.ops.export_scene.gltf(filepath=os.path.join(out, name + ".glb"), export_format="GLB",
                           use_selection=True, export_apply=True, export_yup=True, export_materials="EXPORT",
                           export_extras=True)

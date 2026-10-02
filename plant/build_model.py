@@ -1671,9 +1671,10 @@ VIEWS = [
     dict(k="O4", n="O4 Inlet chilling", show=BASE_SHOW + ["OPT_IC", "OPT_IC_ROUTES"], t=[180, 1160, 20], c=[-150, 820, 420]),
     dict(k="O5", n="O5 Gas, LNG, H2", show=BASE_SHOW + ["OPT_LNG", "OPT_H2", "OPT_LNG_ROUTES", "OPT_H2_ROUTES",
          "SWYD_FUTURE"], t=[1980, 1650, 10], c=[1650, 1150, 700]),
-    dict(k="O6", n="O6 BTM data centre", show=BASE_SHOW + ["OPT_MOD", "OPT_TMP", "OPT_DC", "OPT_MOD_ROUTES",
-         "OPT_DC_ROUTES", "SWYD_FUTURE"], t=[2850, 850, 20], c=[2050, -250, 950]),
-    dict(k="ALL", n="Complete plant", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR")],
+    dict(k="O6", n="Add-on: plant + BTM data centre", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR")],
+         t=[2200, 850, 30], c=[700, -1400, 1700]),
+    dict(k="ALL", n="Complete plant", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR")
+                                            and not l.startswith("OPT_DC")],
          t=[1210, 900, 40], c=[-350, -750, 1400]),
 ]
 
@@ -1693,7 +1694,7 @@ FIT = {
     "O3": dict(layers=["OPT_CCS", "OPT_CCSU"]),
     "O4": dict(layers=["OPT_IC"]),
     "O5": dict(layers=["OPT_LNG", "OPT_H2"], box=[1560, 2400, 1410, 1910, 0, 30]),
-    "O6": dict(layers=["OPT_DC"]),
+    "O6": dict(box=[0, 3380, 0, 1920, 0, 120]),
     "ALL": dict(box=[0, 2420, 0, 1920, 0, 120]),
 }
 for v in VIEWS:

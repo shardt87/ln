@@ -605,7 +605,10 @@ The north-west corner is kept open as a maintenance laydown. The plots were pick
 
 ## BTM data centre (design option, area L)
 
-A ~150 MW data-centre campus outside the east fence, beside the modular yard, supplied behind the meter (`datacenter.py`, layers `OPT_DC` / `OPT_DC_ROUTES`, viewer view O6). It is a design option beyond Rev 14, typical and not engineered.
+A ~150 MW data-centre campus outside the east fence, beside the modular yard, supplied behind the meter (`datacenter.py`, layers `OPT_DC` / `OPT_DC_ROUTES`). It is a design option beyond Rev 14, typical and not engineered, and it is an **add-on**: the plant views, renders and exports show the plant alone, and the campus appears only when it is added:
+- **Viewer:** "Complete plant" and every other view leave it off; the view **"Add-on: plant + BTM data centre"** (O6) turns it on, or tick its layers.
+- **Blender:** the plant cameras leave it out; the cameras E47 and E48 (`show="dc"`) include it.
+- **Exports:** `SK-3X1_plant` and `SK-3X1_coastal_A` are plant only; `SK-3X1_plant_datacenter.glb / .usdz / .blend` is the plant plus the campus (`export_model.py plant/model SK-3X1_plant_datacenter SK-3X1_plant`).
 
 | Part | What is modelled |
 |---|---|

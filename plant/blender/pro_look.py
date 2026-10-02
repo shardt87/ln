@@ -682,9 +682,9 @@ EPIC = [
     dict(k="E46", n="Green hydrogen: electrolyzer building, dryer, compressors, tube banks, T-H2",
          eye=(1985, 1612, 72), target=(2215, 1500, 4), lens=24, show="all"),
     dict(k="E47", n="BTM data centre: two data halls with rooftop dry coolers, BESS, gensets, modular yard beside",
-         eye=(2380, 140, 340), target=(2900, 900, 20), lens=24, show="all"),
+         eye=(2380, 140, 340), target=(2900, 900, 20), lens=24, show="dc"),
     dict(k="E48", n="BTM substation: 13.8/34.5 kV step-ups, 230 kV tie (normally open), switchgear, BTM BESS",
-         eye=(2470, 700, 60), target=(2610, 830, 12), lens=24, show="all"),
+         eye=(2470, 700, 60), target=(2610, 830, 12), lens=24, show="dc"),
 ]
 
 
