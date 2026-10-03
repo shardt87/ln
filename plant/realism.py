@@ -164,29 +164,49 @@ class Realism:
             for (z, d, f, c) in ((24, .5, .48, "pipe"), (24, .4, .52, "pipe"), (24, .6, .68, "pipe"),
                                  (30, .35, .30, "pipe")):
                 r = d / 2
-                # in 10 ft pieces, joined where free: a tray drop or support crossing the tier breaks
-                # the line there (in the field it would jog round it)
+                # continuous line in 5 ft steps; where a tray drop or support blocks the tier it jogs over
+                # (or under) the obstruction; at each rack end it peels off at its own bent and drops to grade
                 lo, hi = (x0 + 2, x1 - 2) if along_x else (y0 + 2, y1 - 2)
                 c0 = y0 + (y1 - y0) * f if along_x else x0 + (x1 - x0) * f
-                run = None
+                kk = (24, .5, .48, "pipe"), (24, .4, .52, "pipe"), (24, .6, .68, "pipe"), (30, .35, .30, "pipe")
+                back = 8 + 12 * [q[2] for q in kk].index(f)
+                lo, hi = lo + back, hi - back
+                P = lambda u, zz: (u, c0, zz) if along_x else (c0, u, zz)
+                fr = lambda u, v, zz: (self.free(u, v, c0 - r, c0 + r, zz - r, zz + r) if along_x else
+                                       self.free(c0 - r, c0 + r, u, v, zz - r, zz + r))
+                zc = z + r
+                pts = [P(lo, zc)]
                 u = lo
                 while u < hi:
-                    v = min(hi, u + 10)
-                    ok = (self.free(u, v, c0 - r, c0 + r, z + .05, z + d) if along_x else
-                          self.free(c0 - r, c0 + r, u, v, z + .05, z + d))
-                    if ok:
-                        run = [run[0], v] if run else [u, v]
-                    if (not ok or v >= hi) and run:
-                        a = (run[0], c0, z + r) if along_x else (c0, run[0], z + r)
-                        b = (run[1], c0, z + r) if along_x else (c0, run[1], z + r)
-                        self.rod(a, b, r, c, seg=8)
-                        self.count("rack small-bore line runs")
-                        for (e, at_end, sgn) in ((a, run[0] <= lo + .01, -1), (b, run[1] >= hi - .01, 1)):
-                            if at_end:                                  # header end: threaded cap
-                                e2 = (e[0] + sgn * .25, e[1], e[2]) if along_x else (e[0], e[1] + sgn * .25, e[2])
-                                self.rod(e, e2, r * 1.35, "steel", seg=8)
-                        run = None
-                    u = v
+                    v = min(hi, u + 5)
+                    if fr(u, v, zc):
+                        u = v
+                        continue
+                    # blocked: find the end of the obstruction, then a clear level to cross it
+                    w = v
+                    while w < hi and not fr(w, min(hi, w + 5), zc):
+                        w = min(hi, w + 5)
+                    w = min(hi, w + 5)
+                    for dz in (1.6, 2.6, -1.6, 3.6):
+                        za = zc + dz
+                        if fr(u - .5, w + .5, za) and za > 1:
+                            pts += [P(u - 1, zc), P(u - 1, za), P(w, za), P(w, zc)]
+                            break
+                    u = w
+                pts.append(P(hi, zc))
+                for q0, q1 in zip(pts, pts[1:]):
+                    if q0 != q1:
+                        self.rod(q0, q1, r, c, seg=8)
+                for q in pts[1:-1]:                                      # elbows
+                    self.rod((q[0], q[1], q[2] - r), (q[0], q[1], q[2] + r), r * 1.15, c, seg=8)
+                self.count("rack small-bore line runs")
+                for e in (pts[0], pts[-1]):                              # drop to grade, valve, support
+                    self.rod((e[0], e[1], e[2] - r), (e[0], e[1], e[2] + r), r * 1.15, c, seg=8)
+                    self.rod(e, (e[0], e[1], 1.0), r, c, seg=8)
+                    self.rod((e[0], e[1], 4.4), (e[0], e[1], 5.2), r * 1.8, "steel", seg=8)
+                    self.rod((e[0], e[1], 4.8), (e[0] + (0 if along_x else .9), e[1] + (.9 if along_x else 0), 4.8),
+                             r * 1.4, "red", seg=8)
+                    self.box(e[0] - .5, e[0] + .5, e[1] - .5, e[1] + .5, 0, .8, "concrete")
         for k in range(3):                                                             # HRSG drain headers
             dx = 160 * k
             x = 597 + dx - 4.2
