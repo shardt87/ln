@@ -198,6 +198,14 @@ OVERRIDES = [
     (r"^PIC: portable input cabinet", [LV + " (portable generator tails: Type W / SOOW single conductors)", GND]),
     (r"^LB: commissioning load bank", [LV + " (Type W / SOOW single conductors)", CTRL, GND]),
     (r"^H2 28: N2 purge supply", [INST + " (pressure, purge flow)", CTRL + " (purge valve control)", GND]),
+    (r"^SFC-\d: GT\d static starter", [MV + " (isolation transformer supply from the unit MV bus; converter output to "
+                                    "the IPB start disconnect)", LV + " (cooling fans, auxiliaries)", CTRL + " (start sequence, "
+                                    "interlocks with the GCB and turbine controller)", DATA, GND]),
+    (r"^SOS-\d: GTG-\d seal-oil", [LV + " (AC seal-oil pumps, vacuum pump)", "DC 125 V: emergency seal-oil pump from the "
+                                  "station battery, Type TC-ER", CTRL, INST + " (H2 purity, pressure, dew point, seal-oil DP)",
+                                  FA + " (H2 leak detection)", GND]),
+    (r"^EHC-ST", [LV + " (EHC pumps, fluid heater, cooler fan)", CTRL, INST + " (pressure, level, fluid temperature)", GND]),
+    (r"^GSC-ST", [LV + " (two exhauster blowers)", CTRL, INST + " (gland header pressure, condenser level)", GND]),
 ]
 
 

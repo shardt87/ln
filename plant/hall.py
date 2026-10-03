@@ -593,6 +593,159 @@ def inlet_electrical():
         dress(False)
 
 
+def gt_st_audit():
+    """GT / ST audit pass (typical, not engineered): the equipment and connections a 3 x 1 H-class
+    block needs that the earlier passes left out.
+    - static starters (LCI / SFC): H-class GTs start by motoring the generator; per unit a thyristor
+      converter lineup and a dry-type isolation transformer in the south gallery, cabled to the start
+      disconnect on the IPB;
+    - generator seal-oil and H2 / CO2 gas-control skid beside each GT generator;
+    - GT compressor bleed (anti-surge) lines with blow-off valves from the compressor to the exhaust
+      diffuser;
+    - ST: combined reheat (stop / intercept) valves fed by the hot reheat, LP admission valve and line
+      onto the LP casing, turning-gear motor on the coupling, junction boxes on the LP casing with
+      conduit to the floor box;
+    - ST electro-hydraulic control (EHC) power unit and the gland-steam condenser with its exhausters;
+    - two stairs onto the EL 20 deck (laydown bay and the east end of the south gallery)."""
+    L = "BASE_POWER_BLOCK"
+    meta = dict(area="A", basis="typical", sheet="typical (GT / ST audit)")
+    for k in (1, 2, 3):
+        dx = 160 * (k - 1)
+        cx, cz = 630 + dx, 29.0
+        # static starter in the south gallery (clear of the gallery doors)
+        x0 = 696 + dx if k < 3 else 1012
+        fuel.new_item("BASE_ELECTRICAL", f"SFC-{k}: GT{k} static starter (LCI) and isolation transformer",
+                      (x0, x0 + 32, 384, 402), (0, 10), tag=f"SFC-{k}",
+                      info="Load-commutated inverter: motors GTG-%d through the start disconnect on the IPB up to "
+                           "purge and light-off speed, then drops out at self-sustaining speed. Fed from the unit "
+                           "MV bus through a dry-type isolation transformer (typical)." % k, **meta)
+        cubicle(x0, x0 + 20, 384, 392, 0, 8, face="y1")                          # converter / control lineup
+        cubicle(x0 + 22, x0 + 32, 384, 396, 0, 10, c="xfmr", face="x1", n=2)     # isolation transformer
+        dress(True)
+        box(x0 + 2, x0 + 18, 393, 394, 0, .6, "steel")                             # cable trench cover
+        for xr in (x0 + 4, x0 + 10, x0 + 16):                                       # DC-link reactor / cooling unit
+            box(xr - 1.5, xr + 1.5, 395, 400, 0, 5, "cabinet")
+        rod((x0 + 10, 397.5, 5), (x0 + 10, 397.5, 6.4), 1.2, "fan", seg=12)
+        dress(False)
+        # generator seal-oil and H2 / CO2 gas-control skid
+        gx = 630 + dx
+        fuel.new_item(L, f"SOS-{k}: GTG-{k} seal-oil and H2 / CO2 gas-control skid", (603 + dx, 617 + dx, 416, 434),
+                      (20, 27), tag=f"SOS-{k}", info="Seal-oil pumps (AC / DC), vacuum tank, coolers and filters; "
+                      "H2 purity / pressure analysers and the CO2 purge manifold (typical).", **meta)
+        box(603 + dx, 617 + dx, 416, 434, 20, 20.6, "steel")
+        rod((607 + dx, 422, 20.6), (607 + dx, 422, 25.5), 2.4, "tank", seg=16)     # vacuum / drain tank
+        for y in (428, 431.5):
+            rod((604.5 + dx, y, 22), (607.5 + dx, y, 22), .7, "pump", seg=12)
+            rod((607.7 + dx, y, 22), (610 + dx, y, 22), .65, "motor", seg=12)
+        box(611 + dx, 616.5 + dx, 417, 422, 20.6, 25, "bundle")                     # seal-oil coolers
+        box(611.5 + dx, 616.5 + dx, 425, 433.5, 20.6, 27, "panel")                  # H2 / CO2 gas-control panel
+        dress(True)
+        for z in (23.5, 24.5):                                                       # seal-oil to both gen. bearings
+            pipe([(617 + dx, 420 + (z - 23.5) * 2, z), (gx - 4.6, 420 + (z - 23.5) * 2, z), (gx - 4.6, 414.5, z)], z,
+                 .14, "amber")
+        pipe([(616.5 + dx, 430, 26), (gx - 5.5, 430, 26), (gx - 5.5, 430, 33.8)], 26, .12, "red")   # CO2 / H2 lines
+        dress(False)
+        # compressor bleed (anti-surge) lines with blow-off valves to the exhaust diffuser
+        gt = find(f"GT{k}: H-class")
+        on(gt)
+        dress(True)
+        for (yb, zb) in ((482, cz - 4.2), (490, cz + 4.2)):
+            r_c = 6.3 - (6.3 - 5.1) * (yb - 470) / 25
+            xo = cx - math.sqrt(max(r_c ** 2 - (zb - cz) ** 2, 0)) + .2
+            pipe([(xo, yb, zb), (cx - 10.6, yb, zb), (cx - 10.6, 529, zb), (cx - 7.3, 529, zb)], zb, .55, "pipe")
+            box(cx - 11.8, cx - 9.4, 508, 512, zb - 1.2, zb + 1.2, "steel")             # blow-off valve body
+            box(cx - 11.6, cx - 9.6, 509, 511, zb + 1.2, zb + 2.6 if zb > cz else zb + 2.2, "amber")   # actuator
+        dress(False)
+    # ---- steam turbine
+    st = find("ST: steam turbine")
+    on(st)
+    sx, sz = 1050, 31.0
+    for xv in (1029, 1071):                                                          # combined reheat valves
+        rod((xv, 536, 21.5), (xv, 536, 34), 2.2, "machine", seg=18)
+        box(xv - 1.3, xv + 1.3, 534.7, 537.3, 34, 38.5, "amber")
+        rod((xv, 536, 29), (sx + (6.4 if xv > sx else -6.4), 538, sz - 1), 1.1, "machine", seg=14)
+    dress(True)
+    for s in (-1, 1):                                                                # hot reheat into the CRVs
+        xr = sx + s * 8.5
+        pipe([(xr, 552, 23.4), (xr, 536, 23.4), (sx + s * 21, 536, 23.4)], 23.4, 1.0, "pipe")
+    pipe([(1063, 552, 41.2), (1063, 527.6, 41.2)], 41.2, .9, "pipe")                  # LP admission
+    box(1061.6, 1064.4, 544, 547, 41.2, 43.8, "amber")                                # LP admission valve actuator
+    rod((1063, 545.5, 40.2), (1063, 545.5, 42.2), 1.3, "machine", seg=12)
+    rod((sx, 462, sz - 3.6), (sx, 467.5, sz - 3.6), 3.6, "steel", seg=18)              # turning-gear housing
+    box(1055, 1060, 462.5, 467, 21.5, 26, "motor")                                     # turning-gear motor
+    for y in (492, 512):                                                              # LP casing junction boxes
+        box(1024.2, 1025.6, y - 1.2, y + 1.2, 28.5, 31.5, "panel")
+        pipe([(1024.2, y, 30), (1021, y, 30), (1021, y, 21.8), (1021, 463, 21.8)], 30, .1, "steel")
+    for y in (470, 529.5, 552):                                                       # bearing proximity-probe housings
+        rod((sx + 3.5, min(y, 551), sz - 3.5), (sx + 3.5, min(y, 551), sz - 1.6), .3, "steel", seg=8)
+    box(1020.3, 1023, 461, 464.5, 21.5, 22.4, "panel")                                # floor box
+    dress(False)
+    fuel.new_item(L, "EHC-ST: ST electro-hydraulic control power unit", (1082, 1098, 510, 528), (20, 27), tag="EHC-ST",
+                  info="Fire-resistant phosphate-ester hydraulic fluid: reservoir, two AC pumps, accumulators, "
+                       "filters and coolers; supply and return to the stop, control and reheat valve actuators.", **meta)
+    box(1082, 1098, 510, 528, 20, 20.6, "steel")
+    box(1083, 1097, 511, 519, 20.6, 25, "tank")
+    for xp in (1086, 1094):
+        rod((xp, 522, 20.6), (xp, 522, 22.3), .8, "pump", seg=12)
+        rod((xp, 522, 22.3), (xp, 522, 24.5), .7, "motor", seg=12)
+    for xa in (1085, 1088, 1091):
+        rod((xa, 526, 20.6), (xa, 526, 26.4), .55, "red", seg=10)                    # accumulators
+    box(1094.5, 1097.5, 524, 527.5, 20.6, 26, "panel")
+    dress(True)
+    pipe([(1083, 515, 23), (1080.5, 515, 23), (1080.5, 545, 23), (1073.3, 545, 23)], 23, .12, "amber")
+    pipe([(1083, 516, 22.4), (1081, 516, 22.4), (1081, 536, 22.4), (1073.3, 536, 22.4)], 22.4, .12, "amber")
+    dress(False)
+    fuel.new_item(L, "GSC-ST: gland-steam condenser and exhausters", (1082, 1098, 440, 462), (20, 28), tag="GSC-ST",
+                  info="Collects leak-off steam and air from the shaft seals; two AC exhauster blowers hold a slight "
+                       "vacuum on the gland system; condensate to the condensate system (typical).", **meta)
+    box(1082, 1098, 440, 462, 20, 20.6, "steel")
+    rod((1083, 447, 25), (1097, 447, 25), 3.6, "tank", seg=18)                         # condenser shell
+    for xb in (1086, 1093):
+        box(xb - 1.8, xb + 1.8, 453, 458, 20.6, 24, "fanhub")                        # exhauster blowers
+        box(xb - 1.3, xb + 1.3, 458, 461, 20.6, 23, "motor")
+        rod((xb, 455.5, 24), (xb, 455.5, 27.8), .45, "pipe", seg=10)                  # vent
+    dress(True)
+    pipe([(1082, 447, 25), (1080.6, 447, 25), (1080.6, 466, 25), (1074.4, 466, 25)], 25, .3, "steam")   # leak-off
+    dress(False)
+    # ---- stairs onto the EL 20 deck
+    for name, (x0, x1, y0, y1), axis in (("Turbine deck stair (laydown bay)", (528, 560, 474, 480), "x"),
+                                         ("Turbine deck stair (south gallery, east end)", (1084, 1090, 376, 404), "y")):
+        fuel.new_item(L, name, (x0, x1, y0, y1), (0, 23.5), area="A", basis="typical", sheet="typical (GT / ST audit)",
+                      register=False)
+        n = 27
+        run = (x1 - x0) if axis == "x" else (y1 - y0)
+        for t in range(n):
+            a, b = t * run / n, (t + 1) * run / n
+            z = 20 * (t + 1) / n
+            if axis == "x":
+                box(x0 + a, x0 + b, y0 + .3, y1 - .3, z - .2, z, "grating")
+            else:
+                box(x0 + .3, x1 - .3, y0 + a, y0 + b, z - .2, z, "grating")
+        for s in (0, 1):                                                              # stringers and handrails
+            if axis == "x":
+                yy = y0 + .15 if s == 0 else y1 - .15
+                rod((x0, yy, 0), (x1, yy, 20), .2, "stair", seg=4)
+                rod((x0, yy, 3.5), (x1, yy, 23.5), .06, "rail", seg=4)
+                for t in range(0, 5):
+                    xp = x0 + t * (x1 - x0) / 4
+                    rod((xp, yy, 20 * t / 4), (xp, yy, 20 * t / 4 + 3.5), .06, "rail", seg=4)
+            else:
+                xx = x0 + .15 if s == 0 else x1 - .15
+                rod((xx, y0, 0), (xx, y1, 20), .2, "stair", seg=4)
+                rod((xx, y0, 3.5), (xx, y1, 23.5), .06, "rail", seg=4)
+                for t in range(0, 5):
+                    yp = y0 + t * (y1 - y0) / 4
+                    rod((xx, yp, 20 * t / 4), (xx, yp, 20 * t / 4 + 3.5), .06, "rail", seg=4)
+
+
+def gt_st_routes(add_route):
+    for k in (1, 2, 3):
+        dx = 160 * (k - 1)
+        x0 = 696 + dx if k < 3 else 1012
+        # isolation transformer / converter to the start disconnect on the IPB, in a floor trench
+        add_route("duct_bank", [(x0 + 2, 389), (636 + dx, 389)], sheet="typical (GT / ST audit)")
+
+
 def build():
     gas_turbines()
     steam_turbine()
@@ -603,3 +756,4 @@ def build():
     hall_services()
     hall_electrical()
     inlet_electrical()
+    gt_st_audit()

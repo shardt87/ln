@@ -1864,6 +1864,7 @@ _dc.color_parts()         # BTM data centre: colour by supply path (islanded / m
 import wiring as _wiring
 import hall as _hall_w
 _hall_w.inlet_routes(add_route)
+_hall_w.gt_st_routes(add_route)
 N_WAPPS, N_FEEDERS = _wiring.build(items, routes, LAYERS, add_route)
 _hall_w.inlet_wiring()
 _wiring.apply_overrides(items)
