@@ -36,15 +36,16 @@ def routes(add_route):
 
 
 # supply paths, colour-coded so the three operating modes read apart in the viewer and renders
+# supply paths: tagged on items and routes (not painted), so the equipment keeps its real finishes;
+# the viewer's "BTM power paths" toggle and the render callouts show them on demand
 PATHS = {
-    "btm_mod": ("BTM supply from the modular yard (13.8 kV collector to BTM-T1 / T2)",
-                ("BTM-T1:", "BTM-T2:")),
-    "btm_grid": ("BTM 230 kV grid tie to the plant switchyard (normally open)",
-                 ("BTM-TIE:", "BTM 230 kV tie breaker")),
-    "btm_island": ("BTM islanded system: campus gensets, BTM BESS, 34.5 kV bus and hall feeders",
+    "btm_island": ("1  Islanded BTM power: campus gensets, BTM battery, 34.5 kV bus",
                    ("BTM BESS", "DC backup genset", "DC genset paralleling", "DC-GSU:", "BTM 34.5 kV switchgear")),
+    "btm_mod": ("2  Supply from the modular yard: 13.8 kV to the BTM step-ups",
+                ("BTM-T1:", "BTM-T2:")),
+    "btm_grid": ("3  230 kV grid tie to the plant switchyard (normally open)",
+                 ("BTM-TIE:", "BTM 230 kV tie breaker")),
 }
-BODY = {"xfmr", "radiator", "bess", "ehouse", "roof", "machine", "cabinet"}
 
 
 def path_of_route(r):
@@ -57,23 +58,19 @@ def path_of_route(r):
 
 
 def color_routes(routes):
+    """Tag the campus cable routes with their supply path (route colour stays the cable colour)."""
     for r in routes:
         if r["layer"] == L:
-            k = path_of_route(r)
-            r["color"], r["label"] = k, PATHS[k][0]
-            r["w"] = max(r["w"], 4)                   # wide enough to read the colour from above
+            r["path"] = path_of_route(r)
 
 
 def color_parts():
+    """Tag the campus power items with their supply path; their parts keep their real colours."""
     for k, (label, prefixes) in PATHS.items():
-        ids = set()
         for it in fuel.G["items"]:
             if it["name"].startswith(prefixes):
-                ids.add(it["id"])
-                it["info"] = ((it.get("info") or "") + f" Colour key: {label}.").strip()
-        for p in fuel.G["parts"]:
-            if p["item"] in ids and p["color"] in BODY:
-                p["color"] = k
+                it["path"] = k
+                it["info"] = ((it.get("info") or "") + f" Supply path: {label[3:]}.").strip()
 
 
 def build():

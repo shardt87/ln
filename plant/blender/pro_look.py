@@ -57,8 +57,6 @@ LOOK = {
     "louvre": ("fins", "#7c8489", .5, .3), "lamp": ("paint", "#f2efe4", .3, 0),
     "insulator": ("ceramic", "#6a3a28", .12, 0), "conductor": ("galv", "#aeb3b6", .3, .9),
     "water": ("water", "#2c464e", .04, 0), "conditional": ("paint", "#aab2b6", .5, .1),   # real finish, not the drawing tint
-    "btm_island": ("paint", "#2e3640", .45, .15), "btm_mod": ("paint", "#2f8a5e", .4, .1),
-    "btm_grid": ("paint", "#7b4fa8", .4, .1),
     "bess": ("paint", "#e3e5e3", .45, 0), "cabinet": ("paint", "#b9c1c6", .4, .1),
     "swgr": ("paint", "#a3adb3", .4, .1), "panel": ("paint", "#c9cfd2", .4, .1),
     "battery": ("paint", "#4c6b58", .5, 0), "equip": ("paint", "#b0b8bc", .5, .1),
@@ -596,6 +594,15 @@ COASTAL_B = [
 
 # Epic set: golden hour (sun 11 deg, from the west-south-west), low and dramatic viewpoints,
 # wide lenses near the ground and long lenses for compression.
+# the data centre's three supply paths, as numbered callouts on the captioned plates (x, y, z ft, number, text, colour)
+BTM_CALLOUTS = [
+    (3010, 476, 16, "1", "ISLANDED BTM POWER · 24 CAMPUS GENSETS + 40 MW BATTERY", "#3d5a73"),
+    (2685, 470, 12, "1", "ISLANDED BTM POWER · BTM BATTERY 40 MW / 80 MWh", "#3d5a73"),
+    (2590, 880, 18, "1", "ISLANDED 34.5 kV BUS · SWITCHGEAR, TRANSFER SCHEME", "#3d5a73"),
+    (2547, 790, 22, "2", "FROM THE MODULAR YARD · 13.8 / 34.5 kV STEP-UPS", "#4f8a5b"),
+    (1955, 890, 16, "2", "MODULAR YARD 13.8 kV COLLECTOR · SUPPLIES THE CAMPUS", "#4f8a5b"),
+    (2652, 788, 36, "3", "GRID TIE 230 kV · NORMALLY OPEN", "#b0573f"),
+]
 EPIC = [
     dict(k="E1", n="The three HRSG stacks from beside the absorbers", eye=(700, 1100, 150), target=(790, 780, 110), lens=24,
          show="all"),
@@ -693,9 +700,9 @@ EPIC = [
     dict(k="E46", n="Green hydrogen: electrolyzer building, dryer, compressors, tube banks, T-H2",
          eye=(1985, 1612, 72), target=(2215, 1500, 4), lens=24, show="all"),
     dict(k="E47", n="BTM data centre: two data halls with rooftop dry coolers, BESS, gensets, modular yard beside",
-         eye=(2380, 140, 340), target=(2900, 900, 20), lens=24, show="dc"),
+         eye=(2380, 140, 340), target=(2900, 900, 20), lens=24, show="dc", callouts=[c for c in BTM_CALLOUTS if "34.5 kV BUS" not in c[4]]),
     dict(k="E48", n="BTM substation: 13.8/34.5 kV step-ups, 230 kV tie (normally open), switchgear, BTM BESS",
-         eye=(2470, 700, 60), target=(2610, 830, 12), lens=24, show="dc"),
+         eye=(2470, 700, 60), target=(2610, 830, 12), lens=24, show="dc", callouts=BTM_CALLOUTS),
     dict(k="E49", n="Absorber access: stair tower and lift, bridges to the platform rings at EL 60 / 130 / 200 / 250",
          eye=(705, 1415, 185), target=(792, 1262, 118), lens=24, show="all", sun=(32, 320)),
 ]

@@ -412,15 +412,15 @@
 "opacity": 1
 },
 "btm_island": {
-"hex": "#2e3640",
+"hex": "#3d5a73",
 "opacity": 1
 },
 "btm_mod": {
-"hex": "#2f8a5e",
+"hex": "#4f8a5b",
 "opacity": 1
 },
 "btm_grid": {
-"hex": "#7b4fa8",
+"hex": "#b0573f",
 "opacity": 1
 }
 }

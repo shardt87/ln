@@ -500,7 +500,15 @@ if args.style == "pro":
         info = dict(k=h["k"], name=h["n"], show=show, style="pro", samples=args.samples, lens=h["lens"],
                     ortho_ft=0, margin_lr=0, margin_tb=0, sun=list(h.get("sun", HERO_SET["sun"])), sheet=HERO_SET["sheet"])
         base = os.path.join(args.out, f"{h['k']}_pro")
-        json.dump(dict(view=info, labels=[]), open(base + ".labels.json", "w"), indent=1)
+        # callouts: numbered notes with leader lines, drawn by finish_pro on the captioned plate
+        calls = []
+        bpy.context.view_layer.update()
+        rx, ry = scene.render.resolution_x, scene.render.resolution_y
+        for (cx, cy, cz, num, text, colour) in h.get("callouts", ()):
+            pc = world_to_camera_view(scene, cam_ob, Vector((cx, cy, cz)) * FT)
+            if 0 < pc.x < 1 and 0 < pc.y < 1 and pc.z > 0:
+                calls.append(dict(x=round(pc.x * rx, 1), y=round((1 - pc.y) * ry, 1), num=num, text=text, colour=colour))
+        json.dump(dict(view=info, labels=[], callouts=calls, rw=rx, rh=ry), open(base + ".labels.json", "w"), indent=1)
         if not args.no_render:
             t1 = time.time()
             scene.render.filepath = base + ".png"

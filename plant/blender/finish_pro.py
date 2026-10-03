@@ -90,6 +90,30 @@ def finish(png, meta):
     r2 = "CONCEPTUAL ILLUSTRATION · NOT ENGINEERED · NOT FOR CONSTRUCTION"
     tracked(d, (W - m - width_tracked(d, r1, light, 2.2 * k), base - int(38 * k)), r1, light, ink, 2.2 * k)
     tracked(d, (W - m - width_tracked(d, r2, light, 1.8 * k), base - int(10 * k)), r2, light, copper, 1.8 * k)
+    # callouts: anchor dot, leader up to a numbered note (each placed clear of the ones already drawn)
+    note = f("Jura-Medium.ttf", int(14 * k))
+    num = f("Jura-Medium.ttf", int(15 * k))
+    boxes = []
+    for c in sorted(meta.get("callouts", ()), key=lambda c: c["y"]):
+        ax, ay = c["x"] * W / meta.get("rw", W), c["y"] * H / meta.get("rh", H)
+        col = tuple(int(c["colour"][i:i + 2], 16) for i in (1, 3, 5))
+        tw = width_tracked(d, c["text"], note, 1.4 * k)
+        bw, bh = tw + int(46 * k), int(30 * k)
+        bx, by = ax - int(16 * k), ay - int(90 * k)
+        for _ in range(40):                                         # nudge up until clear of earlier notes
+            if all(bx + bw < x0 or bx > x1 or by + bh < y0 or by > y1 for (x0, y0, x1, y1) in boxes):
+                break
+            by -= bh + int(8 * k)
+        bx = min(max(bx, m), W - m - bw)
+        by = max(by, m)
+        boxes.append((bx, by, bx + bw, by + bh))
+        d.line([(ax, ay), (ax, by + bh)], fill=(250, 250, 248), width=max(1, int(1.6 * k)))
+        r = int(4 * k)
+        d.ellipse([ax - r, ay - r, ax + r, ay + r], fill=(250, 250, 248), outline=col, width=max(1, int(2 * k)))
+        d.rectangle([bx, by, bx + bw, by + bh], fill=(18, 22, 26))
+        d.rectangle([bx, by, bx + int(30 * k), by + bh], fill=col)
+        d.text((bx + int(15 * k), by + bh / 2), c["num"], font=num, fill=(255, 255, 255), anchor="mm")
+        tracked(d, (bx + int(40 * k), by + int(8 * k)), c["text"], note, (240, 240, 236), 1.4 * k)
     out = png.replace("_pro.png", "_pro_final.jpg")
     im.save(out, quality=93, optimize=True, progressive=True, subsampling=0)
     return out
