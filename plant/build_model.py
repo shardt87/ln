@@ -1891,6 +1891,47 @@ N_DETAIL = _detail.Detail(items, parts).run()
 # LOD 3: building and equipment dressing for close views
 import detail3 as _detail3
 N_DETAIL += _detail3.Detail3(items, parts).run()
+# Tray review (user screenshots): short tray stubs drawn between a duct-bank end and pad equipment
+# rode the EL +36 rack tier, so a 10 ft connection became a 36 ft goalpost over the transformer. A
+# duct bank comes up straight into the equipment: those stubs are now buried, with rigid-conduit
+# stub-ups into the terminal compartment. In the south gallery the excitation-transformer feed
+# runs at the IPB tap level (EL +24) and the ET -> excitation cable tray just above the cubicles.
+_db_ends = {tuple(p) for r in routes if r["type"] == "duct_bank" for p in (r["points"][0], r["points"][-1])}
+N_STUB = 0
+for r in routes:
+    P = r["points"]
+    if r["type"] not in ("mv_tray", "lv_tray") or len(P) != 2:
+        continue
+    L = abs(P[0][0] - P[1][0]) + abs(P[0][1] - P[1][1])
+    if L > 30 or not (tuple(P[0]) in _db_ends or tuple(P[1]) in _db_ends):
+        continue
+    end = P[1] if tuple(P[0]) in _db_ends else P[0]
+    r["type"], r["z"], r["w"], r["h"], r["color"] = "duct_bank", -2, 3, 1.5, "ductbank"
+    r["label"] = "Duct bank (underground), stub-up into the equipment"
+    tgt = min((it for it in items if it["z"][1] < 20 and it["fp"][1] - it["fp"][0] < 200 and
+               it["fp"][0] - 6 <= end[0] <= it["fp"][1] + 6 and it["fp"][2] - 6 <= end[1] <= it["fp"][3] + 6),
+              key=lambda it: (it["fp"][1] - it["fp"][0]) * (it["fp"][3] - it["fp"][2]), default=None)
+    if tgt is None:
+        continue
+    x0, x1, y0, y1 = tgt["fp"]
+    ex, ey = min(max(end[0], x0), x1), min(max(end[1], y0), y1)       # where the bank meets the pad
+    along_x = ey in (y0, y1)
+    for k in range(4):                                                  # rigid conduit stub-ups
+        o = -1.2 + .8 * k
+        cx, cy = (ex + o, ey) if along_x else (ex, ey + o)
+        parts.append(dict(kind="rod", a=[cx, cy, .3], b=[cx, cy, 2.4], r=.22, r2=.22, color="steel", seg=8,
+                          item=tgt["id"], layer=tgt["layer"], d=1))
+    parts.append(dict(kind="box", min=[ex - 2.2 if along_x else ex - 1, ey - 1 if along_x else ey - 2.2, 0],
+                      max=[ex + 2.2 if along_x else ex + 1, ey + 1 if along_x else ey + 2.2, .3], color="concrete",
+                      item=tgt["id"], layer=tgt["layer"], d=1))
+    N_STUB += 1
+for r in routes:
+    if r.get("sheet") == HC and r["type"] == "mv_tray" and r["points"][0][1] < 404:
+        r["z"] = 24                                                     # ET feed from the IPB tap
+    if r.get("sheet") == HC and r["type"] == "lv_tray" and r["points"][0][1] < 400 and r["points"][-1][1] < 400:
+        r["z"] = 10.5                                                   # ET -> excitation cubicles
+# the ST-aux LV branch was drawn with a gap between the hall wall and the run from the rack: close it
+add_route("lv_tray", [(1068, 572), (1068, 612), (1090, 612)], "ROUTES_BASE", sheet="typical (tray review)")
 # trays last, so their supports and drops see every stair, platform and pipe already in the model
 import trays as _trays
 N_TRAY = _trays.build(item, items, parts, routes)     # ladder trays, cables, supports, drops, IPB

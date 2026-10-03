@@ -39,3 +39,7 @@ One zone per cycle. Each cycle:
   - ST: no EHC hydraulic unit and no gland-steam condenser. Now present as `EHC-ST` (reservoir, pumps, accumulators, supply and return to the valve actuators) and `GSC-ST` (condenser shell, two exhausters, leak-off line).
   - Deck: no stairs onto the EL 20 deck. Added one from the laydown bay and one at the east end of the south gallery.
   - Wiring applications are on every new item, and verify, audit and coastal all pass. Cameras E51 (ST), E52 (GT1 generator end), E53 (static starter).
+- **Tray review (user screenshots).**
+  - **ACC transformers:** the short drawn tray stubs between a duct-bank end and the T-R4-1..4 transformers rode the EL +36 rack tier, so a 10 ft connection became a 36 ft "goalpost" over each transformer. These stubs are now buried, with rigid-conduit stub-ups into the transformer terminal compartment. The same rule applies to any short tray stub that leaves a duct bank.
+  - **South gallery:** the excitation-transformer feed now runs at the IPB tap level (EL +24) instead of EL +36. The ET-to-excitation cable tray runs just above the cubicles (EL +10.5).
+  - **ST aux:** its LV branch had a gap between the hall wall and the run from the rack, leaving a tray end hanging in the air. The gap is now closed.
