@@ -393,6 +393,8 @@ The model is improved zone by zone, one cycle per zone (`DETAIL_CYCLES.md` has t
 
 **Absorber and stripper access.** Caged ladders (yellow) on each column reach the platform rings; walkways link the stripper platforms. (Stair towers with lifts were tried and taken out: they duplicated the ladders and crowded the columns.)
 
+**Turbine hall electrical audit (`hall.py`, `hall_electrical`).** Every machine in the hall now carries its cable applications (GTs, generators, ST, ST aux, GCBs, turbine control panels, the crane and the hall itself had none; ducts, spools and the deck are passive). Inside: lighting / small-power and fire-alarm panels on the north wall with conduit to the LV tray, receptacles and welding outlets along the deck, horn / strobes, exit signs, a fused disconnect feeding the crane conductor bar, fire-stopped sleeves where the trays cross the north wall. Outside: MC-cable (ARMOR-X) ladder risers on the east and west walls from duct-bank riser boxes to the roof, roof trays both sides of the ridge feeding 24 roof exhausters, LED wall packs with conduit and pull boxes, weatherproof receptacles and beacons at the doors, air terminals on the ridge and down conductors to ground rods.
+
 **Cycle 6: carbon capture (`ccs.py`).**
 - **Flue-gas path closed:** the HRSG flue duct turns into the DCC, the DCC outlet feeds the booster fan, and the fan discharges into an overhead duct on steel bents to the absorber inlet, with an expansion joint.
 - **DCC:** quench-water riser and return, platform, caged ladder.

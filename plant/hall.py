@@ -361,6 +361,134 @@ def hall_services():
         dress(False)
 
 
+# cable applications for the hall's main machines and services (they had none; the turbine-hall
+# trays and drops already reach each of them)
+_MV = "MV 13.8 kV: Cu MV-105, 133% insulation, shielded, in ladder tray"
+_LV = "LV 480 V: Cu XHHW-2, Type TC-ER (UL 1277), in ladder tray"
+_MC = "LV 480 V / 120 V branch: Type MC-HL (Southwire ARMOR-X) from the tray to the device"
+_CTRL = "Control 120 V AC / 125 V DC: 14 AWG multiconductor, Type TC-ER (ICEA S-73-532)"
+_INST = "Instrumentation 4-20 mA / HART: shielded pairs / triads, Type TC-ER / PLTC"
+_TCX = "Thermocouple extension: Type K (KX) shielded pairs, Type PLTC"
+_RTD = "RTD leads: three-wire shielded, Type PLTC"
+_VIB = "Vibration and keyphasor: proximity-probe extension cable and shielded triads"
+_FA = "Fire and gas detection / CO2 release: FPLR shielded, red jacket (NEC 760)"
+_DATA = "Data / DCS network: fibre optic (single-mode), orange jacket"
+_LIGHT = "Lighting, receptacles, small power: Cu THHN/THWN-2 in conduit / MC cable"
+_GND = "Grounding: bare Cu 4/0 to the station grid, green-insulated equipment grounds"
+_HT = "Space heaters / heat trace: 120 / 240 V, Type MC or TC-ER"
+HALL_WIRING = [
+    (r"^GT\d: H-class gas turbine", [_CTRL, _INST, _TCX, _VIB, _FA, _MC + " (enclosure lights, heaters)", _GND]),
+    (r"^GTG-\d: GT generator", [_RTD, _VIB, _CTRL, _HT, "Generator protection CT / VT secondaries: 10 AWG, Type TC-ER", _GND]),
+    (r"^ST: steam turbine", [_CTRL, _INST, _TCX, _VIB, "Electro-hydraulic control (EHC) servo cable: shielded", _MC, _GND]),
+    (r"^STG: steam-turbine generator", [_RTD, _VIB, _CTRL, _HT, "Generator protection CT / VT secondaries: 10 AWG, Type TC-ER", _GND]),
+    (r"^ST aux", [_LV, _CTRL, _INST, _MC + " (turning gear, lube oil pumps)", _GND]),
+    (r"^GCB-", [_CTRL + " (trip / close, interlocks)", "CT / VT secondaries: 10 AWG, Type TC-ER", _HT, _GND]),
+    (r"^TCP-", [_LV + " (UPS-backed 120 V)", _CTRL, _INST, _DATA, _GND]),
+    (r"^Bridge crane", ["Crane runway conductor bar 480 V fed from a fused disconnect at the north wall",
+                        "Pendant / radio control: 120 V", _GND]),
+    (r"^Common turbine hall", [_LIGHT + " (high-bay LED, emergency and exit lighting)", _FA + " (smoke, heat, manual stations, horns)",
+                               _MC + " (roof exhausters, wall louvre actuators)", _DATA + " (CCTV, Wi-Fi)",
+                               "Lightning protection: air terminals and down conductors to ground rods", _GND]),
+]
+
+
+def hall_electrical():
+    """Turbine hall electrical, internal and external (audit pass): cable applications on every
+    machine, lighting / small-power / fire-alarm panels, wall penetrations with fire stops, the
+    crane feed, roof exhausters fed by exterior MC-cable risers, wall-pack lighting with conduit,
+    exterior receptacles and alarm beacons, and lightning protection."""
+    import re
+    for it in fuel.G["items"]:
+        for pat, apps in HALL_WIRING:
+            if re.search(pat, it["name"]):
+                it["wiring"] = apps
+    hall = find("Common turbine hall")
+    on(hall)
+    dress(True)
+    roof = lambda y: 98 + 3 * (1 - abs(y - 482) / 78)
+    # ---- inside: power / lighting panels and fire-alarm devices along the north wall at deck level
+    for k, x in enumerate(range(600, 1081, 160)):
+        box(x, x + 6, 557.6, 558.6, 21, 28, "panel")                                     # lighting / small-power panel
+        box(x + 7, x + 9, 557.9, 558.6, 23, 26, "red")                                    # fire-alarm panel / pull station
+        rod((x + 3, 558.2, 28), (x + 3, 558.2, 44), .12, "steel", seg=6)                  # conduit up to the LV tray
+        for xr in range(x - 60, x + 60, 30):                                              # receptacles / welding outlets
+            if 562 < xr < 1096:
+                box(xr, xr + 1.2, 558.1, 558.6, 22, 23.6, "amber")
+    for (x, y) in ((482, 460), (1097, 460), (560, 405.5), (900, 405.5), (500, 557.5)):     # horn / strobes
+        box(x - .4, x + .4, y - .4, y + .4, 14, 15.2, "red")
+    for gx in (575, 735, 895, 1055):                                                       # exit signs over doors
+        box(gx - 2, gx + 2, 371.2, 371.6, 17, 18.3, "lamp")
+    # ---- crane feed: fused disconnect on a north-wall column, feed to the conductor bar
+    box(546, 550, 557.4, 558.6, 70, 76, "cabinet")
+    rod((548, 558, 76), (548, 558, 81.4), .12, "steel", seg=6)
+    rod((548, 558, 70), (548, 558, 48), .12, "steel", seg=6)
+    # ---- wall penetrations: fire-stopped sleeves where the trays cross the north wall
+    for (x, z, w) in ((560, 48, 3.4), (560, 44, 3.4), (500, 42, 2.4)):
+        box(x - w / 2 - .4, x + w / 2 + .4, 558.6, 560.6, z - .6, z + 1.6, "concrete")
+    dress(False)
+    # ---- outside: MC-cable risers on the east and west walls from the duct bank to the roof, a roof tray
+    # along each side of the ridge to the roof exhausters
+    out = fuel.new_item("BASE_POWER_BLOCK", "Turbine hall exterior electrical: MC-cable risers, roof exhausters, "
+                        "wall lighting, receptacles, lightning protection", (472, 1108, 362, 568), (0, 106),
+                        area="A", basis="typical", sheet="typical (turbine hall electrical)",
+                        info="Roof exhausters and wall louvre actuators fed by Type MC-HL (ARMOR-X) cables on exterior "
+                             "ladder risers from the duct bank; LED wall packs on conduit with pull boxes; weatherproof "
+                             "receptacles and beacons at the doors; air terminals on the ridge, down conductors at the corners.")
+    out["wiring"] = [_MC, _LIGHT, _FA, "Lightning protection: Cu / Al conductors, UL 96A", _GND]
+    dress(True)
+    for (x, s, y) in ((1100.2, 1, 430), (479.8, -1, 530)):
+        xo = x + s * 1.2
+        box(x + s * 2.6 - .8, x + s * 2.6 + .8, y - 2.5, y + 2.5, -3, .3, "concrete")      # duct bank riser box
+        for d in (-1.1, 1.1):
+            box(xo - .06, xo + .06, y + d - .06, y + d + .06, .3, roof(y) + 1, "pipe")     # ladder rails
+        z = 2
+        while z < roof(y):
+            box(xo - .06, xo + .06, y - 1.1, y + 1.1, z - .06, z + .06, "pipe")            # rungs
+            z += 2
+        for c in range(5):
+            rod((xo + s * .25, y - .8 + c * .4, .3), (xo + s * .25, y - .8 + c * .4, roof(y) + .6), .12,
+                "cable_mc", seg=6)
+        for z in range(12, int(roof(y)), 14):                                               # standoff brackets
+            box(min(x, xo), max(x, xo), y - 1.4, y + 1.4, z - .2, z + .2, "steel")
+    for yr in (470, 494):                                                                   # roof trays both sides of the ridge
+        z = roof(yr)
+        box(482, 1098, yr - .7, yr + .7, z + .4, z + .55, "pipe")
+        for c in range(3):
+            rod((482, yr - .4 + c * .4, z + .7), (1098, yr - .4 + c * .4, z + .7), .1, "cable_mc", seg=6)
+        for x in range(500, 1098, 20):
+            box(x - .3, x + .3, yr - .8, yr + .8, z, z + .45, "steel")                       # roof supports
+    for x in range(520, 1090, 48):                                                          # roof exhausters
+        for yr in (470, 494):
+            z = roof(yr) + .2
+            rod((x, yr + (6 if yr > 482 else -6), z), (x, yr + (6 if yr > 482 else -6), z + 3), 2.6, "machine", seg=16)
+            rod((x, yr + (6 if yr > 482 else -6), z + 3), (x, yr + (6 if yr > 482 else -6), z + 4.4), 3.4, "roof",
+                r2=.8, seg=16)
+            box(x - .4, x + .4, yr + (2 if yr > 482 else -2.8), yr + (2.8 if yr > 482 else -2), z, z + 2.2, "panel")
+    # wall packs with conduit and pull boxes, receptacles and beacons at the doors
+    for (y, s) in ((559.9, 1), (370.1, -1)):
+        yy = y + s * .3
+        for x in range(500, 1090, 40):
+            if y > 500 and any(a - 4 < x < b + 4 for (a, b) in ((619, 641), (779, 801), (939, 961), (1067, 1143))):
+                continue
+            box(x - .8, x + .8, yy, yy + s * .7, 19, 20.4, "lamp")
+        if y > 500:
+            continue
+        rod((484, yy + s * .2, 18.4), (1096, yy + s * .2, 18.4), .1, "steel", seg=4)       # conduit along the wall
+        for x in range(500, 1090, 80):
+            box(x - .5, x + .5, yy, yy + s * .5, 17.8, 18.9, "panel")                        # pull boxes
+    for gx in (575, 735, 895, 1055):
+        box(gx - 9, gx - 8, 369.4, 370, 4, 5.2, "amber")                                    # WP receptacle
+        rod((gx - 10, 369.6, 17), (gx - 10, 369.6, 17.8), .35, "red", seg=10)              # beacon / horn-strobe
+    # lightning protection: air terminals on the ridge, down conductors at the corners to ground rods
+    for x in range(484, 1100, 40):
+        rod((x, 482, 101), (x, 482, 103.5), .06, "copper", seg=4)
+    rod((484, 482, 101.2), (1096, 482, 101.2), .05, "copper", seg=4)
+    for (x, y) in ((480.6, 404.6), (1099.4, 404.6), (480.6, 559.4), (1099.4, 559.4)):
+        rod((x, y, 98), (x, y, 0), .06, "copper", seg=4)
+        box(x - .3, x + .3, y - .3, y + .3, -.5, .2, "concrete")
+    dress(False)
+
+
 def build():
     gas_turbines()
     steam_turbine()
@@ -369,3 +497,4 @@ def build():
     hall_fitout()
     unit_electrical()
     hall_services()
+    hall_electrical()
