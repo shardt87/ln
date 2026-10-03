@@ -1577,6 +1577,8 @@ MX = "OPT_MODX_ROUTES"
 for row, y in ((0, 505), (1, 560)):                       # CONT-3..8 -> CONT-EH (paralleling e-house)
     ys = y - 4 if row == 0 else y + 12
     add_route("mvlv_cable", [(2010, y), (2010, ys), (2190, ys), (2190, 536), (2195, 536)], MX)
+add_route("mvlv_cable", [(2263, 575), (2290, 575), (2290, 564), (2295, 564)], "OPT_TMP_ROUTES",
+          sheet="typical (portable pad)")                                                   # PIC -> load bank
 add_route("mvlv_cable", [(2217, 527), (2217, 492), (2185, 492), (2185, 484)], MX)          # CONT-EH -> PAD-EH
 add_route("mvlv_cable", [(2050, 390), (2050, 410), (2165, 410), (2165, 470)], MX)         # TM-1 -> PAD-EH
 add_route("mvlv_cable", [(2170, 390), (2170, 403), (2205, 403), (2205, 477), (2200, 477)], MX)   # TM-2
@@ -1864,6 +1866,7 @@ import hall as _hall_w
 _hall_w.inlet_routes(add_route)
 N_WAPPS, N_FEEDERS = _wiring.build(items, routes, LAYERS, add_route)
 _hall_w.inlet_wiring()
+_wiring.apply_overrides(items)
 _fuel.G['routes'] = routes
 _station.build_late()  # duct-bank manholes and handholes (after the feeders exist)
 

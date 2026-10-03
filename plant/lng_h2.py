@@ -39,6 +39,8 @@ def routes(add_route):
         add_route("mvlv_cable", [(x + 2 * k + 6, 1530), (x + 2 * k + 6, 1518), (x + 4, 1518), (x + 4, 1505)],
                   layer="OPT_H2_ROUTES", sheet=SHEET)
         add_route("mvlv_cable", [(x + 4, 1490), (x + 4, 1478)], layer="OPT_H2_ROUTES", sheet=SHEET)
+    # N2 purge supply: control / instrument cable from the H2 20 e-house (east of the dryer)
+    add_route("mvlv_cable", [(2283, 1456), (2283, 1496), (2270, 1496), (2270, 1505)], layer="OPT_H2_ROUTES", sheet=SHEET)
 
 
 def lng():

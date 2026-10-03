@@ -169,3 +169,43 @@ def build(items, routes, layers, add_route):
         ends.append((pts[0], rtype))
         n_feed += 1
     return n_apps, n_feed
+
+
+# applications for items the generic rules miss (applied last, by name)
+OVERRIDES = [
+    (r"^HRSG \d \+ SCR", [MV + " (BFP and recirculation motors via R2)", LV + " (MOVs, drain valves, SCR / NH3 skid, platform lighting)",
+                         CTRL + " (drum-level, attemperator, blowdown, MOV control)", INST + " (drum level, pressure, flow, O2 / NOx)",
+                         TCX + " (tube-metal and gas-path thermocouples)", HT + " (freeze protection)", LIGHT, GND]),
+    (r"^Air-cooled condenser", [MV + " (fan VFD outputs from R4)", LV + " (gearbox oil heaters, deck lighting)",
+                                CTRL + " (fan sequencing, vacuum control)", INST + " (vibration switches, condensate T, backpressure)",
+                                HT + " (condensate drain and riser heat trace)", GND]),
+    (r"^HTP-\d: heat-trace panel", [LV + " (panel supply)", HT + " (self-regulating heat-trace circuits)",
+                                    CTRL + " (circuit monitoring, alarm to DCS)", GND]),
+    (r"^Chemical feed$", [LV + " (metering pumps, mixers)", CTRL, INST + " (tank level, dosing flow)", GND]),
+    (r"^Wastewater treatment$", [LV + " (mixers, clarifier drive, pumps, filter press)", CTRL, INST + " (pH, level, turbidity)",
+                                 LIGHT, GND]),
+    (r"^Auxiliary boiler$", [LV + " (FD fan, feedwater pumps)", CTRL + " (burner management system, flame scanners)",
+                             INST + " (drum level, steam pressure)", FA + " (fuel-gas detection)", GND]),
+    (r"^Gas yard local control enclosure", [LV, CTRL, INST_IS + " (field instruments in the gas yard)", DATA, GND]),
+    (r"^CONDITIONAL: backup fuel oil \(ULSD\) unloading", [LV_HAZ + " (unloading and forwarding pumps)", CTRL,
+                                                          INST + " (level, flow, leak detection)", GND]),
+    (r"^M&R 1: pig receiver", [INST_IS + " (pig signaller, pressure)", GND]),
+    (r"^M&R 5: ultrasonic meters", [INST_IS + " (meter heads, pressure, temperature)", DATA + " (flow computers)", GND]),
+    (r"^230 kV switchyard \(gravel\)", ["Ground grid: bare Cu 4/0 mesh with ground rods, bonded to every structure",
+                                        LIGHT + " (yard floodlighting)", GND]),
+    (r"^Aqueous ammonia \(SC units\)", [LV + " (forwarding pumps)", INST + " (tank level, NH3 detection)", GND]),
+    (r"^GSP-\d: generator breaker", [CTRL + " (trip / close, protection)", "CT / VT secondaries: 10 AWG, Type TC-ER", GND]),
+    (r"^PIC: portable input cabinet", [LV + " (portable generator tails: Type W / SOOW single conductors)", GND]),
+    (r"^LB: commissioning load bank", [LV + " (Type W / SOOW single conductors)", CTRL, GND]),
+    (r"^H2 28: N2 purge supply", [INST + " (pressure, purge flow)", CTRL + " (purge valve control)", GND]),
+]
+
+
+def apply_overrides(items):
+    n = 0
+    for it in items:
+        for pat, apps in OVERRIDES:
+            if re.search(pat, it["name"]):
+                it["wiring"] = apps
+                n += 1
+    return n

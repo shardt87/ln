@@ -319,7 +319,7 @@ New epic cameras:
 
 ## Wiring applications
 
-`wiring.py` gives every powered or instrumented item its cable applications (`wiring` in the model). The viewer's inspector lists them when you click the item. The selection is typical, not engineered; Southwire families are named as the requested supplier.
+`wiring.py` gives every powered or instrumented item its cable applications (`wiring` in the model). The viewer's inspector lists them when you click the item. The selection is typical, not engineered; Southwire families are named as the requested supplier. Items the generic rules miss (HRSGs, ACC, heat-trace panels, aux boiler, M&R, temporary-power cabinets and others) get their applications from `wiring.OVERRIDES`, applied last.
 
 | Equipment class | Applications |
 |---|---|
