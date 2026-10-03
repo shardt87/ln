@@ -46,3 +46,12 @@ One zone per cycle. Each cycle:
 - **Valve actuators (user screenshot).**
   - **Steam turbine:** the main stop / control, combined reheat and LP admission valve actuators were plain safety-yellow boxes. They are now hydraulic actuators (`hall.actuator()`) in the valve's grey finish: yoke posts and stem, spring can with flange, hydraulic cylinder, and servo / trip block with tubing.
   - **Gas turbines:** the compressor blow-off valve actuators and the VGV actuators are now grey as well.
+- **Underground systems (`underground.py`, layers `UNDERGROUND` / `OPT_UNDERGROUND`, viewer view "U Underground").** Buried systems were route data painted as strips on grade; they are now real geometry below grade:
+  - **Duct banks:** concrete encasement with a red-dyed top along every buried cable route (2.5 ft cover); the 230 kV banks run deeper (3.5 ft cover). Precast manhole chambers sit under the manhole covers, and handhole boxes at the feeder ends.
+  - **Ground grid:** bare 4/0 Cu station ground grid at 18 in, a 40 ft mesh under the power block and electrical areas and 20 ft in the switchyard, with driven rods at the perimeter and risers to every transformer, e-house and structure.
+  - **Firewater ring main:** ductile iron with thrust blocks at the bends.
+  - **Storm drainage:** RCP under the road edges, catch-basin chambers with laterals, storm manholes at the junctions, and the trunk to the pond inlet headwall.
+  - **Oily-water drains (HDPE):** from the transformer containment sumps, turbine-hall lube-oil areas and station transformers to the oil-water separator, then on to wastewater treatment.
+  - **Sanitary sewer (green PVC):** from the buildings to a new packaged lift station (LS-1, with its LV feed), and a force main to the west boundary.
+  - **Water mains (blue PVC):** potable water to the buildings and service water to the power block.
+  - **Viewer:** buried routes are no longer painted on grade; each stays an invisible pick target at its depth. View U removes the ground (SITE) and shows the systems over a soil floor. Blender renders skip the buried routes and the underground layers.

@@ -341,6 +341,8 @@ New epic cameras:
 
 The gas / steam turbine audit (`hall.gt_st_audit()`) added the GT static starters (SFC-1..3), the generator seal-oil / H2 gas-control skids (SOS-1..3), compressor bleed lines, ST combined reheat and LP admission valves, turning gear, the EHC power unit (EHC-ST), the gland-steam condenser (GSC-ST) and two deck stairs; cameras E51-E53.
 
+Underground systems (`underground.py`): duct banks with red-dyed caps and manhole chambers, the station ground grid, the firewater main, storm / oily-water / sanitary drains and the water mains are modelled below grade in the `UNDERGROUND` and `OPT_UNDERGROUND` layers; the viewer's "U Underground" view removes the ground to show them. Buried routes are no longer painted on grade.
+
 `audit.py` now checks that every item with wiring applications has a cable route ending at it or passing it.
 
 ## Detail cycles

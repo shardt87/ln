@@ -380,7 +380,9 @@ const pathRoutes=[];
 const PIPE_TYPES=['steam','condensate','feedwater','ccw','fuel_gas','fuel_oil','cw','chw','hydrogen','lng','mv_tray','lv_tray','control_tray','ipb','cable_trench','water','aux_steam'];
 const pickOnly=new THREE.MeshBasicMaterial({visible:false});
 MODEL.routes.forEach((r,ri)=>{
-  const z = r.z<0 ? 0.3 : r.z, h = r.z<0 ? 0.35 : r.h, geos=[];
+  // buried routes are modelled as real geometry in the underground layers; the route itself stays an
+  // invisible pick target at its depth (no strip painted on grade)
+  const buried = r.z<0, z = buried ? r.z - r.h/2 : r.z, h = r.h, geos=[];
   for(let i=0;i<r.points.length-1;i++){
     const [ax,ay]=r.points[i],[bx,by]=r.points[i+1], len=Math.hypot(bx-ax,by-ay); if(len<0.5) continue;
     const g = new THREE.BoxGeometry(len+r.w, r.w, h).toNonIndexed();
@@ -393,7 +395,7 @@ MODEL.routes.forEach((r,ri)=>{
   if(!geos.length) return;
   const cls = CLASS[r.color] || 'paint';
   // above-grade pipe routes are drawn as round pipes (parts); the box stays as an invisible pick target
-  const pipe = (r.z>0 || r.type==='cable_trench') && PIPE_TYPES.includes(r.type);
+  const pipe = buried || ((r.z>0 || r.type==='cable_trench') && PIPE_TYPES.includes(r.type));
   const m = new THREE.Mesh(toThree(THREE.BufferGeometryUtils.mergeBufferGeometries(geos,false)),
                            pipe ? pickOnly : surfMat(cls==='copper'?'copper':cls));
   m.castShadow = r.z>0 && !pipe; m.receiveShadow = !pipe; m.userData.route = ri; grp(r.layer).add(m); pickables.push(m);
@@ -423,6 +425,11 @@ let grassEast = null;
     g.add(water);
     g.add(strip(W0, W1, sh+45, S1+6000, sea-40, new THREE.MeshStandardMaterial({color:new THREE.Color('#5b6a60').convertSRGBToLinear(), roughness:1})));
   } else ring(W0, W1, S0, S1); }
+// underground layer: a soil floor under the compound below the deepest services, so the buried systems
+// read against earth, not sky, when the ground is taken away (view U)
+if(MODEL.layers.UNDERGROUND){ const g = new THREE.PlaneGeometry(2420, 1920); g.rotateX(-Math.PI/2);
+  const soil = new THREE.Mesh(g, new THREE.MeshStandardMaterial({color:new THREE.Color('#6f5f4b').convertSRGBToLinear(), map:TEX.gravel, roughness:1}));
+  soil.position.copy(P(1210, 960, -13)); soil.receiveShadow = true; grp('UNDERGROUND').add(soil); }
 const gridH = new THREE.GridHelper(2400, 24, 0x000000, 0x000000); gridH.material.transparent=true; gridH.material.opacity=.04; gridH.position.y=.05; scene.add(gridH);
 document.getElementById('loading').hidden = true;
 

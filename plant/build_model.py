@@ -1668,6 +1668,7 @@ LAYERS = {
     "BASE_SERVICES": ("F Controls / service", "Base plant"),
     "ROUTES_BASE": ("Cable trays, IPB, duct banks, 230 kV", "Routes"),
     "PROCESS_PIPING": ("Process piping", "Routes"),
+    "UNDERGROUND": ("Underground: duct banks, ground grid, drains, water mains", "Routes"),
     "SWYD_FUTURE": ("D4 / D5 / D6 switchyard build-out", "Optional / adjacent"),
     "HV_CORRIDOR": ("Reserved 230 kV corridor + H-MOD tie", "Optional / adjacent"),
     "OPT_CCS": ("G Carbon capture, 3 trains", "Optional / adjacent"),
@@ -1686,6 +1687,7 @@ LAYERS = {
     "OPT_LNG_ROUTES": ("K LNG routes", "Optional routes"), "OPT_H2_ROUTES": ("K H2 routes", "Optional routes"),
     "OPT_DC": ("L BTM data centre (~150 MW, design option)", "Optional / adjacent"),
     "OPT_DC_ROUTES": ("L BTM routes", "Optional routes"),
+    "OPT_UNDERGROUND": ("Underground: option duct banks", "Optional routes"),
 }
 AREAS = {"A": "Power block", "B": "ACC", "C": "Grid interface", "D": "Fuel gas", "E": "Water / utilities",
          "F": "Controls / service", "G": "Carbon capture", "H": "BESS", "I": "Modular / portable power",
@@ -1706,6 +1708,8 @@ VIEWS = [
          "ROUTES_BASE", "PROCESS_PIPING"], t=[1250, 800, 20], c=[1190, 1070, 190]),
     dict(k="H", n="Turbine hall (roof off)", show=["SITE", "BASE_POWER_BLOCK", "BASE_INLET_AIR", "BASE_ELECTRICAL",
          "ROUTES_BASE", "PROCESS_PIPING"], t=[790, 480, 25], c=[600, 250, 260]),
+    dict(k="U", n="U Underground (ground removed)", show=["UNDERGROUND", "BASE_POWER_BLOCK", "BASE_ELECTRICAL",
+         "BASE_SWITCHYARD", "BASE_UTILITIES", "BASE_SERVICES", "BASE_INLET_AIR"], t=[800, 420, -4], c=[560, 40, 330]),
     dict(k="O1", n="O1 Modular / portable", show=BASE_SHOW + ["OPT_MOD", "OPT_TMP", "OPT_MODX", "OPT_MOD_ROUTES", "OPT_TMP_ROUTES", "OPT_MODX_ROUTES",
          "HV_CORRIDOR", "SWYD_FUTURE"], t=[1960, 880, 20], c=[1520, 300, 760]),
     dict(k="O2", n="O2 BESS", show=BASE_SHOW + ["OPT_BESS", "OPT_BESS_ROUTES"], t=[1740, 560, 5], c=[1480, 200, 420]),
@@ -1714,9 +1718,9 @@ VIEWS = [
     dict(k="O4", n="O4 Inlet chilling", show=BASE_SHOW + ["OPT_IC", "OPT_IC_ROUTES"], t=[180, 1160, 20], c=[-150, 820, 420]),
     dict(k="O5", n="O5 Gas, LNG, H2", show=BASE_SHOW + ["OPT_LNG", "OPT_H2", "OPT_LNG_ROUTES", "OPT_H2_ROUTES",
          "SWYD_FUTURE"], t=[1980, 1650, 10], c=[1650, 1150, 700]),
-    dict(k="O6", n="Add-on: plant + BTM data centre", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR")],
+    dict(k="O6", n="Add-on: plant + BTM data centre", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND")],
          t=[2200, 850, 30], c=[700, -1400, 1700]),
-    dict(k="ALL", n="Complete plant", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR")
+    dict(k="ALL", n="Complete plant", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND")
                                             and not l.startswith("OPT_DC")],
          t=[1210, 900, 40], c=[-350, -750, 1400]),
 ]
@@ -1732,6 +1736,7 @@ FIT = {
     "B2": dict(box=[1135, 1310, 308, 368, 0, 16]),
     "C": dict(box=[1130, 1450, 790, 850, 0, 40]),
     "H": dict(box=[480, 1100, 370, 560, 0, 60]),
+    "U": dict(box=[0, 2420, 0, 1920, -10, 20]),
     "O1": dict(layers=["OPT_MOD", "OPT_TMP", "OPT_MODX"]),
     "O2": dict(layers=["OPT_BESS"]),
     "O3": dict(layers=["OPT_CCS", "OPT_CCSU"]),
@@ -1930,8 +1935,13 @@ for r in routes:
         r["z"] = 24                                                     # ET feed from the IPB tap
     if r.get("sheet") == HC and r["type"] == "lv_tray" and r["points"][0][1] < 400 and r["points"][-1][1] < 400:
         r["z"] = 10.5                                                   # ET -> excitation cubicles
+# sanitary lift station feed (underground pass): LV duct bank from the maintenance building
+add_route("duct_bank", [(320, 630), (332, 630), (332, 652)], "ROUTES_BASE", sheet="typical (underground)")
 # the ST-aux LV branch was drawn with a gap between the hall wall and the run from the rack: close it
 add_route("lv_tray", [(1068, 572), (1068, 612), (1090, 612)], "ROUTES_BASE", sheet="typical (tray review)")
+# underground systems in real geometry (duct banks, chambers, ground grid, firewater, drains, water mains)
+import underground as _ug
+N_UG = _ug.build(items, routes)
 # trays last, so their supports and drops see every stair, platform and pipe already in the model
 import trays as _trays
 N_TRAY = _trays.build(item, items, parts, routes)     # ladder trays, cables, supports, drops, IPB

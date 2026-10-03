@@ -426,5 +426,29 @@
 "turf": {
 "hex": "#8a9a63",
 "opacity": 1
+},
+"ductcap": {
+"hex": "#8e3b2e",
+"opacity": 1
+},
+"rcp": {
+"hex": "#a9a49a",
+"opacity": 1
+},
+"pvc_green": {
+"hex": "#3f7a4a",
+"opacity": 1
+},
+"pvc_blue": {
+"hex": "#2f5f9e",
+"opacity": 1
+},
+"hdpe": {
+"hex": "#2a2c2e",
+"opacity": 1
+},
+"ductile": {
+"hex": "#4a4440",
+"opacity": 1
 }
 }
