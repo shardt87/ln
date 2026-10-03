@@ -296,6 +296,15 @@ class Detail:
                     else:
                         a = (max(ox), a[1], a[2])
                     ends = [b if tee[0] in ("y1", "x1") else a, (b[0], 834.5, z + r), (a[0], 841.5, z + r)]
+                drop_at = []
+                k = specs.index((z, dia, f))
+                back = 2 + 12 * k                                       # each line peels off at its own bent
+                if not ends or ends[0] is not a:
+                    a = (a[0] + back, a[1], a[2]) if along_x else (a[0], a[1] + back, a[2])
+                    drop_at.append(a)
+                if not ends or ends[0] is not b:
+                    b = (b[0] - back, b[1], b[2]) if along_x else (b[0], b[1] - back, b[2])
+                    drop_at.append(b)
                 jog = None
                 if tee and tee[0] in ("y1", "y0") and z == 30:
                     # the tier-30 LV tray runs along the other rack at y 837-839: hop over it
@@ -312,18 +321,19 @@ class Detail:
                         self.rod(iid, ly, q0, q1, r, "pipe", seg=10)
                     for q in jog[1:3]:
                         self.rod(iid, ly, (q[0], q[1], q[2] - r * 1.1), (q[0], q[1], q[2] + r * 1.1), r * 1.12, "pipe", seg=10)
-                # free header ends: weld neck flange + blind flange, a drain valve on the underside
-                for e, o2 in ((a, b), (b, a)):
-                    if e in ends:
-                        continue
-                    ux = (1 if e[0] > o2[0] else -1) if along_x else 0
-                    uy = 0 if along_x else (1 if e[1] > o2[1] else -1)
-                    self.rod(iid, ly, (e[0] - ux * .5, e[1] - uy * .5, e[2]), (e[0], e[1], e[2]), r * 1.55, "steel", seg=12)
-                    self.rod(iid, ly, (e[0], e[1], e[2]), (e[0] + ux * .3, e[1] + uy * .3, e[2]), r * 1.55, "steel", seg=12)
-                    self.rod(iid, ly, (e[0] - ux * 1.5, e[1] - uy * 1.5, e[2] - r),
-                             (e[0] - ux * 1.5, e[1] - uy * 1.5, e[2] - r - 1.2), .12, "steel", seg=6)
-                    self.rod(iid, ly, (e[0] - ux * 1.5, e[1] - uy * 1.5, e[2] - r - 1.2),
-                             (e[0] - ux * 1.5, e[1] - uy * 1.5, e[2] - r - 1.6), .22, "red", seg=6)
+                # free ends: lines peel off one by one toward the rack end, each elbowing down at its own
+                # bent and dropping to its user at grade (isolation valve, pipe support at the foot)
+                for e2 in drop_at:
+                    top, foot = e2[2], 1.2
+                    self.rod(iid, ly, (e2[0], e2[1], top - r * 1.1), (e2[0], e2[1], top + r * 1.1), r * 1.12, "pipe", seg=10)
+                    self.rod(iid, ly, (e2[0], e2[1], top), (e2[0], e2[1], foot), r, "pipe", seg=10)
+                    zv = min(6.5, top - 3)                              # isolation valve with a handwheel
+                    self.rod(iid, ly, (e2[0], e2[1], zv - r * .9), (e2[0], e2[1], zv + r * .9), r * 1.6, "steel", seg=10)
+                    hx, hy = (0, 1.2) if along_x else (1.2, 0)
+                    self.rod(iid, ly, (e2[0], e2[1], zv), (e2[0] + hx, e2[1] + hy, zv), .1, "steel", seg=4)
+                    self.rod(iid, ly, (e2[0] + hx, e2[1] + hy, zv), (e2[0] + hx * 1.1, e2[1] + hy * 1.1, zv), max(r, .5),
+                             "red", seg=10)
+                    self.box(iid, ly, e2[0] - r - .4, e2[0] + r + .4, e2[1] - r - .4, e2[1] + r + .4, 0, foot - r * .2, "concrete")
             # longitudinal bracing in every third bay
             if along_x:
                 for x in range(int(x0), int(x1) - 25, 75):
