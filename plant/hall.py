@@ -489,6 +489,110 @@ def hall_electrical():
     dress(False)
 
 
+INLET_WIRING = [
+    (r"^FH-\d: GT inlet filter house", [
+        "LV 480 V: Cu XHHW-2, Type TC-ER (hoist, anti-icing heaters, platform lighting transformer)",
+        "Control 120 V AC / 125 V DC: 14 AWG multiconductor, Type TC-ER (pulse-jet sequencer, solenoid valves)",
+        "Instrumentation 4-20 mA: shielded pairs, Type PLTC (stage differential pressure, ambient T / RH, icing detector)",
+        "LV branch to platform devices: Type MC-HL (Southwire ARMOR-X)",
+        "Lighting and receptacles: Cu THHN/THWN-2 in rigid conduit",
+        "Grounding: bare Cu 4/0 from two frame columns to the station grid"]),
+    (r"^FH-\d stair tower", ["Lighting and receptacles: Cu THHN/THWN-2 in rigid conduit (landing lights, emergency lights)",
+                              "Grounding: bare Cu from the stair frame to the station grid"]),
+    (r"^GT\d inlet duct", ["Instrumentation 4-20 mA: shielded pairs, Type PLTC (inlet temperature, humidity, duct differential "
+                           "pressure, inlet bleed-heat thermocouples)",
+                           "Thermocouple extension: Type K (KX) shielded pairs (bleed-heat manifold)",
+                           "Grounding: bonding jumpers across the expansion joints"]),
+]
+
+
+def inlet_routes(add_route):
+    for dx in (0, 160, 320):
+        # buried duct bank from the foot of each filter-house riser to the unit duct bank at y 312
+        add_route("duct_bank", [(690 + dx, 359), (710 + dx, 359), (710 + dx, 312), (667 + dx, 312)],
+                  sheet="typical (air inlet electrical)")
+
+
+def inlet_wiring():
+    """Called after wiring.build: the inlet items need their own applications, not the generic rules."""
+    import re
+    for it in fuel.G["items"]:
+        for pat, apps in INLET_WIRING:
+            if re.search(pat, it["name"]):
+                it["wiring"] = apps
+
+
+def inlet_electrical():
+    """Air inlet, per filter house: pulse-jet compressed-air system (receiver, header, solenoid-valve manifolds),
+    stage differential-pressure transmitters and junction boxes, an anti-icing manifold across the weather
+    hoods with its supply riser, platform lighting on conduit, the electric chain hoist with pendant, stair
+    lighting, a riser box at the foot of the control riser, a tray under the platform to the casing, frame
+    grounding, and inlet-duct instruments with conduit to the gallery control tray."""
+    for k in range(3):
+        dx = 160 * k
+        fh = find(f"FH-{k + 1}:")
+        on(fh)
+        dress(True)
+        # pulse-jet: air receiver on the platform, header along the casing base, solenoid-valve manifolds
+        rod((596 + dx, 359, 108), (596 + dx, 359, 113.5), 1.6, "tank", seg=14)
+        rod((596 + dx, 359, 113.5), (596 + dx, 359, 114.3), 1.6, "tank", r2=.5, seg=14)
+        rod((596 + dx, 360.6, 110), (596 + dx, 366.3, 110), .2, "pipe", seg=6)
+        rod((590 + dx, 366.3, 105.2), (670 + dx, 366.3, 105.2), .25, "pipe", seg=8)               # air header
+        rod((596 + dx, 366.3, 110), (596 + dx, 366.3, 105.2), .2, "pipe", seg=6)
+        for m in range(8):                                                                       # valve manifolds
+            xm = 593 + dx + m * 10
+            box(xm - 1.6, xm + 1.6, 366.1, 366.9, 104.4, 106.2, "panel")
+        rod((586 + dx, 360, 0), (586 + dx, 360, 108), .2, "pipe", seg=6)                           # instrument-air riser
+        # stage differential-pressure transmitters and junction boxes on the east face
+        for z in (112, 122, 130):
+            box(672 + dx, 672.6 + dx, 372, 374.5, z, z + 2, "panel")
+        box(672 + dx, 672.8 + dx, 378, 382, 105, 109, "cabinet")                                 # sequencer / JB panel
+        rod((672.4 + dx, 376, 105), (672.4 + dx, 376, 130), .1, "steel", seg=4)                  # conduit to the DP JBs
+        # anti-icing manifold across the weather hoods, supply riser on the west column
+        rod((590 + dx, 362.4, 133.5), (670 + dx, 362.4, 133.5), .5, "pipe", seg=10)
+        for m in range(9):
+            rod((592 + dx + m * 9.5, 362.4, 133.5), (592 + dx + m * 9.5, 363.6, 132.6), .14, "steel", seg=6)
+        rod((588.6 + dx, 362.4, 133.5), (586.5 + dx, 362.4, 133.5), .5, "pipe", seg=10)
+        rod((586.5 + dx, 362.4, 133.5), (586.5 + dx, 362.4, .5), .5, "pipe", seg=10)
+        rod((586.5 + dx, 362.4, 12), (586.5 + dx, 362.4, 14), .8, "red", seg=10)                  # isolation valve
+        # platform lighting on handrail posts, conduit along the rail from the panel
+        for xl in (594, 614, 634, 654):
+            rod((xl + dx, 356.3, 108), (xl + dx, 356.3, 115), .08, "steel", seg=4)
+            box(xl + dx - .5, xl + dx + .5, 356.5, 357.3, 114.4, 115, "lamp")
+        rod((590 + dx, 356.5, 109.2), (688 + dx, 356.5, 109.2), .06, "steel", seg=4)
+        box(668 + dx, 669.2 + dx, 356.4, 356.9, 109.5, 111, "amber")                            # WP receptacle
+        # electric chain hoist on the hoist beam, pendant
+        box(694 + dx, 699 + dx, 352.6, 353.9, 111, 114, "machine")
+        rod((696.5 + dx, 353.2, 111), (696.5 + dx, 353.2, 106), .05, "steel", seg=4)
+        box(696 + dx, 697 + dx, 352.9, 353.5, 105.4, 106.4, "amber")
+        # tray under the platform from the riser panel to the casing sequencer
+        box(588 + dx, 690 + dx, 364.2, 365.6, 105.6, 105.8, "pipe")
+        for c in range(3):
+            rod((590 + dx, 364.5 + c * .4, 105.95), (690 + dx, 364.5 + c * .4, 105.95), .1, "cable_mc", seg=6)
+        # riser box at the foot of the control riser (into the buried duct bank)
+        box(688 + dx, 692 + dx, 357.5, 361.5, -3, .3, "concrete")
+        # frame grounding on two columns
+        for xc in (590, 670):
+            rod((xc + dx, 365.6, 3), (xc + dx, 365.6, 0), .08, "copper", seg=4)
+        dress(False)
+        st = find(f"FH-{k + 1} stair tower")
+        on(st)
+        dress(True)
+        for z in range(12, 111, 24):                                                             # landing lights
+            box(678.2 + dx, 679 + dx, 352.2, 353, z + 6, z + 7, "lamp")
+        rod((678.5 + dx, 352.5, 2), (678.5 + dx, 352.5, 108), .06, "steel", seg=4)               # lighting conduit
+        rod((678.5 + dx, 352.5, 0), (678.5 + dx, 352.5, -.4), .1, "copper", seg=4)
+        dress(False)
+        inl = find(f"GT{k + 1} inlet duct")
+        on(inl)
+        dress(True)
+        for (yy, c) in ((420, "panel"), (430, "panel"), (440, "cabinet")):                        # T / RH / DP
+            box(694 + dx, 694.7 + dx, yy, yy + 2, 30, 32.5, c)
+            rod((694.4 + dx, yy + 1, 32.5), (694.4 + dx, yy + 1, 42), .07, "steel", seg=4)
+            rod((694.4 + dx, yy + 1, 42), (656 + dx, yy + 1, 42), .07, "steel", seg=4)
+        dress(False)
+
+
 def build():
     gas_turbines()
     steam_turbine()
@@ -498,3 +602,4 @@ def build():
     unit_electrical()
     hall_services()
     hall_electrical()
+    inlet_electrical()

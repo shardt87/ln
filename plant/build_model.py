@@ -1860,7 +1860,10 @@ _dc.color_parts()         # BTM data centre: colour by supply path (islanded / m
 # Wiring applications: every powered / instrumented item gets its cable applications, and a buried
 # feeder to the nearest underground cable network where no cable route reached it
 import wiring as _wiring
+import hall as _hall_w
+_hall_w.inlet_routes(add_route)
 N_WAPPS, N_FEEDERS = _wiring.build(items, routes, LAYERS, add_route)
+_hall_w.inlet_wiring()
 _fuel.G['routes'] = routes
 _station.build_late()  # duct-bank manholes and handholes (after the feeders exist)
 
