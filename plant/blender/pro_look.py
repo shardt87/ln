@@ -596,7 +596,7 @@ COASTAL_B = [
 # wide lenses near the ground and long lenses for compression.
 # the data centre's three supply paths, as numbered callouts on the captioned plates (x, y, z ft, number, text, colour)
 BTM_CALLOUTS = [
-    (3010, 476, 16, "1", "ISLANDED BTM POWER · 24 CAMPUS GENSETS + 40 MW BATTERY", "#3d5a73"),
+    (3050, 506, 16, "1", "BACKUP · 36 GENSETS (117 MW) + 40 MW BATTERY", "#3d5a73"),
     (2685, 470, 12, "1", "ISLANDED BTM POWER · BTM BATTERY 40 MW / 80 MWh", "#3d5a73"),
     (2590, 880, 18, "1", "ISLANDED 34.5 kV BUS · SWITCHGEAR, TRANSFER SCHEME", "#3d5a73"),
     (2547, 790, 22, "2", "FROM THE MODULAR YARD · 13.8 / 34.5 kV STEP-UPS", "#4f8a5b"),

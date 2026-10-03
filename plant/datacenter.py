@@ -20,19 +20,26 @@ L = "OPT_DC_ROUTES"
 
 def routes(add_route):
     r = lambda t, pts: add_route(t, pts, layer=L, sheet=SHEET)
+    # supply: modular yard 13.8 kV (cable bus) to BTM-T1 / T2; 230 kV tie from D6; all onto the 34.5 kV buses
     r("mvlv_cable", [(1995, 892), (2520, 892), (2520, 790), (2530, 790)])        # MOD-EH to BTM-T1
     r("mvlv_cable", [(2520, 790), (2520, 760), (2597, 760), (2597, 770)])        # branch to BTM-T2
     r("hv_cable", [(2030, 120), (2435, 120), (2435, 790), (2630, 790)])           # 230 kV tie from D6
     for x in (2547, 2597, 2645):                                                  # step-ups / tie to switchgear
         r("mvlv_cable", [(x, 815), (x, 860)])
-    r("mvlv_cable", [(2650, 880), (2716, 880), (2716, 1295)])                    # ring to hall A gallery
-    r("mvlv_cable", [(2650, 870), (2716, 870), (2716, 605)])                     # ring to hall B gallery
-    r("mvlv_cable", [(2686, 698), (2686, 845), (2640, 845), (2640, 860)])        # BESS to switchgear
-    r("mvlv_cable", [(3295, 476), (2722, 476), (2722, 850), (2650, 850)])        # genset bus to switchgear
-    for y in (458, 494):                                                          # genset collectors
-        r("mvlv_cable", [(2742, y), (3295, y)])
-    r("mvlv_cable", [(3309, 512), (3309, 525)])                                   # paralleling gear to DC-GSU
-    r("mvlv_cable", [(3060, 340), (2980, 340), (2980, 410), (2722, 410), (2722, 476)])   # admin / gate LV
+    r("mvlv_cable", [(2686, 698), (2686, 845), (2640, 845), (2640, 860)])        # BESS to the bus tie section
+    # 2N distribution: one feeder per hall side, looped through its row of pad-mount transformers
+    r("mvlv_cable", [(2650, 898), (2690, 898), (2690, 1315), (3270, 1315)])      # hall A, A side (bus A)
+    r("mvlv_cable", [(2650, 894), (2694, 894), (2694, 985), (3270, 985)])        # hall A, B side (bus B)
+    r("mvlv_cable", [(2650, 876), (2698, 876), (2698, 915), (3270, 915)])        # hall B, A side (bus A)
+    r("mvlv_cable", [(2650, 866), (2702, 866), (2702, 585), (3270, 585)])        # hall B, B side (bus B)
+    # backup: genset collectors (13.8 kV) to the paralleling switchgear, then GSU-1 / GSU-2 to the buses
+    for y in (476, 536):
+        r("mvlv_cable", [(2774, y), (3326, y)])
+    r("mvlv_cable", [(2742, 462), (2736, 462)])                                   # paralleling gear to GSU-1
+    r("mvlv_cable", [(2742, 542), (2736, 542)])                                   # paralleling gear to GSU-2
+    r("mvlv_cable", [(2702, 462), (2696, 462), (2696, 600), (2699, 600), (2699, 850), (2650, 850)])   # GSU-1 to bus A
+    r("mvlv_cable", [(2702, 542), (2699, 542), (2699, 600)])                      # GSU-2 joins, to bus B
+    r("mvlv_cable", [(3060, 340), (2980, 340), (2980, 410), (2758, 410), (2758, 440)])   # admin / gate LV
 
 
 # supply paths, colour-coded so the three operating modes read apart in the viewer and renders
@@ -40,7 +47,7 @@ def routes(add_route):
 # the viewer's "BTM power paths" toggle and the render callouts show them on demand
 PATHS = {
     "btm_island": ("1  Islanded BTM power: campus gensets, BTM battery, 34.5 kV bus",
-                   ("BTM BESS", "DC backup genset", "DC genset paralleling", "DC-GSU:", "BTM 34.5 kV switchgear")),
+                   ("BTM BESS", "DC backup genset", "DC genset paralleling", "DC-GSU", "BTM 34.5 kV switchgear")),
     "btm_mod": ("2  Supply from the modular yard: 13.8 kV to the BTM step-ups",
                 ("BTM-T1:", "BTM-T2:")),
     "btm_grid": ("3  230 kV grid tie to the plant switchyard (normally open)",
@@ -103,9 +110,9 @@ def build():
         box(x, x + 4, 754.6, 754.7, 4, 6.5, "sign")
         box(x, x + 4, 754.55, 754.6, 5.8, 6.5, "red")
     on(find("DC backup gensets"))
-    for row, y in enumerate((440, 500)):
+    for row, y in enumerate((440, 500, 560)):
         for k in range(12):
-            x = 2740 + 46 * k
+            x = 2780 + 46 * k
             for f in range(2):
                 rod((x + 8 + f * 12, y + 6, 13), (x + 8 + f * 12, y + 6, 13.4), 4.2, "fan", seg=16)
     on(find("DC admin / security / NOC building"))

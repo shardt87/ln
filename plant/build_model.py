@@ -1345,16 +1345,18 @@ B(2998.5, 3000, 299, 302, 0, 10, "fence"); B(3030, 3031.5, 299, 302, 0, 10, "fen
 building(L, "DC admin / security / NOC building", 3060, 3180, 315, 370, 24, tag="DC-ADM", **DC)
 solid(L, "DC gatehouse", 3035, 3052, 318, 338, 0, 11, "building", **DC)
 # BTM substation: two 13.8/34.5 kV step-ups from the modular yard, the 230/34.5 kV tie, switchgear
-xfmr(L, "BTM-T1: 13.8/34.5 kV step-up from the modular yard (90 MVA)", 2530, 2565, 770, 810, 24, tag="BTM-T1", **DC)
-xfmr(L, "BTM-T2: 13.8/34.5 kV step-up from the modular yard (90 MVA)", 2580, 2615, 770, 810, 24, tag="BTM-T2", **DC)
-xfmr(L, "BTM-TIE: 230/34.5 kV backup / grid-parallel tie transformer (100 MVA)", 2630, 2675, 762, 815, 28, bushing=13,
+xfmr(L, "BTM-T1: 13.8/34.5 kV step-up from the modular yard, to bus A (90 MVA)", 2530, 2565, 770, 810, 24, tag="BTM-T1", **DC)
+xfmr(L, "BTM-T2: 13.8/34.5 kV step-up from the modular yard, to bus B (90 MVA)", 2580, 2615, 770, 810, 24, tag="BTM-T2", **DC)
+xfmr(L, "BTM-TIE: 230/34.5 kV backup / grid-parallel tie transformer (180 MVA, carries the full campus)", 2630, 2675, 762, 815, 28, bushing=13,
      tag="BTM-TIE", **DC)
 solid(L, "BTM 230 kV tie breaker (dead tank, normally open) + disconnect", 2650, 2668, 822, 845, 0, 22, "steel",
       tag="BTM-52T", **DC)
-ehouse(L, "BTM 34.5 kV switchgear (main-tie-main, 3-mode transfer scheme, sync check)", 2530, 2650, 860, 900, 18,
-       tag="BTM-SWGR", **DC, info="Operating modes by breaker: (1) islanded: T1/T2 mains closed, tie open; (2) islanded "
-       "with backup: the 230 kV tie closes on loss of the modular supply (open transition) or for maintenance; "
-       "(3) grid-parallel: tie closed with sync check, modular yard and BESS firm the load. Typical, not engineered.")
+ehouse(L, "BTM 34.5 kV switchgear: double bus A / B with bus tie, 3-mode transfer scheme, sync check", 2530, 2650, 860,
+       900, 18, tag="BTM-SWGR", **DC, info="Bus A: BTM-T1 and the genset GSU-1; bus B: BTM-T2 and GSU-2; the 230 kV tie "
+       "and the BTM BESS on the bus tie section. Each data hall takes one feeder from bus A (A side) and one from bus B "
+       "(B side): 2N. Operating modes by breaker: (1) islanded: T1/T2 mains closed, tie open; (2) islanded with backup: "
+       "the 230 kV tie closes on loss of the modular supply (open transition) or for maintenance; (3) grid-parallel: tie "
+       "closed with sync check, modular yard and BESS firm the load. Typical, not engineered.")
 # BTM BESS for load steps and ride-through (AI training loads swing tens of percent in seconds)
 for r_ in range(5):
     y = 440 + 60 * r_
@@ -1365,23 +1367,38 @@ for r_ in range(5):
     xfmr(L, "BTM BESS PCS / MV skid", 2675, 2697, y + 14, y + 22, 9, fins="y", register=False, **DC)
 item(L, "BTM BESS 40 MW / 80 MWh: 15 containers + 5 PCS / MV skids", (2530, 2697, 440, 698), (0, 10.5), tag="BTM-BESS",
      **DC, info="Absorbs the data-centre load steps so the engines follow slowly; ride-through on mode transfers.")
-# data halls (single storey, ~60 MW IT each) with west electrical galleries and rooftop dry coolers
+# data halls (single storey, ~60 MW IT each), fed 2N: an A-side row of 34.5/0.48 kV pad-mount transformers
+# along the north face (from bus A) and a B-side row along the south face (from bus B), 20 x 3.5 MVA per side;
+# each feeds its LV switchboard and UPS in the west gallery / hall through a bus duct into the wall
 for (t, y0, y1) in (("A", 1000, 1300), ("B", 600, 900)):
     building(L, f"Data hall {t}: ~60 MW IT, liquid-cooled racks (closed loop)", 2730, 3290, y0, y1, 45, c="hall",
-             tag=f"DH-{t}", **DC, info="Closed-loop liquid cooling to rooftop dry coolers; no evaporative water.")
-    building(L, f"Data hall {t} electrical gallery: 8 x 34.5/0.48 kV unit substations, UPS and battery rooms", 2700, 2728,
-             y0, y1, 30, c="ehouse", tag=f"DH-{t}-EG", **DC)
-# backup generation: 24 x 2.5 MW diesel gensets, 13.8 kV, paralleled and stepped up to 34.5 kV
-for row, y in enumerate((440, 500)):
+             tag=f"DH-{t}", **DC, info="Closed-loop liquid cooling to rooftop dry coolers; no evaporative water. "
+             "Power 2N: A side from bus A, B side from bus B; each rack row takes one A and one B feed.")
+    building(L, f"Data hall {t} UPS, battery and LV switchboard gallery (A and B sides)", 2700, 2728, y0, y1, 30,
+             c="ehouse", tag=f"DH-{t}-EG", **DC)
+    for side, ya, yb in (("A", y1 + 3, y1 + 12), ("B", y0 - 12, y0 - 3)):
+        for k in range(20):
+            x = 2742 + 27 * k
+            xfmr(L, f"Data hall {t} {side}-side pad-mount 34.5/0.48 kV (3.5 MVA)", x, x + 9, ya, yb, 8, fins="x",
+                 register=False, **DC)
+            # LV bus duct from the transformer into the hall wall
+            wy0, wy1 = (y1, ya) if side == "A" else (yb, y0)
+            B(x + 3.5, x + 5.5, wy0, wy1, 5.5, 7, "steel")
+        item(L, f"Data hall {t} {side}-side MV/LV transformers: 20 x 3.5 MVA 34.5/0.48 kV pad-mount (bus {side})",
+             (2742, 3264, ya, yb), (0, 8), tag=f"DH-{t}-T{side}", **DC)
+# backup generation: 36 x 3.25 MW diesel gensets (117 MW: the IT load, with the BESS bridging the start), 13.8 kV,
+# paralleled in their switchgear and stepped up to 34.5 kV by two GSUs onto bus A and bus B
+for row, y in enumerate((440, 500, 560)):
     for k in range(12):
-        x = 2740 + 46 * k
-        item(L, f"DC backup genset {row * 12 + k + 1} (2.5 MW diesel, 48 h belly tank)", (x, x + 40, y, y + 12), (0, 14),
-             register=False, **DC)
+        x = 2780 + 46 * k
+        item(L, f"DC backup genset {row * 12 + k + 1} (3.25 MW diesel, 13.8 kV, 48 h belly tank)", (x, x + 40, y, y + 12),
+             (0, 14), register=False, **DC)
         B(x, x + 40, y, y + 12, 0, 1.5, "concrete"); B(x + 0.5, x + 39.5, y + .5, y + 11.5, 1.5, 13, "ehouse")
         R((x + 34, y + 6, 13), (x + 34, y + 6, 20), 0.9, "stack", seg=10)
-item(L, "DC backup gensets 24 x 2.5 MW (diesel)", (2740, 3286, 440, 512), (0, 20), tag="DC-GEN", **DC)
-ehouse(L, "DC genset paralleling switchgear (13.8 kV)", 3295, 3325, 440, 512, 14, tag="DC-PSG", **DC)
-xfmr(L, "DC-GSU: genset 13.8/34.5 kV step-up (75 MVA)", 3292, 3326, 525, 560, 22, tag="DC-GSU", **DC)
+item(L, "DC backup gensets 36 x 3.25 MW (diesel, 117 MW)", (2780, 3326, 440, 572), (0, 20), tag="DC-GEN", **DC)
+ehouse(L, "DC genset paralleling switchgear (13.8 kV, two buses)", 2742, 2774, 440, 572, 14, tag="DC-PSG", **DC)
+xfmr(L, "DC-GSU-1: genset 13.8/34.5 kV step-up to bus A (75 MVA)", 2702, 2736, 445, 480, 22, tag="DC-GSU-1", **DC)
+xfmr(L, "DC-GSU-2: genset 13.8/34.5 kV step-up to bus B (75 MVA)", 2702, 2736, 525, 560, 22, tag="DC-GSU-2", **DC)
 
 # Fuel systems at LOD 3 (gas yard, M&R train, GT gas fuel modules, ULSD area, modular gas skids)
 import fuel as _fuel

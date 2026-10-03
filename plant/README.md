@@ -617,10 +617,13 @@ A ~150 MW data-centre campus outside the east fence, beside the modular yard, su
 | Part | What is modelled |
 |---|---|
 | Campus | 920 × 1,080 ft (x 2,460–3,380, y 300–1,380): crushed stone, internal 30 ft roads, security fence, entrance from the south with gatehouse, admin / security / NOC building with diverse fibre entries |
-| Data halls A and B | 560 × 300 ft, 45 ft, ~60 MW IT each, liquid-cooled racks on a closed loop; rooftop dry-cooler banks with fans and headers; west electrical galleries with 8 × 34.5/0.48 kV unit substations, UPS and battery rooms; east loading docks |
-| BTM substation | BTM-T1 / T2 13.8/34.5 kV step-ups (90 MVA) fed from the modular yard's 13.8 kV collector (MOD-EH); BTM-TIE 230/34.5 kV (100 MVA) with a normally-open 230 kV tie breaker; 34.5 kV main-tie-main switchgear with the transfer scheme and sync check |
-| BTM BESS | 40 MW / 80 MWh, 15 containers and 5 PCS / MV skids: absorbs AI training load steps so the engines follow slowly, and rides through mode transfers |
-| Backup generation | 24 × 2.5 MW diesel gensets (48 h belly tanks), 13.8 kV paralleling switchgear and a 13.8/34.5 kV step-up |
+| Data halls A and B | 560 × 300 ft, 45 ft, ~60 MW IT each, liquid-cooled racks on a closed loop; rooftop dry-cooler banks with fans and headers; west gallery with UPS, battery rooms and LV switchboards (A and B sides); east loading docks |
+| Hall power, 2N | Each hall has an A side and a B side: 20 × 3.5 MVA 34.5/0.48 kV pad-mount transformers in a row along the north face (A, from bus A) and 20 along the south face (B, from bus B), each with a bus duct into the hall. One 34.5 kV feeder per side loops through its row |
+| BTM substation | BTM-T1 / T2 13.8/34.5 kV step-ups (90 MVA each) fed from the modular yard's 13.8 kV collector (MOD-EH) by cable bus; BTM-TIE 230/34.5 kV (180 MVA, carries the full campus) with a normally-open 230 kV tie breaker; 34.5 kV double-bus switchgear (bus A: T1 + GSU-1; bus B: T2 + GSU-2; the tie and the BESS on the bus-tie section) with the transfer scheme and sync check |
+| BTM BESS | 40 MW / 80 MWh, 15 containers and 5 PCS / MV skids: absorbs AI training load steps so the engines follow slowly, bridges genset starts and mode transfers |
+| Backup generation | 36 × 3.25 MW diesel gensets at 13.8 kV (117 MW, the IT load), 48 h belly tanks, in three rows; collectors to the 13.8 kV paralleling switchgear, then two 75 MVA GSUs onto bus A and bus B |
+
+**Simplifications to know:** the 13.8 kV link from MOD-EH to the step-ups (about 550 ft, ~150 MW) would in practice be a cable bus with many parallel sets per phase, or the step-ups would sit in the modular yard; cooling and auxiliary loads are carried on the same pad-mount rows rather than separate mechanical substations.
 
 **Supply paths.** The equipment keeps its real finishes (grey transformers, white battery containers, genset enclosures). The paths are shown on demand instead: the viewer's **BTM power paths** button tints the three paths and labels them, and the data-centre renders carry numbered callouts. The paths are tagged in the model (`path` on items and routes):
 1. **Islanded BTM power:** campus gensets with their paralleling switchgear and step-up, the BTM battery, the 34.5 kV switchgear and the hall feeders.
