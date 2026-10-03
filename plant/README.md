@@ -390,7 +390,7 @@ The model is improved zone by zone, one cycle per zone (`DETAIL_CYCLES.md` has t
 - **Realism:** technicians and a pickup in an aisle.
 - **Cameras:** E41 and E42.
 
-**Absorber and stripper access.** Each absorber has a 12 × 30 ft open stair tower with switchback flights (about 27°) and a personnel / goods lift north of the column, clear of the shell, with bridges to the platform rings at EL 60, 130, 200 and 250. A shared tower and lift north of STR-B serve the strippers, with bridges at EL 70 and 150 and walkways between the stripper platforms. (The first version was a 6 × 6 ft tower inside the shell edge with near-vertical flights.) Camera E49.
+**Absorber and stripper access.** Caged ladders (yellow) on each column reach the platform rings; walkways link the stripper platforms. (Stair towers with lifts were tried and taken out: they duplicated the ladders and crowded the columns.)
 
 **Cycle 6: carbon capture (`ccs.py`).**
 - **Flue-gas path closed:** the HRSG flue duct turns into the DCC, the DCC outlet feeds the booster fan, and the fan discharges into an overhead duct on steel bents to the absorber inlet, with an expansion joint.
@@ -554,7 +554,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
-**Epic set (`--set epic`, E1–E49):** golden hour, with the sun at 11°. The shots are:
+**Epic set (`--set epic`, E1–E48):** golden hour, with the sun at 11°. The shots are:
 - E1: the three stacks from beside the absorbers;
 - E2: a long-lens compression from the west road;
 - E3: a low pass over the ACC;
@@ -582,7 +582,6 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - E43 and E44: the GT inlet-chilling plant, and its cooling tower.
 - E45 and E46: the LNG satellite, and the green-hydrogen plant.
 - E47 and E48: the BTM data-centre campus, and its BTM substation.
-- E49: the absorber stair towers and lifts.
 
 Output goes to `renders/epic/`.
 

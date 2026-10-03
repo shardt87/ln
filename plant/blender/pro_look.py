@@ -703,8 +703,6 @@ EPIC = [
          eye=(2380, 140, 340), target=(2900, 900, 20), lens=24, show="dc", callouts=[c for c in BTM_CALLOUTS if "34.5 kV BUS" not in c[4]]),
     dict(k="E48", n="BTM substation: 13.8/34.5 kV step-ups, 230 kV tie (normally open), switchgear, BTM BESS",
          eye=(2470, 700, 60), target=(2610, 830, 12), lens=24, show="dc", callouts=BTM_CALLOUTS),
-    dict(k="E49", n="Absorber access: stair tower and lift, bridges to the platform rings at EL 60 / 130 / 200 / 250",
-         eye=(705, 1415, 185), target=(792, 1262, 118), lens=24, show="all", sun=(32, 320)),
 ]
 
 

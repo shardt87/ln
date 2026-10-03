@@ -1011,14 +1011,6 @@ for i, dx in enumerate([0, 160, 320]):
     V(gx, 1220, 9, 268, 313, "stack", seg=24)
     for zp in (60, 130, 200, 250):
         V(gx, 1220, 34, zp, zp + 1.2, "grating", seg=48)
-    # access: a stair tower (12 ft wide, flights at ~30 deg) with a personnel / goods lift north of the
-    # column, clear of the shell, and bridges to the platform rings at EL 60, 130, 200 and 250
-    B(gx - 6, gx + 6, 1260, 1290, 0, 252, "stair")
-    B(gx + 6.5, gx + 14.5, 1262, 1272, 0, 258, "ehouse")                  # lift shaft
-    B(gx + 6, gx + 15, 1261.5, 1272.5, 258, 264, "ehouse")                # lift machine room
-    for zp in (60, 130, 200, 250):
-        B(gx - 2.5, gx + 2.5, 1252, 1260, zp + .9, zp + 1.2, "grating")    # bridge to the ring
-        B(gx + 6, gx + 8, 1259, 1262, zp + .9, zp + 1.2, "grating")        # lift landing
     solid(L, f"Water-wash pumps {t}", 675 + dx, 705 + dx, 1150, 1195, 0, 8, "pump", area="G", sheet="SK-3X1-06")
 for i, cx in enumerate([1070, 1120, 1170]):
     t = "ABC"[i]
@@ -1032,13 +1024,6 @@ for i, cx in enumerate([1070, 1120, 1170]):
         V(cx, 1187.5, 24, zp, zp + 1, "grating", seg=40)
         if i < 2:                                                          # walkway to the next stripper
             B(cx + 22, cx + 28, 1193, 1197, zp + .7, zp + 1, "grating")
-    if i == 1:
-        # shared stair tower and lift north of STR-B, bridges to its platforms (EL 70, 150)
-        B(cx - 6, cx + 6, 1238, 1266, 0, 156, "stair")
-        B(cx + 6.5, cx + 14.5, 1240, 1250, 0, 160, "ehouse")
-        B(cx + 6, cx + 15, 1239.5, 1250.5, 160, 165, "ehouse")
-        for zp in (70, 150):
-            B(cx - 2.5, cx + 2.5, 1210, 1238, zp + .7, zp + 1, "grating")
     solid(L, f"RB-{t}: reboiler (LP steam from ST extraction)", cx - 20, cx + 20, 1105, 1150, 0, 30, "equip",
           area="G", sheet="SK-3X1-06")
 solid(L, "Reclaimer (thermal, intermittent)", 1210, 1260, 1105, 1150, 0, 25, "equip", area="G", sheet="SK-3X1-06")
