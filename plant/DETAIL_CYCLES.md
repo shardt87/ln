@@ -43,3 +43,6 @@ One zone per cycle. Each cycle:
   - **ACC transformers:** the short drawn tray stubs between a duct-bank end and the T-R4-1..4 transformers rode the EL +36 rack tier, so a 10 ft connection became a 36 ft "goalpost" over each transformer. These stubs are now buried, with rigid-conduit stub-ups into the transformer terminal compartment. The same rule applies to any short tray stub that leaves a duct bank.
   - **South gallery:** the excitation-transformer feed now runs at the IPB tap level (EL +24) instead of EL +36. The ET-to-excitation cable tray runs just above the cubicles (EL +10.5).
   - **ST aux:** its LV branch had a gap between the hall wall and the run from the rack, leaving a tray end hanging in the air. The gap is now closed.
+- **Valve actuators (user screenshot).**
+  - **Steam turbine:** the main stop / control, combined reheat and LP admission valve actuators were plain safety-yellow boxes. They are now hydraulic actuators (`hall.actuator()`) in the valve's grey finish: yoke posts and stem, spring can with flange, hydraulic cylinder, and servo / trip block with tubing.
+  - **Gas turbines:** the compressor blow-off valve actuators and the VGV actuators are now grey as well.

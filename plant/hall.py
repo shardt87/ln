@@ -39,6 +39,21 @@ def ring(cx, y, cz, r, rr, c, n=24, layer=None):
 
 
 # ---------------------------------------------------------------------------------------
+def actuator(x, y, z0, h, r=1.2):
+    """Hydraulic valve actuator (typical): yoke posts on the bonnet, a spring can, the hydraulic
+    cylinder on top and the servo / trip block with its supply and drain tubing. Painted grey,
+    like the valve, not safety yellow."""
+    zs = z0 + h * .3
+    for d in (-.6 * r, .6 * r):                                                  # yoke posts
+        box(x + d - .12, x + d + .12, y - .12, y + .12, z0, zs, "steel")
+    rod((x, y, z0), (x, y, zs), .2, "steel", seg=8)                              # stem
+    rod((x, y, zs), (x, y, z0 + h * .8), r, "machine", seg=18)                   # spring can
+    rod((x, y, z0 + h * .8 - .1), (x, y, z0 + h * .8 + .1), r + .12, "steel", seg=18)   # can flange
+    rod((x, y, z0 + h * .8), (x, y, z0 + h), r * .55, "steel", seg=14)           # hydraulic cylinder
+    box(x + r * .55, x + r * .55 + .7, y - .45, y + .45, z0 + h * .82, z0 + h * .97, "panel")   # servo / trip block
+    rod((x + r * .55 + .7, y, z0 + h * .9), (x + r + .9, y, z0 + h * .9), .06, "steel", seg=4)
+
+
 def gas_turbines():
     for k in range(3):
         dx = 160 * k
@@ -80,7 +95,7 @@ def gas_turbines():
             box(cx + s * 8.2 - .35, cx + s * 8.2 + .35, 495, 507, cz - .3, cz + .3, "steel")
         for a in (math.radians(25), math.radians(155)):                               # VGV actuators
             box(cx + 7.3 * math.cos(a) - .8, cx + 7.3 * math.cos(a) + .8, 472.5, 475,
-                cz + 7.3 * math.sin(a) - .8, cz + 7.3 * math.sin(a) + .8, "amber")
+                cz + 7.3 * math.sin(a) - .8, cz + 7.3 * math.sin(a) + .8, "machine")
         # fuel-gas manifold ring with pigtails to each can; feed from the gas fuel module
         ring(cx, 494.6, cz, 9.3, .32, "fuelgas", n=32)
         for c in range(16):
@@ -160,7 +175,7 @@ def steam_turbine():
     # main stop / control valve chests beside the HP/IP casing
     for xv in (1029, 1071):
         rod((xv, 545, 21.5), (xv, 545, 36), 2.5, "machine", seg=18)
-        box(xv - 1.4, xv + 1.4, 543.6, 546.4, 36, 40.5, "amber")
+        actuator(xv, 545, 36, 4.8, r=1.3)
         rod((xv, 545, 30), (sx + (6.4 if xv > sx else -6.4), 541, sz), 1.2, "machine", seg=14)
     for y in (470, 529.5, 552):
         box(sx - 5, sx + 5, y - 1.2, min(y + 1.2, 552), 21.5, sz - 3.5, "steel")    # bearing pedestals
@@ -654,7 +669,8 @@ def gt_st_audit():
             xo = cx - math.sqrt(max(r_c ** 2 - (zb - cz) ** 2, 0)) + .2
             pipe([(xo, yb, zb), (cx - 10.6, yb, zb), (cx - 10.6, 529, zb), (cx - 7.3, 529, zb)], zb, .55, "pipe")
             box(cx - 11.8, cx - 9.4, 508, 512, zb - 1.2, zb + 1.2, "steel")             # blow-off valve body
-            box(cx - 11.6, cx - 9.6, 509, 511, zb + 1.2, zb + 2.6 if zb > cz else zb + 2.2, "amber")   # actuator
+            rod((cx - 10.6, 510, zb + 1.2), (cx - 10.6, 510, zb + 2.4), .75, "machine", seg=14)   # pneumatic actuator
+            rod((cx - 10.6, 510, zb + 2.4), (cx - 10.6, 510, zb + 2.6), .85, "steel", seg=14)
         dress(False)
     # ---- steam turbine
     st = find("ST: steam turbine")
@@ -662,14 +678,14 @@ def gt_st_audit():
     sx, sz = 1050, 31.0
     for xv in (1029, 1071):                                                          # combined reheat valves
         rod((xv, 536, 21.5), (xv, 536, 34), 2.2, "machine", seg=18)
-        box(xv - 1.3, xv + 1.3, 534.7, 537.3, 34, 38.5, "amber")
+        actuator(xv, 536, 34, 4.6, r=1.2)
         rod((xv, 536, 29), (sx + (6.4 if xv > sx else -6.4), 538, sz - 1), 1.1, "machine", seg=14)
     dress(True)
     for s in (-1, 1):                                                                # hot reheat into the CRVs
         xr = sx + s * 8.5
         pipe([(xr, 552, 23.4), (xr, 536, 23.4), (sx + s * 21, 536, 23.4)], 23.4, 1.0, "pipe")
     pipe([(1063, 552, 41.2), (1063, 527.6, 41.2)], 41.2, .9, "pipe")                  # LP admission
-    box(1061.6, 1064.4, 544, 547, 41.2, 43.8, "amber")                                # LP admission valve actuator
+    actuator(1063, 545.5, 42.2, 3.6, r=.9)                                             # LP admission valve actuator
     rod((1063, 545.5, 40.2), (1063, 545.5, 42.2), 1.3, "machine", seg=12)
     rod((sx, 462, sz - 3.6), (sx, 467.5, sz - 3.6), 3.6, "steel", seg=18)              # turning-gear housing
     box(1055, 1060, 462.5, 467, 21.5, 26, "motor")                                     # turning-gear motor
