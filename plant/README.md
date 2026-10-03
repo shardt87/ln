@@ -40,6 +40,7 @@ The checks corrected the model in several places:
 | `station.py` | Transformer, e-house and EDG detail; duct-bank manholes (cycle 2). |
 | `acc.py` | ACC fans, drives, cable ladders, condensate drains, deck steel, vacuum pumps, dry coolers (cycle 3). |
 | `placeholders.py` | Rebuilds the last single-box placeholders as equipment: kettle reboilers, reclaimer, amine skids with plate exchangers, pump sets, carbon filters, instrument air, CO2 export compressor, LNG metering and sump, H2 purification and blending, BTM tie breaker, conditional items (kept tan). |
+| `ponds.py` | Stormwater detention pond works (pump station, fence, forebay berm, spillway, ramp) and the wastewater treatment process area (equalization, neutralization, clarifier, sludge, press building). |
 | `datacenter.py` | BTM data-centre campus routes and dressing (design option, area L). |
 | `coastal/coastal_detail.py` | Coastal terminal and landfall dressing and wiring applications (cycle 10). |
 | `lng_h2.py` | LNG satellite and green hydrogen detail, H2 piping, electrolyzer cabling (cycle 9). |
@@ -554,7 +555,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - **Cameras:** six perspective hero cameras (P1–P6) with real lens lengths and subtle depth of field, plus four complete-plant angles (P7 from the north-east, P8 from the south-east, P9 overhead, P10 from the south gate road) and P11, the modular power yard.
 - **Compositor:** haze from the mist pass, fog glow, slight lens dispersion and a warm grade.
 
-**Epic set (`--set epic`, E1–E48):** golden hour, with the sun at 11°. The shots are:
+**Epic set (`--set epic`, E1–E50):** golden hour, with the sun at 11°. The shots are:
 - E1: the three stacks from beside the absorbers;
 - E2: a long-lens compression from the west road;
 - E3: a low pass over the ACC;
@@ -582,6 +583,7 @@ Sheet 11 lists ten views, and the render loop was adjusted over several review p
 - E43 and E44: the GT inlet-chilling plant, and its cooling tower.
 - E45 and E46: the LNG satellite, and the green-hydrogen plant.
 - E47 and E48: the BTM data-centre campus, and its BTM substation.
+- E49 and E50: the stormwater detention pond, and the wastewater treatment area.
 
 Output goes to `renders/epic/`.
 

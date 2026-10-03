@@ -897,8 +897,14 @@ R((262.5, 455, 118), (262.5, 455, 120), 0.2, "steel", seg=4)
 V(262.5 + 1.5, 455, 1.2, 105, 108, "insulator")
 pad(L, "Cable reel yard / outage laydown", 40, 320, 690, 900, "pad", z1=0.3, area="F")
 item(L, "Stormwater basin", (40, 320, 1430, 1640), (-8, 0), area="F", info="Detention basin; depth illustrative.")
-H([(40, 1430, 0), (320, 1430, 0), (320, 1640, 0), (40, 1640, 0),
-   (56, 1446, -8), (304, 1446, -8), (304, 1624, -8), (56, 1624, -8)], "water")
+# a depression, not a slab: four sloped grass banks (rim at grade, toe at EL -8), the floor, and the permanent
+# pool at EL -5 (wet detention pond)
+for (o0, o1, i1, i0) in (((40, 1430), (320, 1430), (304, 1446), (56, 1446)), ((320, 1430), (320, 1640), (304, 1624), (304, 1446)),
+                         ((320, 1640), (40, 1640), (56, 1624), (304, 1624)), ((40, 1640), (40, 1430), (56, 1446), (56, 1624))):
+    top = [(o0[0], o0[1], 0), (o1[0], o1[1], 0), (i1[0], i1[1], -8), (i0[0], i0[1], -8)]
+    H([(x, y, z - .6) for (x, y, z) in top] + top, "turf")
+B(56, 304, 1446, 1624, -8.6, -8, "turf")
+B(50, 310, 1440, 1630, -5.4, -5, "water")
 L = "BASE_UTILITIES"
 building(L, "Water treatment building (incl. R-WT electrical room)", 440, 600, 1445, 1530, 30, tag="R-WT", area="E",
          sheet="SK-3X1-12",
@@ -1829,6 +1835,8 @@ _util.build()             # cycle 4: fire pump house, ammonia, aux boiler, air c
 import services as _services
 _services.routes(add_route)
 N_DRAIN = _services.build()
+import ponds as _ponds
+_ponds.build()            # stormwater pond works and pump station; wastewater treatment process area
 import lng_h2 as _lh
 _lh.routes(add_route)
 _lh.build()               # cycle 9: LNG satellite and green hydrogen

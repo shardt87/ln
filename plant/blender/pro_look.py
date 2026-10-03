@@ -67,6 +67,7 @@ LOOK = {
     "hull": ("paint", "#23282d", .4, .15), "antifoul": ("paint", "#8a2d25", .5, 0),
     "deck": ("paint", "#6b4a3a", .6, 0), "super": ("paint", "#ecebe5", .4, 0),
     "glass": ("paint", "#1f2d36", .08, .2), "mosscover": ("paint", "#d7cfbd", .5, 0),
+    "turf": ("paint", "#6d7c45", .95, 0),
     "tug": ("paint", "#b03a26", .45, 0), "sea": ("sea", "#27434c", .05, 0),
     "sand": ("gravel", "#c2b28f", .95, 0), "rock": ("concrete", "#6f6c66", .9, 0),
     "window": ("window", "#2c3a44", .06, .55),
@@ -302,8 +303,10 @@ def landscape(scene, coll, coastal=None):
     S = 9000
     z = -.6 * FT
     north = 1920 + S if not coastal else coastal["shoreline_y"] - 30
-    mesh_obj("pro surround", [(-S * FT, -S * FT, z), ((2420 + S) * FT, -S * FT, z), ((2420 + S) * FT, north * FT, z),
-                              (-S * FT, north * FT, z)], [(0, 1, 2, 3)], grass)
+    # grass all round, with a hole for the compound (its ground carries the stormwater pond)
+    v = [(-S, -S), (2420 + S, -S), (2420 + S, north), (-S, north), (0, 0), (2420, 0), (2420, 1920), (0, 1920)]
+    mesh_obj("pro surround", [(x * FT, y * FT, z) for (x, y) in v],
+             [(0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)], grass)
     if coastal:
         # the coast runs east-west north of the plant; the sea is to the north
         sh, sea = coastal["shoreline_y"], coastal["sea_level"]
@@ -703,6 +706,10 @@ EPIC = [
          eye=(2380, 140, 340), target=(2900, 900, 20), lens=24, show="dc", callouts=[c for c in BTM_CALLOUTS if "34.5 kV BUS" not in c[4]]),
     dict(k="E48", n="BTM substation: 13.8/34.5 kV step-ups, 230 kV tie (normally open), switchgear, BTM BESS",
          eye=(2470, 700, 60), target=(2610, 830, 12), lens=24, show="dc", callouts=BTM_CALLOUTS),
+    dict(k="E49", n="Stormwater detention pond: grass banks, permanent pool, forebay berm, ramp, pump station",
+         eye=(345, 1395, 95), target=(160, 1560, -6), lens=24, show="all"),
+    dict(k="E50", n="Wastewater treatment: equalization basin, neutralization, clarifier, sludge tank, press building",
+         eye=(800, 1405, 78), target=(680, 1490, 4), lens=24, show="all"),
 ]
 
 
