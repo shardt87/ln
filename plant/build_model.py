@@ -1821,12 +1821,14 @@ _bess.routes(add_route)
 _bess.build()             # cycle 7: BESS yard, containers, PCS skids, collector, buildings
 import datacenter as _dc
 _dc.routes(add_route)
+_dc.color_routes(routes)
 _dc.build()               # BTM data centre: dressing, BESS / genset / substation detail
 import ccs as _ccs
 _ccs.routes(add_route)
 _ccs.build()              # cycle 6: carbon capture flue-gas path, amine piping and rack, regeneration, CT   # cycle 5: gate, fence wire and CCTV, drainage, lighting, admin / workshop dressing
 import placeholders as _ph
 _ph.build()               # single-box placeholders rebuilt as equipment (CCS, LNG, H2, BTM)
+_dc.color_parts()         # BTM data centre: colour by supply path (islanded / modular yard / grid tie)
 
 # Wiring applications: every powered / instrumented item gets its cable applications, and a buried
 # feeder to the nearest underground cable network where no cable route reached it

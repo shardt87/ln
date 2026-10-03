@@ -35,6 +35,47 @@ def routes(add_route):
     r("mvlv_cable", [(3060, 340), (2980, 340), (2980, 410), (2722, 410), (2722, 476)])   # admin / gate LV
 
 
+# supply paths, colour-coded so the three operating modes read apart in the viewer and renders
+PATHS = {
+    "btm_mod": ("BTM supply from the modular yard (13.8 kV collector to BTM-T1 / T2)",
+                ("BTM-T1:", "BTM-T2:")),
+    "btm_grid": ("BTM 230 kV grid tie to the plant switchyard (normally open)",
+                 ("BTM-TIE:", "BTM 230 kV tie breaker")),
+    "btm_island": ("BTM islanded system: campus gensets, BTM BESS, 34.5 kV bus and hall feeders",
+                   ("BTM BESS", "DC backup genset", "DC genset paralleling", "DC-GSU:", "BTM 34.5 kV switchgear")),
+}
+BODY = {"xfmr", "radiator", "bess", "ehouse", "roof", "machine", "cabinet"}
+
+
+def path_of_route(r):
+    pts = [tuple(p) for p in r["points"]]
+    if r["type"] == "hv_cable" or pts[0] == (2645, 815):
+        return "btm_grid"
+    if pts[0] in ((1995, 892), (2520, 790), (2547, 815), (2597, 815)):
+        return "btm_mod"
+    return "btm_island"
+
+
+def color_routes(routes):
+    for r in routes:
+        if r["layer"] == L:
+            k = path_of_route(r)
+            r["color"], r["label"] = k, PATHS[k][0]
+            r["w"] = max(r["w"], 4)                   # wide enough to read the colour from above
+
+
+def color_parts():
+    for k, (label, prefixes) in PATHS.items():
+        ids = set()
+        for it in fuel.G["items"]:
+            if it["name"].startswith(prefixes):
+                ids.add(it["id"])
+                it["info"] = ((it.get("info") or "") + f" Colour key: {label}.").strip()
+        for p in fuel.G["parts"]:
+            if p["item"] in ids and p["color"] in BODY:
+                p["color"] = k
+
+
 def build():
     fuel.D = True
     for t, (y0, y1) in (("A", (1000, 1300)), ("B", (600, 900))):

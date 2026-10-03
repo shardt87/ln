@@ -57,6 +57,8 @@ LOOK = {
     "louvre": ("fins", "#7c8489", .5, .3), "lamp": ("paint", "#f2efe4", .3, 0),
     "insulator": ("ceramic", "#6a3a28", .12, 0), "conductor": ("galv", "#aeb3b6", .3, .9),
     "water": ("water", "#2c464e", .04, 0), "conditional": ("paint", "#aab2b6", .5, .1),   # real finish, not the drawing tint
+    "btm_island": ("paint", "#2e3640", .45, .15), "btm_mod": ("paint", "#2f8a5e", .4, .1),
+    "btm_grid": ("paint", "#7b4fa8", .4, .1),
     "bess": ("paint", "#e3e5e3", .45, 0), "cabinet": ("paint", "#b9c1c6", .4, .1),
     "swgr": ("paint", "#a3adb3", .4, .1), "panel": ("paint", "#c9cfd2", .4, .1),
     "battery": ("paint", "#4c6b58", .5, 0), "equip": ("paint", "#b0b8bc", .5, .1),

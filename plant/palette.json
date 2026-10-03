@@ -410,5 +410,17 @@
 "waterline": {
 "hex": "#3f7f8a",
 "opacity": 1
+},
+"btm_island": {
+"hex": "#2e3640",
+"opacity": 1
+},
+"btm_mod": {
+"hex": "#2f8a5e",
+"opacity": 1
+},
+"btm_grid": {
+"hex": "#7b4fa8",
+"opacity": 1
 }
 }

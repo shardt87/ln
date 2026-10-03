@@ -623,6 +623,11 @@ A ~150 MW data-centre campus outside the east fence, beside the modular yard, su
 | BTM BESS | 40 MW / 80 MWh, 15 containers and 5 PCS / MV skids: absorbs AI training load steps so the engines follow slowly, and rides through mode transfers |
 | Backup generation | 24 × 2.5 MW diesel gensets (48 h belly tanks), 13.8 kV paralleling switchgear and a 13.8/34.5 kV step-up |
 
+**Colour key (viewer and renders), by supply path:**
+- **Dark graphite, islanded system:** campus gensets and their paralleling switchgear and step-up, the BTM BESS, the 34.5 kV switchgear and the feeders to the halls.
+- **Green, modular-yard supply:** BTM-T1 / T2 and the 13.8 kV cables from the modular collector (MOD-EH).
+- **Purple, grid tie:** BTM-TIE, the normally-open 230 kV tie breaker and the 230 kV cable from D6.
+
 **Three operating modes, selected by breakers at the BTM switchgear:**
 1. **Islanded:** T1 / T2 mains closed, 230 kV tie open. The modular yard supplies the campus: eight RICE engines, two aeroderivative SC units, fuel cells and microturbines, with the portable pad as a temporary source. The BTM BESS takes the load steps.
 2. **Islanded with backup:** the 230 kV tie from the plant switchyard (D6 bay) closes on loss of the modular supply (open transition) or for maintenance.
