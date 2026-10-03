@@ -181,6 +181,10 @@ class Realism:
                         b = (run[1], c0, z + r) if along_x else (c0, run[1], z + r)
                         self.rod(a, b, r, c, seg=8)
                         self.count("rack small-bore line runs")
+                        for (e, at_end, sgn) in ((a, run[0] <= lo + .01, -1), (b, run[1] >= hi - .01, 1)):
+                            if at_end:                                  # header end: threaded cap
+                                e2 = (e[0] + sgn * .25, e[1], e[2]) if along_x else (e[0], e[1] + sgn * .25, e[2])
+                                self.rod(e, e2, r * 1.35, "steel", seg=8)
                         run = None
                     u = v
         for k in range(3):                                                             # HRSG drain headers

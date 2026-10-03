@@ -251,24 +251,79 @@ class Detail:
             along_x = (x1 - x0) > (y1 - y0)
             specs = [(24, 2.0, .20), (24, 1.2, .30), (24, 1.6, .78), (30, 1.4, .66), (30, .9, .76), (30, 2.2, .88)]
             # (tier-30 pipes on the north half: the LV tray rides tier 30 at y 838 and its legs leave south)
-            # a rack that runs into another rack stops its pipes at that rack's edge (they turn in at the junction)
+            # a rack that ENDS in another rack stops at that rack's edge and its lines tee into the other
+            # rack's lines of the same tier; a rack crossed in its middle keeps its lines running through
+            tee = None
             for o in self.find(r"pipe and cable rack|N-S pipe rack"):
                 if o is it:
                     continue
                 ox0, ox1, oy0, oy1 = o["fp"]
-                if along_x and ox0 < x1 and ox1 > x0 and oy0 < y1 and oy1 > y0:
-                    x1 = min(x1, ox0) if ox0 > x0 else x1
-                    x0 = max(x0, ox1) if ox1 < x1 else x0
-                elif not along_x and oy0 < y1 and oy1 > y0 and ox0 < x1 and ox1 > x0:
-                    y1 = min(y1, oy0) if oy0 > y0 else y1
-                    y0 = max(y0, oy1) if oy1 < y1 else y0
+                if not (ox0 < x1 and ox1 > x0 and oy0 < y1 and oy1 > y0):
+                    continue
+                if along_x and (ox0 <= x0 + 1 or ox1 >= x1 - 1):
+                    tee = ("x0", ox1, o) if ox0 <= x0 + 1 else ("x1", ox0, o)
+                elif not along_x and (oy0 <= y0 + 1 or oy1 >= y1 - 1):
+                    tee = ("y0", oy1, o) if oy0 <= y0 + 1 else ("y1", oy0, o)
+            if tee:
+                if tee[0] == "x0":
+                    x0 = tee[1]
+                elif tee[0] == "x1":
+                    x1 = tee[1]
+                elif tee[0] == "y0":
+                    y0 = tee[1]
+                else:
+                    y1 = tee[1]
             for (z, dia, f) in specs:
+                r = dia / 2
                 if along_x:
                     y = y0 + (y1 - y0) * f
-                    self.rod(iid, ly, (x0 + 2, y, z + dia / 2), (x1 - 2, y, z + dia / 2), dia / 2, "pipe", seg=10)
+                    a, b = (x0 + 2, y, z + r), (x1 - 2, y, z + r)
                 else:
                     x = x0 + (x1 - x0) * f
-                    self.rod(iid, ly, (x, y0 + 2, z + dia / 2), (x, y1 - 2, z + dia / 2), dia / 2, "pipe", seg=10)
+                    a, b = (x, y0 + 2, z + r), (x, y1 - 2, z + r)
+                ends = []
+                if tee:
+                    # carry the line into the other rack to the first line on the same tier (a tee)
+                    o = tee[2]
+                    oy = [o["fp"][2] + (o["fp"][3] - o["fp"][2]) * ff for (zz, dd, ff) in specs if zz == z]
+                    ox = [o["fp"][0] + (o["fp"][1] - o["fp"][0]) * ff for (zz, dd, ff) in specs if zz == z]
+                    if tee[0] == "y1":
+                        b = (b[0], min(oy), b[2])
+                    elif tee[0] == "y0":
+                        a = (a[0], max(oy), a[2])
+                    elif tee[0] == "x1":
+                        b = (min(ox), b[1], b[2])
+                    else:
+                        a = (max(ox), a[1], a[2])
+                    ends = [b if tee[0] in ("y1", "x1") else a, (b[0], 834.5, z + r), (a[0], 841.5, z + r)]
+                jog = None
+                if tee and tee[0] in ("y1", "y0") and z == 30:
+                    # the tier-30 LV tray runs along the other rack at y 837-839: hop over it
+                    yj = 834.5 if tee[0] == "y1" else 841.5
+                    end = b if tee[0] == "y1" else a
+                    jog = [(end[0], yj, z + r), (end[0], yj, z + r + 3.4), (end[0], end[1], z + r + 3.4), end]
+                    if tee[0] == "y1":
+                        b = jog[0]
+                    else:
+                        a = jog[0]
+                self.rod(iid, ly, a, b, r, "pipe", seg=10)
+                if jog:
+                    for q0, q1 in zip(jog, jog[1:]):
+                        self.rod(iid, ly, q0, q1, r, "pipe", seg=10)
+                    for q in jog[1:3]:
+                        self.rod(iid, ly, (q[0], q[1], q[2] - r * 1.1), (q[0], q[1], q[2] + r * 1.1), r * 1.12, "pipe", seg=10)
+                # free header ends: weld neck flange + blind flange, a drain valve on the underside
+                for e, o2 in ((a, b), (b, a)):
+                    if e in ends:
+                        continue
+                    ux = (1 if e[0] > o2[0] else -1) if along_x else 0
+                    uy = 0 if along_x else (1 if e[1] > o2[1] else -1)
+                    self.rod(iid, ly, (e[0] - ux * .5, e[1] - uy * .5, e[2]), (e[0], e[1], e[2]), r * 1.55, "steel", seg=12)
+                    self.rod(iid, ly, (e[0], e[1], e[2]), (e[0] + ux * .3, e[1] + uy * .3, e[2]), r * 1.55, "steel", seg=12)
+                    self.rod(iid, ly, (e[0] - ux * 1.5, e[1] - uy * 1.5, e[2] - r),
+                             (e[0] - ux * 1.5, e[1] - uy * 1.5, e[2] - r - 1.2), .12, "steel", seg=6)
+                    self.rod(iid, ly, (e[0] - ux * 1.5, e[1] - uy * 1.5, e[2] - r - 1.2),
+                             (e[0] - ux * 1.5, e[1] - uy * 1.5, e[2] - r - 1.6), .22, "red", seg=6)
             # longitudinal bracing in every third bay
             if along_x:
                 for x in range(int(x0), int(x1) - 25, 75):
