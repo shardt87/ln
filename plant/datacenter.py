@@ -27,11 +27,25 @@ def routes(add_route):
     for x in (2547, 2597, 2645):                                                  # step-ups / tie to switchgear
         r("mvlv_cable", [(x, 815), (x, 860)])
     r("mvlv_cable", [(2686, 698), (2686, 845), (2640, 845), (2640, 860)])        # BESS to the bus tie section
-    # 2N distribution: one feeder per hall side, looped through its row of pad-mount transformers
-    r("mvlv_cable", [(2650, 898), (2690, 898), (2690, 1315), (3270, 1315)])      # hall A, A side (bus A)
-    r("mvlv_cable", [(2650, 894), (2694, 894), (2694, 985), (3270, 985)])        # hall A, B side (bus B)
-    r("mvlv_cable", [(2650, 876), (2698, 876), (2698, 915), (3270, 915)])        # hall B, A side (bus A)
-    r("mvlv_cable", [(2650, 866), (2702, 866), (2702, 585), (3270, 585)])        # hall B, B side (bus B)
+    # 2N distribution: four 34.5 kV feeder loops per hall side, six pad-mount transformers each, in one duct bank
+    # per side along the transformer row
+    sides = [  # (switchgear exit y, riser x, corridor y, direction of the corridor offsets)
+        (896, 2676, 1323, 1), (891, 2681, 977, -1),       # hall A: A side (north), B side (south)
+        (876, 2686, 923, 1), (866, 2704, 577, -1),        # hall B: A side (north), B side (south)
+    ]
+    for (ys, xr, yc, sgn) in sides:
+        for j in range(4):
+            x_end = 2742 + 22.5 * (6 * j + 5) + 9
+            yy = yc + sgn * 1.2 * j
+            r("mvlv_cable", [(2650, ys + j * .8), (xr + j * .9, ys + j * .8), (xr + j * .9, yy), (x_end, yy)])
+    for (y0, y1) in ((1020, 1280), (620, 880)):                                  # LV: skids into the hall, gallery
+        r("mvlv_cable", [(3000, y1 + 2), (3000, y1)])
+        r("mvlv_cable", [(3000, y0 - 2), (3000, y0)])
+        r("mvlv_cable", [(2731, (y0 + y1) / 2), (2726, (y0 + y1) / 2)])
+    r("mvlv_cable", [(2565, 732), (2572, 732), (2572, 860)])                    # BTM-T3 to the bus tie section
+    r("mvlv_cable", [(2520, 760), (2520, 732), (2530, 732)])                    # MOD-EH branch to BTM-T3
+    for gx in (2606, 2628):                                                       # grounding transformers
+        r("mvlv_cable", [(gx, 906), (gx, 900)])
     # backup: genset collectors (13.8 kV) to the paralleling switchgear, then GSU-1 / GSU-2 to the buses
     for y in (476, 536):
         r("mvlv_cable", [(2774, y), (3326, y)])
@@ -48,8 +62,8 @@ def routes(add_route):
 PATHS = {
     "btm_island": ("1  Islanded BTM power: campus gensets, BTM battery, 34.5 kV bus",
                    ("BTM BESS", "DC backup genset", "DC genset paralleling", "DC-GSU", "BTM 34.5 kV switchgear")),
-    "btm_mod": ("2  Supply from the modular yard: 13.8 kV to the BTM step-ups",
-                ("BTM-T1:", "BTM-T2:")),
+    "btm_mod": ("2  Supply from the modular yard: 13.8 kV to the BTM step-ups (3 x 90 MVA, N+1)",
+                ("BTM-T1:", "BTM-T2:", "BTM-T3:")),
     "btm_grid": ("3  230 kV grid tie to the plant switchyard (normally open)",
                  ("BTM-TIE:", "BTM 230 kV tie breaker")),
 }
@@ -59,7 +73,7 @@ def path_of_route(r):
     pts = [tuple(p) for p in r["points"]]
     if r["type"] == "hv_cable" or pts[0] == (2645, 815):
         return "btm_grid"
-    if pts[0] in ((1995, 892), (2520, 790), (2547, 815), (2597, 815)):
+    if pts[0] in ((1995, 892), (2520, 790), (2547, 815), (2597, 815), (2565, 732), (2520, 760)):
         return "btm_mod"
     return "btm_island"
 
@@ -82,7 +96,7 @@ def color_parts():
 
 def build():
     fuel.D = True
-    for t, (y0, y1) in (("A", (1000, 1300)), ("B", (600, 900))):
+    for t, (y0, y1) in (("A", (1020, 1280)), ("B", (620, 880))):
         hall = find(f"Data hall {t}:")
         on(hall)
         for k in range(10):                                                      # rooftop dry-cooler banks
@@ -103,12 +117,12 @@ def build():
         box(3290, 3290.2, y0 + 3, y0 + 7, 0, 8, "door")
         box(2730, 3290, y0 - .3, y0, 40, 44, "sign" if t == "A" else "hall")     # name band
     on(find("BTM 34.5 kV switchgear"))
-    for (x0, x1, y0, y1) in ((2522, 2685, 755, 755.3), (2522, 2685, 910, 910.3), (2522, 2522.3, 755, 910),
-                             (2685, 2685.3, 755, 910)):
+    for (x0, x1, y0, y1) in ((2522, 2685, 705, 705.3), (2522, 2685, 925, 925.3), (2522, 2522.3, 705, 925),
+                             (2685, 2685.3, 705, 925)):
         box(x0, x1, y0, y1, 0, 8, "fence")                                       # substation fence
     for x in (2560, 2620):
-        box(x, x + 4, 754.6, 754.7, 4, 6.5, "sign")
-        box(x, x + 4, 754.55, 754.6, 5.8, 6.5, "red")
+        box(x, x + 4, 704.6, 704.7, 4, 6.5, "sign")
+        box(x, x + 4, 704.55, 704.6, 5.8, 6.5, "red")
     on(find("DC backup gensets"))
     for row, y in enumerate((440, 500, 560)):
         for k in range(12):
