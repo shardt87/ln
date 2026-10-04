@@ -104,7 +104,7 @@ def main():
     #    allowed: the IPB entering its GCB and generator terminals, trays through the R1 wall sleeves
     tray = next((i["id"] for i in M["items"] if i["name"].startswith("Cable trays")), None)
     allowed = re.compile(r"^GCB-|^GTG-\d|R1 east-wall tray exits|^Common turbine hall|^Turbine deck|^Laydown|"
-                         r"^230 kV switchyard|^Pipe supports")
+                         r"^230 kV switchyard|^Pipe supports|^Underground:")
 
     def pbox(p):
         if p["kind"] in ("box", "prism"):
@@ -135,6 +135,38 @@ def main():
                             clash.add(items[O[k][0]]["name"][:60])
         for n in sorted(clash):
             findings["cable tray / IPB through equipment"].append(n)
+    # 5b. underground: every buried cable route drawn and terminated; duct banks clear of the buried pipes
+    #     (>= 1 ft vertical where they cross) and of each other
+    ug = M.get("underground_audit", {})
+    for e in ug.get("loose_ends", []):
+        findings["buried cable route end not terminated"].append(e)
+    case = [pbox(p) for p in M["parts"] if p["color"] == "ductcase"]
+    pipes = [(p["color"], pbox(p)) for p in M["parts"] if p["kind"] == "rod" and p["color"] in
+             ("rcp", "ductile", "pvc_blue", "pvc_green", "hdpe") and items[p["item"]]["name"].startswith("Underground")]
+    g2 = defaultdict(list)
+    for k, (_, b) in enumerate(pipes):
+        for gx in range(int(b[0] // 20), int(b[3] // 20) + 1):
+            for gy in range(int(b[1] // 20), int(b[4] // 20) + 1):
+                g2[(gx, gy)].append(k)
+    tight = set()
+    for b in case:
+        seen = set()
+        for gx in range(int(b[0] // 20), int(b[3] // 20) + 1):
+            for gy in range(int(b[1] // 20), int(b[4] // 20) + 1):
+                for k in g2.get((gx, gy), ()):
+                    if k in seen:
+                        continue
+                    seen.add(k)
+                    col, c = pipes[k]
+                    if min(b[3], c[3]) - max(b[0], c[0]) > 0 and min(b[4], c[4]) - max(b[1], c[1]) > 0:
+                        gap = max(c[2] - b[5], b[2] - c[5])
+                        if gap < .99:
+                            tight.add((col, round((b[0] + b[3]) / 2), round((b[1] + b[4]) / 2), round(gap, 2)))
+    for t in sorted(tight):
+        findings["duct bank to buried pipe clearance under 1 ft"].append(f"{t[0]} at x {t[1]} y {t[2]}: {t[3]} ft")
+    print(f"underground: {ug.get('routes', 0)} buried cable routes, {ug.get('length_ft', 0)} ft, "
+          f"{ug.get('conduits', 0)} conduit runs, {ug.get('bends', 0)} sweeps, {ug.get('stubups', 0)} stub-ups, "
+          f"max {ug.get('ways_max', 0)} ways")
     # 6. wiring applications: every item that needs wiring has a cable route ending at it or passing it
     elec = ("mv_tray", "lv_tray", "control_tray", "duct_bank", "mvlv_cable", "hv_cable", "hv_overhead", "ipb", "hmod",
             "cable_trench")

@@ -454,5 +454,17 @@
 "cable_armor": {
 "hex": "#6b2a23",
 "opacity": 1
+},
+"pvc_grey": {
+"hex": "#8f969a",
+"opacity": 1
+},
+"pvc_orange": {
+"hex": "#d0752a",
+"opacity": 1
+},
+"ductcase": {
+"hex": "#b4b0a6",
+"opacity": 1
 }
 }

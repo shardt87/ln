@@ -85,3 +85,15 @@ One zone per cycle. Each cycle:
   - **Ends at equipment:** tray ends at equipment faces (HRSG casings, skids) end in a terminal junction box on the face, never through the casing.
   - **Hall conduit:** the GT junction-box conduits now stop at the tray drop instead of crossing it.
 - **Viewer size (artifact failed to open on mobile at v59, 12.2 MB).** The model data is now embedded gzip-compressed (base64) and inflated in the browser with `DecompressionStream`; the page is about 1 MB. The "Everything" view no longer switches on the underground layers.
+- **Duct banks rebuilt and underground cable audit (user review).**
+  - **Duct banks as built:**
+    - **Conduits:** PVC conduits inside a cast concrete encasement (drawn see-through in the underground view) with a red-dyed top. Sizing follows the circuits sharing each stretch: one 5 in conduit per feeder plus ~50 % spares, from 2 x 2 up to 6 x 4, never more than two rows deep. 230 kV banks carry one 8 in conduit per phase plus a fibre / ground duct.
+    - **Joints and ends:** long-radius sweeps at every corner; a red warning tape 12 in above; stub-ups at the feeder ends (90° sweeps rising to grade with bell ends) into the equipment.
+    - **Depths:** 30 in cover for MV / LV. The 230 kV banks run 1 ft below the deepest MV bank, where they used to collide.
+  - **Separation:** the buried pipes sit deeper: water 6.8 ft, firewater 7.3 ft, sanitary 7.8 ft, oily water 8.3 ft, storm 9.5 ft. Any pipe that would still pass within 1 ft of a bank dives under it.
+  - **Cable route ends:** the three 230 kV cable routes that ended in mid-air in the switchyard (BESS and CCS at the D4 / D5 bays, BTM tie at D6) now rise on cable termination structures with outdoor potheads. The site service duct bank ends in a boundary handhole with a marker post.
+  - **Underground audit** (in `audit.py`):
+    - **Coverage:** all 255 buried cable routes (42,266 ft) are drawn, with every end at equipment, a termination or another bank.
+    - **Conflicts:** no bank-to-bank conflicts, and no bank within 1 ft of a buried pipe.
+    - **Fixes:** one diagonal stub (R1) is now an L.
+  - **Viewer:** view U also lifts away surface pads (switchyard gravel, yard slabs).

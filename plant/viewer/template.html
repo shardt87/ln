@@ -289,7 +289,7 @@ const SURF = {
   concrete:{map:TEX.concrete, tile:30, r:.92, m:0}, gravel:{map:TEX.gravel, tile:18, r:1, m:0},
   road:{map:TEX.road, tile:22, r:.95, m:0}, ground:{map:TEX.grass, tile:60, r:1, m:0},
   grating:{map:TEX.grating, tile:6, r:.6, m:.4}, fins:{map:TEX.fins, tile:6, r:.55, m:.3},
-  louvre:{map:TEX.louvre, tile:4, r:.6, m:.3}, fence:{map:TEX.chain, tile:1.2, r:.45, m:.8, cut:true},
+  louvre:{map:TEX.louvre, tile:4, r:.6, m:.3}, fence:{map:TEX.chain, tile:1.2, r:.45, m:.8, cut:true}, ductcase:{map:TEX.concrete, tile:30, r:.92, m:0, see:.38}, ductcap:{r:.9, m:0, see:.45},
   metal:{r:.42, m:.55}, paint:{r:.55, m:.15}, ceramic:{r:.28, m:0}, copper:{r:.38, m:.7},
   water:{r:.08, m:0}, glass:{r:.3, m:.1}, window:{r:.12, m:.65},
 };
@@ -298,7 +298,7 @@ const CLASS = {hall:'glass', building:'panel', ehouse:'clad', windwall:'clad', f
   grating:'grating', bundle:'fins', radiator:'fins', louvre:'louvre', water:'water', insulator:'ceramic', copper:'copper', copper_dark:'copper',
   steel:'metal', rail:'paint', pipe:'metal', ipb:'metal', stack:'metal', duct:'metal', machine:'metal', xfmr:'paint', fan:'metal', fanhub:'metal', crane:'paint',
   conductor:'metal', stair:'paint', door:'paint', rollup:'clad', motor:'paint', pump:'paint', tank:'paint', ccs:'clad', acc:'clad', bess:'paint',
-  cabinet:'paint', swgr:'paint', panel:'paint', battery:'paint', lamp:'paint', fence:'fence', window:'window',
+  cabinet:'paint', swgr:'paint', panel:'paint', battery:'paint', lamp:'paint', fence:'fence', ductcase:'ductcase', ductcap:'ductcap', pvc_grey:'paint', pvc_orange:'paint', window:'window',
   hull:'paint', super:'paint', mosscover:'paint', lngpipe:'paint', sea:'water'};
 const mats = {};
 function surfMat(cls){
@@ -308,6 +308,7 @@ function surfMat(cls){
   if(s.map) o.map = s.map;
   if(cls==='glass') Object.assign(o,{transparent:true, opacity:.26, depthWrite:false, side:THREE.DoubleSide});
   if(s.cut) Object.assign(o,{alphaTest:.35, side:THREE.DoubleSide});
+  if(s.see) Object.assign(o,{transparent:true, opacity:s.see, depthWrite:false});   // cast section: the conduits read through
   if(cls==='water') o.envMapIntensity = 1;
   return mats[cls] = new THREE.MeshStandardMaterial(o);
 }
@@ -479,6 +480,8 @@ cut.addEventListener('input',()=>{ const v=+cut.value; cutPlane.constant = v>=32
 const viewsEl=document.getElementById('views'); let anim=null;
 function goView(v, instant){
   setLayers(v.show);
+  // underground view: surface pads (switchyard gravel, yard slabs) are lifted away with the ground
+  for(const it of MODEL.items) if(it.z[1] <= .7 && it.z[0] >= 0 && it.layer !== 'SITE') (itemMeshes[it.id]||[]).forEach(m=>{ m.visible = v.k !== 'U'; });
   [...viewsEl.children].forEach(b=>b.setAttribute('aria-pressed', b.dataset.k===v.k));
   const t=P(...v.t), c=P(...v.c);
   if(instant || matchMedia('(prefers-reduced-motion: reduce)').matches){ controls.target.copy(t); camera.position.copy(c); return; }

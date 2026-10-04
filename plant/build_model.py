@@ -1991,7 +1991,8 @@ model = dict(
     disclaimer="Conceptual illustration. Not engineered. Not for construction.",
     source="SK-3X1 Drawing Set Rev 14 (Sept 26, 2026), Stephan Hardt | Power Generation Solutions",
     layers={k: dict(label=v[0], group=v[1]) for k, v in LAYERS.items()},
-    areas=AREAS, views=VIEWS, items=items, parts=parts, routes=routes)
+    areas=AREAS, views=VIEWS, items=items, parts=parts, routes=routes,
+    underground_audit={k: v for k, v in N_UG['audit'].items()})
 
 if __name__ == "__main__":
     validate()
