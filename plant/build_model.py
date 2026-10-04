@@ -1865,7 +1865,9 @@ _dc.color_routes(routes)
 _dc.build()               # BTM data centre: dressing, BESS / genset / substation detail
 import ccs as _ccs
 _ccs.routes(add_route)
-_ccs.build()              # cycle 6: carbon capture flue-gas path, amine piping and rack, regeneration, CT   # cycle 5: gate, fence wire and CCTV, drainage, lighting, admin / workshop dressing
+import ccs_detail as _ccsd
+_ccsd.routes(add_route)
+_ccs.build(); _ccsd.build()              # cycle 6: carbon capture flue-gas path, amine piping and rack, regeneration, CT   # cycle 5: gate, fence wire and CCTV, drainage, lighting, admin / workshop dressing
 import placeholders as _ph
 _ph.build()               # single-box placeholders rebuilt as equipment (CCS, LNG, H2, BTM)
 _dc.color_parts()         # BTM data centre: colour by supply path (islanded / modular yard / grid tie)

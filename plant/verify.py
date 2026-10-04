@@ -192,7 +192,7 @@ TOUCH = [
     (r"^Absorber", r"Water-wash"), (r"^SC-\d", r"^SC-\d"),
     (r"monopoles", r"reserved|COR-HMOD"),
     (r"inlet duct \(drop|^FH-\d:", r"Common turbine hall"),       # penetrate the gallery roof
-    (r"H2 24", r"electrolyzer building"), (r"^H2 26|^H2 25|^H2 28", r"^H2 2[5-8]"),
+    (r"H2 24", r"electrolyzer building"), (r"intercooler \(pumps", r"^Absorber"), (r"^H2 26|^H2 25|^H2 28", r"^H2 2[5-8]"),
 ]
 TOUCH = [(re.compile(a), re.compile(b)) for a, b in TOUCH]
 

@@ -206,6 +206,9 @@ OVERRIDES = [
                                   FA + " (H2 leak detection)", GND]),
     (r"^EHC-ST", [LV + " (EHC pumps, fluid heater, cooler fan)", CTRL, INST + " (pressure, level, fluid temperature)", GND]),
     (r"^GSC-ST", [LV + " (two exhauster blowers)", CTRL, INST + " (gland header pressure, condenser level)", GND]),
+    (r"stair tower \(to EL", [LIGHT + " (landing lights, emergency lights)", GND]),
+    (r"cable termination structure", ["230 kV XLPE cable, 1/C Cu, with outdoor sealing ends (potheads)", GND]),
+    (r"firewall", []),
 ]
 
 

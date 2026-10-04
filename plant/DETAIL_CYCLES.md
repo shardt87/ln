@@ -113,3 +113,25 @@ One zone per cycle. Each cycle:
   - **MH-B:** a new pulling manhole (355, 1340) with its own chamber.
   - **Trench:** at y 1236-1260.
   - **Checks:** a direct part-by-part check finds nothing above grade intersecting the scene. Viewer view M and cameras E54 / E55 follow it.
+- **Carbon capture audit (`ccs_detail.py`).**
+  - **Absorber dimensions:** 62 ft dia x 262 ft with a stack to 313 ft, as Keadby 3's DCO (19 m x 80 m, stack 95.5 m); the size is kept. It was a plain shell with ring platforms and one caged ladder. Added:
+    - bed manways at every packed bed and the wash section;
+    - an open stair tower to EL 250 with bridges to each platform;
+    - an intercooler skid (pumps, plate exchanger) with draw-off and return lines;
+    - an instrument / lighting tray riser up the shell with junction boxes and platform lights;
+    - a stack platform with CEMS ports;
+    - aviation obstruction lights at the top and mid-height (structures above 200 ft);
+    - lightning air terminals and a down conductor.
+  - **Strippers:** added manways, an overhead condenser over the reflux drum, a tray riser with junction boxes, obstruction lights and lightning protection.
+  - **Electrical supply:** the D5 bay feeds two 230 kV circuits, but only one cable (to T-2) was drawn. The second now shares the bank and branches to T-1. Both transformers got 230 kV cable termination structures with jumpers to the bushing tops, and a firewall was added between them (10 ft apart).
+  - **Electrical distribution:** the CCS loads were fed by automatic buried feeders chained from one item to the next. They are now fed radially from the MV / VFD building:
+    - a wall riser, a tray along the CCS pipe rack (EL 30) with drops to every train's DCC, DCC pumps, rich / lean skid, water-wash pumps, intercooler and absorber;
+    - a control tray along y 1100 to the reboilers, strippers, reclaimer, storage, carbon filter, export compressor and dehydration;
+    - a buried 13.8 kV bank to the 3 x ~19 MW CO2 compressors.
+    - No automatic feeders remain in the CCS.
+  - **Equipment and buildings:**
+    - booster fans: MV terminal box, cable riser, lube-oil console and motor air intake;
+    - MV building: rooftop HVAC, doors and landings;
+    - compression building: roof ventilators and doors, plus a new dehydration skid (two molecular-sieve towers and a regeneration heater).
+  - **Cameras:** E56 (absorber), E57 (transformers).
+  - **Underground:** pipes now dive 1.15 ft under the banks, clearing the deeper two-circuit 230 kV bank.

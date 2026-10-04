@@ -82,14 +82,14 @@ def _dips(a, b, r):
             continue
         zm = a[2] + (b[2] - a[2]) * (t0 + t1) / 2
         if zm + r > zb - 1 and zm - r < zt + 1:                    # conflict: dive under
-            cross.append((t0, t1, zb - 1 - r))
+            cross.append((t0, t1, zb - 1.15 - r))
     if not cross:
         return [a, b]
     cross.sort()
     out = [a]
     ramp = 3.0 / L
     for (t0, t1, zn) in cross:
-        for t, zz in ((t0 - ramp, None), (t0 - .5 / L, zn), (t1 + .5 / L, zn), (t1 + ramp, None)):
+        for t, zz in ((t0 - ramp - (r + .5) / L, None), (t0 - (r + .5) / L, zn), (t1 + (r + .5) / L, zn), (t1 + ramp + (r + .5) / L, None)):
             t = min(max(t, 0), 1)
             zbase = a[2] + (b[2] - a[2]) * t
             out.append((a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, zbase if zz is None else min(zz, zbase)))
