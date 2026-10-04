@@ -124,6 +124,55 @@ class Scene:
                 self.rod((ax + t * (bx - ax) + w / 2 - 1, ay + t * (by - ay) + w / 2 - 1, 0),
                          (ax + t * (bx - ax) + w / 2 - 1, ay + t * (by - ay) + w / 2 - 1, 4), .3, "amber")
 
+    def cable_bank(self, pts, ways=7, top=-5.25):
+        """230 kV cable bank under a right of way: encasement (red-dyed top), 8 in conduits in two rows,
+        long-radius sweeps at the corners, warning tape 12 in above (as the plant's underground model)."""
+        cols = -(-ways // 2)
+        pt, rc = .95, .36
+        W, H = cols * pt + .5, 2 * pt + .5
+        R0 = 4.5
+        for k, ((ax, ay), (bx, by)) in enumerate(zip(pts, pts[1:])):
+            x0, x1 = sorted((ax, bx))
+            y0, y1 = sorted((ay, by))
+            alx = ay == by
+            hw = W / 2
+            ex0, ex1 = (x0 - hw, x1 + hw) if alx else (x0 - hw, x0 + hw)
+            ey0, ey1 = (y0 - hw, y0 + hw) if alx else (y0 - hw, y1 + hw)
+            for (z0, z1, c) in ((top - H, top - .12, "ductcase"), (top - .12, top, "ductcap")):
+                self.box(ex0, ex1, ey0, ey1, z0, z1, c)
+            L = math.hypot(bx - ax, by - ay)
+            ux, uy = (bx - ax) / L, (by - ay) / L
+            s0 = R0 if k > 0 else 0
+            s1 = L - (R0 if k < len(pts) - 2 else 0)
+            for w in range(ways):
+                ci, ri = w % cols, w // cols
+                v = (ci - (cols - 1) / 2) * pt
+                zc = top - .25 - pt / 2 - ri * pt
+                self.rod((ax + ux * s0 - uy * v, ay + uy * s0 + ux * v, zc), (ax + ux * s1 - uy * v, ay + uy * s1 + ux * v, zc),
+                         rc, "pvc_grey", seg=8)
+        for k in range(1, len(pts) - 1):                                      # sweeps at the corners
+            (ax, ay), (bx, by), (cx, cy) = pts[k - 1], pts[k], pts[k + 1]
+            L1, L2 = math.hypot(bx - ax, by - ay), math.hypot(cx - bx, cy - by)
+            d1 = ((bx - ax) / L1, (by - ay) / L1)
+            d2 = ((cx - bx) / L2, (cy - by) / L2)
+            for w in range(ways):
+                ci, ri = w % cols, w // cols
+                v = (ci - (cols - 1) / 2) * pt
+                zc = top - .25 - pt / 2 - ri * pt
+                n1 = (-d1[1] * v, d1[0] * v)
+                n2 = (-d2[1] * v, d2[0] * v)
+                P0 = (bx - d1[0] * R0 + n1[0], by - d1[1] * R0 + n1[1])
+                P2 = (bx + d2[0] * R0 + n2[0], by + d2[1] * R0 + n2[1])
+                P1 = (bx + n1[0] + n2[0], by + n1[1] + n2[1])
+                q = [((1 - t) ** 2 * P0[0] + 2 * (1 - t) * t * P1[0] + t * t * P2[0],
+                      (1 - t) ** 2 * P0[1] + 2 * (1 - t) * t * P1[1] + t * t * P2[1], zc) for t in [i / 6 for i in range(7)]]
+                for p_, q_ in zip(q, q[1:]):
+                    self.rod(p_, q_, rc, "pvc_grey", seg=8)
+
+    def buried_pipe(self, pts, r=.7, z=-6.0, color="fuelgas"):
+        for (ax, ay), (bx, by) in zip(pts, pts[1:]):
+            self.rod((ax, ay, z), (bx, by, z), r, color, seg=12)
+
     def fence(self, x0, x1, y0, y1, h=8, gap=None):
         for (ax, ay, bx, by) in ((x0, y0, x1, y0), (x1, y0, x1, y1), (x1, y1, x0, y1), (x0, y1, x0, y0)):
             if gap and gap[0] == (ax, ay, bx, by):
@@ -608,6 +657,7 @@ def links_A(S, K):
     mx = (mx0 + mx1) / 2
     S.item(L_P, "Buried send-out pipeline to the plant M&R (right of way)", (mx - 10, 1616, 1890, my0), (-.2, 4))
     S.row_strip([(mx, my0), (mx, 1950), (1606, 1950), (1606, 1900)], 16)
+    S.buried_pipe([(mx, my0), (mx, 1950), (1606, 1950), (1606, 1900)])        # 16 in coated steel, 6 ft cover
     # 230 kV cable: plant switchyard (east end) along the east fence, outside it, and north to the substation
     sx0, sx1 = T(0, K["5"][3])[0], T(0, K["5"][2])[0]
     sy0 = T(K["5"][0], 0)[1]
@@ -615,6 +665,16 @@ def links_A(S, K):
     S.item(L_P, "Terminal power supply: buried 230 kV cable from the plant switchyard (right of way)",
            (sxc - 3, 2453, 147, sy0), (-.2, .4))
     S.row_strip([(1940, 150), (2450, 150), (2450, 1960), (sxc, 1960), (sxc, sy0)], 6, color="corridor", markers=300)
+    S.cable_bank([(1940, 150), (2450, 150), (2450, 1960), (sxc, 1960), (sxc, sy0)])
+    # cable termination structure in the D6 extension yard, where the cables rise to the bay (outdoor potheads)
+    S.item(L_P, "Terminal 230 kV cable termination structure (D6 extension, outdoor potheads)", (1946, 1954, 146, 154), (0, 26))
+    S.box(1946, 1954, 146, 154, 0, .6, "concrete")
+    for (dx, dy) in ((-3, -3), (3, -3), (-3, 3), (3, 3)):
+        S.rod((1950 + dx, 150 + dy, .6), (1950 + dx, 150 + dy, 18), .35, "steel")
+    S.box(1946.4, 1953.6, 146.4, 153.6, 17.6, 18.2, "steel")
+    for ph in (-2.2, 0, 2.2):
+        S.rod((1950, 150 + ph, -5), (1950, 150 + ph, 18.2), .25, "cable_tc")
+        S.rod((1950, 150 + ph, 18.2), (1950, 150 + ph, 24.5), .55, "insulator", r2=.3)
 
 
 def links_B(S, K):
@@ -624,6 +684,7 @@ def links_B(S, K):
     S.item(L_T, "Buried gas pipeline to the plant M&R (right of way)", (min(lx, 1606) - 10, max(lx, 1606) + 10, 1890, lvs[2]),
            (-.2, 4))
     S.row_strip([(lx, lvs[2]), (lx, 1950), (1606, 1950), (1606, 1900)], 16)
+    S.buried_pipe([(lx, lvs[2]), (lx, 1950), (1606, 1950), (1606, 1900)])
 
 
 def write(S, meta):

@@ -167,6 +167,8 @@ def main():
     print(f"underground: {ug.get('routes', 0)} buried cable routes, {ug.get('length_ft', 0)} ft, "
           f"{ug.get('conduits', 0)} conduit runs, {ug.get('bends', 0)} sweeps, {ug.get('stubups', 0)} stub-ups, "
           f"max {ug.get('ways_max', 0)} ways")
+    for zl, (zn, zf) in sorted(ug.get("zones", {}).items()):
+        print(f"  {zl:<18} {zn:>4} buried routes {zf:>7} ft")
     # 6. wiring applications: every item that needs wiring has a cable route ending at it or passing it
     elec = ("mv_tray", "lv_tray", "control_tray", "duct_bank", "mvlv_cable", "hv_cable", "hv_overhead", "ipb", "hmod",
             "cable_trench")

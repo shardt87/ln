@@ -356,15 +356,17 @@ function partGeo(p){
   return paint(g, col[p.color] || col.equip);
 }
 
-const layerGroups = {}, itemMeshes = {}, pickables = [], detailObjs = [];
+const layerGroups = {}, itemMeshes = {}, pickables = [], detailObjs = [], surfMeshes = [];
 function grp(l){ if(!layerGroups[l]){ const g=new THREE.Group(); g.name=l; scene.add(g); layerGroups[l]=g; } return layerGroups[l]; }
 const buckets = {};
 for(const p of MODEL.parts){
   let cls = CLASS[p.color] || 'paint';
   if(p.kind==='rod' && ['clad','panel','concrete','fins','grating','louvre'].includes(cls)) cls = 'paint'; // box-projected textures only suit flat faces
   const dd = !!p.d && !p.pipe;   // round pipes are dressing in the model but always shown
-  const k = p.item+'|'+p.layer+'|'+cls+'|'+(dd?1:0);
-  (buckets[k] ||= {item:p.item, layer:p.layer, cls, d:dd, geos:[]}).geos.push(partGeo(p));
+  // flat surfacing at grade (yard gravel, slabs, pads): lifted away with the ground in the underground views
+  const surf = p.kind==='box' && p.max[2] <= .8 && p.min[2] >= -.35 && ['gravel','concrete','road','ground'].includes(cls);
+  const k = p.item+'|'+p.layer+'|'+cls+'|'+(dd?1:0)+'|'+(surf?1:0);
+  (buckets[k] ||= {item:p.item, layer:p.layer, cls, d:dd, surf, geos:[]}).geos.push(partGeo(p));
 }
 for(const b of Object.values(buckets)){
   let merged = THREE.BufferGeometryUtils.mergeBufferGeometries(b.geos, false);
@@ -373,7 +375,7 @@ for(const b of Object.values(buckets)){
   const m = new THREE.Mesh(merged, surfMat(b.cls));
   const site = items[b.item].layer === 'SITE';
   m.castShadow = b.cls!=='glass' && (!site || b.d); m.receiveShadow = true;
-  m.userData.item = b.item; grp(b.layer).add(m);
+  m.userData.item = b.item; m.userData.surf = b.surf; grp(b.layer).add(m); if(b.surf) surfMeshes.push(m);
   if(!site) pickables.push(m);
   (itemMeshes[b.item] ||= []).push(m);
   if(b.d){ detailObjs.push(m); continue; }
@@ -481,7 +483,7 @@ const viewsEl=document.getElementById('views'); let anim=null;
 function goView(v, instant){
   setLayers(v.show);
   // underground view: surface pads (switchyard gravel, yard slabs) are lifted away with the ground
-  for(const it of MODEL.items) if(it.z[1] <= .7 && it.z[0] >= 0 && it.layer !== 'SITE') (itemMeshes[it.id]||[]).forEach(m=>{ m.visible = v.k !== 'U'; });
+  for(const m of surfMeshes) m.visible = !['U','U2'].includes(v.k);
   [...viewsEl.children].forEach(b=>b.setAttribute('aria-pressed', b.dataset.k===v.k));
   const t=P(...v.t), c=P(...v.c);
   if(instant || matchMedia('(prefers-reduced-motion: reduce)').matches){ controls.target.copy(t); camera.position.copy(c); return; }

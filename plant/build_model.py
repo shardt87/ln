@@ -1709,6 +1709,9 @@ VIEWS = [
          "ROUTES_BASE", "PROCESS_PIPING"], t=[790, 480, 25], c=[600, 250, 260]),
     dict(k="U", n="U Underground (ground removed)", show=["UNDERGROUND", "BASE_POWER_BLOCK", "BASE_ELECTRICAL",
          "BASE_SWITCHYARD", "BASE_UTILITIES", "BASE_SERVICES", "BASE_INLET_AIR"], t=[800, 420, -4], c=[560, 40, 330]),
+    dict(k="U2", n="U2 Underground: all zones (BESS, modular, gas, CCS, H2, BTM)", show=["UNDERGROUND", "OPT_UNDERGROUND"]
+         + [l for l in LAYERS if l.startswith(("BASE_", "OPT_")) and not l.endswith("_ROUTES") and l != "OPT_UNDERGROUND"],
+         t=[1500, 900, -4], c=[600, -500, 1300]),
     dict(k="O1", n="O1 Modular / portable", show=BASE_SHOW + ["OPT_MOD", "OPT_TMP", "OPT_MODX", "OPT_MOD_ROUTES", "OPT_TMP_ROUTES", "OPT_MODX_ROUTES",
          "HV_CORRIDOR", "SWYD_FUTURE"], t=[1960, 880, 20], c=[1520, 300, 760]),
     dict(k="O2", n="O2 BESS", show=BASE_SHOW + ["OPT_BESS", "OPT_BESS_ROUTES"], t=[1740, 560, 5], c=[1480, 200, 420]),
@@ -1736,6 +1739,7 @@ FIT = {
     "C": dict(box=[1130, 1450, 790, 850, 0, 40]),
     "H": dict(box=[480, 1100, 370, 560, 0, 60]),
     "U": dict(box=[0, 2420, 0, 1920, -10, 20]),
+    "U2": dict(box=[0, 3380, 0, 1920, -10, 20]),
     "O1": dict(layers=["OPT_MOD", "OPT_TMP", "OPT_MODX"]),
     "O2": dict(layers=["OPT_BESS"]),
     "O3": dict(layers=["OPT_CCS", "OPT_CCSU"]),

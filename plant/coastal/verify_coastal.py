@@ -92,8 +92,9 @@ def site_checks(ov, out):
     north = [it["name"] for it in land if it["fp"][3] > shore + 1]
     out(not north, f"site: shoreline at y {shore:.0f}, north of every land item {north[:3]}")
     # links: only these enter the compound; at grade they must clear the plant equipment
-    allowed = all(("right of way" in it["name"].lower() or "link road" in it["name"].lower()) for it in links)
-    out(allowed, f"site: {len(links)} links into the plant, all buried rights of way or the link road")
+    allowed = all(("right of way" in it["name"].lower() or "link road" in it["name"].lower()
+                   or "termination structure" in it["name"].lower()) for it in links)
+    out(allowed, f"site: {len(links)} links into the plant, all buried rights of way, their cable termination or the link road")
     bitems = {it["id"]: it for it in base["items"]}
     hits = set()
     for ln in links:
@@ -122,7 +123,7 @@ def site_checks(ov, out):
         if "pipeline to the plant m&r" in n:
             ok = ln["fp"][0] <= mr[1] and ln["fp"][1] >= mr[0] and ln["fp"][2] <= mr[3]
             out(ok, f"site: {ln['name'][:46]} reaches the M&R station")
-        if "230 kv cable" in n:
+        if "230 kv cable" in n and "right of way" in n:
             ok = ln["fp"][2] < 260 and ln["fp"][1] > 2420
             out(ok, "site: 230 kV cable leaves the switchyard and runs outside the east fence")
     # wiring: every powered keyed item carries its cable applications

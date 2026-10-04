@@ -97,3 +97,7 @@ One zone per cycle. Each cycle:
     - **Conflicts:** no bank-to-bank conflicts, and no bank within 1 ft of a buried pipe.
     - **Fixes:** one diagonal stub (R1) is now an L.
   - **Viewer:** view U also lifts away surface pads (switchyard gravel, yard slabs).
+- **Underground coverage across every zone (user question).**
+  - **Missed runs:** the underground model now also draws the buried runs that the drawing labels as trays: 10 routes at the pipeline M&R, the gas yard and the LNG side, previously left out. That brings the total to 265 buried cable routes (42,554 ft), each listed per zone by `audit.py`.
+  - **Coastal links:** the terminal's buried 230 kV feed (D6 extension to the terminal substation, outside the east fence) is now a real cable bank with sweeps, plus a cable termination structure in the D6 yard. The send-out pipeline (variant A) and landfall pipeline (variant B) are now real buried pipes, not just right-of-way strips.
+  - **Viewer:** new view "U2 Underground: all zones" shows the option banks (BESS, modular, portable pad, gas / LNG / H2, CCS, inlet chilling, BTM data centre) with their equipment. Both underground views lift away flat yard surfacing (BESS yard, pads, gravel) so the banks under them show.

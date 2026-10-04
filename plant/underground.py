@@ -29,6 +29,7 @@ import fuel
 from fuel import box, rod, find
 
 UG, UGO = "UNDERGROUND", "OPT_UNDERGROUND"
+BURIED = ("duct_bank", "mvlv_cable", "hv_cable", "lv_tray", "mv_tray", "control_tray")   # buried when z < 0
 SHEET = "typical (underground)"
 
 
@@ -153,7 +154,7 @@ def duct_banks(routes, items):
     conduits read through it in the underground view."""
     groups = {}
     for rid, r in enumerate(routes):
-        if r["type"] not in ("duct_bank", "mvlv_cable", "hv_cable") or r["z"] >= 0:
+        if r["type"] not in BURIED or r["z"] >= 0:
             continue
         opt = r["layer"].startswith("OPT_") or r["layer"] in ("SWYD_FUTURE", "HV_CORRIDOR")
         hv = r["type"] == "hv_cable"
@@ -484,7 +485,7 @@ def terminations(routes, items):
     cables rise into a switchyard bay, and a service-entrance handhole with a marker post where the site
     service duct bank meets the boundary."""
     pads = [it for it in items if it["layer"] != "SITE" and (it["fp"][1] - it["fp"][0]) < 1500]
-    bur = [r for r in routes if r["type"] in ("duct_bank", "mvlv_cable", "hv_cable") and r["z"] < 0]
+    bur = [r for r in routes if r["type"] in BURIED and r["z"] < 0]
     out = []
     for r in bur:
         for k, p in ((0, r["points"][0]), (-1, r["points"][-1])):
@@ -527,7 +528,7 @@ def terminations(routes, items):
 
 def audit(routes, items, stats):
     """Underground coverage audit: every buried cable route drawn, every end terminated, crossings clear."""
-    bur = [r for r in routes if r["type"] in ("duct_bank", "mvlv_cable", "hv_cable") and r["z"] < 0]
+    bur = [r for r in routes if r["type"] in BURIED and r["z"] < 0]
     keep = [it for it in items if it["layer"] not in ("SITE", "UNDERGROUND", "OPT_UNDERGROUND")
             and (it["fp"][1] - it["fp"][0]) < 1500]
     term = [it for it in items if it["name"].startswith(("230 kV cable termination", "Service-entrance handhole"))]
@@ -540,7 +541,12 @@ def audit(routes, items, stats):
                                               for a, b in zip(q["points"], q["points"][1:])) for q in bur)
             if not ok:
                 loose.append(f"{r['type']} {r['layer']} end {p}")
-    return dict(routes=len(bur), length_ft=round(sum(abs(a[0] - b[0]) + abs(a[1] - b[1]) for r in bur
+    zones = {}
+    for r in bur:
+        z = zones.setdefault(r["layer"], [0, 0])
+        z[0] += 1
+        z[1] += round(sum(abs(a[0] - b[0]) + abs(a[1] - b[1]) for a, b in zip(r["points"], r["points"][1:])))
+    return dict(zones=zones, routes=len(bur), length_ft=round(sum(abs(a[0] - b[0]) + abs(a[1] - b[1]) for r in bur
                                                         for a, b in zip(r["points"], r["points"][1:]))),
                 loose_ends=loose, **stats)
 

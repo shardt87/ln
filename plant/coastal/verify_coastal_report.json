@@ -4,7 +4,7 @@
   "lines": [
    "   ok     site: terminal / landfall placed north of the plant, nothing inside the compound []",
    "   ok     site: shoreline at y 3101, north of every land item []",
-   "   ok     site: 3 links into the plant, all buried rights of way or the link road",
+   "   ok     site: 4 links into the plant, all buried rights of way, their cable termination or the link road",
    "   ok     site: link road clear of plant equipment, fence open at the north gate []",
    "   ok     site: Buried send-out pipeline to the plant M&R (rig reaches the M&R station",
    "   ok     site: 230 kV cable leaves the switchyard and runs outside the east fence",
@@ -35,7 +35,7 @@
   "lines": [
    "   ok     site: terminal / landfall placed north of the plant, nothing inside the compound []",
    "   ok     site: shoreline at y 2800, north of every land item []",
-   "   ok     site: 1 links into the plant, all buried rights of way or the link road",
+   "   ok     site: 1 links into the plant, all buried rights of way, their cable termination or the link road",
    "   ok     site: link road clear of plant equipment, fence open at the north gate []",
    "   ok     site: Buried gas pipeline to the plant M&R (right of reaches the M&R station",
    "   ok     wiring: every keyed terminal item has cable applications []",
