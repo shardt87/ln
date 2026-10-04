@@ -244,6 +244,8 @@ class Trays:
                 continue
             drops.append((key, x, y, d))
             self.waterfall[(key, round(x, 2), round(y, 2))] = d
+        self.frames = {}
+        self.tray_racks(merged_runs)
         for k, ivs in merged_runs.items():
             for a, b in ivs:
                 self.tray(k, a, b)
@@ -278,6 +280,95 @@ class Trays:
             if r["type"] == "ipb" and r["z"] > 0:
                 self.ipb(r)
         return len(self.parts) - self.n0
+
+    def tray_racks(self, merged_runs):
+        """Parallel tray runs at different tiers in one corridor get a shared cable-tray rack: portal frames
+        (two wide-flange columns on piers, a beam at every tray level, knee braces) about every 20 ft, with
+        longitudinal ties, instead of a separate pair of posts under each tray."""
+        mem = []
+        for k, ivs in merged_runs.items():
+            layer, rtype, z, w, h, axis, c = k
+            if z <= 6:
+                continue
+            for a, b in ivs:
+                xm, ym = ((a + b) / 2, c) if axis == "x" else (c, (a + b) / 2)
+                if b - a < 15 or self.in_hall(xm, ym) or self.on_rack(xm, ym, z):
+                    continue
+                mem.append(dict(k=k, a=a, b=b, axis=axis, c=c, z=z, w=w, layer=layer))
+        n = len(mem)
+        parent = list(range(n))
+
+        def find(i):
+            while parent[i] != i:
+                parent[i] = parent[parent[i]]
+                i = parent[i]
+            return i
+        for i in range(n):
+            for j in range(i + 1, n):
+                p, q = mem[i], mem[j]
+                if p["axis"] == q["axis"] and abs(p["c"] - q["c"]) <= 14 and min(p["b"], q["b"]) - max(p["a"], q["a"]) > 10:
+                    parent[find(i)] = find(j)
+        groups = {}
+        for i in range(n):
+            groups.setdefault(find(i), []).append(mem[i])
+        nf = 0
+        for g in groups.values():
+            if len(g) < 2 or len({m["z"] for m in g}) < 2 and len(g) < 3:
+                continue
+            axis = g[0]["axis"]
+            layer = g[0]["layer"]
+            lo = min(m["c"] - m["w"] / 2 for m in g) - .9
+            hi = max(m["c"] + m["w"] / 2 for m in g) + .9
+            S0, S1 = min(m["a"] for m in g), max(m["b"] for m in g)
+            k_n = max(1, int(round((S1 - S0 - 4) / 20)))
+            prev = None
+            for t in range(k_n + 1):
+                s0 = S0 + 2 + (S1 - S0 - 4) * t / k_n
+                for ds in (0, 3, -3, 6, -6):
+                    sv = s0 + ds
+                    cov = [m for m in g if m["a"] - 1 <= sv <= m["b"] + 1]
+                    if not cov:
+                        break
+                    tiers = sorted({m["z"] for m in cov})
+                    top = max(tiers) + 1.2
+                    P = lambda lat: (sv, lat) if axis == "x" else (lat, sv)
+                    cl, ch = P(lo + .35), P(hi - .35)
+                    base = max(self.floor(*cl), self.floor(*ch))
+                    cols = [(q[0] - .35, q[0] + .35, q[1] - .35, q[1] + .35, base + .5, top) for q in (cl, ch)]
+                    beams = []
+                    for zt in tiers:
+                        b0, b1 = P(lo), P(hi)
+                        beams.append((min(b0[0], b1[0]) - (.25 if axis == "x" else 0), max(b0[0], b1[0]) + (.25 if axis == "x" else 0),
+                                      min(b0[1], b1[1]) - (0 if axis == "x" else .25), max(b0[1], b1[1]) + (0 if axis == "x" else .25),
+                                      zt - .5, zt))
+                    if not self.free(*cols) or not self.free(*beams):
+                        continue
+                    lay = cov[0]["layer"]
+                    for q in (cl, ch):
+                        self.box(q[0] - .8, q[0] + .8, q[1] - .8, q[1] + .8, 0 if base < 1 else base, base + .5, "concrete", lay)
+                    for cb in cols:
+                        self.box(*cb, "steel", lay)
+                    for bm in beams:
+                        self.box(*bm, "steel", lay)
+                    # knee braces under the top beam
+                    zt = max(tiers) - .5
+                    for q, sgn in ((cl, 1), (ch, -1)):
+                        lat0 = q[1] if axis == "x" else q[0]
+                        a_ = P(lat0)
+                        b_ = P(lat0 + sgn * 2.5)
+                        self.rod((a_[0], a_[1], zt - 2.5), (b_[0], b_[1], zt), .1, "steel", lay, seg=4)
+                    if prev is not None:                       # longitudinal ties at the top of the columns
+                        for q0, q1 in zip(prev, (cl, ch)):
+                            tb = (min(q0[0], q1[0]) - .12, max(q0[0], q1[0]) + .12, min(q0[1], q1[1]) - .12,
+                                  max(q0[1], q1[1]) + .12, top - .42, top - .18)
+                            if self.free(tb):
+                                self.rod((q0[0], q0[1], top - .3), (q1[0], q1[1], top - .3), .12, "steel", lay, seg=4)
+                    prev = (cl, ch)
+                    for m in cov:
+                        self.frames.setdefault((m["k"], round(m["a"], 1)), []).append(sv)
+                    nf += 1
+                    break
+        self.n_frames = nf
 
     def lanes(self, rtype, w, zb):
         """Cable lanes across a tray: (colour, radius, offset across the tray, centre height)."""
@@ -342,8 +433,12 @@ class Trays:
         L = b0 - a0
         nsup = max(1, int(L // 12))            # 12 ft support spacing (NEMA 12 ladder tray class)
         held = []
+        fr = self.frames.get((key, round(a, 1)), [])
+        held.extend(fr)
         for m in range(nsup + 1):
             s0 = a0 + .5 + (L - 1) * m / max(1, nsup)
+            if fr and min(abs(f - s0) for f in fr) <= 12:
+                continue                               # carried by the shared tray-rack frames
             for ds in (0, 2.5, -2.5, 5, -5):
                 s = min(max(s0 + ds, a0 + .3), b0 - .3)
                 x, y = (s, c) if axis == "x" else (c, s)
