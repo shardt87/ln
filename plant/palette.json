@@ -340,7 +340,7 @@
 "opacity": 1
 },
 "cable_mv": {
-"hex": "#8e2b23",
+"hex": "#1f2326",
 "opacity": 1
 },
 "cable_tc": {
@@ -449,6 +449,10 @@
 },
 "ductile": {
 "hex": "#4a4440",
+"opacity": 1
+},
+"cable_armor": {
+"hex": "#6b2a23",
 "opacity": 1
 }
 }

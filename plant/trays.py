@@ -23,9 +23,9 @@ TRAYS = {"mv_tray": (4, .32, "cable"), "lv_tray": (6, .22, "cable"), "control_tr
 CABLES = {
     "mv_tray": [
         ("15 kV MV-105 power, 1/C Cu, 133% EPR, copper-tape shield, PVC jacket, triplexed "
-         "(Southwire MV-105 type; ICEA S-93-639 / UL 1072)", "cable_mv", .30, 3),
+         "(Southwire MV-105 type; ICEA S-93-639 / UL 1072)", "cable_mv", .30, 6),
         ("15 kV ARMOR-X MC-HL / MV-105, 3/C Cu EPR, continuous corrugated welded armor, red PVC jacket "
-         "(Southwire ARMOR-X)", "cable_mv", .38, 1),
+         "(Southwire ARMOR-X)", "cable_armor", .38, 1),
     ],
     "lv_tray": [
         ("600 V power, Cu XHHW-2, Type TC-ER, black PVC jacket (Southwire Type TC-ER; UL 1277)", "cable_tc", .20, 3),
@@ -150,10 +150,152 @@ class Trays:
         return any(f[0] <= x <= f[1] and f[2] <= y <= f[3] and f[4] >= z - 2 for f in self.racks)
 
     def side_entry(self, x, y, z):
-        """The tray ends at the face of equipment or a building it enters from the side."""
-        return any(i["fp"][0] - 4 <= x <= i["fp"][1] + 4 and i["fp"][2] - 4 <= y <= i["fp"][3] + 4
-                   and i["z"][0] < z < i["z"][1] - .5 and not (i["fp"][0] < x < i["fp"][1] and i["fp"][2] < y < i["fp"][3])
-                   for i in self.solid)
+        """The tray ends at the face of equipment or a building it enters from the side: that item, else None."""
+        for i in self.solid:
+            if (i["fp"][0] - 4 <= x <= i["fp"][1] + 4 and i["fp"][2] - 4 <= y <= i["fp"][3] + 4
+                    and i["z"][0] < z < i["z"][1] - .5 and not (i["fp"][0] < x < i["fp"][1] and i["fp"][2] < y < i["fp"][3])):
+                return i
+        return None
+
+    BLD = ("e-house", "building", "house", "room", "enclosure", "switchgear")
+
+    def building_beside(self, x, y, z, d):
+        """A building whose wall the tray end faces (within 3 ft, the end pointing at it) and whose roof is
+        below the tray, else None."""
+        dx = (1 if d[0] > 0 else -1) if abs(d[0]) > abs(d[1]) else 0
+        dy = 0 if dx else (1 if d[1] > 0 else -1)
+        for i in self.solid:
+            if not any(k in i["name"].lower() for k in self.BLD) or i["z"][1] >= z - 2:
+                continue
+            f = i["fp"]
+            if dx:
+                face = f[0] if dx > 0 else f[1]
+                if 0 <= (face - x) * dx <= 3 and f[2] + 1 < y < f[3] - 1:
+                    return i
+            else:
+                face = f[2] if dy > 0 else f[3]
+                if 0 <= (face - y) * dy <= 3 and f[0] + 1 < x < f[1] - 1:
+                    return i
+        return None
+
+    def riser(self, x, y, b, d, keys):
+        """Wall entry (multi-cable transit frame below the roof line) and a vertical ladder riser up the wall to
+        each tray level; the cables climb the riser and bend out onto their trays."""
+        dx = (1 if d[0] > 0 else -1) if abs(d[0]) > abs(d[1]) else 0
+        dy = 0 if dx else (1 if d[1] > 0 else -1)
+        f = b["fp"]
+        face = (f[0] if dx > 0 else f[1]) if dx else (f[2] if dy > 0 else f[3])
+        sg = -(dx or dy)                                   # outward from the wall, along the trays
+        c = y if dx else x
+        layer = keys[0][0]
+        w = max(k[3] for k in keys)
+        hw = w / 2
+        zs = b["z"][1] - 5.5                               # wall entry below the roof
+        ztop = max(k[2] for k in keys) + .3
+        u0 = face + sg * .8                                # riser stands off the wall (clear of the roof overhang)
+
+        def B(ua, ub, v0, v1, z0, z1, col):
+            ua, ub = sorted((ua, ub))
+            if dx:
+                self.box(ua, ub, c + v0, c + v1, z0, z1, col, layer)
+            else:
+                self.box(c + v0, c + v1, ua, ub, z0, z1, col, layer)
+
+        def Pt(u, v, z):
+            return (u, c + v, z) if dx else (c + v, u, z)
+        # transit frame on the wall around the cable bundle, rain hood above
+        B(face, face + sg * .35, -hw - .6, hw + .6, zs - .5, zs - .25, "steel")
+        B(face, face + sg * .35, -hw - .6, hw + .6, zs + 2.2, zs + 2.45, "steel")
+        for v in (-hw - .6, hw + .35):
+            B(face, face + sg * .35, v, v + .25, zs - .5, zs + 2.45, "steel")
+        B(face, face + sg * .12, -hw - .35, hw + .35, zs - .25, zs + 2.2, "fanhub")
+        B(face, face + sg * 1.2, -hw - .8, hw + .8, zs + 2.55, zs + 2.7, "steel")
+        # vertical ladder riser: side rails, rungs on the wall side, wall clips
+        for v in (-hw, hw - .12):
+            B(u0, u0 + sg * .45, v, v + .12, zs - .4, ztop + .6, GALV)
+        zz = zs + .6
+        while zz < ztop:
+            B(u0, u0 + sg * .1, -hw, hw, zz - .07, zz + .07, GALV)
+            if int(zz) % 6 == 0:
+                B(face, u0, -hw - .2, hw + .2, zz - .15, zz + .15, "steel")
+            zz += 1.5
+        # cables: out of the wall, up the riser, over a bend onto each tray
+        Rb = .9
+        for ti, key in enumerate(sorted(keys, key=lambda k: k[2])):
+            lay, rtype, z, kw, kh = key
+            lanes = self.lanes(rtype, kw, z)[:6]
+            for (col, r, v, zc) in lanes:
+                uc = u0 + sg * (.2 + r + .12 * ti)
+                self.rod(Pt(face + sg * .13, v, zs + .4 + ti * .25), Pt(uc, v, zs + .4 + ti * .25), r, col, layer, seg=6)
+                self.rod(Pt(uc, v, zs + .4 + ti * .25), Pt(uc, v, zc - Rb), r, col, layer, seg=6)
+                pts = [Pt(uc + sg * Rb * (1 - math.cos(math.pi / 2 * k / 6)), v, zc - Rb + Rb * math.sin(math.pi / 2 * k / 6))
+                       for k in range(7)]
+                for p_, q_ in zip(pts, pts[1:]):
+                    self.rod(p_, q_, r, col, layer, seg=6)
+                u_t = (x if dx else y) - sg * kw / 2                       # where the tray's own cables begin
+                self.rod(pts[-1], Pt(u_t + sg * .4, v, zc), r, col, layer, seg=6)
+
+    def entry(self, key, x, y, d, it):
+        """Wall entry where a tray reaches a building or equipment face: the tray runs on to the face, the
+        cables pass through a multi-cable transit frame (steel frame, sealed rubber modules) with a rain hood
+        above, and continue into the wall."""
+        layer, rtype, z, w, h = key
+        hw = w / 2
+        dx = (1 if d[0] > 0 else -1) if abs(d[0]) > abs(d[1]) else 0
+        dy = 0 if dx else (1 if d[1] > 0 else -1)
+        f = it["fp"]
+        face = (f[0] if dx > 0 else f[1]) if dx else (f[2] if dy > 0 else f[3])
+        e = x if dx else y
+        g = (face - e) * (dx or dy)
+        if g < -.5 or g > 5:
+            return
+        c = y if dx else x
+        sg = dx or dy
+
+        def B(u0, u1, v0, v1, z0, z1, col):
+            u0, u1 = sorted((u0, u1))
+            if dx:
+                self.box(u0, u1, c + v0, c + v1, z0, z1, col, layer)
+            else:
+                self.box(c + v0, c + v1, u0, u1, z0, z1, col, layer)
+        u_end = e + sg * hw                                                  # where the drawn tray stops
+        if (face - u_end) * sg > .1:                                         # rails on to the face
+            for v in (-hw, hw - .12):
+                B(u_end, face, v, v + .12, z, z + h, GALV)
+        bld0 = any(k in it["name"].lower() for k in ("e-house", "building", "house", "room", "hall", "enclosure",
+                                                      "switchgear", "r1:", "r3:", "r4:"))
+        tip = face + sg * .8 if bld0 else face - sg * .9
+        zt0, m00, m10 = z + h + .9, -hw - .5, hw + .5
+        u0, u1 = sorted((u_end - sg * .3, face))
+        chk = [(u0, u1, c - hw, c + hw, z, z + h)] if dx else [(c - hw, c + hw, u0, u1, z, z + h)]
+        jb = sorted((face - sg * 1.2, face))
+        chk.append((jb[0], jb[1], c + m00 - .3, c + m10 + .3, z - 1.6, zt0 + .3) if dx else
+                   (c + m00 - .3, c + m10 + .3, jb[0], jb[1], z - 1.6, zt0 + .3))
+        if not self.free(*chk):
+            return                                              # no room on the face: the tray ends as drawn
+        for (col, r, v, zc) in self.lanes(rtype, w, z):                      # cables into the wall / box
+            a = (u_end - sg * .3, c + v, zc) if dx else (c + v, u_end - sg * .3, zc)
+            b = (tip, c + v, zc) if dx else (c + v, tip, zc)
+            if dx:
+                a, b = (a[0], a[1], a[2]), (b[0], b[1], b[2])
+            self.rod(a, b, r, col, layer, seg=6)
+        zt = z + h + .9
+        m0, m1 = -hw - .5, hw + .5
+        bld = any(k in it["name"].lower() for k in ("e-house", "building", "house", "room", "hall", "enclosure",
+                                                     "switchgear", "r1:", "r3:", "r4:"))
+        if not bld:
+            # equipment (HRSG casing, skids): the cables end in a terminal junction box on the face, the
+            # casing itself is never penetrated
+            B(face - sg * 1.0, face, m0 - .3, m1 + .3, z - 1.6, zt + .2, "panel")
+            return
+        B(face - sg * .35, face, m0, m1, z - .55, z - .3, "steel")          # transit frame
+        B(face - sg * .35, face, m0, m1, zt - .25, zt, "steel")
+        for v in (m0, m1 - .25):
+            B(face - sg * .35, face, v, v + .25, z - .55, zt, "steel")
+        B(face - sg * .12, face, m0 + .25, m1 - .25, z - .3, zt - .25, "fanhub")   # sealing modules
+        B(face - sg * 1.2, face, m0 - .2, m1 + .2, zt + .1, zt + .25, "steel")       # rain hood
+
+
 
     def top_under(self, x, y, z):
         """Top of the equipment under a drop point (below the tray), else the floor."""
@@ -235,12 +377,27 @@ class Trays:
                        min(a[1], b[1]) - w / 2 - hw <= y <= max(a[1], b[1]) + w / 2 + hw for (zz, w, a, b) in pipes)
 
         drops = []
-        self.waterfall = {}
+        self.waterfall, self.entries = {}, []
+        # tray ends just outside a building wall, above its roof: the cables leave the building through a
+        # wall entry below the roof and climb a riser tray to the tray levels (grouped per riser location)
+        risers = {}
+        for (x, y, t), (key, d) in list(ends.items()):
+            b = self.building_beside(x, y, key[2], d)
+            if b is not None:
+                risers.setdefault((round(x, 1), round(y, 1), b["id"]), [b, d, []])[2].append(key)
+                del ends[(x, y, t)]
+        self.risers = risers
         for (x, y, t), (key, d) in ends.items():
             enters = any(i["fp"][0] - .5 <= x <= i["fp"][1] + .5 and i["fp"][2] - .5 <= y <= i["fp"][3] + .5
                          and i["z"][1] < key[2] and ("e-house" in i["name"] or "building" in i["name"].lower())
                          for i in self.solid)          # the tray ends over a building it enters: drop to its roof entry
-            if on_run(x, y, key[2]) or self.side_entry(x, y, key[2]) or (over_pipe(x, y, key[2], key[3] / 2) and not enters):
+            if on_run(x, y, key[2]):
+                continue
+            ent = self.side_entry(x, y, key[2])
+            if ent is not None:
+                self.entries.append((key, x, y, d, ent))
+                continue
+            if over_pipe(x, y, key[2], key[3] / 2) and not enters:
                 continue
             drops.append((key, x, y, d))
             self.waterfall[(key, round(x, 2), round(y, 2))] = d
@@ -276,6 +433,10 @@ class Trays:
             self.bend(*b)
         for (key, x, y, d) in drops:
             self.drop(key, x, y, d)
+        for (key, x, y, d, it) in self.entries:
+            self.entry(key, x, y, d, it)
+        for (x, y, _), (b, d, keys) in self.risers.items():
+            self.riser(x, y, b, d, keys)
         for r in self.routes:
             if r["type"] == "ipb" and r["z"] > 0:
                 self.ipb(r)

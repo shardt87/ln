@@ -114,7 +114,7 @@ def gas_turbines():
         for (y, zj) in ((480, 30), (515, 31)):
             box(cx + 9.4, cx + 10.6, y - 1.2, y + 1.2, zj - 1.5, zj + 1.5, "panel")
             pipe([(cx + 10.6, y, zj), (cx + 12.5, y, zj), (cx + 12.5, y, 30.5), (cx + 12.5, 487, 30.5),
-                  (678 + dx, 487, 30.5)], 30.5, .1, "steel")
+                  (675.6 + dx, 487, 30.5)], 30.5, .1, "steel")
         # exhaust thermocouples: 16 heads around the diffuser, wheel-space thermocouples on the
         # turbine casing, yellow type KX extension cable rings to the junction box at y 515
         for (yt, rt, n) in ((536, 8.6, 16), (516, 7.3, 8)):

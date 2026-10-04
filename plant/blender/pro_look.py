@@ -78,7 +78,7 @@ LOOK = {
     "firewater": ("paint", "#a52a22", .45, 0), "waterline": ("paint", "#3a7480", .45, 0), "sign": ("paint", "#efefea", .35, 0), "label": ("paint", "#efefea", .4, 0),
     "hivis": ("paint", "#bfd424", .55, 0), "hivis_o": ("paint", "#e06a22", .55, 0), "hardhat": ("paint", "#f1f1ec", .3, 0),
     "workwear": ("paint", "#26324a", .7, 0), "skin": ("paint", "#b88c6c", .6, 0), "truck": ("paint", "#e4e6e7", .25, .1),
-    "cable_mv": ("paint", "#7e241d", .5, 0), "cable_tc": ("paint", "#1b1f22", .55, 0),
+    "cable_mv": ("paint", "#1d2124", .5, 0), "cable_armor": ("paint", "#6a2720", .45, 0), "cable_tc": ("paint", "#1b1f22", .55, 0),
     "cable_mc": ("galv", "#6d7377", .45, .6), "cable_inst": ("paint", "#26467a", .5, 0),
     "cable_tcx": ("paint", "#cfa818", .45, 0), "cable_fa": ("paint", "#a52e25", .5, 0),
     "cable_fo": ("paint", "#d36f22", .45, 0),
@@ -86,7 +86,7 @@ LOOK = {
 _mats = {}
 # materials kept clean: glass, lamps, people, signs, labels, cables and the like
 WEATHER_SKIP = {"lamp", "sign", "label", "hivis", "hivis_o", "hardhat", "workwear", "skin", "glass",
-                "window", "insulator", "rail", "cable_mv", "cable_tc", "cable_mc", "cable_inst", "cable_tcx",
+                "window", "insulator", "rail", "cable_mv", "cable_armor", "cable_tc", "cable_mc", "cable_inst", "cable_tcx",
                 "cable_fa", "cable_fo", "cable", "truck", "sea", "water"}
 
 

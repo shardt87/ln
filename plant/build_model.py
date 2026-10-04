@@ -657,7 +657,6 @@ item(L, "R1 east-wall tray exits to hall (LCI, GT aux, DC) and tray riser to rac
      (0, 36), area="A", sheet="SK-3X1-05")
 for yy in (640, 650, 660):
     B(472.6, 474, yy - 1.5, yy + 1.5, 18, 20, "copper")
-    B(474, 478, yy - 1.5, yy + 1.5, 18, 20, "copper", layer="ROUTES_BASE")
 B(470, 474, 744, 748, 0.6, 23, "copper")
 B(474, 478, 744, 748, 23, 36, "copper", layer="ROUTES_BASE")
 
