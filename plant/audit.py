@@ -140,7 +140,7 @@ def main():
     ug = M.get("underground_audit", {})
     for e in ug.get("loose_ends", []):
         findings["buried cable route end not terminated"].append(e)
-    case = [pbox(p) for p in M["parts"] if p["color"] == "ductcase"]
+    case = [pbox(p) for p in M["parts"] if p["color"] == "ductcase" and "banks" in items[p["item"]]["name"]]
     pipes = [(p["color"], pbox(p)) for p in M["parts"] if p["kind"] == "rod" and p["color"] in
              ("rcp", "ductile", "pvc_blue", "pvc_green", "hdpe") and items[p["item"]]["name"].startswith("Underground")]
     g2 = defaultdict(list)

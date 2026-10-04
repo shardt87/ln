@@ -466,5 +466,17 @@
 "ductcase": {
 "hex": "#b4b0a6",
 "opacity": 1
+},
+"soil": {
+"hex": "#7a6347",
+"opacity": 1
+},
+"timber": {
+"hex": "#9a7448",
+"opacity": 1
+},
+"barrier": {
+"hex": "#e2701f",
+"opacity": 1
 }
 }

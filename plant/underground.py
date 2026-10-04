@@ -298,10 +298,18 @@ def chambers():
     for p in covers:
         x0, y0, _ = p["min"]
         x1, y1, _ = p["max"]
-        if x1 - x0 > 5:                                                   # manhole
-            box(x0, x1, y0, y1, -9, -.4, "concrete")
-            box(x0 + .5, x1 - .5, y0 + .5, y1 - .5, -9.3, -9, "concrete")   # base slab
-            rod(((x0 + x1) / 2, (y0 + y1) / 2, -.4), ((x0 + x1) / 2, (y0 + y1) / 2, 0), 1.3, "concrete", seg=16)  # chimney
+        if x1 - x0 > 5:                                                   # manhole: walls, floor, roof slab
+            for (a0, a1, b0, b1) in ((x0, x1, y0, y0 + .5), (x0, x1, y1 - .5, y1), (x0, x0 + .5, y0, y1), (x1 - .5, x1, y0, y1)):
+                box(a0, a1, b0, b1, -9, -1.2, "ductcase")                  # walls: cast section, see-through
+            box(x0, x1, y0, y1, -9.3, -9, "concrete")                     # base slab
+            cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+            for (a0, a1, b0, b1) in ((x0, x1, y0, cy - 1.3), (x0, x1, cy + 1.3, y1), (x0, cx - 1.3, cy - 1.3, cy + 1.3),
+                                     (cx + 1.3, x1, cy - 1.3, cy + 1.3)):
+                box(a0, a1, b0, b1, -1.2, -.4, "ductcase")                 # roof slab with the access opening
+            for k in range(2):                                            # cable racks on the side walls
+                box(x0 + .5, x0 + .7, y0 + 1, y1 - 1, -7 + 2 * k, -6.85 + 2 * k, "steel")
+                box(x1 - .7, x1 - .5, y0 + 1, y1 - 1, -7 + 2 * k, -6.85 + 2 * k, "steel")
+            pass                                                          # (the cover sits on the roof opening)
         else:                                                             # handhole
             box(x0, x1, y0, y1, -3.2, -.05, "concrete")
     return len(covers)
