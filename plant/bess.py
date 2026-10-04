@@ -44,12 +44,12 @@ def yard():
         box(x0, x1, y0, y1, 0, 8, "fence")
     for x in range(1550, 1921, 20):
         for y in (345.2, 739.8):
-            box(x - .2, x + .2, y - .2, y + .2, 0, 8.5, "fence")
+            box(x - .2, x + .2, y - .2, y + .2, 0, 8.5, "steel")
     for y in range(345, 741, 20):
         for x in (1550.2, 1919.8):
             if x < 1551 and 494 < y < 525:
                 continue
-            box(x - .2, x + .2, y - .2, y + .2, 0, 8.5, "fence")
+            box(x - .2, x + .2, y - .2, y + .2, 0, 8.5, "steel")
     for y in (494, 525):                                                        # gate posts and leaves (open)
         box(1549.6, 1550.8, y - .6, y + .6, 0, 10, "steel")
     box(1535, 1535.4, 494, 509, 0, 8, "fence")

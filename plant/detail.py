@@ -378,12 +378,12 @@ class Detail:
             for y in (0.25, 1919.75):
                 if y > 1 and 1462 < x < 1508:                  # north gate
                     continue
-                self.box(sid, "SITE", x - .2, x + .2, y - .2, y + .2, 0, 8.5, "fence")
+                self.box(sid, "SITE", x - .2, x + .2, y - .2, y + .2, 0, 8.5, "steel")
         for y in [0.3] + list(range(20, 1920, 20)) + [1919.7]:
             for x in (0.25, 2419.75):
                 if x < 1 and 270 <= y <= 300:
                     continue
-                self.box(sid, "SITE", x - .2, x + .2, y - .2, y + .2, 0, 8.5, "fence")
+                self.box(sid, "SITE", x - .2, x + .2, y - .2, y + .2, 0, 8.5, "steel")
         # area lighting poles along the access road, ring road and spine roads
         poles = [(x, 267) for x in range(120, 2400, 160)] + [(x, 933) for x in range(420, 1480, 160)] + \
                 [(367, y) for y in range(340, 1660, 160)] + [(1457, y) for y in range(340, 1400, 160)] + \

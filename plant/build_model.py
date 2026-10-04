@@ -243,11 +243,11 @@ for (x0, x1, y0, y1) in [(0, 2420, 0, 0.5), (0, 1465, 1919.5, 1920), (1505, 2420
     B(x0, x1, y0, y1, 0, 8, "fence")
 # north gate (x 1465-1505): link to the coastal LNG terminal (sheet 15 variant, placed north of the plant);
 # gate posts, and the two swing leaves parked open against the fence inside
-B(1464, 1465.5, 1918.5, 1920, 0, 10, "fence"); B(1504.5, 1506, 1918.5, 1920, 0, 10, "fence")
+B(1464, 1465.5, 1918.5, 1920, 0, 10, "steel"); B(1504.5, 1506, 1918.5, 1920, 0, 10, "steel")
 B(1446, 1464, 1918.6, 1919, 0, 8, "fence"); B(1506, 1524, 1918.6, 1919, 0, 8, "fence")
 solid(L, "Gatehouse", 277, 300, 305, 325, 0, 12, "building", area="F", sheet="SK-3X1-12",
       info="Keadby 3 DCO: gatehouse 6 x 7 x 4 m.")
-B(0, 1.5, 270, 272, 0, 10, "fence"); B(0, 1.5, 298, 300, 0, 10, "fence")
+B(0, 1.5, 270, 272, 0, 10, "steel"); B(0, 1.5, 298, 300, 0, 10, "steel")
 
 # ---------------------------------------------------------------------------
 # A POWER BLOCK (SK-3X1-01, -03, -09, -10, -12, -13)
@@ -1347,7 +1347,7 @@ item(L, "Campus security fence (8 ft) and entrance gate", (2460, 3380, 300, 1380
 for (x0, x1, y0, y1) in ((2460, 3000, 300, 300.5), (3030, 3380, 300, 300.5), (2460, 3380, 1379.5, 1380),
                          (2460, 2460.5, 300, 1380), (3379.5, 3380, 300, 1380)):
     B(x0, x1, y0, y1, 0, 8, "fence")
-B(2998.5, 3000, 299, 302, 0, 10, "fence"); B(3030, 3031.5, 299, 302, 0, 10, "fence")
+B(2998.5, 3000, 299, 302, 0, 10, "steel"); B(3030, 3031.5, 299, 302, 0, 10, "steel")
 building(L, "DC admin / security / NOC building", 3060, 3180, 315, 370, 24, tag="DC-ADM", **DC)
 solid(L, "DC gatehouse", 3035, 3052, 318, 338, 0, 11, "building", **DC)
 # BTM substation: two 13.8/34.5 kV step-ups from the modular yard, the 230/34.5 kV tie, switchgear
@@ -1937,8 +1937,29 @@ for r in routes:
         r["z"] = 10.5                                                   # ET -> excitation cubicles
 # sanitary lift station feed (underground pass): LV duct bank from the maintenance building
 add_route("duct_bank", [(320, 630), (332, 630), (332, 652)], "ROUTES_BASE", sheet="typical (underground)")
-# the ST-aux LV branch was drawn with a gap between the hall wall and the run from the rack: close it
-add_route("lv_tray", [(1068, 572), (1068, 612), (1090, 612)], "ROUTES_BASE", sheet="typical (tray review)")
+# (the ST-aux LV branch leaves R3 through its south face; R3's north face feeds the run to the rack)
+# chain-link fences: every fence panel gets line posts every 10 ft and a top rail (the panel itself is the
+# mesh, drawn see-through by the renderers), so no fence reads as a solid wall
+N_POSTS = 0
+for p in [q for q in parts if q["kind"] == "box" and q["color"] == "fence"]:
+    (x0, y0, z0), (x1, y1, z1) = p["min"], p["max"]
+    if z1 - z0 < 4.5:
+        continue
+    along_x = (x1 - x0) >= (y1 - y0)
+    L, T = (x1 - x0, y1 - y0) if along_x else (y1 - y0, x1 - x0)
+    if L < 4 or T > 1.2:
+        continue
+    c = (y0 + y1) / 2 if along_x else (x0 + x1) / 2
+    a0 = x0 if along_x else y0
+    n = max(1, int(round(L / 10)))
+    for k in range(n + 1):
+        s0 = a0 + L * k / n
+        px, py = (s0, c) if along_x else (c, s0)
+        parts.append(dict(kind="rod", a=[round(px, 2), round(py, 2), z0], b=[round(px, 2), round(py, 2), z1 + .2],
+                          r=.12, r2=.12, color="steel", seg=6, item=p["item"], layer=p["layer"], d=1))
+        N_POSTS += 1
+    a, b = ([x0, c, z1], [x1, c, z1]) if along_x else ([c, y0, z1], [c, y1, z1])
+    parts.append(dict(kind="rod", a=a, b=b, r=.08, r2=.08, color="steel", seg=6, item=p["item"], layer=p["layer"], d=1))
 # underground systems in real geometry (duct banks, chambers, ground grid, firewater, drains, water mains)
 import underground as _ug
 N_UG = _ug.build(items, routes)

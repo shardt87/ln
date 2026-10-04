@@ -264,6 +264,10 @@ function rnd(seed){ let x=seed; return ()=>((x=Math.imul(x^x>>>15,0x2c1b3c6d)+0x
 function noise(g,s,base,amp,n,seedv){ const r=rnd(seedv); g.fillStyle=base; g.fillRect(0,0,s,s);
   for(let i=0;i<n;i++){ const v=Math.floor(255-r()*amp); g.fillStyle=`rgb(${v},${v},${v})`; const w=1+r()*2.2; g.fillRect(r()*s,r()*s,w,w); } }
 const TEX = {
+  // chain-link: a diamond wire mesh on a transparent ground (alpha-tested), so fences read as mesh, not walls
+  chain: (()=>{ const t=canvasTex(128,(g,s)=>{ g.clearRect(0,0,s,s); g.strokeStyle='#c9ced1'; g.lineWidth=5;
+    g.beginPath(); g.moveTo(0,0); g.lineTo(s,s); g.moveTo(s,0); g.lineTo(0,s); g.moveTo(-s/2,s/2); g.lineTo(s/2,-s/2);
+    g.moveTo(s/2,s*1.5); g.lineTo(s*1.5,s/2); g.moveTo(-s/2,s/2); g.lineTo(s/2,s*1.5); g.moveTo(s/2,-s/2); g.lineTo(s*1.5,s/2); g.stroke(); }); return t; })(),
   clad: canvasTex(256,(g,s)=>{ g.fillStyle='#fff'; g.fillRect(0,0,s,s); for(let i=0;i<16;i++){ const x=i*s/16; const grd=g.createLinearGradient(x,0,x+s/16,0);
       grd.addColorStop(0,'#e4e7e9'); grd.addColorStop(.18,'#ffffff'); grd.addColorStop(.55,'#f1f3f4'); grd.addColorStop(.8,'#d3d8db'); grd.addColorStop(1,'#e4e7e9');
       g.fillStyle=grd; g.fillRect(x,0,s/16,s); } g.fillStyle='rgba(0,0,0,.06)'; g.fillRect(0,s-2,s,2); }),
@@ -285,7 +289,7 @@ const SURF = {
   concrete:{map:TEX.concrete, tile:30, r:.92, m:0}, gravel:{map:TEX.gravel, tile:18, r:1, m:0},
   road:{map:TEX.road, tile:22, r:.95, m:0}, ground:{map:TEX.grass, tile:60, r:1, m:0},
   grating:{map:TEX.grating, tile:6, r:.6, m:.4}, fins:{map:TEX.fins, tile:6, r:.55, m:.3},
-  louvre:{map:TEX.louvre, tile:4, r:.6, m:.3},
+  louvre:{map:TEX.louvre, tile:4, r:.6, m:.3}, fence:{map:TEX.chain, tile:1.2, r:.45, m:.8, cut:true},
   metal:{r:.42, m:.55}, paint:{r:.55, m:.15}, ceramic:{r:.28, m:0}, copper:{r:.38, m:.7},
   water:{r:.08, m:0}, glass:{r:.3, m:.1}, window:{r:.12, m:.65},
 };
@@ -294,7 +298,7 @@ const CLASS = {hall:'glass', building:'panel', ehouse:'clad', windwall:'clad', f
   grating:'grating', bundle:'fins', radiator:'fins', louvre:'louvre', water:'water', insulator:'ceramic', copper:'copper', copper_dark:'copper',
   steel:'metal', rail:'paint', pipe:'metal', ipb:'metal', stack:'metal', duct:'metal', machine:'metal', xfmr:'paint', fan:'metal', fanhub:'metal', crane:'paint',
   conductor:'metal', stair:'paint', door:'paint', rollup:'clad', motor:'paint', pump:'paint', tank:'paint', ccs:'clad', acc:'clad', bess:'paint',
-  cabinet:'paint', swgr:'paint', panel:'paint', battery:'paint', lamp:'paint', fence:'metal', window:'window',
+  cabinet:'paint', swgr:'paint', panel:'paint', battery:'paint', lamp:'paint', fence:'fence', window:'window',
   hull:'paint', super:'paint', mosscover:'paint', lngpipe:'paint', sea:'water'};
 const mats = {};
 function surfMat(cls){
@@ -303,6 +307,7 @@ function surfMat(cls){
   const o = {vertexColors:true, roughness:s.r, metalness:s.m, clippingPlanes:CLIP, clipShadows:true};
   if(s.map) o.map = s.map;
   if(cls==='glass') Object.assign(o,{transparent:true, opacity:.26, depthWrite:false, side:THREE.DoubleSide});
+  if(s.cut) Object.assign(o,{alphaTest:.35, side:THREE.DoubleSide});
   if(cls==='water') o.envMapIntensity = 1;
   return mats[cls] = new THREE.MeshStandardMaterial(o);
 }

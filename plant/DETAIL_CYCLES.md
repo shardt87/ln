@@ -65,3 +65,16 @@ One zone per cycle. Each cycle:
     - **H-MOD tie:** hangs on suspension strings at its monopoles.
     - **Jumpers and droppers:** short ones get a slight curve.
   - Rigid tubular bus on post insulators stays straight, as it is in reality. The viewer and Blender no longer draw the overhead routes as bars; the conductors are geometry.
+- **Tray supports and fences (user screenshots).**
+  - **Tray supports:**
+    - **Cause of the floating spans:** supports were skipped wherever the floor was inside an equipment envelope. The trays crossing the turbine hall over the machines, and the run under the ACC, had spans of up to 411 ft with no support.
+    - **New support logic:** supports now check the actual steel and parts. Options are tried in order:
+      - a trapeze from the floor, widened to a portal where a pipe runs on the same line;
+      - a single-post T-support beside equipment;
+      - posts on a flat e-house roof;
+      - threaded-rod hangers from steel above (in the hall only below EL 80, never into the crane path);
+      - a cantilever bracket off nearby structural steel (not off HRSG casings or pipes);
+      - finally, a beam shared with a parallel tray's posts.
+    - **Spacing and result:** 12 ft spacing (NEMA 12 class); the longest unsupported span is now 29 ft.
+    - The ST-aux branch "fix" from the tray review was undone: R3 sits between the two ends, and the tray end over R3 now drops to a roof entry instead of crossing its roof.
+  - **Fences:** fences drew as solid 8 ft grey slabs. The north gate in the screenshot looked like walls: the link road to the LNG terminal through the perimeter fence, with the two gate leaves parked open. Fence panels are now see-through chain-link mesh in the viewer (the Blender look was already a haze). Every fence gets line posts every 10 ft and a top rail, and posts and gate posts are galvanised steel.

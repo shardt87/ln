@@ -70,6 +70,7 @@ class Trays:
                        info="Ladder trays with cables, supports and drops, and the three-phase IPB enclosures, "
                             "generated from the route centrelines.")
         self.n0 = len(parts)
+        self.gaps, self.retry, self.held, self.posts = [], [], [], []
         self.hall = next(i for i in items if i["name"] == "Common turbine hall")["fp"]
         self.deck = next(i for i in items if i["name"].startswith("Turbine deck EL 20"))["fp"]
         is_rack = lambda i: "pipe rack" in i["name"].lower() or "pipe and cable rack" in i["name"].lower()
@@ -81,7 +82,7 @@ class Trays:
         # through (walls, deck, pads and the ground are what supports stand on, so they are left out)
         byid = {i["id"]: i for i in items}
         free_of = ("Common turbine hall", "Turbine deck", "Laydown", "230 kV switchyard", "Pipe supports")
-        self.obs, self.grid = [], {}
+        self.obs, self.grid, self.obs_ok = [], {}, []
         for p in parts:
             it = byid[p["item"]]
             if it["layer"] == "SITE" or it["z"][1] < 1 or it["name"].startswith(free_of):
@@ -89,6 +90,7 @@ class Trays:
             b = _pbox(p)
             k = len(self.obs)
             self.obs.append(b)
+            self.obs_ok.append(p["color"] in ("steel", "stair") and not it["name"].startswith(("HRSG", "Air-cooled")))
             for gx in range(int(b[0] // 10), int(b[3] // 10) + 1):
                 for gy in range(int(b[1] // 10), int(b[4] // 10) + 1):
                     self.grid.setdefault((gx, gy), []).append(k)
@@ -235,13 +237,39 @@ class Trays:
         drops = []
         self.waterfall = {}
         for (x, y, t), (key, d) in ends.items():
-            if on_run(x, y, key[2]) or self.side_entry(x, y, key[2]) or over_pipe(x, y, key[2], key[3] / 2):
+            enters = any(i["fp"][0] - .5 <= x <= i["fp"][1] + .5 and i["fp"][2] - .5 <= y <= i["fp"][3] + .5
+                         and i["z"][1] < key[2] and ("e-house" in i["name"] or "building" in i["name"].lower())
+                         for i in self.solid)          # the tray ends over a building it enters: drop to its roof entry
+            if on_run(x, y, key[2]) or self.side_entry(x, y, key[2]) or (over_pipe(x, y, key[2], key[3] / 2) and not enters):
                 continue
             drops.append((key, x, y, d))
             self.waterfall[(key, round(x, 2), round(y, 2))] = d
         for k, ivs in merged_runs.items():
             for a, b in ivs:
                 self.tray(k, a, b)
+        # ganged trapezes: a support spot with no room for its own posts shares the posts of a parallel tray
+        # beside it (one beam carries both trays), as tray tiers do in a congested area
+        for (held, s0, x, y, z, zb, hw, axis, layer) in self.retry:
+            cand = []
+            for (px, py, pz) in self.posts:
+                if abs(pz - (zb - .4)) > .6:
+                    continue
+                along, perp = (abs(px - x), abs(py - y)) if axis == "x" else (abs(py - y), abs(px - x))
+                if along < 6 and hw < perp < 8:
+                    cand.append((along + perp, px, py))
+            for _, px, py in sorted(cand):
+                xx, yy = (px, y) if axis == "x" else (x, py)
+                bm = ((xx - .25, xx + .25, min(py, yy - hw - .3), max(py, yy + hw + .3), zb - .4, zb) if axis == "x" else
+                      (min(px, xx - hw - .3), max(px, xx + hw + .3), yy - .25, yy + .25, zb - .4, zb))
+                if self.free(bm):
+                    self.box(*bm, "steel", layer)
+                    held.append(xx if axis == "x" else yy)
+                    break
+        for held, a0, b0, info in self.held:
+            pts = [a0] + sorted(held) + [b0]
+            gap = max(q - p for p, q in zip(pts, pts[1:]))
+            if gap > 22:
+                self.gaps.append((round(gap),) + info)
         for b in bends:
             self.bend(*b)
         for (key, x, y, d) in drops:
@@ -312,27 +340,53 @@ class Trays:
         # supports about every 10 ft; each one checks the geometry around it and shifts up to 5 ft
         # along the run, or is left out, rather than pass through steel, pipes or equipment
         L = b0 - a0
-        nsup = max(1, int(L // 10))
+        nsup = max(1, int(L // 12))            # 12 ft support spacing (NEMA 12 ladder tray class)
+        held = []
         for m in range(nsup + 1):
             s0 = a0 + .5 + (L - 1) * m / max(1, nsup)
             for ds in (0, 2.5, -2.5, 5, -5):
                 s = min(max(s0 + ds, a0 + .3), b0 - .3)
                 x, y = (s, c) if axis == "x" else (c, s)
                 if self.on_rack(x, y, z):
+                    held.append(s)
                     break
-                parts = self.support(x, y, z, zb, hw, axis)
-                if parts is None:
+                opts = self.support(x, y, z, zb, hw, axis)
+                if opts is None:
+                    held.append(s)
                     break
-                if self.free(*[q[:6] for q in parts]):
-                    for q in parts:
-                        if q[6] == "rod":
-                            self.rod(q[7], q[8], .12, "steel", layer, seg=4)
-                        else:
-                            self.box(*q[:6], "steel", layer)
+                done = False
+                for parts in opts:
+                    if self.free(*[q[:6] for q in parts]):
+                        for q in parts:
+                            if q[6] == "box" and q[5] - q[4] > 3 and q[1] - q[0] < .5 and q[3] - q[2] < .5:
+                                self.posts.append(((q[0] + q[1]) / 2, (q[2] + q[3]) / 2, q[5]))
+                            if q[6] == "rod":
+                                self.rod(q[7], q[8], .06 if q[5] - q[4] > 6 and q[1] - q[0] < .2 else .12, "steel", layer, seg=4)
+                            else:
+                                self.box(*q[:6], "steel", layer)
+                        held.append(s)
+                        done = True
+                        break
+                if done:
                     break
+            else:
+                self.retry.append((held, s0, x, y, z, zb, hw, axis, layer))
+        self.held.append((held, a0, b0, (layer, rtype, axis, round(c, 1), round(a, 1), round(b, 1), z)))
+
+    def lowest_above(self, x0, x1, y0, y1, z, reach=24):
+        """Bottom of the lowest part over a footprint within reach above z (structure to hang from), else None."""
+        best = None
+        for gx in range(int(x0 // 10), int(x1 // 10) + 1):
+            for gy in range(int(y0 // 10), int(y1 // 10) + 1):
+                for k in self.grid.get((gx, gy), ()):
+                    b = self.obs[k]
+                    if b[0] < x1 and b[3] > x0 and b[1] < y1 and b[4] > y0 and z < b[2] < z + reach:
+                        best = b[2] if best is None else min(best, b[2])
+        return best
 
     def support(self, x, y, z, zb, hw, axis):
-        """Boxes (x0, x1, y0, y1, z0, z1, kind, ...) for one support, or None where none is needed / possible."""
+        """Candidate supports, each a list of boxes (x0, x1, y0, y1, z0, z1, kind, ...), tried in order;
+        None where none is needed (the tray sits just above the floor)."""
         if self.in_hall(x, y) and axis == "x":
             f = self.hall
             yn, ys = f[3] - 4, f[2] + 34
@@ -342,21 +396,86 @@ class Trays:
                 arm = (x - .2, x + .2, min(y - hw - .5, yw), max(y + hw + .5, yw), zb - .45, zb, "box")
                 brace = (x - .12, x + .12, min(yw, yk), max(yw, yk), zb - 5.5, zb - .45, "rod", (x, yw, zb - 5.5),
                          (x, yk, zb - .45))
-                return [arm, brace]
-        if self.blocked(x, y, z):
-            return None
+                return [[arm, brace]]
         base = self.floor(x, y)
         if z - base < 3:
             return None
-        out = []
-        for sgn in (-1, 1):                                                      # trapeze stanchion pair
-            px, py = (x, y + sgn * (hw + .4)) if axis == "x" else (x + sgn * (hw + .4), y)
-            out.append((px - .22, px + .22, py - .22, py + .22, base, zb, "box"))
-        if axis == "x":
-            out.append((x - .25, x + .25, y - hw - .6, y + hw + .6, zb - .4, zb, "box"))
-        else:
-            out.append((x - hw - .6, x + hw + .6, y - .25, y + .25, zb - .4, zb, "box"))
-        return out
+        beam = ((x - .25, x + .25, y - hw - .6, y + hw + .6, zb - .4, zb, "box") if axis == "x" else
+                (x - hw - .6, x + hw + .6, y - .25, y + .25, zb - .4, zb, "box"))
+        opts = []
+        # 1. trapeze stanchion pair from the floor (grade, or the EL 20 deck in the hall); it is placed only
+        #    where the actual parts leave room (the equipment envelope alone no longer rules it out)
+        for off in (.4, 2.6):                     # wider portal where the tray rides over a pipe on the same line
+            st = []
+            for sgn in (-1, 1):
+                px, py = (x, y + sgn * (hw + off)) if axis == "x" else (x + sgn * (hw + off), y)
+                st.append((px - .22, px + .22, py - .22, py + .22, base, zb - .4, "box"))
+            bm = ((x - .25, x + .25, y - hw - off - .2, y + hw + off + .2, zb - .4, zb, "box") if axis == "x" else
+                  (x - hw - off - .2, x + hw + off + .2, y - .25, y + .25, zb - .4, zb, "box"))
+            opts.append(st + [bm])
+        # 1a. single-post cantilever (T-support) beside equipment that leaves no room on one side
+        for off in (.4, 2.6, 4.5):
+            for sgn in (-1, 1):
+                px, py = (x, y + sgn * (hw + off)) if axis == "x" else (x + sgn * (hw + off), y)
+                post = (px - .25, px + .25, py - .25, py + .25, base, zb - .4, "box")
+                arm = ((x - .25, x + .25, min(py, y - hw - .3), max(py, y + hw + .3), zb - .4, zb, "box") if axis == "x" else
+                       (min(px, x - hw - .3), max(px, x + hw + .3), y - .25, y + .25, zb - .4, zb, "box"))
+                opts.append([post, arm])
+        # 1b. stanchions on a flat e-house / building roof under the tray
+        roof = [i["z"][1] for i in self.solid if i["fp"][0] <= x <= i["fp"][1] and i["fp"][2] <= y <= i["fp"][3]
+                and i["z"][1] < zb - 3 and ("e-house" in i["name"] or "building" in i["name"].lower())]
+        if roof:
+            rb = max(roof) + .2                   # on the roof membrane, clear of its flashing
+            st = []
+            for sgn in (-1, 1):
+                px, py = (x, y + sgn * (hw + .4)) if axis == "x" else (x + sgn * (hw + .4), y)
+                st.append((px - .22, px + .22, py - .22, py + .22, rb, zb - .4, "box"))
+            opts.append(st + [beam])
+        # 2. trapeze hung on threaded rods from the steel above (ACC deck beams, platforms, rack steel);
+        #    not in the turbine hall, where the crane travels under the roof
+        if True:
+            x0, x1 = (x - .3, x + .3) if axis == "x" else (x - hw - .5, x + hw + .5)
+            y0, y1 = (y - hw - .5, y + hw + .5) if axis == "x" else (y - .3, y + .3)
+            top = self.lowest_above(x0, x1, y0, y1, zb + 1.5, reach=30)
+            if top is not None and (not self.in_hall(x, y) or top < 80):    # in the hall: never into the crane path
+                hg = []
+                for sgn in (-1, 1):
+                    px, py = (x, y + sgn * (hw + .4)) if axis == "x" else (x + sgn * (hw + .4), y)
+                    hg.append((px - .06, px + .06, py - .06, py + .06, zb - .4, top, "rod", (px, py, zb - .4), (px, py, top)))
+                opts.append(hg + [beam])
+        # 3. cantilever bracket with knee brace off a nearby column or post (ACC, rack, platform steel)
+        col = self.column_near(x, y, zb, hw, axis)
+        if col is not None:
+            cx, cy = col
+            if axis == "x":
+                arm = (x - .2, x + .2, min(cy, y - hw - .5), max(cy, y + hw + .5), zb - .45, zb, "box")
+                yk = cy + (y - cy) * .7
+                brace = (x - .12, x + .12, min(cy, yk), max(cy, yk), zb - 5, zb - .45, "rod", (x, cy, zb - 5), (x, yk, zb - .45))
+            else:
+                arm = (min(cx, x - hw - .5), max(cx, x + hw + .5), y - .2, y + .2, zb - .45, zb, "box")
+                xk = cx + (x - cx) * .7
+                brace = (min(cx, xk), max(cx, xk), y - .12, y + .12, zb - 5, zb - .45, "rod", (cx, y, zb - 5), (xk, y, zb - .45))
+            opts.append([arm, brace])
+        return opts
+
+    def column_near(self, x, y, zb, hw, axis, reach=12):
+        """Face of the nearest slender vertical member beside the tray (spanning the tray height), else None."""
+        best = None
+        for gx in range(int((x - reach) // 10), int((x + reach) // 10) + 1):
+            for gy in range(int((y - reach) // 10), int((y + reach) // 10) + 1):
+                for k in self.grid.get((gx, gy), ()):
+                    b = self.obs[k]
+                    if not self.obs_ok[k] or not (b[2] < zb - 6 and b[5] > zb + .5 and b[3] - b[0] < 3.5 and b[4] - b[1] < 3.5):
+                        continue
+                    if axis == "x" and b[0] - .5 <= x <= b[3] + .5:
+                        d = min(abs(b[1] - y), abs(b[4] - y))
+                        if hw < d < reach and (best is None or d < best[0]):
+                            best = (d, (x, b[1] - .15 if b[1] > y else b[4] + .15))
+                    if axis == "y" and b[1] - .5 <= y <= b[4] + .5:
+                        d = min(abs(b[0] - x), abs(b[3] - x))
+                        if hw < d < reach and (best is None or d < best[0]):
+                            best = (d, (b[0] - .15 if b[0] > x else b[3] + .15, y))
+        return best[1] if best else None
 
     def bend(self, key, pt, lst, R):
         """Radius bend fitting at an L corner: curved side rails, radial rungs, cables swept round."""
@@ -484,4 +603,7 @@ class Trays:
 
 
 def build(item, items, parts, routes):
-    return Trays(item, items, parts, routes).run()
+    t = Trays(item, items, parts, routes)
+    n = t.run()
+    build.gaps = t.gaps
+    return n
