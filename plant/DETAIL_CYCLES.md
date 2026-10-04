@@ -55,3 +55,13 @@ One zone per cycle. Each cycle:
   - **Sanitary sewer (green PVC):** from the buildings to a new packaged lift station (LS-1, with its LV feed), and a force main to the west boundary.
   - **Water mains (blue PVC):** potable water to the buildings and service water to the power block.
   - **Viewer:** buried routes are no longer painted on grade; each stays an invisible pick target at its depth. View U removes the ground (SITE) and shows the systems over a soil floor. Blender renders skip the buried routes and the underground layers.
+- **Cables and conductors that bend and sag (user feedback: "cables are stiff").**
+  - **Tray bends:** every L-corner of a tray run now has a radius bend fitting (curved side rails and radial rungs). The cables sweep round it, inner cables on the inside, and the straight runs stop at the tangent points (51 bends).
+  - **Tray drops:** each drop is a "waterfall". The cables leave the tray, curve down over a 1.2 ft radius and hang against the rungs of a ladder drop to a cable gland at the equipment.
+  - **Strung conductors (`cables.py`):**
+    - **Strain buses:** the 230 kV strain buses sag between the dead-end structures, and the bay droppers meet the bus at its sagged height.
+    - **Shield wires:** sag between the dead-end peaks.
+    - **GSU-to-switchyard lines:** these overhead routes, previously flat bars, are now three ACSR phases with sag, carried on steel monopole angle structures where the routes turn.
+    - **H-MOD tie:** hangs on suspension strings at its monopoles.
+    - **Jumpers and droppers:** short ones get a slight curve.
+  - Rigid tubular bus on post insulators stays straight, as it is in reality. The viewer and Blender no longer draw the overhead routes as bars; the conductors are geometry.

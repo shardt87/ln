@@ -1942,6 +1942,9 @@ add_route("lv_tray", [(1068, 572), (1068, 612), (1090, 612)], "ROUTES_BASE", she
 # underground systems in real geometry (duct banks, chambers, ground grid, firewater, drains, water mains)
 import underground as _ug
 N_UG = _ug.build(items, routes)
+# strung conductors sag between their supports (strain buses, shield wires, overhead lines, H-MOD, jumpers)
+import cables as _cables
+N_CAB = _cables.build(routes)
 # trays last, so their supports and drops see every stair, platform and pipe already in the model
 import trays as _trays
 N_TRAY = _trays.build(item, items, parts, routes)     # ladder trays, cables, supports, drops, IPB

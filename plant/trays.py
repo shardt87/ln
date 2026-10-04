@@ -173,9 +173,13 @@ class Trays:
                         runs.setdefault(key + ("y", a[0]), []).append((min(a[1], b[1]), max(a[1], b[1])))
                     elif a[1] == b[1] and a[0] != b[0]:
                         runs.setdefault(key + ("x", a[1]), []).append((min(a[0], b[0]), max(a[0], b[0])))
-                if r["z"] > 6:
-                    for p in (r["points"][0], r["points"][-1]):
-                        ends[(round(p[0], 1), round(p[1], 1), r["type"])] = key
+                if r["z"] > 6 and len(r["points"]) > 1:
+                    P = r["points"]
+                    for p, q in ((P[0], P[1]), (P[-1], P[-2])):           # q: the neighbour, inside the run
+                        dx, dy = p[0] - q[0], p[1] - q[1]
+                        L = math.hypot(dx, dy) or 1
+                        ends[(round(p[0], 1), round(p[1], 1), r["type"])] = (key, (dx / L, dy / L))
+        merged_runs = {}
         for k, ivs in runs.items():
             ivs.sort()
             merged = [list(ivs[0])]
@@ -184,8 +188,29 @@ class Trays:
                     merged[-1][1] = max(merged[-1][1], b)
                 else:
                     merged.append([a, b])
-            for a, b in merged:
-                self.tray(k, a, b)
+            merged_runs[k] = merged
+        # radius bends: a point where exactly two runs of one tray class end at right angles, and no run
+        # passes through, gets a bend fitting; the straight runs stop at its tangent points
+        at = {}
+        for k, ivs in merged_runs.items():
+            key, axis, c = k[:5], k[5], k[6]
+            for a, b in ivs:
+                for v, sgn in ((a, -1), (b, 1)):
+                    pt = (round(v, 2), round(c, 2)) if axis == "x" else (round(c, 2), round(v, 2))
+                    at.setdefault((key, pt), []).append((axis, c, a, b, sgn))
+        self.trim, bends = {}, []
+        for (key, pt), lst in at.items():
+            if len(lst) != 2 or lst[0][0] == lst[1][0]:
+                continue
+            through = any(k[:5] == key and ((k[5] == "x" and abs(k[6] - pt[1]) < .01 and any(a + .01 < pt[0] < b - .01 for a, b in iv)) or
+                          (k[5] == "y" and abs(k[6] - pt[0]) < .01 and any(a + .01 < pt[1] < b - .01 for a, b in iv)))
+                          for k, iv in merged_runs.items())
+            R = key[3] / 2 + 1.0
+            if through or any(b - a < R + 1 for (_, _, a, b, _) in lst):
+                continue
+            for (axis, c, a, b, sgn) in lst:
+                self.trim[(key, axis, round(c, 2), round(b if sgn > 0 else a, 2))] = R
+            bends.append((key, pt, lst, R))
         # junctions: an end that lies on another tray run at the same tier continues there, no drop
         segs = [(r["z"], r["points"][k], r["points"][k + 1]) for r in self.routes if r["type"] in TRAYS and r["z"] > 0
                 for k in range(len(r["points"]) - 1)]
@@ -207,34 +232,28 @@ class Trays:
             return any(zz < z and min(a[0], b[0]) - w / 2 - hw <= x <= max(a[0], b[0]) + w / 2 + hw and
                        min(a[1], b[1]) - w / 2 - hw <= y <= max(a[1], b[1]) + w / 2 + hw for (zz, w, a, b) in pipes)
 
-        for (x, y, t), key in ends.items():
+        drops = []
+        self.waterfall = {}
+        for (x, y, t), (key, d) in ends.items():
             if on_run(x, y, key[2]) or self.side_entry(x, y, key[2]) or over_pipe(x, y, key[2], key[3] / 2):
                 continue
-            self.drop(key, x, y)
+            drops.append((key, x, y, d))
+            self.waterfall[(key, round(x, 2), round(y, 2))] = d
+        for k, ivs in merged_runs.items():
+            for a, b in ivs:
+                self.tray(k, a, b)
+        for b in bends:
+            self.bend(*b)
+        for (key, x, y, d) in drops:
+            self.drop(key, x, y, d)
         for r in self.routes:
             if r["type"] == "ipb" and r["z"] > 0:
                 self.ipb(r)
         return len(self.parts) - self.n0
 
-    def tray(self, key, a, b):
-        layer, rtype, z, w, h, axis, c = key
-        n_cab, rc, ccol = TRAYS[rtype]
-        hw, zb = w / 2, z            # the tray sits ON its tier: route z is the bottom (rack beam top)
-
-        def B(s0, s1, v0, v1, z0, z1, col):
-            if axis == "x":
-                self.box(s0, s1, c + v0, c + v1, z0, z1, col, layer)
-            else:
-                self.box(c + v0, c + v1, s0, s1, z0, z1, col, layer)
-
-        a0, b0 = a - hw, b + hw
-        for s in (-1, 1):                                                       # side rails
-            B(a0, b0, s * hw - (.12 if s > 0 else 0), s * hw + (0 if s > 0 else .12), zb, zb + h, GALV)
-        s = a0 + 1
-        while s < b0 - .5:                                                       # rungs
-            B(s - .08, s + .08, -hw, hw, zb, zb + .12, GALV)
-            s += 2
-        # cables in schedule order, packed across the tray width in layers (never past the side rails)
+    def lanes(self, rtype, w, zb):
+        """Cable lanes across a tray: (colour, radius, offset across the tray, centre height)."""
+        hw = w / 2
         cabs = [(col, r) for (_, col, r, n) in CABLES[rtype] for _ in range(n)]
         span = w - .4
         rows, row, used = [], [], 0.0
@@ -245,18 +264,51 @@ class Trays:
             row.append((col, r))
             used += 2 * r
         rows.append(row)
-        zbase = zb + .12
+        out, zbase = [], zb + .12
         for row in rows:
             used = sum(2 * r for _, r in row)
             gap = max(0.0, (span - used) / max(1, len(row) - 1)) if len(row) > 1 else 0
             v = -hw + .2 + (0 if len(row) > 1 else (span - used) / 2)
             for (col, r) in row:
-                zc = zbase + r
-                pa = (a0 + .3, c + v + r, zc) if axis == "x" else (c + v + r, a0 + .3, zc)
-                pb = (b0 - .3, c + v + r, zc) if axis == "x" else (c + v + r, b0 - .3, zc)
-                self.rod(pa, pb, r, col, layer, seg=6)
+                out.append((col, r, v + r, zbase + r))
                 v += 2 * r + gap
             zbase += 2 * max(r for _, r in row) * .85
+        return out
+
+    def tray(self, key, a, b):
+        layer, rtype, z, w, h, axis, c = key
+        n_cab, rc, ccol = TRAYS[rtype]
+        hw, zb = w / 2, z            # the tray sits ON its tier: route z is the bottom (rack beam top)
+        k5 = key[:5]
+
+        def B(s0, s1, v0, v1, z0, z1, col):
+            if axis == "x":
+                self.box(s0, s1, c + v0, c + v1, z0, z1, col, layer)
+            else:
+                self.box(c + v0, c + v1, s0, s1, z0, z1, col, layer)
+
+        a0, b0 = a - hw, b + hw
+        ta = self.trim.get((k5, axis, round(c, 2), round(a, 2)))
+        tb = self.trim.get((k5, axis, round(c, 2), round(b, 2)))
+        ra0, rb0 = (a + ta if ta else a0), (b - tb if tb else b0)                 # rails stop at a bend's tangent
+        for s in (-1, 1):                                                       # side rails
+            B(ra0, rb0, s * hw - (.12 if s > 0 else 0), s * hw + (0 if s > 0 else .12), zb, zb + h, GALV)
+        s = ra0 + 1
+        while s < rb0 - .5:                                                      # rungs
+            B(s - .08, s + .08, -hw, hw, zb, zb + .12, GALV)
+            s += 2
+        # cables in schedule order, packed across the tray width in layers (never past the side rails);
+        # at a bend they stop at the tangent (the bend carries them round), at a drop they stop where the
+        # waterfall starts to curve them down
+        Rb = 1.2
+        pa_ = (a, c) if axis == "x" else (c, a)
+        pb_ = (b, c) if axis == "x" else (c, b)
+        ca = a + ta if ta else (a - (hw - .5 - Rb) if (k5, round(pa_[0], 2), round(pa_[1], 2)) in self.waterfall else a0 + .3)
+        cb = b - tb if tb else (b + (hw - .5 - Rb) if (k5, round(pb_[0], 2), round(pb_[1], 2)) in self.waterfall else b0 - .3)
+        for (col, r, v, zc) in self.lanes(rtype, w, zb):
+            pa = (ca, c + v, zc) if axis == "x" else (c + v, ca, zc)
+            pb = (cb, c + v, zc) if axis == "x" else (c + v, cb, zc)
+            self.rod(pa, pb, r, col, layer, seg=6)
         # supports about every 10 ft; each one checks the geometry around it and shifts up to 5 ft
         # along the run, or is left out, rather than pass through steel, pipes or equipment
         L = b0 - a0
@@ -306,7 +358,44 @@ class Trays:
             out.append((x - hw - .6, x + hw + .6, y - .25, y + .25, zb - .4, zb, "box"))
         return out
 
-    def drop(self, key, x, y):
+    def bend(self, key, pt, lst, R):
+        """Radius bend fitting at an L corner: curved side rails, radial rungs, cables swept round."""
+        layer, rtype, z, w, h = key
+        hw, zb = w / 2, z
+        x, y = pt
+        # unit directions: d1 along the first run towards the corner, d2 from the corner along the second
+        (ax1, c1, a1, b1, s1), (ax2, c2, a2, b2, s2) = lst
+        d1 = (s1, 0) if ax1 == "x" else (0, s1)
+        d2 = (-s2, 0) if ax2 == "x" else (0, -s2)
+        T1 = (x - d1[0] * R, y - d1[1] * R)
+        O = (T1[0] + d2[0] * R, T1[1] + d2[1] * R)
+        n = 8
+
+        def P(rr, th):
+            return (O[0] - d2[0] * rr * math.cos(th) + d1[0] * rr * math.sin(th),
+                    O[1] - d2[1] * rr * math.cos(th) + d1[1] * rr * math.sin(th))
+        for rr in (R - hw, R + hw):                                              # side rails
+            for k in range(n):
+                t0, t1 = math.pi / 2 * k / n, math.pi / 2 * (k + 1) / n
+                pi0, pi1 = P(rr - .06, t0), P(rr - .06, t1)
+                po0, po1 = P(rr + .06, t0), P(rr + .06, t1)
+                v = [[*pi0, zb], [*pi1, zb], [*po1, zb], [*po0, zb], [*pi0, zb + h], [*pi1, zb + h], [*po1, zb + h], [*po0, zb + h]]
+                self.add("hex", layer, v=[[round(q, 2) for q in p] for p in v], color=GALV)
+        for k in range(1, 4):                                                    # rungs
+            th = math.pi / 2 * k / 4
+            p0, p1 = P(R - hw, th), P(R + hw, th)
+            self.rod((*p0, zb + .06), (*p1, zb + .06), .07, GALV, layer, seg=4)
+        # cables: the lane at offset v (across the first run, + = along +y / +x) lies at radius R - s,
+        # s = its offset towards the inside of the bend
+        perp1 = (0, 1) if ax1 == "x" else (1, 0)
+        sgn = perp1[0] * d2[0] + perp1[1] * d2[1]
+        for (col, r, v, zc) in self.lanes(rtype, w, zb):
+            rr = R - v * sgn
+            pts = [(*P(rr, math.pi / 2 * k / n), zc) for k in range(n + 1)]
+            for p, q in zip(pts, pts[1:]):
+                self.rod(p, q, r, col, layer, seg=6)
+
+    def drop(self, key, x, y, d=(0, 1)):
         layer, rtype, z, w, h = key
         n_cab, rc, ccol = TRAYS[rtype]
         hw = w / 2
@@ -314,16 +403,38 @@ class Trays:
         bottom = max(self.top_under(x, y, z), self.highest_below(x - hw, x + hw, y - hw, y + hw, z)) + .3
         if z - bottom < 2 or not self.free((x - hw, x + hw, y - hw, y + hw, bottom + .05, z)):
             return
-        for s in (-1, 1):                                                       # vertical rails
-            self.box(x - hw, x + hw, y + s * hw - .06, y + s * hw + .06, bottom, z, GALV, layer)
+        dx, dy = (1 if abs(d[0]) > abs(d[1]) else 0) * (1 if d[0] > 0 else -1), (1 if abs(d[1]) >= abs(d[0]) else 0) * (1 if d[1] > 0 else -1)
+        lat = (abs(dy), abs(dx))                                                  # across the tray
+        for s in (-1, 1):                                                       # vertical side rails
+            cx, cy = x + lat[0] * s * hw, y + lat[1] * s * hw
+            ox, oy = x + dx * hw, y + dy * hw                                     # channel rails on the outer face
+            if dx:
+                self.box(min(ox, ox - dx * .4), max(ox, ox - dx * .4), cy - .06, cy + .06, bottom, z, GALV, layer)
+            else:
+                self.box(cx - .06, cx + .06, min(oy, oy - dy * .4), max(oy, oy - dy * .4), bottom, z, GALV, layer)
         zz = bottom + 1
+        fx, fy = x + dx * hw, y + dy * hw                                         # rungs on the outer face
         while zz < z - .5:
-            self.box(x - hw, x + hw, y + hw - .1, y + hw, zz - .08, zz + .08, GALV, layer)
+            if dx:
+                self.box(fx - .1 * dx, fx, y - hw, y + hw, zz - .08, zz + .08, GALV, layer)
+            else:
+                self.box(x - hw, x + hw, fy - .1 * dy, fy, zz - .08, zz + .08, GALV, layer)
             zz += 2
-        cabs = [(col, r) for (_, col, r, n) in CABLES[rtype] for _ in range(n)][:5]
-        for m, (col, r) in enumerate(cabs):
-            v = -hw + .25 + (w - .5) * m / max(1, len(cabs) - 1)
-            self.rod((x + v, y + hw - .25 - r, bottom), (x + v, y + hw - .25 - r, z), r, col, layer, seg=6)
+        # waterfall: each cable leaves the tray, curves down over a 1.2 ft radius and drops against the
+        # rungs to a gland at the equipment
+        Rb, e0 = 1.2, hw - .5 - 1.2
+        for (col, r, v, zc) in self.lanes(rtype, w, z)[:6]:
+            bx, by = x + lat[0] * v, y + lat[1] * v
+            S = (bx + dx * e0, by + dy * e0)
+            pts = []
+            for k in range(7):
+                th = math.pi / 2 * k / 6
+                pts.append((S[0] + dx * Rb * math.sin(th), S[1] + dy * Rb * math.sin(th), zc - Rb * (1 - math.cos(th))))
+            ex, ey = pts[-1][0], pts[-1][1]
+            pts.append((ex, ey, bottom + .5))
+            for p, q in zip(pts, pts[1:]):
+                self.rod(p, q, r, col, layer, seg=6)
+            self.rod((ex, ey, bottom), (ex, ey, bottom + .5), r + .08, "steel", layer, seg=8)   # cable gland
 
     def ipb(self, r):
         z, layer = r["z"], r["layer"]
