@@ -44,7 +44,7 @@ LOOK = {
     "partition": ("paint", "#e4e4df", .7, 0),
     "steel": ("galv", "#8e959a", .38, .85), "stair": ("galv", "#8a9196", .4, .8),
     "grating": ("galv", "#9aa1a5", .45, .8), "pipe": ("galv", "#a2a8ab", .35, .85),
-    "copper": ("galv", "#9ea5a9", .35, .85), "fence": ("fence", "#8e959a", .4, .8), "barrier": ("fence", "#e2701f", .5, 0),
+    "copper": ("galv", "#9ea5a9", .35, .85), "fence": ("fence", "#8e959a", .4, .8), "barrier": ("fence", "#e2701f", .5, 0), "safety": ("paint", "#2f9a4a", .5, 0),
     "soil": ("gravel", "#7a6347", 1, 0), "timber": ("paint", "#9a7448", .8, 0), "ductcase": ("concrete", "#b4b0a6", .9, 0),
     "pvc_grey": ("paint", "#8f969a", .5, 0), "pvc_orange": ("paint", "#d0752a", .5, 0),
     "copper_dark": ("paint", "#6f787d", .4, .5), "duct": ("paint", "#9ba2a6", .5, .4),

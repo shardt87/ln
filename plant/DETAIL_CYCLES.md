@@ -136,3 +136,18 @@ One zone per cycle. Each cycle:
   - **Cameras:** E56 (absorber), E57 (transformers).
   - **Underground:** pipes now dive 1.15 ft under the banks, clearing the deeper two-circuit 230 kV bank.
 - **Absorber stair towers removed (user):** the caged ladder with its rest platforms already serves each absorber, so the added stair towers and bridges were duplicates and are gone. Same call as for the filter houses.
+- **CCS storage, flue ducts and cable routing (user screenshots).**
+  - **Regeneration-area cables:** these ran in a control tray at EL 42 on rows of tall thin posts. They are now buried duct banks with stub-ups into each reboiler, stripper, the reclaimer, storage, compression, the export compressor and dehydration.
+  - **Train tray:** the train LV / control tray now rides on top of the CCS pipe rack (EL 27.3), which is its own item, so no posts are needed along it.
+  - **Solvent / NaOH storage:** the tanks stood plain on a slab. The farm now has:
+    - a 4 ft containment bund with a sump and step-over stairs;
+    - cone roofs with vents, wind girders, roof handrails, caged ladders, manways, outlet nozzles and valves, level gauges and transmitters;
+    - a transfer-pump pad with a local control station;
+    - a truck unloading station with hose connections and a safety shower;
+    - pump discharge lines on sleepers to the CCS rack.
+  - **HRSG-to-DCC flue ducts:** each was a bare box on two thin posts. Each now has:
+    - stiffener frames every 8 ft and cladding seams;
+    - fabric expansion joints at both ends;
+    - access doors and low-point drains;
+    - a test-port platform with a caged ladder;
+    - braced portal bents with sliding shoes on pier caps.

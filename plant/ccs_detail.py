@@ -36,21 +36,26 @@ def routes(add_route):
     # second 230 kV circuit from D5: shares the bank with the first, branches to T-1
     r("hv_cable", [(1890, 170), (1890, 262), (1520, 262), (1520, 1038), (1280, 1038), (1230, 1038), (1230, 1030)])
     # CCS cable trays from the MV / VFD building (riser on its west wall)
-    r("lv_tray", [(1058, 1030), (1046, 1030), (1046, 1110), (590, 1110)])
-    r("control_tray", [(1058, 1040), (1043, 1040), (1043, 1100), (1306, 1100)])
+    # LV / control tray from the MV / VFD building riser onto the top of the CCS pipe rack (EL 27.3, above the
+    # upper-tier pipes), drops off the rack to each train's loads
+    r("lv_tray", [(1058, 1030), (1046, 1030), (1046, 1133), (590, 1133)])
     for dx in (0, 160, 320):
-        r("lv_tray", [(590 + dx, 1110), (590 + dx, 1062)])               # DCC pumps, on to the DCC (junction box)
-        r("lv_tray", [(682 + dx, 1110), (682 + dx, 1101)])               # rich / lean skid
-        r("lv_tray", [(700 + dx, 1110), (700 + dx, 1220)])               # water-wash pumps, intercooler (over the rack)
-        r("lv_tray", [(650 + dx, 1110), (650 + dx, 1188)])               # absorber: junction box, shell riser
+        r("lv_tray", [(590 + dx, 1133), (590 + dx, 1062)])               # DCC pumps, on to the DCC (junction box)
+        r("lv_tray", [(682 + dx, 1133), (682 + dx, 1101)])               # rich / lean skid
+        r("lv_tray", [(700 + dx, 1133), (700 + dx, 1220)])               # water-wash pumps, intercooler
+        r("lv_tray", [(650 + dx, 1133), (650 + dx, 1188)])               # absorber: junction box, shell riser
+    # regeneration area: buried duct banks with stub-ups (no tall tray posts in the process yard)
+    b = lambda pts: add_route("mvlv_cable", pts, layer=L, sheet=SHEET)
+    b([(1062, 1050), (1062, 1100), (1306, 1100)])
     for x in (1070, 1120, 1170):
-        r("control_tray", [(x, 1100), (x, 1103.5)])                       # reboilers
+        b([(x, 1100), (x, 1104)])                                         # reboilers
     for x in (1095, 1145):
-        r("control_tray", [(x, 1100), (x, 1161)])                         # strippers (between the shells)
-    r("control_tray", [(1235, 1100), (1235, 1103.5)])                     # reclaimer
-    r("control_tray", [(1306, 1100), (1306, 1250)])                       # storage, carbon filter, compression
-    r("control_tray", [(1306, 1190), (1358, 1190)])                       # export compressor
-    r("control_tray", [(1306, 1227.5), (1448, 1227.5), (1448, 1238)])     # dehydration skid
+        b([(x, 1100), (x, 1163)])                                         # strippers (between the shells)
+    b([(1235, 1100), (1235, 1104)])                                       # reclaimer
+    b([(1306, 1100), (1306, 1229)])                                       # storage, carbon filter, compression
+    b([(1306, 1195), (1302, 1195)])                                       # storage pumps
+    b([(1306, 1190), (1358, 1190)])                                       # export compressor
+    b([(1306, 1229), (1446, 1229), (1446, 1238)])                         # dehydration skid
     # 13.8 kV to the CO2 compressor motors (buried bank from the VFD building)
     r("mvlv_cable", [(1200, 1046), (1307, 1046), (1307, 1240), (1310, 1240)])
 
@@ -245,6 +250,134 @@ def compression():
                     "Grounding: bare Cu 4/0 to the station grid"]
 
 
+def storage():
+    """Solvent (amine) and NaOH storage as built: bunded tank farm sized for the largest tank plus rain,
+    cone roofs with vents, caged ladders and roof handrails, nozzles, a transfer-pump pad, truck unloading
+    station and the lines to the CCS rack."""
+    it = find("Solvent + NaOH storage")
+    on(it)
+    fuel.D = True
+    # bund: 4 ft concrete wall round the slab, sump, stair over the wall
+    for (a0, a1, b0, b1) in ((1210, 1300, 1165, 1166), (1210, 1300, 1224, 1225), (1210, 1211, 1165, 1225), (1299, 1300, 1165, 1225)):
+        box(a0, a1, b0, b1, 3, 7, "concrete")
+    box(1292, 1296, 1167, 1171, 1.5, 3, "concrete")                                   # bund sump
+    box(1292.3, 1295.7, 1167.3, 1170.7, 2.9, 3.05, "grating")
+    for k in range(5):                                                                 # step-over stair, west wall
+        box(1205 + k, 1206 + k, 1192, 1196, k * 1.4, k * 1.4 + .3, "grating")
+        box(1211 + k, 1212 + k, 1192, 1196, 7 - k * 1.4, 7.3 - k * 1.4, "grating")
+    tanks = [(1228, 1185, 11, "amine"), (1270, 1185, 11, "amine"), (1228, 1210, 10, "NaOH"), (1285, 1212, 10, "NaOH")]
+    for (cx, cy, r, kind) in tanks:
+        rod((cx, cy, 30), (cx, cy, 32.5), r, "tank", r2=1.2, seg=28)                  # cone roof
+        rod((cx, cy, 32.5), (cx, cy, 34), .6, "steel", seg=10)                         # vent
+        rod((cx, cy, 34), (cx, cy, 34.4), 1.1, "steel", seg=10)
+        for z in (10, 20):                                                             # shell weld seams / wind girders
+            rod((cx, cy, z - .1), (cx, cy, z + .1), r + .08, "steel", seg=28)
+        for k in range(12):                                                            # roof handrail (half ring)
+            a0, a1 = math.pi * k / 12, math.pi * (k + 1) / 12
+            rod((cx + (r - .5) * math.cos(a0), cy + (r - .5) * math.sin(a0), 33.2),
+                (cx + (r - .5) * math.cos(a1), cy + (r - .5) * math.sin(a1), 33.2), .06, "rail", seg=4)
+        a = math.radians(200)                                                          # caged ladder
+        lx, ly = cx + (r + .9) * math.cos(a), cy + (r + .9) * math.sin(a)
+        for s_ in (-.7, .7):
+            rod((lx - s_ * math.sin(a), ly + s_ * math.cos(a), 3), (lx - s_ * math.sin(a), ly + s_ * math.cos(a), 33.5), .07, "rail", seg=4)
+        tx, ty = -math.sin(a), math.cos(a)
+        for z in range(4, 33):                                                         # rungs
+            rod((lx - .7 * tx, ly - .7 * ty, z), (lx + .7 * tx, ly + .7 * ty, z), .04, "rail", seg=4)
+        for z in range(10, 33, 3):                                                     # cage hoops
+            hp = [(lx + 1.1 * tx * math.cos(u) + 1.1 * math.cos(a) * math.sin(u), ly + 1.1 * ty * math.cos(u)
+                   + 1.1 * math.sin(a) * math.sin(u), z) for u in [math.pi * i / 6 for i in range(7)]]
+            for p_, q_ in zip(hp, hp[1:]):
+                rod(p_, q_, .04, "rail", seg=4)
+        box(cx + r * .7 - .9, cx + r * .7 + .9, cy - r * .7 - .9, cy - r * .7 + .9, 3, 6, "steel")   # shell manway
+        rod((cx, cy - r, 4), (cx, cy - r - 2, 4), .45, "pipe", seg=10)                # outlet nozzle
+        box(cx - .6, cx + .6, cy - r - 2.6, cy - r - 2, 3.4, 4.6, "steel")             # tank valve
+        box(cx + r - .1, cx + r + .3, cy - .5, cy + .5, 6, 26, "steel")                # level gauge board
+        box(cx + r + .3, cx + r + .9, cy - .4, cy + .4, 15, 17, "panel")               # radar level transmitter box
+    # transfer-pump pad inside the bund (south-east corner) and its lines
+    box(1288, 1298, 1196, 1206, 3, 3.5, "concrete")
+    for y in (1199, 1203):
+        rod((1289.5, y, 4.8), (1293, y, 4.8), .8, "pump", seg=12)
+        rod((1293.2, y, 4.8), (1296.5, y, 4.8), .75, "motor", seg=12)
+    box(1296.8, 1298.6, 1197, 1205, 3.5, 8, "panel")                                   # local control station
+    pipe([(1228, 1172, 4), (1228, 1170, 4), (1290, 1170, 4), (1290, 1199, 4.8)], 4, .45, "pipe")
+    pipe([(1270, 1172, 4), (1270, 1170, 4)], 4, .45, "pipe")
+    pipe([(1228, 1199, 4), (1240, 1199, 4), (1240, 1203, 4), (1289, 1203, 4.8)], 4, .4, "waterline")
+    # truck unloading station outside the east wall: hose connections, drip tray, safety shower
+    box(1301, 1309, 1180, 1192, 0, .4, "concrete")
+    box(1301.5, 1303, 1182, 1190, .4, 4.5, "steel")
+    for y in (1184, 1188):
+        rod((1303, y, 3.5), (1305, y, 3.5), .35, "pipe", seg=8)
+        box(1305, 1305.6, y - .5, y + .5, 3, 4, "red")
+    pipe([(1301.5, 1186, 3.5), (1299, 1186, 3.5), (1299, 1186, 8), (1270, 1186, 8), (1270, 1196, 8)], 8, .4, "pipe")
+    rod((1307.5, 1196, 0), (1307.5, 1196, 8), .15, "safety", seg=8)                   # safety shower / eyewash
+    rod((1307.5, 1196, 8), (1307.5, 1197.5, 8.3), .6, "safety", r2=.9, seg=10)
+    # lines from the pump discharge west to the CCS rack (on sleepers, then up)
+    pipe([(1290, 1204, 6), (1290, 1160, 6), (1046, 1160, 6), (1046, 1135, 6), (1046, 1135, 18.5)], 6, .4, "pipe")
+    for x in range(1060, 1290, 25):
+        box(x - .4, x + .4, 1158.8, 1161.2, 0, 5.6, "steel")                           # pipe sleepers
+    fuel.D = False
+
+
+def flue_ducts():
+    """HRSG stack breeching to the DCC: external stiffener frames every 8 ft, insulation cladding seams,
+    fabric expansion joints at both ends, access doors, low-point drains, a sample / test-port platform, and
+    portal support bents with bracing and sliding / guided shoes."""
+    for k, t in enumerate("ABC"):
+        dx = 160 * k
+        it = find(f"Flue-gas duct, HRSG {k + 1} to DCC-{t}")
+        on(it)
+        x0, x1, z0, z1 = 621 + dx, 639 + dx, 44, 62
+        fuel.D = True
+        for y in range(832, 980, 8):                                                   # stiffener frames
+            box(x0 - .35, x0, y - .25, y + .25, z0 - .35, z1 + .35, "steel")
+            box(x1, x1 + .35, y - .25, y + .25, z0 - .35, z1 + .35, "steel")
+            box(x0 - .35, x1 + .35, y - .25, y + .25, z1, z1 + .35, "steel")
+            box(x0 - .35, x1 + .35, y - .25, y + .25, z0 - .35, z0, "steel")
+        for y in range(836, 980, 16):                                                  # cladding seams
+            box(x0 - .05, x1 + .05, y - .04, y + .04, z1 - .05, z1 + .05, "machine")
+        for y in (829, 981):                                                           # fabric expansion joints
+            box(x0 - .7, x1 + .7, y - 1.2, y + 1.2, z0 - .7, z1 + .7, "fan")
+            box(x0 - .9, x1 + .9, y - 1.6, y - 1.2, z0 - .9, z1 + .9, "steel")
+            box(x0 - .9, x1 + .9, y + 1.2, y + 1.6, z0 - .9, z1 + .9, "steel")
+        for y in (872, 932):                                                           # access doors (west face)
+            box(x0 - .45, x0 - .35, y - 1.5, y + 1.5, 48, 54, "door")
+            for zz in (49, 53):
+                box(x0 - .6, x0 - .45, y + 1.1, y + 1.4, zz, zz + .4, "steel")
+        for y in (900, 960):                                                           # low-point drains
+            rod((x0 + 9, y, z0), (x0 + 9, y, z0 - 3), .25, "pipe", seg=8)
+            box(x0 + 8.6, x0 + 9.4, y - .4, y + .4, z0 - 3.8, z0 - 3, "steel")
+        # test-port platform on the east face with rail, ports and a caged ladder down a bent column
+        box(x1 + .4, x1 + 5, 900, 916, z0 + 3, z0 + 3.3, "grating")
+        for yy in (900, 916):
+            rod((x1 + .4, yy, z0 + 6.8), (x1 + 5, yy, z0 + 6.8), .07, "rail", seg=4)
+        rod((x1 + 5, 900, z0 + 6.8), (x1 + 5, 916, z0 + 6.8), .07, "rail", seg=4)
+        for y in (904, 908, 912):
+            rod((x1, y, z0 + 8), (x1 + 1.2, y, z0 + 8), .4, "steel", seg=10)
+        for s_ in (-.7, .7):
+            rod((x1 + 5.6, 908 + s_, 0), (x1 + 5.6, 908 + s_, z0 + 3.3), .07, "rail", seg=4)
+        for zz in range(1, int(z0 + 3)):                                               # rungs
+            rod((x1 + 5.6, 907.3, zz), (x1 + 5.6, 908.7, zz), .04, "rail", seg=4)
+        for zz in range(8, int(z0 + 3), 3):                                            # cage hoops
+            hp = [(x1 + 5.6 + 1.1 * math.sin(u), 908 - 1.1 * math.cos(u), zz) for u in [math.pi * i / 6 for i in range(7)]]
+            for p_, q_ in zip(hp, hp[1:]):
+                rod(p_, q_, .04, "rail", seg=4)
+        fuel.D = False
+        # support bents: replace the two thin posts with braced portal frames, shoes under the duct
+        fuel.G["parts"][:] = [p for p in fuel.G["parts"] if not (p["item"] == it["id"] and p["kind"] == "box" and p["color"] == "steel"
+                                                                and p["min"][2] == 0)]
+        for y in (870, 930):
+            for xc in (x0 - 2, x1 + 2):
+                box(xc - .6, xc + .6, y - .6, y + .6, 0, z0 - 1.5, "steel")
+                box(xc - 1.4, xc + 1.4, y - 1.4, y + 1.4, 0, .4, "concrete")                # pier cap
+            box(x0 - 2.8, x1 + 2.8, y - .7, y + .7, z0 - 1.5, z0 - .3, "steel")           # cross beam
+            fuel.D = True
+            for (xa, xb) in ((x0 - 2, x1 + 2), (x1 + 2, x0 - 2)):
+                rod((xa, y, 4), (xb, y, z0 - 2), .22, "steel", seg=6)                      # X bracing
+            for xs in (x0 + 3, x1 - 3):
+                box(xs - .8, xs + .8, y - .8, y + .8, z0 - .3, z0, "machine")               # sliding shoes
+            fuel.D = False
+
+
 def build():
     for i, dx in enumerate((0, 160, 320)):
         t = "ABC"[i]
@@ -255,3 +388,5 @@ def build():
     mv_building()
     transformers()
     compression()
+    storage()
+    flue_ducts()

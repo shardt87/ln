@@ -1867,6 +1867,10 @@ import ccs as _ccs
 _ccs.routes(add_route)
 import ccs_detail as _ccsd
 _ccsd.routes(add_route)
+for _r in routes:
+    if _r.get('sheet') == 'typical (CCS audit)' and _r['type'] == 'lv_tray' and _r['points'][0][1] == 1133 or \
+            (_r.get('sheet') == 'typical (CCS audit)' and _r['type'] == 'lv_tray' and [1046, 1133] in _r['points']):
+        _r['z'] = 27.3                    # on top of the CCS pipe rack
 _ccs.build(); _ccsd.build()              # cycle 6: carbon capture flue-gas path, amine piping and rack, regeneration, CT   # cycle 5: gate, fence wire and CCTV, drainage, lighting, admin / workshop dressing
 import placeholders as _ph
 _ph.build()               # single-box placeholders rebuilt as equipment (CCS, LNG, H2, BTM)

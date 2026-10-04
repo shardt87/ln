@@ -90,8 +90,11 @@ def trains():
         box(652 + dx, 656 + dx, 1180, 1182, 0, 6, "panel")                      # sample / analyser panel
         box(651 + dx, 657 + dx, 1179, 1183, 6, 6.3, "roof")
         dress(False)
-    # ---- CCS pipe rack y 1115-1135, x 560-1045
-    on(find("Rich/lean pumps, cross exchanger, lean cooler A"))
+    # ---- CCS pipe rack y 1115-1135, x 560-1045 (its own item: the CCS cable tray rides on top of it)
+    fuel.new_item("OPT_CCS", "CCS pipe rack (two tiers, y 1115-1135)", (560, 1046, 1115, 1135), (0, 27), area="G",
+                  basis="typical", register=False, sheet="typical (carbon capture detail)",
+                  info="Rich and lean amine, LP steam, condensate and cooling water on the lower tier; utilities on the "
+                       "upper tier; the CCS LV / control cable tray on top.")
     dress(True)
     cols = sorted({x for x in range(562, 1046, 24)})
     duct_x = [(625 + dx, 645 + dx) for dx in (0, 160, 320)]

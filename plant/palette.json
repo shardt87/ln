@@ -478,5 +478,9 @@
 "barrier": {
 "hex": "#e2701f",
 "opacity": 1
+},
+"safety": {
+"hex": "#2f9a4a",
+"opacity": 1
 }
 }
