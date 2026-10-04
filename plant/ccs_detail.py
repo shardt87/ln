@@ -11,8 +11,8 @@ Audit findings and what this adds:
   rich / lean skid, water-wash pumps and absorber; a second tray along y 1100 to the reboilers, strippers,
   reclaimer, storage, carbon filter and export compressor. The CO2 compressors (3 x ~19 MW) are fed at 13.8 kV
   by their own buried bank from the VFD building.
-- absorbers: bed manways at every packed bed, a stair tower with bridges to the platforms (no 260 ft caged
-  ladder only), an intercooler skid with draw-off and return lines, an instrument / lighting tray riser up the
+- absorbers: bed manways at every packed bed (access by the caged ladder and its rest platforms; no stair
+  tower, at the user's direction, as for the filter houses), an intercooler skid with draw-off and return lines, an instrument / lighting tray riser up the
   shell with junction boxes and platform lights, a stack platform with CEMS sample ports, aviation obstruction
   lights (FAA: structures above 200 ft) and lightning protection.
 - strippers: manways, overhead condenser over the reflux drum, tray riser with junction boxes, obstruction
@@ -103,16 +103,6 @@ def absorber(t, dx):
     rod((gx + 31.1 * math.cos(a), cy + 31.1 * math.sin(a), 262), (gx + 31.1 * math.cos(a), cy + 31.1 * math.sin(a), 0),
         .07, "copper", seg=4)                                                         # down conductor
     fuel.D = False
-    # stair tower east of the shell with bridges to the platforms
-    st = fuel.new_item("OPT_CCS", f"Absorber {t} stair tower (to EL 250)", (663 + dx, 677 + dx, 1197, 1213), (0, 254),
-                       area="G", basis="typical", register=False, sheet=SHEET,
-                       info="Open steel stair tower with landings every ~12 ft and bridges to the absorber platforms; "
-                            "the caged ladder remains as the second means of escape.")
-    box(663 + dx, 677 + dx, 1197, 1213, 0, 250, "stair")             # detail.py turns this into an open stair tower
-    for z in (60, 130, 200, 250):
-        box(658.5 + dx, 663 + dx, 1203, 1207, z + .9, z + 1.2, "grating")
-        for yy in (1203, 1207):
-            rod((658.5 + dx, yy, z + 4.7), (663 + dx, yy, z + 4.7), .08, "rail", seg=4)
     # intercooler skid: draw-off from the shell, pumps, plate exchanger, return
     ic = fuel.new_item("OPT_CCS", f"Absorber {t} intercooler (pumps + plate exchanger)", (679 + dx, 701 + dx, 1222, 1250),
                        (0, 12), area="G", basis="typical", sheet=SHEET,

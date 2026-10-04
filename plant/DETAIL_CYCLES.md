@@ -135,3 +135,4 @@ One zone per cycle. Each cycle:
     - compression building: roof ventilators and doors, plus a new dehydration skid (two molecular-sieve towers and a regeneration heater).
   - **Cameras:** E56 (absorber), E57 (transformers).
   - **Underground:** pipes now dive 1.15 ft under the banks, clearing the deeper two-circuit 230 kV bank.
+- **Absorber stair towers removed (user):** the caged ladder with its rest platforms already serves each absorber, so the added stair towers and bridges were duplicates and are gone. Same call as for the filter houses.

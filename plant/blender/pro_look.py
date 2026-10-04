@@ -674,7 +674,7 @@ EPIC = [
          eye=(322, 1124, 26), target=(350, 1158, 1), lens=26, show="base"),
     dict(k="E55", n="Open trench over the R1 duct bank: trench box, exposed conduits, excavator, crew",
          eye=(331, 1220, 24), target=(356, 1248, -3), lens=24, show="base"),
-    dict(k="E56", n="CCS absorber A: stair tower and bridges, bed manways, intercooler skid, tray riser, platform lights",
+    dict(k="E56", n="CCS absorber A: bed manways, intercooler skid, tray riser, platform lights",
          eye=(712, 1150, 150), target=(655, 1215, 110), lens=28, show="all"),
     dict(k="E57", n="CCS T-1 / T-2: 230 kV cable terminations, jumpers to the bushings, firewall; tray riser at the VFD building",
          eye=(1300, 1085, 55), target=(1250, 1020, 20), lens=26, show="all"),
