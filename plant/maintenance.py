@@ -1,13 +1,14 @@
-"""Cable-pulling maintenance scene on the R1 -> water-treatment duct bank (x 355), west of the spine road.
+"""Cable-pulling maintenance scene on the R1 -> water-treatment duct bank (x 355, y 1150-1370), west of the spine
+road, north of where the inlet-chilling pipes leave the bank corridor (the stretch is clear of pipes and equipment).
 
 A crew replaces a feeder in the bank, typical of an outage job:
-- manhole MH-A (355, 887): cover lifted off and laid aside, guard rail with chain and cones round the opening,
+- manhole MH-A (355, 1153): cover lifted off and laid aside, guard rail with chain and cones round the opening,
   davit tripod with man-riding winch, gas monitor and a ventilation blower with its duct down the shaft; a cable
   reel trailer behind a pickup pays out a new cable over a feeder sheave into the manhole, a worker guides it at
   the reel, one at the rim, one in the chamber at the duct mouth;
-- manhole MH-B (355, 1153): the cable-puller truck with its capstan and boom over the open manhole, pulling rope
+- manhole MH-B (355, 1340): the cable-puller truck with its capstan and boom over the open manhole, pulling rope
   down the shaft, two workers at the puller;
-- between them (y 1000-1024): an open excavation exposing the duct bank, with a steel trench box, ladder, spoil
+- between them (y 1236-1260): an open excavation exposing the duct bank, with a steel trench box, ladder, spoil
   pile, a mini excavator, orange barrier fence; the encasement is broken out over a short length so the conduits
   show, two workers in the trench.
 The compound ground is cut at the openings so the shafts and the trench read from above. Typical, not engineered.
@@ -18,8 +19,8 @@ import fuel
 from fuel import box, rod
 
 X = 355.0
-MH_A, MH_B = (X, 887.0), (X, 1153.0)
-EXC = (349.0, 361.0, 1000.0, 1024.0)                 # trench footprint
+MH_A, MH_B = (X, 1153.0), (X, 1340.0)               # MH-B: a pulling manhole added for this job
+EXC = (349.0, 361.0, 1236.0, 1260.0)                 # trench footprint
 OPEN = [(X - 1.3, X + 1.3, MH_A[1] - 1.3, MH_A[1] + 1.3), (X - 1.3, X + 1.3, MH_B[1] - 1.3, MH_B[1] + 1.3), EXC]
 
 
@@ -97,6 +98,17 @@ def open_manhole(cx, cy):
         box(cx + dx - .7, cx + dx + .7, cy + dy - .7, cy + dy + .7, 0, .1, "hivis_o")
 
 
+def new_chamber(cx, cy):
+    """Precast chamber for the pulling manhole MH-B (7 x 7 ft, 8 ft deep), as the plant's other manholes."""
+    x0, x1, y0, y1 = cx - 3.5, cx + 3.5, cy - 3.5, cy + 3.5
+    for (a0, a1, b0, b1) in ((x0, x1, y0, y0 + .5), (x0, x1, y1 - .5, y1), (x0, x0 + .5, y0, y1), (x1 - .5, x1, y0, y1)):
+        box(a0, a1, b0, b1, -9, -1.2, "ductcase")
+    box(x0, x1, y0, y1, -9.3, -9, "concrete")
+    for (a0, a1, b0, b1) in ((x0, x1, y0, cy - 1.3), (x0, x1, cy + 1.3, y1), (x0, cx - 1.3, cy - 1.3, cy + 1.3), (cx + 1.3, x1, cy - 1.3, cy + 1.3)):
+        box(a0, a1, b0, b1, -1.2, -.4, "ductcase")
+    box(x0 - .5, x1 + .5, y0 - .5, y1 + .5, 0, .3, "concrete")                      # collar at grade
+
+
 def tripod(cx, cy):
     """Davit tripod over the opening with the man-riding winch and lifeline."""
     top = (cx, cy, 8.5)
@@ -114,7 +126,7 @@ def blower(x, y, cx, cy):
 
 def reel_trailer(cx, cy):
     """Pickup and cable-reel trailer west of MH-A; cable over the feeder sheave into the shaft."""
-    rx, ry, rz = cx - 15, cy - 6, 5.6                                                    # reel centre, axis along x
+    rx, ry, rz = cx - 15, cy + 6, 5.6                                                    # reel centre, axis along x
     box(rx - 3.2, rx + 3.2, ry - 4.5, ry + 4.5, 1.8, 2.4, "steel")                     # trailer frame
     for sx in (-3.4, 3.4):
         rod((rx + sx - .3, ry, 1.4), (rx + sx + .3, ry, 1.4), 1.4, "fanhub", seg=14)     # wheels
@@ -123,19 +135,19 @@ def reel_trailer(cx, cy):
     for sx in (-2.2, 2.2):
         rod((rx + sx - .2, ry, rz), (rx + sx + .2, ry, rz), 4.6, "timber", seg=28)      # flanges
     rod((rx - 2, ry, rz), (rx + 2, ry, rz), 3.6, "cable_tc", seg=28)                    # wound cable
-    rod((rx - 2.6, ry - 4.5, 2.1), (rx - 2.6, ry - 9.5, 2.1), .18, "steel", seg=6)      # tongue
-    fuel_pickup(rx - 2.6, ry - 20)
+    rod((rx - 2.6, ry + 4.5, 2.1), (rx - 2.6, ry + 9.5, 2.1), .18, "steel", seg=6)      # tongue
+    fuel_pickup(rx - 2.6, ry + 20)
     # feeder sheave on a stand at the rim, cable from the reel top over it and down the shaft
-    sx_, sy_ = cx - .9, cy - 1.5
-    rod((sx_, sy_ - 2.5, 0), (sx_, sy_, 3.2), .12, "steel", seg=6)
-    rod((sx_ + 2, sy_ - 2, 0), (sx_, sy_, 3.2), .12, "steel", seg=6)
+    sx_, sy_ = cx - .9, cy + 1.5
+    rod((sx_, sy_ + 2.5, 0), (sx_, sy_, 3.2), .12, "steel", seg=6)
+    rod((sx_ - 2, sy_ + 2, 0), (sx_, sy_, 3.2), .12, "steel", seg=6)
     rod((sx_ - .25, sy_, 3.4), (sx_ + .25, sy_, 3.4), .9, "crane", seg=16)
-    p_top = (rx, ry + .6, rz + 3.6)
-    poly(bez(p_top, ((rx + sx_) / 2, (ry + sy_) / 2, rz + 5), (sx_, sy_ - .2, 4.3), 12), .22, "cable_tc")
-    poly(bez((sx_, sy_ + .2, 4.3), (cx - .3, cy - .4, 4), (cx - .3, cy - .3, 1), 6), .22, "cable_tc")
+    p_top = (rx, ry - .6, rz + 3.6)
+    poly(bez(p_top, ((rx + sx_) / 2, (ry + sy_) / 2, rz + 5), (sx_, sy_ + .2, 4.3), 12), .22, "cable_tc")
+    poly(bez((sx_, sy_ - .2, 4.3), (cx - .3, cy + .4, 4), (cx - .3, cy - .3, 1), 6), .22, "cable_tc")
     rod((cx - .3, cy - .3, 1), (cx - .3, cy - .3, -6.5), .22, "cable_tc", seg=8)
     # in the chamber: the cable bends into the duct mouth on the south wall (a conduit of the bank)
-    poly(bez((cx - .3, cy - .3, -6.5), (cx - .3, cy - 3, -4.6), (cx - .3, cy - 6, -4.6), 6), .22, "cable_tc")
+    poly(bez((cx - .3, cy - .3, -6.5), (cx - .3, cy + 3, -4.6), (cx - .3, cy + 6, -4.6), 6), .22, "cable_tc")
     return (rx, ry)
 
 
@@ -167,7 +179,7 @@ def puller_truck(cx, cy):
     rod((b1[0] - .25, b1[1], b1[2] - .6), (b1[0] + .25, b1[1], b1[2] - .6), .8, "steel", seg=16)
     rod((x, y0 + 1, 7.4), (b1[0], b1[1] - .3, b1[2] - .1), .06, "amber", seg=4)         # rope from the capstan
     rod((b1[0], b1[1], b1[2] - 1.4), (cx, cy + .6, -6.5), .06, "amber", seg=4)          # rope down the shaft
-    poly(bez((cx, cy + .6, -6.5), (cx, cy - 2.5, -4.6), (cx, cy - 6, -4.6), 6), .06, "amber", seg=4)
+    poly(bez((cx, cy + .6, -6.5), (cx, cy - 2.5, -4.6), (cx, cy - 6, -4.6), 6), .06, "amber", seg=4)   # rope into the south duct
     box(cx + 5, cx + 7.5, cy + 5, cy + 7, 0, 3.2, "panel")                             # dynamometer / control stand
     for (dx, dy) in ((-7, 4), (7, 4), (0, -7.5), (7, -6)):
         rod((cx + dx, cy + dy, 0), (cx + dx, cy + dy, 2.3), .55, "hivis_o", r2=.08, seg=10)
@@ -234,13 +246,14 @@ def excavation():
 
 def build():
     it = fuel.new_item("BASE_SERVICES", "Underground: cable-pull maintenance on the R1 duct bank (open manholes, reel, puller, trench)",
-                       (300, 372, 860, 1200), (-9.3, 12), area="F", basis="typical", register=False,
+                       (310, 372, 1135, 1380), (-9.3, 12), area="F", basis="typical", register=False,
                        sheet="typical (underground maintenance scene)",
                        info="Outage job: a feeder is replaced in the R1 -> water treatment duct bank. MH-A: cover off, guard "
                             "rail, davit tripod, gas monitor and ventilation, reel trailer paying out over a feeder sheave. "
                             "MH-B: cable-puller truck with capstan and boom. Between them an open trench with a trench box "
                             "exposes the bank. Confined-space entry with attendant (typical).")
     cut_ground()
+    new_chamber(*MH_B)
     for (cx, cy) in (MH_A, MH_B):
         open_manhole(cx, cy)
     tripod(*MH_A)
@@ -250,11 +263,11 @@ def build():
     puller_truck(*MH_B)
     excavation()
     # crew
-    person(rx + 4, ry + 1.5, 0, 0)                                                      # reel tender
-    person(MH_A[0] - 3, MH_A[1] - 3.2, 0, .8)                                           # guides the cable at the rim
+    person(rx + 4, ry - 1.5, 0, 0)                                                      # reel tender
+    person(MH_A[0] - 3, MH_A[1] + 3.2, 0, -.8)                                           # guides the cable at the rim
     person(MH_A[0] + 3, MH_A[1] - 1, 0, 3.1, vest="hivis_o")                            # attendant at the tripod
     person(MH_A[0] + .3, MH_A[1] + .2, -9, 4.7)                                        # in the chamber at the duct
-    person(MH_A[0] - 9, MH_A[1] + 8, 0, -.6, vest="hivis_o", hat="sign")               # supervisor
+    person(MH_A[0] - 9, MH_A[1] - 7, 0, .6, vest="hivis_o", hat="sign")               # supervisor
     person(MH_B[0] - 12, MH_B[1] + 4, 0, 0)                                             # puller operator
     person(MH_B[0] + 4, MH_B[1] + 8, 0, 3.6, vest="hivis_o")                           # watches the dynamometer
     person(X - 2.5, EXC[2] + 8, -5.2, 1.6)                                              # in the trench

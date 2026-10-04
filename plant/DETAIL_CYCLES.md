@@ -108,3 +108,8 @@ One zone per cycle. Each cycle:
   - **Crew:** ten workers in PPE.
   - **Ground cut:** the compound ground is cut at the openings so the shafts and the trench read from above.
   - **Manhole chambers:** all chambers are now hollow (see-through walls, roof slab with the access opening, cable racks), so the worker and the cable read in the underground view.
+- **Maintenance scene moved (user screenshot: clipping with the pipes).** At y 880-1180 the R1 duct bank shares its corridor with the inlet-chilling chilled-water pipes (x 340 / 346), so the reel trailer, guard rails and trench box ran through them. The scene now sits on the same bank further north (y 1150-1370), the only stretch of base-plant duct bank with a 50 ft clear band beside it (searched against every item, above-grade route and road):
+  - **MH-A:** station manhole (355, 1153), with the reel trailer north-west of it.
+  - **MH-B:** a new pulling manhole (355, 1340) with its own chamber.
+  - **Trench:** at y 1236-1260.
+  - **Checks:** a direct part-by-part check finds nothing above grade intersecting the scene. Viewer view M and cameras E54 / E55 follow it.
