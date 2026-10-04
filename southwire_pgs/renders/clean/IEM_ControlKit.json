@@ -1,0 +1,46 @@
+{
+ "view": "IEM_ControlKit",
+ "title": "IEM - switchgear wire kit (main)",
+ "size": [
+  2400,
+  1664
+ ],
+ "callouts": [
+  {
+   "n": 1,
+   "anchor_px": [
+    1666.933536529541,
+    1471.5172052383423
+   ],
+   "label_norm": [
+    0.86,
+    0.8
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 2,
+   "anchor_px": [
+    1456.5595149993896,
+    1166.0558738708496
+   ],
+   "label_norm": [
+    0.88,
+    0.5
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 3,
+   "anchor_px": [
+    1802.1070003509521,
+    1318.0013828277588
+   ],
+   "label_norm": [
+    0.93,
+    0.66
+   ],
+   "in_frame": true
+  }
+ ]
+}

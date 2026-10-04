@@ -1,0 +1,46 @@
+{
+ "view": "EPD_ControlCabinet",
+ "title": "Electronic Power Design - control cabinet + kit",
+ "size": [
+  2400,
+  1664
+ ],
+ "callouts": [
+  {
+   "n": 1,
+   "anchor_px": [
+    1989.6862506866455,
+    1275.7806663513184
+   ],
+   "label_norm": [
+    0.9,
+    0.62
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 2,
+   "anchor_px": [
+    1013.2236242294312,
+    799.8547744750977
+   ],
+   "label_norm": [
+    0.18,
+    0.55
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 3,
+   "anchor_px": [
+    1599.0975379943848,
+    1169.6443328857422
+   ],
+   "label_norm": [
+    0.86,
+    0.4
+   ],
+   "in_frame": true
+  }
+ ]
+}

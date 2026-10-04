@@ -1,0 +1,46 @@
+{
+ "view": "WESCO_StagedSupply",
+ "title": "Wesco - modules with staged reels and kits",
+ "size": [
+  2400,
+  1664
+ ],
+ "callouts": [
+  {
+   "n": 1,
+   "anchor_px": [
+    630.3530216217041,
+    515.968147277832
+   ],
+   "label_norm": [
+    0.12,
+    0.12
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 2,
+   "anchor_px": [
+    644.1941499710083,
+    915.2614631652832
+   ],
+   "label_norm": [
+    0.1,
+    0.88
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 3,
+   "anchor_px": [
+    1685.4317665100098,
+    1076.6755180358887
+   ],
+   "label_norm": [
+    0.62,
+    0.9
+   ],
+   "in_frame": true
+  }
+ ]
+}

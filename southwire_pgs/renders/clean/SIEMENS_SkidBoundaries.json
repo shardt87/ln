@@ -1,0 +1,46 @@
+{
+ "view": "SIEMENS_SkidBoundaries",
+ "title": "Siemens - skid factory / field boundaries",
+ "size": [
+  2400,
+  1664
+ ],
+ "callouts": [
+  {
+   "n": 1,
+   "anchor_px": [
+    1174.2638111114502,
+    564.4340896606445
+   ],
+   "label_norm": [
+    0.12,
+    0.2
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 2,
+   "anchor_px": [
+    1059.4303607940674,
+    730.1642532348633
+   ],
+   "label_norm": [
+    0.45,
+    0.1
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 3,
+   "anchor_px": [
+    2190.530204772949,
+    889.5021286010742
+   ],
+   "label_norm": [
+    0.92,
+    0.42
+   ],
+   "in_frame": true
+  }
+ ]
+}

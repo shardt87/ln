@@ -1,0 +1,46 @@
+{
+ "view": "RESA_TestBoundaries",
+ "title": "RESA Power - factory / field test boundaries",
+ "size": [
+  2400,
+  1664
+ ],
+ "callouts": [
+  {
+   "n": 1,
+   "anchor_px": [
+    1758.5015773773193,
+    1005.3358459472656
+   ],
+   "label_norm": [
+    0.9,
+    0.72
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 2,
+   "anchor_px": [
+    1251.4883995056152,
+    661.9925079345703
+   ],
+   "label_norm": [
+    0.55,
+    0.12
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 3,
+   "anchor_px": [
+    1188.6361598968506,
+    890.6935539245605
+   ],
+   "label_norm": [
+    0.3,
+    0.86
+   ],
+   "in_frame": true
+  }
+ ]
+}

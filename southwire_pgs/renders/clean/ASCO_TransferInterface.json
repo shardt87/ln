@@ -1,0 +1,46 @@
+{
+ "view": "ASCO_TransferInterface",
+ "title": "Schneider Electric / ASCO - transfer interfaces",
+ "size": [
+  2400,
+  1664
+ ],
+ "callouts": [
+  {
+   "n": 1,
+   "anchor_px": [
+    1230.700922012329,
+    736.4537887573242
+   ],
+   "label_norm": [
+    0.12,
+    0.3
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 2,
+   "anchor_px": [
+    1177.8197765350342,
+    1131.719467163086
+   ],
+   "label_norm": [
+    0.12,
+    0.78
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 3,
+   "anchor_px": [
+    1386.0570430755615,
+    939.5910873413086
+   ],
+   "label_norm": [
+    0.88,
+    0.55
+   ],
+   "in_frame": true
+  }
+ ]
+}

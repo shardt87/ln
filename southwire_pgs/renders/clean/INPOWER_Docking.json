@@ -1,0 +1,46 @@
+{
+ "view": "INPOWER_Docking",
+ "title": "InPower - docking station and lead sets",
+ "size": [
+  2400,
+  1664
+ ],
+ "callouts": [
+  {
+   "n": 1,
+   "anchor_px": [
+    731.6011905670166,
+    1118.2360038757324
+   ],
+   "label_norm": [
+    0.1,
+    0.82
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 2,
+   "anchor_px": [
+    1560.0870609283447,
+    762.9055633544922
+   ],
+   "label_norm": [
+    0.88,
+    0.3
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 3,
+   "anchor_px": [
+    1292.6799774169922,
+    780.4891662597656
+   ],
+   "label_norm": [
+    0.2,
+    0.3
+   ],
+   "in_frame": true
+  }
+ ]
+}

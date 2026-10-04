@@ -1,0 +1,46 @@
+{
+ "view": "MAVERICK_Lineup",
+ "title": "Maverick - lineup, cable entry, control wiring",
+ "size": [
+  2400,
+  1664
+ ],
+ "callouts": [
+  {
+   "n": 1,
+   "anchor_px": [
+    1425.9796142578125,
+    969.3460235595703
+   ],
+   "label_norm": [
+    0.88,
+    0.72
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 2,
+   "anchor_px": [
+    1334.7516059875488,
+    780.7140121459961
+   ],
+   "label_norm": [
+    0.2,
+    0.3
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 3,
+   "anchor_px": [
+    1661.4648342132568,
+    1121.2482643127441
+   ],
+   "label_norm": [
+    0.86,
+    0.9
+   ],
+   "in_frame": true
+  }
+ ]
+}

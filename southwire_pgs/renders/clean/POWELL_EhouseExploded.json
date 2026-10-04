@@ -1,0 +1,46 @@
+{
+ "view": "POWELL_EhouseExploded",
+ "title": "Powell - e-house exploded with interconnect package",
+ "size": [
+  2400,
+  1664
+ ],
+ "callouts": [
+  {
+   "n": 1,
+   "anchor_px": [
+    1040.6525373458862,
+    509.68565368652344
+   ],
+   "label_norm": [
+    0.12,
+    0.22
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 2,
+   "anchor_px": [
+    1197.333312034607,
+    957.6410446166992
+   ],
+   "label_norm": [
+    0.42,
+    0.9
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 3,
+   "anchor_px": [
+    1487.7219200134277,
+    522.7427825927734
+   ],
+   "label_norm": [
+    0.66,
+    0.16
+   ],
+   "in_frame": true
+  }
+ ]
+}

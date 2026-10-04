@@ -1,0 +1,46 @@
+{
+ "view": "WINAR_AssemblyBench",
+ "title": "Winar - exploded cable assembly",
+ "size": [
+  2400,
+  1664
+ ],
+ "callouts": [
+  {
+   "n": 1,
+   "anchor_px": [
+    938.2973670959473,
+    889.7680358886719
+   ],
+   "label_norm": [
+    0.3,
+    0.86
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 2,
+   "anchor_px": [
+    1280.7467937469482,
+    880.8887062072754
+   ],
+   "label_norm": [
+    0.62,
+    0.86
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 3,
+   "anchor_px": [
+    1982.7760219573975,
+    764.976188659668
+   ],
+   "label_norm": [
+    0.9,
+    0.22
+   ],
+   "in_frame": true
+  }
+ ]
+}

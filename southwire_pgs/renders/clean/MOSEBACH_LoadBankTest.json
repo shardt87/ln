@@ -1,0 +1,46 @@
+{
+ "view": "MOSEBACH_LoadBankTest",
+ "title": "Mosebach - generator to load bank test leads",
+ "size": [
+  2400,
+  1664
+ ],
+ "callouts": [
+  {
+   "n": 1,
+   "anchor_px": [
+    1593.6334133148193,
+    1082.5598945617676
+   ],
+   "label_norm": [
+    0.55,
+    0.84
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 2,
+   "anchor_px": [
+    2244.289970397949,
+    920.7357711791992
+   ],
+   "label_norm": [
+    0.9,
+    0.3
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 3,
+   "anchor_px": [
+    1199.8498678207397,
+    691.5489807128906
+   ],
+   "label_norm": [
+    0.3,
+    0.2
+   ],
+   "in_frame": true
+  }
+ ]
+}

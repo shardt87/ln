@@ -1,0 +1,46 @@
+{
+ "view": "CAT_GenInterface",
+ "title": "Caterpillar - generator electrical interfaces",
+ "size": [
+  2400,
+  1664
+ ],
+ "callouts": [
+  {
+   "n": 1,
+   "anchor_px": [
+    925.1210689544678,
+    872.7073211669922
+   ],
+   "label_norm": [
+    0.1,
+    0.7
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 2,
+   "anchor_px": [
+    1252.5790214538574,
+    877.8951416015625
+   ],
+   "label_norm": [
+    0.3,
+    0.22
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 3,
+   "anchor_px": [
+    1713.8800621032715,
+    522.1450119018555
+   ],
+   "label_norm": [
+    0.9,
+    0.25
+   ],
+   "in_frame": true
+  }
+ ]
+}

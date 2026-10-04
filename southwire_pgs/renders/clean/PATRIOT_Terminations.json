@@ -1,0 +1,46 @@
+{
+ "view": "PATRIOT_Terminations",
+ "title": "Patriot - terminal and duct detail",
+ "size": [
+  2400,
+  1664
+ ],
+ "callouts": [
+  {
+   "n": 1,
+   "anchor_px": [
+    1277.6006698608398,
+    465.7670135498047
+   ],
+   "label_norm": [
+    0.85,
+    0.2
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 2,
+   "anchor_px": [
+    1135.4000329971313,
+    1343.0992965698242
+   ],
+   "label_norm": [
+    0.86,
+    0.8
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 3,
+   "anchor_px": [
+    908.2430362701416,
+    968.7089767456055
+   ],
+   "label_norm": [
+    0.12,
+    0.42
+   ],
+   "in_frame": true
+  }
+ ]
+}

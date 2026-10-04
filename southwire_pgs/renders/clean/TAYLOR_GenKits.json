@@ -1,0 +1,46 @@
+{
+ "view": "TAYLOR_GenKits",
+ "title": "Taylor - generator with power-lead and control kits",
+ "size": [
+  2400,
+  1664
+ ],
+ "callouts": [
+  {
+   "n": 1,
+   "anchor_px": [
+    637.0223522186279,
+    1155.664363861084
+   ],
+   "label_norm": [
+    0.1,
+    0.62
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 2,
+   "anchor_px": [
+    1048.8744020462036,
+    1189.733325958252
+   ],
+   "label_norm": [
+    0.88,
+    0.62
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 3,
+   "anchor_px": [
+    595.9418892860413,
+    1239.4142990112305
+   ],
+   "label_norm": [
+    0.4,
+    0.93
+   ],
+   "in_frame": true
+  }
+ ]
+}

@@ -1,0 +1,46 @@
+{
+ "view": "NVENT_EnclosureRouting",
+ "title": "nVent - roof removed, tray, entries, connections",
+ "size": [
+  2400,
+  1664
+ ],
+ "callouts": [
+  {
+   "n": 1,
+   "anchor_px": [
+    751.8398523330688,
+    472.5180435180664
+   ],
+   "label_norm": [
+    0.12,
+    0.18
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 2,
+   "anchor_px": [
+    2087.705612182617,
+    824.3662490844727
+   ],
+   "label_norm": [
+    0.92,
+    0.35
+   ],
+   "in_frame": true
+  },
+  {
+   "n": 3,
+   "anchor_px": [
+    1298.0977535247803,
+    572.6912994384766
+   ],
+   "label_norm": [
+    0.55,
+    0.12
+   ],
+   "in_frame": true
+  }
+ ]
+}
