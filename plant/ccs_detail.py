@@ -346,19 +346,20 @@ def flue_ducts():
         for y in (900, 960):                                                           # low-point drains
             rod((x0 + 9, y, z0), (x0 + 9, y, z0 - 3), .25, "pipe", seg=8)
             box(x0 + 8.6, x0 + 9.4, y - .4, y + .4, z0 - 3.8, z0 - 3, "steel")
-        # test-port platform on the east face with rail, ports and a caged ladder down a bent column
-        box(x1 + .4, x1 + 5, 900, 916, z0 + 3, z0 + 3.3, "grating")
-        for yy in (900, 916):
+        # test-port platform on the east face near the DCC end (south of the ring road, so the ladder lands on
+        # clear grade beside the duct, not in the road), rail, ports and a caged ladder
+        box(x1 + .4, x1 + 5, 948, 964, z0 + 3, z0 + 3.3, "grating")
+        for yy in (948, 964):
             rod((x1 + .4, yy, z0 + 6.8), (x1 + 5, yy, z0 + 6.8), .07, "rail", seg=4)
-        rod((x1 + 5, 900, z0 + 6.8), (x1 + 5, 916, z0 + 6.8), .07, "rail", seg=4)
-        for y in (904, 908, 912):
+        rod((x1 + 5, 948, z0 + 6.8), (x1 + 5, 964, z0 + 6.8), .07, "rail", seg=4)
+        for y in (952, 956, 960):
             rod((x1, y, z0 + 8), (x1 + 1.2, y, z0 + 8), .4, "steel", seg=10)
         for s_ in (-.7, .7):
-            rod((x1 + 5.6, 908 + s_, 0), (x1 + 5.6, 908 + s_, z0 + 3.3), .07, "rail", seg=4)
+            rod((x1 + 5.6, 956 + s_, 0), (x1 + 5.6, 956 + s_, z0 + 3.3), .07, "rail", seg=4)
         for zz in range(1, int(z0 + 3)):                                               # rungs
-            rod((x1 + 5.6, 907.3, zz), (x1 + 5.6, 908.7, zz), .04, "rail", seg=4)
+            rod((x1 + 5.6, 955.3, zz), (x1 + 5.6, 956.7, zz), .04, "rail", seg=4)
         for zz in range(8, int(z0 + 3), 3):                                            # cage hoops
-            hp = [(x1 + 5.6 + 1.1 * math.sin(u), 908 - 1.1 * math.cos(u), zz) for u in [math.pi * i / 6 for i in range(7)]]
+            hp = [(x1 + 5.6 + 1.1 * math.sin(u), 956 - 1.1 * math.cos(u), zz) for u in [math.pi * i / 6 for i in range(7)]]
             for p_, q_ in zip(hp, hp[1:]):
                 rod(p_, q_, .04, "rail", seg=4)
         fuel.D = False

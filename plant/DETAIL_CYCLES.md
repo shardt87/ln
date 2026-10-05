@@ -151,3 +151,4 @@ One zone per cycle. Each cycle:
     - access doors and low-point drains;
     - a test-port platform with a caged ladder;
     - braced portal bents with sliding shoes on pier caps.
+- **Flue-duct test platforms moved (user):** the test-port platform and caged ladder sat mid-span over the ring road (y 900-930), so the ladder landed in the road. They now sit near the DCC end (y 948-964), with the ladder on clear grade beside the duct.
