@@ -58,23 +58,27 @@ def cut_ground():
     patch = fuel.new_item("NOMOD_GROUND", "Ground over the maintenance openings (shown without the modular yard)",
                           (0, 2420, 0, 1920), (-.5, 0), basis="typical", register=False)
     G["cur"] = cur
-    patched = {}
+    ids = {id(t) for t in tiles}
+    G["parts"][:] = [p for p in G["parts"] if id(p) not in ids]
+
+    def sub(r, o):
+        """Rectangle r minus rectangle o, as up to four pieces."""
+        (a0, a1, b0, b1), (x0, x1, y0, y1) = r, o
+        if not (a0 < x1 and a1 > x0 and b0 < y1 and b1 > y0):
+            return [r]
+        out = [(a0, a1, b0, y0), (a0, a1, y1, b1), (a0, x0, max(b0, y0), min(b1, y1)), (x1, a1, max(b0, y0), min(b1, y1))]
+        return [q for q in out if q[1] - q[0] > .01 and q[3] - q[2] > .01]
+    for t in tiles:
+        (tx0, ty0, tz0), (tx1, ty1, tz1) = t["min"], t["max"]
+        rects = [(tx0, tx1, ty0, ty1)]
+        for o in OPEN:
+            rects = [q for r in rects for q in sub(r, o)]
+        for (a0, a1, b0, b1) in rects:
+            G["parts"].append(dict(t, min=[a0, b0, tz0], max=[a1, b1, tz1]))
     for (x0, x1, y0, y1) in OPEN:
-        for t in list(tiles):
-            (tx0, ty0, tz0), (tx1, ty1, tz1) = t["min"], t["max"]
-            if not (tx0 < x1 and tx1 > x0 and ty0 < y1 and ty1 > y0):
-                continue
-            G["parts"].remove(t)
-            if not patched.get((x0, y0)):
-                patched[(x0, y0)] = True
-                G["parts"].append(dict(kind="box", min=[x0, y0, tz0], max=[x1, y1, tz1], color="ground",
-                                       item=patch["id"], layer="NOMOD_GROUND"))
-            tiles.remove(t)
-            for (a0, a1, b0, b1) in ((tx0, tx1, ty0, y0), (tx0, tx1, y1, ty1), (tx0, x0, y0, y1), (x1, tx1, y0, y1)):
-                if a1 - a0 > .01 and b1 - b0 > .01:
-                    n = dict(t, min=[a0, b0, tz0], max=[a1, b1, tz1])
-                    G["parts"].append(n)
-                    tiles.append(n)
+        if any(t["min"][0] < x1 and t["max"][0] > x0 and t["min"][1] < y1 and t["max"][1] > y0 for t in tiles):
+            G["parts"].append(dict(kind="box", min=[x0, y0, -.5], max=[x1, y1, 0], color="ground",
+                                   item=patch["id"], layer="NOMOD_GROUND"))
     pp = [p for p in G["parts"] if p["item"] == patch["id"]]
     if pp:
         patch["fp"] = [min(p["min"][0] for p in pp), max(p["max"][0] for p in pp),

@@ -192,3 +192,5 @@ One zone per cycle. Each cycle:
   MH-B reuses the existing bend manhole at (1900, 960); MH-A is a new chamber on the bank.
 - The scene is part of the modular-yard option (layer OPT_MOD); a NOMOD_GROUND patch closes the ground openings in views
   without the yard (viewer and Blender switch it automatically). View M and cameras E54 / E55 updated.
+- Fix: the ground cut now subtracts every opening from each compound tile in one pass (the old split left overlapping
+  duplicate tiles along the bank, which rendered as a black band); E54 / E55 re-rendered with shorter captions.
