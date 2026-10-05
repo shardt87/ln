@@ -160,22 +160,34 @@ class Trays:
     BLD = ("e-house", "building", "house", "room", "enclosure", "switchgear")
 
     def building_beside(self, x, y, z, d):
-        """A building whose wall the tray end faces (within 3 ft, the end pointing at it) and whose roof is
-        below the tray, else None."""
+        """A building whose wall the tray end faces (within 3 ft, the end pointing at it), or, for a tray that
+        starts alongside a wall (within 5 ft, running parallel to it), that building; its roof must be below the
+        tray. Returns (building, direction from the tray end towards the wall) or None."""
         dx = (1 if d[0] > 0 else -1) if abs(d[0]) > abs(d[1]) else 0
         dy = 0 if dx else (1 if d[1] > 0 else -1)
-        for i in self.solid:
-            if not any(k in i["name"].lower() for k in self.BLD) or i["z"][1] >= z - 2:
-                continue
+        blds = [i for i in self.solid if any(k in i["name"].lower() for k in self.BLD) and i["z"][1] < z - 2]
+        for i in blds:
             f = i["fp"]
             if dx:
                 face = f[0] if dx > 0 else f[1]
                 if 0 <= (face - x) * dx <= 3 and f[2] + 1 < y < f[3] - 1:
-                    return i
+                    return i, (dx, 0)
             else:
                 face = f[2] if dy > 0 else f[3]
                 if 0 <= (face - y) * dy <= 3 and f[0] + 1 < x < f[1] - 1:
-                    return i
+                    return i, (0, dy)
+        for i in blds:                                          # tray starting alongside a wall
+            f = i["fp"]
+            if f[2] + 1 < y < f[3] - 1 + 3:
+                if 0 < x - f[1] <= 5:
+                    return i, (-1, 0)
+                if 0 < f[0] - x <= 5:
+                    return i, (1, 0)
+            if f[0] + 1 < x < f[1] - 1:
+                if 0 < y - f[3] <= 5:
+                    return i, (0, -1)
+                if 0 < f[2] - y <= 5:
+                    return i, (0, 1)
         return None
 
     def riser(self, x, y, b, d, keys):
@@ -382,9 +394,10 @@ class Trays:
         # wall entry below the roof and climb a riser tray to the tray levels (grouped per riser location)
         risers = {}
         for (x, y, t), (key, d) in list(ends.items()):
-            b = self.building_beside(x, y, key[2], d)
-            if b is not None:
-                risers.setdefault((round(x, 1), round(y, 1), b["id"]), [b, d, []])[2].append(key)
+            hit = self.building_beside(x, y, key[2], d)
+            if hit is not None:
+                b, dw = hit
+                risers.setdefault((round(x, 1), round(y, 1), b["id"]), [b, dw, []])[2].append(key)
                 del ends[(x, y, t)]
         self.risers = risers
         for (x, y, t), (key, d) in ends.items():

@@ -180,3 +180,7 @@ One zone per cycle. Each cycle:
     - the leads continue to the first H-MOD monopole;
     - a firewall stands between the two transformers.
   - **LNG / H2 / RICE zones:** reviewed and already detailed; no change.
+- **R1 east-wall riser (user screenshots).** The "R1 east-wall tray exits / tray riser to rack" was drawn as two solid copper-coloured blocks, 4 ft square, EL 0.6-36. The rack trays starting beside the wall (x 478, y 736 / 746) didn't see R1, because they run parallel to the wall rather than pointing at it, so each got a cable drop that landed on the block.
+  - **Risers:** `trays.building_beside` now also recognises trays that start within 5 ft alongside a wall. These trays now leave R1 through wall entries below the roof and climb ladder risers to their tiers, like the other building risers.
+  - **Copper blocks:** removed.
+  - **Interior and wall-sleeve trays:** R1's interior overhead trays and wall sleeves were orange copper bars. They are now galvanised ladder trays carrying their cables.

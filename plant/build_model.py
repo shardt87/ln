@@ -651,14 +651,16 @@ item(L, "R1 cable basement below MV rows (hatched on sheet 05)", (444, 471, 634,
 B(444, 471, 634, 747, -8, 0, "basement")
 item(L, "R1 overhead LV / control trays", (426, 472, 636, 747), (14, 15), area="A", sheet="SK-3X1-05")
 for xx in (438, 456, 468):
-    B(xx - 1, xx + 1, 636, 747, 14, 14.6, "copper")
-B(426, 472, 719, 721, 14.6, 15.2, "copper")
+    B(xx - 1, xx + 1, 636, 747, 14, 14.4, "pipe")            # galvanised ladder tray with its cables
+    B(xx - .8, xx + .8, 636, 747, 14.4, 14.6, "cable_tc")
+B(426, 472, 719, 721, 14.6, 15.0, "pipe")
+B(426, 472, 719.2, 720.8, 15.0, 15.2, "cable_tc")
 item(L, "R1 east-wall tray exits to hall (LCI, GT aux, DC) and tray riser to rack", (470, 478, 638, 748),
      (0, 36), area="A", sheet="SK-3X1-05")
 for yy in (640, 650, 660):
-    B(472.6, 474, yy - 1.5, yy + 1.5, 18, 20, "copper")
-B(470, 474, 744, 748, 0.6, 23, "copper")
-B(474, 478, 744, 748, 23, 36, "copper", layer="ROUTES_BASE")
+    B(472.6, 474, yy - 1.5, yy + 1.5, 18, 20, "pipe")               # wall sleeve (galvanised)
+# (the riser up the east wall to the rack trays is built by trays.py as a ladder riser with a wall entry)
+B(470, 474, 744, 748, 0.6, 1.2, "concrete")
 
 # R4 ACC VFD e-house, shell + typical interior (SK-3X1-03, -11 view B2)
 L = "BASE_ELECTRICAL"
