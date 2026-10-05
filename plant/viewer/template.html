@@ -403,7 +403,7 @@ for(const d of (MODEL.decals||[])){
   const m=new THREE.Mesh(new THREE.PlaneGeometry(d.w,d.h), mat);
   const nn=new THREE.Vector3(d.n[0], d.n[2], -d.n[1]);
   m.position.copy(P(...d.c)).addScaledVector(nn,.04);
-  if(Math.abs(nn.y)>.9) m.up.set(0,0,-1);
+  if(d.up) m.up.set(d.up[0], d.up[2], -d.up[1]); else if(Math.abs(nn.y)>.9) m.up.set(0,0,-1);
   m.lookAt(m.position.clone().add(nn)); m.userData.item=d.item; m.receiveShadow=true;
   grp(d.layer).add(m); pickables.push(m);
 }

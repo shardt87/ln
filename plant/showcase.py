@@ -18,7 +18,7 @@ INK = "#1d1f21"
 
 
 # ---------------------------------------------------------------------------- decals
-def decal(c, n, w, h, lines, bg="#ffffff", fg=INK, brand=False, layer=None, up=None):
+def decal(c, n, w, h, lines, bg="#ffffff", fg=INK, brand=False, layer=None, up=None, generic_only=False):
     """A printed panel centred at c, facing n (unit axis vector), w x h ft. lines: (text, size as a share of h,
     bold, colour or None, brand line, band colour or None)."""
     it = fuel.G["cur"]
@@ -29,7 +29,9 @@ def decal(c, n, w, h, lines, bg="#ffffff", fg=INK, brand=False, layer=None, up=N
     d = dict(c=[round(v, 2) for v in c], n=list(n), w=round(w, 2), h=round(h, 2), bg=bg, lines=L, item=it["id"],
              layer=layer or it["layer"], brand=int(bool(brand)))
     if up:
-        d["up"] = list(up)
+        d["up"] = [round(v, 4) for v in up]
+    if generic_only:
+        d["nobrand"] = 1                         # the unbranded twin of a branded panel
     fuel.G.setdefault("decals", []).append(d)
 
 

@@ -201,22 +201,18 @@ def transformers():
     box(1253, 1257, 983, 1032, 0, 40, "concrete")
     for x in (1230, 1280):
         it = fuel.new_item("OPT_CCS", f"CCS 230 kV cable termination structure ({'T-1' if x < 1250 else 'T-2'})",
-                           (x - 4, x + 4, 1033, 1041), (0, 26), area="G", basis="typical", register=False, sheet=SHEET,
+                           (x - 4.5, x + 4.5, 1033, 1041), (0, 27), area="G", basis="typical", register=False, sheet=SHEET,
                            info="The 230 kV XLPE cable rises from the bank to outdoor sealing ends with arresters; "
                                 "jumpers drop to the transformer HV bushings.")
-        box(x - 4, x + 4, 1033, 1041, 0, .6, "concrete")
-        for (ddx, ddy) in ((-3, -3), (3, -3), (-3, 3), (3, 3)):
-            rod((x + ddx, 1037 + ddy, .6), (x + ddx, 1037 + ddy, 18), .35, "steel", seg=6)
-        box(x - 3.6, x + 3.6, 1033.4, 1040.6, 17.6, 18.2, "steel")
-        for k, ph in enumerate((-2.4, 0, 2.4)):
-            rod((x + ph, 1037, -1.5), (x + ph, 1037, 18.2), .25, "cable_tc", seg=8)
-            rod((x + ph, 1037, 18.2), (x + ph, 1037, 24.5), .55, "insulator", r2=.3, seg=10)
-            # jumper to the HV bushing tops (one row along y on the tank centreline, EL 35)
-            p0, p2 = (x + ph, 1037, 24.6), (x, 1014.7 - 7.2 * (2 - k), 35.3)       # to the bushing tops
+        import cable_install
+
+        def jumper(k, p0, x=x):
+            p2 = (x, 1014.7 - 7.2 * (2 - k), 35.3)                                    # to the HV bushing tops
             pts = [tuple((1 - s) ** 2 * p0[j] + 2 * (1 - s) * s * ((p0[j] + p2[j]) / 2 - (1.5 if j == 2 else 0)) + s * s * p2[j]
                          for j in range(3)) for s in [i / 8 for i in range(9)]]
             for a_, b_ in zip(pts, pts[1:]):
                 rod(a_, b_, .14, "conductor", seg=6)
+        cable_install.hv_termination(x, 1037, 0, 1, top=jumper)
 
 
 def compression():

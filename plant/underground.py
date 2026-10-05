@@ -509,19 +509,14 @@ def terminations(routes, items):
             if r["type"] == "hv_cable":
                 cx, cy = x + ux * 6, y + uy * 6                                   # clear of the bay gantry posts
                 it = fuel.new_item(r["layer"], "230 kV cable termination structure (outdoor potheads, arresters)",
-                                   (cx - 4, cx + 4, cy - 4, cy + 4), (0, 26), basis="typical", register=False,
+                                   (cx - 4.5, cx + 4.5, cy - 4.5, cy + 4.5), (0, 27), basis="typical", register=False,
                                    area="C", sheet=SHEET,
-                                   info="The 230 kV XLPE cables rise from the cable bank up the structure to outdoor "
-                                        "sealing ends (potheads), with surge arresters, and connect to the bay above.")
-                box(cx - 4, cx + 4, cy - 4, cy + 4, 0, .6, "concrete")
-                for (dx, dy) in ((-3, -3), (3, -3), (-3, 3), (3, 3)):
-                    rod((cx + dx, cy + dy, .6), (cx + dx, cy + dy, 18), .35, "steel", seg=6)
-                box(cx - 3.6, cx + 3.6, cy - 3.6, cy + 3.6, 17.6, 18.2, "steel")              # platform
-                for ph in (-2.2, 0, 2.2):
-                    px, py = cx + uy * ph, cy - ux * ph
-                    rod((px, py, -1.5), (px, py, 18.2), .25, "cable_tc", seg=8)              # cable riser
-                    rod((px, py, 18.2), (px, py, 24.5), .55, "insulator", r2=.3, seg=10)      # pothead
-                    rod((px + ux * 1.2, py + uy * 1.2, 18.2), (px + ux * 1.2, py + uy * 1.2, 23), .35, "insulator", seg=8)
+                                   info="The three 230 kV XLPE single-core cables (Southwire, the requested supplier) "
+                                        "rise from the cable bank through steel guards, cleated to the structure, into "
+                                        "outdoor sealing ends; surge arresters jumpered to the terminals; sheath-bonding "
+                                        "leads to a link box with a ground lead; the bay connects to the terminals.")
+                import cable_install
+                cable_install.hv_termination(cx, cy, ux, uy)
                 out.append(("230 kV termination", r["layer"], (round(cx), round(cy))))
             else:
                 fuel.new_item(r["layer"], "Service-entrance handhole and marker post (site boundary)",

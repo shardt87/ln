@@ -1717,6 +1717,10 @@ VIEWS = [
          t=[1500, 900, -4], c=[600, -500, 1300]),
     dict(k="CY", n="Cable reel yard: reels and SIMpull Truck", show=BASE_SHOW,
          t=[150, 790, 2], c=[120, 690, 45]),
+    dict(k="CHV", n="Cable installed: 230 kV termination at the BESS bay",
+         show=BASE_SHOW + ["OPT_BESS", "OPT_BESS_ROUTES"], t=[1756, 177, 12], c=[1772, 202, 16]),
+    dict(k="CEH", n="Cable installed: MV cable entries under MOD-EH",
+         show=BASE_SHOW + ["OPT_MOD", "OPT_MOD_ROUTES"], t=[1960, 899, 1.6], c=[1953, 911, 4.5]),
     dict(k="M", n="Maintenance: cable pull on the modular-yard 13.8 kV collector (manholes, reel, trench)",
          show=BASE_SHOW + ["OPT_MOD", "OPT_MOD_ROUTES"], t=[1805, 950, 0], c=[1680, 860, 80]),
     dict(k="O1", n="O1 Modular / portable", show=BASE_SHOW + ["OPT_MOD", "OPT_TMP", "OPT_MODX", "OPT_MOD_ROUTES", "OPT_TMP_ROUTES", "OPT_MODX_ROUTES",
@@ -1749,6 +1753,8 @@ FIT = {
     "U2": dict(box=[0, 3380, 0, 1920, -10, 20]),
     "M": dict(box=[1695, 1940, 905, 972, -9, 12]),
     "CY": dict(box=[44, 316, 700, 880, 0, 14]),
+    "CHV": dict(box=[1745, 1767, 166, 188, 0, 27]),
+    "CEH": dict(box=[1925, 1995, 890, 906, 0, 4]),
     "O1": dict(layers=["OPT_MOD", "OPT_TMP", "OPT_MODX"]),
     "O2": dict(layers=["OPT_BESS"]),
     "O3": dict(layers=["OPT_CCS", "OPT_CCSU"]),
@@ -1994,6 +2000,8 @@ import maintenance as _maint
 _maint.build()      # cable-pull scene on the modular-yard 13.8 kV collector bank
 import showcase as _show
 print("cable showcase", _show.build())
+import cable_install as _ci
+print("e-house bottom cable entries", _ci.ehouse_bottom_entry("MOD-EH"))
 import terminate as _term
 N_TERM = _term.build(items, parts)   # quality sweep: every open pipe end terminated (drop to UG, valve, blind flange)
 print('pipe-end terminations', N_TERM)

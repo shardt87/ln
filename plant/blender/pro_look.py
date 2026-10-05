@@ -680,6 +680,8 @@ EPIC = [
          eye=(712, 1150, 150), target=(655, 1215, 110), lens=28, show="all"),
     dict(k="E57", n="CCS T-1 / T-2: 230 kV cable terminations, jumpers to the bushings, firewall; tray riser at the VFD building",
          eye=(1300, 1085, 55), target=(1250, 1020, 20), lens=26, show="all"),
+    dict(k="E60", n="230 kV XLPE cable termination: cleated risers, sealing ends, surge arresters, bonding link box",
+         eye=(1740, 201, 10), target=(1757, 177, 13), lens=22, show="all", sun=(32, 330)),
     dict(k="E58", n="Cable reel yard: SIMpull Truck unloading SIMpull Reels on payoffs, reel rows",
          eye=(214, 702, 15), target=(160, 752, 6), lens=28, show="base"),
     dict(k="E26", n="HRSG 1 west wall: buckstays, SCR doors, ammonia injection grid, downcomers, blowdown tank",

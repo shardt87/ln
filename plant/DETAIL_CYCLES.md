@@ -215,3 +215,16 @@ One zone per cycle. Each cycle:
 - Removed again (user review: a showcase is not wanted, the cable should be shown installed where it is used): the
   cutaway display stands, sign panels, product row and yard sign, views CHV / CTC / CSY / CDC and cameras E59 / E60.
   Kept: the stocked reel yard, the SIMpull Truck and the decal system.
+
+### Installed cable at the point of use
+- New `cable_install.py`. 230 kV cable termination structures (BESS bay, CCS T-1 / T-2) rebuilt as installed: braced
+  steel structure on a foundation, the three 1/C XLPE cables up out of sealed duct mouths through steel cable guards,
+  cleated to beams every 3 ft, through entry glands into outdoor sealing ends (stress-cone body, shedded insulator,
+  top terminal); surge arresters behind, jumpered to the terminals, with ground leads and a surge counter;
+  sheath-bonding leads to a link box on the front column with a copper lead to the grid. The cable jacket carries
+  its printed legend (supplier name only in the branded build). CCS jumpers to the T-1 / T-2 bushings start at the
+  new terminals.
+- MOD-EH: the solid plinth is now piers and a steel skid base; at each duct-bank stub-up the cables leave the end
+  bell (MV-105 triplex from the grey conduits, fibre from the orange) and rise under the skid beam into gland plates
+  under the bottom-entry switchgear.
+- Decals can be generic-only twins (`nobrand`) of branded ones. Views CHV, CEH; camera E60.

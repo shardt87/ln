@@ -275,6 +275,8 @@ def make_decals():
     os.makedirs(ddir, exist_ok=True)
     n = 0
     for k, d in enumerate(model.get("decals", [])):
+        if d.get("nobrand") and not args.generic:
+            continue
         if args.generic:
             if d.get("brand"):
                 continue

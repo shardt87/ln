@@ -12,6 +12,8 @@ tpl = open(os.path.join(HERE, "viewer", "template.html")).read()
 import sys
 GENERIC = "--generic" in sys.argv     # unbranded build: supplier wordmarks and livery left off
 model = json.load(open(os.path.join(HERE, "sk3x1_model.json")))
+if not GENERIC:
+    model["decals"] = [d for d in model.get("decals", []) if not d.get("nobrand")]
 if GENERIC:
     dd = []
     for d in model.get("decals", []):
