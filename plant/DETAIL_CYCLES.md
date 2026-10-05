@@ -212,3 +212,6 @@ One zone per cycle. Each cycle:
   yard sign. The modular-yard pull scene's reel now carries MV-105 with stencilled flanges.
 - Viewer views CY, CHV, CTC, CSY, CDC; Blender cameras E58 (reel yard + SIMpull Truck), E59 (product row),
   E60 (230 kV cutaway at the BESS termination); E54 re-rendered with the branded reel.
+- Removed again (user review: a showcase is not wanted, the cable should be shown installed where it is used): the
+  cutaway display stands, sign panels, product row and yard sign, views CHV / CTC / CSY / CDC and cameras E59 / E60.
+  Kept: the stocked reel yard, the SIMpull Truck and the decal system.
