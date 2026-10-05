@@ -209,6 +209,7 @@ OVERRIDES = [
     (r"stair tower \(to EL", [LIGHT + " (landing lights, emergency lights)", GND]),
     (r"cable termination structure", ["230 kV XLPE cable, 1/C Cu, with outdoor sealing ends (potheads)", GND]),
     (r"firewall", []),
+    (r"take-off gantry", ["230 kV ACSR jumpers and strung bus", "Surge arrester ground leads: bare Cu to the grid", GND]),
 ]
 
 

@@ -173,3 +173,10 @@ One zone per cycle. Each cycle:
     - the 230 kV angle poles stand 6 ft clear of any road.
   - **Cooling-tower stairs:** the CCS and inlet-chilling tower access stairs get stringers, handrails and intermediate supports.
   - **Result:** open pipe ends 412 -> 21 (only parking bollards and two dry-cooler nozzles, which are fine). Floating parts 469 -> 117 (small wall devices and internal fittings within the check's tolerance). Road intrusions 24 -> 2 (the reserved-corridor marking, which legitimately crosses the road). Verify, audit and coastal all pass.
+- **Option-zone detail pass (`zone_detail.py`).**
+  - **BESS yard:** surfaced with crushed rock, and the containers sit on concrete plinth beams.
+  - **Modular yard:** T-MOD-1 / -2 had their 230 kV bushings ending in the air, with the H-MOD tie starting at its first pole 55 ft away. Now:
+    - jumpers rise from the bushings to a take-off gantry (strain strings, arresters on stands);
+    - the leads continue to the first H-MOD monopole;
+    - a firewall stands between the two transformers.
+  - **LNG / H2 / RICE zones:** reviewed and already detailed; no change.

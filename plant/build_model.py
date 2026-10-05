@@ -1871,7 +1871,7 @@ for _r in routes:
     if _r.get('sheet') == 'typical (CCS audit)' and _r['type'] == 'lv_tray' and _r['points'][0][1] == 1133 or \
             (_r.get('sheet') == 'typical (CCS audit)' and _r['type'] == 'lv_tray' and [1046, 1133] in _r['points']):
         _r['z'] = 27.3                    # on top of the CCS pipe rack
-_ccs.build(); _ccsd.build()              # cycle 6: carbon capture flue-gas path, amine piping and rack, regeneration, CT   # cycle 5: gate, fence wire and CCTV, drainage, lighting, admin / workshop dressing
+_ccs.build(); _ccsd.build(); import zone_detail as _zd; _zd.build()              # cycle 6: carbon capture flue-gas path, amine piping and rack, regeneration, CT   # cycle 5: gate, fence wire and CCTV, drainage, lighting, admin / workshop dressing
 import placeholders as _ph
 _ph.build()               # single-box placeholders rebuilt as equipment (CCS, LNG, H2, BTM)
 _dc.color_parts()         # BTM data centre: colour by supply path (islanded / modular yard / grid tie)
