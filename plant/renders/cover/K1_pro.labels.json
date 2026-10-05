@@ -56,5 +56,8 @@
   ],
   "sheet": "SK-3X1-15"
  },
- "labels": []
+ "labels": [],
+ "callouts": [],
+ "rw": 2400,
+ "rh": 2240
 }
