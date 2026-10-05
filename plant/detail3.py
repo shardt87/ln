@@ -283,7 +283,7 @@ class Detail3:
 
     def stacks(self):
         for it in self.items:
-            if it["tag"] not in ("STK-1", "STK-2", "STK-3") and not it["tag"].startswith("ABS-"):
+            if it["tag"] not in ("STK-1", "STK-2", "STK-3"):     # absorbers: lights on the stack in ccs_detail.py
                 continue
             cx, cy = (it["fp"][0] + it["fp"][1]) / 2, (it["fp"][2] + it["fp"][3]) / 2
             r = (it["fp"][1] - it["fp"][0]) / 2

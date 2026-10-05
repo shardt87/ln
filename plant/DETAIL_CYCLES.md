@@ -152,3 +152,10 @@ One zone per cycle. Each cycle:
     - a test-port platform with a caged ladder;
     - braced portal bents with sliding shoes on pier caps.
 - **Flue-duct test platforms moved (user):** the test-port platform and caged ladder sat mid-span over the ring road (y 900-930), so the ladder landed in the road. They now sit near the DCC end (y 948-964), with the ladder on clear grade beside the duct.
+- **Absorber lights and amine pipe ends (user screenshots).**
+  - **Lights:** an older pass (detail3) placed the absorbers' obstruction lights at the shell radius (31 ft) all the way up, so the top set hung in the air round the 9 ft stack. The absorbers are now skipped there; their lights are on the stack top and at mid-shell (ccs_detail).
+  - **Pipe ends:** at each rich / lean skid, every line now meets the equipment it serves:
+    - the rich-amine bottoms line from the absorber now runs to the rich-pump suction header;
+    - the lean-amine riser now starts at the lean cooler outlet;
+    - the rack risers come up off the skid headers;
+    - the rich and lean pump discharges join those headers.

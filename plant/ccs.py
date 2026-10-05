@@ -78,15 +78,16 @@ def trains():
         # ---- absorber: lean-amine and wash risers, rich bottoms, sample panel
         on(find(f"Absorber {t}"))
         dress(True)
-        pipe([(668 + dx, 1100, 10), (668 + dx, 1228, 10), (666 + dx, 1228, 10), (666 + dx, 1228, 204),
-              (660 + dx, 1228, 204)], 10, .7, "pipe")                           # lean amine to the upper bed
+        pipe([(681 + dx, 1090, 6), (676 + dx, 1090, 6), (676 + dx, 1090, 11), (676 + dx, 1104, 11), (668 + dx, 1104, 11),
+              (668 + dx, 1228, 11), (666 + dx, 1228, 11), (666 + dx, 1228, 204), (660 + dx, 1228, 204)], 11, .7,
+             "pipe")                                                            # lean amine: lean cooler -> upper bed
         pipe([(690 + dx, 1195, 6), (690 + dx, 1236, 6), (665 + dx, 1236, 6), (665 + dx, 1236, 246),
               (656 + dx, 1236, 246)], 6, .45, "waterline")                     # water wash
         for zg in range(30, 240, 30):                                           # pipe guides off the shell
             if zg not in (60, 120, 210):
                 box(659 + dx, 666.6 + dx, 1227.6, 1228.4, zg - .3, zg + .3, "steel")
                 box(655 + dx, 665.5 + dx, 1235.6, 1236.4, zg - .3, zg + .3, "steel")
-        pipe([(650 + dx, 1196, 3), (650 + dx, 1104, 3), (662 + dx, 1104, 3)], 3, .8, "pipe")   # rich amine
+        pipe([(650 + dx, 1196, 3), (650 + dx, 1049, 3), (662.4 + dx, 1049, 3)], 3, .8, "pipe")   # rich amine to the pump suction header
         box(652 + dx, 656 + dx, 1180, 1182, 0, 6, "panel")                      # sample / analyser panel
         box(651 + dx, 657 + dx, 1179, 1183, 6, 6.3, "roof")
         dress(False)
@@ -115,9 +116,12 @@ def trains():
         rod((560, y, 26.6), (1046, y, 26.6), .5, "pipe", seg=10)                # upper tier utilities
     # risers from each rich / lean skid onto the rack
     for dx in (0, 160, 320):
-        for (x, y) in ((690 + dx, 1118), (696 + dx, 1121)):
-            rod((x, 1100, 8), (x, y, 8), .6, "pipe", seg=10)
-            rod((x, y, 8), (x, y, 18), .6, "pipe", seg=10)
+        # skid headers (y 1084 / 1086, EL 9) rise onto the rack; pump discharges join the headers
+        for (x, y, yh) in ((690 + dx, 1118, 1084), (696 + dx, 1121, 1086)):
+            pipe([(x, yh, 9), (x, yh, 11.8), (x, y, 11.8), (x, y, 18)], 11.8, .6, "pipe")
+        pipe([(663 + dx, 1053, 3.6), (663 + dx, 1053, 9), (663 + dx, 1084, 9)], 9, .5, "pipe")     # rich pumps -> header
+        pipe([(667 + dx, 1072, 3.5), (667 + dx, 1072, 10.2), (667 + dx, 1086, 10.2), (667 + dx, 1086, 9)], 10.2, .5,
+             "pipe")                                                                                 # lean pumps -> header
     dress(False)
 
 
