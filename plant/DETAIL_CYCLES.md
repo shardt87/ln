@@ -159,3 +159,17 @@ One zone per cycle. Each cycle:
     - the lean-amine riser now starts at the lean cooler outlet;
     - the rack risers come up off the skid headers;
     - the rich and lean pump discharges join those headers.
+- **Plant-wide quality / realism sweep (`qa.py`, `terminate.py`).**
+  - **New check:** `qa.py` is a geometry check that complements verify / audit. It flags floating parts, open pipe ends, anything at grade in a road and headroom under 18 ft over roads, and writes `qa_report.json`.
+  - **First run found:** 469 floating parts, 412 open pipe ends and 24 road intrusions (after correcting its own handling of large parts).
+  - **Open pipe ends (`terminate.build`, runs after all geometry):** every end above grade that touches nothing now gets a realistic ending:
+    - 198 drop to grade or to their pad, through a UG sleeve block;
+    - 73 upward nozzles (mostly pump discharges) get an isolation valve with a handwheel;
+    - 120 with no clear path get a blind flange.
+  - **Floating parts (`terminate.support_floating`):** 251 parts above grade that touched nothing now get steel legs down to the surface below. These include transformer conservators over their tanks, pump casings over baseplates, equipment over skids, and headers over roofs.
+  - **Roads:**
+    - flue-duct bents moved from the ring-road edge (y 930) to y 937;
+    - ACC stair towers pulled 2 ft west, clear of the east spine road;
+    - the 230 kV angle poles stand 6 ft clear of any road.
+  - **Cooling-tower stairs:** the CCS and inlet-chilling tower access stairs get stringers, handrails and intermediate supports.
+  - **Result:** open pipe ends 412 -> 21 (only parking bollards and two dry-cooler nozzles, which are fine). Floating parts 469 -> 117 (small wall devices and internal fittings within the check's tolerance). Road intrusions 24 -> 2 (the reserved-corridor marking, which legitimately crosses the road). Verify, audit and coastal all pass.

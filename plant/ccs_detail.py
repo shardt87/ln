@@ -366,7 +366,7 @@ def flue_ducts():
         # support bents: replace the two thin posts with braced portal frames, shoes under the duct
         fuel.G["parts"][:] = [p for p in fuel.G["parts"] if not (p["item"] == it["id"] and p["kind"] == "box" and p["color"] == "steel"
                                                                 and p["min"][2] == 0)]
-        for y in (870, 930):
+        for y in (870, 937):                                                          # clear of the ring road (y 900-930)
             for xc in (x0 - 2, x1 + 2):
                 box(xc - .6, xc + .6, y - .6, y + .6, 0, z0 - 1.5, "steel")
                 box(xc - 1.4, xc + 1.4, y - 1.4, y + 1.4, 0, .4, "concrete")                # pier cap

@@ -147,8 +147,12 @@ def overhead_lines(routes):
         # angle structures at the interior points: steel monopole, crossarm along the bisector with
         # strain insulators at the three phase positions
         qs = {o: _offset_poly(pts, o) for o in PH}
+        roads = [i["fp"] for i in fuel.G["items"] if i["layer"] == "SITE" and "road" in i["name"].lower()]
         for k in range(1, len(pts) - 1):
             x, y = pts[k]
+            for f in roads:                                       # the pole stands clear of any road (6 ft margin)
+                if f[0] - 6 < x < f[1] + 6 and f[2] - 6 < y < f[3] + 6:
+                    y = f[2] - 6 if abs(y - f[2]) < abs(y - f[3]) else f[3] + 6
             fuel.new_item(r["layer"], "230 kV angle structure (steel monopole)", (x - 12, x + 12, y - 12, y + 12),
                           (0, 48), basis="typical", register=False, area="C", sheet="typical (strung conductors)")
             box(x - 2.5, x + 2.5, y - 2.5, y + 2.5, 0, .5, "concrete")                     # drilled-pier cap

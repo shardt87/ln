@@ -518,7 +518,7 @@ for i in range(8):
         cx, cy = 1150 + 40 * i, 400 + 40 * j
         V(cx, cy, 17, 92, 99, "fan", seg=24)
         V(cx, cy, 16.2, 97, 99.2, "fanhub", r2=2, seg=24)
-B(1452, 1462, 380, 396, 0, 92, "stair"); B(1452, 1462, 764, 780, 0, 92, "stair")
+B(1450, 1459.5, 380, 396, 0, 92, "stair"); B(1450, 1459.5, 764, 780, 0, 92, "stair")   # clear of the east spine road (x 1460)
 
 # ---------------------------------------------------------------------------
 # ELECTRICAL (SK-3X1-03, -04, -05)
@@ -1985,7 +1985,12 @@ N_TRAY = _trays.build(item, items, parts, routes)     # ladder trays, cables, su
 import realism as _realism
 N_REAL = _realism.build(item, items, parts, routes)
 import maintenance as _maint
-_maint.build()           # cable-pull maintenance scene on the R1 duct bank (open manholes, reel, puller, trench)
+_maint.build()
+import terminate as _term
+N_TERM = _term.build(items, parts)   # quality sweep: every open pipe end terminated (drop to UG, valve, blind flange)
+print('pipe-end terminations', N_TERM)
+print('supports added under floating parts', _term.support_floating(items, parts))
+#  cable-pull maintenance scene on the R1 duct bank (open manholes, reel, puller, trench)
 
 
 def validate():

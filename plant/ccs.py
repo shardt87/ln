@@ -191,6 +191,14 @@ def cooling_tower():
     # access stair at the east end
     for k in range(20):
         box(1190.5, 1194.5, 1745 + k * 1.9, 1746.2 + k * 1.9, 2 * k + 2, 2 * k + 2.3, "grating")
+    for xs in (1190.5, 1194.5):                                                         # stringers, handrails, posts
+        rod((xs, 1745 - 1.9, 0), (xs, 1745 + 38.2, 42), .18, "steel", seg=6)
+        rod((xs, 1745 - 1.9, 3.5), (xs, 1745 + 38.2, 45.5), .06, "rail", seg=4)
+        for k in range(0, 20, 4):
+            rod((xs, 1745 + .6 + k * 1.9, 2 * k + 2.3), (xs, 1745 + .6 + k * 1.9, 2 * k + 5.8), .05, "rail", seg=4)
+    for y_, z_ in ((1745 + 13, 14), (1745 + 28, 30)):                               # intermediate supports to grade
+        for xs in (1190.5, 1194.5):
+            box(xs - .2, xs + .2, y_ - .2, y_ + .2, 0, z_, "steel")
     box(1190.5, 1194.5, 1783, 1787, 41.7, 42, "grating")
     # hot-water header south of the tower and a riser into every cell
     pipe([(1222, 1760, 4), (1222, 1734, 4), (445, 1734, 4)], 4, 2.2, "waterline")

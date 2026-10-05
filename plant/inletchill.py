@@ -83,6 +83,14 @@ def tower():
         rod((x, 1241, 45), (x, 1319, 45), .07, "rail", seg=4)
     for k in range(20):                                                                # access stair, east end
         box(300.5, 304.5, 1244 + k * 1.9, 1245.2 + k * 1.9, 2 * k + 2, 2 * k + 2.3, "grating")
+    for xs in (300.5, 304.5):                                                         # stringers, handrails, posts
+        rod((xs, 1244 - 1.9, 0), (xs, 1244 + 38.2, 42), .18, "steel", seg=6)
+        rod((xs, 1244 - 1.9, 3.5), (xs, 1244 + 38.2, 45.5), .06, "rail", seg=4)
+        for k in range(0, 20, 4):
+            rod((xs, 1244 + .6 + k * 1.9, 2 * k + 2.3), (xs, 1244 + .6 + k * 1.9, 2 * k + 5.8), .05, "rail", seg=4)
+    for y_, z_ in ((1244 + 13, 14), (1244 + 28, 30)):                               # intermediate supports to grade
+        for xs in (300.5, 304.5):
+            box(xs - .2, xs + .2, y_ - .2, y_ + .2, 0, z_, "steel")
     box(300.5, 304.5, 1282, 1286, 41.7, 42, "grating")
     rod((165, 1236, 4), (165, 1236, 38), 1.3, "waterline", seg=12)                     # hot-water riser and header
     rod((165, 1236, 38), (165, 1241, 38), 1.3, "waterline", seg=12)
