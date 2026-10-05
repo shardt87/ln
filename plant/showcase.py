@@ -134,10 +134,10 @@ def simpull_truck(x, y):
     for k in range(3):
         simpull_reel(x0 + 3.6 + k * 6.6, y, 4.2, axis="y")
     # livery: both skirts and the cab doors
-    for sgn, s in ((-1, y0 - .02), (1, y1 + .02)):
+    for sgn, s, sc in ((-1, y0 - .02, y0 + .18), (1, y1 + .02, y1 - .18)):
         decal(((x0 + x1 - 9.6) / 2, s, 3.4), (0, sgn, 0), 18, 1.5,
               [(BRAND + "  SIMpull SOLUTIONS", .55, 1, "#ffffff", 1)], bg=None, brand=True)
-        decal((x1 - 7.0, s, 4.4), (0, sgn, 0), 3.6, 2.6,
+        decal((x1 - 7.0, sc, 4.4), (0, sgn, 0), 3.6, 2.6,
               [(BRAND, .3, 1, RED, 1), ("SIMpull", .26, 1, INK, 1), ("SOLUTIONS", .16, 0, "#555a5f", 1)],
               bg=None, brand=True)
 
