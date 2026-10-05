@@ -139,6 +139,88 @@ def build_spec(page):
     return el, meta
 
 
+MODULE_LABEL = {
+    "IEM": "Switchgear / control cabinet + wire kit (Module 1)",
+    "EPD": "Switchgear / control cabinet + wire kit (Module 1)",
+    "PATRIOT": "Control compartment terminations (Module 1)",
+    "MAVERICK": "Switchgear lineup, cable entry (Module 1)",
+    "CAT": "Generator package interfaces (Module 2)",
+    "TAYLOR": "Generator package + kits (Module 2)",
+    "POWELL": "E-house, exploded (Module 3)",
+    "SIEMENS": "E-house / skid boundaries (Module 3)",
+    "NVENT": "E-house, roof removed (Module 3)",
+    "WESCO": "E-house modules + staged supply (Module 3)",
+    "RESA": "Transformer interface, Configuration B (Module 4)",
+    "ASCO": "Transfer equipment, Configuration A",
+    "INPOWER": "Docking station, Configuration D (Module 5)",
+    "MOSEBACH": "Load-bank testing, Configuration D (Module 5)",
+    "WINAR": "Cable assembly bench (Module 6)",
+}
+
+
+def thumb(view):
+    from PIL import Image
+    out = os.path.join(ROOT, "renders", "thumbs", view + ".jpg")
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    src = os.path.join(RCLEAN, view + ".png")
+    if not os.path.exists(out) or os.path.getmtime(out) < os.path.getmtime(src):
+        im = Image.open(src).convert("RGB")
+        im.thumbnail((420, 420))
+        im.save(out, quality=88)
+    return out
+
+
+def index_spec(pages):
+    """Index page placed first in the combined PDF / PPTX."""
+    el = []
+    T = lambda **k: el.append(dict(kind="text", **k))
+    R = lambda **k: el.append(dict(kind="rect", **k))
+    R(x=ML, y=0.38, w=1.75, h=0.48, fill=None, line="#9AA3AA", dash=True, name="Logo_Placeholder")
+    T(x=ML, y=0.38, w=1.75, h=0.48, text="SOUTHWIRE LOGO\nplaceholder - insert approved artwork", size=7,
+      color=MUTED, align="center", valign="middle", name="Logo_Placeholder_Text")
+    T(x=2.45, y=0.40, w=3.0, h=0.22, text=COMMON["unit"].upper(), size=8.5, bold=True, color=ACCENT,
+      name="Business_Unit")
+    T(x=ML, y=0.98, w=PW - 2 * ML, h=0.42, text="Application one-pagers: index", size=21, bold=True,
+      color=INK, name="Headline")
+    R(x=ML, y=1.52, w=0.9, h=0.035, fill=ACCENT, line=None, name="Accent_Rule")
+    T(x=ML, y=1.62, w=PW - 2 * ML, h=0.36,
+      text=(f"{len(pages)} discussion pages built on one reusable 3D model. Each page pairs one equipment view "
+            "with three applications to evaluate and a proposed next step."),
+      size=10, color=INK, name="Intro")
+    y0 = 2.18
+    for txt, x, w, al in (("#", ML, 0.3, "left"), ("COMPANY / MODEL VIEW", 1.68, 2.3, "left"),
+                          ("APPLICATION", 4.08, 3.0, "left"), ("PAGE", PW - ML - 0.5, 0.5, "right")):
+        T(x=x, y=y0, w=w, h=0.18, text=txt, size=7.5, bold=True, color=ACCENT, align=al, name="Header_" + txt[:4])
+    R(x=ML, y=y0 + 0.22, w=PW - 2 * ML, h=0.01, fill=RULE, line=None, name="Header_Rule")
+    rh = 0.535
+    for i, p in enumerate(pages):
+        y = y0 + 0.30 + i * rh
+        el.append(dict(kind="marker", x=ML + 0.13, y=y + rh / 2 - 0.03, r=0.12, n=i + 1, name=f"Row_{i+1}_Number"))
+        el.append(dict(kind="image", x=ML + 0.36, y=y + 0.01, w=0.70, h=0.70 * 1664 / 2400,
+                       path=thumb(p["view"]), name=f"Row_{i+1}_Thumb"))
+        T(x=1.68, y=y + 0.04, w=2.3, h=0.2, text=p["company"], size=9.5, bold=True, color=INK,
+          name=f"Row_{i+1}_Company")
+        T(x=1.68, y=y + 0.24, w=2.3, h=0.22, text=MODULE_LABEL.get(p["key"], ""), size=7, color=MUTED,
+          name=f"Row_{i+1}_View")
+        T(x=4.08, y=y + 0.04, w=3.0, h=0.42, text=p["headline"], size=8.5, color=INK, name=f"Row_{i+1}_Application")
+        T(x=PW - ML - 0.5, y=y + 0.12, w=0.5, h=0.2, text=str(i + 2), size=10, bold=True, color=INK,
+          align="right", name=f"Row_{i+1}_Page")
+        if i < len(pages) - 1:
+            R(x=ML, y=y + rh - 0.035, w=PW - 2 * ML, h=0.006, fill="#E6E9EB", line=None, name=f"Row_{i+1}_Rule")
+    T(x=ML, y=10.42, w=PW - 2 * ML, h=0.34,
+      text=("Discussion concepts only. Company names identify the intended conversation; no partnership, pilot, "
+            "purchase or product qualification is implied. " + COMMON["disclaimer"]),
+      size=6.5, color=MUTED, name="Index_Disclaimer")
+    return el, None, {"key": "INDEX", "company": "Index", "view": "-", "headline": "Index"}
+
+
+def numbered(spec, n, total):
+    el, meta, page = spec
+    el = el + [dict(kind="text", x=PW - ML - 1.2, y=10.74, w=1.2, h=0.16, text=f"Page {n} of {total}", size=6.5,
+                    color=MUTED, align="right", name="Page_Number")]
+    return el, meta, page
+
+
 _FONTS = {}
 
 
@@ -324,6 +406,9 @@ def to_pptx(specs, path):
                     run.font.bold = bool(e.get("bold"))
                     run.font.name = "Arial"
                     run.font.color.rgb = RGB(e.get("color", INK))
+        if page["key"] == "INDEX":
+            s.notes_slide.notes_text_frame.text = "Index of the company one-pagers; page numbers refer to this file."
+            continue
         s.notes_slide.notes_text_frame.text = (
             f"View: {page['view']} (master .blend). Discussion concept for {page['company']}; "
             "no agreement, pilot or purchase is implied. Replace the logo placeholder and the [Phone]/[Email] "
@@ -397,8 +482,10 @@ def main(keys=None):
         over += to_pdf([sp], os.path.join(ROOT, "pages", "pdf", f"{k}_one_pager.pdf"))
         to_pptx([sp], os.path.join(ROOT, "pages", "pptx", f"{k}_one_pager.pptx"))
     if not keys:
-        to_pdf(specs, os.path.join(ROOT, "pages", "pdf", "All_one_pagers.pdf"))
-        to_pptx(specs, os.path.join(ROOT, "pages", "pptx", "All_one_pagers.pptx"))
+        total = len(specs) + 1
+        allspecs = [numbered(index_spec(pages), 1, total)] + [numbered(sp, i + 2, total) for i, sp in enumerate(specs)]
+        over += to_pdf(allspecs, os.path.join(ROOT, "pages", "pdf", "All_one_pagers.pdf"))
+        to_pptx(allspecs, os.path.join(ROOT, "pages", "pptx", "All_one_pagers.pptx"))
     for o in over:
         print("OVERFLOW", o)
     print("pages:", [s[2]["key"] for s in specs])

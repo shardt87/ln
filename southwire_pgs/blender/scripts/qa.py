@@ -53,7 +53,7 @@ from pptx import Presentation  # noqa: E402
 pdfs = sorted(glob.glob(os.path.join(ROOT, "pages", "pdf", "*.pdf")))
 for f in pdfs:
     d = pymupdf.open(f)
-    exp = len(PAGES) if f.endswith("All_one_pagers.pdf") else 1
+    exp = len(PAGES) + 1 if f.endswith("All_one_pagers.pdf") else 1
     if len(d) != exp:
         problems.append(f"{os.path.basename(f)}: {len(d)} pages (expected {exp})")
     r = d[0].rect
@@ -65,7 +65,7 @@ for f in pdfs:
 pptxs = sorted(glob.glob(os.path.join(ROOT, "pages", "pptx", "*.pptx")))
 for f in pptxs:
     prs = Presentation(f)
-    exp = len(PAGES) if f.endswith("All_one_pagers.pptx") else 1
+    exp = len(PAGES) + 1 if f.endswith("All_one_pagers.pptx") else 1
     if len(prs.slides) != exp:
         problems.append(f"{os.path.basename(f)}: {len(prs.slides)} slides")
 print(f"PDFs: {len(pdfs)}  PPTX: {len(pptxs)}")
