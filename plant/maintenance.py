@@ -1,5 +1,7 @@
-"""Cable-pulling maintenance scene on the R1 -> water-treatment duct bank (x 355, y 1150-1370), west of the spine
-road, north of where the inlet-chilling pipes leave the bank corridor (the stretch is clear of pipes and equipment).
+"""Cable-pulling maintenance scene on the modular power yard's 13.8 kV collector duct bank (y 960, x 1710-1900),
+open ground south of the bank: high-voltage feeders and room for the reel trailer and puller truck (it first sat on
+the R1 duct bank by the inlet-chilling plant, which was cramped and low-voltage). Coordinates below are the local
+frame of the scene (see to_site).
 
 A crew replaces a feeder in the bank, typical of an outage job:
 - manhole MH-A (355, 1153): cover lifted off and laid aside, guard rail with chain and cones round the opening,
@@ -52,18 +54,31 @@ def cut_ground():
     G = fuel.G
     cid = next(it["id"] for it in G["items"] if it["name"].startswith("Compound"))
     tiles = [p for p in G["parts"] if p["item"] == cid and p["kind"] == "box" and p["color"] == "ground"]
+    cur = G["cur"]
+    patch = fuel.new_item("NOMOD_GROUND", "Ground over the maintenance openings (shown without the modular yard)",
+                          (0, 2420, 0, 1920), (-.5, 0), basis="typical", register=False)
+    G["cur"] = cur
+    patched = {}
     for (x0, x1, y0, y1) in OPEN:
         for t in list(tiles):
             (tx0, ty0, tz0), (tx1, ty1, tz1) = t["min"], t["max"]
             if not (tx0 < x1 and tx1 > x0 and ty0 < y1 and ty1 > y0):
                 continue
             G["parts"].remove(t)
+            if not patched.get((x0, y0)):
+                patched[(x0, y0)] = True
+                G["parts"].append(dict(kind="box", min=[x0, y0, tz0], max=[x1, y1, tz1], color="ground",
+                                       item=patch["id"], layer="NOMOD_GROUND"))
             tiles.remove(t)
             for (a0, a1, b0, b1) in ((tx0, tx1, ty0, y0), (tx0, tx1, y1, ty1), (tx0, x0, y0, y1), (x1, tx1, y0, y1)):
                 if a1 - a0 > .01 and b1 - b0 > .01:
                     n = dict(t, min=[a0, b0, tz0], max=[a1, b1, tz1])
                     G["parts"].append(n)
                     tiles.append(n)
+    pp = [p for p in G["parts"] if p["item"] == patch["id"]]
+    if pp:
+        patch["fp"] = [min(p["min"][0] for p in pp), max(p["max"][0] for p in pp),
+                       min(p["min"][1] for p in pp), max(p["max"][1] for p in pp)]
 
 
 def open_manhole(cx, cy):
@@ -244,25 +259,57 @@ def excavation():
     box(x1 + 5, x1 + 7, y0 - 6.05, y0 - 5.95, 3.4, 5.2, "sign")
 
 
+# The scene is drawn in a local frame (the bank along local y at local x = X, the work side at local x < X) and
+# placed on the modular yard's 13.8 kV collector bank (y 960, x 1700-1935, open ground south of it): local
+# (x, y) -> site (y + DX, Y0 + x - X). MH-B lands on the existing bend manhole at (1900, 960).
+Y0, DX = 960.0, 560.0
+LAYER = "OPT_MOD"
+
+
+def to_site(x, y):
+    return y + DX, Y0 + x - X
+
+
+def _place(parts):
+    for p in parts:
+        if p["kind"] == "rod":
+            for k in ("a", "b"):
+                x, y = to_site(p[k][0], p[k][1])
+                p[k] = [round(x, 2), round(y, 2), p[k][2]]
+        elif p["kind"] in ("box", "prism"):
+            x0, y0 = to_site(p["min"][0], p["min"][1])
+            x1, y1 = to_site(p["max"][0], p["max"][1])
+            p["min"] = [round(min(x0, x1), 2), round(min(y0, y1), 2), p["min"][2]]
+            p["max"] = [round(max(x0, x1), 2), round(max(y0, y1), 2), p["max"][2]]
+        else:
+            v = [[*to_site(q[0], q[1]), q[2]] for q in p["v"]]
+            p["v"] = [v[0], v[3], v[2], v[1], v[4], v[7], v[6], v[5]]          # the mirror flips the winding
+
+
+def site_rect(r):
+    x0, y0 = to_site(r[0], r[2])
+    x1, y1 = to_site(r[1], r[3])
+    return (min(x0, x1), max(x0, x1), min(y0, y1), max(y0, y1))
+
+
 def build():
-    it = fuel.new_item("BASE_SERVICES", "Underground: cable-pull maintenance on the R1 duct bank (open manholes, reel, puller, trench)",
-                       (310, 372, 1135, 1380), (-9.3, 12), area="F", basis="typical", register=False,
+    global OPEN
+    (sx0, sx1, sy0, sy1) = site_rect((310, 372, 1135, 1380))
+    it = fuel.new_item(LAYER, "Underground: cable-pull maintenance on the modular-yard 13.8 kV collector (open manholes, reel, puller, trench)",
+                       (sx0, sx1, sy0, sy1), (-9.3, 12), area="I", basis="typical", register=False,
                        sheet="typical (underground maintenance scene)",
-                       info="Outage job: a feeder is replaced in the R1 -> water treatment duct bank. MH-A: cover off, guard "
-                            "rail, davit tripod, gas monitor and ventilation, reel trailer paying out over a feeder sheave. "
-                            "MH-B: cable-puller truck with capstan and boom. Between them an open trench with a trench box "
-                            "exposes the bank. Confined-space entry with attendant (typical).")
-    cut_ground()
-    new_chamber(*MH_B)
-    for (cx, cy) in (MH_A, MH_B):
-        open_manhole(cx, cy)
+                       info="Outage job in the modular power yard: a 13.8 kV collector feeder is replaced in the duct bank "
+                            "from the RICE / SC units to MOD-EH. MH-A: cover off, guard rail, davit tripod, gas monitor and "
+                            "ventilation, reel trailer paying out over a feeder sheave. MH-B: cable-puller truck with capstan "
+                            "and boom. Between them an open trench with a trench box exposes the bank. Confined-space entry "
+                            "with attendant (typical).")
+    n0 = len(fuel.G["parts"])
     tripod(*MH_A)
     blower(MH_A[0] + 6, MH_A[1] + 3, *MH_A)
     box(MH_A[0] + 2.2, MH_A[0] + 2.8, MH_A[1] + 2.2, MH_A[1] + 2.8, 0, 1.2, "crane")   # gas monitor
     rx, ry = reel_trailer(*MH_A)
     puller_truck(*MH_B)
     excavation()
-    # crew
     person(rx + 4, ry - 1.5, 0, 0)                                                      # reel tender
     person(MH_A[0] - 3, MH_A[1] + 3.2, 0, -.8)                                           # guides the cable at the rim
     person(MH_A[0] + 3, MH_A[1] - 1, 0, 3.1, vest="hivis_o")                            # attendant at the tripod
@@ -273,4 +320,18 @@ def build():
     person(X - 2.5, EXC[2] + 8, -5.2, 1.6)                                              # in the trench
     person(X + 2.5, EXC[2] + 15, -5.2, 4.7)
     person(EXC[1] + 2.5, EXC[2] + 6, 0, 3.1, vest="hivis_o")                           # spotter at the edge
+    _place(fuel.G["parts"][n0:])
+    # openings, chambers and covers in site coordinates
+    OPEN = [site_rect(r) for r in OPEN]
+    cut_ground()
+    a, b = to_site(*MH_A), to_site(*MH_B)
+    fuel.G["cur"] = it
+    mh = next(i["id"] for i in fuel.G["items"] if i["name"].startswith("Duct-bank manholes"))
+    for (cx, cy) in (a, b):
+        has = any(p["item"] == mh and p["kind"] == "box" and abs((p["min"][0] + p["max"][0]) / 2 - cx) < 3
+                  and abs((p["min"][1] + p["max"][1]) / 2 - cy) < 3 for p in fuel.G["parts"])
+        if not has:
+            new_chamber(cx, cy)
+        fuel.G["cur"] = it
+        open_manhole(cx, cy)
     return it

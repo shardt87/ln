@@ -431,6 +431,8 @@ def set_visibility(show):
     """Exclude hidden collections from the view layer, so they neither
     render nor block the label visibility rays."""
     show = set(show) | {"SITE", "LANDSCAPE"}
+    if "OPT_MOD" not in show:
+        show.add("NOMOD_GROUND")          # ground over the maintenance openings in the modular yard
     for lc in bpy.context.view_layer.layer_collection.children:
         lc.exclude = lc.name not in show
 

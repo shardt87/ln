@@ -184,3 +184,11 @@ One zone per cycle. Each cycle:
   - **Risers:** `trays.building_beside` now also recognises trays that start within 5 ft alongside a wall. These trays now leave R1 through wall entries below the roof and climb ladder risers to their tiers, like the other building risers.
   - **Copper blocks:** removed.
   - **Interior and wall-sleeve trays:** R1's interior overhead trays and wall sleeves were orange copper bars. They are now galvanised ladder trays carrying their cables.
+
+### Maintenance scene relocated to the modular yard
+- The cable-pull scene (open manholes, davit, blower, reel trailer, puller truck, trench box, excavator, 11 crew) moved off the
+  cramped R1 -> water-treatment bank by the inlet-chilling plant onto the modular power yard's 13.8 kV collector duct bank
+  (y 960, x 1712-1900), open ground south of the RICE / SC units: an MV feeder replacement with room for the vehicles.
+  MH-B reuses the existing bend manhole at (1900, 960); MH-A is a new chamber on the bank.
+- The scene is part of the modular-yard option (layer OPT_MOD); a NOMOD_GROUND patch closes the ground openings in views
+  without the yard (viewer and Blender switch it automatically). View M and cameras E54 / E55 updated.

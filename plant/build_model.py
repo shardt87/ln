@@ -1689,6 +1689,7 @@ LAYERS = {
     "OPT_DC": ("L BTM data centre (~150 MW, design option)", "Optional / adjacent"),
     "OPT_DC_ROUTES": ("L BTM routes", "Optional routes"),
     "OPT_UNDERGROUND": ("Underground: option duct banks", "Optional routes"),
+    "NOMOD_GROUND": ("Ground patch (views without the modular yard)", "Base plant"),
 }
 AREAS = {"A": "Power block", "B": "ACC", "C": "Grid interface", "D": "Fuel gas", "E": "Water / utilities",
          "F": "Controls / service", "G": "Carbon capture", "H": "BESS", "I": "Modular / portable power",
@@ -1714,8 +1715,8 @@ VIEWS = [
     dict(k="U2", n="U2 Underground: all zones (BESS, modular, gas, CCS, H2, BTM)", show=["UNDERGROUND", "OPT_UNDERGROUND"]
          + [l for l in LAYERS if l.startswith(("BASE_", "OPT_")) and not l.endswith("_ROUTES") and l != "OPT_UNDERGROUND"],
          t=[1500, 900, -4], c=[600, -500, 1300]),
-    dict(k="M", n="Maintenance: cable pull at the R1 duct bank (manholes, reel, trench)", show=BASE_SHOW,
-         t=[352, 1245, 0], c=[262, 1120, 80]),
+    dict(k="M", n="Maintenance: cable pull on the modular-yard 13.8 kV collector (manholes, reel, trench)",
+         show=BASE_SHOW + ["OPT_MOD", "OPT_MOD_ROUTES"], t=[1805, 950, 0], c=[1680, 860, 80]),
     dict(k="O1", n="O1 Modular / portable", show=BASE_SHOW + ["OPT_MOD", "OPT_TMP", "OPT_MODX", "OPT_MOD_ROUTES", "OPT_TMP_ROUTES", "OPT_MODX_ROUTES",
          "HV_CORRIDOR", "SWYD_FUTURE"], t=[1960, 880, 20], c=[1520, 300, 760]),
     dict(k="O2", n="O2 BESS", show=BASE_SHOW + ["OPT_BESS", "OPT_BESS_ROUTES"], t=[1740, 560, 5], c=[1480, 200, 420]),
@@ -1744,7 +1745,7 @@ FIT = {
     "H": dict(box=[480, 1100, 370, 560, 0, 60]),
     "U": dict(box=[0, 2420, 0, 1920, -10, 20]),
     "U2": dict(box=[0, 3380, 0, 1920, -10, 20]),
-    "M": dict(box=[310, 372, 1135, 1380, -9, 12]),
+    "M": dict(box=[1695, 1940, 905, 972, -9, 12]),
     "O1": dict(layers=["OPT_MOD", "OPT_TMP", "OPT_MODX"]),
     "O2": dict(layers=["OPT_BESS"]),
     "O3": dict(layers=["OPT_CCS", "OPT_CCSU"]),
@@ -1987,12 +1988,11 @@ N_TRAY = _trays.build(item, items, parts, routes)     # ladder trays, cables, su
 import realism as _realism
 N_REAL = _realism.build(item, items, parts, routes)
 import maintenance as _maint
-_maint.build()
+_maint.build()      # cable-pull scene on the modular-yard 13.8 kV collector bank
 import terminate as _term
 N_TERM = _term.build(items, parts)   # quality sweep: every open pipe end terminated (drop to UG, valve, blind flange)
 print('pipe-end terminations', N_TERM)
 print('supports added under floating parts', _term.support_floating(items, parts))
-#  cable-pull maintenance scene on the R1 duct bank (open manholes, reel, puller, trench)
 
 
 def validate():
