@@ -1715,6 +1715,16 @@ VIEWS = [
     dict(k="U2", n="U2 Underground: all zones (BESS, modular, gas, CCS, H2, BTM)", show=["UNDERGROUND", "OPT_UNDERGROUND"]
          + [l for l in LAYERS if l.startswith(("BASE_", "OPT_")) and not l.endswith("_ROUTES") and l != "OPT_UNDERGROUND"],
          t=[1500, 900, -4], c=[600, -500, 1300]),
+    dict(k="CY", n="Cable showcase: reel yard, SIMpull Truck and product row", show=BASE_SHOW,
+         t=[150, 790, 2], c=[120, 690, 45]),
+    dict(k="CHV", n="Cable showcase: 230 kV XLPE at the BESS cable termination",
+         show=BASE_SHOW + ["OPT_BESS", "OPT_BESS_ROUTES"], t=[1762, 180, 8], c=[1790, 140, 30]),
+    dict(k="CTC", n="Cable showcase: R1 tray riser, Type TC-ER and control cable", show=BASE_SHOW,
+         t=[478, 700, 14], c=[520, 670, 30]),
+    dict(k="CSY", n="Cable showcase: switchyard conductor and copper grounding", show=BASE_SHOW,
+         t=[505, 210, 10], c=[520, 170, 30]),
+    dict(k="CDC", n="Cable showcase: data hall MV-105 35 kV and Armorlite MC",
+         show=BASE_SHOW + ["OPT_DC", "OPT_DC_ROUTES"], t=[2700, 1010, 8], c=[2660, 975, 30]),
     dict(k="M", n="Maintenance: cable pull on the modular-yard 13.8 kV collector (manholes, reel, trench)",
          show=BASE_SHOW + ["OPT_MOD", "OPT_MOD_ROUTES"], t=[1805, 950, 0], c=[1680, 860, 80]),
     dict(k="O1", n="O1 Modular / portable", show=BASE_SHOW + ["OPT_MOD", "OPT_TMP", "OPT_MODX", "OPT_MOD_ROUTES", "OPT_TMP_ROUTES", "OPT_MODX_ROUTES",
@@ -1746,6 +1756,11 @@ FIT = {
     "U": dict(box=[0, 2420, 0, 1920, -10, 20]),
     "U2": dict(box=[0, 3380, 0, 1920, -10, 20]),
     "M": dict(box=[1695, 1940, 905, 972, -9, 12]),
+    "CY": dict(box=[44, 316, 700, 880, 0, 14]),
+    "CHV": dict(box=[1740, 1780, 160, 195, 0, 26]),
+    "CTC": dict(box=[465, 495, 660, 740, 0, 36]),
+    "CSY": dict(box=[490, 520, 195, 215, 0, 10]),
+    "CDC": dict(box=[2680, 2730, 990, 1030, 0, 30]),
     "O1": dict(layers=["OPT_MOD", "OPT_TMP", "OPT_MODX"]),
     "O2": dict(layers=["OPT_BESS"]),
     "O3": dict(layers=["OPT_CCS", "OPT_CCSU"]),
@@ -1989,6 +2004,8 @@ import realism as _realism
 N_REAL = _realism.build(item, items, parts, routes)
 import maintenance as _maint
 _maint.build()      # cable-pull scene on the modular-yard 13.8 kV collector bank
+import showcase as _show
+print("cable showcase", _show.build())
 import terminate as _term
 N_TERM = _term.build(items, parts)   # quality sweep: every open pipe end terminated (drop to UG, valve, blind flange)
 print('pipe-end terminations', N_TERM)
@@ -2013,7 +2030,7 @@ model = dict(
     disclaimer="Conceptual illustration. Not engineered. Not for construction.",
     source="SK-3X1 Drawing Set Rev 14 (Sept 26, 2026), Stephan Hardt | Power Generation Solutions",
     layers={k: dict(label=v[0], group=v[1]) for k, v in LAYERS.items()},
-    areas=AREAS, views=VIEWS, items=items, parts=parts, routes=routes,
+    areas=AREAS, views=VIEWS, items=items, parts=parts, routes=routes, decals=_fuel.G.get("decals", []),
     underground_audit={k: v for k, v in N_UG['audit'].items()})
 
 if __name__ == "__main__":

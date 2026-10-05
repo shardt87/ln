@@ -194,3 +194,21 @@ One zone per cycle. Each cycle:
   without the yard (viewer and Blender switch it automatically). View M and cameras E54 / E55 updated.
 - Fix: the ground cut now subtracts every opening from each compound tile in one pass (the old split left overlapping
   duplicate tiles along the bank, which rendered as a black band); E54 / E55 re-rendered with shorter captions.
+
+### Cable product showcase (Southwire, the requested cable supplier)
+- New `showcase.py`: printed decals (placards, reel stencils, truck livery) as a model-level `decals` list, drawn by
+  the viewer (canvas textures) and Blender (PIL image textures); brand lines are flagged so `build_viewer.py --generic`
+  and the Blender `--generic` flag leave the wordmarks off (`viewer/index.html` = generic, `viewer/index_southwire.html`
+  = branded).
+- Cutaway display stands (2:1 samples, layers stepped back from the cut: conductor, insulation, shields, sheath /
+  armor, jacket; spec placard and sign panel) for 230 kV XLPE, MV-105, ARMOR-X MC-HL, Type TC-ER, instrumentation,
+  SIMpull THHN, overhead conductor (ACSR / ACSS / C7), bare copper grounding, Armorlite MC / MV-105 35 kV.
+- At the point of use: R1 tray riser (TC-ER), switchyard (overhead conductor, bare Cu), plant gas yard (ARMOR-X MC-HL,
+  Class I Div 2), BESS 230 kV cable termination (HV XLPE), BESS collection and modular-yard collector (MV-105),
+  data hall A gallery (MV-105 35 kV, Armorlite MC).
+- The drawn cable reel yard / outage laydown is now a stocked reel yard: three rows of stencilled reels (230 kV on a
+  steel reel, MV-105, ARMOR-X, TC-ER, instrumentation), the SIMpull Truck (flatbed with three SIMpull Reels on
+  payoffs, livery on the skirts and doors) unloading, two reels on payoffs with a crew, the full product row and a
+  yard sign. The modular-yard pull scene's reel now carries MV-105 with stencilled flanges.
+- Viewer views CY, CHV, CTC, CSY, CDC; Blender cameras E58 (reel yard + SIMpull Truck), E59 (product row),
+  E60 (230 kV cutaway at the BESS termination); E54 re-rendered with the branded reel.

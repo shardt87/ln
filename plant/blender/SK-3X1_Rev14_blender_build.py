@@ -52,6 +52,7 @@ ap.add_argument("--blend", default="")
 ap.add_argument("--no-render", action="store_true")
 ap.add_argument("--set", default="", help="camera set for --style pro: '' (plates P1-P11) or 'epic' (E1-E8)")
 ap.add_argument("--overlay", default="", help="coastal variant overlay (plant/coastal/sk3x1_coastal_A.json or _B)")
+ap.add_argument("--generic", action="store_true", help="leave the cable supplier's wordmarks and livery off")
 args = ap.parse_args(argv)
 
 model = json.load(open(os.path.join(PLANT, "sk3x1_model.json")))
@@ -245,6 +246,75 @@ for (iid, layer), ps in buckets.items():
     if it.get("wiring"):
         ob["wiring"] = "; ".join(it["wiring"])
     item_objs.setdefault(iid, []).append(ob)
+# Printed panels (placards, reel stencils, truck livery): image textures drawn with PIL on thin planes
+def decal_image(d, path):
+    from PIL import Image, ImageDraw, ImageFont
+    W = 1024
+    H = max(48, round(W * d["h"] / d["w"]))
+    img = Image.new("RGBA", (W, H), d["bg"] if d.get("bg") else (0, 0, 0, 0))
+    g = ImageDraw.Draw(img)
+    fonts = {1: "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 0: "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"}
+    tot = sum(l["s"] * 1.35 for l in d["lines"])
+    y = max(0, (1 - tot) / 2) * H
+    for l in d["lines"]:
+        lh = l["s"] * 1.35 * H
+        if l.get("band"):
+            g.rectangle([0, y, W, y + lh], fill=l["band"])
+        px = max(6, int(l["s"] * H * .95))
+        f = ImageFont.truetype(fonts[l["b"]], px)
+        w = g.textlength(l["t"], font=f)
+        if w > W * .92:
+            f = ImageFont.truetype(fonts[l["b"]], max(6, int(px * W * .92 / w)))
+        g.text((W / 2, y + lh / 2), l["t"], font=f, fill=l["c"], anchor="mm")
+        y += lh
+    img.save(path)
+
+
+def make_decals():
+    ddir = os.path.join(args.out, "_decals")
+    os.makedirs(ddir, exist_ok=True)
+    n = 0
+    for k, d in enumerate(model.get("decals", [])):
+        if args.generic:
+            if d.get("brand"):
+                continue
+            d = dict(d, lines=[l for l in d["lines"] if not l.get("brand")])
+            if not d["lines"]:
+                continue
+        path = os.path.join(ddir, f"decal_{k:04d}.png")
+        decal_image(d, path)
+        nv = Vector(d["n"])
+        up = Vector(d.get("up") or ((0, 1, 0) if abs(nv.z) > .9 else (0, 0, 1)))
+        rt = up.cross(nv).normalized()
+        c = Vector(d["c"]) + nv * .04
+        hw, hh = d["w"] / 2, d["h"] / 2
+        q = [c - rt * hw - up * hh, c + rt * hw - up * hh, c + rt * hw + up * hh, c - rt * hw + up * hh]
+        me = bpy.data.meshes.new(f"decal {k}")
+        me.from_pydata([tuple(v * FT) for v in q], [], [(0, 1, 2, 3)])
+        uv = me.uv_layers.new()
+        for i, co in enumerate(((0, 0), (1, 0), (1, 1), (0, 1))):
+            uv.data[i].uv = co
+        m = bpy.data.materials.new(f"decal {k}")
+        m.use_nodes = True
+        nt = m.node_tree
+        b = nt.nodes["Principled BSDF"]
+        tex = nt.nodes.new("ShaderNodeTexImage")
+        tex.image = bpy.data.images.load(path)
+        tex.image.pack()
+        nt.links.new(tex.outputs["Color"], b.inputs["Base Color"])
+        nt.links.new(tex.outputs["Alpha"], b.inputs["Alpha"])
+        b.inputs["Roughness"].default_value = .55
+        if hasattr(m, "blend_method"):
+            m.blend_method = "CLIP" if not d.get("bg") else "OPAQUE"
+        me.materials.append(m)
+        ob = bpy.data.objects.new(f"decal {items[d['item']]['name'][:40]} {k}", me)
+        ob["item"] = d["item"]
+        coll(d["layer"]).objects.link(ob)
+        n += 1
+    return n
+
+
+print("decals", make_decals())
 # Routes. The drawing runs many circuits along one tray path, so collinear
 # segments overlap; coincident faces render black in Cycles. Merge them into
 # one run per (layer, type, line) and lift N-S runs slightly above E-W runs.

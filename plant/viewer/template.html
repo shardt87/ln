@@ -383,6 +383,30 @@ for(const b of Object.values(buckets)){
     const e = new THREE.LineSegments(new THREE.EdgesGeometry(merged, 35), edgeMat); grp(b.layer).add(e);
   }
 }
+// printed panels (placards, reel stencils, truck livery): canvas textures on thin planes
+for(const d of (MODEL.decals||[])){
+  const cw = 1024, ch = Math.max(48, Math.round(cw*d.h/d.w));
+  const cv = document.createElement('canvas'); cv.width=cw; cv.height=ch; const g=cv.getContext('2d');
+  if(d.bg){ g.fillStyle=d.bg; g.fillRect(0,0,cw,ch); }
+  const tot = d.lines.reduce((a,l)=>a+l.s*1.35,0); let y = Math.max(0,(1-tot)/2)*ch;
+  g.textAlign='center'; g.textBaseline='middle';
+  for(const l of d.lines){
+    const lh=l.s*1.35*ch; let px=l.s*ch;
+    if(l.band){ g.fillStyle=l.band; g.fillRect(0,y,cw,lh); }
+    const font = q => `${l.b?'700':'500'} ${q}px "Helvetica Neue",Arial,sans-serif`;
+    g.font=font(px); const w=g.measureText(l.t).width; if(w>cw*.92){ px*=cw*.92/w; g.font=font(px); }
+    g.fillStyle=l.c; g.fillText(l.t, cw/2, y+lh/2); y+=lh;
+  }
+  const tex=new THREE.CanvasTexture(cv); tex.encoding=THREE.sRGBEncoding; tex.anisotropy=8;
+  const mat=new THREE.MeshStandardMaterial({map:tex, roughness:.55, clippingPlanes:CLIP, transparent:!d.bg, alphaTest:d.bg?0:.25,
+    depthWrite:!!d.bg, polygonOffset:true, polygonOffsetFactor:-2, polygonOffsetUnits:-2});
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(d.w,d.h), mat);
+  const nn=new THREE.Vector3(d.n[0], d.n[2], -d.n[1]);
+  m.position.copy(P(...d.c)).addScaledVector(nn,.04);
+  if(Math.abs(nn.y)>.9) m.up.set(0,0,-1);
+  m.lookAt(m.position.clone().add(nn)); m.userData.item=d.item; m.receiveShadow=true;
+  grp(d.layer).add(m); pickables.push(m);
+}
 // routes: one mesh per route polyline
 const pathRoutes=[];
 const PIPE_TYPES=['hv_overhead','hmod','steam','condensate','feedwater','ccw','fuel_gas','fuel_oil','cw','chw','hydrogen','lng','mv_tray','lv_tray','control_tray','ipb','cable_trench','water','aux_steam'];

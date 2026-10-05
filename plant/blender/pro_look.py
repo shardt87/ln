@@ -84,10 +84,12 @@ LOOK = {
     "cable_mc": ("galv", "#6d7377", .45, .6), "cable_inst": ("paint", "#26467a", .5, 0),
     "cable_tcx": ("paint", "#cfa818", .45, 0), "cable_fa": ("paint", "#a52e25", .5, 0),
     "cable_fo": ("paint", "#d36f22", .45, 0),
+    "sw_red": ("paint", "#c41f27", .4, 0), "xlpe": ("paint", "#e4e0cf", .3, 0), "alu": ("galv", "#b3b8bc", .3, .85),
+    "steel_dark": ("paint", "#3a4045", .45, .3), "white_truck": ("paint", "#e9ebea", .3, 0),
 }
 _mats = {}
 # materials kept clean: glass, lamps, people, signs, labels, cables and the like
-WEATHER_SKIP = {"lamp", "sign", "label", "hivis", "hivis_o", "hardhat", "workwear", "skin", "glass",
+WEATHER_SKIP = {"sw_red", "xlpe", "alu", "white_truck", "lamp", "sign", "label", "hivis", "hivis_o", "hardhat", "workwear", "skin", "glass",
                 "window", "insulator", "rail", "cable_mv", "cable_armor", "cable_tc", "cable_mc", "cable_inst", "cable_tcx",
                 "cable_fa", "cable_fo", "cable", "truck", "sea", "water"}
 
@@ -678,6 +680,12 @@ EPIC = [
          eye=(712, 1150, 150), target=(655, 1215, 110), lens=28, show="all"),
     dict(k="E57", n="CCS T-1 / T-2: 230 kV cable terminations, jumpers to the bushings, firewall; tray riser at the VFD building",
          eye=(1300, 1085, 55), target=(1250, 1020, 20), lens=26, show="all"),
+    dict(k="E58", n="Cable reel yard: SIMpull Truck unloading SIMpull Reels on payoffs, branded reel rows",
+         eye=(214, 702, 15), target=(160, 752, 6), lens=28, show="base"),
+    dict(k="E59", n="Cable product row: cutaway samples from 230 kV XLPE to SIMpull THHN and bare copper",
+         eye=(121, 769, 5.6), target=(103, 779.5, 3.7), lens=30, show="base"),
+    dict(k="E60", n="Where the cable goes: 230 kV XLPE cutaway at the BESS cable termination structure",
+         eye=(1779, 164, 7.5), target=(1765, 178, 4.5), lens=30, show="all"),
     dict(k="E26", n="HRSG 1 west wall: buckstays, SCR doors, ammonia injection grid, downcomers, blowdown tank",
          eye=(452, 905, 92), target=(628, 690, 52), lens=28, show="all"),
     dict(k="E27", n="HRSG roofs: drums, risers, safety valves and silencers, steam leads", eye=(560, 618, 122),

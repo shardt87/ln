@@ -153,7 +153,7 @@ def reel_trailer(cx, cy):
     rod((rx - 3, ry, rz), (rx + 3, ry, rz), .25, "steel", seg=8)                        # spindle
     for sx in (-2.2, 2.2):
         rod((rx + sx - .2, ry, rz), (rx + sx + .2, ry, rz), 4.6, "timber", seg=28)      # flanges
-    rod((rx - 2, ry, rz), (rx + 2, ry, rz), 3.6, "cable_tc", seg=28)                    # wound cable
+    rod((rx - 2, ry, rz), (rx + 2, ry, rz), 3.6, "cable_mv", seg=28)                    # wound cable
     rod((rx - 2.6, ry + 4.5, 2.1), (rx - 2.6, ry + 9.5, 2.1), .18, "steel", seg=6)      # tongue
     fuel_pickup(rx - 2.6, ry + 20)
     # feeder sheave on a stand at the rim, cable from the reel top over it and down the shaft
@@ -325,6 +325,14 @@ def build():
     person(X + 2.5, EXC[2] + 15, -5.2, 4.7)
     person(EXC[1] + 2.5, EXC[2] + 6, 0, 3.1, vest="hivis_o")                           # spotter at the edge
     _place(fuel.G["parts"][n0:])
+    # the reel's stencilled flanges (supplier: Southwire, as requested)
+    import showcase
+    rxl, ryl = MH_A[0] - 15, MH_A[1] + 6
+    for sgn in (-1, 1):
+        sx, sy = to_site(rxl + sgn * 2.42, ryl)
+        showcase.decal((sx, sy, 5.6), (0, sgn, 0), 6.6, 3.5,
+                       [(showcase.BRAND, .24, 1, showcase.RED, 1), ("MV-105 15 kV 500 KCMIL", .13, 1, "#2a2a2a"),
+                        ("1/C Cu EPR 133 %  -  3,200 FT", .1, 0, "#2a2a2a")], bg=None)
     # openings, chambers and covers in site coordinates
     OPEN = [site_rect(r) for r in OPEN]
     cut_ground()

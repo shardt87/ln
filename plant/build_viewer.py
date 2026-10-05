@@ -9,7 +9,18 @@ import json
 import os
 HERE = os.path.dirname(os.path.abspath(__file__))
 tpl = open(os.path.join(HERE, "viewer", "template.html")).read()
+import sys
+GENERIC = "--generic" in sys.argv     # unbranded build: supplier wordmarks and livery left off
 model = json.load(open(os.path.join(HERE, "sk3x1_model.json")))
+if GENERIC:
+    dd = []
+    for d in model.get("decals", []):
+        if d.get("brand"):
+            continue
+        d["lines"] = [l for l in d["lines"] if not l.get("brand")]
+        if d["lines"]:
+            dd.append(d)
+    model["decals"] = dd
 ov = json.load(open(os.path.join(HERE, "coastal", "sk3x1_coastal_A.json")))
 meta = ov["coastal"]
 model["layers"].update(ov["layers"])
@@ -44,5 +55,6 @@ tpl = tpl[:i] + "\nObject.assign(window, {MODEL, goView});\n})().catch(e => { co
 for key, data in (("PALETTE", open(os.path.join(HERE, "palette.json")).read()),
                   ("REPORT", open(os.path.join(HERE, "verify_report.json")).read())):
     tpl = tpl.replace(f"/*{key}_JSON*/null", data)
-open(os.path.join(HERE, "viewer", "index.html"), "w").write(tpl)
-print("wrote viewer/index.html", len(tpl), "bytes;", len(ov["items"]), "coastal items merged")
+OUT = sys.argv[sys.argv.index("--out") + 1] if "--out" in sys.argv else os.path.join(HERE, "viewer", "index.html")
+open(OUT, "w").write(tpl)
+print("wrote", OUT, len(tpl), "bytes;", len(ov["items"]), "coastal items merged")

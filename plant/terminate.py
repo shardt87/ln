@@ -12,7 +12,7 @@ from collections import defaultdict
 
 PIPE = {"pipe", "waterline", "fuelgas", "fueloil", "steam", "lngpipe", "cw", "chw", "hydrogen", "pvc_blue",
         "pvc_green", "hdpe", "ductile"}
-SKIP = ("People", "Vehicles", "Parking", "Compound", "Underground", "Duct-bank manholes", "Underground: cable-pull")
+SKIP = ("People", "Vehicles", "Parking", "Compound", "Underground", "Duct-bank manholes", "Underground: cable-pull", "Cable showcase")
 G = 10
 
 
