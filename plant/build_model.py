@@ -1690,6 +1690,7 @@ LAYERS = {
     "OPT_DC_ROUTES": ("L BTM routes", "Optional routes"),
     "OPT_UNDERGROUND": ("Underground: option duct banks", "Optional routes"),
     "NOMOD_GROUND": ("Ground patch (views without the modular yard)", "Base plant"),
+    "NOBESS_GROUND": ("Ground patch (views without the BESS)", "Base plant"),
 }
 AREAS = {"A": "Power block", "B": "ACC", "C": "Grid interface", "D": "Fuel gas", "E": "Water / utilities",
          "F": "Controls / service", "G": "Carbon capture", "H": "BESS", "I": "Modular / portable power",
@@ -1721,6 +1722,10 @@ VIEWS = [
          show=BASE_SHOW + ["OPT_BESS", "OPT_BESS_ROUTES"], t=[1756, 177, 12], c=[1772, 202, 16]),
     dict(k="CEH", n="Cable installed: MV cable entries under MOD-EH",
          show=BASE_SHOW + ["OPT_MOD", "OPT_MOD_ROUTES"], t=[1960, 899, 1.6], c=[1953, 911, 4.5]),
+    dict(k="CPM", n="Cable installed: data hall pad-mount termination cabinet",
+         show=BASE_SHOW + ["OPT_DC", "OPT_DC_ROUTES"], t=[2751, 1318.5, 3], c=[2747.5, 1329, 5.6]),
+    dict(k="CBE", n="Cable installed: BESS skid elbows and the open DC trench",
+         show=BASE_SHOW + ["OPT_BESS", "OPT_BESS_ROUTES"], t=[1610, 490, 3.3], c=[1619, 483, 5.5]),
     dict(k="M", n="Maintenance: cable pull on the modular-yard 13.8 kV collector (manholes, reel, trench)",
          show=BASE_SHOW + ["OPT_MOD", "OPT_MOD_ROUTES"], t=[1805, 950, 0], c=[1680, 860, 80]),
     dict(k="O1", n="O1 Modular / portable", show=BASE_SHOW + ["OPT_MOD", "OPT_TMP", "OPT_MODX", "OPT_MOD_ROUTES", "OPT_TMP_ROUTES", "OPT_MODX_ROUTES",
@@ -1755,6 +1760,8 @@ FIT = {
     "CY": dict(box=[44, 316, 700, 880, 0, 14]),
     "CHV": dict(box=[1745, 1767, 166, 188, 0, 27]),
     "CEH": dict(box=[1925, 1995, 890, 906, 0, 4]),
+    "CPM": dict(box=[2744, 2758, 1308, 1322, 0, 9]),
+    "CBE": dict(box=[1600, 1620, 480, 500, 0, 9]),
     "O1": dict(layers=["OPT_MOD", "OPT_TMP", "OPT_MODX"]),
     "O2": dict(layers=["OPT_BESS"]),
     "O3": dict(layers=["OPT_CCS", "OPT_CCSU"]),
@@ -2002,6 +2009,18 @@ import showcase as _show
 print("cable showcase", _show.build())
 import cable_install as _ci
 print("e-house bottom cable entries", _ci.ehouse_bottom_entry("MOD-EH"))
+_pm = [i for i in items if i["name"].startswith("Data hall") and "pad-mount 34.5/0.48 kV (3.5 MVA)" in i["name"]]
+for _i in _pm:
+    _face = "+y" if "A-side" in _i["name"] else "-y"
+    _ci.padmount_cabinet(_i, _face, open_=_i["name"].startswith("Data hall A A-side") and _i["fp"][0] < 2750)
+_sk = [i for i in items if i["name"] == "BESS PCS / MV skid"]
+for _i in _sk:
+    _ci.padmount_cabinet(_i, "+x", open_=_i["fp"][0] == 1590 and _i["fp"][2] == 486)
+_ci.bess_dc_trench(next(i for i in _sk if i["fp"][0] == 1710 and i["fp"][2] == 544), open_=True)
+for _i in _sk:
+    if not (_i["fp"][0] == 1710 and _i["fp"][2] == 544):
+        _ci.bess_dc_trench(_i)
+print("pad-mount cabinets", len(_pm) + len(_sk))
 import terminate as _term
 N_TERM = _term.build(items, parts)   # quality sweep: every open pipe end terminated (drop to UG, valve, blind flange)
 print('pipe-end terminations', N_TERM)

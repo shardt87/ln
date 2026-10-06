@@ -228,3 +228,13 @@ One zone per cycle. Each cycle:
   bell (MV-105 triplex from the grey conduits, fibre from the orange) and rise under the skid beam into gland plates
   under the bottom-entry switchgear.
 - Decals can be generic-only twins (`nobrand`) of branded ones. Views CHV, CEH; camera E60.
+- Pad-mount termination cabinets (`padmount_cabinet`) on all 96 data-hall 34.5/0.48 kV pad-mounts (feeder side) and the
+  15 BESS PCS / MV skid transformers (collector side): loop feed of six 200 A load-break elbows on the HV bushings,
+  test-point caps, concentric-neutral leads to the ground bus, parking-stand bracket, cables down through the pad to
+  the feeder bank; LV compartment shut. Doors shut and labelled on most; open on one per area (printed legend on a
+  cable). The tank face stops at the cabinet back sheet.
+- BESS DC trench (`bess_dc_trench`): the flat slabs are now precast U-sections with lids; at one skid a run of lids is
+  lifted and stacked on timber and the compound ground and yard gravel are opened (patch layer NOBESS_GROUND for
+  views without the BESS), showing the paired 1,500 V DC conductors from the container DC entry boxes along the
+  trench floor and up into the inverter gland plate.
+- Blender: patch layers are no longer part of "all"; set_visibility decides them. Views CPM, CBE; cameras E61-E63.
