@@ -1,7 +1,9 @@
-"""Section cover 'Plant Zones' on the clean E68 render (CCS absorbers over the legend-printed cable on the CCS rack).
+"""Section covers (letter portrait, JPG + PDF) on a clean hero render.
 
-    python blender/cover_zones.py [renders/epic/E68_pro_clean.jpg] [out.jpg]
-Writes renders/cover/SK-3X1_plant_zones_cover.jpg (and .pdf, letter portrait)."""
+    python blender/cover_zones.py            # both covers
+    python blender/cover_zones.py ccs        # the carbon-capture product-application cover only
+- ccs:   'Carbon Capture' cable-application cover on E68 (absorbers over ARMOR-X on the CCS rack)
+- zones: 'Plant Zones' index cover on the same render"""
 import json
 import os
 import sys
@@ -27,9 +29,31 @@ def tracked(d, xy, text, font, fill, track):
     return x
 
 
-def main():
-    src = sys.argv[1] if len(sys.argv) > 1 else os.path.join(PLANT, "renders", "epic", "E68_pro_clean.jpg")
-    out = sys.argv[2] if len(sys.argv) > 2 else os.path.join(PLANT, "renders", "cover", "SK-3X1_plant_zones_cover.jpg")
+def zone_items():
+    areas = json.load(open(os.path.join(PLANT, "sk3x1_model.json")))["areas"]
+    return [(a, n.upper()) for a, n in areas.items() if a != "L"]      # plant zones; the data-centre option left out
+
+
+COVERS = {
+    "ccs": dict(src="E68_pro_clean.jpg", out="SK-3X1_ccs_cable_cover.jpg", kicker="PRODUCT APPLICATION  ·  ZONE G",
+                title=("CARBON", "CAPTURE"),
+                tagline=("Absorbers, strippers, 16 MW fans:", "all of it runs on cable."),
+                items=[("230 kV", "XLPE TO T-1 / T-2"),
+                       ("15 kV", "MV-105 TO FANS, COMPRESSORS"),
+                       ("600 V", "ARMOR-X MC-HL, PROCESS RACKS"),
+                       ("600 V", "TYPE TC-ER POWER AND CONTROL"),
+                       ("PLTC", "ABSORBER INSTRUMENTATION"),
+                       ("4/0", "BARE COPPER GROUNDING")], key_w=112, item_px=21, title_px=118, title_track=8),
+    "zones": dict(src="E68_pro_clean.jpg", out="SK-3X1_plant_zones_cover.jpg", kicker="SK-3X1  ·  REV 14  ·  3x1 COMBINED CYCLE",
+                  title=("PLANT", "ZONES"),
+                  tagline=("From the grid to the absorber stack,", "and the cable that connects it all."),
+                  items=None, key_w=40),
+}
+
+
+def make(c):
+    src = os.path.join(PLANT, "renders", "epic", c["src"])
+    out = os.path.join(PLANT, "renders", "cover", c["out"])
     os.makedirs(os.path.dirname(out), exist_ok=True)
     img = Image.open(src).convert("RGB")
     W0, H0 = img.size
@@ -51,24 +75,24 @@ def main():
     img = Image.composite(Image.new("RGB", (W, H), (236, 238, 237)), img, veil)
     d = ImageDraw.Draw(img)
     m = int(96 * k)
-    tracked(d, (m, int(110 * k)), "SK-3X1  ·  REV 14  ·  3x1 COMBINED CYCLE", f("IBMPlexMono-Regular.ttf", int(22 * k)), INK,
-            3 * k)
+    tracked(d, (m, int(110 * k)), c["kicker"], f("IBMPlexMono-Regular.ttf", int(22 * k)), INK, 3 * k)
     d.line([(m, int(160 * k)), (m + int(84 * k), int(160 * k))], fill=COPPER, width=max(2, int(4 * k)))
-    tracked(d, (m - int(6 * k), int(200 * k)), "PLANT", f("Jura-Light.ttf", int(150 * k)), INK, 14 * k)
-    tracked(d, (m - int(6 * k), int(350 * k)), "ZONES", f("Jura-Light.ttf", int(150 * k)), INK, 14 * k)
-    d.text((m, int(540 * k)), "From the grid to the absorber stack,", font=f("InstrumentSerif-Italic.ttf", int(40 * k)),
+    tracked(d, (m - int(6 * k), int(200 * k)), c["title"][0], f("Jura-Light.ttf", int(c.get("title_px", 150) * k)), INK,
+            c.get("title_track", 14) * k)
+    tracked(d, (m - int(6 * k), int(350 * k)), c["title"][1], f("Jura-Light.ttf", int(c.get("title_px", 150) * k)), INK,
+            c.get("title_track", 14) * k)
+    d.text((m, int(540 * k)), c["tagline"][0], font=f("InstrumentSerif-Italic.ttf", int(40 * k)),
            fill=INK)
-    d.text((m, int(590 * k)), "and the cable that connects it all.", font=f("InstrumentSerif-Italic.ttf", int(40 * k)),
+    d.text((m, int(590 * k)), c["tagline"][1], font=f("InstrumentSerif-Italic.ttf", int(40 * k)),
            fill=INK)
-    # zone index (plant zones; the data-centre option is left out)
-    areas = json.load(open(os.path.join(PLANT, "sk3x1_model.json")))["areas"]
-    zones = [(a, n) for a, n in areas.items() if a != "L"]
+    # index: plant zones, or the cable applications of the section
+    items = c["items"] or zone_items()
     y = int(700 * k)
     mono = f("IBMPlexMono-Regular.ttf", int(21 * k))
-    name = f("Jura-Medium.ttf", int(23 * k))
-    for a, n in zones:
+    name = f("Jura-Medium.ttf", int(c.get("item_px", 23) * k))
+    for a, n in items:
         d.text((m, y + int(2 * k)), a, font=mono, fill=COPPER)
-        tracked(d, (m + int(40 * k), y), n.upper(), name, INK, 1.6 * k)
+        tracked(d, (m + int(c["key_w"] * k), y), n, name, INK, 1.6 * k)
         y += int(40 * k)
     # foot: credit and disclaimer, on a thin dark band
     band = int(64 * k)
@@ -85,4 +109,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    for key in (sys.argv[1:] or list(COVERS)):
+        make(COVERS[key])
