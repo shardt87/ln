@@ -599,12 +599,28 @@ if args.style == "pro":
             if 0 < pc.x < 1 and 0 < pc.y < 1 and pc.z > 0:
                 calls.append(dict(x=round(pc.x * rx, 1), y=round((1 - pc.y) * ry, 1), num=num, text=text, colour=colour))
         json.dump(dict(view=info, labels=[], callouts=calls, rw=rx, rh=ry), open(base + ".labels.json", "w"), indent=1)
+        # interior cameras: the high-bay fixtures (lamp parts above EL 60) light the hall
+        lamps_on = []
+        if h.get("lamps"):
+            for p in model["parts"]:
+                lo_, hi_ = (p["min"], p["max"]) if p["kind"] == "box" else (p["a"], p["b"]) if p["kind"] == "rod" else (None, None)
+                if p["color"] == "lamp" and lo_ and min(lo_[2], hi_[2]) > 60 and p["layer"] in show:
+                    c = [(lo_[i] + hi_[i]) / 2 for i in range(2)] + [min(lo_[2], hi_[2])]
+                    ld = bpy.data.lights.new("high bay", "AREA")
+                    ld.energy, ld.size, ld.color = h["lamps"], 2.0, (1.0, .95, .86)
+                    lo = bpy.data.objects.new("high bay", ld)
+                    lo.location = Vector((c[0], c[1], c[2] - .5)) * FT
+                    scene.collection.objects.link(lo)
+                    lamps_on.append(lo)
+            print("high-bay lights", len(lamps_on))
         if not args.no_render:
             t1 = time.time()
             scene.render.filepath = base + ".png"
             bpy.ops.render.render(write_still=True)
             info["seconds"] = round(time.time() - t1, 1)
             print(f"rendered {h['k']:<3} {h['n']:<40} {h['lens']} mm  {info['seconds']}s")
+        for lo in lamps_on:
+            bpy.data.objects.remove(lo, do_unlink=True)
         for ob in hidden:
             ob.hide_render = False
         manifest.append(info)

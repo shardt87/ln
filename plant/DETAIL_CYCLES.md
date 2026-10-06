@@ -263,3 +263,4 @@ One zone per cycle. Each cycle:
   tagging, fresh ties on the MV bundle. Tray cables in this stack drawn round (16 sides); jackets matte. Blender decals
   share one image / material per unique label. View SL; camera E67.
 - Tray stack: ARMOR-X drawn with its corrugated armor ribs through the jacket (x 596-652), an ARMOR-X offcut on the lift platform stripped to the bare corrugated aluminium armor and conductors; E67 re-shot looking east inside the hall (walls shown, roof off) with the lift crew mid-frame.
+- E67 re-shot with the hall roof on: interior cameras can switch the high-bay fixtures on as area lights (camera option lamps=W); frames GT1 below the tray stack. View SL shows the roof.
