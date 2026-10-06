@@ -303,3 +303,79 @@ def turbine_hall_pull():
     mt.person(xr + 10, yr + 3.5, .3, .3, vest="hivis_o")                                # watches the sheave, radio
     mt.person(xr - 7, yr - 9, .3, .9, hat="sign")                                        # supervisor
 
+
+
+# printed jacket legends by tray cable colour: (text, ink)
+LEGENDS = {
+    "cable_mv": ("MV-105  15 kV  1/C 500 KCMIL CU  EPR 133%  TAPE SHIELD  PVC  UL 1072", "#e8e8e4"),
+    "cable_armor": ("ARMOR-X  MC-HL  15 kV  3/C 500 KCMIL CU  EPR  CWA  PVC  UL 2225", "#f0e6d8"),
+    "cable_tc": ("TYPE TC-ER  600 V  3/C 4/0 AWG CU  XHHW-2  SUN RES  UL 1277", "#e8e8e4"),
+    "cable_inst": ("INSTRUMENTATION  PLTC-ER  16 AWG  4 TSP  300 V  ICEA S-73-532", "#f2f2ee"),
+    "cable_tcx": ("TYPE KX  THERMOCOUPLE EXT  16 AWG  2/C  PLTC-ER", "#1d1f21"),
+}
+
+
+def tray_legends(x0=596.0, x1=724.0, step=6.5, y0=541.5, y1=553.5, z0=41.5, z1=50.0):
+    """Print the jacket legend on the top of every tray cable in the turbine-hall tray stack between x0 and x1,
+    repeated along the cable the way it is printed at the factory (staggered per cable)."""
+    tr = next(i for i in fuel.G["items"] if i["name"].startswith("Cable trays and isolated-phase"))
+    cur = fuel.G["cur"]
+    fuel.G["cur"] = tr
+    n = 0
+    sa, ca = math.sin(math.radians(40)), math.cos(math.radians(40))    # print turned 40 deg toward the walkway
+    for p in [q for q in fuel.G["parts"] if q["item"] == tr["id"] and q["kind"] == "rod" and q["color"] in LEGENDS]:
+        a, b = p["a"], p["b"]
+        if abs(a[1] - b[1]) > .01 or abs(a[2] - b[2]) > .01 or not (y0 < a[1] < y1 and z0 < a[2] < z1):
+            continue
+        lo, hi = sorted((a[0], b[0]))
+        text, ink = LEGENDS[p["color"]]
+        r = p["r"]
+        L = min(4.6, 2.6 + r * 6)
+        off = (hash((round(a[1], 2), round(a[2], 2))) % 7) / 7 * step
+        x = max(lo, x0) + off
+        while x + L < min(hi, x1):
+            for (t, br) in ((BRAND + "  " + text, 1), (text, 0)):
+                decal((x + L / 2, a[1] - (r + .005) * sa, a[2] + (r + .005) * ca), (0, -sa, ca), L, r * .7,
+                      [(t, .8, 1, ink, br)], bg=None, up=(0, ca, sa), generic_only=not br)
+            n += 1
+            x += step
+    fuel.G["cur"] = cur
+    return n
+
+
+def tray_dresser(lx0=650.0, ly0=535.0):
+    """Electrician on a scissor lift beside the tray stack (deck EL 20), dressing and tying the cables in the MV tray,
+    a second checking the cable tags in the LV tray; a reel of tie wraps and tags on the platform."""
+    import maintenance as mt
+    it = fuel.new_item("BASE_POWER_BLOCK", "Cable dressing: electricians on a lift at the turbine-hall tray stack",
+                       (lx0 - .5, lx0 + 7.5, ly0 - .3, ly0 + 5.8), (20, 50), basis="typical", register=False,
+                       area="B", sheet="typical (cable installation)",
+                       info="Tray stack east of GT1: MV-105 and ARMOR-X in the EL 48 MV tray, Type TC-ER and MC-HL "
+                            "in the EL 44 LV trays, instrumentation and thermocouple cable in the EL 42 control tray; "
+                            "electricians dressing and tagging cable from a scissor lift. Cable supplier: Southwire "
+                            "(as requested).")
+    fuel.G["cur"] = it
+    lx1, ly1, zp = lx0 + 7, ly0 + 5, 42.6
+    box(lx0, lx1, ly0, ly1, 20, 21.5, "crane")
+    for k in range(5):
+        z0_, z1_ = 21.5 + k * (zp - 21.5) / 5, 21.5 + (k + 1) * (zp - 21.5) / 5
+        for y in (ly0 + .3, ly1 - .3):
+            rod((lx0 + .5, y, z0_), (lx1 - .5, y, z1_), .1, "crane", seg=6)
+            rod((lx1 - .5, y, z0_), (lx0 + .5, y, z1_), .1, "crane", seg=6)
+    box(lx0 - .3, lx1 + .3, ly0 - .2, ly1 + .3, zp, zp + .3, "grating")
+    for (a0, a1, b0, b1) in ((lx0 - .3, lx1 + .3, ly0 - .2, ly0 - .1), (lx0 - .3, lx1 + .3, ly1 + .2, ly1 + .3),
+                             (lx0 - .3, lx0 - .2, ly0 - .2, ly1 + .3), (lx1 + .2, lx1 + .3, ly0 - .2, ly1 + .3)):
+        box(a0, a1, b0, b1, zp + 3.5, zp + 3.65, "crane")
+    for (px, py) in ((lx0 - .25, ly0 - .15), (lx1 + .25, ly0 - .15), (lx0 - .25, ly1 + .25), (lx1 + .25, ly1 + .25)):
+        rod((px, py, zp + .3), (px, py, zp + 3.5), .05, "crane", seg=4)
+    mt.person(lx0 + 2.2, ly1 - .8, zp + .3, 1.57, vest="hivis_o")          # reaching into the MV tray
+    mt.person(lx0 + 5.2, ly1 - 1.2, zp + .3, 1.3)                          # checking tags in the LV tray
+    box(lx0 + .4, lx0 + 1.4, ly0 + .3, ly0 + 1.1, zp + .3, zp + 1.1, "sw_red")   # tool bag
+    for k in range(3):                                                     # fresh black ties on the MV bundle
+        x = lx0 + 1 + k * 2.2
+        rod((x, 542.6, 48.0), (x, 542.6, 49.5), .03, "cable", seg=4)
+        rod((x, 542.6, 49.5), (x, 545.4, 49.5), .03, "cable", seg=4)
+        rod((x, 545.4, 49.5), (x, 545.4, 48.0), .03, "cable", seg=4)
+    for k, x in enumerate((lx0 + 4.5, lx0 + 6.2)):                         # yellow cable tags on the LV cables
+        box(x, x + .5, 543.95, 544.05, 44.2, 44.55, "crane")
+    return it

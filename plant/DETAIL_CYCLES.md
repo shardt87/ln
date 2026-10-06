@@ -256,3 +256,9 @@ One zone per cycle. Each cycle:
   supervisor, crew, barrier. View SJ; camera E67.
 - User review: the 230 kV splice story (SJ / E67) was not liked; removed.
 - Conditional items: the yellow flag colour is replaced by real finishes (tanks white with grey roofs, unloading pad concrete, compressors / chillers machinery grey, transformer and BESS in their own finishes); basis stays 'conditional' in the data. ULSD and TES tanks get a spiral stair, roof handrail, wind girder, top angle, vent, gauge hatch, manway and nozzles.
+- Turbine-hall tray legends (`showcase.tray_legends()`, `tray_dresser()`): printed jacket legends repeated along every
+  cable in the tray stack east of GT1 (x 596-724): MV-105 15 kV and ARMOR-X MC-HL in the EL 48 MV tray, Type TC-ER in
+  the EL 44 LV trays, instrumentation PLTC and KX thermocouple in the EL 42 control tray; print turned 40 deg toward the
+  walkway; supplier name only in the branded build. Scissor lift on the deck with two electricians dressing and
+  tagging, fresh ties on the MV bundle. Tray cables in this stack drawn round (16 sides); jackets matte. Blender decals
+  share one image / material per unique label. View SL; camera E67.

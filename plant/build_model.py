@@ -1731,6 +1731,9 @@ VIEWS = [
     dict(k="ST", n="Story: GT1 outage, MV feeder pull into the turbine-hall tray",
          show=["SITE", "BASE_POWER_BLOCK", "BASE_INLET_AIR", "BASE_ELECTRICAL", "ROUTES_BASE", "PROCESS_PIPING"],
          t=[556, 538, 30], c=[508, 497, 6.5]),
+    dict(k="SL", n="Story: cable legends in the turbine-hall tray stack (electricians dressing cable)",
+         show=["SITE", "BASE_POWER_BLOCK", "BASE_INLET_AIR", "BASE_ELECTRICAL", "ROUTES_BASE", "PROCESS_PIPING"],
+         t=[612, 546, 45.8], c=[664, 539.6, 51.2]),
     dict(k="M", n="Maintenance: cable pull on the modular-yard 13.8 kV collector (manholes, reel, trench)",
          show=BASE_SHOW + ["OPT_MOD", "OPT_MOD_ROUTES"], t=[1805, 950, 0], c=[1680, 860, 80]),
     dict(k="O1", n="O1 Modular / portable", show=BASE_SHOW + ["OPT_MOD", "OPT_TMP", "OPT_MODX", "OPT_MOD_ROUTES", "OPT_TMP_ROUTES", "OPT_MODX_ROUTES",
@@ -1766,6 +1769,7 @@ FIT = {
     "CHV": dict(box=[1745, 1767, 166, 188, 0, 27]),
     "CEH": dict(box=[1925, 1995, 890, 906, 0, 4]),
     "CBE": dict(box=[1600, 1620, 480, 500, 0, 9]),
+    "SL": dict(box=[600, 665, 534, 554, 40, 51]),
     "ST": dict(box=[518, 606, 436, 556, 0, 50]),
     "SD": dict(box=[1700, 1785, 915, 965, 0, 14]),
     "SB": dict(box=[1700, 1760, 525, 550, 0, 10]),
@@ -2016,6 +2020,12 @@ import showcase as _show
 print("cable showcase", _show.build())
 _show.stories()
 _show.turbine_hall_pull()
+print("tray legends", _show.tray_legends())
+for _p in parts:                    # tray cables round, not faceted (they are seen close up in the tray shots)
+    if _p["kind"] == "rod" and _p["color"] in ("cable_mv", "cable_armor", "cable_tc", "cable_inst", "cable_tcx", "cable_mc") \
+            and _p.get("seg", 12) < 14 and abs(_p["a"][2] - _p["b"][2]) < .01 and 40 < _p["a"][2] < 52:
+        _p["seg"] = 16
+_show.tray_dresser()
 import cable_install as _ci
 print("e-house bottom cable entries", _ci.ehouse_bottom_entry("MOD-EH"))
 _sk = [i for i in items if i["name"] == "BESS PCS / MV skid"]

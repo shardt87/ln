@@ -274,6 +274,7 @@ def make_decals():
     ddir = os.path.join(args.out, "_decals")
     os.makedirs(ddir, exist_ok=True)
     n = 0
+    img_cache, mat_cache = {}, {}
     for k, d in enumerate(model.get("decals", [])):
         if d.get("nobrand") and not args.generic:
             continue
@@ -283,8 +284,11 @@ def make_decals():
             d = dict(d, lines=[l for l in d["lines"] if not l.get("brand")])
             if not d["lines"]:
                 continue
-        path = os.path.join(ddir, f"decal_{k:04d}.png")
-        decal_image(d, path)
+        key = json.dumps([d["w"], d["h"], d.get("bg"), d["lines"]])
+        if key not in img_cache:                                   # identical panels share one image
+            img_cache[key] = os.path.join(ddir, f"decal_{len(img_cache):04d}.png")
+            decal_image(d, img_cache[key])
+        path = img_cache[key]
         nv = Vector(d["n"])
         up = Vector(d.get("up") or ((0, 1, 0) if abs(nv.z) > .9 else (0, 0, 1)))
         rt = up.cross(nv).normalized()
@@ -296,6 +300,14 @@ def make_decals():
         uv = me.uv_layers.new()
         for i, co in enumerate(((0, 0), (1, 0), (1, 1), (0, 1))):
             uv.data[i].uv = co
+        if path in mat_cache:
+            m = mat_cache[path]
+            me.materials.append(m)
+            ob = bpy.data.objects.new(f"decal {items[d['item']]['name'][:40]} {k}", me)
+            ob["item"] = d["item"]
+            coll(d["layer"]).objects.link(ob)
+            n += 1
+            continue
         m = bpy.data.materials.new(f"decal {k}")
         m.use_nodes = True
         nt = m.node_tree
@@ -308,6 +320,7 @@ def make_decals():
         b.inputs["Roughness"].default_value = .55
         if hasattr(m, "blend_method"):
             m.blend_method = "CLIP" if not d.get("bg") else "OPAQUE"
+        mat_cache[path] = m
         me.materials.append(m)
         ob = bpy.data.objects.new(f"decal {items[d['item']]['name'][:40]} {k}", me)
         ob["item"] = d["item"]
