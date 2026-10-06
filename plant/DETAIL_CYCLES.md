@@ -238,3 +238,8 @@ One zone per cycle. Each cycle:
   views without the BESS), showing the paired 1,500 V DC conductors from the container DC entry boxes along the
   trench floor and up into the inverter gland plate.
 - Blender: patch layers are no longer part of "all"; set_visibility decides them. Views CPM, CBE; cameras E61-E63.
+- User review: no cable detail in the data centre (plant only), and shots that tell a story rather than isolated
+  details. Removed the data-hall pad-mount cabinets, view CPM, cameras E61 / E63. Added two staged stories
+  (`showcase.stories()`): the SIMpull Truck delivering feeder reels on payoffs to the modular-yard 13.8 kV cable pull,
+  and a BESS crew pulling DC conductor off a reel on jack stands into the open precast trench. Views SD, SB; cameras
+  E64, E65.

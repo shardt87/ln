@@ -191,3 +191,48 @@ def build():
     fuel.G.setdefault("decals", [])
     reel_yard()
     return dict(decals=len(fuel.G["decals"]))
+
+
+def stories():
+    """Cable work staged where it tells the story of the plant being built and kept running:
+    - modular yard: the SIMpull Truck has brought the replacement feeder reels to the 13.8 kV cable pull; two
+      SIMpull Reels are already off the tail lift on payoffs, the crew walking them toward MH-A;
+    - BESS: a DC cable reel on jack stands at the open precast trench, the crew pulling conductors in."""
+    import maintenance as mt
+    it = fuel.new_item("OPT_MOD", "Cable delivery: SIMpull Truck at the modular-yard cable pull",
+                       (1738, 1782, 918, 936), (0, 12), basis="typical", register=False, area="I",
+                       sheet="typical (cable installation)",
+                       info="SIMpull Truck delivering paralleled, colour-coded feeder reels on SIMpull payoffs to the "
+                            "13.8 kV collector cable replacement. Cable supplier: Southwire (as requested).")
+    fuel.G["cur"] = it
+    simpull_truck(1765, 928)
+    simpull_reel(1741.5, 929, 0, axis="y")
+    simpull_reel(1736, 933, 0, axis="y")
+    mt.person(1739, 925.5, 0, 1.2, vest="hivis_o")               # pushing the payoff
+    mt.person(1744.5, 932.5, 0, 3.4)
+    mt.person(1751, 922.5, 0, 2.0)                                # driver at the tail lift controls
+    it = fuel.new_item("OPT_BESS", "Cable pull: DC conductors into the BESS precast trench",
+                       (1734, 1754, 535.5, 543.5), (0, 9), basis="typical", register=False, area="H",
+                       sheet="typical (cable installation)",
+                       info="Reel of 2 kV PV / RHW-2 DC conductor on jack stands; crew feeding it into the open precast "
+                            "trench toward the inverter. Cable supplier: Southwire (as requested).")
+    fuel.G["cur"] = it
+    xr, yr, D, W = 1745.0, 539.5, 5.6, 3.4
+    R = D / 2
+    for s in (-1, 1):                                             # jack stands with the arbor shaft
+        y = yr + s * (W / 2 + .5)
+        rod((xr - 1.6, y, 0), (xr, y, R + .5), .12, "sw_red", seg=6)
+        rod((xr + 1.6, y, 0), (xr, y, R + .5), .12, "sw_red", seg=6)
+        box(xr - 1.8, xr + 1.8, y - .2, y + .2, 0, .15, "sw_red")
+    rod((xr, yr - W / 2 - .7, R + .5), (xr, yr + W / 2 + .7, R + .5), .12, "steel", seg=8)
+    reel(xr, yr, D, W, "y", "cable", "PV / RHW-2 2 kV 500 KCMIL", length_ft=2500, z0=.5)
+    # conductor off the bottom of the reel, over a roller at the trench edge, down into the trench toward the west
+    pts = [(xr - R * .6, yr, .5 + R * .5), (xr - R - .8, yr - 1.5, .9), (xr - R - 1.6, 535.6, .45), (xr - R - 2.2, 534.3, .2),
+           (xr - R - 3.5, 534.3, -1.9), (1712, 534.3, -2.0)]
+    for a, b in zip(pts, pts[1:]):
+        rod(a, b, .075, "cable", seg=8)
+    box(xr - R - 2.4, xr - R - 1.2, 535.2, 535.7, .15, .5, "crane")            # cable roller at the edge
+    mt.person(xr - 5.5, 537.5, 0, 3.6)                                          # guiding the cable at the edge
+    mt.person(1726, 536.4, 0, 3.1, vest="hivis_o")                              # pulling along the trench
+    mt.person(1719, 536.5, 0, 3.1)
+    mt.person(xr + 1.5, 542.6, 0, 4.4)                                          # reel tender

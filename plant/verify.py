@@ -236,7 +236,7 @@ cl = sorted(clashes.values(), key=lambda c: -c["volume_ft3"])
 results["clashes"] = dict(pairs_tested=len(seen), clashes=cl, ok=not cl)
 
 # 5. bounds -------------------------------------------------------------------
-below_ok = re.compile(r"Stormwater|cable basement|Compound|sump pump|MC-cable risers|^FH-\d|^Underground:|^LS-1|cable termination structure|Service-entrance handhole|^Ground over the|pad-mount 34.5/0.48 kV|^BESS PCS / MV skid")
+below_ok = re.compile(r"Stormwater|cable basement|Compound|sump pump|MC-cable risers|^FH-\d|^Underground:|^LS-1|cable termination structure|Service-entrance handhole|^Ground over the|^BESS PCS / MV skid|^Cable pull: DC")
 oob = []
 for p, b in PB_ALL:
     n = items[p["item"]]["name"]
