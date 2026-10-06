@@ -411,9 +411,9 @@ def splice_230(cy=575.0, cx=1520.0):
         rod((px, ty0, ze - .4), (px, ty1, ze - .4), .3, "tent", seg=10)            # rolled-up side walls
     box(tx0 - .3, tx1 + .3, ty0 - .35, ty0 - .3, ze - 1.2, ze, "tent")              # valance, ends
     box(tx0 - .3, tx1 + .3, ty1 + .3, ty1 + .35, ze - 1.2, ze, "tent")
-    decal((cx, ty0 - .4, ze - .6), (0, -1, 0), 9, 1.0,
+    decal((cx, ty0 - .315, ze - .6), (0, -1, 0), 9, 1.0,
           [(BRAND + "  HV CABLE JOINTING", .6, 1, RED, 1)], bg=None, brand=True)
-    decal((cx, ty0 - .4, ze - .6), (0, -1, 0), 9, 1.0, [("HV CABLE JOINTING - CLEAN AREA", .55, 1, "#c03030")],
+    decal((cx, ty0 - .315, ze - .6), (0, -1, 0), 9, 1.0, [("HV CABLE JOINTING - CLEAN AREA", .55, 1, "#c03030")],
           bg=None, generic_only=True)
     # generator and air conditioner east of the tent, hoses / leads into the tent
     gx, gy = 1541.5, cy + 14
