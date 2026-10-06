@@ -2032,6 +2032,73 @@ print('pipe-end terminations', N_TERM)
 print('supports added under floating parts', _term.support_floating(items, parts))
 
 
+# "conditional" was a drawing flag colour (yellow); the items keep basis="conditional" in their data, but are drawn
+# in their real finishes
+def _real_finish(p, name):
+    hi = (p.get("max") or p.get("b"))[2]
+    if "tank" in name and "transformer" not in name:
+        return "tankroof" if p["kind"] == "rod" and hi > 42 else "tankwall"
+    if "unloading" in name:
+        return "concrete"
+    if "grounding transformer" in name:
+        return "xfmr"
+    if "black-start" in name:
+        return "bess"
+    if name.startswith("Plant gas yard") or ("compressor" in name and p["kind"] == "rod" and hi < 6):
+        return "fuelgas"
+    if "compressor" in name:
+        return "machine" if p["kind"] == "box" else "tank"
+    if "chiller" in name:
+        return "machine" if p["kind"] == "box" else "pipe"
+    return "equip"
+_nm = {it["id"]: it["name"] for it in items}
+for _p in parts:
+    if _p["color"] == "conditional":
+        _p["color"] = _real_finish(_p, _nm[_p["item"]])
+
+
+def _tank_dress(it, cx, cy, R, H, roof, a0):
+    """Storage-tank detail: spiral stair up the shell (treads, stringer, handrail) from the ground at bearing a0 to
+    the roof, roof handrail ring with toe board, wind girder and top angle, roof vent and gauge hatch, shell
+    manway, nozzles near the base."""
+    import math as _m
+    def add(kind, **kw):
+        kw.update(item=it["id"], layer=it["layer"], d=1)
+        parts.append(dict(kind=kind, **kw))
+    def P(a, r, z):
+        return [round(cx + r * _m.cos(a), 2), round(cy + r * _m.sin(a), 2), round(z, 2)]
+    sweep = H / (2 * _m.pi * R) * 1.25 * 2 * _m.pi * .55        # ~38 deg stair pitch
+    n = int(H / .65)
+    for k in range(n):                                          # treads on brackets
+        a = a0 + sweep * k / n
+        z = H * (k + 1) / (n + 1)
+        add("rod", a=P(a, R + .2, z), b=P(a, R + 3.2, z), r=.12, r2=.12, color="grating", seg=4)
+    for k in range(24):                                         # outer stringer and handrail
+        a1, a2 = a0 + sweep * k / 24, a0 + sweep * (k + 1) / 24
+        z1, z2 = H * k / 24, H * (k + 1) / 24
+        add("rod", a=P(a1, R + 3.2, z1), b=P(a2, R + 3.2, z2), r=.1, r2=.1, color="steel", seg=4)
+        add("rod", a=P(a1, R + 3.25, z1 + 3.4), b=P(a2, R + 3.25, z2 + 3.4), r=.06, r2=.06, color="crane", seg=4)
+        add("rod", a=P(a1, R + 3.25, z1), b=P(a1, R + 3.25, z1 + 3.4), r=.05, r2=.05, color="crane", seg=4)
+    for k in range(48):                                         # roof-edge handrail and toe board
+        a1, a2 = 2 * _m.pi * k / 48, 2 * _m.pi * (k + 1) / 48
+        add("rod", a=P(a1, R - .6, H + 3.6), b=P(a2, R - .6, H + 3.6), r=.06, r2=.06, color="crane", seg=4)
+        add("rod", a=P(a1, R - .6, H + .2), b=P(a1, R - .6, H + 3.6), r=.05, r2=.05, color="crane", seg=4)
+    add("rod", a=[cx, cy, H - 2.2], b=[cx, cy, H - 1.6], r=R + .45, r2=R + .45, color="steel", seg=40)   # wind girder
+    add("rod", a=[cx, cy, H - .15], b=[cx, cy, H + .15], r=R + .3, r2=R + .3, color="steel", seg=40)     # top angle
+    add("rod", a=[cx, cy, roof], b=[cx, cy, roof + 2.5], r=1.2, r2=1.2, color="steel", seg=12)          # vent
+    add("rod", a=[cx, cy, roof + 2.5], b=[cx, cy, roof + 3.3], r=2.0, r2=.6, color="steel", seg=12)
+    add("rod", a=P(a0 + sweep, R * .55, H + 1.2), b=P(a0 + sweep, R * .55, H + 2.2), r=1.0, r2=1.0,
+        color="steel", seg=10)                                  # gauge hatch
+    for k, da in enumerate((.35, .9, 1.4)):                     # base nozzles and the shell manway
+        a = a0 + _m.pi + da
+        add("rod", a=P(a, R, 2.2), b=P(a, R + 1.8, 2.2), r=.6 if k else 1.3, r2=.6 if k else 1.3, color="steel", seg=12)
+for _nm_, _a0 in (("CONDITIONAL: ULSD backup fuel-oil tank", 3.6), ("CONDITIONAL: TES chilled-water tank", 0.3)):
+    _it = next(i for i in items if i["name"] == _nm_)
+    _sh = next(p for p in parts if p["item"] == _it["id"] and p["color"] == "tankwall")
+    _rf = next(p for p in parts if p["item"] == _it["id"] and p["color"] == "tankroof")
+    _tank_dress(_it, _sh["a"][0], _sh["a"][1], _sh["r"], _sh["b"][2], _rf["b"][2], _a0)
+
+
 def validate():
     ids = {it["id"] for it in items}
     assert all(p["item"] in ids for p in parts)

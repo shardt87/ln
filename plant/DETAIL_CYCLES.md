@@ -255,3 +255,4 @@ One zone per cycle. Each cycle:
   air conditioner; the next 230 kV drum on a lowboy behind a red tractor; HV test van with its lead to the bay;
   supervisor, crew, barrier. View SJ; camera E67.
 - User review: the 230 kV splice story (SJ / E67) was not liked; removed.
+- Conditional items: the yellow flag colour is replaced by real finishes (tanks white with grey roofs, unloading pad concrete, compressors / chillers machinery grey, transformer and BESS in their own finishes); basis stays 'conditional' in the data. ULSD and TES tanks get a spiral stair, roof handrail, wind girder, top angle, vent, gauge hatch, manway and nozzles.
