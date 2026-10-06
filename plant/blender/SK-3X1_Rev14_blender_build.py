@@ -292,7 +292,7 @@ def make_decals():
         nv = Vector(d["n"])
         up = Vector(d.get("up") or ((0, 1, 0) if abs(nv.z) > .9 else (0, 0, 1)))
         rt = up.cross(nv).normalized()
-        c = Vector(d["c"]) + nv * .04
+        c = Vector(d["c"]) + nv * (.006 if d["h"] < .5 else .04)    # small prints sit on the jacket (no shadow gap)
         hw, hh = d["w"] / 2, d["h"] / 2
         q = [c - rt * hw - up * hh, c + rt * hw - up * hh, c + rt * hw + up * hh, c - rt * hw + up * hh]
         me = bpy.data.meshes.new(f"decal {k}")
@@ -305,6 +305,7 @@ def make_decals():
             me.materials.append(m)
             ob = bpy.data.objects.new(f"decal {items[d['item']]['name'][:40]} {k}", me)
             ob["item"] = d["item"]
+            ob.visible_shadow = False                          # printed ink casts no shadow
             coll(d["layer"]).objects.link(ob)
             n += 1
             continue
@@ -324,6 +325,7 @@ def make_decals():
         me.materials.append(m)
         ob = bpy.data.objects.new(f"decal {items[d['item']]['name'][:40]} {k}", me)
         ob["item"] = d["item"]
+        ob.visible_shadow = False
         coll(d["layer"]).objects.link(ob)
         n += 1
     return n

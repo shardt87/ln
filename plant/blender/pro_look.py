@@ -691,7 +691,7 @@ EPIC = [
     dict(k="E66", n="Turbine hall, GT1 outage: new 13.8 kV feeder pulled from the laydown bay up into the EL 48 MV tray",
          eye=(517, 484, 12.5), target=(549, 537, 23), lens=22, show="all", hide=("Common turbine hall",),
          hide_layers=("HALL_ROOF",), sun=(40, 200)),
-    dict(k="E67", n="Turbine hall tray stack: MV-105, ARMOR-X, TC-ER and instrumentation cable, legends printed on the jackets",
+    dict(k="E67", n="Turbine hall tray stack: the legend on every jacket",
          eye=(650.3, 542.3, 50.4), target=(630, 544.3, 48.7), lens=32, show="all", hide=("Common turbine hall",),
          hide_layers=("HALL_ROOF",), sun=(38, 160), dof=(7, 2.8)),
     dict(k="E58", n="Cable reel yard: SIMpull Truck unloading SIMpull Reels on payoffs, reel rows",
