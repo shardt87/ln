@@ -247,3 +247,10 @@ One zone per cycle. Each cycle:
   jacks in the laydown bay, over a sheave hung at the tray corner into the EL 48 MV ladder tray and along it to the
   GT1 drop, where a capstan puller on the deck hauls the rope; a scissor lift on the deck puts two electricians at
   tray level; reel tender, sheave watcher and supervisor on the floor. View ST; camera E66.
+- 230 kV splice story (`showcase.splice_230()`): on the CCS 230 kV cable bank at x 1520, y 559-591 (clear of the
+  feedwater rack further north): an open joint bay cut into the bank (bank and ground split around it, patch layer
+  NOCCS_GROUND), three phases racked on the walls with staggered joints (two finished with earthing bands and bonding
+  leads, the middle one in progress: XLPE pencilled back, connector crimped, joint body parked), cross-bonding link
+  box, ladder, guard rail, two jointers; white jointing tent with sides rolled up and work lights, generator and spot
+  air conditioner; the next 230 kV drum on a lowboy behind a red tractor; HV test van with its lead to the bay;
+  supervisor, crew, barrier. View SJ; camera E67.

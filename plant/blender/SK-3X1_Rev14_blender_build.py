@@ -503,7 +503,7 @@ def set_visibility(show):
     """Exclude hidden collections from the view layer, so they neither
     render nor block the label visibility rays."""
     show = {l for l in show if not (l.startswith("NO") and l.endswith("_GROUND"))} | {"SITE", "LANDSCAPE"}
-    for patch, opt in (("NOMOD_GROUND", "OPT_MOD"), ("NOBESS_GROUND", "OPT_BESS")):
+    for patch, opt in (("NOMOD_GROUND", "OPT_MOD"), ("NOBESS_GROUND", "OPT_BESS"), ("NOCCS_GROUND", "OPT_CCS")):
         if opt not in show:
             show.add(patch)               # ground over openings cut for an option (maintenance pit, open trench)
     for lc in bpy.context.view_layer.layer_collection.children:

@@ -484,7 +484,7 @@ for(const [g, ls] of Object.entries(byGroup)){
 }
 function setLayer(l,on){ if(layerGroups[l]) layerGroups[l].visible=on; if(layerBoxes[l]) layerBoxes[l].checked=on;
   if(l==='COASTAL_SEA' && grassEast) grassEast.visible = !on;
-  for(const [pl, ol] of [['NOMOD_GROUND','OPT_MOD'],['NOBESS_GROUND','OPT_BESS']]) if(layerGroups[pl]) layerGroups[pl].visible = !!(layerGroups[ol] && !layerGroups[ol].visible); }
+  for(const [pl, ol] of [['NOMOD_GROUND','OPT_MOD'],['NOBESS_GROUND','OPT_BESS'],['NOCCS_GROUND','OPT_CCS']]) if(layerGroups[pl]) layerGroups[pl].visible = !!(layerGroups[ol] && !layerGroups[ol].visible); }
 function setLayers(show){ const s=new Set(show); for(const l in MODEL.layers) setLayer(l, s.has(l)); syncOpt(); }
 const bOpt=document.getElementById('bOpt');
 function syncOpt(){ bOpt.setAttribute('aria-pressed', Object.keys(layerBoxes).filter(OPT).every(l=>layerBoxes[l].checked)); }
