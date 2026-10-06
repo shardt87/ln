@@ -266,3 +266,4 @@ One zone per cycle. Each cycle:
 - E67 re-shot with the hall roof on: interior cameras can switch the high-bay fixtures on as area lights (camera option lamps=W); frames GT1 below the tray stack. View SL shows the roof.
 - E67 re-shot at the user's chosen viewer angle: just above the MV tray, looking north-east across the legends to HRSG-2 and its stack; hall cladding see-through in this render (camera option hall_alpha), high-bay lights on.
 - Cover shot E68 (portrait 1545 x 2000): from the LV tray on the CCS rack (y 1133, EL 28) looking up at Absorber B with A beyond and the BF-B flue duct; legends (ARMOR-X MC-HL, Type TC-ER) printed on the rack-tray cables x 726-856; per-camera near clip (clip) for close shots.
+- ARMOR-X MC-HL (cable_mc) drawn as it is: black PVC jacket (not bare metal) with the corrugated welded aluminium armor showing as fine ribs (CCS rack stretch x 708-800); cover re-rendered.

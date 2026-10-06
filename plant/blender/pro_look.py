@@ -81,7 +81,7 @@ LOOK = {
     "hivis": ("paint", "#bfd424", .55, 0), "hivis_o": ("paint", "#e06a22", .55, 0), "hardhat": ("paint", "#f1f1ec", .3, 0),
     "workwear": ("paint", "#26324a", .7, 0), "skin": ("paint", "#b88c6c", .6, 0), "truck": ("paint", "#e4e6e7", .25, .1),
     "cable_mv": ("paint", "#141719", .78, 0), "cable_armor": ("paint", "#6a2720", .7, 0), "cable_tc": ("paint", "#151819", .78, 0),
-    "cable_mc": ("galv", "#6d7377", .45, .6), "cable_inst": ("paint", "#26467a", .5, 0),
+    "cable_mc": ("paint", "#1c2023", .72, 0), "cable_inst": ("paint", "#26467a", .5, 0),
     "cable_tcx": ("paint", "#cfa818", .45, 0), "cable_fa": ("paint", "#a52e25", .5, 0),
     "cable_fo": ("paint", "#d36f22", .45, 0),
     "sw_red": ("paint", "#c41f27", .4, 0), "xlpe": ("paint", "#e4e0cf", .3, 0), "alu": ("galv", "#b3b8bc", .3, .85),

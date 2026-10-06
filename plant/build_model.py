@@ -2028,6 +2028,7 @@ for _p in parts:                    # tray cables round, not faceted (they are s
         _p["seg"] = 16
 _show.tray_dresser()
 print("armor ribs", _show.armor_ribs())
+print("ARMOR-X ribs, CCS rack", _show.armor_ribs(x0=708, x1=800, pitch=.085, color="cable_mc", y0=1131, y1=1135.5, z0=26, z1=29, depth=.014))
 _show.armor_sample()
 import cable_install as _ci
 print("e-house bottom cable entries", _ci.ehouse_bottom_entry("MOD-EH"))

@@ -382,20 +382,20 @@ def tray_dresser(lx0=650.0, ly0=535.0):
     return it
 
 
-def armor_ribs(x0=596.0, x1=652.0, pitch=.2):
+def armor_ribs(x0=596.0, x1=652.0, pitch=.2, color="cable_armor", y0=0, y1=1e9, z0=40, z1=52, depth=.035):
     """ARMOR-X: the corrugated welded aluminium armor shows through the PVC jacket as ribs; drawn on the stretch of
     the MV-tray ARMOR-X circuit seen in the tray-stack shots."""
     tr = next(i for i in fuel.G["items"] if i["name"].startswith("Cable trays and isolated-phase"))
     cur = fuel.G["cur"]
     fuel.G["cur"] = tr
     n = 0
-    for p in [q for q in fuel.G["parts"] if q["item"] == tr["id"] and q["kind"] == "rod" and q["color"] == "cable_armor"
-              and abs(q["a"][1] - q["b"][1]) < .01 and 40 < q["a"][2] < 52]:
+    for p in [q for q in fuel.G["parts"] if q["item"] == tr["id"] and q["kind"] == "rod" and q["color"] == color
+              and abs(q["a"][1] - q["b"][1]) < .01 and z0 < q["a"][2] < z1 and y0 < q["a"][1] < y1]:
         lo, hi = sorted((p["a"][0], p["b"][0]))
         y, z, r = p["a"][1], p["a"][2], p["r"]
         x = max(lo, x0)
         while x < min(hi, x1):
-            rod((x, y, z), (x + pitch * .45, y, z), r * 1.035, "cable_armor", seg=16)
+            rod((x, y, z), (x + pitch * .5, y, z), r * (1 + depth), color, seg=16)
             n += 1
             x += pitch
     fuel.G["cur"] = cur
