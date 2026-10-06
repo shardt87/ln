@@ -613,12 +613,23 @@ if args.style == "pro":
                     scene.collection.objects.link(lo)
                     lamps_on.append(lo)
             print("high-bay lights", len(lamps_on))
+        # see-through hall cladding (as the viewer draws it), for cameras that look out of the hall
+        hall_m, hall_a = None, None
+        if h.get("hall_alpha") is not None:
+            hall_m = pro_look.material("hall")
+            bsdf = hall_m.node_tree.nodes["Principled BSDF"]
+            hall_a = bsdf.inputs["Alpha"].default_value
+            bsdf.inputs["Alpha"].default_value = h["hall_alpha"]
+            if hasattr(hall_m, "blend_method"):
+                hall_m.blend_method = "BLEND"
         if not args.no_render:
             t1 = time.time()
             scene.render.filepath = base + ".png"
             bpy.ops.render.render(write_still=True)
             info["seconds"] = round(time.time() - t1, 1)
             print(f"rendered {h['k']:<3} {h['n']:<40} {h['lens']} mm  {info['seconds']}s")
+        if hall_m:
+            hall_m.node_tree.nodes["Principled BSDF"].inputs["Alpha"].default_value = hall_a
         for lo in lamps_on:
             bpy.data.objects.remove(lo, do_unlink=True)
         for ob in hidden:

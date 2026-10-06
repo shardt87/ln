@@ -1733,7 +1733,7 @@ VIEWS = [
          t=[556, 538, 30], c=[508, 497, 6.5]),
     dict(k="SL", n="Story: cable legends in the turbine-hall tray stack (electricians dressing cable)",
          show=["SITE", "BASE_POWER_BLOCK", "HALL_ROOF", "BASE_INLET_AIR", "BASE_ELECTRICAL", "ROUTES_BASE", "PROCESS_PIPING"],
-         t=[640, 532, 38], c=[603, 542.6, 51.2]),
+         t=[702, 606, 61], c=[638, 540.5, 50.5]),
     dict(k="M", n="Maintenance: cable pull on the modular-yard 13.8 kV collector (manholes, reel, trench)",
          show=BASE_SHOW + ["OPT_MOD", "OPT_MOD_ROUTES"], t=[1805, 950, 0], c=[1680, 860, 80]),
     dict(k="O1", n="O1 Modular / portable", show=BASE_SHOW + ["OPT_MOD", "OPT_TMP", "OPT_MODX", "OPT_MOD_ROUTES", "OPT_TMP_ROUTES", "OPT_MODX_ROUTES",

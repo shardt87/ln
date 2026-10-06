@@ -264,3 +264,4 @@ One zone per cycle. Each cycle:
   share one image / material per unique label. View SL; camera E67.
 - Tray stack: ARMOR-X drawn with its corrugated armor ribs through the jacket (x 596-652), an ARMOR-X offcut on the lift platform stripped to the bare corrugated aluminium armor and conductors; E67 re-shot looking east inside the hall (walls shown, roof off) with the lift crew mid-frame.
 - E67 re-shot with the hall roof on: interior cameras can switch the high-bay fixtures on as area lights (camera option lamps=W); frames GT1 below the tray stack. View SL shows the roof.
+- E67 re-shot at the user's chosen viewer angle: just above the MV tray, looking north-east across the legends to HRSG-2 and its stack; hall cladding see-through in this render (camera option hall_alpha), high-bay lights on.
