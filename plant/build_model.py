@@ -2021,9 +2021,10 @@ print("cable showcase", _show.build())
 _show.stories()
 _show.turbine_hall_pull()
 print("tray legends", _show.tray_legends())
+print("CCS rack tray legends", _show.tray_legends(x0=726, x1=856, y0=1131, y1=1135.5, z0=26, z1=29))
 for _p in parts:                    # tray cables round, not faceted (they are seen close up in the tray shots)
     if _p["kind"] == "rod" and _p["color"] in ("cable_mv", "cable_armor", "cable_tc", "cable_inst", "cable_tcx", "cable_mc") \
-            and _p.get("seg", 12) < 14 and abs(_p["a"][2] - _p["b"][2]) < .01 and 40 < _p["a"][2] < 52:
+            and _p.get("seg", 12) < 14 and abs(_p["a"][2] - _p["b"][2]) < .01 and (40 < _p["a"][2] < 52 or (26 < _p["a"][2] < 29 and 1130 < _p["a"][1] < 1136)):
         _p["seg"] = 16
 _show.tray_dresser()
 print("armor ribs", _show.armor_ribs())

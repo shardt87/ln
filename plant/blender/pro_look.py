@@ -551,7 +551,7 @@ def hero_camera(scene, h):
     cam = bpy.data.cameras.new(f"cam {h['k']}")
     cam.lens = h["lens"]
     cam.sensor_width = 36
-    cam.clip_start, cam.clip_end = 1, 20000
+    cam.clip_start, cam.clip_end = h.get("clip", 1), 20000
     if "dof" in h:
         cam.dof.use_dof = True
         cam.dof.focus_distance = h["dof"][0] * FT
@@ -694,6 +694,9 @@ EPIC = [
     dict(k="E67", n="Turbine hall: ARMOR-X and MV-105 in the tray over GT1, the legend on every jacket",
          eye=(638, 540.5, 50.5), target=(702, 606, 61), lens=24, show="all", lamps=6500, hall_alpha=.1,
          sun=(40, 175), dof=(6, 5.6)),
+    dict(k="E68", n="Cover: the cable that runs carbon capture: ARMOR-X and Type TC-ER on the CCS rack below Absorber B",
+         eye=(729, 1128.3, 29.3), target=(785, 1220, 80), lens=14, res=(1545, 2000), show="all", sun=(38, 120), clip=.05,
+         dof=(5.5, 8.0)),
     dict(k="E58", n="Cable reel yard: SIMpull Truck unloading SIMpull Reels on payoffs, reel rows",
          eye=(214, 702, 15), target=(160, 752, 6), lens=28, show="base"),
     dict(k="E26", n="HRSG 1 west wall: buckstays, SCR doors, ammonia injection grid, downcomers, blowdown tank",

@@ -310,6 +310,7 @@ LEGENDS = {
     "cable_mv": ("MV-105  15 kV  1/C 500 KCMIL CU  EPR 133%  TAPE SHIELD  PVC  UL 1072", "#e8e8e4"),
     "cable_armor": ("ARMOR-X  MC-HL  15 kV  3/C 500 KCMIL CU  EPR  CWA  PVC  UL 2225", "#f0e6d8"),
     "cable_tc": ("TYPE TC-ER  600 V  3/C 4/0 AWG CU  XHHW-2  SUN RES  UL 1277", "#e8e8e4"),
+    "cable_mc": ("ARMOR-X  MC-HL  600 V  3/C 4/0 AWG CU  XHHW-2  CCW AL ARMOR  PVC  UL 1569 / 2225", "#f2f2ee"),
     "cable_inst": ("INSTRUMENTATION  PLTC-ER  16 AWG  4 TSP  300 V  ICEA S-73-532", "#f2f2ee"),
     "cable_tcx": ("TYPE KX  THERMOCOUPLE EXT  16 AWG  2/C  PLTC-ER", "#1d1f21"),
 }
