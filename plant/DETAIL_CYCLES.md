@@ -254,3 +254,4 @@ One zone per cycle. Each cycle:
   box, ladder, guard rail, two jointers; white jointing tent with sides rolled up and work lights, generator and spot
   air conditioner; the next 230 kV drum on a lowboy behind a red tractor; HV test van with its lead to the bay;
   supervisor, crew, barrier. View SJ; camera E67.
+- User review: the 230 kV splice story (SJ / E67) was not liked; removed.
