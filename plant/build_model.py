@@ -1728,6 +1728,9 @@ VIEWS = [
          show=BASE_SHOW + ["OPT_MOD", "OPT_MOD_ROUTES"], t=[1752, 944, 5], c=[1702, 906, 7.5]),
     dict(k="SB", n="Story: BESS crew pulling DC cable into the trench",
          show=BASE_SHOW + ["OPT_BESS", "OPT_BESS_ROUTES"], t=[1714, 534, 1.4], c=[1768, 546, 6.2]),
+    dict(k="ST", n="Story: GT1 outage, MV feeder pull into the turbine-hall tray",
+         show=["SITE", "BASE_POWER_BLOCK", "BASE_INLET_AIR", "BASE_ELECTRICAL", "ROUTES_BASE", "PROCESS_PIPING"],
+         t=[556, 538, 30], c=[508, 497, 6.5]),
     dict(k="M", n="Maintenance: cable pull on the modular-yard 13.8 kV collector (manholes, reel, trench)",
          show=BASE_SHOW + ["OPT_MOD", "OPT_MOD_ROUTES"], t=[1805, 950, 0], c=[1680, 860, 80]),
     dict(k="O1", n="O1 Modular / portable", show=BASE_SHOW + ["OPT_MOD", "OPT_TMP", "OPT_MODX", "OPT_MOD_ROUTES", "OPT_TMP_ROUTES", "OPT_MODX_ROUTES",
@@ -1763,6 +1766,7 @@ FIT = {
     "CHV": dict(box=[1745, 1767, 166, 188, 0, 27]),
     "CEH": dict(box=[1925, 1995, 890, 906, 0, 4]),
     "CBE": dict(box=[1600, 1620, 480, 500, 0, 9]),
+    "ST": dict(box=[518, 606, 436, 556, 0, 50]),
     "SD": dict(box=[1700, 1785, 915, 965, 0, 14]),
     "SB": dict(box=[1700, 1760, 525, 550, 0, 10]),
     "O1": dict(layers=["OPT_MOD", "OPT_TMP", "OPT_MODX"]),
@@ -2011,6 +2015,7 @@ _maint.build()      # cable-pull scene on the modular-yard 13.8 kV collector ban
 import showcase as _show
 print("cable showcase", _show.build())
 _show.stories()
+_show.turbine_hall_pull()
 import cable_install as _ci
 print("e-house bottom cable entries", _ci.ehouse_bottom_entry("MOD-EH"))
 _sk = [i for i in items if i["name"] == "BESS PCS / MV skid"]

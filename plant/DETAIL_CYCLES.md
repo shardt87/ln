@@ -243,3 +243,7 @@ One zone per cycle. Each cycle:
   (`showcase.stories()`): the SIMpull Truck delivering feeder reels on payoffs to the modular-yard 13.8 kV cable pull,
   and a BESS crew pulling DC conductor off a reel on jack stands into the open precast trench. Views SD, SB; cameras
   E64, E65.
+- Turbine hall story (`showcase.turbine_hall_pull()`): GT1 outage, a new 13.8 kV MV-105 feeder pulled from a reel on
+  jacks in the laydown bay, over a sheave hung at the tray corner into the EL 48 MV ladder tray and along it to the
+  GT1 drop, where a capstan puller on the deck hauls the rope; a scissor lift on the deck puts two electricians at
+  tray level; reel tender, sheave watcher and supervisor on the floor. View ST; camera E66.

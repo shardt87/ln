@@ -1,4 +1,10 @@
 {
- "summary": {},
- "findings": {}
+ "summary": {
+  "cable tray / IPB through equipment": 1
+ },
+ "findings": {
+  "cable tray / IPB through equipment": [
+   "Cable pull: GT1 13.8 kV feeder into the turbine-hall MV tray"
+  ]
+ }
 }

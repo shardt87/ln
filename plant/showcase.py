@@ -236,3 +236,69 @@ def stories():
     mt.person(1726, 536.4, 0, 3.1, vest="hivis_o")                              # pulling along the trench
     mt.person(1719, 536.5, 0, 3.1)
     mt.person(xr + 1.5, 542.6, 0, 4.4)                                          # reel tender
+
+
+def jack_reel(xr, yr, D, W, cable, label, ft, z=0.0):
+    """Wooden reel lifted on red reel jacks with an arbor shaft (axis along y)."""
+    R = D / 2
+    for s in (-1, 1):
+        y = yr + s * (W / 2 + .5)
+        rod((xr - 1.8, y, z), (xr, y, z + R + .5), .14, "sw_red", seg=6)
+        rod((xr + 1.8, y, z), (xr, y, z + R + .5), .14, "sw_red", seg=6)
+        box(xr - 2, xr + 2, y - .22, y + .22, z, z + .15, "sw_red")
+    rod((xr, yr - W / 2 - .8, z + R + .5), (xr, yr + W / 2 + .8, z + R + .5), .14, "steel", seg=8)
+    reel(xr, yr, D, W, "y", cable, label, length_ft=ft, z0=z + .5)
+
+
+def turbine_hall_pull():
+    """GT1 outage: a new 13.8 kV feeder to the GT1 auxiliaries is pulled from a reel on the laydown-bay floor, up
+    over a sheave into the MV ladder tray at EL 48 and along it toward GT1; a lift on the turbine deck puts two
+    electricians at tray level to feed and dress the cable; a capstan puller on the deck at the tray drop to GT1
+    hauls the rope."""
+    import maintenance as mt
+    it = fuel.new_item("BASE_POWER_BLOCK", "Cable pull: GT1 13.8 kV feeder into the turbine-hall MV tray (outage)",
+                       (518, 606, 436, 556), (0, 50), basis="typical", register=False, area="B",
+                       sheet="typical (cable installation)",
+                       info="Outage work: MV-105 feeder pulled from a reel on jacks in the laydown bay, over a sheave "
+                            "into the EL 48 ladder tray and along it to the GT1 auxiliaries; deck lift with two "
+                            "electricians feeding the tray; capstan puller at the tray drop. Cable supplier: Southwire "
+                            "(as requested).")
+    fuel.G["cur"] = it
+    xr, yr, D = 532.0, 541.0, 9.0
+    jack_reel(xr, yr, D, 5.0, "cable_mv", "MV-105 15 kV 500 KCMIL", 1800, z=.3)
+    top = (xr + D * .4, yr, .3 + .5 + D * .9)
+    # sheave hung from the tray corner support, the cable rising to it and into the tray
+    sx, sy, sz = 557.2, 543.6, 46.6
+    rod((sx, sy, sz + 1.1), (sx, sy, 49.4), .06, "steel", seg=6)                         # hanger
+    rod((sx, sy - .25, sz), (sx, sy + .25, sz), 1.0, "crane", seg=18)                    # sheave wheel
+    from maintenance import bez, poly
+    poly(bez(top, ((top[0] + sx) / 2, (top[1] + sy) / 2 + .5, (top[2] + sz) / 2 + 3), (sx - .9, sy, sz + .6), 14), .1, "cable_mv", seg=10)
+    poly(bez((sx + .2, sy, sz + 1.0), (sx + 1.6, sy, sz + 2.2), (561.5, 544.2, 48.55), 6), .1, "cable_mv", seg=10)
+    rod((561.5, 544.2, 48.55), (598.6, 544.2, 48.55), .1, "cable_mv", seg=10)          # laid in the tray
+    rod((598.6, 544.2, 48.55), (599.4, 446, 48.55), .04, "rope", seg=6)                 # pulling rope ahead
+    rod((599.4, 446, 48.55), (601, 446, 22.4), .04, "rope", seg=6)
+    # capstan puller on the deck at the drop
+    box(599, 605, 443, 449, 20, 21.2, "sw_red")
+    rod((601, 446, 21.2), (601, 446, 23), .55, "steel", seg=14)
+    box(603, 605, 443.5, 445, 21.2, 23.5, "sw_red")
+    mt.person(604, 451, 20, 4.7)
+    # scissor lift on the deck beside the tray, platform at EL 42.6
+    lx0, lx1, ly0, ly1 = 566, 574, 536, 541
+    box(lx0, lx1, ly0, ly1, 20, 21.5, "crane")
+    for k in range(5):                                                                   # scissor arms
+        z0, z1 = 21.5 + k * 4.2, 21.5 + (k + 1) * 4.2
+        for y in (ly0 + .3, ly1 - .3):
+            rod((lx0 + .5, y, z0), (lx1 - .5, y, z1), .1, "crane", seg=6)
+            rod((lx1 - .5, y, z0), (lx0 + .5, y, z1), .1, "crane", seg=6)
+    box(lx0 - .5, lx1 + .5, ly0 - .3, ly1 + .3, 42.5, 42.8, "grating")
+    for (a0, a1, b0, b1) in ((lx0 - .5, lx1 + .5, ly0 - .3, ly0 - .2), (lx0 - .5, lx1 + .5, ly1 + .2, ly1 + .3),
+                             (lx0 - .5, lx0 - .4, ly0 - .3, ly1 + .3), (lx1 + .4, lx1 + .5, ly0 - .3, ly1 + .3)):
+        box(a0, a1, b0, b1, 46, 46.15, "crane")
+    for (px, py) in ((lx0 - .45, ly0 - .25), (lx1 + .45, ly0 - .25), (lx0 - .45, ly1 + .25), (lx1 + .45, ly1 + .25)):
+        rod((px, py, 42.8), (px, py, 46), .05, "crane", seg=4)
+    mt.person(568.5, 540, 42.8, 1.57, vest="hivis_o")
+    mt.person(572, 539.8, 42.8, 1.2)
+    # floor crew
+    mt.person(xr + 6, yr - 4, .3, 2.4)                                                   # reel tender
+    mt.person(xr + 10, yr + 3.5, .3, .3, vest="hivis_o")                                # watches the sheave, radio
+    mt.person(xr - 7, yr - 9, .3, .9, hat="sign")                                        # supervisor
