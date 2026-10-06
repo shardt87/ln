@@ -379,3 +379,44 @@ def tray_dresser(lx0=650.0, ly0=535.0):
     for k, x in enumerate((lx0 + 4.5, lx0 + 6.2)):                         # yellow cable tags on the LV cables
         box(x, x + .5, 543.95, 544.05, 44.2, 44.55, "crane")
     return it
+
+
+def armor_ribs(x0=596.0, x1=652.0, pitch=.2):
+    """ARMOR-X: the corrugated welded aluminium armor shows through the PVC jacket as ribs; drawn on the stretch of
+    the MV-tray ARMOR-X circuit seen in the tray-stack shots."""
+    tr = next(i for i in fuel.G["items"] if i["name"].startswith("Cable trays and isolated-phase"))
+    cur = fuel.G["cur"]
+    fuel.G["cur"] = tr
+    n = 0
+    for p in [q for q in fuel.G["parts"] if q["item"] == tr["id"] and q["kind"] == "rod" and q["color"] == "cable_armor"
+              and abs(q["a"][1] - q["b"][1]) < .01 and 40 < q["a"][2] < 52]:
+        lo, hi = sorted((p["a"][0], p["b"][0]))
+        y, z, r = p["a"][1], p["a"][2], p["r"]
+        x = max(lo, x0)
+        while x < min(hi, x1):
+            rod((x, y, z), (x + pitch * .45, y, z), r * 1.035, "cable_armor", seg=16)
+            n += 1
+            x += pitch
+    fuel.G["cur"] = cur
+    return n
+
+
+def armor_sample(x=651.2, y=538.6, z=43.25):
+    """A cut-off end of ARMOR-X lying on the lift platform beside the tool bag (the offcut from the termination):
+    jacket stripped back to show the corrugated aluminium armor, then the three insulated conductors."""
+    it = next(i for i in fuel.G["items"] if i["name"].startswith("Cable dressing: electricians"))
+    cur = fuel.G["cur"]
+    fuel.G["cur"] = it
+    r = .38
+    rod((x, y, z), (x + 1.6, y, z), r, "cable_armor", seg=18)                     # jacket
+    xa = x + 1.6
+    for k in range(9):                                                             # bare corrugated armor
+        rod((xa + k * .2, y, z), (xa + k * .2 + .1, y, z), r * .98, "alu", seg=18)
+        rod((xa + k * .2 + .1, y, z), (xa + k * .2 + .2, y, z), r * .9, "alu", seg=18)
+    xc = xa + 1.8
+    for j, c in enumerate(("cable", "red", "pvc_blue")):                           # conductors fanned out
+        a = 2 * math.pi * j / 3
+        oy, oz = .14 * math.cos(a), .14 * math.sin(a)
+        rod((xc - .1, y + oy, z + oz), (xc + .9, y + oy * 2.2, z + oz * 1.4), .11, c, seg=12)
+        rod((xc + .9, y + oy * 2.2, z + oz * 1.4), (xc + 1.25, y + oy * 2.2, z + oz * 1.4), .06, "copper", seg=8)
+    fuel.G["cur"] = cur
