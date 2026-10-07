@@ -376,6 +376,7 @@ for (layer, rtype), geos in route_geos.items():
 # ground beyond the compound
 if args.style == "pro":
     n_trees = pro_look.landscape(scene, coll("LANDSCAPE"), coastal)
+    print("backdrop towers", pro_look.backdrop(scene, coll("LANDSCAPE"), coastal))
     print(f"landscape: {n_trees} trees")
 else:
     me = bpy.data.meshes.new("surround")

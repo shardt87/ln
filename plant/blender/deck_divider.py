@@ -30,7 +30,7 @@ SLIDES = {
                 items=["THE PLANT MODEL AND CABLE SYSTEMS", "CABLE LINEUP AND DETAIL", "MODULAR GAS POWER",
                        "STANDARDS AND SERVICES"],
                 out="SK-3X1_divider_gas_power"),
-    "gas_site": dict(photo=os.path.join(PLANT, "renders", "cover", "K6_pro.png"), number="02",
+    "gas_site": dict(photo=os.path.join(PLANT, "renders", "cover", "K7_pro.png"), number="02",
                      title=("GAS POWER", "GENERATION", "SOLUTIONS"), tag=None,
                      items=["THE PLANT MODEL AND CABLE SYSTEMS", "CABLE LINEUP AND DETAIL", "MODULAR GAS POWER",
                             "STANDARDS AND SERVICES"],
@@ -137,7 +137,7 @@ def make(c):
 
 
 
-TITLE = dict(photo=os.path.join(PLANT, "renders", "cover", "K6_pro.png"),
+TITLE = dict(photo=os.path.join(PLANT, "renders", "cover", "K7_pro.png"),
              kicker="ANIXTER/WESCO GLOBAL ACCOUNTS MEETING", title=("POWER", "GENERATION", "SOLUTIONS"),
              sub="SOUTHWIRE × ANIXTER/WESCO", claim="ACCELERATING TIME TO POWER™", date="OCTOBER 6, 2026",
              out="SK-3X1_title_cover")

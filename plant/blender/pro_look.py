@@ -682,6 +682,9 @@ COASTAL_A = [
          target=(1550, 1850, 80), lens=28, show="everything", site=True, res=(2400, 2240)),
     dict(k="K4", n="Cover photo (1170 x 1080): the whole facility, LNG by sea, the 3x1 plant, the BTM data centre",
          eye=(4300, -900, 1250), target=(1700, 1500, 30), lens=26, show="everything", site=True, res=(1170, 1080)),
+    dict(k="K7", n="Cover photo (1170 x 1080): golden hour, the 230 kV lines leaving the plant across the fields",
+         eye=(830, -3050, 215), target=(790, 700, 80), lens=44, show="everything", site=True, res=(1170, 1080),
+         sun=(13, 250)),
     dict(k="K6", n="Cover photo (1170 x 1080): from the cable reel yard across the whole facility to the LNG terminal",
          eye=(52, 801, 7.5), target=(1150, 1215, 52), lens=21, show="everything", site=True, res=(1170, 1080),
          dof=(24, 8.0)),
@@ -873,3 +876,261 @@ def hero_set(coastal=None, name=""):
         f = lambda p: (t["c"] - p[1], p[0] - t["d"], p[2])
         heroes = [h if h.get("site") else dict(h, eye=f(h["eye"]), target=f(h["target"])) for h in heroes]
     return dict(heroes=heroes, sun=(28, 140), sheet="SK-3X1-15")
+
+
+# ------------------------------------------------------------------------------------------------- backdrop
+SITE_C = (1210.0, 960.0)
+
+
+def ground_h(x, y):
+    """Terrain height (ft) of the backdrop: flat around the site, rolling hills beyond ~5,000 ft."""
+    d = math.hypot(x - SITE_C[0], y - SITE_C[1])
+    if d < 5200:
+        return 0.0
+    t = min(1.0, (d - 5200) / 9000)
+    t = t * t * (3 - 2 * t)
+    n = (math.sin(x * .00031 + 1.3) * math.cos(y * .00027 - .4) + .55 * math.sin(x * .00071 - y * .00052 + 2.1)
+         + .3 * math.sin(x * .0013 + y * .0011))
+    return t * (170 + 110 * n)
+
+
+def _fields_material():
+    """Farmland: field parcels (Voronoi cells, ~650 ft) in crop / pasture / stubble colours with fine row striping."""
+    m = bpy.data.materials.new("pro fields")
+    m.use_nodes = True
+    nt = m.node_tree
+    L = nt.links
+    b = nt.nodes["Principled BSDF"]
+    b.inputs["Roughness"].default_value = .96
+    geo = _node(nt, "ShaderNodeNewGeometry", (-1600, 0))
+    mp = _node(nt, "ShaderNodeMapping", (-1400, 0))                  # rectangular parcels ~1,300 x 650 ft, rotated
+    mp.inputs["Rotation"].default_value = (0, 0, math.radians(8))
+    mp.inputs["Scale"].default_value = (.5, 1.0, 1.0)
+    L.new(geo.outputs["Position"], mp.inputs["Vector"])
+    vor = _node(nt, "ShaderNodeTexVoronoi", (-1100, 200), Scale=.005, Randomness=0.0)
+    vor.feature = "F1"
+    L.new(mp.outputs["Vector"], vor.inputs["Vector"])
+    sep = _node(nt, "ShaderNodeSeparateColor", (-900, 200))
+    L.new(vor.outputs["Color"], sep.inputs["Color"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.location = (-700, 200)
+    ramp.color_ramp.interpolation = "CONSTANT"
+    cols = ["#5a6d38", "#77823f", "#a99d62", "#617340", "#8a7a52", "#4f6634", "#93935a", "#6b7c3c"]
+    els = ramp.color_ramp.elements
+    els[0].position, els[0].color = 0.0, lin(cols[0])
+    els[1].position, els[1].color = 1 / len(cols), lin(cols[1])
+    for k, c in enumerate(cols[2:], start=2):
+        e = els.new(k / len(cols))
+        e.color = lin(c)
+    L.new(sep.outputs["Red"], ramp.inputs["Fac"])
+    # rows: fine stripes whose direction changes per field (wave texture on a per-cell rotated coordinate)
+    wave = _node(nt, "ShaderNodeTexWave", (-900, -150), Scale=.6, Distortion=.4)
+    wave.bands_direction = "DIAGONAL"
+    L.new(geo.outputs["Position"], wave.inputs["Vector"])
+    rows = _node(nt, "ShaderNodeMix", (-450, 0))
+    rows.data_type = "RGBA"
+    rows.blend_type = "MULTIPLY"
+    rows.inputs["Factor"].default_value = .12
+    L.new(ramp.outputs["Color"], rows.inputs[6])
+    L.new(wave.outputs["Color"], rows.inputs[7])
+    # field edges: a darker hedge line where the Voronoi distance to the cell border is small
+    edge = _node(nt, "ShaderNodeTexVoronoi", (-1100, -400), Scale=.005, Randomness=0.0)
+    edge.feature = "DISTANCE_TO_EDGE"
+    L.new(mp.outputs["Vector"], edge.inputs["Vector"])
+    er = _node(nt, "ShaderNodeMapRange", (-700, -400))
+    er.inputs["From Min"].default_value, er.inputs["From Max"].default_value = .0, .018
+    er.inputs["To Min"].default_value, er.inputs["To Max"].default_value = .62, 1.0
+    L.new(edge.outputs["Distance"], er.inputs["Value"])
+    hedge = _node(nt, "ShaderNodeMix", (-250, 0))
+    hedge.data_type = "RGBA"
+    hedge.blend_type = "MULTIPLY"
+    hedge.inputs["Factor"].default_value = 1.0
+    L.new(rows.outputs[2], hedge.inputs[6])
+    comb = _node(nt, "ShaderNodeCombineColor", (-450, -400))
+    L.new(er.outputs[0], comb.inputs["Red"]); L.new(er.outputs[0], comb.inputs["Green"]); L.new(er.outputs[0], comb.inputs["Blue"])
+    L.new(comb.outputs[0], hedge.inputs[7])
+    L.new(hedge.outputs[2], b.inputs["Base Color"])
+    n2 = _node(nt, "ShaderNodeTexNoise", (-700, -650), Scale=1.5, Detail=8)
+    L.new(geo.outputs["Position"], n2.inputs["Vector"])
+    bump = _node(nt, "ShaderNodeBump", (-250, -650), Strength=.25)
+    L.new(n2.outputs["Fac"], bump.inputs["Height"])
+    L.new(bump.outputs["Normal"], b.inputs["Normal"])
+    return m
+
+
+def _mesh(coll, name, verts, faces, mats):
+    me = bpy.data.meshes.new(name)
+    me.from_pydata(verts, [], faces)
+    for m in mats:
+        me.materials.append(m)
+    ob = bpy.data.objects.new(name, me)
+    coll.objects.link(ob)
+    return ob, me
+
+
+def _bars(segs, w):
+    """Thin square bars between point pairs (ft) as one vertex / face list (m)."""
+    verts, faces = [], []
+    for a, b in segs:
+        a, b = Vector(a), Vector(b)
+        ax = (b - a).normalized()
+        ref = Vector((0, 0, 1)) if abs(ax.z) < .9 else Vector((1, 0, 0))
+        u = ax.cross(ref).normalized() * w / 2
+        v = ax.cross(u).normalized() * w / 2
+        base = len(verts)
+        for p in (a, b):
+            for (su, sv) in ((1, 1), (-1, 1), (-1, -1), (1, -1)):
+                verts.append(tuple((p + u * su + v * sv) * FT))
+        faces += [(base + i, base + (i + 1) % 4, base + 4 + (i + 1) % 4, base + 4 + i) for i in range(4)]
+    return verts, faces
+
+
+def lattice_tower():
+    """230 kV double-circuit lattice tower (local: line along +y, arms along x), ~140 ft; returns (segments, phase
+    attachment points, shield-wire points)."""
+    segs = []
+    lv = [(0, 16), (36, 9.5), (88, 5.2), (128, 4.0)]                 # (z, half width) of the leg profile
+    corners = [(1, 1), (-1, 1), (-1, -1), (1, -1)]
+    for (z0, h0), (z1, h1) in zip(lv, lv[1:]):
+        for (sx, sy) in corners:
+            segs.append(((sx * h0, sy * h0, z0), (sx * h1, sy * h1, z1)))
+        n = 3 if z1 - z0 > 30 else 2
+        for k in range(n):                                            # X-bracing panels on all four faces
+            za, zb = z0 + (z1 - z0) * k / n, z0 + (z1 - z0) * (k + 1) / n
+            ha, hb = h0 + (h1 - h0) * k / n, h0 + (h1 - h0) * (k + 1) / n
+            for i in range(4):
+                (ax_, ay_), (bx_, by_) = corners[i], corners[(i + 1) % 4]
+                segs.append(((ax_ * ha, ay_ * ha, za), (bx_ * hb, by_ * hb, zb)))
+                segs.append(((bx_ * ha, by_ * ha, za), (ax_ * hb, ay_ * hb, zb)))
+            for i in range(4):
+                (ax_, ay_), (bx_, by_) = corners[i], corners[(i + 1) % 4]
+                segs.append(((ax_ * hb, ay_ * hb, zb), (bx_ * hb, by_ * hb, zb)))
+    phases, shields = [], []
+    for z, L_ in ((86, 24), (102, 28), (118, 24)):                   # three crossarms, both sides
+        h = 5.2 - (z - 88) * (1.2 / 40)
+        for s in (-1, 1):
+            for yy in (-h, h):
+                segs.append(((s * h, yy, z), (s * L_, 0, z)))
+                segs.append(((s * h, yy, z - 7), (s * L_, 0, z)))
+            phases.append((s * (L_ - 1.5), 0, z - 9))
+            segs.append(((s * (L_ - 1.5), 0, z), (s * (L_ - 1.5), 0, z - 9)))   # insulator string
+    for s in (-1, 1):                                                  # shield-wire peaks
+        segs.append(((s * 4, -4, 128), (s * 10, 0, 140)))
+        segs.append(((s * 4, 4, 128), (s * 10, 0, 140)))
+        shields.append((s * 10, 0, 140))
+    return segs, phases, shields
+
+
+def transmission_lines(coll, paths):
+    """Lattice towers along each path (list of (x, y) ft), conductors as catenaries between them."""
+    steel = material("steel")
+    insul = material("insulator")
+    cond = material("conductor")
+    segs, phases, shields = lattice_tower()
+    n_t = 0
+    for path in paths:
+        pts = []
+        for a, b in zip(path, path[1:]):                              # towers every ~1,000 ft along the path
+            L_ = math.dist(a, b)
+            n = max(1, round(L_ / 1000))
+            for k in range(n):
+                pts.append((a[0] + (b[0] - a[0]) * k / n, a[1] + (b[1] - a[1]) * k / n))
+        pts.append(path[-1])
+        heads = []
+        for i, (x, y) in enumerate(pts):
+            a = pts[max(0, i - 1)]
+            b = pts[min(len(pts) - 1, i + 1)]
+            ang = math.atan2(b[1] - a[1], b[0] - a[0]) - math.pi / 2       # arms perpendicular to the line
+            ca, sa = math.cos(ang), math.sin(ang)
+            gz = ground_h(x, y)
+            T = lambda p: (x + p[0] * ca - p[1] * sa, y + p[0] * sa + p[1] * ca, gz + p[2])
+            v, f = _bars([(T(p), T(q)) for p, q in segs], .9)
+            _mesh(coll, "pro tower", v, f, [steel])
+            heads.append(([T(p) for p in phases], [T(p) for p in shields]))
+            n_t += 1
+        cv, cf = [], []
+        for (h0, s0), (h1, s1) in zip(heads, heads[1:]):
+            for a, b, sag, w in [(p, q, 28, .55) for p, q in zip(h0, h1)] + [(p, q, 22, .35) for p, q in zip(s0, s1)]:
+                N = 14
+                curve = []
+                for k in range(N + 1):
+                    t = k / N
+                    curve.append((a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t,
+                                  a[2] + (b[2] - a[2]) * t - 4 * sag * t * (1 - t)))
+                v, f = _bars(list(zip(curve, curve[1:])), w)
+                base = len(cv)
+                cv += v
+                cf += [tuple(base + i for i in face) for face in f]
+        _mesh(coll, "pro conductors", cv, cf, [cond])
+    return n_t
+
+
+def backdrop(scene, coll, coastal=None):
+    """Context around the site for the wide shots: rolling hills with farmland, a highway with traffic, and the two
+    230 kV transmission lines leaving the switchyard across the fields."""
+    fields = _fields_material()
+    for ob in coll.objects:                                           # the flat surround becomes farmland too
+        if ob.name.startswith("pro surround"):
+            ob.data.materials.clear()
+            ob.data.materials.append(fields)
+    north_lim = (coastal["shoreline_y"] - 40) if coastal else 1e9
+    R, step = 26000, 400
+    xs = list(range(int(SITE_C[0] - R), int(SITE_C[0] + R) + 1, step))
+    ys = [y for y in range(int(SITE_C[1] - R), int(SITE_C[1] + R) + 1, step) if y <= north_lim] + \
+         ([north_lim] if coastal else [])
+    verts, idx = [], {}
+    for j, y in enumerate(ys):
+        for i, x in enumerate(xs):
+            idx[(i, j)] = len(verts)
+            verts.append((x * FT, y * FT, (-.6 + ground_h(x, y) + .35) * FT))
+    faces = []
+    for j in range(len(ys) - 1):
+        for i in range(len(xs) - 1):
+            cx, cy = (xs[i] + xs[i + 1]) / 2, (ys[j] + ys[j + 1]) / 2
+            if math.hypot(cx - SITE_C[0], cy - SITE_C[1]) < 5400:
+                continue
+            faces.append((idx[(i, j)], idx[(i + 1, j)], idx[(i + 1, j + 1)], idx[(i, j + 1)]))
+    ob, me = _mesh(coll, "pro hills", verts, faces, [fields])
+    me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
+    # highway (four lanes) south of the site, following the ground, with traffic
+    road = material("road")
+    yh = -2200
+    hv, hf = [], []
+    xs_h = list(range(-16000, 18001, 300))
+    for k, x in enumerate(xs_h):
+        z = (ground_h(x, yh) + .1) * FT
+        hv += [(x * FT, (yh - 40) * FT, z), (x * FT, (yh + 40) * FT, z)]
+        if k:
+            b0 = 2 * (k - 1)
+            hf.append((b0, b0 + 2, b0 + 3, b0 + 1))
+    _mesh(coll, "pro highway", hv, hf, [road])
+    rng = random.Random(42)
+    car_cols = ["white_truck", "steel_dark", "red", "truck", "door", "steel", "white_truck", "hivis_o"]
+    for k in range(70):
+        x = rng.uniform(-9000, 12000)
+        lane = rng.choice((-28, -12, 12, 28))
+        big = rng.random() < .3
+        L_, W_, H_ = (65, 8.5, 13) if big else (15, 6.2, 5)
+        gz = ground_h(x, yh)
+        ob, me = _mesh(coll, "pro vehicle", [], [], [material(rng.choice(car_cols))])
+        x0, x1, y0, y1, z0, z1 = x - L_ / 2, x + L_ / 2, yh + lane - W_ / 2, yh + lane + W_ / 2, gz + .5, gz + H_
+        bv = [(xx * FT, yy * FT, zz * FT) for zz in (z0, z1) for yy in (y0, y1) for xx in (x0, x1)]
+        me.from_pydata(bv, [], [(0, 2, 3, 1), (4, 5, 7, 6), (0, 1, 5, 4), (2, 6, 7, 3), (0, 4, 6, 2), (1, 3, 7, 5)])
+    # the two 230 kV lines out of the switchyard: south across the highway, then away to the south-west
+    paths = [[(670, -260), (670, -3400), (-2600, -9800), (-7000, -17000)],
+             [(870, -260), (870, -3600), (-2300, -10000), (-6600, -17200)]]
+    n_t = transmission_lines(coll, paths)
+    # drop from the switchyard gantries (EL 40 at the fence) to the first towers
+    cond = material("conductor")
+    dv, df = [], []
+    for x in (670, 870):
+        for dxp, zt in ((-24, 77), (24, 77), (-28, 93), (28, 93), (-24, 109), (24, 109)):
+            a, b = (x + dxp * .3, 18, 40), (x + dxp, -260, zt)
+            curve = [(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t - 4 * 6 * t * (1 - t))
+                     for t in [i / 10 for i in range(11)]]
+            v, f = _bars(list(zip(curve, curve[1:])), .5)
+            base = len(dv)
+            dv += v
+            df += [tuple(base + i for i in face) for face in f]
+    _mesh(coll, "pro line drops", dv, df, [cond])
+    return n_t

@@ -282,3 +282,4 @@ One zone per cycle. Each cycle:
   deck_divider.finish_photo.
 - Whole-facility cover photo K5 (coastal variant A overlay: plant, BTM data centre, LNG tank, jetty and carrier) from the south-west, 1170 x 1080 at 160 % / 160 spp with the cloud sky; deck title slide (make_title, the deck's cover layout) and an alternative 02 divider on it.
 - Cover photo K6: from the cable reel yard (230 kV steel drum stencilled SOUTHWIRE, reel row receding) across to the HRSG stacks and turbine hall; title slide and alternative 02 divider rebuilt on it (K5 aerial kept).
+- Backdrop (pro_look.backdrop): rolling hills beyond ~5,000 ft, rectangular farmland parcels with rows and hedge lines (also on the flat surround), a four-lane highway with traffic, and the two 230 kV lines leaving the switchyard on 38 double-circuit lattice towers with catenary conductors and shield wires. Cover camera K7: golden hour between the lines, conductors leading to the plant.
