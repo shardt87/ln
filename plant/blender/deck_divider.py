@@ -25,6 +25,13 @@ SLIDES = {
                        "ARMOR-X MC-HL AND TYPE TC-ER ON THE RACKS",
                        "INSTRUMENTATION AND GROUNDING"],
                 out="SK-3X1_divider_ccs"),
+    "hall": dict(photo=os.path.join(PLANT, "renders", "epic", "E70_pro.png"), number="07",
+                 title=("TURBINE", "HALL"), tag="PRODUCT APPLICATION · GT / ST",
+                 items=["MV-105 15 KV FEEDERS TO THE GT AUXILIARIES",
+                        "ARMOR-X MC-HL AT THE TURBINE ENCLOSURES",
+                        "TYPE TC-ER POWER AND CONTROL IN THE TRAYS",
+                        "INSTRUMENTATION AND THERMOCOUPLE CABLE"],
+                 out="SK-3X1_divider_turbine_hall"),
 }
 
 
