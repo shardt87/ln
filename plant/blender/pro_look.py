@@ -85,11 +85,11 @@ LOOK = {
     "cable_tcx": ("paint", "#cfa818", .45, 0), "cable_fa": ("paint", "#a52e25", .5, 0),
     "cable_fo": ("paint", "#d36f22", .45, 0),
     "sw_red": ("paint", "#c41f27", .4, 0), "xlpe": ("paint", "#e4e0cf", .3, 0), "alu": ("galv", "#b3b8bc", .3, .85),
-    "steel_dark": ("paint", "#3a4045", .45, .3), "tent": ("paint", "#eeeeea", .8, 0), "white_truck": ("paint", "#e9ebea", .3, 0),
+    "steel_dark": ("paint", "#3a4045", .45, .3), "boot": ("paint", "#35261b", .7, 0), "reflect": ("galv", "#d4d8d9", .25, .7), "glove": ("paint", "#c7b088", .8, 0), "tent": ("paint", "#eeeeea", .8, 0), "white_truck": ("paint", "#e9ebea", .3, 0),
 }
 _mats = {}
 # materials kept clean: glass, lamps, people, signs, labels, cables and the like
-WEATHER_SKIP = {"tent", "sw_red", "xlpe", "alu", "white_truck", "lamp", "sign", "label", "hivis", "hivis_o", "hardhat", "workwear", "skin", "glass",
+WEATHER_SKIP = {"boot", "reflect", "glove", "tent", "sw_red", "xlpe", "alu", "white_truck", "lamp", "sign", "label", "hivis", "hivis_o", "hardhat", "workwear", "skin", "glass",
                 "window", "insulator", "rail", "cable_mv", "cable_armor", "cable_tc", "cable_mc", "cable_inst", "cable_tcx",
                 "cable_fa", "cable_fo", "cable", "truck", "sea", "water"}
 
@@ -428,6 +428,7 @@ def world_and_sun(scene, elevation=24, azimuth=258):
     sky.dust_density = 2.5
     world.node_tree.links.new(sky.outputs["Color"], bg.inputs["Color"])
     bg.inputs["Strength"].default_value = .14
+    add_clouds(world)
     world.mist_settings.start = 120
     world.mist_settings.depth = 2200
     world.mist_settings.falloff = "QUADRATIC"
@@ -440,6 +441,97 @@ def world_and_sun(scene, elevation=24, azimuth=258):
     towards_sun = Vector((math.sin(az) * math.cos(el), math.cos(az) * math.cos(el), math.sin(el)))
     ob.rotation_euler = towards_sun.to_track_quat("Z", "Y").to_euler()
     scene.collection.objects.link(ob)
+
+
+CLOUDS = dict(coverage=.535, softness=.075, scale=1.35, bright=10.5, shade=.68, seed=3.7)
+
+
+def add_clouds(world, **kw):
+    """Cumulus layer in the world shader, seen by camera rays only (the scene keeps its sky + sun lighting):
+    the view direction is projected onto a flat cloud deck (x/z, y/z), so clouds shrink and crowd toward the
+    horizon in perspective; fractal noise sets the shape, a second noise the self-shadowing; faded out at the
+    horizon. Full render resolution, no image needed."""
+    c = dict(CLOUDS, **kw)
+    nt = world.node_tree
+    N, L = nt.nodes, nt.links
+    bg = N["Background"]
+    sky = next(n for n in N if n.type == "TEX_SKY")
+
+    def node(t, x, y, **inputs):
+        n = N.new(t)
+        n.location = (x, y)
+        for k_, v in inputs.items():
+            n.inputs[k_].default_value = v
+        return n
+
+    def math_(op, x, y, a=None, b=None):
+        n = N.new("ShaderNodeMath")
+        n.operation = op
+        n.location = (x, y)
+        if a is not None:
+            n.inputs[0].default_value = a
+        if b is not None:
+            n.inputs[1].default_value = b
+        return n
+    tc = node("ShaderNodeTexCoord", -1600, 400)
+    sep = node("ShaderNodeSeparateXYZ", -1400, 400)
+    L.new(tc.outputs["Generated"], sep.inputs[0])
+    zc = math_("MAXIMUM", -1200, 300, b=.035)
+    L.new(sep.outputs["Z"], zc.inputs[0])
+    u = math_("DIVIDE", -1050, 480)
+    v = math_("DIVIDE", -1050, 360)
+    L.new(sep.outputs["X"], u.inputs[0]); L.new(zc.outputs[0], u.inputs[1])
+    L.new(sep.outputs["Y"], v.inputs[0]); L.new(zc.outputs[0], v.inputs[1])
+    comb = node("ShaderNodeCombineXYZ", -900, 420, Z=c["seed"])
+    L.new(u.outputs[0], comb.inputs["X"]); L.new(v.outputs[0], comb.inputs["Y"])
+    n1 = node("ShaderNodeTexNoise", -700, 500, Scale=c["scale"], Detail=8.0, Roughness=.52)
+    n1.noise_dimensions = "3D"
+    L.new(comb.outputs[0], n1.inputs["Vector"])
+    n2 = node("ShaderNodeTexNoise", -700, 250, Scale=c["scale"] * 3.2, Detail=6.0, Roughness=.6)
+    L.new(comb.outputs[0], n2.inputs["Vector"])
+    cov = node("ShaderNodeMapRange", -480, 500)
+    cov.inputs["From Min"].default_value = c["coverage"]
+    cov.inputs["From Max"].default_value = c["coverage"] + c["softness"]
+    cov.interpolation_type = "SMOOTHSTEP"
+    L.new(n1.outputs["Fac"], cov.inputs["Value"])
+    hor = node("ShaderNodeMapRange", -480, 280)                  # fade toward the horizon
+    hor.inputs["From Min"].default_value = .04
+    hor.inputs["From Max"].default_value = .28
+    hor.interpolation_type = "SMOOTHSTEP"
+    L.new(sep.outputs["Z"], hor.inputs["Value"])
+    mask = math_("MULTIPLY", -280, 420)
+    L.new(cov.outputs[0], mask.inputs[0]); L.new(hor.outputs[0], mask.inputs[1])
+    # cloud shading: lit tops, grey bellies (second noise), warmed by the sky colour
+    shade = node("ShaderNodeMapRange", -480, 120)
+    shade.inputs["From Min"].default_value = .35
+    shade.inputs["From Max"].default_value = .7
+    shade.inputs["To Min"].default_value = c["shade"]
+    shade.inputs["To Max"].default_value = 1.0
+    L.new(n2.outputs["Fac"], shade.inputs["Value"])
+    white = node("ShaderNodeMix", -280, 160)
+    white.data_type = "RGBA"
+    white.blend_type = "MIX"
+    white.inputs["Factor"].default_value = .82
+    L.new(sky.outputs["Color"], white.inputs[6])
+    white.inputs[7].default_value = (c["bright"], c["bright"] * .975, c["bright"] * .94, 1)
+    lit = node("ShaderNodeMix", -100, 160)
+    lit.data_type = "RGBA"
+    lit.blend_type = "MULTIPLY"
+    lit.inputs["Factor"].default_value = 1.0
+    L.new(white.outputs[2], lit.inputs[6])
+    L.new(shade.outputs[0], lit.inputs[7])
+    cloudy = node("ShaderNodeMix", 100, 300)
+    cloudy.data_type = "RGBA"
+    L.new(mask.outputs[0], cloudy.inputs["Factor"])
+    L.new(sky.outputs["Color"], cloudy.inputs[6])
+    L.new(lit.outputs[2], cloudy.inputs[7])
+    lp = node("ShaderNodeLightPath", 100, 600)
+    cam = node("ShaderNodeMix", 300, 350)
+    cam.data_type = "RGBA"
+    L.new(lp.outputs["Is Camera Ray"], cam.inputs["Factor"])
+    L.new(sky.outputs["Color"], cam.inputs[6])
+    L.new(cloudy.outputs[2], cam.inputs[7])
+    L.new(cam.outputs[2], bg.inputs["Color"])
 
 
 def set_sun(scene, elevation, azimuth):

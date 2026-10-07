@@ -48,13 +48,33 @@ def P(*v):
     return tuple(int(round(x * S)) for x in v)
 
 
+def finish_photo(ph):
+    """Photographic finish on the render: gentle vignette and fine luminance grain."""
+    import random
+    w, h = ph.size
+    v = Image.new("L", (w // 8, h // 8), 0)
+    px = v.load()
+    for yy in range(v.size[1]):
+        for xx in range(v.size[0]):
+            dx, dy = (xx / v.size[0] - .58) / .62, (yy / v.size[1] - .5) / .7
+            px[xx, yy] = int(255 * min(1, max(0, (dx * dx + dy * dy) - .35) * .55))
+    v = v.resize((w, h), Image.BILINEAR)
+    ph = Image.composite(Image.new("RGB", (w, h), (12, 13, 15)), ph, v.point(lambda q: int(q * .55)))
+    rnd = random.Random(7)
+    g = Image.new("L", (w // 2, h // 2))
+    g.putdata([128 + int(rnd.gauss(0, 9)) for _ in range((w // 2) * (h // 2))])
+    g = g.resize((w, h), Image.BILINEAR)
+    ph = Image.blend(ph, Image.merge("RGB", (g, g, g)), .035)
+    return ph
+
+
 def make(c):
     W, H = P(1440, 810)
     img = Image.new("RGB", (W, H), BG)
     # photo, right, under a dark diagonal (top edge at x 738 pt, bottom at 564 pt)
     ph = Image.open(c["photo"]).convert("RGB")
     pw, phh = P(877.5, 810)
-    ph = ph.resize((pw, phh), Image.LANCZOS)
+    ph = finish_photo(ph.resize((pw, phh), Image.LANCZOS))
     img.paste(ph, P(562.5, 0))
     d = ImageDraw.Draw(img)
     d.polygon([P(562.5, 0), P(738, 0), P(564, 810), P(562.5, 810)], fill=BG)

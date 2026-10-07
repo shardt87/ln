@@ -269,3 +269,14 @@ One zone per cycle. Each cycle:
 - ARMOR-X MC-HL (cable_mc) drawn as it is: black PVC jacket (not bare metal) with the corrugated welded aluminium armor showing as fine ribs (CCS rack stretch x 708-800); cover re-rendered.
 - Deck-style CCS section divider (blender/deck_divider.py): 16:9 slide matching the user's Southwire x Anixter/Wesco PowerGen deck (Barlow Condensed, charcoal / copper, logo, section number 14 = CCS zone in the deck's plant model, tag box, item rules, watermark, footer), photo E69 (1170 x 1080) under the dark diagonal. Output renders/deck/SK-3X1_divider_ccs.png / .pdf.
 - 02 Gas Power divider re-shot with cable leading the frame (E71): legends and ARMOR-X ribs on the outdoor R1 -> hall MV tray (x 560, y 560-640, EL 48), looking north down the cables to HRSG 1 and its stack.
+
+### Render quality pass
+- Procedural cumulus sky (pro_look.add_clouds): a cloud deck in the world shader, view direction projected onto it so
+  clouds recede in perspective, fractal noise for the shapes, second noise for lit tops / grey bellies, faded at the
+  horizon; camera rays only, so lighting stays the sky + sun. (Online HDRI libraries are blocked by the network
+  policy; this is full resolution and needs no image.)
+- New shared scale figure (figure.py) for every person in the model: boots, jointed legs, pelvis, tapered torso in a
+  hi-vis vest with reflective bands, shoulders, jointed arms with gloves, neck, head, hard hat with brim; relaxed or
+  working pose.
+- Deck divider photos rendered at 160 % and 160 samples; photographic finish (vignette, fine grain) in
+  deck_divider.finish_photo.

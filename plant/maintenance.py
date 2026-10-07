@@ -27,16 +27,8 @@ OPEN = [(X - 1.3, X + 1.3, MH_A[1] - 1.3, MH_A[1] + 1.3), (X - 1.3, X + 1.3, MH_
 
 
 def person(x, y, z, a=0.0, vest="hivis", hat="hardhat"):
-    ca, sa = math.cos(a), math.sin(a)
-    for s in (-1, 1):
-        px, py = x + s * .28 * -sa, y + s * .28 * ca
-        rod((px, py, z), (px, py, z + 2.8), .2, "workwear", seg=6)
-    box(x - .55, x + .55, y - .55, y + .55, z + 2.8, z + 4.7, vest)
-    for s in (-1, 1):
-        px, py = x + s * .72 * -sa, y + s * .72 * ca
-        rod((px, py, z + 4.6), (px + .35 * ca, py + .35 * sa, z + 3.1), .14, vest, seg=6)
-    rod((x, y, z + 4.75), (x, y, z + 5.45), .36, "skin", seg=10)
-    rod((x, y, z + 5.4), (x, y, z + 5.85), .43, hat, r2=.3, seg=10)
+    import figure
+    figure.build(rod, x, y, z, a, vest, hat)
 
 
 def bez(p0, p1, p2, n=10):
