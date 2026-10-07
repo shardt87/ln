@@ -25,6 +25,11 @@ SLIDES = {
                        "ARMOR-X MC-HL AND TYPE TC-ER ON THE RACKS",
                        "INSTRUMENTATION AND GROUNDING"],
                 out="SK-3X1_divider_ccs"),
+    "gas": dict(photo=os.path.join(PLANT, "renders", "epic", "E71_pro.png"), number="02",
+                title=("GAS POWER", "GENERATION", "SOLUTIONS"), tag=None,
+                items=["THE PLANT MODEL AND CABLE SYSTEMS", "CABLE LINEUP AND DETAIL", "MODULAR GAS POWER",
+                       "STANDARDS AND SERVICES"],
+                out="SK-3X1_divider_gas_power"),
     "hall": dict(photo=os.path.join(PLANT, "renders", "epic", "E70_pro.png"), number="07",
                  title=("TURBINE", "HALL"), tag="PRODUCT APPLICATION · GT / ST",
                  items=["MV-105 15 KV FEEDERS TO THE GT AUXILIARIES",
@@ -68,13 +73,20 @@ def make(c):
     d.rectangle([P(0, 0), P(12, 810)], fill=BAR)
     logo = Image.open(os.path.join(DECK, "southwire_pgs_logo.png")).convert("RGBA").resize(P(300, 74.25), Image.LANCZOS)
     img.alpha_composite(logo, P(96, 54))
-    d.text(P(96, 149.2), c["number"], font=font("BarlowCondensed-ExtraBold.ttf", 127.5), fill=BAR, anchor="la")
-    d.text(P(96, 285), c["title"][0], font=font("BarlowCondensed-ExtraBold.ttf", 90), fill=WHITE, anchor="la")
-    d.text(P(96, 366), c["title"][1], font=font("BarlowCondensed-ExtraBold.ttf", 90), fill=ORANGE, anchor="la")
-    tf = font("BarlowCondensed-ExtraBold.ttf", 30)
-    tw = d.textlength(c["tag"], font=tf) / S
-    d.rectangle([P(96, 478.5), P(96 + tw + 42, 535.5)], fill=BAR)
-    d.text(P(117, 489), c["tag"], font=tf, fill=TAGTXT, anchor="la")
+    if len(c["title"]) == 2:
+        d.text(P(96, 149.2), c["number"], font=font("BarlowCondensed-ExtraBold.ttf", 127.5), fill=BAR, anchor="la")
+    else:
+        d.text(P(96, 156), c["number"], font=font("BarlowCondensed-ExtraBold.ttf", 60), fill=BAR, anchor="la")
+    t = c["title"]
+    tfont = font("BarlowCondensed-ExtraBold.ttf", 90)
+    ys = (285, 366) if len(t) == 2 else (240, 321, 402)     # three lines: smaller number above
+    for k, (yy, line) in enumerate(zip(ys, t)):
+        d.text(P(96, yy), line, font=tfont, fill=ORANGE if k == len(t) - 1 else WHITE, anchor="la")
+    if c.get("tag"):
+        tf = font("BarlowCondensed-ExtraBold.ttf", 30)
+        tw = d.textlength(c["tag"], font=tf) / S
+        d.rectangle([P(96, 478.5), P(96 + tw + 42, 535.5)], fill=BAR)
+        d.text(P(117, 489), c["tag"], font=tf, fill=TAGTXT, anchor="la")
     lf = font("BarlowCondensed-Bold.ttf", 24)
     y_rule = [553.5, 600.75, 648, 695.25, 742.5]
     for yr in y_rule:
