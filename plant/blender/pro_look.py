@@ -680,6 +680,10 @@ COASTAL_A = [
          target=(1400, 2050, 50), lens=30, show="everything", site=True, res=(2400, 2240)),
     dict(k="K3", n="LNG by sea, the 3x1 plant, the BTM data centre", eye=(1500, -1700, 950),
          target=(1550, 1850, 80), lens=28, show="everything", site=True, res=(2400, 2240)),
+    dict(k="K4", n="Cover photo (1170 x 1080): the whole facility, LNG by sea, the 3x1 plant, the BTM data centre",
+         eye=(4300, -900, 1250), target=(1700, 1500, 30), lens=26, show="everything", site=True, res=(1170, 1080)),
+    dict(k="K5", n="Cover photo (1170 x 1080): the whole facility from the south-west", eye=(-260, -520, 900),
+         target=(1650, 1550, 20), lens=27, show="everything", site=True, res=(1170, 1080)),
 ]
 COASTAL_B = [
     dict(k="F1", n="FSRU and LNG carrier, ship-to-ship transfer", eye=(25300, -300, 300), target=(24300, 950, 40),

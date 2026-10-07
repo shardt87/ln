@@ -280,3 +280,4 @@ One zone per cycle. Each cycle:
   working pose.
 - Deck divider photos rendered at 160 % and 160 samples; photographic finish (vignette, fine grain) in
   deck_divider.finish_photo.
+- Whole-facility cover photo K5 (coastal variant A overlay: plant, BTM data centre, LNG tank, jetty and carrier) from the south-west, 1170 x 1080 at 160 % / 160 spp with the cloud sky; deck title slide (make_title, the deck's cover layout) and an alternative 02 divider on it.
