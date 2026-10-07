@@ -377,6 +377,8 @@ for (layer, rtype), geos in route_geos.items():
 if args.style == "pro":
     n_trees = pro_look.landscape(scene, coll("LANDSCAPE"), coastal)
     print("backdrop towers", pro_look.backdrop(scene, coll("LANDSCAPE"), coastal))
+    print("plumes", pro_look.add_plumes(coll("PLUMES"), [(x, 790, 180, 10, 1.2) for x in (630, 790, 950)] +
+                                       [(x, 1220, 313, 9, 2.4) for x in (630, 790, 950)]))
     print(f"landscape: {n_trees} trees")
 else:
     me = bpy.data.meshes.new("surround")
@@ -518,7 +520,7 @@ def make_camera(v, margin=.03):
 def set_visibility(show):
     """Exclude hidden collections from the view layer, so they neither
     render nor block the label visibility rays."""
-    show = {l for l in show if not (l.startswith("NO") and l.endswith("_GROUND"))} | {"SITE", "LANDSCAPE"}
+    show = {l for l in show if not (l.startswith("NO") and l.endswith("_GROUND"))} | {"SITE", "LANDSCAPE", "PLUMES"}
     for patch, opt in (("NOMOD_GROUND", "OPT_MOD"), ("NOBESS_GROUND", "OPT_BESS"), ("NOCCS_GROUND", "OPT_CCS")):
         if opt not in show:
             show.add(patch)               # ground over openings cut for an option (maintenance pit, open trench)
@@ -587,6 +589,9 @@ if args.style == "pro":
             ob.hide_render = True
         sun = h.get("sun", HERO_SET["sun"])          # per-camera sun override (e.g. a cutaway in shade)
         pro_look.set_sun(scene, *sun)
+        pro_look.apply_look(scene, h.get("look"))
+        if "PLUMES" in collections:
+            collections["PLUMES"].hide_render = not h.get("plumes")
         scene.render.resolution_x, scene.render.resolution_y = h.get("res", (1920, 1080))   # cover shots: own aspect
         info = dict(k=h["k"], name=h["n"], show=show, style="pro", samples=args.samples, lens=h["lens"],
                     ortho_ft=0, margin_lr=0, margin_tb=0, sun=list(h.get("sun", HERO_SET["sun"])), sheet=HERO_SET["sheet"])

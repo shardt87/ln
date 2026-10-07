@@ -576,6 +576,7 @@ def compositor(scene):
     mul = nt.nodes.new("CompositorNodeMath")
     mul.operation = "MULTIPLY"
     mul.inputs[1].default_value = .28
+    mul.name = "haze amount"
     mul.location = (-650, -200)
     L.new(rl.outputs["Mist"], mul.inputs[0])
     haze = nt.nodes.new("CompositorNodeMixRGB")
@@ -603,11 +604,106 @@ def compositor(scene):
     grade.lift = (1.0, 1.0, 1.02)
     grade.gamma = (1.0, 1.0, 1.0)
     grade.gain = (1.03, 1.0, .97)
+    grade.name = "grade"
     grade.location = (550, 0)
     L.new(lens.outputs["Image"], grade.inputs["Image"])
+    hs = nt.nodes.new("CompositorNodeHueSat")
+    hs.name = "saturation"
+    hs.location = (680, 0)
+    L.new(grade.outputs["Image"], hs.inputs["Image"])
     comp = nt.nodes.new("CompositorNodeComposite")
-    comp.location = (800, 0)
-    L.new(grade.outputs["Image"], comp.inputs["Image"])
+    comp.location = (850, 0)
+    L.new(hs.outputs["Image"], comp.inputs["Image"])
+
+
+LOOK_DEFAULT = dict(dust=2.5, air=1.2, haze=.28, sat=1.0, exposure=-.3, sun_col=(1.0, .9, .78), sun_energy=3.1,
+                    gain=(1.03, 1.0, .97), lift=(1.0, 1.0, 1.02))
+LOOK_GOLDEN = dict(dust=.9, air=1.0, haze=.05, sat=1.22, exposure=-.12, sun_col=(1.0, .78, .55), sun_energy=4.2,
+                   gain=(1.08, 1.0, .9), lift=(.99, 1.0, 1.04))
+
+
+def apply_look(scene, look=None):
+    """Per-camera grade: haze amount, saturation, exposure, sun colour / strength, lift / gain."""
+    lk = dict(LOOK_DEFAULT, **(look or {}))
+    nt = scene.node_tree
+    nt.nodes["haze amount"].inputs[1].default_value = lk["haze"]
+    hs = nt.nodes["saturation"]
+    hs.inputs["Saturation"].default_value = lk["sat"]
+    g = nt.nodes["grade"]
+    g.gain, g.lift = lk["gain"], lk["lift"]
+    scene.view_settings.exposure = lk["exposure"]
+    sun = bpy.data.objects["pro sun"].data
+    sun.color, sun.energy = lk["sun_col"], lk["sun_energy"]
+    sky = next(n for n in scene.world.node_tree.nodes if n.type == "TEX_SKY")
+    sky.dust_density, sky.air_density = lk["dust"], lk["air"]
+    scene.cycles.volume_bounces = 3 if look else 0
+
+
+def add_plumes(coll, sources):
+    """White vapour plumes above stacks and absorbers, as chains of soft overlapping puffs (Principled Volume in
+    unit spheres: density = noise x radial falloff x per-puff strength), drifting downwind to the east-north-east
+    and widening. sources = [(x, y, z_top, r_top, strength)] in ft."""
+    m = bpy.data.materials.new("pro plume")
+    m.use_nodes = True
+    nt = m.node_tree
+    L = nt.links
+    for nd in list(nt.nodes):
+        if nd.type == "BSDF_PRINCIPLED":
+            nt.nodes.remove(nd)
+    out = next(nd for nd in nt.nodes if nd.type == "OUTPUT_MATERIAL")
+    vol = _node(nt, "ShaderNodeVolumePrincipled", (200, 0))
+    vol.inputs["Color"].default_value = (.97, .97, .97, 1)
+    vol.inputs["Anisotropy"].default_value = .5
+    L.new(vol.outputs["Volume"], out.inputs["Volume"])
+    tc = _node(nt, "ShaderNodeTexCoord", (-1200, 0))
+    ln = _node(nt, "ShaderNodeVectorMath", (-950, -200))
+    ln.operation = "LENGTH"
+    L.new(tc.outputs["Object"], ln.inputs[0])
+    fall = _node(nt, "ShaderNodeMapRange", (-700, -200))
+    fall.inputs["From Min"].default_value, fall.inputs["From Max"].default_value = .25, 1.0
+    fall.inputs["To Min"].default_value, fall.inputs["To Max"].default_value = 1, 0
+    fall.interpolation_type = "SMOOTHSTEP"
+    L.new(ln.outputs["Value"], fall.inputs["Value"])
+    nz = _node(nt, "ShaderNodeTexNoise", (-950, 150), Scale=2.2, Detail=8.0, Roughness=.62)
+    L.new(tc.outputs["Object"], nz.inputs["Vector"])
+    mr = _node(nt, "ShaderNodeMapRange", (-700, 150))
+    mr.inputs["From Min"].default_value, mr.inputs["From Max"].default_value = .38, .7
+    L.new(nz.outputs["Fac"], mr.inputs["Value"])
+    mul = _node(nt, "ShaderNodeMath", (-450, 0))
+    mul.operation = "MULTIPLY"
+    L.new(mr.outputs[0], mul.inputs[0]); L.new(fall.outputs[0], mul.inputs[1])
+    att = nt.nodes.new("ShaderNodeAttribute")
+    att.attribute_type = "OBJECT"
+    att.attribute_name = "strength"
+    att.location = (-450, -250)
+    mul2 = _node(nt, "ShaderNodeMath", (-200, 0))
+    mul2.operation = "MULTIPLY"
+    L.new(mul.outputs[0], mul2.inputs[0]); L.new(att.outputs["Fac"], mul2.inputs[1])
+    L.new(mul2.outputs[0], vol.inputs["Density"])
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2, radius=1)
+    proto = bpy.context.active_object
+    proto.data.materials.append(m)
+    for c in proto.users_collection:
+        c.objects.unlink(proto)
+    wind = Vector((math.cos(math.radians(25)), math.sin(math.radians(25)), 0))
+    rng = random.Random(11)
+    n = 0
+    for (x, y, z, r, k) in sources:
+        length = 16 * r + 120
+        puffs = 12
+        for i in range(puffs):
+            t = i / (puffs - 1)
+            c = Vector((x, y, z)) + wind * (length * .7 * t ** 1.4) + Vector((0, 0, r * 1.2 + length * .75 * math.sqrt(t)))
+            c += Vector((rng.uniform(-1, 1), rng.uniform(-1, 1), rng.uniform(-.5, .5))) * r * .6 * t
+            rr = r * (1.3 + 4.2 * t)
+            ob = bpy.data.objects.new("pro plume", proto.data)
+            ob.location = c * FT
+            ob.scale = (rr * FT * 1.15, rr * FT, rr * FT * .85)
+            ob.rotation_euler = (rng.uniform(0, 3), rng.uniform(0, 3), rng.uniform(0, 3))
+            ob["strength"] = k * (1 - .8 * t) / (1 + 1.5 * t)
+            coll.objects.link(ob)
+            n += 1
+    return n
 
 
 # Hero cameras: model feet (X east, Y north, Z up)
@@ -691,7 +787,7 @@ COASTAL_A = [
          sun=(16, 240)),
     dict(k="K11", n="Cover: the power block in front, the LNG terminal and the BTM data centre beyond (from the south-west)",
          eye=(900, -470, 480), target=(1450, 1250, 20), lens=22, show="everything", site=True, res=(1170, 1080),
-         sun=(15, 245)),
+         sun=(11, 250), look=LOOK_GOLDEN, plumes=True),
     dict(k="K7", n="Cover photo (1170 x 1080): golden hour, the 230 kV lines leaving the plant across the fields",
          eye=(830, -3050, 215), target=(790, 700, 80), lens=44, show="everything", site=True, res=(1170, 1080),
          sun=(13, 250)),
