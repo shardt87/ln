@@ -2024,12 +2024,13 @@ print("tray legends", _show.tray_legends())
 print("CCS rack tray legends", _show.tray_legends(x0=726, x1=856, y0=1131, y1=1135.5, z0=26, z1=29))
 for _p in parts:                    # tray cables round, not faceted (they are seen close up in the tray shots)
     if _p["kind"] == "rod" and _p["color"] in ("cable_mv", "cable_armor", "cable_tc", "cable_inst", "cable_tcx", "cable_mc") \
-            and _p.get("seg", 12) < 14 and abs(_p["a"][2] - _p["b"][2]) < .01 and (40 < _p["a"][2] < 52 or (26 < _p["a"][2] < 29 and 1130 < _p["a"][1] < 1136)):
+            and _p.get("seg", 12) < 14 and abs(_p["a"][2] - _p["b"][2]) < .01 and (40 < _p["a"][2] < 52 or (26 < _p["a"][2] < 29 and 1130 < _p["a"][1] < 1136)) or (_p["kind"] == "rod" and _p["color"] in ("cable_mv", "cable_armor") and abs(_p["a"][0] - _p["b"][0]) < .01 and 556 < _p["a"][0] < 563 and 47 < _p["a"][2] < 50):
         _p["seg"] = 16
 _show.tray_dresser()
 print("armor ribs", _show.armor_ribs())
 print("ARMOR-X ribs, CCS rack", _show.armor_ribs(x0=708, x1=800, pitch=.085, color="cable_mc", y0=1131, y1=1135.5, z0=26, z1=29, depth=.014))
 _show.armor_sample()
+print("R1 -> hall MV tray legends / ribs", _show.tray_legends_y(), _show.armor_ribs_y())
 import cable_install as _ci
 print("e-house bottom cable entries", _ci.ehouse_bottom_entry("MOD-EH"))
 _sk = [i for i in items if i["name"] == "BESS PCS / MV skid"]

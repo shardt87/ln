@@ -421,3 +421,46 @@ def armor_sample(x=651.2, y=538.6, z=43.25):
         rod((xc - .1, y + oy, z + oz), (xc + .9, y + oy * 2.2, z + oz * 1.4), .11, c, seg=12)
         rod((xc + .9, y + oy * 2.2, z + oz * 1.4), (xc + 1.25, y + oy * 2.2, z + oz * 1.4), .06, "copper", seg=8)
     fuel.G["cur"] = cur
+
+
+def tray_legends_y(xa=(556.0, 563.0), y0=560.0, y1=640.0, z0=47.0, z1=50.0, step=6.5):
+    """Legends on tray cables that run north-south (along y), printed on the top of the jacket, reading northward."""
+    tr = next(i for i in fuel.G["items"] if i["name"].startswith("Cable trays and isolated-phase"))
+    cur = fuel.G["cur"]
+    fuel.G["cur"] = tr
+    n = 0
+    for p in [q for q in fuel.G["parts"] if q["item"] == tr["id"] and q["kind"] == "rod" and q["color"] in LEGENDS]:
+        a, b = p["a"], p["b"]
+        if abs(a[0] - b[0]) > .01 or abs(a[2] - b[2]) > .01 or not (xa[0] < a[0] < xa[1] and z0 < a[2] < z1):
+            continue
+        lo, hi = sorted((a[1], b[1]))
+        text, ink = LEGENDS[p["color"]]
+        r = p["r"]
+        L = min(4.6, 2.6 + r * 6)
+        y = max(lo, y0) + (hash((round(a[0], 2), round(a[2], 2))) % 7) / 7 * step
+        while y + L < min(hi, y1):
+            for (t, br) in ((BRAND + "  " + text, 1), (text, 0)):
+                decal((a[0], y + L / 2, a[2] + r * 1.04 + .005), (0, 0, 1), L, r * .7, [(t, .8, 1, ink, br)], bg=None,
+                      up=(-1, 0, 0), generic_only=not br)
+            n += 1
+            y += step
+    fuel.G["cur"] = cur
+    return n
+
+
+def armor_ribs_y(xa=(556.0, 563.0), y0=560.0, y1=640.0, z0=47.0, z1=50.0, pitch=.2, color="cable_armor", depth=.035):
+    tr = next(i for i in fuel.G["items"] if i["name"].startswith("Cable trays and isolated-phase"))
+    cur = fuel.G["cur"]
+    fuel.G["cur"] = tr
+    n = 0
+    for p in [q for q in fuel.G["parts"] if q["item"] == tr["id"] and q["kind"] == "rod" and q["color"] == color
+              and abs(q["a"][0] - q["b"][0]) < .01 and xa[0] < q["a"][0] < xa[1] and z0 < q["a"][2] < z1]:
+        lo, hi = sorted((p["a"][1], p["b"][1]))
+        x, z, r = p["a"][0], p["a"][2], p["r"]
+        y = max(lo, y0)
+        while y < min(hi, y1):
+            rod((x, y, z), (x, y + pitch * .5, z), r * (1 + depth), color, seg=16)
+            n += 1
+            y += pitch
+    fuel.G["cur"] = cur
+    return n
