@@ -377,8 +377,11 @@ for (layer, rtype), geos in route_geos.items():
 if args.style == "pro":
     n_trees = pro_look.landscape(scene, coll("LANDSCAPE"), coastal)
     print("backdrop towers", pro_look.backdrop(scene, coll("LANDSCAPE"), coastal))
+    # plume drift: the first selected camera's "wind" (deg from +x), so the plumes blow away from a cover's type
+    _sel = [k for k in args.views.split(",") if k]
+    _wind = next((h["wind"] for h in pro_look.hero_set(coastal, args.set)["heroes"] if h["k"] in _sel and "wind" in h), 150)
     print("plumes", pro_look.add_plumes(coll("PLUMES"), [(x, 790, 180, 10, 1.2) for x in (630, 790, 950)] +
-                                       [(x, 1220, 313, 9, 2.4) for x in (630, 790, 950)], wind_deg=150))
+                                       [(x, 1220, 313, 9, 2.4) for x in (630, 790, 950)], wind_deg=_wind))
     print(f"landscape: {n_trees} trees")
 else:
     me = bpy.data.meshes.new("surround")

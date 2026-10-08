@@ -804,6 +804,17 @@ COASTAL_A = [
     dict(k="K11", n="Cover: the power block in front, the LNG terminal and the BTM data centre beyond (from the south-west)",
          eye=(930, -380, 430), target=(1500, 1250, 20), lens=21, show="everything", site=True, res=(1170, 1080),
          sun=(11, 250), look=LOOK_GOLDEN, plumes=True),
+    # title-cover candidates: the power block right of centre (the deck's dark diagonal covers the left), plumes
+    # drifting away from the type, the LNG terminal and the BTM data centre beyond
+    dict(k="K12", n="Title candidate: from the south over the GSUs, the three HRSGs and stacks face on, the ACC to the right",
+         eye=(1080, -480, 230), target=(640, 1000, 110), lens=26, show="everything", site=True, res=(1170, 1080),
+         sun=(11, 230), look=LOOK_GOLDEN, plumes=True, wind=20),
+    dict(k="K13", n="Title candidate: from the north-west over the carbon-capture absorbers, the campus beyond",
+         eye=(-180, 2200, 360), target=(1350, 720, 70), lens=28, show="everything", site=True, res=(1170, 1080),
+         sun=(11, 250), look=LOOK_GOLDEN, plumes=True, wind=215),
+    dict(k="K14", n="Title candidate: from the south-east over the GSUs and the 230 kV switchyard, power block close",
+         eye=(1500, -420, 300), target=(680, 980, 80), lens=26, show="everything", site=True, res=(1170, 1080),
+         sun=(11, 200), look=LOOK_GOLDEN, plumes=True, wind=30),
     dict(k="K7", n="Cover photo (1170 x 1080): golden hour, the 230 kV lines leaving the plant across the fields",
          eye=(830, -3050, 215), target=(790, 700, 80), lens=44, show="everything", site=True, res=(1170, 1080),
          sun=(13, 250)),
