@@ -165,7 +165,7 @@ New epic cameras: E14 (the RICE exhaust trains and stacks) and E15 (a simple-cyc
 - **Containerized and enclosed gensets** (CONT-1..8, GEN-E, the black-start gensets): an enclosure on sleepers with corrugation ribs, corner castings, end and side doors, intake louvres, a roof radiator with fans, and a roof silencer and stack.
 - **Trailers:**
   - MOB-1 genset and the load bank: chassis, axle sets, landing legs, gooseneck, roof fans.
-  - TM-1/2 turbines: gooseneck, landing legs, walkway and stair, exhaust collector, doors.
+  - TM-1/2 turbines (LOD 3, see DETAIL_CYCLES "TM2500 mobile turbines"): ladder chassis on crane mats, six axles with dual tyres, gooseneck on landing legs; turbine and generator enclosures with seams, doors, louvres and roof vent fans; filter house with weather hoods, ladder and handrail; rectangular raised stack with silencer; control trailer with HVAC and stair; fuel-gas skid and hose; generator terminal box with six 15 kV MV-105 leads in a ground tray (printed legends). Cameras E72, E73.
 - **Open engine skid (GEN-O):** radiator and fan, engine, generator, panel.
 - **Fuel cells (FC-1..12):** four power-module cabinets each, with doors, handles and roof exhaust vents.
 - **Microturbines (MT-1..6):** ribbed enclosures with roof intake hoods and exhaust outlets.

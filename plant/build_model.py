@@ -1581,8 +1581,8 @@ for row, y in ((0, 505), (1, 560)):                       # CONT-3..8 -> CONT-EH
 add_route("mvlv_cable", [(2263, 575), (2290, 575), (2290, 564), (2295, 564)], "OPT_TMP_ROUTES",
           sheet="typical (portable pad)")                                                   # PIC -> load bank
 add_route("mvlv_cable", [(2217, 527), (2217, 492), (2185, 492), (2185, 484)], MX)          # CONT-EH -> PAD-EH
-add_route("mvlv_cable", [(2050, 390), (2050, 410), (2165, 410), (2165, 470)], MX)         # TM-1 -> PAD-EH
-add_route("mvlv_cable", [(2170, 390), (2170, 403), (2205, 403), (2205, 477), (2200, 477)], MX)   # TM-2
+add_route("mvlv_cable", [(2060, 390), (2060, 410), (2165, 410), (2165, 470)], MX)         # TM-1 -> PAD-EH
+add_route("mvlv_cable", [(2180, 390), (2180, 403), (2205, 403), (2205, 477), (2200, 477)], MX)   # TM-2
 add_route("mvlv_cable", [(1904, 1290), (1904, 1285), (2030, 1285), (2030, 1292)], MX)     # FC-5..12 -> inverter
 add_route("mvlv_cable", [(2056, 1304), (2064, 1304), (2064, 1322), (2285, 1322), (2285, 1003),
                          (2250, 1003), (2250, 982)], MX)                                    # inverter -> MOD-LV

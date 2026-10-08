@@ -285,3 +285,23 @@ One zone per cycle. Each cycle:
 - Backdrop (pro_look.backdrop): rolling hills beyond ~5,000 ft, rectangular farmland parcels with rows and hedge lines (also on the flat surround), a four-lane highway with traffic, and the two 230 kV lines leaving the switchyard on 38 double-circuit lattice towers with catenary conductors and shield wires. Cover camera K7: golden hour between the lines, conductors leading to the plant.
 - Cover look pass: per-camera grade (apply_look: haze, saturation, exposure, sun colour / strength, sky dust, volume bounces; LOOK_GOLDEN for K11) and white vapour plumes above the three HRSG stacks and the three absorbers (add_plumes: chains of soft volumetric puffs drifting downwind), enabled per camera.
 - Material pass: colour hierarchy (dark roofs, blue-grey HRSG casings, darker steel stacks and ducts against the white absorbers), panel-to-panel tone variation on cladding, grey crushed-stone ground; plume wind direction per scene (cover: drifting west, clear of the LNG terminal); cover camera reframed.
+
+### TM2500 mobile turbines (TM-1, TM-2) at LOD 3
+- The two trailer-mounted aeroderivatives were still block models. Rebuilt in `yard.tm2500()` inside the same
+  78 x 55 ft envelope and 42 ft height:
+  - **GT trailer:** ladder chassis with cross members, a four-axle rear bogie and a two-axle mid bogie (dual tyres,
+    rims, hubs, fenders) on timber crane mats, gooseneck and kingpin plate on landing legs with sand shoes.
+  - **Enclosures:** turbine and generator enclosures with panel seams, doors with handles, wall intake louvres, and
+    a roof vent silencer with two fans.
+  - **Filter house:** combustion-air filter house on a frame over the generator end, with three rows of weather
+    hoods, a roof ladder and handrail, and a plenum down to the inlet.
+  - **Exhaust:** rectangular exhaust collector and raised stack with silencer section, flange bands and stays (it
+    was a round chimney).
+  - **Control / auxiliary trailer:** rear HVAC unit, wall units, door, landing and stair; interconnect cables to
+    the GT trailer under a yellow cable protector.
+  - **Fuel-gas / water-wash skid:** moved off the gooseneck to the east end; flexible gas hose to the trailer.
+  - **Cable moment:** the generator terminal box on the north face drops six 15 kV MV-105 1000 kcmil leads (two per
+    phase) into an open ground tray on sleepers. The tray runs north to the yard duct bank, and printed jacket
+    legends are staggered on the run. The TM-1/TM-2 cable routes now start at the tray (x + 50).
+- New palette colour `tyre`. verify, audit and coastal checks: PASS / CLEAN.
+- Cameras **E72** (TM-2 from the south-east) and **E73** (generator leads and legend close-up). Viewer v92.

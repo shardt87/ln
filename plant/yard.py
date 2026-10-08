@@ -178,23 +178,188 @@ def trailers():
         box(xf - 3, xf + 3, y0 + 1, y1 - 1, 10.5, 11.3, "louvre")
         rod((xf, (y0 + y1) / 2, 11.3), (xf, (y0 + y1) / 2, 11.7), 2.6, "fan", seg=16)
     box(x0, x0 + 2, y0 + 2, y1 - 2, 2.6, 3.5, "steel")
-    # TM2500-class trailers: gooseneck, landing legs, stair and walkway, exhaust collector
     for it in items("TM-"):
-        x, y = it["fp"][0], it["fp"][2]
-        on(it)
-        dress(True)
-        box(x + 64, x + 70, y + 32, y + 40, 3.6, 4.5, "steel")                # gooseneck to the tractor
-        box(x + 52, x + 64, y + 33, y + 39, 4.5, 5.2, "steel")
-        for (xl, yl) in ((x + 40, y + 31), (x + 40, y + 41), (x + 36, y + 9.5), (x + 36, y + 15.5)):
-            box(xl - .3, xl + .3, yl - .3, yl + .3, 0, 4.5, "steel")
-        box(x + 4, x + 14, y + 26, y + 29.6, 4.3, 4.6, "grating")             # walkway, south side
-        for s in range(4):
-            box(x + 15, x + 18, y + 26 - s * .9 - .9, y + 26 - s * .9, 3.5 - s * 1.0, 3.7 - s * 1.0, "grating")
-        rod((x + 4, y + 26, 7.9), (x + 14, y + 26, 7.9), .06, "rail", seg=4)
-        box(x + 2, x + 14, y + 31, y + 41, 16, 19, "duct")                    # exhaust collector under the stack
-        for xd in (x + 22, x + 36):
-            box(xd, xd + 3.5, y + 30.9, y + 31, 5, 13, "door")
-        dress(False)
+        tm2500(it)
+
+
+LEGEND_GEN = "15 kV  1/C 1000 KCMIL CU  MV-105  EPR 133%  1/3 CN  PVC JACKET  UL 1072  SUN RES  DIRECT BURIAL"
+
+
+def axle(x, y0, y1, r=1.65):
+    """One trailer axle across y0..y1: dual tyres each side, hubs, axle beam, fender."""
+    for ya, s in ((y0, 1), (y1, -1)):
+        for k in (0, 1):
+            yt = ya + s * (.15 + k * 1.0)
+            rod((x, yt, r), (x, yt + s * .85, r), r, "tyre", seg=18)              # tyre
+            rod((x, yt - s * .03, r), (x, yt + s * .88, r), r * .55, "steel", seg=12)   # rim
+        rod((x, ya - s * .05, r), (x, ya + s * .2, r), .5, "steel_dark", seg=10)   # hub
+    rod((x, y0 + 1.8, r), (x, y1 - 1.8, r), .3, "steel_dark", seg=8)            # axle beam
+
+
+def tm2500(it):
+    """TM2500-class mobile aeroderivative at LOD 3 inside the drawn envelope (78 x 55 ft, 42 ft):
+    - GT trailer (south-north y+31..41): ladder chassis, rear bogie of four axles and a two-axle mid bogie on crane
+      mats, gooseneck on landing legs; turbine enclosure with panel seams, doors, roof ventilation fans and a
+      vent silencer; generator enclosure at the gooseneck end with the terminal box on the north face;
+    - combustion-air filter house above the generator end: weather hoods on both faces, plenum down to the inlet;
+    - rectangular exhaust collector and raised stack with its silencer section at the rear;
+    - control / auxiliary trailer to the south with HVAC units, door and stair, and the interconnect cables to the GT
+      trailer under a cable protector;
+    - fuel-gas / water-wash skid at the east end with a flexible gas hose to the trailer;
+    - generator leads: six 15 kV MV-105 cables (two per phase) dropping out of the terminal box into a ground tray
+      that runs north to the yard duct bank (printed jacket legend on the run)."""
+    import cable_install
+    x, y = it["fp"][0], it["fp"][2]
+    strip(it)
+    T0, T1 = y + 31, y + 41                      # GT trailer width
+    D = 4.6                                      # deck top
+    # crane mats under the bogies and landing legs
+    for (xa, xb) in ((x + 3, x + 21), (x + 41, x + 51), (x + 59, x + 65)):
+        for k in range(3):
+            box(xa, xb, T0 - 1.5 + k * 4.3, T0 + 2.2 + k * 4.3, 0, .35, "timber")
+    # ladder chassis, deck, gooseneck
+    for yb in (T0 + 1.6, T1 - 2.8):
+        box(x + 1, x + 63, yb, yb + 1.2, 3.1, 4.2, "steel_dark")
+    for xc in range(4, 62, 6):
+        box(x + xc, x + xc + .4, T0 + 1.6, T1 - 1.6, 3.3, 4.2, "steel_dark")      # cross members
+    box(x, x + 62, T0, T1, 4.2, D, "steel")
+    box(x + 62, x + 71, T0 + 2, T1 - 2, 5.0, 6.4, "steel")                        # gooseneck
+    box(x + 59, x + 62.5, T0 + 2, T1 - 2, 4.2, 6.4, "steel")
+    box(x + 68, x + 70, T0 + 3.5, T1 - 3.5, 4.4, 5.0, "steel_dark")               # kingpin plate
+    for yl in (T0 + 2.6, T1 - 3.2):                                               # landing legs, sand shoes
+        box(x + 61.5, x + 62.1, yl, yl + .6, .5, 5.0, "steel_dark")
+        box(x + 60.8, x + 62.8, yl - .7, yl + 1.3, .35, .55, "steel")
+    dress(True)
+    for xa in (x + 6, x + 10, x + 14, x + 18, x + 44, x + 48):
+        axle(xa, T0, T1)
+    for (xa, xb) in ((x + 3.8, x + 20.2), (x + 41.8, x + 50.2)):                 # fenders
+        for yf, s in ((T0, 1), (T1, -1)):
+            box(xa, xb, yf, yf + s * 2.2, 3.6, 3.75, "steel")
+    dress(False)
+    # turbine enclosure (rear) and generator enclosure (front)
+    ET, EG = (x + 1.5, x + 38), (x + 38.4, x + 58.5)
+    box(ET[0], ET[1], T0 + .5, T1 - .5, D, 15.6, "machine")
+    box(EG[0], EG[1], T0 + .5, T1 - .5, D, 14.6, "machine")
+    box(ET[0] - .1, EG[1] + .1, T0 + .4, T1 - .4, 14.6, 14.9, "roof")
+    dress(True)
+    xs = ET[0] + 3.2
+    while xs < EG[1] - 1:                                                         # panel seams
+        if abs(xs - 38.2 - x) > 1:
+            for yy, s in ((T0 + .5, -1), (T1 - .5, 1)):
+                box(xs - .08, xs + .08, yy, yy + s * .08, D + .2, 14.4, "steel")
+        xs += 3.2
+    for xd in (x + 8, x + 22, x + 31, x + 46):                                    # doors with handles, both faces
+        for yy, s in ((T0 + .5, -1), (T1 - .5, 1)):
+            box(xd, xd + 3, yy, yy + s * .1, D + .5, D + 7.3, "door")
+            box(xd + 2.4, xd + 2.6, yy + s * .1, yy + s * .25, D + 3.5, D + 4.2, "steel")
+    for (xa, xb) in ((x + 3, x + 7), (x + 26, x + 30), (x + 52, x + 56)):         # wall intake louvres
+        for yy, s in ((T0 + .5, -1), (T1 - .5, 1)):
+            box(xa, xb, yy, yy + s * .15, 9, 13, "louvre")
+    dress(False)
+    # enclosure ventilation: silencer box with two fans on the turbine roof
+    box(x + 18, x + 32, T0 + 1.5, T1 - 1.5, 15.6, 19.5, "louvre")
+    for xf in (x + 21.5, x + 28.5):
+        rod((xf, (T0 + T1) / 2, 19.5), (xf, (T0 + T1) / 2, 20.6), 2.6, "duct", seg=20)
+        rod((xf, (T0 + T1) / 2, 20.6), (xf, (T0 + T1) / 2, 20.8), 2.4, "fan", seg=20)
+    # combustion-air filter house over the generator end, on a frame, plenum down to the turbine inlet
+    FX, FY = (x + 36, x + 57), (T0 - 2, T1 + 2)
+    for (xc, yc) in ((FX[0] + 1, FY[0] + 2.2), (FX[1] - 1, FY[0] + 2.2), (FX[0] + 1, FY[1] - 2.2), (FX[1] - 1, FY[1] - 2.2)):
+        box(xc - .3, xc + .3, yc - .3, yc + .3, 14.9, 18, "steel_dark")
+    box(x + 38.5, x + 45, T0 + 2.5, T1 - 2.5, 14.9, 18, "duct")                    # plenum
+    box(FX[0], FX[1], FY[0], FY[1], 18, 28.5, "filter")
+    box(FX[0] - .2, FX[1] + .2, FY[0] - .2, FY[1] + .2, 28.5, 29, "roof")
+    dress(True)
+    for zh in (19.5, 22.5, 25.5):                                                 # weather hoods, both faces and the end
+        for yy, s in ((FY[0], -1), (FY[1], 1)):
+            box(FX[0] + .5, FX[1] - .5, yy, yy + s * 1.2, zh + 2.0, zh + 2.3, "steel")
+            for xh in (FX[0] + .5, FX[1] - .7):
+                box(xh, xh + .2, yy, yy + s * 1.2, zh, zh + 2.3, "steel")
+        box(FX[1], FX[1] + 1.2, FY[0] + .5, FY[1] - .5, zh + 2.0, zh + 2.3, "steel")
+    for k in range(6):                                                            # roof access ladder, handrail
+        box(FX[1] + .1, FX[1] + .3, FY[0] + 1, FY[0] + 1.2, D + k * 4, D + k * 4 + .15, "rail")
+    rod((FX[1] + .2, FY[0] + 1.1, D), (FX[1] + .2, FY[0] + 1.1, 32), .06, "rail", seg=4)
+    rod((FX[1] + .2, FY[0] + 2.1, D), (FX[1] + .2, FY[0] + 2.1, 32), .06, "rail", seg=4)
+    for xr in (FX[0] + .3, FX[1] - .3):
+        rod((xr, FY[0] + .3, 29), (xr, FY[0] + .3, 32), .06, "rail", seg=4)
+        rod((xr, FY[1] - .3, 29), (xr, FY[1] - .3, 32), .06, "rail", seg=4)
+    for yr in (FY[0] + .3, FY[1] - .3):
+        rod((FX[0] + .3, yr, 32), (FX[1] - .3, yr, 32), .06, "rail", seg=4)
+    dress(False)
+    # exhaust: rectangular collector and raised stack with a silencer section
+    box(x + 2, x + 15, T0 + 1, T1 - 1, 15.6, 20.5, "duct")
+    box(x + 4, x + 13, T0 + 1.6, T1 - 1.6, 20.5, 26, "stack")
+    box(x + 3.4, x + 13.6, T0 + 1, T1 - 1, 26, 34, "stack")                        # silencer
+    box(x + 4, x + 13, T0 + 1.6, T1 - 1.6, 34, 41.4, "stack")
+    box(x + 3.7, x + 13.3, T0 + 1.3, T1 - 1.3, 41.4, 42, "steel_dark")              # top lip
+    dress(True)
+    for zb in (26, 34):                                                           # flange bands
+        box(x + 3.3, x + 13.7, T0 + .9, T1 - .9, zb - .2, zb + .2, "steel_dark")
+    for (xc, yc) in ((x + 3, T0 + .6), (x + 14, T0 + .6), (x + 3, T1 - .6), (x + 14, T1 - .6)):
+        rod((xc, yc, 20.5), ((xc + x + 8.5) / 2, (yc + (T0 + T1) / 2) / 2, 30), .18, "steel_dark", seg=6)   # stays
+    dress(False)
+    # generator terminal box on the north face, leads down into a ground tray to the yard duct bank
+    tb = (x + 47, x + 53)
+    box(tb[0], tb[1], T1 - .5, T1 + 1.6, D + 1, D + 7.5, "cabinet")
+    box(tb[0] + .4, tb[1] - .4, T1 + 1.6, T1 + 1.7, D + 1.6, D + 6.9, "cabinet")              # bolted cover
+    box(tb[0] + 2, tb[1] - 2, T1 + 1.7, T1 + 1.75, D + 4.8, D + 6.2, "sign")
+    xt = x + 50                                                                   # tray centre line, north to the route
+    box(xt - 1.3, xt + 1.3, T1 + 1.7, y + 55, .35, .42, "steel")                   # open ground tray on sleepers
+    for xr in (xt - 1.3, xt + 1.2):
+        box(xr, xr + .1, T1 + 1.7, y + 55, .35, .75, "steel")
+    for yy in range(int(T1 + 3), int(y + 55), 4):
+        box(xt - 1.6, xt + 1.6, yy, yy + .5, 0, .35, "timber")
+    zc = .55
+    leads = [xt - 1.0 + k * .4 for k in range(6)]
+    for k, xl in enumerate(leads):
+        rod((xl, T1 + 1.0, D + 1), (xl, T1 + 1.0, zc + 1.0), .12, "cable_mv", seg=8)          # drop from the box
+        rod((xl, T1 + 1.0, zc + 1.0), (xl, T1 + 2.4, zc), .12, "cable_mv", seg=8)             # bend into the tray
+        rod((xl, T1 + 2.4, zc), (xl, y + 55, zc), .12, "cable_mv", seg=8)
+    for xl, yl in ((leads[1], T1 + 5.5), (leads[3], T1 + 7.5), (leads[4], T1 + 4.5)):   # printed legends, staggered
+        cable_install.legend((xl, yl, zc + .125), (0, 0, 1), (0, 1, 0), 6, LEGEND_GEN)
+    box(tb[0] - .2, tb[1] + .2, T1 + 1.6, T1 + 1.9, D + 7.3, D + 7.6, "sign")     # caution sign over the box
+    # control / auxiliary trailer
+    A0, A1 = y + 8, y + 17
+    for yb in (A0 + 1.2, A1 - 2.2):
+        box(x + 4, x + 50, yb, yb + 1, 3.1, 4.1, "steel_dark")
+    box(x + 4, x + 50, A0, A1, 4.1, 4.5, "steel")
+    box(x + 5, x + 49, A0 + .3, A1 - .3, 4.5, 13, "ehouse")
+    box(x + 4.8, x + 49.2, A0 + .1, A1 - .1, 13, 13.4, "roof")
+    box(x + 49.5, x + 53, A0 + 2.5, A1 - 2.5, 4.6, 6.0, "steel")                   # gooseneck stub
+    for yl in (A0 + 2.4, A1 - 3):
+        box(x + 47, x + 47.6, yl, yl + .6, .5, 4.1, "steel_dark")
+        box(x + 46.3, x + 48.3, yl - .7, yl + 1.3, .35, .55, "steel")
+    for k in range(2):
+        box(x + 4, x + 18, A0 - 1.5 + k * 6.5, A0 + 2.5 + k * 6.5, 0, .35, "timber")
+    dress(True)
+    for xa in (x + 9, x + 13):
+        axle(xa, A0, A1)
+    box(x + 5, x + 6.2, A0 + 1.5, A1 - 1.5, 6, 11, "cabinet")                     # HVAC units on the rear wall
+    box(x + 5.6, x + 6.4, A0 + 2, A1 - 2, 6.5, 10.5, "louvre")
+    for xh in (x + 20, x + 34):
+        box(xh, xh + 4, A1 - .3, A1 + .9, 9, 12, "cabinet")                       # wall-hung units, north face
+    box(x + 26, x + 29, A1 - .3, A1 - .2, 5, 12, "door")                           # door, landing and stair north
+    box(x + 25, x + 30, A1, A1 + 3, 4.3, 4.5, "grating")
+    for s in range(4):
+        box(x + 25, x + 30, A1 + 3 + s * .9, A1 + 3.9 + s * .9, 3.3 - s * 1.0, 3.5 - s * 1.0, "grating")
+    for xr in (x + 25, x + 30):
+        rod((xr, A1 + .1, 7.5), (xr, A1 + 6.6, 4), .06, "rail", seg=4)
+    dress(False)
+    # interconnect cables between the trailers, under a yellow cable protector across the walkway
+    for k in range(4):
+        xc = x + 34.5 + k * .45
+        rod((xc, A1 + .1, 5), (xc, A1 + .9, .3), .1, "cable_tc", seg=6)
+        rod((xc, A1 + .9, .3), (xc, T0 - 1, .3), .1, "cable_tc", seg=6)
+        rod((xc, T0 - 1, .3), (xc, T0 + .2, 3.4), .1, "cable_tc", seg=6)
+    box(x + 33.6, x + 37.2, y + 22, y + 24.5, 0, .45, "amber")
+    # fuel-gas / water-wash skid at the east end, flexible hose to the gooseneck end
+    box(x + 72, x + 78, T0 - 1, T1 + 1, 0, .5, "concrete")
+    box(x + 72.3, x + 77.7, T0 - .7, T1 + .7, .5, 8.5, "cabinet")
+    dress(True)
+    box(x + 72.2, x + 72.3, T0 + 1, T0 + 4, 1.5, 7, "door")
+    box(x + 72.2, x + 72.3, T1 - 4, T1 - 1, 1.5, 7, "door")
+    pipe([(x + 72, T0 + 6, 2.5), (x + 66, T0 + 6, 2.5), (x + 63, T0 + 6, 1.2), (x + 60, T0 + 6, 1.2),
+          (x + 58.6, T0 + 6, 3.8)], 0, .3, "fuelgas", elbows=False)
+    dress(False)
 
 
 def fuel_cells_and_microturbines():

@@ -85,7 +85,7 @@ LOOK = {
     "cable_tcx": ("paint", "#cfa818", .45, 0), "cable_fa": ("paint", "#a52e25", .5, 0),
     "cable_fo": ("paint", "#d36f22", .45, 0),
     "sw_red": ("paint", "#c41f27", .4, 0), "xlpe": ("paint", "#e4e0cf", .3, 0), "alu": ("galv", "#b3b8bc", .3, .85),
-    "steel_dark": ("paint", "#3a4045", .45, .3), "boot": ("paint", "#35261b", .7, 0), "reflect": ("galv", "#d4d8d9", .25, .7), "glove": ("paint", "#c7b088", .8, 0), "tent": ("paint", "#eeeeea", .8, 0), "white_truck": ("paint", "#e9ebea", .3, 0),
+    "steel_dark": ("paint", "#3a4045", .45, .3), "tyre": ("paint", "#1c1e20", .85, 0), "boot": ("paint", "#35261b", .7, 0), "reflect": ("galv", "#d4d8d9", .25, .7), "glove": ("paint", "#c7b088", .8, 0), "tent": ("paint", "#eeeeea", .8, 0), "white_truck": ("paint", "#e9ebea", .3, 0),
 }
 _mats = {}
 # materials kept clean: glass, lamps, people, signs, labels, cables and the like
@@ -941,6 +941,10 @@ EPIC = [
     dict(k="E71", n="Gas power divider photo (1170 x 1080): ARMOR-X and MV-105 in the R1 -> hall tray, HRSG 1 and its stack ahead",
          eye=(559.7, 565.5, 50.4), target=(618, 760, 92), lens=18, res=(1170, 1080), show="all", sun=(34, 120), clip=.05,
          dof=(5, 6.0)),
+    dict(k="E72", n="TM2500 mobile turbines: TM-2 from the south-east, filter house, raised stack, control trailer",
+         eye=(2262, 296, 34), target=(2160, 362, 17), lens=26, show="all", sun=(20, 235)),
+    dict(k="E73", n="TM-2 generator leads: 15 kV MV-105 from the terminal box into the ground tray, jacket legend",
+         eye=(2185, 386.5, 3.6), target=(2179.8, 379.5, 1.6), lens=24, show="all", sun=(38, 300), clip=.05),
     dict(k="E58", n="Cable reel yard: SIMpull Truck unloading SIMpull Reels on payoffs, reel rows",
          eye=(214, 702, 15), target=(160, 752, 6), lens=28, show="base"),
     dict(k="E26", n="HRSG 1 west wall: buckstays, SCR doors, ammonia injection grid, downcomers, blowdown tank",
