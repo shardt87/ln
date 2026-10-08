@@ -138,8 +138,8 @@ def make(c):
 
 
 TITLE = dict(photo=os.path.join(PLANT, "renders", "cover", "K11_pro.png"),
-             kicker=None, title=("GAS POWER", "CAMPUS"),
-             sub=None, claim="ACCELERATING TIME TO POWER™", date="OCTOBER 6, 2026",
+             kicker=None, title=("POWER", "GENERATION", "SOLUTIONS"),
+             sub="GAS POWER CAMPUS", claim="ACCELERATING TIME TO POWER™", date="OCTOBER 6, 2026",
              out="SK-3X1_title_cover")
 
 
@@ -181,7 +181,7 @@ def make_title(c=TITLE):
     if c.get("sub"):
         d.text(P(96, 470.2), c["sub"], font=font("BarlowCondensed-Bold.ttf", 27), fill=GREY, anchor="la")
     if c.get("claim"):
-        d.text(P(96, 480), c["claim"], font=font("BarlowCondensed-ExtraBold.ttf", 33), fill=ORANGE, anchor="la")
+        d.text(P(96, 513.8 if len(t) == 3 else 480), c["claim"], font=font("BarlowCondensed-ExtraBold.ttf", 33), fill=ORANGE, anchor="la")
     d.text(P(96, 618.8), c["date"], font=font("BarlowCondensed-Bold.ttf", 21), fill=WHITE, anchor="la")
     ff = font("Barlow-Regular.ttf", 18)
     d.text(P(96, 650.2), "Stephan Hardt · Power Generation Solutions", font=ff, fill=GREY, anchor="la")
