@@ -378,7 +378,7 @@ if args.style == "pro":
     n_trees = pro_look.landscape(scene, coll("LANDSCAPE"), coastal)
     print("backdrop towers", pro_look.backdrop(scene, coll("LANDSCAPE"), coastal))
     print("plumes", pro_look.add_plumes(coll("PLUMES"), [(x, 790, 180, 10, 1.2) for x in (630, 790, 950)] +
-                                       [(x, 1220, 313, 9, 2.4) for x in (630, 790, 950)]))
+                                       [(x, 1220, 313, 9, 2.4) for x in (630, 790, 950)], wind_deg=150))
     print(f"landscape: {n_trees} trees")
 else:
     me = bpy.data.meshes.new("surround")

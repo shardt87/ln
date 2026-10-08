@@ -32,23 +32,23 @@ def lin(h):
 
 # surface type, colour (sRGB), roughness, metallic
 LOOK = {
-    "ground": ("gravel", "#857f72", .95, 0), "road": ("asphalt", "#3b3d3f", .9, 0),
-    "gravel": ("gravel", "#8a867c", .95, 0), "corridor": ("gravel", "#928e83", .95, 0),
+    "ground": ("gravel", "#8b8a84", .95, 0), "road": ("asphalt", "#3b3d3f", .9, 0),
+    "gravel": ("gravel", "#83837f", .95, 0), "corridor": ("gravel", "#928e83", .95, 0),
     "pad": ("concrete", "#a9a69e", .85, 0), "concrete": ("concrete", "#a6a39b", .85, 0),
     "basement": ("concrete", "#8f8c86", .9, 0), "future": ("gravel", "#b3afa4", .95, 0),
-    "building": ("clad", "#c2bfb7", .55, .05), "hall": ("clad", "#aeb7bd", .45, .3),
-    "roof": ("clad", "#9da5ab", .5, .3), "ehouse": ("clad", "#bfc4c2", .5, .1),
-    "hrsg": ("clad", "#a2a8ab", .5, .4), "hrsg_b": ("clad", "#9aa1a4", .5, .4), "filter": ("clad", "#b8bec1", .5, .25),
+    "building": ("clad", "#c2bfb7", .55, .05), "hall": ("clad", "#c3c8ca", .45, .3),
+    "roof": ("clad", "#5f676d", .5, .35), "ehouse": ("clad", "#bfc4c2", .5, .1),
+    "hrsg": ("clad", "#7e8e99", .48, .4), "hrsg_b": ("clad", "#76858f", .48, .4), "filter": ("clad", "#a5afb4", .5, .25),
     "windwall": ("clad", "#adb4b8", .5, .3), "tower": ("clad", "#b3bab7", .6, 0),
-    "ccs": ("clad", "#d2d6d6", .55, .1), "acc": ("clad", "#c4c9cb", .5, .2),
+    "ccs": ("clad", "#d2d6d6", .55, .1), "acc": ("clad", "#b4bbbe", .5, .25),
     "partition": ("paint", "#e4e4df", .7, 0),
     "steel": ("galv", "#8e959a", .38, .85), "stair": ("galv", "#8a9196", .4, .8),
     "grating": ("galv", "#9aa1a5", .45, .8), "pipe": ("galv", "#a2a8ab", .35, .85),
     "copper": ("galv", "#9ea5a9", .35, .85), "fence": ("fence", "#8e959a", .4, .8), "barrier": ("fence", "#e2701f", .5, 0), "safety": ("paint", "#2f9a4a", .5, 0),
     "soil": ("gravel", "#7a6347", 1, 0), "timber": ("paint", "#9a7448", .8, 0), "ductcase": ("concrete", "#b4b0a6", .9, 0),
     "pvc_grey": ("paint", "#8f969a", .5, 0), "pvc_orange": ("paint", "#d0752a", .5, 0),
-    "copper_dark": ("paint", "#6f787d", .4, .5), "duct": ("paint", "#9ba2a6", .5, .4),
-    "stack": ("paint", "#858c91", .55, .35), "machine": ("paint", "#8a9499", .4, .3),
+    "copper_dark": ("paint", "#6f787d", .4, .5), "duct": ("paint", "#8a949a", .5, .4),
+    "stack": ("paint", "#6c7378", .5, .45), "machine": ("paint", "#8a9499", .4, .3),
     "xfmr": ("paint", "#7d898f", .42, .1), "radiator": ("fins", "#7b878d", .42, .15),
     "bundle": ("fins", "#8b9396", .45, .5), "fan": ("paint", "#5e666b", .45, .4),
     "fanhub": ("paint", "#3e4549", .45, .4), "motor": ("paint", "#3d6c8c", .35, .05),
@@ -180,6 +180,22 @@ def material(key):
             L.new(base_out, rust.inputs[6])
             rust.inputs[7].default_value = (.23, .1, .04, 1)
             base_out = rust.outputs[2]
+    if kind in ("clad", "fins"):
+        pv = _node(nt, "ShaderNodeTexVoronoi", (-800, 1200), Scale=.25, Randomness=1.0)
+        L.new(geo.outputs["Position"], pv.inputs["Vector"])
+        pr = _node(nt, "ShaderNodeMapRange", (-600, 1200))
+        pr.inputs["To Min"].default_value, pr.inputs["To Max"].default_value = .9, 1.06
+        L.new(pv.outputs["Distance"], pr.inputs["Value"])
+        pc = _node(nt, "ShaderNodeCombineColor", (-400, 1200))
+        for ch in ("Red", "Green", "Blue"):
+            L.new(pr.outputs[0], pc.inputs[ch])
+        tone = _node(nt, "ShaderNodeMix", (-100, 900))
+        tone.data_type = "RGBA"
+        tone.blend_type = "MULTIPLY"
+        tone.inputs["Factor"].default_value = 1
+        L.new(base_out, tone.inputs[6])
+        L.new(pc.outputs[0], tone.inputs[7])
+        base_out = tone.outputs[2]
     L.new(base_out, b.inputs["Base Color"])
     normal_src = None
     if kind in ("clad", "fins", "louvre"):
@@ -639,7 +655,7 @@ def apply_look(scene, look=None):
     scene.cycles.volume_bounces = 3 if look else 0
 
 
-def add_plumes(coll, sources):
+def add_plumes(coll, sources, wind_deg=25):
     """White vapour plumes above stacks and absorbers, as chains of soft overlapping puffs (Principled Volume in
     unit spheres: density = noise x radial falloff x per-puff strength), drifting downwind to the east-north-east
     and widening. sources = [(x, y, z_top, r_top, strength)] in ft."""
@@ -685,7 +701,7 @@ def add_plumes(coll, sources):
     proto.data.materials.append(m)
     for c in proto.users_collection:
         c.objects.unlink(proto)
-    wind = Vector((math.cos(math.radians(25)), math.sin(math.radians(25)), 0))
+    wind = Vector((math.cos(math.radians(wind_deg)), math.sin(math.radians(wind_deg)), 0))
     rng = random.Random(11)
     n = 0
     for (x, y, z, r, k) in sources:
@@ -786,7 +802,7 @@ COASTAL_A = [
          eye=(1300, 120, 260), target=(820, 600, 70), lens=24, show="everything", site=True, res=(1170, 1080),
          sun=(16, 240)),
     dict(k="K11", n="Cover: the power block in front, the LNG terminal and the BTM data centre beyond (from the south-west)",
-         eye=(900, -470, 480), target=(1450, 1250, 20), lens=22, show="everything", site=True, res=(1170, 1080),
+         eye=(930, -380, 430), target=(1500, 1250, 20), lens=21, show="everything", site=True, res=(1170, 1080),
          sun=(11, 250), look=LOOK_GOLDEN, plumes=True),
     dict(k="K7", n="Cover photo (1170 x 1080): golden hour, the 230 kV lines leaving the plant across the fields",
          eye=(830, -3050, 215), target=(790, 700, 80), lens=44, show="everything", site=True, res=(1170, 1080),
