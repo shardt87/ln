@@ -584,6 +584,8 @@ if args.style == "pro":
         show = {"base": BASE, "all": ALL, "dc": ALL + DCL, "everything": ALL + DCL + COAST,
                 "coastal": [l for l in ALL if not l.startswith("OPT_LNG")] + COAST}[h["show"]]
         show = [l for l in show if l not in h.get("hide_layers", ())]
+        if h.get("only"):                                # isolate a zone (slide plates: surrounding plant omitted)
+            show = [l for l in show if l in h["only"]]
         set_visibility(show)
         # cutaway cameras: hide named items (e.g. the turbine-hall walls) for this render only
         hidden = [ob for iid, obs in item_objs.items() if any(items[iid]["name"].startswith(pfx)
