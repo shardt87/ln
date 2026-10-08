@@ -138,8 +138,8 @@ def make(c):
 
 
 TITLE = dict(photo=os.path.join(PLANT, "renders", "cover", "K11_pro.png"),
-             kicker="ANIXTER/WESCO GLOBAL ACCOUNTS MEETING", title=("POWER", "GENERATION", "SOLUTIONS"),
-             sub="SOUTHWIRE × ANIXTER/WESCO", claim="ACCELERATING TIME TO POWER™", date="OCTOBER 6, 2026",
+             kicker=None, title=("GAS POWER", "CAMPUS"),
+             sub=None, claim="ACCELERATING TIME TO POWER™", date="OCTOBER 6, 2026",
              out="SK-3X1_title_cover")
 
 
@@ -168,13 +168,20 @@ def make_title(c=TITLE):
     logo = Image.open(os.path.join(DECK, "southwire_pgs_logo.png")).convert("RGBA").resize(P(345, 85.5), Image.LANCZOS)
     img.alpha_composite(logo, P(96, 72))
     d = ImageDraw.Draw(img)
-    d.text(P(96, 185.2), c["kicker"], font=font("BarlowCondensed-Bold.ttf", 19.5), fill=ORANGE, anchor="la")
+    if c.get("kicker"):
+        d.text(P(96, 185.2), c["kicker"], font=font("BarlowCondensed-Bold.ttf", 19.5), fill=ORANGE, anchor="la")
     d.rectangle([P(96, 223.5), P(156, 228)], fill=BAR)
-    tf = font("BarlowCondensed-ExtraBold.ttf", 78)
-    for k, (yy, line) in enumerate(zip((230.2, 301.5, 373.5), c["title"])):
-        d.text(P(96, yy), line, font=tf, fill=ORANGE if k == 2 else WHITE, anchor="la")
-    d.text(P(96, 470.2), c["sub"], font=font("BarlowCondensed-Bold.ttf", 27), fill=GREY, anchor="la")
-    d.text(P(96, 513.8), c["claim"], font=font("BarlowCondensed-ExtraBold.ttf", 33), fill=ORANGE, anchor="la")
+    t = c["title"]
+    if len(t) == 2:                                   # two big lines: larger type, same block height
+        tf, ys = font("BarlowCondensed-ExtraBold.ttf", 104), (238, 333)
+    else:
+        tf, ys = font("BarlowCondensed-ExtraBold.ttf", 78), (230.2, 301.5, 373.5)
+    for k, (yy, line) in enumerate(zip(ys, t)):
+        d.text(P(96, yy), line, font=tf, fill=ORANGE if k == len(t) - 1 else WHITE, anchor="la")
+    if c.get("sub"):
+        d.text(P(96, 470.2), c["sub"], font=font("BarlowCondensed-Bold.ttf", 27), fill=GREY, anchor="la")
+    if c.get("claim"):
+        d.text(P(96, 480), c["claim"], font=font("BarlowCondensed-ExtraBold.ttf", 33), fill=ORANGE, anchor="la")
     d.text(P(96, 618.8), c["date"], font=font("BarlowCondensed-Bold.ttf", 21), fill=WHITE, anchor="la")
     ff = font("Barlow-Regular.ttf", 18)
     d.text(P(96, 650.2), "Stephan Hardt · Power Generation Solutions", font=ff, fill=GREY, anchor="la")
