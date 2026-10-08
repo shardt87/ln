@@ -306,3 +306,33 @@ One zone per cycle. Each cycle:
 - New palette colour `tyre`. verify, audit and coastal checks: PASS / CLEAN.
 - The generic e-house door-and-stair dressing in `detail.py` now skips TM items (it had dropped a loose stair beside each trailer).
 - Cameras **E72** (TM-2 from the south-east) and **E73** (generator leads and legend close-up). Viewer v93.
+
+### Modular yard: cable on the surface where the power is temporary, last plain units detailed
+- **Buried vs surface.** The permanent modular plant (RICE, LM6000-class units, MOD-EH, T-MOD) keeps its buried
+  duct banks. The portable pad and the bridge-power units are now cabled on grade, the way rental power is
+  installed (`surface_cable.py`; routes inside the pad area are tagged `surface`, so the underground pass skips them
+  and the renderers draw the cable parts instead of a strip):
+  - **Portable pad (OPT_TMP):** 15 kV Type SHD-GC portable power cable (yellow jacket, two per feeder) laid loose
+    on the gravel; 480 V links as two Type W sets of four single conductors (black) ending in colour-coded cam-lock
+    plugs at PAD-LV, GEN-E, GEN-O and the input cabinet; MV ends rise to gland plates.
+  - The C-L01 drive-over ramp from sheet 08 is now a modular cable protector (black base with sloped edges,
+    yellow hinged lids in 3 ft modules). The MOB-1 -> PIC feeder runs through it (it used to cross the lane with no
+    ramp).
+  - **Bridge power (OPT_MODX):** CONT-3..8, the CONT paralleling e-house and TM-1 / TM-2 feeders run in open
+    ground trays on timber sleepers. The trays sit high enough for the loose 480 V sets to pass under them, and no
+    sleeper lands on a cable. The TM-1 feeder no longer passes under PAD-LV.
+  - Cable ends that started inside a unit (CONT-6, GSP-2) now stop at the unit's face.
+  - Printed jacket legends on the longest straight run of each feeder (SHD-GC and Type W).
+- **Last plain units at LOD 3** (`yard.small_units()`):
+  - GSP-1 / -2 breaker cabinets: doors, louvres, gland plate, sign.
+  - PIC input cabinet: cam-lock receptacle panels with rain hoods on both faces.
+  - GEN-O open engine-generator skid: base rails, radiator with guards, V engine, generator, terminal box,
+    silencer, control panel, batteries.
+  - Portable-pad gas-conditioning skid: two filter-separators, line heater, two regulator runs with control
+    valves, panel.
+  - RICE CEMS shelter: door, HVAC, calibration-gas cylinder rack, sample-line entry.
+  - SC-1 / -2 lube-oil fin-fan coolers: legs, coil bundle, fan rings, drives, headers.
+- The RICE engines were already at LOD 3 (V18 block, heads, turbochargers, generator) inside the see-through hall.
+- New colours: `cable_shd`, cam-lock red / blue / white / green, `hdpe` in the render look.
+- Cameras: E74 (portable pad overview), E75 / E76 (modular yard reviews), E77 (SHD-GC through the C-L01 ramp),
+  E78 (Type W and cam-locks at PAD-LV), E79 (GEN-O and GEN-E). verify PASS, audit CLEAN, coastal PASS. Viewer v94.

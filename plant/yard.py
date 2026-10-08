@@ -446,8 +446,129 @@ def skids():
     box(x1 - 3.5, x1 - .8, y0 + 1, y0 + 3.5, .4, 6, "panel")                 # truck fill / scrubber panel
 
 
+def small_units():
+    """The last single-box units in the modular yard, at LOD 3 inside their drawn footprints."""
+    # GSP-1 / -2: generator breaker / protection cabinets beside CONT-1 / -2 (cables in on the west face)
+    for it in items("GSP-"):
+        x0, x1, y0, y1 = it["fp"]
+        strip(it)
+        box(x0, x1, y0, y1, 0, .5, "steel")
+        box(x0 + .2, x1 - .2, y0 + .2, y1 - .2, .5, 7.4, "swgr")
+        box(x0, x1, y0, y1, 7.4, 7.8, "roof")
+        dress(True)
+        for ya in (y0 + .8, (y0 + y1) / 2 + .2):                          # two doors, east face
+            box(x1 - .2, x1 - .1, ya, ya + (y1 - y0) / 2 - 1, 1, 6.9, "door")
+            box(x1 - .1, x1, ya + (y1 - y0) / 2 - 1.6, ya + (y1 - y0) / 2 - 1.4, 3.6, 4.4, "steel")
+        for yy in (y0 + .2, y1 - .2):
+            box(x0 + 2, x1 - 2, yy - .05, yy + .05, 5.2, 6.6, "louvre")
+        box(x0 - .1, x0 + .2, (y0 + y1) / 2 - 1.2, (y0 + y1) / 2 + 1.2, 1.2, 2.4, "steel_dark")   # gland plate
+        box(x1, x1 + .05, y0 + 1, y0 + 2.2, 6.2, 7, "sign")
+        dress(False)
+    # PIC: portable input cabinet with cam-lock receptacle panels on both faces
+    it = find("PIC:")
+    x0, x1, y0, y1 = it["fp"]
+    strip(it)
+    box(x0, x1, y0, y1, 0, .4, "steel")
+    for xs in (x0 + .5, x1 - .9):                                         # skid runners
+        box(xs, xs + .4, y0, y1, 0, .6, "steel_dark")
+    box(x0 + .3, x1 - .3, y0 + .3, y1 - .3, .6, 6.5, "swgr")
+    box(x0 + .1, x1 - .1, y0 + .1, y1 - .1, 6.5, 7, "roof")
+    dress(True)
+    cols = ("cable_mc", "camlock_r", "camlock_b", "camlock_w", "camlock_g")
+    for xf, s in ((x0 + .3, -1), (x1 - .3, 1)):
+        box(xf, xf + s * .05, y0 + .8, y1 - .8, 1.6, 3.6, "steel_dark")       # receptacle panel
+        for k, c in enumerate(cols):
+            yc = y0 + 1.3 + k * (y1 - y0 - 2.6) / 4
+            rod((xf + s * .05, yc, 2.6), (xf + s * .35, yc, 2.6), .16, c, seg=10)
+        box(xf, xf + s * .4, y0 + .6, y1 - .6, 3.7, 3.8, "steel")              # rain hood
+        box(xf, xf + s * .05, y0 + 1.5, y1 - 1.5, 4.2, 6, "door")
+    box(x1 - .3, x1 - .25, y0 + 2, y1 - 2, 6.1, 6.4, "sign")
+    dress(False)
+    # GEN-O: open engine-generator skid
+    it = find("GEN-O:")
+    x0, x1, y0, y1 = it["fp"]
+    ym = (y0 + y1) / 2
+    strip(it)
+    for yb in (y0 + .6, y1 - 1.2):
+        box(x0, x1, yb, yb + .6, 0, 1.2, "steel_dark")                        # base rails
+    box(x0 + .3, x1 - .3, y0 + .6, y1 - .6, .9, 1.2, "steel")
+    box(x0 + .5, x0 + 4, y0 + .5, y1 - .5, 1.2, 7.6, "radiator")              # radiator, west end
+    box(x0 + 4, x0 + 4.4, y0 + 1, y1 - 1, 2, 7, "steel")                       # fan shroud
+    box(x0 + 6, x0 + 15, ym - 1.6, ym + 1.6, 1.2, 4.8, "machine")             # engine block
+    for s in (-1, 1):
+        box(x0 + 6.3, x0 + 14.7, ym + s * 1.7 - .9, ym + s * 1.7 + .9, 4.2, 5.8, "motor")   # cylinder heads (V)
+    rod((x0 + 15, ym, 3.4), (x0 + 16.4, ym, 3.4), 2.4, "steel", seg=18)      # flywheel housing
+    rod((x0 + 16.4, ym, 3.4), (x0 + 23.5, ym, 3.4), 2.7, "machine", seg=20)  # generator
+    box(x0 + 18, x0 + 22, y1 - 1.6, y1 - .4, 4.5, 7.2, "cabinet")              # terminal box
+    dress(True)
+    rod((x0 + 8, ym, 6.6), (x0 + 14, ym, 6.6), .9, "stack", seg=14)            # exhaust silencer on brackets
+    rod((x0 + 14, ym, 6.6), (x0 + 14, ym, 7.9), .35, "stack", seg=10)
+    for xb in (x0 + 9, x0 + 13):
+        box(xb - .1, xb + .1, ym - .2, ym + .2, 5.6, 5.8, "steel")
+    rod((x0 + 6.5, ym + 1.2, 3), (x0 + 6.5, ym + 1.2, 6.6), .25, "duct", seg=8)
+    box(x1 - 2.2, x1 - .4, y0 + .6, y0 + 2.2, 1.2, 6, "panel")                 # control panel
+    box(x0 + 5, x0 + 6, y0 + .6, y0 + 2, 1.2, 2.2, "battery")                  # start batteries
+    for (xg, yg) in ((x0 + 2, y0 + .3), (x0 + 2, y1 - .3)):
+        box(xg - 1.5, xg + 1.5, yg - .05, yg + .05, 1.5, 7, "louvre")          # radiator guards
+    dress(False)
+    # portable-pad gas-conditioning skid: filter-separators, line heater, regulator runs, panel
+    it = find("Portable pad gas-conditioning skid")
+    x0, x1, y0, y1 = it["fp"]
+    strip(it)
+    box(x0, x1, y0, y1, 0, .6, "steel")
+    for xv in (x0 + 3, x0 + 7):                                               # vertical filter-separators
+        rod((xv, y0 + 3, .6), (xv, y0 + 3, 6.8), 1.2, "fuelgas", seg=16)
+        rod((xv, y0 + 3, 6.8), (xv, y0 + 3, 7.4), .9, "fuelgas", seg=16)
+    fuel.hvessel(x0 + 11, x0 + 21, y0 + 5, 2.6, 1.6, c="equip", saddles=(x0 + 13, x0 + 19))   # line heater
+    rod((x0 + 19.5, y0 + 5, 4.2), (x0 + 19.5, y0 + 5, 7.6), .35, "stack", seg=8)
+    dress(True)
+    for yr in (y0 + 2, y0 + 8):                                               # regulator runs
+        pipe([(x0 + 22, yr, 2.2), (x1 - 1.5, yr, 2.2)], 2.2, .3, "fuelgas")
+        for xr in (x0 + 24, x0 + 27):
+            fuel.valve((xr, yr, 2.2), 0, .3, kind="ctrl")
+    pipe([(x0 + 3, y0 + 3, 2), (x0 + 3, y0 + 8, 2), (x0 + 7, y0 + 8, 2)], 2, .3, "fuelgas")
+    box(x1 - 1.2, x1 - .3, y0 + 4, y0 + 6.5, .6, 5.5, "panel")
+    dress(False)
+    # RICE CEMS shelter: insulated walk-in shelter, HVAC, heated sample line, calibration-gas cylinders
+    it = find("RICE CEMS")
+    x0, x1, y0, y1 = it["fp"]
+    strip(it)
+    box(x0, x1, y0, y1, 0, .5, "concrete")
+    box(x0 + .3, x1 - .3, y0 + .3, y1 - .3, .5, 9.2, "ehouse")
+    box(x0 + .1, x1 - .1, y0 + .1, y1 - .1, 9.2, 9.6, "roof")
+    dress(True)
+    box(x0 + 2, x0 + 5, y0 + .25, y0 + .3, .7, 7.6, "door")
+    box(x1 - .3, x1 + .0, y0 + 3, y0 + 7, 3, 6.5, "machine")                  # wall HVAC (inside the footprint)
+    for k in range(5):                                                         # cylinder rack, south face
+        rod((x0 + 7 + k * 1.1, y0 + .1, .5), (x0 + 7 + k * 1.1, y0 + .1, 5.2), .4, "red" if k % 2 else "steel", seg=10)
+    box(x0 + 6.4, x0 + 12.6, y0, y0 + .1, 3.5, 3.7, "steel")
+    rod((x0 + 3, y1 - .4, 9.6), (x0 + 3, y1 - .4, 10), .3, "steel", seg=8)     # sample line entry
+    dress(False)
+    # SC-1 / SC-2 lube-oil fin-fan coolers: legs, coil bundle, fan plenums with guards, drive motors
+    for it in items("SC-"):
+        if "lube-oil" not in it["name"]:
+            continue
+        x0, x1, y0, y1 = it["fp"]
+        strip(it)
+        for (xl, yl) in ((x0 + .5, y0 + .5), (x1 - .5, y0 + .5), (x0 + .5, y1 - .5), (x1 - .5, y1 - .5),
+                         ((x0 + x1) / 2, y0 + .5), ((x0 + x1) / 2, y1 - .5)):
+            box(xl - .3, xl + .3, yl - .3, yl + .3, 0, 5.8, "steel")
+        box(x0, x1, y0, y1, 5.8, 7.4, "bundle")                               # finned coil bundle
+        box(x0, x1, y0, y1, 7.4, 7.6, "steel")
+        for xf in (x0 + 5, x1 - 5):
+            rod((xf, (y0 + y1) / 2, 7.6), (xf, (y0 + y1) / 2, 9.4), 4.2, "steel", seg=24)   # fan ring
+            rod((xf, (y0 + y1) / 2, 9.4), (xf, (y0 + y1) / 2, 9.6), 4.0, "fan", seg=24)
+        dress(True)
+        for xf in (x0 + 5, x1 - 5):
+            rod((xf, (y0 + y1) / 2, 2.4), (xf, (y0 + y1) / 2, 5.6), .7, "motor", seg=12)      # drive under the coil
+        for yh in (y0 + .2, y1 - .2):
+            box(x0 + .3, x1 - .3, yh - .2, yh + .2, 6, 7.2, "steel")            # headers
+        dress(False)
+
+
 def build():
     containers()
     trailers()
     fuel_cells_and_microturbines()
     skids()
+    small_units()

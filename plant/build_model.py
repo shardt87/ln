@@ -1915,6 +1915,10 @@ _hall_w.gt_st_routes(add_route)
 N_WAPPS, N_FEEDERS = _wiring.build(items, routes, LAYERS, add_route)
 _hall_w.inlet_wiring()
 _wiring.apply_overrides(items)
+# temporary and bridge power on the portable pad: cable on grade / in ground trays, not in duct banks
+import surface_cable as _surf
+N_SURF = _surf.convert(routes)
+N_SURF = _surf.build()
 _fuel.G['routes'] = routes
 _station.build_late()  # duct-bank manholes and handholes (after the feeders exist)
 

@@ -85,7 +85,7 @@ LOOK = {
     "cable_tcx": ("paint", "#cfa818", .45, 0), "cable_fa": ("paint", "#a52e25", .5, 0),
     "cable_fo": ("paint", "#d36f22", .45, 0),
     "sw_red": ("paint", "#c41f27", .4, 0), "xlpe": ("paint", "#e4e0cf", .3, 0), "alu": ("galv", "#b3b8bc", .3, .85),
-    "steel_dark": ("paint", "#3a4045", .45, .3), "tyre": ("paint", "#1c1e20", .85, 0), "boot": ("paint", "#35261b", .7, 0), "reflect": ("galv", "#d4d8d9", .25, .7), "glove": ("paint", "#c7b088", .8, 0), "tent": ("paint", "#eeeeea", .8, 0), "white_truck": ("paint", "#e9ebea", .3, 0),
+    "steel_dark": ("paint", "#3a4045", .45, .3), "tyre": ("paint", "#1c1e20", .85, 0), "hdpe": ("paint", "#1e2022", .7, 0), "cable_shd": ("paint", "#c9a01e", .6, 0), "camlock_r": ("paint", "#b02a22", .5, 0), "camlock_b": ("paint", "#244f8c", .5, 0), "camlock_w": ("paint", "#e4e4de", .5, 0), "camlock_g": ("paint", "#2f7a3c", .5, 0), "boot": ("paint", "#35261b", .7, 0), "reflect": ("galv", "#d4d8d9", .25, .7), "glove": ("paint", "#c7b088", .8, 0), "tent": ("paint", "#eeeeea", .8, 0), "white_truck": ("paint", "#e9ebea", .3, 0),
 }
 _mats = {}
 # materials kept clean: glass, lamps, people, signs, labels, cables and the like
@@ -951,6 +951,12 @@ EPIC = [
          eye=(2080, 880, 110), target=(1800, 1120, 20), lens=26, show="all", sun=(24, 235)),
     dict(k="E76", n="Modular yard: fuel cells, microturbines and the 480 V step-up (from the south)",
          eye=(2140, 960, 60), target=(2130, 1120, 5), lens=26, show="all", sun=(24, 235)),
+    dict(k="E77", n="Portable pad: 15 kV SHD-GC feeder from MOB-1 through the C-L01 drive-over ramp to the input cabinet",
+         eye=(2229, 668, 8), target=(2247, 628, 1), lens=26, show="all", sun=(24, 235), clip=.05),
+    dict(k="E78", n="Portable pad: Type W 480 V sets with cam-lock plugs into the PAD-LV paralleling switchboard",
+         eye=(2148, 447, 6.5), target=(2160, 434, 1.5), lens=24, show="all", sun=(30, 250), clip=.05),
+    dict(k="E79", n="Portable pad: open engine-generator skid GEN-O, enclosed genset GEN-E and their Type W sets",
+         eye=(2058, 398, 16), target=(2024, 440, 3), lens=26, show="all", sun=(24, 235)),
     dict(k="E58", n="Cable reel yard: SIMpull Truck unloading SIMpull Reels on payoffs, reel rows",
          eye=(214, 702, 15), target=(160, 752, 6), lens=28, show="base"),
     dict(k="E26", n="HRSG 1 west wall: buckstays, SCR doors, ammonia injection grid, downcomers, blowdown tank",

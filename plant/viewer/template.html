@@ -432,7 +432,7 @@ MODEL.routes.forEach((r,ri)=>{
   if(!geos.length) return;
   const cls = CLASS[r.color] || 'paint';
   // above-grade pipe routes are drawn as round pipes (parts); the box stays as an invisible pick target
-  const pipe = buried || ((r.z>0 || r.type==='cable_trench') && PIPE_TYPES.includes(r.type));
+  const pipe = buried || r.surface || ((r.z>0 || r.type==='cable_trench') && PIPE_TYPES.includes(r.type));   // surface cables: drawn as parts
   const m = new THREE.Mesh(toThree(THREE.BufferGeometryUtils.mergeBufferGeometries(geos,false)),
                            pipe ? pickOnly : surfMat(cls==='copper'?'copper':cls));
   m.castShadow = r.z>0 && !pipe; m.receiveShadow = !pipe; m.userData.route = ri; grp(r.layer).add(m); pickables.push(m);
