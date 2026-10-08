@@ -360,7 +360,7 @@ class Detail:
                 if w > 60:
                     self.box(it["id"], it["layer"], x0 + w * .55, x0 + w * .55 + 14, y0 - .25, y0, 0, 14, "rollup")
                 self.box(it["id"], it["layer"], x0 + w * .3, x0 + w * .3 + 8, y0 - .2, y0, h * .55, h * .55 + 3, "louvre")
-            if "ehouse" in cols and "roof" in cols and (x1 - x0) >= 20:
+            if "ehouse" in cols and "roof" in cols and (x1 - x0) >= 20 and not it["name"].startswith("TM-"):   # TM: own stair
                 # door with a small stair and landing on the south face
                 w = x1 - x0
                 dx = x0 + w * .2

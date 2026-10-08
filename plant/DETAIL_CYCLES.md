@@ -304,4 +304,5 @@ One zone per cycle. Each cycle:
     phase) into an open ground tray on sleepers. The tray runs north to the yard duct bank, and printed jacket
     legends are staggered on the run. The TM-1/TM-2 cable routes now start at the tray (x + 50).
 - New palette colour `tyre`. verify, audit and coastal checks: PASS / CLEAN.
-- Cameras **E72** (TM-2 from the south-east) and **E73** (generator leads and legend close-up). Viewer v92.
+- The generic e-house door-and-stair dressing in `detail.py` now skips TM items (it had dropped a loose stair beside each trailer).
+- Cameras **E72** (TM-2 from the south-east) and **E73** (generator leads and legend close-up). Viewer v93.
