@@ -1,0 +1,129 @@
+{
+ "view": {
+  "k": "K15",
+  "name": "Path of Power spread: GT1, generator, GSU-1 and the 230 kV line, from the west at golden hour",
+  "show": [
+   "SITE",
+   "BASE_POWER_BLOCK",
+   "HALL_ROOF",
+   "BASE_INLET_AIR",
+   "BASE_ELECTRICAL",
+   "R1_ROOF",
+   "R1_WALL_E",
+   "R4_ROOF",
+   "R4_WALL_E",
+   "BASE_SWITCHYARD",
+   "BASE_UTILITIES",
+   "BASE_SERVICES",
+   "ROUTES_BASE",
+   "PROCESS_PIPING",
+   "SWYD_FUTURE",
+   "HV_CORRIDOR",
+   "OPT_CCS",
+   "OPT_CCSU",
+   "OPT_BESS",
+   "OPT_MOD",
+   "OPT_TMP",
+   "OPT_MODX",
+   "OPT_MODX_ROUTES",
+   "OPT_IC",
+   "OPT_LNG",
+   "OPT_H2",
+   "OPT_CCS_ROUTES",
+   "OPT_CCSU_ROUTES",
+   "OPT_BESS_ROUTES",
+   "OPT_MOD_ROUTES",
+   "OPT_TMP_ROUTES",
+   "OPT_IC_ROUTES",
+   "OPT_LNG_ROUTES",
+   "OPT_H2_ROUTES",
+   "NOMOD_GROUND",
+   "NOBESS_GROUND",
+   "OPT_DC",
+   "OPT_DC_ROUTES",
+   "LNG_TERMINAL",
+   "LNG_JETTY",
+   "MARINE",
+   "LNG_PIPING"
+  ],
+  "style": "pro",
+  "samples": 96,
+  "lens": 22,
+  "ortho_ft": 0,
+  "margin_lr": 0,
+  "margin_tb": 0,
+  "sun": [
+   12,
+   245
+  ],
+  "sheet": "SK-3X1-15"
+ },
+ "labels": [],
+ "callouts": [
+  {
+   "x": 3068.2,
+   "y": 1397.7,
+   "num": "0",
+   "text": "Plant gas yard",
+   "colour": ""
+  },
+  {
+   "x": 3195.7,
+   "y": 1640.5,
+   "num": "0",
+   "text": "fuel gas header",
+   "colour": ""
+  },
+  {
+   "x": 1622.2,
+   "y": 1796.0,
+   "num": "0",
+   "text": "GT branch",
+   "colour": ""
+  },
+  {
+   "x": 1430.6,
+   "y": 2094.7,
+   "num": "1",
+   "text": "GT1",
+   "colour": ""
+  },
+  {
+   "x": 1436.3,
+   "y": 2182.4,
+   "num": "2",
+   "text": "GTG-1",
+   "colour": ""
+  },
+  {
+   "x": 1442.9,
+   "y": 2274.1,
+   "num": "3",
+   "text": "GCB-1",
+   "colour": ""
+  },
+  {
+   "x": 1443.0,
+   "y": 2294.4,
+   "num": "4",
+   "text": "GSU-1",
+   "colour": ""
+  },
+  {
+   "x": 1700.0,
+   "y": 2848.3,
+   "num": "5",
+   "text": "Line 1 entrance",
+   "colour": ""
+  },
+  {
+   "x": 1713.6,
+   "y": 2757.1,
+   "num": "6",
+   "text": "Line 1 terminal tower",
+   "colour": ""
+  }
+ ],
+ "rw": 5100,
+ "rh": 3300
+}
