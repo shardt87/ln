@@ -815,6 +815,15 @@ COASTAL_A = [
     dict(k="K14", n="Title candidate: from the south-east over the GSUs and the 230 kV switchyard, power block close",
          eye=(1500, -420, 300), target=(680, 980, 80), lens=26, show="everything", site=True, res=(1170, 1080),
          sun=(11, 200), look=LOOK_GOLDEN, plumes=True, wind=30),
+    # brochure opening spread (17 x 11 in): the path of power left to right, gas turbine -> generator -> GCB / IPB ->
+    # GSU -> 230 kV line entrance -> terminal tower; callouts are the path nodes for the copper line overlay
+    dict(k="K15", n="Path of Power spread: GT1, generator, GSU-1 and the 230 kV line, from the west at golden hour",
+         eye=(640, -470, 400), target=(1180, 980, 10), lens=22, show="everything", site=True, res=(5100, 3300),
+         sun=(12, 245), look=LOOK_GOLDEN, plumes=True, wind=35,
+         callouts=[(1830, 1594, 6, "0", "Plant gas yard", ""), (1505, 889, 8, "0", "fuel gas header", ""),
+                   (715, 885, 8, "0", "GT branch", ""), (630, 498, 30, "1", "GT1", ""), (630, 432, 28, "2", "GTG-1", ""), (630, 385, 20, "3", "GCB-1", ""),
+                   (630, 345, 32, "4", "GSU-1", ""), (670, 79, 30, "5", "Line 1 entrance", ""),
+                   (670, 18, 88, "6", "Line 1 terminal tower", "")]),
     dict(k="K7", n="Cover photo (1170 x 1080): golden hour, the 230 kV lines leaving the plant across the fields",
          eye=(830, -3050, 215), target=(790, 700, 80), lens=44, show="everything", site=True, res=(1170, 1080),
          sun=(13, 250)),
