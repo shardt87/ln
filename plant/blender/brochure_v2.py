@@ -38,6 +38,7 @@ if args.draft:
                anch=os.path.join(D, "armorx_anchors.json"))
 url = lambda p: "file://" + os.path.abspath(p)
 
+HALO = 'stroke="#0e1012" stroke-width="3.2" stroke-opacity=".75" paint-order="stroke" stroke-linejoin="round"'
 PX = 96                                    # CSS px per inch
 SW, SH = 17 * PX, 11 * PX                  # spread
 CW = int(8.5 * PX)                         # single page
@@ -168,11 +169,11 @@ def opening(lab):
         svg.append(f'<line x1="{x:.1f}" y1="{y:.1f}" x2="{lx:.1f}" y2="{ly:.1f}" stroke="{WHITE}" stroke-width=".8" '
                    f'opacity=".8"/>')
         svg.append(f'<text x="{lx + (4 if anc == "start" else -4):.1f}" y="{ly - 4:.1f}" text-anchor="{anc}" '
-                   f'font-family="BC" font-weight="700" font-size="13" letter-spacing="2.2" fill="{WHITE}">'
+                   f'font-family="BC" font-weight="700" font-size="13" letter-spacing="2.2" fill="{WHITE}" {HALO}>'
                    f'{t1.upper()}</text>')
         if t2:
             svg.append(f'<text x="{lx + (4 if anc == "start" else -4):.1f}" y="{ly + 16:.1f}" text-anchor="{anc}" '
-                       f'font-family="BC" font-weight="800" font-size="19" letter-spacing="1" fill="{COPPER}">{t2}</text>')
+                       f'font-family="BC" font-weight="800" font-size="19" letter-spacing="1" fill="{COPPER}" {HALO}>{t2}</text>')
     svg.append("</svg>")
     return f"""
 <section class="page spread">
@@ -257,8 +258,20 @@ def anatomy(anch):
 </section>"""
 
 
+def jpeg_sources():
+    from PIL import Image
+    d = os.path.join(OUT, "_img")
+    os.makedirs(d, exist_ok=True)
+    for k in ("k15", "hero", "end"):
+        q = os.path.join(d, os.path.splitext(os.path.basename(SRC[k]))[0] + ".jpg")
+        if not os.path.exists(q) or os.path.getmtime(q) < os.path.getmtime(SRC[k]):
+            Image.open(SRC[k]).convert("RGB").save(q, quality=90, subsampling=0)
+        SRC[k] = q
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
+    jpeg_sources()
     anch = json.load(open(SRC["anch"]))
     lab = json.load(open(SRC["k15j"]))
     html = f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS}</style></head><body>" + \
