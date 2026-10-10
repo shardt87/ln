@@ -183,6 +183,13 @@ class Graph:
 
 G = Graph(M["routes"])
 _DCACHE = {}
+PATHS = {}                                            # (src id, dst id) -> routed polyline (ft), for the viewer X-ray
+
+
+def term(it):
+    c = centre(it)
+    z0, z1 = it["z"]
+    return (round(c[0], 1), round(c[1], 1), round(z0 + min(6, (z1 - z0) / 2), 1))
 
 
 def route_len(src, dst):
@@ -197,14 +204,17 @@ def route_len(src, dst):
             best = (dist[v] + d0, v, d0)
     a, b = centre(src), centre(dst)
     if best is None:                                     # not on the network: L-shaped estimate
+        PATHS[(src["id"], dst["id"])] = [term(src), (b[0], a[1], 0.0), term(dst)]
         return abs(a[0] - b[0]) + abs(a[1] - b[1]), 40, "Estimated"
     total, v, d_end = best
     kinds = defaultdict(float)
     vert = 0.0
     cur = v
     n = 0
+    chain = [v]
     while cur in prev and n < 5000:
         d, p = prev[cur]
+        chain.append(p)
         k = G.kind.get((p, cur), "Tray")
         seg = math.dist(p[:2], cur[:2])
         if k == "Riser":
@@ -212,6 +222,7 @@ def route_len(src, dst):
         kinds[k] += seg
         cur = p
         n += 1
+    PATHS[(src["id"], dst["id"])] = [term(src)] + [tuple(round(q, 1) for q in c) for c in reversed(chain)] + [term(dst)]
     d_start = min(d for d, w in acc_s)
     route = max(0.0, total - d_end - d_start - vert)
     kind = max(kinds, key=kinds.get) if kinds else "Tray"
@@ -310,7 +321,7 @@ def add(src, dst, service, prod, cond, size, sets=1, cables_per_set=1, kw=None, 
         route, vert, kind = length
     ROWS.append(dict(src=src, dst=dst, service=service, prod=prod, cond=cond, size=size, sets=sets,
                      cps=cables_per_set, kw=kw, volt=volt, amps=amps, route=round(route), vert=round(vert), kind=kind,
-                     note=note, desc=desc))
+                     note=note, desc=desc, path=PATHS.get((src["id"], dst["id"]))))
 
 
 def mv_feeder(src, dst, kw, kv, service, armored=False, motor=True, n=1, note=""):
@@ -449,6 +460,10 @@ for k in range(80):
     add(r4, cell, f"ACC fan F{k + 1:02d} motor (VFD output)", "VFD", "3/C+3G", s, sets, 1, 150, 480, round(I),
         f"VD {vd:.1f} %", length=(route + extra, vert, kind))
     add(r4, cell, f"ACC fan F{k + 1:02d} vibration / RTD / local station", "CT", "7/C", "14", length=(route + extra, vert, kind))
+    pa = PATHS.get((r4["id"], acc["id"]))
+    if pa:
+        fan = pa[:-1] + [(pa[-1][0], pa[-1][1], 70.0), (round(x, 1), round(y, 1), 70.0)]
+        ROWS[-1]["path"] = ROWS[-2]["path"] = fan
 
 # carbon capture
 ccs_sw = src_of(r"^CCS MV switchgear building")
@@ -934,6 +949,40 @@ def audit():
     out.append(("Excluded as bus duct", "INFO", len(BUS_DUCT), "; ".join(a for a, b in BUS_DUCT)))
     return out
 
+
+XCLS = ["HV 230 kV", "MV 35 kV", "MV 25 kV", "MV 15 kV", "MV 5 kV", "LV 600 V", "DC 2 kV", "Portable MV", "Portable LV",
+        "Control", "Instrumentation", "Fire alarm", "Fibre / data"]
+
+
+def export_xray():
+    """Compact cable data for the viewer's cable X-ray: unique paths (ints, ft) + one record per schedule row."""
+    paths, pidx, recs = [], {}, []
+    seg = defaultdict(int)
+    for r in ROWS:
+        cl = CLASS[r["prod"]]
+        if cl not in XCLS:
+            continue
+        pi = -1
+        if r.get("path") and len(r["path"]) >= 2:
+            key = tuple(r["path"])
+            if key not in pidx:
+                pidx[key] = len(paths)
+                paths.append([int(round(v)) for q in r["path"] for v in q])
+            pi = pidx[key]
+            n = r["sets"] * r["cps"]
+            for a_, b_ in zip(r["path"], r["path"][1:]):
+                k = (tuple(int(round(v)) for v in a_), tuple(int(round(v)) for v in b_))
+                seg[tuple(sorted(k))] += n
+        run = math.ceil((r["route"] + r["vert"] + 20) * 1.1 / 10) * 10
+        recs.append([r["no"], XCLS.index(cl), r["prod"], AWG(r["size"]) if r["size"] != "-" else "", r["cond"],
+                     r["sets"] * r["cps"], run, (r["src"].get("tag") or r["src"]["name"][:40]),
+                     (r["dst"].get("tag") or r["dst"]["name"][:40]), r["src"]["id"], r["dst"]["id"],
+                     (r["service"] if not r["desc"] else r["desc"])[:80], pi])
+    fill = [[*a, *b, n] for (a, b), n in seg.items() if a != b]
+    data = dict(classes=XCLS, products={k: P[k] for k in P}, paths=paths, cables=recs, fill=fill)
+    json.dump(data, open(os.path.join(HERE, "brochure", "cables_xray.json"), "w"), separators=(",", ":"))
+    return len(recs), len(paths)
+
 # ------------------------------------------------------------------------------------------------ workbook
 def write():
     from openpyxl import Workbook
@@ -1025,6 +1074,7 @@ def write():
         a = r["dst"]["area"] or "C"
         cnt[(a, code[r["prod"]])] += 1
         no = f"{a}-{code[r['prod']]}-{cnt[(a, code[r['prod']])]:04d}"
+        r["no"] = no
         key = f"{r['prod']}|{r['cond']}|{r['size']}"
         vals = [no, a, AREA.get(a, ""), r["service"] if not r["desc"] else r["desc"], r["src"].get("tag") or "",
                 r["src"]["name"][:70], r["dst"].get("tag") or "", r["dst"]["name"][:70], CLASS[r["prod"]],
@@ -1192,6 +1242,7 @@ def write():
         au.column_dimensions[get_column_letter(c)].width = w
     from openpyxl.workbook.properties import CalcProperties
     wb.calculation = CalcProperties(fullCalcOnLoad=True)
+    export_xray()
     out = os.path.join(HERE, "brochure", "SK-3X1_Cable_Schedule_and_BOM.xlsx")
     wb.save(out)
     return out, last - 1, len(keys)

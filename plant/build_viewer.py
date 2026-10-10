@@ -54,6 +54,11 @@ tpl = tpl.replace("const MODEL = /*MODEL_JSON*/null;",
 tpl = tpl.replace("<script>\nconst MODEL = await", '<script id="mz" type="text/plain">' + mz + '</script>\n<script>\n(async () => {\nconst MODEL = await', 1)
 i = tpl.rindex("</script>")
 tpl = tpl[:i] + "\nObject.assign(window, {MODEL, goView});\n})().catch(e => { const el = document.getElementById('loading'); if (el) { el.hidden = false; el.textContent = 'Could not load the model: ' + e.message; } });\n" + tpl[i:]
+cz = base64.b64encode(gzip.compress(open(os.path.join(HERE, "brochure", "cables_xray.json"), "rb").read(), 9)).decode()
+tpl = tpl.replace("const CAB = /*CABLES_JSON*/null;",
+                  "const CAB = await (async () => { const b = Uint8Array.from(atob(document.getElementById('cz').textContent), c => c.charCodeAt(0));\n"
+                  "  return JSON.parse(await new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream('gzip'))).text()); })();")
+tpl = tpl.replace('<script id="mz" type="text/plain">', '<script id="cz" type="text/plain">' + cz + '</script>\n<script id="mz" type="text/plain">', 1)
 for key, data in (("PALETTE", open(os.path.join(HERE, "palette.json")).read()),
                   ("REPORT", open(os.path.join(HERE, "verify_report.json")).read())):
     tpl = tpl.replace(f"/*{key}_JSON*/null", data)

@@ -129,6 +129,8 @@ footer{color:var(--ink2);font-size:12px;border-top:1px solid var(--rule);padding
         <button id="bDetail" aria-pressed="true">Detail</button>
         <button id="bPaths" aria-pressed="false" title="Data centre: show the three supply paths">BTM power paths</button>
         <button id="bOpt" aria-pressed="false">All optional</button>
+        <button id="bCab" aria-pressed="false" title="Every cable of the cable schedule on its routed path">Cable X-ray</button>
+        <button id="bFill" aria-pressed="false" title="Cable count carried by each tray / duct-bank segment">Tray fill</button>
       </div>
     </div>
     <div>
@@ -546,9 +548,9 @@ function dims(it){ const [x0,x1,y0,y1]=it.fp;
   return it.shape==='circle' ? {xy:`${fmt((x0+x1)/2)} / ${fmt((y0+y1)/2)}`, plan:`${fmt(x1-x0)} dia`, el:`${fmt(it.z[0])}–${fmt(it.z[1])}`}
    : {xy:`${fmt(x0)}–${fmt(x1)} / ${fmt(y0)}–${fmt(y1)}`, plan:`${fmt(x1-x0)} x ${fmt(y1-y0)}`, el:`${fmt(it.z[0])}–${fmt(it.z[1])}`}; }
 let selId=null, selRoute=null;
-function clearSel(){ if(selId) (itemMeshes[selId]||[]).forEach(m=>m.material = m.userData.mat); if(selRoute) { selRoute.material = matSolid; } selId=null; selRoute=null; }
+function clearSel(){ if(selId) (itemMeshes[selId]||[]).forEach(m=>m.material = (XR.on||XR.fill) ? ghostMat : m.userData.mat); if(selRoute) { selRoute.material = matSolid; } selId=null; selRoute=null; }
 function selectItem(id){ clearSel(); if(!id){ showDefault(); return; } selId=id;
-  (itemMeshes[id]||[]).forEach(m=>{ m.userData.mat=m.material; m.material=matHi; }); showItem(items[id]); }
+  (itemMeshes[id]||[]).forEach(m=>{ m.userData.mat=m.material; m.material=matHi; }); showItem(items[id]); if(XR.on) xrayItem(id); }
 function selectRoute(mesh){ clearSel(); selRoute=mesh; mesh.material=matHi; showRoute(MODEL.routes[mesh.userData.route]); }
 function showItem(it){
   const d=dims(it), nParts=MODEL.parts.filter(p=>p.item===it.id).length;
@@ -686,6 +688,83 @@ function applyTheme(){ const cs=getComputedStyle(document.documentElement);
   document.getElementById('north').style.color=cs.getPropertyValue('--ink'); }
 applyTheme(); matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme);
 new MutationObserver(applyTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+
+// ---------- cable X-ray: every cable of the cable schedule on its routed path ----------
+const CAB = /*CABLES_JSON*/null;
+const XCOL = {'HV 230 kV':'#9b59d0','MV 35 kV':'#c0392b','MV 25 kV':'#d35400','MV 15 kV':'#e8453c','MV 5 kV':'#ef8a2c',
+  'LV 600 V':'#f2c613','DC 2 kV':'#17a589','Portable MV':'#f7b733','Portable LV':'#a3b1b8','Control':'#3a8fd9',
+  'Instrumentation':'#36c26b','Fire alarm':'#ff3d7f','Fibre / data':'#ff9f1a'};
+const XR = {on:false, fill:false, built:false, groups:[], hi:null, fillObj:null, cls:new Set(CAB?CAB.classes:[]), sel:null};
+const ghostMat = new THREE.MeshBasicMaterial({color:0x9aa7b0, transparent:true, opacity:.06, depthWrite:false, clippingPlanes:CLIP});
+function xrayBuild(){
+  if(XR.built||!CAB) return; XR.built=true;
+  const per = CAB.classes.map(()=>({pos:[], idx:[]})), cnt = {};
+  CAB.cables.forEach((c,ci)=>{ const pi=c[12]; if(pi<0) return;
+    const j = cnt[pi] = (cnt[pi]||0)+1, ox=((j%7)-3)*.45, oz=(Math.floor(j/7)%6)*.35+.4;
+    const p=CAB.paths[pi], b=per[c[1]];
+    for(let k=0;k+5<p.length;k+=3){ const a=P(p[k]+ox,p[k+1]+ox*.6,p[k+2]+oz), d=P(p[k+3]+ox,p[k+4]+ox*.6,p[k+5]+oz);
+      b.pos.push(a.x,a.y,a.z,d.x,d.y,d.z); } });
+  per.forEach((b,i)=>{ const g=new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(b.pos,3));
+    const m=new THREE.LineSegments(g, new THREE.LineBasicMaterial({color:new THREE.Color(XCOL[CAB.classes[i]]), transparent:true, opacity:.7,
+      depthTest:false, clippingPlanes:CLIP}));
+    m.renderOrder=10; m.visible=false; m.userData.cls=CAB.classes[i]; scene.add(m); XR.groups.push(m); });
+  // tray fill: cables carried by each network segment, cool -> hot
+  const fp=[], fc=[], mx=Math.max(...CAB.fill.map(f=>f[6])), c=new THREE.Color();
+  for(const f of CAB.fill){ const a=P(f[0],f[1],f[2]+.2), d=P(f[3],f[4],f[5]+.2); fp.push(a.x,a.y,a.z,d.x,d.y,d.z);
+    const t=Math.min(1, Math.log(1+f[6])/Math.log(1+mx)); c.setHSL(.62-.62*t, .95, .42+.12*t); fc.push(c.r,c.g,c.b,c.r,c.g,c.b); }
+  const fg=new THREE.BufferGeometry(); fg.setAttribute('position', new THREE.Float32BufferAttribute(fp,3)); fg.setAttribute('color', new THREE.Float32BufferAttribute(fc,3));
+  XR.fillObj=new THREE.LineSegments(fg, new THREE.LineBasicMaterial({vertexColors:true, depthTest:false, clippingPlanes:CLIP}));
+  XR.fillObj.renderOrder=11; XR.fillObj.visible=false; scene.add(XR.fillObj); XR.fillMax=mx;
+}
+function ghost(on){ scene.traverse(o=>{ if(!o.isMesh || o.userData.xr) return;
+  if(on){ if(!o.userData.xmat){ o.userData.xmat=o.material; o.material=ghostMat; } }
+  else if(o.userData.xmat){ o.material=o.userData.xmat; o.userData.xmat=null; } }); }
+function xraySync(){ const show=XR.on||XR.fill; ghost(show); renderer.shadowMap.enabled=!show;
+  XR.groups.forEach(g=>{ g.visible = XR.on && XR.cls.has(g.userData.cls); g.material.opacity = XR.hi ? .1 : .7; });
+  if(XR.fillObj) XR.fillObj.visible = XR.fill;
+  if(XR.hi) XR.hi.visible = XR.on; }
+function xrayHighlight(list){ if(XR.hi){ scene.remove(XR.hi); XR.hi.geometry.dispose(); XR.hi=null; }
+  if(list && list.length){ const pos=[], col=[], c=new THREE.Color();
+    for(const ci of list){ const cb=CAB.cables[ci], pi=cb[12]; if(pi<0) continue; const p=CAB.paths[pi]; c.set(XCOL[CAB.classes[cb[1]]]);
+      for(let k=0;k+5<p.length;k+=3){ const a=P(p[k],p[k+1],p[k+2]+.6), d=P(p[k+3],p[k+4],p[k+5]+.6); pos.push(a.x,a.y,a.z,d.x,d.y,d.z); col.push(c.r,c.g,c.b,c.r,c.g,c.b); } }
+    const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
+    XR.hi=new THREE.LineSegments(g,new THREE.LineBasicMaterial({vertexColors:true, depthTest:false, clippingPlanes:CLIP})); XR.hi.renderOrder=12; XR.hi.userData.xr=true; scene.add(XR.hi); }
+  xraySync(); }
+const xrStats = () => { const n={}, L={}; for(const c of (CAB?CAB.cables:[])){ const k=CAB.classes[c[1]]; n[k]=(n[k]||0)+c[5]; L[k]=(L[k]||0)+c[6]*c[5]; } return {n,L}; };
+function xrayPanel(){
+  const st=xrStats(), tot=Object.values(st.n).reduce((a,b)=>a+b,0), totL=Object.values(st.L).reduce((a,b)=>a+b,0);
+  insp.innerHTML=`<p class="lbl">Cable X-ray</p><h2>${tot.toLocaleString('en-US')} cables · ${Math.round(totL/5280).toLocaleString('en-US')} mi</h2>
+   <p class="info" style="margin-top:6px">Every power, control, instrumentation, fire-alarm and fibre cable of the cable schedule on its routed path
+   (tray, duct bank, trench, surface). Click equipment to see its cables; filter by class; search a cable number or tag.</p>
+   <input id="xq" placeholder="Cable no. or tag, e.g. A-MV-0003, BFP-1" style="width:100%;margin:8px 0;padding:6px 8px;font:12px var(--mono)">
+   <div id="xcls" style="display:grid;grid-template-columns:auto 1fr auto;gap:4px 8px;font-size:12px">${CAB.classes.map((k,i)=>`
+     <input type="checkbox" data-c="${esc(k)}" ${XR.cls.has(k)?'checked':''} aria-label="${esc(k)}"><span><span style="display:inline-block;width:14px;height:3px;background:${XCOL[k]};vertical-align:middle;margin-right:6px"></span>${esc(k)}</span>
+     <span class="muted">${(st.n[k]||0).toLocaleString('en-US')}</span>`).join('')}</div>
+   <div id="xres" style="margin-top:8px"></div>
+   <p class="muted" style="margin-top:8px">Field cables from devices to their local junction boxes are counted, not drawn (they stay on the equipment).
+   Conceptual, from the model; see SK-3X1_Cable_Schedule_and_BOM.xlsx.</p>`;
+  document.getElementById('xcls').onchange=e=>{ const k=e.target.dataset.c; if(e.target.checked) XR.cls.add(k); else XR.cls.delete(k); xraySync(); };
+  const q=document.getElementById('xq'); q.oninput=()=>{ const s=q.value.trim().toLowerCase(); if(s.length<2){ document.getElementById('xres').innerHTML=''; xrayHighlight(null); return; }
+    const hits=[]; CAB.cables.forEach((c,i)=>{ if(c[0].toLowerCase().includes(s)||String(c[7]).toLowerCase().includes(s)||String(c[8]).toLowerCase().includes(s)) hits.push(i); });
+    xrayList(hits, `${hits.length} cables match`); xrayHighlight(hits.slice(0,800)); };
+}
+function xrayList(ids, title){
+  const el=document.getElementById('xres'); if(!el) return;
+  const rows=ids.slice(0,200).map(i=>{ const c=CAB.cables[i]; return `<tr data-i="${i}" style="cursor:pointer"><td style="white-space:nowrap"><span style="display:inline-block;width:8px;height:8px;border-radius:4px;background:${XCOL[CAB.classes[c[1]]]};margin-right:5px"></span>${esc(c[0])}</td>
+    <td>${esc(c[7])} → ${esc(c[8])}<br><span class="muted">${esc(c[11])}</span></td><td style="white-space:nowrap">${esc(c[5]>1?c[5]+' x ':'')}${esc(c[4])} ${esc(c[3])}<br><span class="muted">${c[6].toLocaleString('en-US')} ft</span></td></tr>`; }).join('');
+  el.innerHTML=`<p class="lbl">${esc(title)}</p><div style="max-height:340px;overflow:auto"><table style="width:100%;font-size:11px;border-collapse:collapse">${rows}</table></div>${ids.length>200?`<p class="muted">first 200 of ${ids.length}</p>`:''}`;
+  el.querySelector('table').onclick=e=>{ const tr=e.target.closest('tr'); if(!tr) return; const i=+tr.dataset.i, c=CAB.cables[i];
+    xrayHighlight([i]); const pi=c[12]; if(pi>=0){ const p=CAB.paths[pi], m=Math.floor(p.length/6)*3; const t=P(p[m],p[m+1],p[m+2]);
+      const dir=camera.position.clone().sub(controls.target).normalize(); anim={t0:performance.now(), ft:controls.target.clone(), fc:camera.position.clone(), t, c:t.clone().add(dir.multiplyScalar(420))}; } };
+}
+function xrayItem(id){ if(!XR.on||!CAB) return;
+  const ids=[]; CAB.cables.forEach((c,i)=>{ if(c[9]===id||c[10]===id) ids.push(i); });
+  const box=document.createElement('div'); box.id='xres'; insp.appendChild(box);
+  xrayList(ids, `${ids.length} cable runs to / from this item (${ids.reduce((a,i)=>a+CAB.cables[i][5],0)} cables)`); xrayHighlight(ids); }
+toggle('bCab', on=>{ XR.on=on; if(on){ xrayBuild(); xrayPanel(); } else { xrayHighlight(null); showDefault(); } xraySync(); });
+toggle('bFill', on=>{ XR.fill=on; xrayBuild(); xraySync();
+  if(on && !XR.on) insp.innerHTML=`<p class="lbl">Tray fill</p><h2>Cables per tray / bank segment</h2><p class="info" style="margin-top:6px">Each segment of the cable network coloured by the number of schedule cables it carries: blue few, red most (max ${XR.fillMax}).</p>`; });
 
 // ---------- loop ----------
 function resize(){ const w=stage.clientWidth,h=stage.clientHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix(); }
