@@ -567,6 +567,160 @@ for k, r in enumerate([r for r in M["routes"] if r["type"] in ("hv_overhead", "h
         f"230 kV overhead {'H-MOD tie' if r['type'] == 'hmod' else 'GSU / line'} conductors", "ACSR", "1/C", "1590", 1, 3,
         None, 230000, None, "plus 3 % sag", length=(L * 1.03, 0, "Overhead"))
 
+
+# Device-level wiring: each item's field devices (typical counts for the equipment class): motors, motor-operated
+# valves, analog instruments, discrete devices, solenoids, thermocouples, RTDs. Every device gets its own cable to a
+# local junction box (or its MCC for motors / MOVs); junction boxes home-run to the control building on multipair.
+# m = [(motors, kW each, VFD)], mov = MOVs, ai / di = analog / discrete instruments, sol, tc, rtd.
+DEV = [
+    (r"^GT\d: H-class", dict(ai=120, di=80, sol=30, tc=60)),
+    (r"^GTG-\d", dict(m=[(4, 2, 0)], ai=20, di=20, rtd=24)),
+    (r"^GT\d aux", dict(m=[(12, 45, 0)], ai=40, di=40, sol=10)),
+    (r"^SOS-", dict(m=[(3, 15, 0)], ai=15, di=15, sol=4)),
+    (r"^FS-GT", dict(ai=4, di=20, sol=8)),
+    (r"^WASH-GT", dict(m=[(2, 22, 0)], ai=4, di=6, sol=4)),
+    (r"^GFM-", dict(ai=15, di=15, sol=6)),
+    (r"^FH-\d:", dict(m=[(2, 15, 0)], ai=10, di=30, sol=60)),
+    (r"^INL-|inlet duct", dict(ai=6, tc=4)),
+    (r"^SFC-|^EXC-|^NGT-|^SPC-", dict(ai=10, di=20)),
+    (r"^GSU-|^UAT-|^T4-|^LCT-|^T-R\d|^T-R4|^CCS T-\d:|main power transformer|^T-MOD", dict(m=[(6, 2, 0)], ai=8, di=16)),
+    (r"^GCB-", dict(di=20)),
+    (r"^HRSG \d \+", dict(m=[(4, 15, 0)], mov=45, ai=160, di=80, sol=20, tc=80)),
+    (r"^BFP-", dict(m=[(4, 15, 0)], ai=30, di=20, rtd=24)),
+    (r"^SCRB-", dict(m=[(2, 110, 0)], ai=6, di=6)),
+    (r"^CEMS shelter", dict(m=[(2, 5, 0)], ai=12, di=10)),
+    (r"blowdown tank", dict(mov=4, ai=6, di=4)),
+    (r"chemical feed|^Chemical feed", dict(m=[(6, 2, 0)], ai=8, di=12)),
+    (r"^SWAS", dict(ai=24, di=8)),
+    (r"^ST: steam", dict(mov=20, ai=150, di=100, sol=20, tc=40)),
+    (r"^STG", dict(m=[(4, 2, 0)], ai=20, di=20, rtd=30)),
+    (r"^ST aux", dict(m=[(10, 40, 0)], ai=30, di=30)),
+    (r"^EHC-ST", dict(m=[(2, 37, 0)], ai=10, di=10, sol=10)),
+    (r"^GSC-ST", dict(m=[(2, 30, 0)], ai=6, di=6)),
+    (r"^Air-cooled condenser", dict(mov=30, ai=100, di=160)),
+    (r"^Aux dry coolers", dict(m=[(12, 22, 1)], ai=12, di=24)),
+    (r"^CCW-A/B", dict(m=[(2, 150, 0)], ai=10, di=10)),
+    (r"^CP-A/B/C", dict(ai=15, di=15, rtd=18)),
+    (r"^VAC-A/B", dict(m=[(2, 75, 0)], ai=10, di=10)),
+    (r"^Air compressors", dict(m=[(3, 250, 0)], ai=15, di=15)),
+    (r"tank|Tank", dict(ai=4, di=4)),
+    (r"230 kV breaker", dict(ai=2, di=20)),
+    (r"entrance: surge|terminal tower", dict(di=4)),
+    (r"filter-separator", dict(ai=8, di=12, sol=4)),
+    (r"Gas metering|M&R 5|gas quality", dict(ai=20, di=8)),
+    (r"regulation", dict(ai=12, di=12, sol=6)),
+    (r"performance heater", dict(ai=10, di=10)),
+    (r"ESD valve|insulating joint", dict(di=8, sol=4)),
+    (r"Auxiliary boiler", dict(m=[(3, 30, 0)], ai=25, di=25)),
+    (r"Ammonia storage", dict(m=[(2, 7, 0)], ai=8, di=10)),
+    (r"Fire pump house", dict(m=[(1, 250, 0), (1, 15, 0)], ai=10, di=30)),
+    (r"^Wastewater treatment", dict(m=[(8, 15, 0)], ai=20, di=30)),
+    (r"Oil-water", dict(m=[(2, 7, 0)], ai=4, di=4)),
+    (r"Water treatment building", dict(m=[(20, 15, 0)], ai=60, di=80)),
+    (r"H2 / CO2 storage", dict(ai=8, di=8)),
+    (r"Stormwater pump", dict(m=[(2, 75, 0)], ai=4, di=6)),
+    (r"LS-1", dict(m=[(2, 7, 0)], ai=2, di=4)),
+    (r"^Absorber [ABC] \(", dict(mov=10, ai=60, di=40)),
+    (r"intercooler", dict(m=[(2, 150, 0)], ai=15, di=15)),
+    (r"^DCC-[ABC]:", dict(ai=20, di=10)),
+    (r"^DCC-[ABC] pumps", dict(m=[(2, 200, 0)], ai=10, di=10)),
+    (r"^Water-wash pumps", dict(m=[(2, 110, 0)], ai=8, di=8)),
+    (r"^STR-", dict(mov=6, ai=50, di=30)),
+    (r"^RB-", dict(mov=4, ai=15, di=10)),
+    (r"^Rich/lean", dict(ai=20, di=20, rtd=12)),
+    (r"^DMP-", dict(m=[(2, 15, 0)], ai=8, di=16)),
+    (r"^BF-[ABC]", dict(m=[(4, 15, 0)], ai=30, di=20, rtd=18)),
+    (r"^CO2 compression", dict(m=[(10, 30, 0)], ai=150, di=100, rtd=36)),
+    (r"^CO2 dehydration", dict(m=[(2, 20, 0), (1, 200, 0)], mov=12, ai=30, di=30)),
+    (r"^CCS-CT|CCS cooling tower", dict(m=[(30, 110, 1)], ai=30, di=60)),
+    (r"^CCS circulating", dict(ai=20, di=20)),
+    (r"instrument air", dict(m=[(2, 250, 0)], ai=10, di=10)),
+    (r"^Reclaimer", dict(m=[(2, 15, 0)], ai=15, di=10)),
+    (r"Solvent", dict(m=[(4, 15, 0)], ai=10, di=10)),
+    (r"^CCS wastewater", dict(m=[(6, 15, 0)], ai=15, di=15)),
+    (r"Activated-carbon", dict(ai=6, di=6)),
+    (r"HP export compressor", dict(m=[(4, 30, 0)], ai=60, di=40, rtd=12)),
+    (r"^BESS container", dict(di=8)),
+    (r"^BESS PCS", dict(m=[(2, 7, 0)], ai=6, di=10)),
+    (r"^RICE engine-generator", dict(m=[(6, 22, 0)], ai=80, di=60, tc=30, rtd=12)),
+    (r"^RICE \d radiators", dict(m=[(5, 30, 1)], ai=5, di=10)),
+    (r"^RICE \d SCR", dict(m=[(1, 15, 0)], ai=10, di=6)),
+    (r"^SC-\d: aeroderivative", dict(m=[(10, 30, 0)], ai=150, di=100, tc=40)),
+    (r"^SC-\d lube-oil fin-fan", dict(m=[(4, 15, 0)], ai=4, di=8)),
+    (r"^SC-\d SCR", dict(m=[(2, 30, 0)], ai=12, di=8)),
+    (r"^TM-\d", dict(m=[(6, 22, 0)], ai=100, di=60, tc=20)),
+    (r"^CONT-\d|^MOB-1|^GEN-[EO]", dict(ai=20, di=20)),
+    (r"^Black-start genset", dict(ai=20, di=20)),
+    (r"^FC-\d+:", dict(ai=10, di=10)),
+    (r"^MT-\d", dict(ai=6, di=6)),
+    (r"^Fuel-gas compressors 3|CONDITIONAL: fuel-gas compressors", dict(m=[(6, 15, 0)], ai=30, di=20, rtd=12)),
+    (r"^Chillers x6", dict(m=[(6, 7, 0)], ai=120, di=120)),
+    (r"^CW pumps \(inlet", dict(ai=24, di=24)),
+    (r"^Inlet-chilling tower", dict(m=[(12, 75, 1)], ai=12, di=24)),
+    (r"^CHW pumps", dict(m=[(4, 150, 0)], ai=12, di=12)),
+    (r"^LNG \d+:|^H2 \d+:", dict(m=[(1, 15, 0)], ai=12, di=12, sol=2)),
+]
+DEVRX = [(re.compile(p), d) for p, d in DEV]
+JB_PAIRS = 24
+FIELD = dict(ai=("PLTC", "1 pr", "16", "Analog instrument to JB"), di=("PLTC", "1 pr", "16", "Discrete device to JB"),
+             sol=("CT", "2/C", "14", "Solenoid to JB"), tc=("TCX", "1 pr", "16", "Thermocouple to TC JB"),
+             rtd=("RTD", "1 tri", "18", "RTD to JB"))
+N_DEV = defaultdict(int)
+
+
+def dev_of(it):
+    for rx, d in DEVRX:
+        if rx.search(it["name"]):
+            return d
+    return None
+
+
+def device_wiring(it, d):
+    f = it["fp"]
+    span = (f[1] - f[0]) + (f[3] - f[2])
+    h = it["z"][1]
+    field = min(250, max(40, span * .5 + h * .4 + 25))           # average device-to-JB run on the equipment
+    haz = bool(HAZ.search(it["name"]))
+    src_lv = lv_src(it)
+    src_ct = ctl_src(it)
+    tag = it.get("tag") or it["name"][:18]
+    for (n, kw, vfd) in d.get("m", []):
+        for k in range(n):
+            N_DEV["motors"] += 1
+            if vfd:
+                route, vert, kind = route_len(src_lv, it)
+                I = kw / (1.732 * .48 * .85)
+                s, sets, vd = size_lv(I, (route + vert + field) * 1.1)
+                add(src_lv, it, f"Motor {k + 1} of {n}, {kw} kW (VFD output)", "VFD", "3/C+3G", s, sets, 1, kw, 480, round(I),
+                    f"VD {vd:.1f} %", length=(route + field, vert, kind))
+            else:
+                lv_feeder(src_lv, it, kw, f"Motor {k + 1} of {n}, {kw} kW")
+            add(src_lv, it, f"Motor {k + 1} of {n}: control / local station", "CTAX" if haz else "CT", "7/C", "14")
+    for k in range(d.get("mov", 0)):
+        N_DEV["MOVs"] += 1
+        add(src_lv, it, f"MOV {k + 1}: power", "LVAX" if haz else "LV", "3/C+G", "12", 1, 1, 2, 480, 4)
+        add(src_lv, it, f"MOV {k + 1}: control", "CTAX" if haz else "CT", "12/C", "14")
+    for key in ("ai", "di", "sol", "tc", "rtd"):
+        n = d.get(key, 0)
+        if not n:
+            continue
+        N_DEV[key] += n
+        prod, cond, size, what = FIELD[key]
+        if key in ("ai", "di") and haz:
+            prod = "ITC"
+        if key == "sol" and haz:
+            prod = "CTAX"
+        per = 10 if key in ("sol", "rtd") else 20
+        for j in range(math.ceil(n / per)):
+            m_ = min(per, n - j * per)
+            jb = f"JB-{tag}-{key.upper()}{j + 1:02d}"
+            add(it, dict(it, tag=jb), f"{what} {jb}: {m_} x {cond} (field cables)", prod, cond, size, m_, 1,
+                note="device-to-JB field wiring, one cable per device", length=(field, 10, "Tray / conduit"))
+            hp = {"ai": ("ITC" if haz else "PLTC", "24 pr", "18"), "di": ("ITC" if haz else "PLTC", "24 pr", "18"),
+                  "tc": ("TCX", "24 pr", "16"), "rtd": ("RTD", "12 tri", "18"),
+                  "sol": ("CTAX" if haz else "CT", "25/C", "14")}[key]
+            add(src_ct, dict(it, tag=jb), f"Home run {jb} to the control / marshalling room", hp[0], hp[1], hp[2])
+
 # LV power, control, instrumentation, FA, fibre per item, from its wiring applications --------------------------
 DEF_KW = [(r"GT\d aux", 400), (r"GT1:|GT2:|GT3:", 150), (r"HRSG \d \+", 150), (r"FH-\d:", 40), (r"SOS-", 30),
           (r"FS-GT", 10), (r"WASH-GT", 30), (r"GFM-", 15), (r"TCP-", 15), (r"SCRB-", 2 * 110), (r"AC-A/B/C|Air compressor", 3 * 250),
@@ -593,6 +747,9 @@ SKIP_LV = re.compile(r"^R1 |SWGR|LC-480|MCC|EMCC|transformer|T-R\d|T-R4|LCT-|T4-
 done_bld = set()
 for it in ITEMS:
     apps = " ".join(it.get("wiring", []))
+    d = dev_of(it)
+    if d and it["area"] != "L":
+        device_wiring(it, d)
     if not apps:
         continue
     nm = it["name"]
@@ -601,7 +758,7 @@ for it in ITEMS:
         continue
     is_bld = bool(BLD.search(nm)) and not re.search(r"skid|pump|^R1 ", nm)
     # LV power
-    if not SKIP_LV.search(nm) and re.search(r"LV power|LV 480", apps):
+    if not SKIP_LV.search(nm) and re.search(r"LV power|LV 480", apps) and not (d and d.get("m")):
         kw = next((k for p, k in DEF_KW if re.search(p, nm)), None)
         if kw is None and is_bld:
             f = it["fp"]
@@ -612,7 +769,7 @@ for it in ITEMS:
             lv_feeder(lv_src(it), it, kw, "LV power feeder" if not is_bld else "LV panel / distribution feeder")
     # control and instrumentation
     big = re.search(r"GT\d:|STG|GTG|HRSG \d \+|ST: steam|ACC|CO2 compression|BF-|SC-\d:|RICE engine|TM-\d", nm)
-    if "Control" in apps or "CT" in apps:
+    if ("Control" in apps or "CT" in apps) and (not d or re.search(r"230 kV breaker|GCB-|GSU|UAT|transformer", nm)):
         if re.search(r"230 kV breaker", nm):
             ctrl(RH, it, n7=0, n12=4, nct=3)
         elif re.search(r"GCB-|GSP-", nm):
@@ -623,16 +780,16 @@ for it in ITEMS:
             ctrl(ctl_src(it), it, n7=2, n12=6)
         elif not re.search(r"^R1 |SWGR|LC-480|MCC", nm):
             ctrl(ctl_src(it), it, n7=1, n12=0)
-    if "Instrumentation" in apps:
+    if "Instrumentation" in apps and not d:
         if big:
             inst(ctl_src(it), it, n4=2, n12=8)
         elif re.search(r"skid|pumps|compressor|tank|heater|separator|absorber|stripper|DCC|reboiler|module", nm, re.I):
             inst(ctl_src(it), it, n4=1, n12=1)
         else:
             inst(ctl_src(it), it, n4=1)
-    if "Thermocouple" in apps:
+    if "Thermocouple" in apps and not d:
         inst(ctl_src(it), it, n4=0, ntcx=6 if big else 2)
-    if "RTD" in apps:
+    if "RTD" in apps and not d:
         inst(ctl_src(it), it, n4=0, nrtd=4)
     if "Vibration" in apps:
         add(ctl_src(it), it, "Vibration monitoring", "PLTC", "4 pr", "18")
@@ -640,6 +797,39 @@ for it in ITEMS:
         add(ctl_src(it), it, "Fire alarm / F&G loop (to the local FACP / F&G node)", "FA", "2/C", "14")
     if "Data" in apps and (is_bld or big):
         add(CR, it, "Plant network / DCS fibre", "FO", "12 SM", "-")
+
+
+# outdoor and structure lighting, 480 V welding receptacles, heat-trace circuits (allowances counted from the model)
+LIGHT_STRUCT = [(r"^HRSG \d \+", 40), (r"^Air-cooled condenser", 80), (r"^Absorber [ABC] \(", 30), (r"^STR-", 20),
+                (r"^FH-\d:", 12), (r"stair tower", 8), (r"^DCC-[ABC]:", 8), (r"CCS cooling tower", 30),
+                (r"Inlet-chilling tower", 12), (r"^HRSG \d stack|HRSG \d stack", 6), (r"RICE \d SCR", 6), (r"^SC-\d stack", 4)]
+for it in ITEMS:
+    for p_, n in LIGHT_STRUCT:
+        if re.search(p_, it["name"]):
+            src = lv_src(it)
+            for c in range(math.ceil(n / 12)):
+                add(src, it, f"Area / platform lighting circuit {c + 1} ({min(12, n - c * 12)} fixtures)", "LV", "3/C+G",
+                    "10", 1, 1, 3, 480, 5, "fixture-to-fixture run included", length=(route_len(src, it)[0] + 12 * 25,
+                                                                                         route_len(src, it)[1], "Tray"))
+            break
+site_l = next((it for it in ITEMS if it["name"].startswith("Site lighting")), None)
+if site_l:
+    poles = sum(1 for p_ in M["parts"] if p_["item"] == site_l["id"] and p_["kind"] == "rod" and abs(p_["a"][2] - p_["b"][2]) > 20)
+    poles = poles or 120
+    add(site_l, site_l, f"Site / road lighting: {poles} poles, buried circuits pole to pole", "LV", "3/C+G", "8", poles, 1,
+        None, 480, None, "~120 ft between poles + riser", length=(120, 30, "Buried"))
+welds = 0
+for it in ITEMS:
+    if re.search(r"^HRSG \d \+|^GT\d: H-class|^ST: steam|^Air-cooled condenser|^Absorber [ABC] \(|^STR-|"
+                 r"^CO2 compression|^RICE engine-generator|^BF-", it["name"]):
+        for k in range(4):
+            welds += 1
+            lv_feeder(lv_src(it), it, 60, f"480 V welding receptacle {k + 1}", motor=False)
+for it in ITEMS:
+    if it["name"].startswith("HTP-"):
+        for k in range(24):
+            add(it, it, f"Heat-trace circuit {k + 1} (power to the trace junction box)", "LV", "3/C+G", "10", 1, 1, 4, 480, 6,
+                "heat-trace cable itself by others", length=(180, 20, "Tray"))
 
 # lighting / small power branch circuits (allowance per building by floor area)
 for it in ITEMS:
@@ -654,7 +844,7 @@ gg = next(it for it in M["items"] if "station ground grid" in it["name"])
 L = sum(math.dist(p["a"], p["b"]) for p in M["parts"] if p["item"] == gg["id"] and p["kind"] == "rod")
 add(dict(gg, area="C"), dict(gg, area="C"), "Station ground grid, rods and risers (from the model)", "BARE", "1/C", "4/0", 1, 1,
     None, None, None, "measured from the modelled grid", length=(L, 0, "Buried"))
-n_eq = sum(1 for it in ITEMS if "Grounding" in " ".join(it.get("wiring", [])))
+n_eq = sum(1 for it in ITEMS if "Grounding" in " ".join(it.get("wiring", []))) + N_DEV["motors"]
 add(dict(gg, area="C", name="Equipment grounding"), dict(gg, area="C", name="Equipment grounding"),
     f"Equipment ground leads: {n_eq} items x 2 leads x 30 ft", "BARE", "1/C", "4/0", 1, 1, None, None, None, "allowance",
     length=(n_eq * 60, 0, "Buried"))
@@ -684,9 +874,12 @@ def write():
         ("Conceptual, derived from the SK-3X1 3D model. Not engineered, not for construction or procurement.", False),
         ("", False),
         ("How it was built", True),
-        ("1. Every powered item of the model (417 items, BTM data-centre option excluded) is matched to an equipment class "
-         "that gives its power circuits (voltage, typical rating, source bus) and its control, instrumentation, fire-alarm "
-         "and fibre cables. Ratings are typical for the class unless the drawing states one.", False),
+        ("1. Every powered item of the model (BTM data-centre option excluded) is matched to an equipment class that gives "
+         "its power circuits (voltage, typical rating, source bus) and its field devices (motors, MOVs, analog and discrete "
+         "instruments, solenoids, thermocouples, RTDs; typical counts for the class). Each device has its own cable to its "
+         "MCC or to a local junction box; junction boxes home-run on 24-pair / 12-triad / 25-conductor cables. Device-to-JB "
+         "cables are grouped per JB (Sets = number of device cables). Ratings are typical unless the drawing states one.",
+         False),
         ("2. Lengths follow the model's electrical routes (trays, duct banks, buried / surface cable, trenches) as a graph: "
          "shortest path source to load, plus drops and vertical transitions. 230 kV circuits, overhead conductors and the "
          "ground grid are measured directly from the model.", False),
@@ -730,7 +923,7 @@ def write():
     cols = ["Cable No.", "Zone", "Area", "Service / circuit", "From (tag)", "From (description)", "To (tag)",
             "To (description)", "Class", "Product", "Product key", "Conductors", "Size (AWG/kcmil)", "Sets", "Cables / set",
             "Voltage (V)", "Load (kW)", "Current (A)", "Route type", "Route (ft)", "Drops + vertical (ft)",
-            "Run length (ft)", "Total cable (ft)", "MV term. kits", "Glands / connectors", "Notes"]
+            "Run length (ft)", "Total cable (ft)", "MV term. kits", "Glands / connectors", "Notes", "Cables (count)"]
     for c, h in enumerate(cols, 1):
         x = sc.cell(1, c, h)
         x.font, x.fill = hdr_font, hdr_fill
@@ -758,18 +951,19 @@ def write():
         sc.cell(i, 25, f'=IF(OR(LEFT(K{i},4)="LVAX",LEFT(K{i},6)="MV15AX",LEFT(K{i},4)="CTAX",LEFT(K{i},2)="W|"),'
                        f'2*N{i}*O{i},0)').font = blk
         sc.cell(i, 26, r["note"]).font = blk
+        sc.cell(i, 27, f"=N{i}*O{i}").font = blk
         for c in (20, 21, 22, 23):
             sc.cell(i, c).number_format = "#,##0"
     last = len(ROWS) + 1
-    widths = [12, 6, 20, 46, 12, 34, 12, 34, 14, 52, 22, 10, 12, 6, 7, 9, 9, 9, 13, 9, 10, 10, 12, 8, 9, 30]
+    widths = [12, 6, 20, 46, 12, 34, 12, 34, 14, 52, 22, 10, 12, 6, 7, 9, 9, 9, 13, 9, 10, 10, 12, 8, 9, 30, 9]
     for c, w in enumerate(widths, 1):
         sc.column_dimensions[get_column_letter(c)].width = w
     sc.freeze_panes = "E2"
-    sc.auto_filter.ref = f"A1:Z{last}"
+    sc.auto_filter.ref = f"A1:AA{last}"
 
     # Cable BOM
     bm = wb.create_sheet("Cable BOM")
-    bcols = ["Product key", "Class", "Product (typical Southwire family)", "Conductors", "Size", "Runs", "Total length (ft)",
+    bcols = ["Product key", "Class", "Product (typical Southwire family)", "Conductors", "Size", "Cables", "Total length (ft)",
              "Waste", "Order length (ft)", "Standard reel (ft)", "Reels", "Order length (km)"]
     for c, h in enumerate(bcols, 1):
         x = bm.cell(1, c, h)
@@ -783,7 +977,7 @@ def write():
         vals = [key, CLASS[p], P[p], cnd, AWG(s) if s != "-" else "-"]
         for c, v in enumerate(vals, 1):
             bm.cell(i, c, v).font = blk
-        bm.cell(i, 6, f"=COUNTIF('Cable Schedule'!$K$2:$K${last},A{i})").font = grn
+        bm.cell(i, 6, f"=SUMIFS('Cable Schedule'!$AA$2:$AA${last},'Cable Schedule'!$K$2:$K${last},A{i})").font = grn
         bm.cell(i, 7, f"=SUMIFS('Cable Schedule'!$W$2:$W${last},'Cable Schedule'!$K$2:$K${last},A{i})").font = grn
         bm.cell(i, 8, "='Read Me'!$B$14").font = grn
         bm.cell(i, 9, f"=ROUNDUP(G{i}*(1+H{i}),-2)").font = blk
@@ -862,8 +1056,17 @@ def write():
     sm.cell(tr + 1, 1, "Total (miles)").font = Font(name=F, bold=True)
     x = sm.cell(tr + 1, len(classes) + 2, f"={get_column_letter(len(classes) + 2)}{tr}/5280")
     x.font, x.number_format = Font(name=F, bold=True, size=9), "#,##0.0"
-    sm.cell(tr + 3, 1, "Cable runs").font = Font(name=F, bold=True)
+    sm.cell(tr + 3, 1, "Schedule rows").font = Font(name=F, bold=True)
     sm.cell(tr + 3, 2, f"=COUNTIF('Cable Schedule'!B2:B{last},\"?\")").font = grn
+    sm.cell(tr + 4, 1, "Cables (count)").font = Font(name=F, bold=True)
+    sm.cell(tr + 4, 2, f"=SUM('Cable Schedule'!AA2:AA{last})").font = grn
+    sm.cell(tr + 4, 2).number_format = "#,##0"
+    sm.cell(tr + 6, 1, "Device count behind the schedule (typical for each equipment class)").font = Font(name=F, bold=True)
+    for k_, (nm_, v_) in enumerate([("Analog instruments", N_DEV["ai"]), ("Discrete devices", N_DEV["di"]),
+                                    ("Thermocouples", N_DEV["tc"]), ("RTDs", N_DEV["rtd"]), ("Solenoids", N_DEV["sol"]),
+                                    ("LV motors", N_DEV["motors"]), ("Motor-operated valves", N_DEV["MOVs"])]):
+        sm.cell(tr + 7 + k_, 1, nm_).font = blk
+        sm.cell(tr + 7 + k_, 2, v_).font = inp
     sm.column_dimensions["A"].width = 34
     for c in range(2, len(classes) + 3):
         sm.column_dimensions[get_column_letter(c)].width = 13
