@@ -120,17 +120,17 @@ class Graph:
                         stack.append(w)
         bg = defaultdict(list)
         for v in nodes:
-            bg[(int(v[0] // 60), int(v[1] // 60))].append(v)
+            bg[(int(v[0] // 110), int(v[1] // 110))].append(v)
         best = {}
         for v in nodes:
-            gx, gy = int(v[0] // 60), int(v[1] // 60)
+            gx, gy = int(v[0] // 110), int(v[1] // 110)
             for i in range(gx - 1, gx + 2):
                 for j in range(gy - 1, gy + 2):
                     for w in bg[(i, j)]:
                         if comp[w] != comp[v]:
                             d = abs(v[0] - w[0]) + abs(v[1] - w[1])
                             key = tuple(sorted((comp[v], comp[w])))
-                            if d <= 60 and (key not in best or d < best[key][0]):
+                            if d <= 110 and (key not in best or d < best[key][0]):
                                 best[key] = (d, v, w)
         for d, v, w in best.values():
             c = d * 1.2 + abs(v[2] - w[2])
@@ -343,7 +343,7 @@ def lv_feeder(src, dst, kw, service, prod=None, n=1, note="", motor=True):
     s, sets, vd = size_lv(I, L)
     pr = prod or ("LVAX" if HAZ.search(dst["name"]) else "LV")
     for _ in range(n):
-        add(src, dst, service, pr, "3/C+G", s, sets, 1, kw, 480, round(I), note or (f"VD {vd:.1f} %" if vd else ""),
+        add(src, dst, service, pr, "3/C+G", s, sets, 1, kw, 480, round(I, 1), note or (f"VD {vd:.1f} %" if vd else ""),
             length=(route, vert, kind))
 
 
@@ -375,7 +375,7 @@ S4 = [BY_TAG["SWGR-4.16-A"], BY_TAG["SWGR-4.16-B"]]
 R1, RH, CR = BY_TAG["R1"], BY_TAG["RH"], BY_TAG["CR"]
 LVS = {"A": [BY_TAG["R2A"], BY_TAG["R2B"], BY_TAG["R2C"], BY_TAG["R3"], BY_TAG["LC-480-A"], BY_TAG["LC-480-B"]],
        "B": [src_of(r"^R4 480 V switchgear")], "C": [RH], "D": [BY_TAG["MCC-C1"]], "E": [BY_TAG["MCC-C1"], BY_TAG["MCC-C2"]],
-       "F": [BY_TAG["MCC-C2"]], "G": [src_of(r"^CT MCC / VFD e-house")], "H": [src_of(r"^BESS auxiliary transformer")],
+       "F": [BY_TAG["MCC-C2"]], "G": [src_of(r"^CT MCC / VFD e-house"), src_of(r"^CCS MV switchgear building")], "H": [src_of(r"^BESS auxiliary transformer")],
        "I": [src_of(r"^MOD-LV 480 V"), src_of(r"^PAD-LV"), src_of(r"^PCM: power control")], "J": [src_of(r"^Inlet-chilling e-house")],
        "K": [src_of(r"^LNG 17"), src_of(r"^H2 20")]}
 CTRLS = {"A": [BY_TAG["R2A"], BY_TAG["R2B"], BY_TAG["R2C"], BY_TAG["R3"], R1], "B": [BY_TAG["R4"]], "C": [RH],
@@ -507,10 +507,10 @@ for k in (1, 2):
     sc = one(rf"^SC-{k}: aeroderivative")
     mv_feeder(sc, one(rf"^SC-{k} PCM"), 50000, 13.8, f"SC-{k} (LM6000 class) generator leads to its PCM / GCB", motor=False)
     mv_feeder(one(rf"^SC-{k} PCM"), mod_eh, 50000, 13.8, f"SC-{k} PCM to MOD-EH", motor=False)
-mv_feeder(pcm, mod_eh, 150000, 13.8, "RICE PCM to MOD-EH (bus tie)", motor=False, note="may be bus duct")
-for k in (1, 2):
-    mv_feeder(mod_eh, BY_TAG[f"T-MOD-{k}"], 120000, 13.8, f"MOD-EH to T-MOD-{k} LV side", motor=False,
-              note="may be bus duct")
+BUS_DUCT = [("RICE PCM to MOD-EH bus tie", "13.8 kV, ~6,300 A"), ("MOD-EH to T-MOD-1 LV side", "13.8 kV, ~5,000 A"),
+            ("MOD-EH to T-MOD-2 LV side", "13.8 kV, ~5,000 A"),
+            ("Generator terminals to GSU / UAT / ET (isolated-phase bus)", "21 kV, as modelled (IPB routes)"),
+            ("T-R4-1..4 secondaries to the ACC VFD lineups", "480 V, ~4,500 A each")]
 mv_feeder(one(r"^MOD-LV 480 V"), mod_eh, 7500, 13.8, "MOD-LV step-up to MOD-EH", motor=False)
 for it in find(r"^Fuel-gas compressors 3 x 100"):
     mv_feeder(mod_eh, it, 1500, 13.8, "Modular-yard fuel-gas compressor", armored=True, n=3)
@@ -527,8 +527,8 @@ for k in range(1, 9):
 add(cont_eh, pad_eh, "CONT-EH to PAD-EH", "MV15", "1/C", "500", 2, 3, 12000, 13800, 558)
 for k in (1, 2):
     tm = BY_TAG[f"TM-{k}"]
-    add(tm, pad_eh, f"TM-{k} (TM2500) generator leads to PAD-EH", "MV15", "1/C", "1000", 2, 3, 35000, 13800, 1464,
-        "2 per phase per the model (ground tray)")
+    add(tm, pad_eh, f"TM-{k} (TM2500) generator leads to PAD-EH", "MV15", "1/C", "1000", 3, 3, 35000, 13800, 1464,
+        "3 per phase for 125 % (the model shows 2 per phase: update the model)")
 mob = BY_TAG["MOB-1"]
 add(mob, BY_TAG["PIC"], "MOB-1 13.8 kV to PIC through the C-L01 ramp", "SHD", "3/C", "2", 1, 1, 2000, 13800, 93, "portable")
 add(BY_TAG["PIC"], BY_TAG["LB"], "PIC to commissioning load bank", "SHD", "3/C", "2", 1, 1, 2000, 13800, 93, "portable")
@@ -539,7 +539,7 @@ for t, kw in (("GEN-E", 2000), ("GEN-O", 1000)):
     add(g, BY_TAG["PAD-LV"], f"{t} 480 V to PAD-LV (Type W sets, cam-lock)", "W", "1/C", "4/0", sets, 4, kw, 480,
         round(I), "4 x 1/C per set incl. ground")
 add(BY_TAG["PAD-LV"], BY_TAG["PAD-TX"] if "PAD-TX" in BY_TAG else one(r"^PAD-TX"), "PAD-LV to PAD-TX", "LV1C", "1/C", "500",
-    8, 4, 3000, 480, 3600)
+    12, 4, 3000, 480, 3600, "12 sets of 4 x 1/C (or bus duct)")
 fc_inv = [one(r"^Fuel-cell inverter"), one(r"^FC-5..12 inverter")]
 for k in range(1, 13):
     fc = one(rf"^FC-{k}: SOFC")
@@ -552,6 +552,33 @@ for k in range(1, 7):
     lv_feeder(mt, one(r"^MOD-LV 480 V"), 1000, f"MT-{k} microturbine output", motor=False)
 for it in find(r"^Black-start genset"):
     lv_feeder(it, src_of(r"^BS black-start switchgear"), 2000, "Black-start genset output", motor=False)
+
+
+# audit additions: circuits found missing by the first audit
+emcc = BY_TAG["EMCC"]
+for t in ("EDG-1", "EDG-2"):
+    I = 3000 / (1.732 * .48)
+    add(BY_TAG[t], emcc, f"{t} 480 V output to EMCC", "LV1C", "1/C", "500", 13, 4, 3000, 480, round(I),
+        "13 sets of 4 x 1/C 500 kcmil for 3 % VD (or bus duct)")
+lv_feeder(BY_TAG["LC-480-A"], emcc, 400, "EMCC normal supply from LC-480-A", motor=False)
+lv_feeder(LVS["A"][4], BY_TAG["CRANE"], 150, "Bridge crane conductor-bar feeder (fused disconnect, north wall)")
+for t in ("CPR-1", "CPR-2"):
+    lv_feeder(lv_src(BY_TAG[t]), BY_TAG[t], 10, "Cathodic-protection rectifier supply", motor=False)
+    add(BY_TAG[t], BY_TAG[t], "CP anode / structure leads (allowance)", "LV", "1/C", "8", 1, 1, length=(1500, 0, "Buried"),
+        note="HMWPE anode lead cable by CP vendor; allowance")
+gt = one(r"^CONDITIONAL: grounding transformer")
+if gt:
+    mv_feeder(src_of(r"^34.5 kV collector e-house"), gt, 2000, 34.5, "Grounding transformer connection (34.5 kV)", motor=False)
+the = one(r"^Turbine hall exterior electrical")
+if the:
+    lv_feeder(BY_TAG["LC-480-A"], the, 120, "Turbine hall roof exhausters / louvres / exterior lighting panel", motor=False)
+for pat, n in ((r"^230 kV switchyard \(gravel", 40), (r"^BESS yard: surfacing", 24)):
+    it = one(pat)
+    if it:
+        src = RH if "switchyard" in it["name"] else LVS["H"][0]
+        for c in range(math.ceil(n / 10)):
+            add(src, it, f"Yard lighting circuit {c + 1} ({min(10, n - c * 10)} floodlights)", "LV", "3/C+G", "8", 1, 1, 4,
+                480, 6, "pole to pole, buried", length=(10 * 90, 30, "Buried"))
 
 # 230 kV underground circuits and overhead conductors (from the routes) ---------------------------------------
 dummy = lambda name, tag: dict(name=name, tag=tag, area="C", id=tag, fp=[0, 1, 0, 1], layer="ROUTES")
@@ -698,7 +725,7 @@ def device_wiring(it, d):
             add(src_lv, it, f"Motor {k + 1} of {n}: control / local station", "CTAX" if haz else "CT", "7/C", "14")
     for k in range(d.get("mov", 0)):
         N_DEV["MOVs"] += 1
-        add(src_lv, it, f"MOV {k + 1}: power", "LVAX" if haz else "LV", "3/C+G", "12", 1, 1, 2, 480, 4)
+        lv_feeder(src_lv, it, 2.5, f"MOV {k + 1}: power", prod="LVAX" if haz else "LV")
         add(src_lv, it, f"MOV {k + 1}: control", "CTAX" if haz else "CT", "12/C", "14")
     for key in ("ai", "di", "sol", "tc", "rtd"):
         n = d.get(key, 0)
@@ -808,9 +835,11 @@ for it in ITEMS:
         if re.search(p_, it["name"]):
             src = lv_src(it)
             for c in range(math.ceil(n / 12)):
+                rl, rv, rk = route_len(src, it)
+                sz, st_, vd = size_lv(5, (rl + rv + 300) * 1.1)
                 add(src, it, f"Area / platform lighting circuit {c + 1} ({min(12, n - c * 12)} fixtures)", "LV", "3/C+G",
-                    "10", 1, 1, 3, 480, 5, "fixture-to-fixture run included", length=(route_len(src, it)[0] + 12 * 25,
-                                                                                         route_len(src, it)[1], "Tray"))
+                    max(sz, "10", key=SIZES_LV.index), st_, 1, 3, 480, 5, "fixture-to-fixture run included",
+                    length=(rl + 300, rv, rk))
             break
 site_l = next((it for it in ITEMS if it["name"].startswith("Site lighting")), None)
 if site_l:
@@ -849,6 +878,61 @@ add(dict(gg, area="C", name="Equipment grounding"), dict(gg, area="C", name="Equ
     f"Equipment ground leads: {n_eq} items x 2 leads x 30 ft", "BARE", "1/C", "4/0", 1, 1, None, None, None, "allowance",
     length=(n_eq * 60, 0, "Buried"))
 
+
+
+def audit():
+    """Independent checks on the schedule; returns [(check, result, count, examples)]."""
+    out = []
+    by_dst = defaultdict(list)
+    for r in ROWS:
+        by_dst[r["dst"]["id"]].append(r)
+    srcs = {r["src"]["id"] for r in ROWS}
+    power = ("LV", "LVAX", "VFD", "LV1C", "MV15", "MV15AX", "MV5", "MV5S", "MV25", "MV35", "W", "SHD", "PV")
+    miss = [it["name"][:50] for it in ITEMS if re.search(r"LV power|MV power|LV 480", " ".join(it.get("wiring", [])))
+            and not any(r["prod"] in power for r in by_dst.get(it["id"], [])) and it["id"] not in srcs
+            and not re.search(r"VFD lineup|BESS blocks", it["name"])]
+    out.append(("Every powered item has a power circuit (VFD lineups: bus duct; BESS blocks: per container)",
+                "PASS" if not miss else "CHECK", len(miss), "; ".join(miss[:4])))
+    miss = [it["name"][:50] for it in ITEMS if "Instrumentation" in " ".join(it.get("wiring", []))
+            and not any(r["prod"] in ("PLTC", "ITC", "TCX", "RTD") for r in by_dst.get(it["id"], []))]
+    out.append(("Every instrumented item has instrument cables", "PASS" if not miss else "CHECK", len(miss), "; ".join(miss[:4])))
+    dbl = [rows[0]["dst"]["name"][:40] for rows in by_dst.values()
+           if any(r["service"].startswith("LV power feeder") for r in rows) and any(r["service"].startswith("Motor ") for r in rows)]
+    out.append(("No lump feeder where motors are fed individually (double count)", "PASS" if not dbl else "FAIL", len(dbl),
+                "; ".join(dbl[:4])))
+    bad = []
+    for r in ROWS:
+        I = r["amps"]
+        if not I:
+            continue
+        if r["prod"] in ("LV", "LVAX", "VFD", "LV1C") and r["size"] in AMP_LV and AMP_LV[r["size"]] * r["sets"] < 1.25 * I * .999:
+            bad.append(r["service"][:40])
+        if r["prod"] in ("MV15", "MV15AX", "MV5", "MV5S", "MV25") and AMP_MV[r["size"]] * .85 * r["sets"] < 1.25 * I * .999:
+            bad.append(r["service"][:40])
+        if r["prod"] == "MV35" and AMP_MV35[r["size"]] * .85 * r["sets"] < 1.25 * I * .999:
+            bad.append(r["service"][:40])
+    out.append(("Ampacity >= 125 % of full-load current (recomputed)", "PASS" if not bad else "FAIL", len(bad), "; ".join(bad[:4])))
+    vdb = []
+    for r in ROWS:
+        if r["prod"] in ("LV", "LVAX", "VFD", "LV1C") and r["amps"] and r["size"] in R_LV:
+            L = (r["route"] + r["vert"]) * 1.1
+            vd = 1.732 * r["amps"] * L / 1000 * R_LV[r["size"]] / r["sets"] / 480 * 100
+            if vd > 3.05:
+                vdb.append(f"{r['service'][:30]} {vd:.1f}%")
+    out.append(("480 V voltage drop <= 3 % (recomputed)", "PASS" if not vdb else "CHECK", len(vdb), "; ".join(vdb[:4])))
+    haz = [r["dst"]["name"][:40] for r in ROWS if HAZ.search(r["dst"]["name"]) and r["prod"] in ("LV", "CT", "PLTC")
+           and not re.match(r"GT\d:", r["dst"]["name"])]
+    out.append(("Class I Div 2 loads on ARMOR-X / IS cable", "PASS" if not haz else "FAIL", len(haz), "; ".join(haz[:4])))
+    est = [r for r in ROWS if r["kind"] == "Estimated"]
+    out.append(("Runs that follow a modelled route", "INFO", len(ROWS) - len(est),
+                f"{len(est)} estimated (build-out bays D4-D6 and utilities without drawn trench / bank)"))
+    lng = [r for r in ROWS if r["route"] + r["vert"] > 3000 and r["prod"] not in ("FO", "THHN", "BARE", "ACSR")]
+    out.append(("Copper runs > 3,000 ft", "INFO", len(lng), "; ".join(f"{r['service'][:30]}" for r in lng[:4])))
+    many = [r for r in ROWS if r["sets"] >= 6 and r["prod"] in ("LV", "LVAX", "LV1C", "MV15", "MV5S", "MV25", "MV35")]
+    out.append(("Feeders with >= 6 parallel sets (bus-duct candidates)", "INFO", len(many),
+                "; ".join(f"{r['service'][:30]} x{r['sets']}" for r in many[:4])))
+    out.append(("Excluded as bus duct", "INFO", len(BUS_DUCT), "; ".join(a for a, b in BUS_DUCT)))
+    return out
 
 # ------------------------------------------------------------------------------------------------ workbook
 def write():
@@ -904,6 +988,10 @@ def write():
     ws["C12"] = "Source: typical industry allowance (assumption)"
     ws["C13"] = "Source: typical (assumption)"
     ws["C14"] = "Source: typical (assumption)"
+    ws["A23"] = "Excluded from the cable BOM (bus duct, by others)"
+    ws["A23"].font = Font(name=F, bold=True)
+    for k_, (a_, b_) in enumerate(BUS_DUCT, 24):
+        ws.cell(k_, 1, f"{a_}: {b_}").font = Font(name=F, size=10)
     ws["A16"] = "Sheets"
     ws["A16"].font = Font(name=F, bold=True)
     for r, t in enumerate(["Cable Schedule: one row per cable run (from / to, service, product, size, sets, length)",
@@ -1088,6 +1176,20 @@ def write():
         ll.column_dimensions[get_column_letter(c)].width = w
     ll.freeze_panes = "A2"
 
+    au = wb.create_sheet("Audit", 1)
+    for c, h in enumerate(["Check", "Result", "Count", "Notes / examples"], 1):
+        x = au.cell(1, c, h)
+        x.font, x.fill = hdr_font, hdr_fill
+    colr = {"PASS": "008000", "FAIL": "C00000", "CHECK": "B07000", "INFO": "404040"}
+    for i, (a_, b_, c_, d_) in enumerate(audit(), 2):
+        au.cell(i, 1, a_).font = blk
+        au.cell(i, 2, b_).font = Font(name=F, bold=True, size=9, color=colr[b_])
+        au.cell(i, 3, c_).font = blk
+        au.cell(i, 4, d_).font = blk
+        for c in (1, 4):
+            au.cell(i, c).alignment = Alignment(wrap_text=True, vertical="top")
+    for c, w in enumerate([62, 9, 9, 110], 1):
+        au.column_dimensions[get_column_letter(c)].width = w
     from openpyxl.workbook.properties import CalcProperties
     wb.calculation = CalcProperties(fullCalcOnLoad=True)
     out = os.path.join(HERE, "brochure", "SK-3X1_Cable_Schedule_and_BOM.xlsx")
