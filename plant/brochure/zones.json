@@ -1,0 +1,406 @@
+{
+ "note": "Cable zones for the brochure: top five products per zone (typical; confirm with Southwire product management) and the model location of each, projected into the zone's hero camera.",
+ "zones": [
+  {
+   "n": "01",
+   "name": "Grid connection",
+   "sub": "230 kV switchyard and lines",
+   "cam": "E20",
+   "areas": [
+    "C"
+   ],
+   "intro": "The plant's output leaves through step-up transformers and a breaker-and-a-half 230 kV switchyard. Where the circuits run underground, HV cable rises to outdoor terminations; overhead conductor carries them to the grid.",
+   "products": [
+    [
+     "HV XLPE transmission cable, 230 kV",
+     "Underground circuits from the step-up transformers and the CCS and modular-yard ties: Cu conductor, XLPE, metallic moisture barrier, HDPE jacket.",
+     [
+      1756,
+      176,
+      14
+     ]
+    ],
+    [
+     "Overhead conductor (ACSR / ACSS)",
+     "The 230 kV lines leaving the terminal towers, and the switchyard bus jumpers.",
+     [
+      1925,
+      62,
+      45
+     ]
+    ],
+    [
+     "Bare copper grounding conductor",
+     "The station ground grid, rods and risers under the yard and every structure.",
+     [
+      1790,
+      130,
+      0
+     ]
+    ],
+    [
+     "Type TC-ER control cable, shielded",
+     "Breaker, CT / VT and relay circuits in the yard trenches to the relay house.",
+     [
+      1847.5,
+      151,
+      0
+     ]
+    ],
+    [
+     "MV-105 shielded power cable",
+     "15-35 kV station-service and auxiliary feeders at the yard edge.",
+     [
+      1298,
+      317,
+      5
+     ]
+    ]
+   ]
+  },
+  {
+   "n": "02",
+   "name": "Power island",
+   "sub": "Gas turbines, generators, steam turbine",
+   "cam": "E21",
+   "areas": [
+    "A"
+   ],
+   "intro": "Three H-class gas turbines and a steam turbine share one hall. Every auxiliary that keeps them turning, from lube oil to fuel valves to the static starters, is fed and controlled by cable.",
+   "products": [
+    [
+     "ARMOR-X® MC-HL 15 kV, red PVC",
+     "13.8 kV feeders to auxiliary drives through the Class I, Div. 2 turbine areas, laid in tray with no conduit.",
+     [
+      654,
+      538,
+      35
+     ]
+    ],
+    [
+     "ARMOR-X® MC-HL 600 V, black PVC",
+     "Motor and power circuits on the turbine enclosures, lube-oil and fuel skids.",
+     [
+      668,
+      488,
+      25
+     ]
+    ],
+    [
+     "MV-105 15 kV, EPR 133%",
+     "Switchgear to unit transformers, boiler feed pumps and the static starters.",
+     [
+      712,
+      393,
+      5
+     ]
+    ],
+    [
+     "VFD cable, symmetrical grounds, shielded",
+     "Drives to pumps and fans: controls noise and reflected-wave stress.",
+     [
+      686,
+      534,
+      25
+     ]
+    ],
+    [
+     "Instrumentation cable (PLTC / ITC)",
+     "Turbine and HRSG control loops, transmitters and thermocouples.",
+     [
+      765,
+      510,
+      24
+     ]
+    ]
+   ]
+  },
+  {
+   "n": "03",
+   "name": "Balance of plant",
+   "sub": "Inlet chilling, cooling water, buildings",
+   "cam": "E43",
+   "areas": [
+    "E",
+    "F"
+   ],
+   "intro": "Around the power island, the balance of plant keeps it running. Here, the inlet-chilling plant: six water-cooled chillers, cooling-water pumps, an e-house and a 12-cell tower, all fed, controlled and protected by cable.",
+   "products": [
+    [
+     "MV-105 5 kV and 15 kV",
+     "13.8 and 4.16 kV feeders to the chiller compressors, cooling-water pumps and station transformers.",
+     [
+      240,
+      1105,
+      10
+     ]
+    ],
+    [
+     "Type TC-ER 600 V power",
+     "Motor-control-center and panel feeders out of the e-house and across the racks.",
+     [
+      278,
+      1062,
+      14
+     ]
+    ],
+    [
+     "SIMpull® THHN / XHHW-2 building wire",
+     "Lighting, receptacles and HVAC in the chiller, water-treatment, control and admin buildings.",
+     [
+      150,
+      1105,
+      25
+     ]
+    ],
+    [
+     "Type TC-ER control, multiconductor",
+     "Pump, valve and level interlocks between the e-house and the process.",
+     [
+      278,
+      1135,
+      5
+     ]
+    ],
+    [
+     "Fire alarm and life-safety cable",
+     "Detection and notification circuits in the plant buildings and e-houses.",
+     [
+      120,
+      1075,
+      25
+     ]
+    ]
+   ]
+  },
+  {
+   "n": "04",
+   "name": "Carbon capture",
+   "sub": "Coolers, booster fans, absorbers, amine",
+   "cam": "E39",
+   "areas": [
+    "G"
+   ],
+   "intro": "Post-combustion capture adds a second plant's worth of motors: 16 MW booster fans, quench and solvent pumps, compressors, all fed from the CCS rack.",
+   "products": [
+    [
+     "MV-105 15 kV",
+     "Feeders to the 16 MW booster fans and the CO2 compressors.",
+     [
+      635,
+      1010,
+      15
+     ]
+    ],
+    [
+     "ARMOR-X® MC-HL 15 kV",
+     "MV circuits along the carbon-capture rack.",
+     [
+      572,
+      854,
+      10
+     ]
+    ],
+    [
+     "ARMOR-X® MC-HL 600 V",
+     "Pump, blower and actuator power in the amine process area.",
+     [
+      682,
+      1070,
+      8
+     ]
+    ],
+    [
+     "VFD cable",
+     "Variable-speed drives on quench and solvent pumps.",
+     [
+      588,
+      1078,
+      4
+     ]
+    ],
+    [
+     "Instrumentation cable (PLTC / ITC)",
+     "Cooler, absorber, stripper and regeneration control loops.",
+     [
+      588,
+      1022,
+      45
+     ]
+    ]
+   ]
+  },
+  {
+   "n": "05",
+   "name": "Fuel",
+   "sub": "Gas yard, M&R station, LNG and hydrogen",
+   "cam": "E13",
+   "areas": [
+    "D",
+    "K"
+   ],
+   "intro": "Gas arrives at the metering and regulating station and is filtered, heated and regulated in the plant gas yard: hazardous areas where every circuit is built for them.",
+   "products": [
+    [
+     "ARMOR-X® MC-HL 600 V",
+     "Power in the Class I areas: regulation and heating skids, vaporizers, electrolyzers.",
+     [
+      1730,
+      1530,
+      6
+     ]
+    ],
+    [
+     "Type TC-ER-HL power and control",
+     "Hazardous-location circuits where armor is not required.",
+     [
+      1575,
+      1446,
+      5
+     ]
+    ],
+    [
+     "Armored instrumentation cable",
+     "Metering, pressure and gas-detection loops.",
+     [
+      1665,
+      1530,
+      5
+     ]
+    ],
+    [
+     "MV-105 5-15 kV",
+     "Fuel-gas compressor and boil-off compressor motors.",
+     [
+      1865,
+      1595,
+      10
+     ]
+    ],
+    [
+     "Bare copper grounding and bonding",
+     "Static and lightning protection at skids, tanks and unloading arms.",
+     [
+      1660,
+      1480,
+      6
+     ]
+    ]
+   ]
+  },
+  {
+   "n": "06",
+   "name": "Battery storage",
+   "sub": "Containers, PCS skids, collection",
+   "cam": "E41",
+   "areas": [
+    "H"
+   ],
+   "intro": "The battery yard pairs containers with power-conversion skids. DC conductors run in precast trenches; 35 kV collection loops carry the power to the yard substation.",
+   "products": [
+    [
+     "PV / RHW-2 2 kV DC conductor",
+     "Battery racks to inverters in precast trenches (1,500 V systems).",
+     [
+      1744,
+      540,
+      4
+     ]
+    ],
+    [
+     "MV-105 35 kV aluminium, concentric neutral",
+     "Collection loops from the PCS / MV skids to the collector e-house.",
+     [
+      1600,
+      548,
+      4
+     ]
+    ],
+    [
+     "Type TC-ER 600 V",
+     "Container HVAC, auxiliary power and the energy management system.",
+     [
+      1645,
+      529,
+      5
+     ]
+    ],
+    [
+     "Shielded control / communications cable",
+     "Battery management, inverter and SCADA links.",
+     [
+      1825,
+      368,
+      7
+     ]
+    ],
+    [
+     "Bare copper grounding",
+     "Container and skid grounding to the yard grid.",
+     [
+      1645,
+      587,
+      0
+     ]
+    ]
+   ]
+  },
+  {
+   "n": "07",
+   "name": "Modular and temporary power",
+   "sub": "Gensets, trailer turbines, portable pad",
+   "cam": "E74",
+   "areas": [
+    "I"
+   ],
+   "intro": "Containerized gensets, trailer turbines and bridge-power fleets come and go. Their cable lies on the pad, crosses lanes under drive-over protectors and plugs in with cam-locks.",
+   "products": [
+    [
+     "Type SHD-GC portable power cable, 15 kV",
+     "MV feeders from gensets and trailer units, laid on the pad and under drive-over protectors.",
+     [
+      2245,
+      630,
+      0.5
+     ]
+    ],
+    [
+     "Type W portable power cable, 2 kV",
+     "480 V single conductors with cam-lock connections.",
+     [
+      2175,
+      435,
+      4
+     ]
+    ],
+    [
+     "MV-105 15 kV in ground trays",
+     "Bridge-power feeders and TM2500 generator leads to the duct bank.",
+     [
+      2100,
+      501,
+      0.5
+     ]
+    ],
+    [
+     "Type G-GC portable cable",
+     "Multi-conductor portable links for smaller gensets and load banks.",
+     [
+      2310,
+      564,
+      6
+     ]
+    ],
+    [
+     "Type TC-ER control",
+     "Genset paralleling, protection and fuel-skid control.",
+     [
+      2046,
+      611,
+      4
+     ]
+    ]
+   ]
+  }
+ ]
+}
