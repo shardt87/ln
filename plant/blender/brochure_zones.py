@@ -85,7 +85,7 @@ html, body {{ background: {INK}; -webkit-print-color-adjust: exact; print-color-
 .cn {{ width: 26px; height: 26px; border-radius: 13px; background: {COPPER}; color: {INK}; font: 800 15px/26px BC;
       text-align: center; }}
 .ct {{ font: 800 18px/1.05 BC; letter-spacing: .03em; color: {WHITE}; text-transform: uppercase; }}
-.cd {{ font: 400 11.5px/1.45 B; color: {GREY}; margin-top: 4px; }}
+.cd {{ font: 400 11px/1.4 B; color: {GREY}; margin-top: 4px; }}
 """
 
 
@@ -197,7 +197,7 @@ def zone_page(z, cams, page_no):
     W, H = cam["res"]
     ih = round(CW * H / W)                                   # hero height at full page width
     pins = []
-    for i, (name, desc, pt) in enumerate(z["products"]):
+    for i, (name, desc, pt, *_) in enumerate(z["products"]):
         x, y = project(cam, pt)
         x, y = x / W * CW, y / H * ih
         pins.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="11" fill="{COPPER}" stroke="{WHITE}" stroke-width="1.8"/>'
@@ -228,17 +228,145 @@ def zone_page(z, cams, page_no):
 </section>"""
 
 
+ICONS = os.path.join(PLANT, "renders", "icons")
+
+
+def jpg_of(name, src_dir=EPIC):
+    src = os.path.join(src_dir, name)
+    jpg = os.path.join(OUT, "_img", os.path.splitext(name)[0] + ".jpg")
+    os.makedirs(os.path.dirname(jpg), exist_ok=True)
+    if not os.path.exists(jpg) or os.path.getmtime(jpg) < os.path.getmtime(src):
+        from PIL import Image
+        Image.open(src).convert("RGB").save(jpg, quality=90, subsampling=0)
+    return jpg
+
+
+def icon(fam, size):
+    p = os.path.join(ICONS, f"{fam}.png")
+    return (f'<img src="{url(p)}" style="width:{size}px;height:{size}px;object-fit:contain;display:block">'
+            if os.path.exists(p) else f'<div style="width:{size}px;height:{size}px"></div>')
+
+
+def pins_svg(z, cam, w, h, r=11):
+    W, H = cam["res"]
+    out = []
+    for i, pr in enumerate(z["products"]):
+        x, y = project(cam, pr[2])
+        x, y = x / W * w, y / H * h
+        out.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{r}" fill="{COPPER}" stroke="{WHITE}" stroke-width="1.8"/>'
+                   f'<text x="{x:.1f}" y="{y + r * .45:.1f}" text-anchor="middle" font-family="BC" font-weight="800" '
+                   f'font-size="{r * 1.25:.0f}" fill="{INK}">{i + 1}</text>')
+    return f'<svg class="abs" style="left:0;top:0" width="{w}" height="{h}">{"".join(out)}</svg>'
+
+
+def icon_cards(z, w, cols, ic=118):
+    cells = []
+    for i, pr in enumerate(z["products"]):
+        cells.append(f"""<div style="display:grid;grid-template-columns:{ic}px 1fr;column-gap:14px;align-items:center;
+             border-top:1px solid #2c3036;padding:10px 0">
+          <div style="position:relative">{icon(pr[3], ic)}<div class="cn" style="position:absolute;left:0;top:4px">{i + 1}</div></div>
+          <div><div class="ct">{pr[0]}</div><div class="cd">{pr[1]}</div></div></div>""")
+    return (f'<div style="width:{w}px;display:grid;grid-template-columns:repeat({cols},1fr);column-gap:34px">'
+            f'{"".join(cells)}</div>')
+
+
+def foot(z, page_no, w):
+    dots = "".join(f'<span style="display:inline-block;width:{22 if q["n"] == z["n"] else 7}px;height:4px;margin-right:5px;'
+                   f'background:{COPPER if q["n"] == z["n"] else "#3a3f45"};border-radius:2px"></span>' for q in ZONES)
+    return (f'<div class="abs" style="left:48px;width:{w - 96}px;bottom:30px;display:flex;justify-content:space-between;'
+            f'align-items:center;border-top:1px solid #3a3f45;padding-top:10px"><span>{dots}</span><span class="small">'
+            f'TYPICAL PRODUCTS; CONFIRM AGAINST CURRENT SOUTHWIRE SPECIFICATIONS &nbsp;&middot;&nbsp; {page_no}</span></div>')
+
+
+def zone_spread_closeup(z, cams, page_no):
+    """Spread: the cable close-up full bleed on the left page with the headline; the right page carries the zone
+    hero with its pins and the five products with their cross-sections."""
+    cam = cams[z["cam"]]
+    half = SW // 2
+    cu = jpg_of(z["closeup"]["img"])
+    hero = jpg_of(f"{z['cam']}_pro.png")
+    hw = half - 96
+    hh = round(hw * .5)                                  # hero cropped to 2:1 (top of the view is roof / sky)
+    return f"""
+<section class="page spread">
+  <img class="abs" src="{url(cu)}" style="left:0;top:0;width:{half}px;height:{SH}px;object-fit:cover;object-position:50% 50%">
+  <div class="abs" style="left:0;top:0;width:{half}px;height:{SH}px;background:linear-gradient(180deg,rgba(14,16,18,.88) 0%,
+       rgba(14,16,18,.35) 34%,rgba(14,16,18,0) 55%,rgba(14,16,18,0) 80%,rgba(14,16,18,.85) 100%)"></div>
+  <div class="abs kicker" style="left:56px;top:56px">Zone {z["n"]} of 07 &nbsp;&middot;&nbsp; {z["sub"]}</div>
+  <div class="abs h1" style="left:52px;top:84px;font-size:96px">{z["name"]}</div>
+  <div class="abs body" style="left:56px;top:190px;width:520px;color:{WHITE}">{z["intro"]}</div>
+  <div class="abs small" style="left:56px;bottom:40px;width:520px;color:#c9cdd1;font-size:10.5px">{z["closeup"]["cap"]}</div>
+  <div class="abs" style="left:{half}px;top:0;width:{half}px;height:{SH}px;background:{INK}"></div>
+  <div class="abs" style="left:{half + 48}px;top:48px;width:{hw}px;height:{hh}px;overflow:hidden">
+    <div style="position:relative;width:{hw}px;height:{round(hw * 9 / 16)}px;margin-top:{hh - round(hw * 9 / 16)}px">
+      <img src="{url(hero)}" style="width:{hw}px;display:block">{pins_svg(z, cam, hw, round(hw * 9 / 16))}</div></div>
+  <div class="abs" style="left:{half + 48 + hw - 150}px;top:{48 + hh + 12}px;width:150px">{plan_svg(150, 122, hi=z["n"], labels=False)}</div>
+  <div class="abs kicker" style="left:{half + 48}px;top:{48 + hh + 18}px">The top five</div>
+  <div class="abs small" style="left:{half + 48}px;top:{48 + hh + 38}px;width:360px">Numbers on the view mark where each
+    product runs. Cross-sections: typical construction of each cable family.</div>
+  <div class="abs" style="left:{half + 48}px;top:{48 + hh + 84}px">{icon_cards(z, hw, 1, ic=74)}</div>
+  <div class="abs" style="left:{half}px;top:0;width:{half}px;height:{SH}px;pointer-events:none">{foot(z, page_no, half)}</div>
+</section>"""
+
+
+def zone_single_closeup(z, cams, page_no):
+    """Single page: the cable close-up leads (top 55%), the wide zone view is an inset with the pins, two-column
+    product cards with cross-sections underneath."""
+    cam = cams[z["cam"]]
+    cu = jpg_of(z["closeup"]["img"])
+    hero = jpg_of(f"{z['cam']}_pro.png")
+    H = 11 * PX
+    th = 520
+    iw = 330
+    ih = round(iw * cam["res"][1] / cam["res"][0])
+    c2 = ""
+    if z.get("closeup2"):
+        c2 = f"""<div class="abs" style="left:48px;top:{th - 18 - 150}px;width:{int(150 * 16 / 9)}px;height:150px;
+          border:2px solid {COPPER};overflow:hidden"><img src="{url(jpg_of(z['closeup2']['img']))}"
+          style="width:100%;height:100%;object-fit:cover"></div>"""
+    return f"""
+<section class="page single">
+  <img class="abs" src="{url(cu)}" style="left:0;top:0;width:{CW}px;height:{th}px;object-fit:cover;object-position:50% 60%">
+  <div class="abs" style="left:0;top:0;width:{CW}px;height:{th}px;background:linear-gradient(180deg,rgba(14,16,18,.8) 0%,
+       rgba(14,16,18,0) 26%,rgba(14,16,18,0) 74%,rgba(14,16,18,1) 100%)"></div>
+  <div class="abs kicker" style="left:48px;top:40px;color:{WHITE}">Zone {z["n"]} of 07 &nbsp;&middot;&nbsp; {z["sub"]}</div>
+  {c2}
+  <div class="abs" style="right:48px;top:{th - 18 - ih}px;width:{iw}px;height:{ih}px;border:2px solid {WHITE};overflow:hidden">
+    <img src="{url(hero)}" style="width:{iw}px;height:{ih}px;display:block">{pins_svg(z, cam, iw, ih, r=8)}</div>
+  <div class="abs h1" style="left:48px;top:{th + 6}px;font-size:58px">{z["n"]} &nbsp;{z["name"]}</div>
+  <div class="abs body" style="left:48px;top:{th + 70}px;width:{CW - 96}px">{z["intro"]}
+    <span style="color:#80868c"> {z["closeup"]["cap"]}</span></div>
+  <div class="abs" style="left:48px;top:{th + 150}px">{icon_cards(z, CW - 96, 2, ic=86)}</div>
+  {foot(z, page_no, CW)}
+</section>"""
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     cams = cameras()
-    html = f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS}</style></head><body>" + zones_spread() + \
-        "".join(zone_page(z, cams, 8 + k) for k, z in enumerate(ZONES)) + "</body></html>"
-    hp = os.path.join(OUT, "zones.html")
+    body = zones_spread() + "".join(zone_page(z, cams, 8 + k) for k, z in enumerate(ZONES))
+    if "--samples" in sys.argv:                          # the new standard: zone 02 as a spread, zone 06 single
+        body = zone_spread_closeup(ZONES[1], cams, "09-10") + zone_single_closeup(ZONES[5], cams, "15")
+    html = f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS}</style></head><body>" + body + "</body></html>"
+    hp = os.path.join(OUT, "zone_samples.html" if "--samples" in sys.argv else "zones.html")
     open(hp, "w").write(html)
-    pdf = os.path.join(OUT, "SW_PathOfPower_zones.pdf")
-    subprocess.run([CHROME, "--headless=new", "--no-sandbox", "--disable-gpu", "--allow-file-access-from-files",
-                    "--no-pdf-header-footer", f"--print-to-pdf={pdf}", url(hp)], check=True,
-                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    pdf = os.path.join(OUT, "SW_PathOfPower_zone_samples.pdf" if "--samples" in sys.argv else "SW_PathOfPower_zones.pdf")
+    # one Chromium print per page, then merged: mixed page sizes in one print job get shrunk to fit
+    import re
+    import pymupdf
+    head, rest = html.split("<body>", 1)
+    out = pymupdf.open()
+    for i, sec in enumerate(re.findall(r"<section.*?</section>", rest, re.S)):
+        hp_i = hp.replace(".html", f"_{i}.html")
+        open(hp_i, "w").write(head + "<body>" + sec + "</body></html>")
+        pdf_i = hp_i.replace(".html", ".pdf")
+        subprocess.run([CHROME, "--headless=new", "--no-sandbox", "--disable-gpu", "--allow-file-access-from-files",
+                        "--no-pdf-header-footer", f"--print-to-pdf={pdf_i}", url(hp_i)], check=True,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        out.insert_pdf(pymupdf.open(pdf_i))
+        os.remove(pdf_i)
+        os.remove(hp_i)
+    out.save(pdf, garbage=3, deflate=True)
     print("wrote", pdf)
 
 

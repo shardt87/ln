@@ -18,7 +18,8 @@
       1756,
       176,
       14
-     ]
+     ],
+     "hv_xlpe"
     ],
     [
      "Overhead conductor (ACSR / ACSS)",
@@ -27,7 +28,8 @@
       1925,
       62,
       45
-     ]
+     ],
+     "bare_cu"
     ],
     [
      "Bare copper grounding conductor",
@@ -36,7 +38,8 @@
       1790,
       130,
       0
-     ]
+     ],
+     "bare_cu"
     ],
     [
      "Type TC-ER control cable, shielded",
@@ -45,7 +48,8 @@
       1847.5,
       151,
       0
-     ]
+     ],
+     "tc_er"
     ],
     [
      "MV-105 shielded power cable",
@@ -54,7 +58,8 @@
       1298,
       317,
       5
-     ]
+     ],
+     "mv105"
     ]
    ]
   },
@@ -75,7 +80,8 @@
       654,
       538,
       35
-     ]
+     ],
+     "armorx15"
     ],
     [
      "ARMOR-X® MC-HL 600 V, black PVC",
@@ -84,7 +90,8 @@
       668,
       488,
       25
-     ]
+     ],
+     "armorx600"
     ],
     [
      "MV-105 15 kV, EPR 133%",
@@ -93,7 +100,8 @@
       712,
       393,
       5
-     ]
+     ],
+     "mv105"
     ],
     [
      "VFD cable, symmetrical grounds, shielded",
@@ -102,7 +110,8 @@
       686,
       534,
       25
-     ]
+     ],
+     "vfd"
     ],
     [
      "Instrumentation cable (PLTC / ITC)",
@@ -111,9 +120,14 @@
       765,
       510,
       24
-     ]
+     ],
+     "pltc"
     ]
-   ]
+   ],
+   "closeup": {
+    "img": "E81_pro.png",
+    "cap": "ARMOR-X MC-HL 15 kV (red) and MV-105 in the tray over GT1, control cable in the tier below: the legend on every jacket."
+   }
   },
   {
    "n": "03",
@@ -133,7 +147,8 @@
       240,
       1105,
       10
-     ]
+     ],
+     "mv105"
     ],
     [
      "Type TC-ER 600 V power",
@@ -142,7 +157,8 @@
       278,
       1062,
       14
-     ]
+     ],
+     "tc_er"
     ],
     [
      "SIMpull® THHN / XHHW-2 building wire",
@@ -151,7 +167,8 @@
       150,
       1105,
       25
-     ]
+     ],
+     "pv"
     ],
     [
      "Type TC-ER control, multiconductor",
@@ -160,7 +177,8 @@
       278,
       1135,
       5
-     ]
+     ],
+     "tc_er"
     ],
     [
      "Fire alarm and life-safety cable",
@@ -169,7 +187,8 @@
       120,
       1075,
       25
-     ]
+     ],
+     "pltc"
     ]
    ]
   },
@@ -190,7 +209,8 @@
       635,
       1010,
       15
-     ]
+     ],
+     "mv105"
     ],
     [
      "ARMOR-X® MC-HL 15 kV",
@@ -199,7 +219,8 @@
       572,
       854,
       10
-     ]
+     ],
+     "armorx15"
     ],
     [
      "ARMOR-X® MC-HL 600 V",
@@ -208,7 +229,8 @@
       682,
       1070,
       8
-     ]
+     ],
+     "armorx600"
     ],
     [
      "VFD cable",
@@ -217,7 +239,8 @@
       588,
       1078,
       4
-     ]
+     ],
+     "vfd"
     ],
     [
      "Instrumentation cable (PLTC / ITC)",
@@ -226,7 +249,8 @@
       588,
       1022,
       45
-     ]
+     ],
+     "pltc"
     ]
    ]
   },
@@ -248,7 +272,8 @@
       1730,
       1530,
       6
-     ]
+     ],
+     "armorx600"
     ],
     [
      "Type TC-ER-HL power and control",
@@ -257,7 +282,8 @@
       1575,
       1446,
       5
-     ]
+     ],
+     "tc_er"
     ],
     [
      "Armored instrumentation cable",
@@ -266,7 +292,8 @@
       1665,
       1530,
       5
-     ]
+     ],
+     "pltc"
     ],
     [
      "MV-105 5-15 kV",
@@ -275,7 +302,8 @@
       1865,
       1595,
       10
-     ]
+     ],
+     "mv105"
     ],
     [
      "Bare copper grounding and bonding",
@@ -284,7 +312,8 @@
       1660,
       1480,
       6
-     ]
+     ],
+     "bare_cu"
     ]
    ]
   },
@@ -305,7 +334,8 @@
       1744,
       540,
       4
-     ]
+     ],
+     "pv"
     ],
     [
      "MV-105 35 kV aluminium, concentric neutral",
@@ -314,7 +344,8 @@
       1600,
       548,
       4
-     ]
+     ],
+     "mv105"
     ],
     [
      "Type TC-ER 600 V",
@@ -323,7 +354,8 @@
       1645,
       529,
       5
-     ]
+     ],
+     "tc_er"
     ],
     [
      "Shielded control / communications cable",
@@ -332,7 +364,8 @@
       1825,
       368,
       7
-     ]
+     ],
+     "pltc"
     ],
     [
      "Bare copper grounding",
@@ -341,9 +374,14 @@
       1645,
       587,
       0
-     ]
+     ],
+     "bare_cu"
     ]
-   ]
+   ],
+   "closeup": {
+    "img": "E65_pro.png",
+    "cap": "Paying 1,500 V DC conductor off the reel into the precast trench between the battery containers."
+   }
   },
   {
    "n": "07",
@@ -362,7 +400,8 @@
       2245,
       630,
       0.5
-     ]
+     ],
+     "shdgc"
     ],
     [
      "Type W portable power cable, 2 kV",
@@ -371,7 +410,8 @@
       2175,
       435,
       4
-     ]
+     ],
+     "type_w"
     ],
     [
      "MV-105 15 kV in ground trays",
@@ -380,7 +420,8 @@
       2100,
       501,
       0.5
-     ]
+     ],
+     "mv105"
     ],
     [
      "Type G-GC portable cable",
@@ -389,7 +430,8 @@
       2310,
       564,
       6
-     ]
+     ],
+     "shdgc"
     ],
     [
      "Type TC-ER control",
@@ -398,7 +440,8 @@
       2046,
       611,
       4
-     ]
+     ],
+     "tc_er"
     ]
    ]
   }
