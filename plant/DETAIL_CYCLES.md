@@ -336,3 +336,27 @@ One zone per cycle. Each cycle:
 - New colours: `cable_shd`, cam-lock red / blue / white / green, `hdpe` in the render look.
 - Cameras: E74 (portable pad overview), E75 / E76 (modular yard reviews), E77 (SHD-GC through the C-L01 ramp),
   E78 (Type W and cam-locks at PAD-LV), E79 (GEN-O and GEN-E). verify PASS, audit CLEAN, coastal PASS. Viewer v94.
+
+### Switchgear rooms at LOD 3: R1 and the R4 VFD e-house (`swgr_rooms.py`)
+User review: the switchgear rooms were plain boxes. The lineups keep their drawn footprints and heights
+(SK-3X1-05, -03, -11 view B2); the room around them is now fitted out as a real electrical room.
+- **15 kV / 5 kV metal-clad (SWGR-13.8-1/2/3, SWGR-4.16-A/B):** 36 in two-high cubicles: breaker door with viewing
+  window, racking port and handle; relay door with a numerical protection relay (LCD, target LEDs, keys), power
+  meter, open / closed / charged lamps and control switch; mimic bus with drops; cubicle nameplates; base channel;
+  arc-resistant relief flaps and roof plenum, with the 13.8 kV plenum exhaust taken to the east wall.
+- **480 V (LC-480-A/B, R4-LC):** four-high draw-out breaker cells with trip units. **MCCs (MCC-GT1..3, C1/C2,
+  EMCC, R4 vacuum-pump MCC):** 20 in sections, buckets with disconnects and pilot lights, wireways; conduit drops
+  from the overhead tray into the MCC tops.
+- **P&C panels:** flush relays, test switches, lamps. **DCS / telecom:** perforated doors, status LEDs.
+  **LP / HT:** panelboards.
+- **LCI-1..3 and the 92 ACC VFDs:** louvred doors, keypads, lamps, roof fan hoods; dry-type TX-LCI transformers
+  in louvred enclosures. R4: VFD output trays over each lineup to the cable exit, bus-duct entries from T-R4-1..4.
+- **Room:** epoxy floor, yellow aisle lines, dielectric mats in front of every lineup, LED high-bays on hangers,
+  ducted HVAC with diffusers (R1) and four wall-mounted units (R4), copper ground bus, extinguishers, exit signs,
+  lineup nameplates and NFPA 70E arc-flash labels, an MV breaker lift truck with a spare breaker, technicians at
+  SWGR-13.8-2 and VFD lineup 1.
+- Interior colours (`swgr_in`, `cab_in`, `panel_in`, `epoxy`, `mat`, `led_*`, `hmi`, `lamp_in`, ...) stay clean in
+  Blender; the LEDs, displays and fixtures glow. Room cameras take `add_layers` (interior layers) and
+  `lamp_z` / `lamp_box` (which fixtures light the shot).
+- Cameras E82 (R1 MV aisle), E83 (R1 MCC / P&C aisle), E84 (R4 VFD aisle), E85 (R1 roof-off cutaway). verify PASS,
+  audit CLEAN, coastal PASS. Viewer v96 (views B and B2 show the rooms).

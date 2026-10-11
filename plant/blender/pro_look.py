@@ -86,12 +86,22 @@ LOOK = {
     "cable_fo": ("paint", "#d36f22", .45, 0),
     "sw_red": ("paint", "#c41f27", .4, 0), "xlpe": ("paint", "#e4e0cf", .3, 0), "alu": ("galv", "#b3b8bc", .3, .85),
     "steel_dark": ("paint", "#3a4045", .45, .3), "tyre": ("paint", "#1c1e20", .85, 0), "hdpe": ("paint", "#1e2022", .7, 0), "cable_shd": ("paint", "#c9a01e", .6, 0), "camlock_r": ("paint", "#b02a22", .5, 0), "camlock_b": ("paint", "#244f8c", .5, 0), "camlock_w": ("paint", "#e4e4de", .5, 0), "camlock_g": ("paint", "#2f7a3c", .5, 0), "boot": ("paint", "#35261b", .7, 0), "reflect": ("galv", "#d4d8d9", .25, .7), "glove": ("paint", "#c7b088", .8, 0), "tent": ("paint", "#eeeeea", .8, 0), "white_truck": ("paint", "#e9ebea", .3, 0),
+    # switchgear-room interiors (swgr_rooms.py): clean ANSI 61 grey enclosures, epoxy floor, dielectric mats,
+    # LEDs, relay screens and LED fixtures (emissive)
+    "swgr_in": ("paint", "#a9b2b8", .32, .05), "cab_in": ("paint", "#bcc4c9", .32, .05),
+    "panel_in": ("paint", "#cbd1d4", .32, .05), "epoxy": ("paint", "#97a49f", .18, 0), "mat": ("paint", "#1d1f21", .9, 0),
+    "led_r": ("paint", "#ff3b30", .3, 0), "led_g": ("paint", "#2fe36b", .3, 0), "led_a": ("paint", "#ffb020", .3, 0),
+    "hmi": ("paint", "#2c5a4c", .12, 0), "yellow": ("paint", "#e2b622", .5, 0), "cu_bus": ("paint", "#b8733a", .3, .9),
+    "mimic": ("paint", "#23282c", .4, 0), "lamp_in": ("paint", "#fffbef", .3, 0),
 }
+EMIT = {"led_r": 4.0, "led_g": 4.0, "led_a": 4.0, "hmi": .8, "lamp_in": 12.0}
 _mats = {}
 # materials kept clean: glass, lamps, people, signs, labels, cables and the like
 WEATHER_SKIP = {"boot", "reflect", "glove", "tent", "sw_red", "xlpe", "alu", "white_truck", "lamp", "sign", "label", "hivis", "hivis_o", "hardhat", "workwear", "skin", "glass",
                 "window", "insulator", "rail", "cable_mv", "cable_armor", "cable_tc", "cable_mc", "cable_inst", "cable_tcx",
-                "cable_fa", "cable_fo", "cable", "truck", "sea", "water"}
+                "cable_fa", "cable_fo", "cable", "truck", "sea", "water",
+                "swgr_in", "cab_in", "panel_in", "epoxy", "mat", "led_r", "led_g", "led_a", "hmi", "yellow", "cu_bus", "mimic",
+                "lamp_in"}
 
 
 def _node(nt, t, loc, **inputs):
@@ -283,6 +293,9 @@ def material(key):
     elif normal_src is not None:
         L.new(normal_src.outputs["Normal"], b.inputs["Normal"])
     m.diffuse_color = lin(hexc)
+    if key in EMIT:
+        b.inputs["Emission Color" if "Emission Color" in b.inputs else "Emission"].default_value = lin(hexc)
+        b.inputs["Emission Strength"].default_value = EMIT[key]
     _mats[key] = m
     return m
 
@@ -953,6 +966,19 @@ EPIC = [
     dict(k="E71", n="Gas power divider photo (1170 x 1080): ARMOR-X and MV-105 in the R1 -> hall tray, HRSG 1 and its stack ahead",
          eye=(559.7, 565.5, 50.4), target=(618, 760, 92), lens=18, res=(1170, 1080), show="all", sun=(34, 120), clip=.05,
          dof=(5, 6.0)),
+    # switchgear rooms (swgr_rooms.py): interior cameras lit by the room's LED fixtures
+    dict(k="E82", n="R1 switchgear room: 13.8 kV and 4.16 kV metal-clad lineups across the operating aisle",
+         eye=(456.0, 636.5, 6.0), target=(460.5, 700, 4.6), lens=16, show="all", add_layers=("R1_INTERIOR",),
+         lamps=320, lamp_z=15, lamp_box=(410, 474, 600, 780), clip=.03),
+    dict(k="E83", n="R1: MCCs and protection & control panels, conduit drops from the overhead tray",
+         eye=(433.5, 637, 6.0), target=(438.5, 705, 4.8), lens=16, show="all", add_layers=("R1_INTERIOR",),
+         lamps=320, lamp_z=15, lamp_box=(410, 474, 600, 780), clip=.03),
+    dict(k="E84", n="R4 VFD e-house: two lineups of ACC fan drives across the aisle, output trays overhead",
+         eye=(1148, 321.5, 6.8), target=(1210, 321.5, 5.6), lens=16, show="all", add_layers=("R4_INTERIOR",),
+         lamps=260, lamp_z=10, lamp_box=(1135, 1255, 308, 368), clip=.03),
+    dict(k="E85", n="R1 cutaway: roof and east wall off, the switchgear room from above",
+         eye=(372, 618, 82), target=(446, 692, 0), lens=24, show="all", add_layers=("R1_INTERIOR",),
+         hide_layers=("R1_ROOF",), sun=(52, 200)),
     dict(k="E72", n="TM2500 mobile turbines: TM-2 from the south-east, filter house, raised stack, control trailer",
          eye=(2262, 296, 34), target=(2160, 362, 17), lens=26, show="all", sun=(20, 235)),
     dict(k="E73", n="TM-2 generator leads: 15 kV MV-105 from the terminal box into the ground tray, jacket legend",

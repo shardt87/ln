@@ -584,6 +584,7 @@ if args.style == "pro":
         show = {"base": BASE, "all": ALL, "dc": ALL + DCL, "everything": ALL + DCL + COAST,
                 "coastal": [l for l in ALL if not l.startswith("OPT_LNG")] + COAST}[h["show"]]
         show = [l for l in show if l not in h.get("hide_layers", ())]
+        show += [l for l in h.get("add_layers", ()) if l not in show]          # e.g. R1_INTERIOR for room cameras
         if h.get("only"):                                # isolate a zone (slide plates: surrounding plant omitted)
             show = [l for l in show if l in h["only"]]
         set_visibility(show)
@@ -615,7 +616,9 @@ if args.style == "pro":
         if h.get("lamps"):
             for p in model["parts"]:
                 lo_, hi_ = (p["min"], p["max"]) if p["kind"] == "box" else (p["a"], p["b"]) if p["kind"] == "rod" else (None, None)
-                if p["color"] == "lamp" and lo_ and min(lo_[2], hi_[2]) > 60 and p["layer"] in show:
+                lz, lb = h.get("lamp_z", 60), h.get("lamp_box")
+                if (p["color"] in ("lamp", "lamp_in") and lo_ and min(lo_[2], hi_[2]) > lz and p["layer"] in show
+                        and (not lb or (lb[0] <= lo_[0] <= lb[1] and lb[2] <= lo_[1] <= lb[3]))):
                     c = [(lo_[i] + hi_[i]) / 2 for i in range(2)] + [min(lo_[2], hi_[2])]
                     ld = bpy.data.lights.new("high bay", "AREA")
                     ld.energy, ld.size, ld.color = h["lamps"], 2.0, (1.0, .95, .86)

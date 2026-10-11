@@ -1942,6 +1942,9 @@ N_DETAIL = _detail.Detail(items, parts).run()
 # LOD 3: building and equipment dressing for close views
 import detail3 as _detail3
 N_DETAIL += _detail3.Detail3(items, parts).run()
+# LOD 3 switchgear rooms: R1 and the R4 VFD e-house get real lineup fronts and a fitted-out room
+import swgr_rooms as _swgr
+N_DETAIL += _swgr.build()
 # Tray review (user screenshots): short tray stubs drawn between a duct-bank end and pad equipment
 # rode the EL +36 rack tier, so a 10 ft connection became a 36 ft goalpost over the transformer. A
 # duct bank comes up straight into the equipment: those stubs are now buried, with rigid-conduit
