@@ -103,8 +103,11 @@ LOOK = {
     "binder_r": ("paint", "#a3332c", .5, 0), "binder_b": ("paint", "#2f5a8a", .5, 0), "binder_w": ("paint", "#e8e6e0", .5, 0),
     "binder_k": ("paint", "#2b2d2f", .5, 0), "shirt": ("paint", "#3e5f80", .85, 0), "shirt_w": ("paint", "#dfe3e6", .85, 0),
     "trousers": ("paint", "#2d3238", .85, 0), "hair": ("paint", "#2b221b", .7, 0),
+    # SIMpull / Maxis equipment (simpull.py)
+    "sp_black": ("paint", "#1c1d1f", .45, 0), "sp_yellow": ("paint", "#f2c200", .4, 0),
+    "coilpak_p": ("paint", "#8a7fd0", .15, 0), "coilpak_b": ("paint", "#6f9ad8", .15, 0), "barrel_w": ("paint", "#eceae4", .45, 0),
 }
-ALPHA = {"glass_in": .18}
+ALPHA = {"glass_in": .18, "coilpak_p": .7, "coilpak_b": .7}
 EMIT = {"led_r": 4.0, "led_g": 4.0, "led_a": 4.0, "hmi": .8, "lamp_in": 12.0}
 _mats = {}
 # materials kept clean: glass, lamps, people, signs, labels, cables and the like
@@ -114,7 +117,8 @@ WEATHER_SKIP = {"boot", "reflect", "glove", "tent", "sw_red", "xlpe", "alu", "wh
                 "swgr_in", "cab_in", "panel_in", "epoxy", "mat", "led_r", "led_g", "led_a", "hmi", "yellow", "cu_bus", "mimic",
                 "lamp_in", "desk", "console", "monitor", "keycap", "chair", "vinyl", "carpet", "ceiling", "wall_in", "door_in",
                 "glass_in", "blind", "acoustic", "rack", "wood", "fabric", "locker", "foliage", "binder_r", "binder_b",
-                "binder_w", "binder_k", "shirt", "shirt_w", "trousers", "hair"}
+                "binder_w", "binder_k", "shirt", "shirt_w", "trousers", "hair", "sp_black", "sp_yellow", "coilpak_p",
+                "coilpak_b", "barrel_w"}
 
 
 def _node(nt, t, loc, **inputs):
@@ -1006,6 +1010,13 @@ EPIC = [
     dict(k="E88", n="Control / admin building cutaway: control room, supervisor office, servers, lobby, offices",
          eye=(345, 290, 105), target=(232, 372, 0), lens=24, show="all", add_layers=("CR_INTERIOR",),
          hide_layers=("CR_ROOF",), sun=(50, 160)),
+    # SIMpull / Maxis equipment (simpull.py)
+    dict(k="E89", n="Reel yard staging: SIMpull Reels on Cradles, 45K / 30K Reel Rollers, Flanges, Stack reels on JAX stands",
+         eye=(316, 797, 17), target=(254, 840, 2.5), lens=24, show="all", sun=(34, 150)),
+    dict(k="E90", n="Workshop feeder pull: SIMpull Reel with SIMpull Heads into the wireway, BARREL drum, wire wagon",
+         eye=(267, 670, 7.2), target=(251.5, 647, 3.8), lens=24, show="all", sun=(26, 315)),
+    dict(k="E91", n="SIMpull Reels on Cradles and the RR-SW45 Reel Roller, Maxis puller and carts behind",
+         eye=(231, 806, 5.6), target=(262, 826, 3.6), lens=24, show="all", sun=(34, 150), dof=(22, 5.6)),
     dict(k="E72", n="TM2500 mobile turbines: TM-2 from the south-east, filter house, raised stack, control trailer",
          eye=(2262, 296, 34), target=(2160, 362, 17), lens=26, show="all", sun=(20, 235)),
     dict(k="E73", n="TM-2 generator leads: 15 kV MV-105 from the terminal box into the ground tray, jacket legend",

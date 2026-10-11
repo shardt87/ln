@@ -75,36 +75,11 @@ def reel(x, y, D, W, axis, cable, product, flange="timber", length_ft=None, laye
         decal(c, (ax[0] * sgn, ax[1] * sgn, 0), D * .74, D * .4, lines, bg=None, brand=False, layer=layer)
 
 
-def simpull_reel(x, y, z0, axis="x", cols=("cable", "red", "pvc_blue", "hardhat", "pvc_green")):
-    """SIMpull Reel on its SIMpull payoff cart: steel reel on a wheeled frame, paralleled colour-coded THHN."""
-    D, W = 4.6, 2.6
-    R = D / 2
-    zc = z0 + 1.1 + R
-    ax = (1, 0, 0) if axis == "x" else (0, 1, 0)
-    nx = (0, 1, 0) if axis == "x" else (1, 0, 0)
-    pt = lambda s, o=0.0, dz=0.0: (x + ax[0] * s + nx[0] * o, y + ax[1] * s + nx[1] * o, zc + dz)
-    # payoff cart: base frame, four casters, two uprights carrying the arbor
-    a0, a1 = pt(-W / 2 - .5, -R), pt(W / 2 + .5, R)
-    box(min(a0[0], a1[0]), max(a0[0], a1[0]), min(a0[1], a1[1]), max(a0[1], a1[1]), z0 + .55, z0 + .8, "sw_red")
-    for s in (-W / 2 - .3, W / 2 + .3):
-        for o in (-R + .4, R - .4):
-            c = pt(s, o)
-            rod((c[0], c[1], z0 + .3), (c[0], c[1], z0 + .55), .28, "fanhub", seg=10)
-    for s in (-W / 2 - .35, W / 2 + .35):
-        b0, b1 = pt(s, 0, -R + .3), pt(s, 0)
-        rod((b0[0], b0[1], z0 + .8), b1, .14, "sw_red", seg=8)
-    rod(pt(-W / 2 - .45), pt(W / 2 + .45), .12, "steel", seg=8)
-    for s in (-W / 2, W / 2 - .18):
-        rod(pt(s), pt(s + .18), R, "steel_dark", seg=28)
-    # paralleled conductors wound side by side: colour bands across the drum
-    n = len(cols)
-    for k, c in enumerate(cols):
-        s0 = -W / 2 + .18 + k * (W - .36) / n
-        rod(pt(s0), pt(s0 + (W - .36) / n), R * .8, c, seg=24)
-    for sgn in (-1, 1):
-        decal(pt(sgn * (W / 2 + .02)), (ax[0] * sgn, ax[1] * sgn, 0), D * .7, D * .36,
-              [(BRAND, .26, 1, RED, 1), ("SIMpull REEL", .17, 1, "#f2f2f2"), ("THHN / THWN-2", .12, 0, "#cfd3d6")],
-              bg=None)
+def simpull_reel(x, y, z0, axis="x", cols=("cable", "red", "pvc_blue", "binder_w", "pvc_green")):
+    """SIMpull Reel (61 x 32 in, black spoked flanges) on a SIMpull Cradle, paralleled colour-coded feeders
+    (simpull.sp_reel)."""
+    import simpull
+    simpull.sp_reel(x, y, z0, axis=axis, cols=cols)
 
 
 def simpull_truck(x, y):
@@ -214,16 +189,16 @@ def stories():
     it = fuel.new_item("OPT_BESS", "Cable pull: DC conductors into the BESS precast trench",
                        (1734, 1754, 535.5, 543.5), (0, 9), basis="typical", register=False, area="H",
                        sheet="typical (cable installation)",
-                       info="Reel of 2 kV PV / RHW-2 DC conductor on jack stands; crew feeding it into the open precast "
+                       info="Reel of 2 kV PV / RHW-2 DC conductor on Maxis JAX reel stands; crew feeding it into the open precast "
                             "trench toward the inverter. Cable supplier: Southwire (as requested).")
     fuel.G["cur"] = it
     xr, yr, D, W = 1745.0, 539.5, 5.6, 3.4
     R = D / 2
     for s in (-1, 1):                                             # jack stands with the arbor shaft
         y = yr + s * (W / 2 + .5)
-        rod((xr - 1.6, y, 0), (xr, y, R + .5), .12, "sw_red", seg=6)
-        rod((xr + 1.6, y, 0), (xr, y, R + .5), .12, "sw_red", seg=6)
-        box(xr - 1.8, xr + 1.8, y - .2, y + .2, 0, .15, "sw_red")
+        rod((xr - 1.6, y, 0), (xr, y, R + .5), .12, "steel_dark", seg=6)
+        rod((xr + 1.6, y, 0), (xr, y, R + .5), .12, "steel_dark", seg=6)
+        box(xr - 1.8, xr + 1.8, y - .2, y + .2, 0, .15, "steel_dark")
     rod((xr, yr - W / 2 - .7, R + .5), (xr, yr + W / 2 + .7, R + .5), .12, "steel", seg=8)
     reel(xr, yr, D, W, "y", "cable", "PV / RHW-2 2 kV 500 KCMIL", length_ft=2500, z0=.5)
     # conductor off the bottom of the reel, over a roller at the trench edge, down into the trench toward the west
@@ -239,13 +214,13 @@ def stories():
 
 
 def jack_reel(xr, yr, D, W, cable, label, ft, z=0.0):
-    """Wooden reel lifted on red reel jacks with an arbor shaft (axis along y)."""
+    """Wooden reel lifted on Maxis JAX reel stands with an arbor shaft (axis along y)."""
     R = D / 2
     for s in (-1, 1):
         y = yr + s * (W / 2 + .5)
-        rod((xr - 1.8, y, z), (xr, y, z + R + .5), .14, "sw_red", seg=6)
-        rod((xr + 1.8, y, z), (xr, y, z + R + .5), .14, "sw_red", seg=6)
-        box(xr - 2, xr + 2, y - .22, y + .22, z, z + .15, "sw_red")
+        rod((xr - 1.8, y, z), (xr, y, z + R + .5), .14, "steel_dark", seg=6)
+        rod((xr + 1.8, y, z), (xr, y, z + R + .5), .14, "steel_dark", seg=6)
+        box(xr - 2, xr + 2, y - .22, y + .22, z, z + .15, "steel_dark")
     rod((xr, yr - W / 2 - .8, z + R + .5), (xr, yr + W / 2 + .8, z + R + .5), .14, "steel", seg=8)
     reel(xr, yr, D, W, "y", cable, label, length_ft=ft, z0=z + .5)
 
@@ -259,14 +234,18 @@ def turbine_hall_pull():
     it = fuel.new_item("BASE_POWER_BLOCK", "Cable pull: GT1 13.8 kV feeder into the turbine-hall MV tray (outage)",
                        (518, 606, 436, 556), (0, 50), basis="typical", register=False, area="B",
                        sheet="typical (cable installation)",
-                       info="Outage work: MV-105 feeder pulled from a reel on jacks in the laydown bay, over a sheave "
+                       info="Outage work: MV-105 feeder pulled from a reel on an RR-SW45 reel roller in the laydown bay, over a sheave "
                             "into the EL 48 ladder tray and along it to the GT1 auxiliaries; deck lift with two "
                             "electricians feeding the tray; capstan puller at the tray drop. Cable supplier: Southwire "
                             "(as requested).")
     fuel.G["cur"] = it
     xr, yr, D = 532.0, 541.0, 9.0
-    jack_reel(xr, yr, D, 5.0, "cable_mv", "MV-105 15 kV 500 KCMIL", 1800, z=.3)
-    top = (xr + D * .4, yr, .3 + .5 + D * .9)
+    import simpull
+    simpull.lifted(.3, simpull.reel_roller, xr, yr, 45, D, 5.0, "cable_mv", "MV-105 15 kV 500 KCMIL", steel=False)
+    zc = .3 + .85 + ((D / 2 + .32) ** 2 - 1.35 ** 2) ** .5
+    top = (xr + D * .4, yr, zc + D * .4)
+    simpull.tension_monitor(598, 451.5, 20)                                              # at the capstan
+    simpull.triggers_box(596.5, 452, 20)
     # sheave hung from the tray corner support, the cable rising to it and into the tray
     sx, sy, sz = 557.2, 543.6, 46.6
     rod((sx, sy, sz + 1.1), (sx, sy, 49.4), .06, "steel", seg=6)                         # hanger

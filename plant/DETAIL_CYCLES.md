@@ -383,3 +383,28 @@ the solid box is now walls, a roof slab and a suspended ceiling (layer `CR_ROOF`
   permit / work control, print, training, telecom / UPS, kitchen, relief room; door signs on every room.
 - Operators and office staff have no hard hats indoors (seated and standing figures in `control_room.py`).
 - Cameras E86 (MCR hero), E87 (over the console), E88 (roof-off cutaway). verify PASS, audit CLEAN, coastal PASS.
+
+### SIMpull / Maxis installation equipment (`simpull.py`)
+User request: add the SIMpull Solutions equipment (brochure and NECA 2026 booth photos) to the reel yard and wherever
+it makes sense on the plant. Sizes are from the brochure; the geometry is typical.
+- **Reel yard staging** (east end of the reel pad):
+  - six SIMpull Reels (61 x 32 in, black spoked flanges, magnetic chocks) on SIMpull Cradles, holding paralleled
+    colour-coded feeders with reel labels;
+  - an RR-SW45 Reel Roller with a 35 kV MV-105 steel reel, a second RR-SW45 with 15 kV, and an RR-SW30 with
+    ARMOR-X. Each has its welded frame, driven rollers, fork tubes, motor / VFD box and pendant;
+  - three wooden reels fitted with SIMpull Flanges, and two SIMpull Stack paralleled reels on Maxis JAX reel stands;
+  - a CoilPAK cart, a wire wagon, two SIMpull BARREL drums on hand trucks, the Maxis Feeder and the Maxis XD10
+    puller, and a Southwire tools & equipment container;
+  - temporary power: a 150 kW towable generator, cam-lock cords, a 480 V 3-phase cart and power distribution
+    boxes, plus extension cords, tripod LED work lights and an area light.
+- **Active feeder pull at the maintenance building:** a new 400 A welding-shop feeder (SIMpull THHN 4 x 500 kcmil
+  + ground) comes off a SIMpull Reel. Its factory SIMpull Heads go into the wall wireway and conduit riser.
+  Branch circuits feed from a BARREL drum and a wire wagon. The pull has a tension monitor, a Triggers wireless
+  safety switch, a distribution box, a work light and a three-person crew.
+- **Existing pulls:**
+  - Turbine-hall GT1 outage pull: the MV reel now sits on an RR-SW45 Reel Roller, with a tension monitor and a
+    Triggers switch at the capstan.
+  - BESS DC trench pull: the red reel jacks are now black Maxis JAX stands.
+  - SIMpull Truck: its reels now use the real SIMpull Reel look.
+- Cameras E89 (yard staging), E90 (workshop feeder pull), E91 (reels and reel roller close-up). verify PASS,
+  audit CLEAN, coastal PASS.
