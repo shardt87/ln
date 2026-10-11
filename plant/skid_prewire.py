@@ -1,4 +1,6 @@
-"""Skid pre-assembly / pre-wire workstation for the modular-yard expansion (east of the cable spine).
+"""Skid pre-assembly / pre-wire workstation for the modular-yard expansion, in the drawn maintenance laydown
+(north-west corner, gravel, fenced): away from energised plant, reached from the west spine road, the east half of
+the laydown left clear for engine / turbine exchanges. Finished skids go out on a lowboy to the modular yard.
 
 On an expansion the electrical crew wires skids at waist height under cover before the crane sets them: junction
 boxes, skid-edge tray and conduit are mounted, the skid wiring is pulled and terminated, the field tails are cut to
@@ -176,7 +178,7 @@ def pdc_split(x0, x1, y0, y1, z, face, name):
 
 
 # ------------------------------------------------------------------------------- build
-def build():
+def _build():
     it = fuel.new_item("OPT_MODX", "Skid pre-assembly / pre-wire workstation (modular-yard expansion): fabric shelter, skids "
                        "on cribbing, ready-to-set row, PDC shipping splits", (1996, 2118, 914, 1050), (0, 25), basis="typical",
                        register=False, area="I", sheet="typical (prefab cable installation)",
@@ -241,5 +243,48 @@ def build():
     decal((2044, 921.4, 4.5), (0, -1, 0), 4.6, 1.4, [("INTERCONNECTS", .3, 1, "#111111"), ("PRE-TERMINATED  ·  SPLIT A → B", .2, 0, "#333333")],
           bg="#f2c200")
     person(2045, 919, 0, 1.4)
+    fuel.D = False
+    return 1
+
+
+# laid out at the modular yard first, moved into the maintenance laydown (x 45-405, y 1705-1880), west half
+DX, DY = -1941.0, 798.0
+
+
+def build():
+    P, Dc = fuel.G["parts"], fuel.G.setdefault("decals", [])
+    n, m = len(P), len(Dc)
+    _build()
+    it = fuel.G["cur"]
+    for p in P[n:]:
+        for key in ("min", "max", "a", "b"):
+            if key in p:
+                p[key][0] = round(p[key][0] + DX, 3)
+                p[key][1] = round(p[key][1] + DY, 3)
+        for v in p.get("v", ()):
+            v[0] = round(v[0] + DX, 3)
+            v[1] = round(v[1] + DY, 3)
+    for d in Dc[m:]:
+        d["c"][0] = round(d["c"][0] + DX, 3)
+        d["c"][1] = round(d["c"][1] + DY, 3)
+    it["fp"] = [it["fp"][0] + DX, it["fp"][1] + DX, it["fp"][2] + DY, it["fp"][3] + DY]
+    it["name"] = it["name"].replace("(modular-yard expansion)", "in the maintenance laydown (modular-yard expansion)")
+    it["info"] += (" Set up in the maintenance laydown (away from energised plant, contractor access from the west spine "
+                   "road); finished skids go out on a lowboy to the modular yard. East half kept clear for engine / "
+                   "turbine exchanges.")
+    # area sign at the laydown entrance and a lowboy waiting for the first pick
+    fuel.on(it)
+    fuel.D = True
+    decal((178, 1712, 4.5), (0, -1, 0), 9, 2.6, [("PREFAB / PRE-WIRE AREA", .3, 1, "#ffffff"), ("MODULAR-YARD EXPANSION", .18, 0, "#e6e6e6"),
+                                                 ("HARD HAT · SAFETY GLASSES · GLOVES", .16, 1, "#f2c200")], bg="#22303a")
+    for x in (173.6, 182.4):
+        rod((x, 1712.1, 0), (x, 1712.1, 5.8), .1, "steel", seg=6)
+    box(150, 196, 1806, 1816, 2.8, 3.4, "steel_dark")                                  # lowboy deck
+    box(150, 160, 1806, 1816, 3.4, 5.2, "steel_dark")                                  # gooseneck
+    for xx in (186, 190, 194):
+        for s_ in (-1, 1):
+            rod((xx, 1811 + s_ * 4.2, 1.6), (xx, 1811 + s_ * 3.0, 1.6), 1.6, "tyre", seg=14)
+    for s_ in (-1, 1):
+        rod((156, 1811 + s_ * 3, 2.8), (156, 1811 + s_ * 3, 0), .2, "steel", seg=6)
     fuel.D = False
     return 1

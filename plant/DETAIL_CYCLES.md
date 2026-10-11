@@ -432,7 +432,7 @@ yard / outage laydown"), but in their own bay, and the model also shows where th
 ### Skid pre-assembly / pre-wire workstation (`skid_prewire.py`)
 User question: should skid equipment be pre-wired at a prefab workstation? Yes for small and mid skids; no for
 transformers (set directly, wired in place) or large e-houses (factory-integrated; only their shipping-split
-interconnects are a site job). Placed beside the modular-yard cable spine (OPT_MODX), at the work front.
+interconnects are a site job). Placed in the drawn maintenance laydown (north-west corner, OPT_MODX). It was first placed beside the cable spine at the work front; moved on review because a dedicated laydown keeps pre-assembly away from energised plant, gives contractor access from the west spine road, and leaves the east half clear for engine / turbine exchanges. Finished skids go out on a lowboy (waiting at the laydown) to the modular yard.
 - **Workstation:** a fabric shelter (arched frame, open south end, east side rolled up) on a slab.
   - A fuel-gas conditioning skid and a CW pump skid sit on cribbing being pre-wired: JBs on stanchions,
     skid-edge ladder tray, conduit drops, field tails coiled and tagged, a PRE-WIRE IN PROGRESS / DO NOT LIFT
