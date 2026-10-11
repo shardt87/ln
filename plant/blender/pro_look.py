@@ -1028,6 +1028,12 @@ EPIC = [
          eye=(236, 1668, 62), target=(118, 1772, 1), lens=22, show="all", sun=(40, 150)),
     dict(k="E96", n="Inside the pre-wire shelter: JBs, skid-edge tray and tagged tails on the fuel-gas skid, megger at the bench",
          eye=(89, 1753, 9.5), target=(73, 1778, 5), lens=20, show="all", sun=(40, 150)),
+    # turbine hall access (hall_access.py)
+    dict(k="E97", n="Under the turbine deck: walkway at grade between the pedestals, crossover stile and stair up between GT1 and GT2",
+         eye=(668, 428, 6.2), target=(716, 470, 7.5), lens=18, show="all", lamps=450, lamp_z=15, lamp_box=(560, 1100, 404, 556),
+         clip=.03),
+    dict(k="E98", n="Turbine deck: stair coming up through the guarded opening between GT1 and GT2",
+         eye=(736, 538, 28.5), target=(714, 496, 19.5), lens=20, show="all", lamps=6500, hall_alpha=.1, sun=(40, 175)),
     dict(k="E72", n="TM2500 mobile turbines: TM-2 from the south-east, filter house, raised stack, control trailer",
          eye=(2262, 296, 34), target=(2160, 362, 17), lens=26, show="all", sun=(20, 235)),
     dict(k="E73", n="TM-2 generator leads: 15 kV MV-105 from the terminal box into the ground tray, jacket legend",

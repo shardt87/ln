@@ -1956,6 +1956,9 @@ N_DETAIL += _swgr.build()
 # control / admin building: hollowed, main control room with video wall and console, offices
 import control_room as _cr
 N_DETAIL += _cr.build()
+# turbine hall: open operating floor on columns, pedestals, stairs between the units, crossover stiles
+import hall_access as _ha
+N_DETAIL += _ha.build()
 # Tray review (user screenshots): short tray stubs drawn between a duct-bank end and pad equipment
 # rode the EL +36 rack tier, so a 10 ft connection became a 36 ft goalpost over the transformer. A
 # duct bank comes up straight into the equipment: those stubs are now buried, with rigid-conduit

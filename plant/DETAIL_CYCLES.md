@@ -444,3 +444,19 @@ interconnects are a site job). Placed in the drawn maintenance laydown (north-we
 - **PDC e-house in two shipping splits** on cribbing: split faces wrapped, and pre-terminated interconnects
   coiled at the split and tagged for reconnection.
 - Cameras E95 (overview), E96 (inside the shelter). verify PASS, audit CLEAN, coastal PASS.
+
+### Turbine hall access: how people cross between the units (`hall_access.py`)
+User question: how do people cross the turbine hall? The machine trains fill the EL 20 deck from the south gallery
+to the HRSG wall. Cable trays run at EL 41-49 over them (GT top EL 38, generator EL 36), which leaves no headroom
+for a crossover bridge over the machines. As in a real table-top turbine hall, people cross underneath:
+- **Structure:** the solid EL 0-20 block is now an operating-floor slab (EL 18.5-20) on a 20 ft steel column grid
+  with beams. Each GT and the ST stands on its own table-top pedestal (top slab on concrete legs). The ground floor
+  is open, with LED fixtures under the slab and yellow walkway lines. The inlet-chilling chilled-water headers
+  (EL 3), which used to be buried in the block, now run visibly under the deck.
+- **Stairs:** stairs rise from the ground floor through guarded slab openings (toe board, mid and top rails)
+  between GT1 / GT2 and GT2 / GT3. With the existing laydown-bay and south-gallery stairs, the route is: deck - down
+  - across at grade - up - next unit.
+- **Crossover stiles:** where the north-south walk to each stair meets the chilled-water headers, a stile (steps
+  up, a grated platform with handrails, steps down) carries people over them.
+- Operators are shown on the ground floor, on a stile, on a stair and arriving on the deck.
+- Cameras E97 (ground floor), E98 (deck opening). verify PASS (0 clashes), audit CLEAN, coastal PASS.
