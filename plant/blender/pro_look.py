@@ -1024,7 +1024,7 @@ EPIC = [
          eye=(156, 694, 19), target=(92, 758, 1.5), lens=22, show="all", sun=(34, 150)),
     dict(k="E94", n="Spine splice: electricians on the boom lift take the coiled tails of module 4 as module 5 comes down",
          eye=(1998, 1046, 17.5), target=(1976, 1066, 15.5), lens=22, show="all", sun=(38, 140)),
-    dict(k="E95", n="Skid pre-wire workstation: fuel-gas and pump skids wired under the shelter, ready-to-set row, PDC splits",
+    dict(k="E95", n="Skid pre-wire workstation, ready-to-set row and PDC shipping splits",
          eye=(2112, 903, 42), target=(2040, 966, 1), lens=22, show="all", sun=(40, 150)),
     dict(k="E96", n="Inside the pre-wire shelter: JBs, skid-edge tray and tagged tails on the fuel-gas skid, megger at the bench",
          eye=(2030, 955, 9.5), target=(2014, 980, 5), lens=20, show="all", sun=(40, 150)),
