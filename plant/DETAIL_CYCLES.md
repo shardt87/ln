@@ -408,3 +408,23 @@ it makes sense on the plant. Sizes are from the brochure; the geometry is typica
   - SIMpull Truck: its reels now use the real SIMpull Reel look.
 - Cameras E89 (yard staging), E90 (workshop feeder pull), E91 (reels and reel roller close-up). verify PASS,
   audit CLEAN, coastal PASS.
+
+### Prefabricated cable systems: staging bay and the modular-yard cable spine (`prefab.py`)
+User question: should prefabs and cable-spine prefabs go in the reel yard? They go on the same drawn pad ("cable reel
+yard / outage laydown"), but in their own bay, and the model also shows where they go.
+- **Prefab staging bay** (south strip of the pad, beside the truck / crane lane):
+  - spine modules 6-8 on timber dunnage, with shrink-wrapped coiled tails and sequence tags; module 9 arrives on a
+    flatbed with ratchet straps;
+  - pre-terminated 15 kV MV assemblies in open crates: factory terminations, tested and capped, tagged for T-MOD-1
+    feeder B;
+  - two prefab multi-conduit racks, three pre-wired junction-box skids, and a "Prefab staging" sign.
+- **Cable spine going in** (modular-yard expansion, OPT_MODX): an elevated LV power / control / fibre spine from
+  MOD-EH north toward the aeroderivative units.
+  - Built from 40 ft modules: a welded frame with three ladder-tray tiers (EL 12 power, EL 14.5 control, EL 17
+    fibre) and the cable laid in. The modules sit on bents every 20 ft on pier footings.
+  - Modules 1-4 are set, with splice plates between them. Tray risers drop into a wall entry on MOD-EH.
+  - Module 5 hangs from a truck crane on a spreader bar, held by two riggers on tag lines. Two electricians on a
+    boom lift at the module 4 / 5 splice take the coiled tails. The bents for module 6 stand ready, and a lift
+    supervisor watches.
+- Labels are generic (prefabricated cable spine, pre-terminated assemblies); geometry typical.
+- Cameras E92 (crane lift), E93 (staging bay), E94 (splice). verify PASS, audit CLEAN, coastal PASS.
