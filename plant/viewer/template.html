@@ -388,8 +388,12 @@ for(const b of Object.values(buckets)){
 // printed panels (placards, reel stencils, truck livery): canvas textures on thin planes
 const decalMats = {};   // identical panels share one texture; resolution follows the panel's real size (phones run out of GPU memory otherwise)
 for(const d of (MODEL.decals||[])){
-  const key = JSON.stringify([d.w, d.h, d.bg, d.lines]);
+  const key = d.img ? 'img:'+d.img : JSON.stringify([d.w, d.h, d.bg, d.lines]);
   let mat = decalMats[key];
+  if(!mat && d.img){                 // control-room displays: rendered SCADA / CCTV images, self-lit
+    const tex = new THREE.TextureLoader().load((MODEL.screens||{})[d.img]||''); tex.encoding=THREE.sRGBEncoding; tex.anisotropy=4;
+    mat = decalMats[key] = new THREE.MeshBasicMaterial({map:tex, clippingPlanes:CLIP, toneMapped:false, polygonOffset:true, polygonOffsetFactor:-2, polygonOffsetUnits:-2});
+  }
   if(!mat){
   const cw = Math.min(512, Math.max(128, Math.round(d.w*96))), ch = Math.min(256, Math.max(24, Math.round(cw*d.h/d.w)));
   const cv = document.createElement('canvas'); cv.width=cw; cv.height=ch; const g=cv.getContext('2d');

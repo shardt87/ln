@@ -102,6 +102,11 @@ The audit now reports CLEAN and runs in CI.
 
 ## Detail layer 3 (close views)
 
+`control_room.py` runs next: the control / admin building is hollowed (walls, roof slab and ceiling on
+`CR_ROOF`) and fitted out (`CR_INTERIOR`): main control room with a 16-cube video wall and a six-position
+console showing SCADA graphics (images from `screens/make_screens.py`), supervisor platform, server room, lobby,
+conference, offices, lockers. View B3, cameras E86-E88.
+
 `swgr_rooms.py` runs after `detail3.py` and fits out the switchgear rooms (R1, R4 VFD e-house): metal-clad
 cubicle fronts with relays, meters, lamps and mimic bus, 480 V breaker cells, MCC buckets, P&C / DCS panels, VFD
 and LCI doors, dry-type transformers, and the room itself (epoxy floor, mats, LED fixtures, HVAC, ground bus,

@@ -93,7 +93,18 @@ LOOK = {
     "led_r": ("paint", "#ff3b30", .3, 0), "led_g": ("paint", "#2fe36b", .3, 0), "led_a": ("paint", "#ffb020", .3, 0),
     "hmi": ("paint", "#2c5a4c", .12, 0), "yellow": ("paint", "#e2b622", .5, 0), "cu_bus": ("paint", "#b8733a", .3, .9),
     "mimic": ("paint", "#23282c", .4, 0), "lamp_in": ("paint", "#fffbef", .3, 0),
+    # control / admin building interior (control_room.py)
+    "desk": ("paint", "#34383c", .35, 0), "console": ("paint", "#3d4247", .45, .1), "monitor": ("paint", "#141618", .35, .1),
+    "keycap": ("paint", "#2a2d30", .6, 0), "chair": ("paint", "#24272a", .8, 0), "vinyl": ("paint", "#b9b6ad", .35, 0),
+    "carpet": ("paint", "#454c53", .95, 0), "ceiling": ("paint", "#ecebe6", .9, 0), "wall_in": ("paint", "#e3e0d9", .8, 0),
+    "door_in": ("paint", "#9c7a55", .5, 0), "glass_in": ("paint", "#c8dde5", .05, 0), "blind": ("paint", "#dcd8cc", .8, 0),
+    "acoustic": ("paint", "#5a6672", .95, 0), "rack": ("paint", "#1b1e21", .5, .3), "wood": ("paint", "#a9835b", .5, 0),
+    "fabric": ("paint", "#5f6b74", .95, 0), "locker": ("paint", "#7d8c96", .4, .3), "foliage": ("paint", "#4b7a37", .7, 0),
+    "binder_r": ("paint", "#a3332c", .5, 0), "binder_b": ("paint", "#2f5a8a", .5, 0), "binder_w": ("paint", "#e8e6e0", .5, 0),
+    "binder_k": ("paint", "#2b2d2f", .5, 0), "shirt": ("paint", "#3e5f80", .85, 0), "shirt_w": ("paint", "#dfe3e6", .85, 0),
+    "trousers": ("paint", "#2d3238", .85, 0), "hair": ("paint", "#2b221b", .7, 0),
 }
+ALPHA = {"glass_in": .18}
 EMIT = {"led_r": 4.0, "led_g": 4.0, "led_a": 4.0, "hmi": .8, "lamp_in": 12.0}
 _mats = {}
 # materials kept clean: glass, lamps, people, signs, labels, cables and the like
@@ -101,7 +112,9 @@ WEATHER_SKIP = {"boot", "reflect", "glove", "tent", "sw_red", "xlpe", "alu", "wh
                 "window", "insulator", "rail", "cable_mv", "cable_armor", "cable_tc", "cable_mc", "cable_inst", "cable_tcx",
                 "cable_fa", "cable_fo", "cable", "truck", "sea", "water",
                 "swgr_in", "cab_in", "panel_in", "epoxy", "mat", "led_r", "led_g", "led_a", "hmi", "yellow", "cu_bus", "mimic",
-                "lamp_in"}
+                "lamp_in", "desk", "console", "monitor", "keycap", "chair", "vinyl", "carpet", "ceiling", "wall_in", "door_in",
+                "glass_in", "blind", "acoustic", "rack", "wood", "fabric", "locker", "foliage", "binder_r", "binder_b",
+                "binder_w", "binder_k", "shirt", "shirt_w", "trousers", "hair"}
 
 
 def _node(nt, t, loc, **inputs):
@@ -293,6 +306,10 @@ def material(key):
     elif normal_src is not None:
         L.new(normal_src.outputs["Normal"], b.inputs["Normal"])
     m.diffuse_color = lin(hexc)
+    if key in ALPHA:
+        b.inputs["Alpha"].default_value = ALPHA[key]
+        if hasattr(m, "blend_method"):
+            m.blend_method = "BLEND"
     if key in EMIT:
         b.inputs["Emission Color" if "Emission Color" in b.inputs else "Emission"].default_value = lin(hexc)
         b.inputs["Emission Strength"].default_value = EMIT[key]
@@ -979,6 +996,16 @@ EPIC = [
     dict(k="E85", n="R1 cutaway: roof and east wall off, the switchgear room from above",
          eye=(372, 618, 82), target=(446, 692, 0), lens=24, show="all", add_layers=("R1_INTERIOR",),
          hide_layers=("R1_ROOF",), sun=(52, 200)),
+    # control / admin building (control_room.py)
+    dict(k="E86", n="Main control room: six-position console facing the 16-cube video wall, shift supervisor behind",
+         eye=(280.5, 349.6, 8.4), target=(318, 375.5, 5.0), lens=17, show="all", add_layers=("CR_INTERIOR",),
+         lamps=230, lamp_z=10, lamp_box=(83, 320, 345, 396), clip=.03),
+    dict(k="E87", n="Control room: over the operator's shoulder, GT and alarm graphics, CCTV and one-line on the wall",
+         eye=(292.6, 375.2, 6.5), target=(312, 369.5, 5.0), lens=22, show="all", add_layers=("CR_INTERIOR",),
+         lamps=230, lamp_z=10, lamp_box=(83, 320, 345, 396), clip=.03, dof=(9, 4.0)),
+    dict(k="E88", n="Control / admin building cutaway: control room, supervisor office, servers, lobby, offices",
+         eye=(345, 290, 105), target=(232, 372, 0), lens=24, show="all", add_layers=("CR_INTERIOR",),
+         hide_layers=("CR_ROOF",), sun=(50, 160)),
     dict(k="E72", n="TM2500 mobile turbines: TM-2 from the south-east, filter house, raised stack, control trailer",
          eye=(2262, 296, 34), target=(2160, 362, 17), lens=26, show="all", sun=(20, 235)),
     dict(k="E73", n="TM-2 generator leads: 15 kV MV-105 from the terminal box into the ground tray, jacket legend",

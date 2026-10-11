@@ -282,13 +282,16 @@ def make_decals():
             if d.get("brand"):
                 continue
             d = dict(d, lines=[l for l in d["lines"] if not l.get("brand")])
-            if not d["lines"]:
+            if not d["lines"] and not d.get("img"):
                 continue
-        key = json.dumps([d["w"], d["h"], d.get("bg"), d["lines"]])
-        if key not in img_cache:                                   # identical panels share one image
-            img_cache[key] = os.path.join(ddir, f"decal_{len(img_cache):04d}.png")
-            decal_image(d, img_cache[key])
-        path = img_cache[key]
+        if d.get("img"):                                           # screen: a rendered SCADA / CCTV image (plant/screens)
+            path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "screens", d["img"])
+        else:
+            key = json.dumps([d["w"], d["h"], d.get("bg"), d["lines"]])
+            if key not in img_cache:                               # identical panels share one image
+                img_cache[key] = os.path.join(ddir, f"decal_{len(img_cache):04d}.png")
+                decal_image(d, img_cache[key])
+            path = img_cache[key]
         nv = Vector(d["n"])
         up = Vector(d.get("up") or ((0, 1, 0) if abs(nv.z) > .9 else (0, 0, 1)))
         rt = up.cross(nv).normalized()
@@ -319,6 +322,14 @@ def make_decals():
         nt.links.new(tex.outputs["Color"], b.inputs["Base Color"])
         nt.links.new(tex.outputs["Alpha"], b.inputs["Alpha"])
         b.inputs["Roughness"].default_value = .55
+        if d.get("img"):                                           # self-lit display behind a glass face
+            nt.links.new(tex.outputs["Color"], b.inputs["Emission Color" if "Emission Color" in b.inputs else "Emission"])
+            b.inputs["Emission Strength"].default_value = d.get("emit", 1.4)
+            b.inputs["Roughness"].default_value = .18
+            b.inputs["Base Color"].default_value = (0.02, 0.02, 0.02, 1)
+            for l in list(nt.links):
+                if l.to_socket == b.inputs["Base Color"]:
+                    nt.links.remove(l)
         if hasattr(m, "blend_method"):
             m.blend_method = "CLIP" if not d.get("bg") else "OPAQUE"
         mat_cache[path] = m
@@ -569,7 +580,7 @@ manifest = []
 if args.style == "pro":
     heroes = HERO_SET["heroes"]
     keys = [k for k in args.views.split(",") if k] or [h["k"] for h in heroes]
-    ALL = [l for l in model["layers"] if l not in ("R1_INTERIOR", "R4_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND")]
+    ALL = [l for l in model["layers"] if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND")]
     COAST = [l for l, v in model["layers"].items() if v.get("group", "").startswith("Coastal")]
     BASE = [l for l in ALL if not l.startswith(("OPT_", "HV_CORRIDOR", "SWYD_FUTURE")) and l not in COAST]
     DCL = [l for l in ALL if l.startswith("OPT_DC")]      # BTM data centre: an add-on, shown only by "dc" cameras

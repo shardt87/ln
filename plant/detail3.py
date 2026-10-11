@@ -59,7 +59,7 @@ class Detail3:
         electrical building stays closed (louvres, doors); industrial buildings get ribbed
         metal cladding, a high translucent strip, roll-up doors, wall louvres and roof vents."""
         for it in self.items:
-            if it["layer"].startswith(("R1_INTERIOR", "R4_INTERIOR")):
+            if it["layer"].startswith(("R1_INTERIOR", "R4_INTERIOR", "CR_")):
                 continue
             b = self.main_box(it, "building")
             if b is None or b["min"][2] > .5:

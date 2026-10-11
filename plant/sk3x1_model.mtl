@@ -3,6 +3,11 @@ Kd 0.765 0.788 0.776
 Ka 0 0 0
 d 1
 
+newmtl acoustic
+Kd 0.353 0.400 0.447
+Ka 0 0 0
+d 1
+
 newmtl alu
 Kd 0.722 0.741 0.757
 Ka 0 0 0
@@ -30,6 +35,31 @@ d 1
 
 newmtl bess
 Kd 0.655 0.737 0.765
+Ka 0 0 0
+d 1
+
+newmtl binder_b
+Kd 0.184 0.353 0.541
+Ka 0 0 0
+d 1
+
+newmtl binder_k
+Kd 0.169 0.176 0.184
+Ka 0 0 0
+d 1
+
+newmtl binder_r
+Kd 0.639 0.200 0.173
+Ka 0 0 0
+d 1
+
+newmtl binder_w
+Kd 0.910 0.902 0.878
+Ka 0 0 0
+d 1
+
+newmtl blind
+Kd 0.863 0.847 0.800
 Ka 0 0 0
 d 1
 
@@ -128,6 +158,11 @@ Kd 0.902 0.902 0.878
 Ka 0 0 0
 d 1
 
+newmtl carpet
+Kd 0.271 0.298 0.325
+Ka 0 0 0
+d 1
+
 newmtl ccs
 Kd 0.835 0.867 0.875
 Ka 0 0 0
@@ -135,6 +170,16 @@ d 1
 
 newmtl ccw
 Kd 0.490 0.561 0.306
+Ka 0 0 0
+d 1
+
+newmtl ceiling
+Kd 0.925 0.922 0.902
+Ka 0 0 0
+d 1
+
+newmtl chair
+Kd 0.141 0.153 0.165
 Ka 0 0 0
 d 1
 
@@ -155,6 +200,11 @@ d 1
 
 newmtl conductor
 Kd 0.227 0.275 0.314
+Ka 0 0 0
+d 1
+
+newmtl console
+Kd 0.239 0.259 0.278
 Ka 0 0 0
 d 1
 
@@ -188,8 +238,18 @@ Kd 0.420 0.604 0.769
 Ka 0 0 0
 d 1
 
+newmtl desk
+Kd 0.204 0.220 0.235
+Ka 0 0 0
+d 1
+
 newmtl door
 Kd 0.431 0.561 0.659
+Ka 0 0 0
+d 1
+
+newmtl door_in
+Kd 0.612 0.478 0.333
 Ka 0 0 0
 d 1
 
@@ -228,6 +288,11 @@ Kd 0.702 0.737 0.757
 Ka 0 0 0
 d 1
 
+newmtl fabric
+Kd 0.373 0.420 0.455
+Ka 0 0 0
+d 1
+
 newmtl fan
 Kd 0.557 0.600 0.624
 Ka 0 0 0
@@ -258,6 +323,11 @@ Kd 0.722 0.196 0.165
 Ka 0 0 0
 d 1
 
+newmtl foliage
+Kd 0.294 0.478 0.216
+Ka 0 0 0
+d 1
+
 newmtl fuelgas
 Kd 0.612 0.478 0.235
 Ka 0 0 0
@@ -272,6 +342,11 @@ newmtl glass
 Kd 0.169 0.227 0.267
 Ka 0 0 0
 d 1
+
+newmtl glass_in
+Kd 0.663 0.769 0.812
+Ka 0 0 0
+d 0.3
 
 newmtl glove
 Kd 0.788 0.706 0.541
@@ -290,6 +365,11 @@ d 1
 
 newmtl ground
 Kd 0.875 0.890 0.863
+Ka 0 0 0
+d 1
+
+newmtl hair
+Kd 0.169 0.133 0.106
 Ka 0 0 0
 d 1
 
@@ -353,6 +433,11 @@ Kd 0.604 0.639 0.659
 Ka 0 0 0
 d 1
 
+newmtl keycap
+Kd 0.165 0.176 0.188
+Ka 0 0 0
+d 1
+
 newmtl label
 Kd 0.949 0.949 0.933
 Ka 0 0 0
@@ -393,6 +478,11 @@ Kd 0.925 0.922 0.902
 Ka 0 0 0
 d 1
 
+newmtl locker
+Kd 0.490 0.549 0.588
+Ka 0 0 0
+d 1
+
 newmtl louvre
 Kd 0.435 0.478 0.510
 Ka 0 0 0
@@ -410,6 +500,11 @@ d 1
 
 newmtl mimic
 Kd 0.137 0.157 0.173
+Ka 0 0 0
+d 1
+
+newmtl monitor
+Kd 0.078 0.086 0.094
 Ka 0 0 0
 d 1
 
@@ -468,6 +563,11 @@ Kd 0.816 0.459 0.165
 Ka 0 0 0
 d 1
 
+newmtl rack
+Kd 0.106 0.118 0.129
+Ka 0 0 0
+d 1
+
 newmtl radiator
 Kd 0.596 0.639 0.659
 Ka 0 0 0
@@ -520,6 +620,16 @@ d 1
 
 newmtl safety
 Kd 0.184 0.604 0.290
+Ka 0 0 0
+d 1
+
+newmtl shirt
+Kd 0.243 0.373 0.502
+Ka 0 0 0
+d 1
+
+newmtl shirt_w
+Kd 0.875 0.890 0.902
 Ka 0 0 0
 d 1
 
@@ -608,6 +718,11 @@ Kd 0.706 0.769 0.792
 Ka 0 0 0
 d 1
 
+newmtl trousers
+Kd 0.176 0.196 0.220
+Ka 0 0 0
+d 1
+
 newmtl truck
 Kd 0.914 0.922 0.925
 Ka 0 0 0
@@ -625,6 +740,16 @@ d 1
 
 newmtl tyre
 Kd 0.106 0.114 0.122
+Ka 0 0 0
+d 1
+
+newmtl vinyl
+Kd 0.725 0.714 0.678
+Ka 0 0 0
+d 1
+
+newmtl wall_in
+Kd 0.890 0.878 0.851
 Ka 0 0 0
 d 1
 
@@ -650,6 +775,11 @@ d 1
 
 newmtl windwall
 Kd 0.804 0.827 0.816
+Ka 0 0 0
+d 1
+
+newmtl wood
+Kd 0.663 0.514 0.357
 Ka 0 0 0
 d 1
 

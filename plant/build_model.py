@@ -1664,6 +1664,8 @@ LAYERS = {
     "R1_INTERIOR": ("R1 interior (SK-3X1-05)", "Base plant"),
     "R4_ROOF": ("R4 roof", "Base plant"), "R4_WALL_E": ("R4 east wall", "Base plant"),
     "R4_INTERIOR": ("R4 VFD interior", "Base plant"),
+    "CR_ROOF": ("Control / admin building roof and ceiling", "Base plant"),
+    "CR_INTERIOR": ("Control room and admin interior", "Base plant"),
     "BASE_SWITCHYARD": ("C Grid interface: 230 kV switchyard", "Base plant"),
     "BASE_UTILITIES": ("D/E Fuel gas, water and BOP utilities, pipe racks, M&R", "Base plant"),
     "BASE_SERVICES": ("F Controls / service", "Base plant"),
@@ -1744,12 +1746,17 @@ VIEWS = [
     dict(k="O4", n="O4 Inlet chilling", show=BASE_SHOW + ["OPT_IC", "OPT_IC_ROUTES"], t=[180, 1160, 20], c=[-150, 820, 420]),
     dict(k="O5", n="O5 Gas, LNG, H2", show=BASE_SHOW + ["OPT_LNG", "OPT_H2", "OPT_LNG_ROUTES", "OPT_H2_ROUTES",
          "SWYD_FUTURE"], t=[1980, 1650, 10], c=[1650, 1150, 700]),
-    dict(k="O6", n="Add-on: plant + BTM data centre", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND")],
+    dict(k="O6", n="Add-on: plant + BTM data centre", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND")],
          t=[2200, 850, 30], c=[700, -1400, 1700]),
-    dict(k="ALL", n="Complete plant", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND")
+    dict(k="ALL", n="Complete plant", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND")
                                             and not l.startswith("OPT_DC")],
          t=[1210, 900, 40], c=[-350, -750, 1400]),
 ]
+VIEWS.insert(3, dict(
+    k="B3", n="B3 Control room (roof off)", show=["SITE", "BASE_SERVICES", "CR_INTERIOR"], t=[262, 370, 4], c=[205, 255, 120]))
+for _v in VIEWS:                              # the control-building roof travels with the rest of the services
+    if "BASE_SERVICES" in _v["show"] and "CR_ROOF" not in _v["show"] and _v["k"] != "B3":
+        _v["show"].append("CR_ROOF")
 
 
 # Fit sets for the orthographic cameras (SK-3X1-11: "its fit set is projected
@@ -1760,6 +1767,7 @@ FIT = {
               clip=[380, 1480, 0, 900]),       # core plant + D1-D3; the long buses run beyond
     "B": dict(box=[410, 480, 600, 780, 0, 24]),
     "B2": dict(box=[1135, 1310, 308, 368, 0, 16]),
+    "B3": dict(box=[83, 320, 345, 396, 0, 20]),
     "C": dict(box=[1130, 1450, 790, 850, 0, 40]),
     "H": dict(box=[480, 1100, 370, 560, 0, 60]),
     "U": dict(box=[0, 2420, 0, 1920, -10, 20]),
@@ -1945,6 +1953,9 @@ N_DETAIL += _detail3.Detail3(items, parts).run()
 # LOD 3 switchgear rooms: R1 and the R4 VFD e-house get real lineup fronts and a fitted-out room
 import swgr_rooms as _swgr
 N_DETAIL += _swgr.build()
+# control / admin building: hollowed, main control room with video wall and console, offices
+import control_room as _cr
+N_DETAIL += _cr.build()
 # Tray review (user screenshots): short tray stubs drawn between a duct-bank end and pad equipment
 # rode the EL +36 rack tier, so a 10 ft connection became a 36 ft goalpost over the transformer. A
 # duct bank comes up straight into the equipment: those stubs are now buried, with rigid-conduit

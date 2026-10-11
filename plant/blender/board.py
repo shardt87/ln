@@ -103,7 +103,7 @@ def key_plan(d, box, B):
     # footprints of register items, base plant solid hairline, optional systems fainter
     for it in model["items"]:
         sheet15 = it.get("tag") == "LNGC" or it["name"].startswith("Terminal plot")
-        if (not it["register"] and not sheet15) or it["layer"] in ("SITE", "R1_INTERIOR", "R4_INTERIOR"):
+        if (not it["register"] and not sheet15) or it["layer"] in ("SITE", "R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR"):
             continue
         fx0, fx1, fy0, fy1 = it["fp"]
         if (fx1 - fx0) * (fy1 - fy0) < 120 and not it.get("key"):

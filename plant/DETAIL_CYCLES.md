@@ -360,3 +360,26 @@ User review: the switchgear rooms were plain boxes. The lineups keep their drawn
   `lamp_z` / `lamp_box` (which fixtures light the shot).
 - Cameras E82 (R1 MV aisle), E83 (R1 MCC / P&C aisle), E84 (R4 VFD aisle), E85 (R1 roof-off cutaway). verify PASS,
   audit CLEAN, coastal PASS. Viewer v96 (views B and B2 show the rooms).
+
+### Control / admin building: main control room and offices (`control_room.py`, `screens/make_screens.py`)
+User request: a real control room with SCADA and screens. The building keeps its SK-3X1-12 footprint and height;
+the solid box is now walls, a roof slab and a suspended ceiling (layer `CR_ROOF`), with the rooms on `CR_INTERIOR`
+(off in the plant views like the R1 / R4 interiors; view **B3 Control room** and camera E88 lift the roof).
+- **Main control room** (east end, 43 x 49 ft): a 16-cube video wall (8 x 2, ~70 in cubes) shows the plant overview,
+  the 230 kV one-line and a CCTV mosaic across 2 x 2 cubes, plus dispatch / AGC, trends, ACC and the alarm
+  summary. A six-position operator console on an arc faces it, each position with 2 x 3 monitors (27 in) on posts,
+  two keyboards, mice and a phone. Hard-wired GT / ST trip and plant ESD buttons sit under guards at the two centre
+  positions. The shift supervisor's desk is on a raised platform behind, with five monitors. There's also a halo
+  light, carpet tiles, a 2 x 2 ft ceiling grid with troffers, acoustic wall panels, a GPS clock with frequency and
+  MW tickers, the fire-alarm panel, binder shelving, a printer and plants. Three operators sit at the console and
+  the supervisor stands at the platform.
+- **Screens** are real images (`plant/screens`, drawn by `make_screens.py` in a high-performance HMI style):
+  - overview, 230 kV one-line, GT1, HRSG 1, 8-hour trends, alarm summary, ACC 80 cells, ISO dispatch;
+  - a CCTV mosaic cut from the plant renders.
+  Decals take an `img` (Blender: an emissive image texture; viewer: an embedded JPEG, self-lit).
+- **Rest of the building:** shift-supervisor office behind a glass wall, operations meeting room, DCS engineering /
+  server room (two rack rows, workstations), lobby with reception, plant sign and safety board at the entrance,
+  conference room with a wall display, break room, open office (24 desks), north strip with lockers, restrooms,
+  permit / work control, print, training, telecom / UPS, kitchen, relief room; door signs on every room.
+- Operators and office staff have no hard hats indoors (seated and standing figures in `control_room.py`).
+- Cameras E86 (MCR hero), E87 (over the console), E88 (roof-off cutaway). verify PASS, audit CLEAN, coastal PASS.

@@ -20,7 +20,7 @@ if GENERIC:
         if d.get("brand"):
             continue
         d["lines"] = [l for l in d["lines"] if not l.get("brand")]
-        if d["lines"]:
+        if d["lines"] or d.get("img"):
             dd.append(d)
     model["decals"] = dd
 ov = json.load(open(os.path.join(HERE, "coastal", "sk3x1_coastal_A.json")))
@@ -38,11 +38,31 @@ model["views"].append(dict(k="COAST", n="Coastal: LNG terminal",
                            show=[l for l in full["show"] if not l.startswith("OPT_LNG")] + coast,
                            t=[1450, 2900, 20], c=[3900, 100, 3100]))
 model["views"].append(dict(k="EVERY", n="Everything: plant + all LNG + BTM data centre",
-                           show=[l for l in model["layers"] if l not in ("R1_INTERIOR", "R4_INTERIOR", "UNDERGROUND",
+                           show=[l for l in model["layers"] if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND",
                                                                          "OPT_UNDERGROUND")],
                            t=[1700, 1800, 20], c=[-900, -2600, 4300]))
 model["views"].append(dict(k="FUEL", n="Fuel systems: M&R, gas yard, ULSD", show=list(full["show"]),
                            t=[1640, 1660, 4], c=[1330, 1330, 330]))
+# screen decals (control-room SCADA / CCTV displays): small JPEG data URIs, one per image
+import io, base64 as _b64
+try:
+    from PIL import Image as _Image
+except ImportError:
+    _Image = None
+model["screens"] = {}
+for d in model.get("decals", []):
+    n = d.get("img")
+    if n and n not in model["screens"]:
+        p = os.path.join(HERE, "screens", n)
+        if _Image:
+            im = _Image.open(p).convert("RGB")
+            im.thumbnail((720 if d["w"] > 3 else 480, 405))
+            buf = io.BytesIO()
+            im.save(buf, "JPEG", quality=78)
+            raw = buf.getvalue()
+        else:
+            raw = open(p, "rb").read()
+        model["screens"][n] = "data:image/%s;base64," % ("png" if not _Image and p.endswith(".png") else "jpeg") + _b64.b64encode(raw).decode()
 # the model travels gzip-compressed (base64) and is inflated in the browser with DecompressionStream:
 # the page drops from ~12 MB to ~2-3 MB, which mobile viewers load reliably
 import base64, gzip
