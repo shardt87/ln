@@ -428,3 +428,19 @@ yard / outage laydown"), but in their own bay, and the model also shows where th
     supervisor watches.
 - Labels are generic (prefabricated cable spine, pre-terminated assemblies); geometry typical.
 - Cameras E92 (crane lift), E93 (staging bay), E94 (splice). verify PASS, audit CLEAN, coastal PASS.
+
+### Skid pre-assembly / pre-wire workstation (`skid_prewire.py`)
+User question: should skid equipment be pre-wired at a prefab workstation? Yes for small and mid skids; no for
+transformers (set directly, wired in place) or large e-houses (factory-integrated; only their shipping-split
+interconnects are a site job). Placed beside the modular-yard cable spine (OPT_MODX), at the work front.
+- **Workstation:** a fabric shelter (arched frame, open south end, east side rolled up) on a slab.
+  - A fuel-gas conditioning skid and a CW pump skid sit on cribbing being pre-wired: JBs on stanchions,
+    skid-edge ladder tray, conduit drops, field tails coiled and tagged, a PRE-WIRE IN PROGRESS / DO NOT LIFT
+    tag.
+  - Around them: workbenches with a megger, JB and tray-fitting kits on pallets, a wire wagon, a distribution
+    box, two tripod lights, and four electricians.
+- **Ready-to-set row:** a lube-oil skid and a second fuel-gas skid, wrapped tails, TESTED / READY TO SET tags
+  (IR > 1 GΩ, continuity OK), crane pick order sign.
+- **PDC e-house in two shipping splits** on cribbing: split faces wrapped, and pre-terminated interconnects
+  coiled at the split and tagged for reconnection.
+- Cameras E95 (overview), E96 (inside the shelter). verify PASS, audit CLEAN, coastal PASS.

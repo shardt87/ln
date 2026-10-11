@@ -2042,6 +2042,8 @@ import simpull as _sp
 _sp.build()                # SIMpull / Maxis staging in the reel yard, feeder pull at the workshop
 import prefab as _pf
 _pf.build()                # prefab staging bay on the laydown pad, cable spine going in at the modular yard
+import skid_prewire as _skp
+_skp.build()               # skid pre-assembly / pre-wire workstation beside the spine
 print("tray legends", _show.tray_legends())
 print("CCS rack tray legends", _show.tray_legends(x0=726, x1=856, y0=1131, y1=1135.5, z0=26, z1=29))
 for _p in parts:                    # tray cables round, not faceted (they are seen close up in the tray shots)
