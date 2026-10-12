@@ -1,12 +1,4 @@
 {
- "summary": {
-  "cable tray / IPB through equipment": 3
- },
- "findings": {
-  "cable tray / IPB through equipment": [
-   "HRSG 1 + SCR (3P reheat, horizontal)",
-   "HRSG 2 + SCR (3P reheat, horizontal)",
-   "HRSG 3 + SCR (3P reheat, horizontal)"
-  ]
- }
+ "summary": {},
+ "findings": {}
 }

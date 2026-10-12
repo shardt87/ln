@@ -160,9 +160,9 @@ def casing():
 # ---------------------------------------------------------------------------------------
 def access():
     """Open stair tower and access platforms per HRSG (replaces the solid stair block): a switchback stair at the
-    north-east corner (10 flights to the drum level), grated platforms with yellow handrails along the east wall at
-    every second landing (about EL 18, 36, 54, 71) on brackets from the buckstays, and a bridge from the top
-    landing onto the drum walkways."""
+    south end of the east wall, clear of the EL 30 cable tray (10 flights to the casing roof), grated platforms with
+    yellow handrails along the east wall at every second landing (about EL 17, 34, 52, 69) on brackets from the
+    buckstays, and a step-over from the top landing onto the roof."""
     for k in range(3):
         dx = 160 * k
         it = find(f"HRSG {k + 1} + SCR")
@@ -170,8 +170,8 @@ def access():
                                                                   and p["kind"] == "box" and p["max"][2] > 80)]
         on(it)
         dress(True)
-        X0, X1, Y0, Y1 = 665.0 + dx, 673.0 + dx, 738.0, 752.0
-        n, top = 10, 89.2
+        X0, X1, Y0, Y1 = 664.6 + dx, 672.6 + dx, 608.0, 622.0      # south end of the east wall, clear of the EL 30 tray
+        n, top = 10, 86.0
         h = top / n
         for (x, y) in ((X0, Y0), (X1, Y0), (X0, Y1), (X1, Y1)):                      # tower columns
             box(x - .35, x + .35, y - .35, y + .35, 0, top + 3.6, "steel")
@@ -201,21 +201,19 @@ def access():
         xp0, xp1 = 665.5 + dx, 669.5 + dx
         for i in (2, 4, 6, 8):
             zp = i * h
-            box(xp0, xp1, 610.0, Y0, zp - .25, zp, "grating")
-            box(xp0, xp1, 610.0, Y0, zp - .9, zp - .25, "steel")                       # edge beam
-            for y in list(range(616, 736, 16)):
+            box(xp0, xp1, Y1, 738.0, zp - .25, zp, "grating")
+            box(xp0, xp1, Y1, 738.0, zp - .9, zp - .25, "steel")                       # edge beam
+            for y in list(range(628, 738, 16)):
                 if 648 < y < 656:
                     continue
                 box(663.8 + dx, xp1, y - .2, y + .2, zp - 1.6, zp - .25, "steel")      # bracket
                 rod((xp1, y, zp), (xp1, y, zp + 3.5), .05, "sp_yellow", seg=4)
-            rod((xp1, 610.0, zp + 3.5), (xp1, Y0, zp + 3.5), .06, "sp_yellow", seg=4)
-            rod((xp1, 610.0, zp + 1.75), (xp1, Y0, zp + 1.75), .05, "sp_yellow", seg=4)
-            rod((xp0, 610.0, zp + 3.5), (xp1, 610.0, zp + 3.5), .06, "sp_yellow", seg=4)
+            rod((xp1, Y1, zp + 3.5), (xp1, 738.0, zp + 3.5), .06, "sp_yellow", seg=4)
+            rod((xp1, Y1, zp + 1.75), (xp1, 738.0, zp + 1.75), .05, "sp_yellow", seg=4)
+            rod((xp0, 738.0, zp + 3.5), (xp1, 738.0, zp + 3.5), .06, "sp_yellow", seg=4)
             box(xp0, xp1, 610.0, Y0, zp, zp + .3, "sp_yellow") if False else None
-        # bridge from the top landing onto the drum walkways
-        box(660 + dx, X0, 742, 746, top - .3, top, "grating")
-        for y in (742, 746):
-            rod((660 + dx, y, top + 3.5), (X0, y, top + 3.5), .06, "sp_yellow", seg=4)
+        # step-over from the top landing onto the casing roof (drum walkways by ladder from there)
+        box(663.4 + dx, X0, 612, 616, top - .3, top, "grating")
         dress(False)
 
 

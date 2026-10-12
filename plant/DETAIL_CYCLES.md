@@ -468,9 +468,11 @@ made it read wrong against photos:
 - **Casing height:** raised from 78 to 85 ft, the upper value in the sheet-13 note; H-class units sit at the top of
   that range. The drums keep their elevation on a shorter frame, so the top stays at EL 100. The roof, risers,
   handrail, steam leads, downcomers, AIG riser and cable riser all follow the new roof.
-- **Stair tower:** was a solid grey block. It's now an open switchback stair tower at the north-east corner: four
-  columns on footings, 10 flights to the drum level, landings and yellow guard rails.
+- **Stair tower:** was a solid grey block. It's now an open switchback stair tower at the south end of the east
+  wall: four columns on footings, 10 flights to the casing roof, landings and yellow guard rails. The tower was
+  first placed at the north-east corner, but the EL 30 cable tray (x 670-672.5) runs through that spot, so it
+  moved to the only spot clear of trays on all three units.
 - **Access platforms:** new grated platforms with yellow handrails along the east wall at every second landing
-  (about EL 18, 36, 54, 71), on brackets from the buckstays, plus a bridge from the top landing to the drum
-  walkways.
-- Camera E99 (north-east view); E26 and E28 re-rendered. verify PASS (0 clashes), audit CLEAN, coastal PASS.
+  (about EL 17, 34, 52, 69), running north from the tower on brackets from the buckstays, plus a step-over from
+  the top landing onto the casing roof.
+- Camera E99 (south-east view); E26 and E28 re-rendered. verify PASS (0 clashes), audit CLEAN, coastal PASS.
