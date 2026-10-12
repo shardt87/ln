@@ -342,15 +342,16 @@ for i, gx in enumerate(GX, start=1):
     # --- HRSG: casing, drums, stair, inlet transition, outlet breeching
     item(L, f"HRSG {i} + SCR (3P reheat, horizontal)", (595 + dx, 665 + dx, 600, 760), (0, 100),
          tag=f"HRSG-{i}", area="A", sheet="SK-3X1-13",
-         info="70 x 160 ft, top EL 100 (501G HRSG ~70 ft; largest casing 85 ft). Three-pressure "
-         "reheat with SCR. HP, IP and LP drums on the roof steel.")
+         info="70 x 160 ft envelope, top EL 100 (501G HRSG ~70 ft; largest casing 85 ft): a 130 ft casing "
+         "behind a long inlet diffuser, the stack tight at the outlet. Three-pressure reheat with SCR. HP, IP "
+         "and LP drums on the roof steel.")
     B(595 + dx, 665 + dx, 600, 760, 0, 1.5, "concrete")
     # casing 85 ft tall (the sheet-13 note: ~70 ft for a 501G HRSG, 85 ft the largest; H-class units are at the
     # top of that range); the drums sit on a short steel frame above it, so the overall top stays at EL 100
-    B(597 + dx, 663 + dx, 601, 759, 1.5, 85, "hrsg")
-    for yy in range(620, 760, 20):                            # casing stiffener bands
+    B(597 + dx, 663 + dx, 629, 759, 1.5, 85, "hrsg")
+    for yy in range(640, 760, 20):                            # casing stiffener bands
         B(596.5 + dx, 663.5 + dx, yy - 0.6, yy + 0.6, 1.5, 85, "steel")
-    B(596.6 + dx, 663.4 + dx, 600.6, 759.4, 85, 86, "roof")    # casing roof (headers below)
+    B(596.6 + dx, 663.4 + dx, 628.6, 759.4, 85, 86, "roof")    # casing roof (headers below)
     for fx in (600, 630, 660):                                 # drum-support frame, EL 86-89
         for fy in (650, 670, 690, 710, 724, 740):
             B(fx + dx - .6, fx + dx + .6, fy - .6, fy + .6, 86, 88.6, "steel")
@@ -366,10 +367,10 @@ for i, gx in enumerate(GX, start=1):
             B(600 + dx, 660 + dx, min(ya, ya + side * 3), max(ya, ya + side * 3), 88.9, 89.2, "grating")
     for sx in (612, 648):                                     # safety-valve silencers
         R((sx + dx, 715, 89.2), (sx + dx, 715, 100), 1.0, "steel", seg=10)
-    B(665 + dx, 673 + dx, 738, 752, 0, 92, "stair")
-    item(L, f"HRSG {i} inlet transition duct", (595 + dx, 665 + dx, 560, 600), (2, 96), area="A",
+    item(L, f"HRSG {i} inlet transition duct", (595 + dx, 665 + dx, 560, 629), (2, 96), area="A",
          sheet="SK-3X1-01", info="Expands the GT exhaust into the HRSG face (SK-3X1-09 'exhaust transition').")
-    loft_y(560, (620 + dx, 640 + dx, 21, 38), 600, (598 + dx, 662 + dx, 3, 84), "hrsg")
+    # inlet diffuser: a long transition from the GT exhaust to the casing face (about 70 ft on H-class units)
+    loft_y(560, (620 + dx, 640 + dx, 21, 38), 629, (598 + dx, 662 + dx, 3, 84), "hrsg")
     item(L, f"HRSG {i} outlet breeching", (605 + dx, 655 + dx, 759, 779), (48, 78), area="A",
          register=False)
     # into the stack: the loft ends inside the shell (chord at y 786 is wider than the duct), no corners poke out
@@ -1645,7 +1646,7 @@ for k in range(3):                                                              
 # HRSG instrument / control cabling: from the rack control tier (EL 42) down the east side of each
 # HRSG to the riser at its south-east corner (clear of the stair towers and the rack bents)
 for k, xr in enumerate((674.5, 837.0, 994.5)):
-    add_route("control_tray", [(xr, 842), (xr, 605.5), (668.0 + 160 * k, 605.5)], "ROUTES_BASE",
+    add_route("control_tray", [(xr, 842), (xr, 626.0), (672.0 + 160 * k, 626.0)], "ROUTES_BASE",
               sheet="typical (HRSG detail)")
 # GSU / UAT marshalling cabinets to the existing duct bank (protection, monitoring, cooling control)
 for x in (612, 772, 932):

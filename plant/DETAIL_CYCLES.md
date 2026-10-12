@@ -485,3 +485,14 @@ straight runs, so it dropped the run and kept only the riser and elbow at the e-
   (sharing its supports), east to the HRSG west wall, ending over a new marshalling junction box there.
 - Any other diagonal tray segment on the drawings now becomes an L (along x, then y) when the routes load.
 - Camera E100 (west side close-up); E26 and E28 re-rendered. verify PASS (0 clashes), audit CLEAN, coastal PASS.
+
+### HRSG proportions (`build_model.py`, `hrsg.py`, `realism.py`)
+User question: does the HRSG read as one giant block, should the tail be shorter? Yes: built H-class
+three-pressure HRSGs have a casing of about 120-130 ft behind a long (about 70 ft) inlet diffuser, with the stack
+tight at the outlet. The model had a 158 ft casing behind an abrupt 40 ft inlet duct.
+- The drawn envelope (70 x 160 ft, sheet 01) and the stack position (sheet 01) are kept. The casing now starts at
+  y 629: 130 ft long, with the first coil section (HP superheater / reheater) shortened.
+- The inlet transition is a 69 ft diffuser from the GT exhaust to the casing face, with four stiffener frames.
+- The stair tower stays at the south-east corner beside the diffuser and bridges onto the roof. The east-wall
+  platforms, the cable riser, the roof junction box and the steam leads follow the new south end.
+- Camera E101 (aerial from the west); E99 and E26 re-rendered. verify PASS (0 clashes), audit CLEAN, coastal PASS.

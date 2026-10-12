@@ -402,12 +402,12 @@ class Realism:
     # ---------------------------------------------------------------------------------
     def harps(self):
         """HRSG 3 coil sections inside the casing (seen in the cutaway camera)."""
-        self.new("BASE_POWER_BLOCK", "HRSG 3 tube harps and headers (cutaway view)", (917, 983, 601, 759), (2, 77),
+        self.new("BASE_POWER_BLOCK", "HRSG 3 tube harps and headers (cutaway view)", (917, 983, 629, 759), (2, 77),
                  info="Finned-tube harps in gas-flow order: HP superheater / reheater, HP evaporator, SCR and CO "
                       "catalyst, HP economizer / IP superheater, IP evaporator, LP evaporator / IP economizer, LP "
                       "economizer; upper and lower headers (typical).")
         x0, x1 = 918.5, 981.5
-        sections = [(602, 640, 3, "bundle"), (640, 668, 4, "bundle"), (668, 688, 0, "filter"), (688, 712, 4, "bundle"),
+        sections = [(630, 648, 2, "bundle"), (648, 668, 3, "bundle"), (668, 688, 0, "filter"), (688, 712, 4, "bundle"),
                     (712, 725, 2, "bundle"), (725, 745, 3, "bundle"), (745, 758, 2, "bundle")]
         for (ya, yb, n, c) in sections:
             if n == 0:                                                  # SCR + CO catalyst blocks

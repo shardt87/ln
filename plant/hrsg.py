@@ -1,7 +1,8 @@
 """HRSGs at LOD 3: three-pressure reheat, horizontal gas flow (south to north), with SCR.
 
-The drawn envelope is kept (70 x 160 ft casing, top EL 100 on sheet 13); everything here is
-dressing on the HRSG items and typical, not engineered:
+The drawn envelope is kept (70 x 160 ft, top EL 100 on sheet 13): a 130 ft casing behind a ~70 ft inlet
+diffuser, the stack tight at the outlet, as on built H-class units; everything here is dressing on the
+HRSG items and typical, not engineered:
 - casing: external buckstays every 8 ft, wale bands, module seams at the coil-section breaks
   (HP superheater / reheater, HP evaporator, SCR + CO catalyst, HP economizer / IP superheater,
   IP evaporator, LP evaporator / IP economizer, LP economizer), access doors per section;
@@ -27,7 +28,7 @@ def dress(flag):
     fuel.D = flag
 
 
-SECTIONS = [640, 668, 688, 712, 725, 745]          # coil-section breaks along the gas path (y)
+SECTIONS = [648, 668, 688, 712, 725, 745]          # coil-section breaks along the gas path (y)
 
 
 def build():
@@ -44,18 +45,18 @@ def casing():
         it = find(f"HRSG {k + 1} + SCR")
         on(it)
         dress(True)
-        bands = set(range(620, 760, 20))
+        bands = set(range(640, 760, 20))
         # buckstays (west and east walls) and wale bands
-        for y in range(604, 758, 8):
+        for y in range(632, 758, 8):
             if any(abs(y - b) < 1.5 for b in bands):
                 continue
             box(x0 - .8, x0, y - .35, y + .35, 1.5, 85, "steel")
             box(x1, x1 + .8, y - .35, y + .35, 1.5, 85, "steel")
         for z in (20, 40, 60, 80):
-            box(x0 - 1.0, x0 - .8, 601, 759, z - .5, z + .5, "steel")
+            box(x0 - 1.0, x0 - .8, 629, 759, z - .5, z + .5, "steel")
         # insulated casing panels: thin skins between the buckstays and wale bands, two tones
-        ys = [y for y in range(604, 758, 8) if not any(abs(y - b) < 1.5 for b in bands)]
-        edges = sorted(set([601] + ys + [759]))
+        ys = [y for y in range(632, 758, 8) if not any(abs(y - b) < 1.5 for b in bands)]
+        edges = sorted(set([629] + ys + [759]))
         zs = [1.5, 20, 40, 60, 80, 85]
         for i, (ya, yb) in enumerate(zip(edges, edges[1:])):
             for j, (za, zb) in enumerate(zip(zs, zs[1:])):
@@ -66,7 +67,7 @@ def casing():
             box(x0 - .25, x0, y - .15, y + .15, 1.5, 85, "machine")
             box(x0, x1, y - .15, y + .15, 86, 86.3, "machine")
         # access doors per section (west wall, at grade)
-        for y in (622, 655, 700, 735, 752):
+        for y in (636, 655, 700, 735, 752):
             box(x0 - .15, x0, y - 1.5, y + 1.5, 2, 6.5, "door")
         # SCR: catalyst loading doors (three levels), AIG header and lances, CO catalyst door
         for z in (14, 34, 54):
@@ -76,7 +77,7 @@ def casing():
         for z in range(10, 80, 8):
             rod((x0 - 2.2, 664, z), (x0 + .4, 664, z), .18, "pipe", seg=6)    # lances
             rod((x0 - 1.4, 664, z - .3), (x0 - 1.4, 664, z + .3), .3, "amber", seg=8)   # balancing valves
-        box(x0 - .2, x0, 644, 650, 30, 36, "door")                               # CO catalyst access
+        box(x0 - .2, x0, 652, 658, 30, 36, "door")                               # CO catalyst access
         # ammonia vaporization / dilution-air skid at grade, west of the SCR
         box(x0 - 16, x0 - 5, 659, 670, 0, .6, "concrete")
         rod((x0 - 13, 664.5, 2.5), (x0 - 7, 664.5, 2.5), 2, "tank", seg=16)
@@ -108,26 +109,27 @@ def casing():
                 rod((xs + 1.6, yy, 104), (xs + 1.6, yy, 109), .9, "steel", seg=12)   # vent silencer
             rod((628 + dx, yy + rr + .8, zc - 2), (628 + dx, yy + rr + .8, zc + 2), .25, "glass", seg=8)  # level gauge
         # roof handrail
-        for (a, b) in (((x0, 601), (x1, 601)), ((x0, 759), (x1, 759)), ((x0, 601), (x0, 759)), ((x1, 601), (x1, 759))):
+        for (a, b) in (((x0, 629), (x1, 629)), ((x0, 759), (x1, 759)), ((x0, 629), (x0, 759)), ((x1, 629), (x1, 759))):
             rod((a[0], a[1], 89.4), (b[0], b[1], 89.4), .07, "rail", seg=4)
             rod((a[0], a[1], 87.7), (b[0], b[1], 87.7), .05, "rail", seg=4)
         for x in range(int(x0), int(x1) + 1, 6):
-            for y in (601, 759):
+            for y in (629, 759):
                 rod((x, y, 86), (x, y, 89.4), .05, "rail", seg=4)
-        for y in range(601, 760, 6):
+        for y in range(629, 760, 6):
             for x in (x0, x1):
                 rod((x, y, 86), (x, y, 89.4), .05, "rail", seg=4)
         # steam leads: over the east roof edge, down the north face beside the breeching, to the rack
         for (xl, zr, r, zt) in ((662.2 + dx, 91, 1.25, 27), (659.4 + dx, 92.2, 1.45, 25.5),
                                 (656.8 + dx, 93.4, .8, 24)):
-            pipe([(xl, 612, 86), (xl, 612, zr), (xl, 762, zr), (xl, 762, zt), (xl, 824, zt)], zr, r, "pipe")
+            pipe([(xl, 640, 86), (xl, 640, zr), (xl, 762, zr), (xl, 762, zt), (xl, 824, zt)], zr, r, "pipe")
         # feedwater from the boiler feed pumps up the east face to the economizer inlet
         pipe([(676 + dx, 652, 8), (664.6 + dx, 652, 8), (664.6 + dx, 652, 70), (664.6 + dx, 734, 70), (x1, 734, 70)], 70,
              .55, "pipe")
         # GT exhaust expansion joint and inlet-duct stiffener frames
         box(617.6 + dx, 642.4 + dx, 557.5, 560.5, 20.4, 38.6, "fanhub")
         on(find(f"HRSG {k + 1} inlet transition duct"))
-        for (yf, x_a, x_b, z_a, z_b) in ((572, 613, 647, 14, 52), (586, 605, 655, 8, 67)):
+        for (yf, x_a, x_b, z_a, z_b) in ((572, 615.6, 644.4, 17.4, 46.6), (586, 611.1, 648.9, 13.7, 55.9),
+                                         (603, 606.3, 653.7, 9.8, 66.9), (617, 601.8, 658.2, 6.1, 76.0)):
             box(x_a + dx, x_a + dx + .6, yf - .3, yf + .3, z_a, z_b, "steel")
             box(x_b + dx - .6, x_b + dx, yf - .3, yf + .3, z_a, z_b, "steel")
             box(x_a + dx, x_b + dx, yf - .3, yf + .3, z_b, z_b + .6, "steel")
@@ -160,9 +162,9 @@ def casing():
 # ---------------------------------------------------------------------------------------
 def access():
     """Open stair tower and access platforms per HRSG (replaces the solid stair block): a switchback stair at the
-    south end of the east wall, clear of the EL 30 cable tray (10 flights to the casing roof), grated platforms with
-    yellow handrails along the east wall at every second landing (about EL 17, 34, 52, 69) on brackets from the
-    buckstays, and a step-over from the top landing onto the roof."""
+    south-east corner beside the inlet diffuser, clear of the EL 30 cable tray (10 flights to the roof level), grated
+    platforms with yellow handrails along the east wall at every second landing (about EL 17, 34, 52, 69) on
+    brackets from the buckstays, and a bridge from the top landing onto the casing roof."""
     for k in range(3):
         dx = 160 * k
         it = find(f"HRSG {k + 1} + SCR")
@@ -201,19 +203,22 @@ def access():
         xp0, xp1 = 665.5 + dx, 669.5 + dx
         for i in (2, 4, 6, 8):
             zp = i * h
-            box(xp0, xp1, Y1, 738.0, zp - .25, zp, "grating")
-            box(xp0, xp1, Y1, 738.0, zp - .9, zp - .25, "steel")                       # edge beam
-            for y in list(range(628, 738, 16)):
+            box(xp0, xp1, 629.0, 738.0, zp - .25, zp, "grating")
+            box(xp0, xp1, 629.0, 738.0, zp - .9, zp - .25, "steel")                       # edge beam
+            for y in list(range(632, 738, 16)):
                 if 648 < y < 656:
                     continue
                 box(663.8 + dx, xp1, y - .2, y + .2, zp - 1.6, zp - .25, "steel")      # bracket
                 rod((xp1, y, zp), (xp1, y, zp + 3.5), .05, "sp_yellow", seg=4)
-            rod((xp1, Y1, zp + 3.5), (xp1, 738.0, zp + 3.5), .06, "sp_yellow", seg=4)
-            rod((xp1, Y1, zp + 1.75), (xp1, 738.0, zp + 1.75), .05, "sp_yellow", seg=4)
+            rod((xp1, 629.0, zp + 3.5), (xp1, 738.0, zp + 3.5), .06, "sp_yellow", seg=4)
+            rod((xp1, 629.0, zp + 1.75), (xp1, 738.0, zp + 1.75), .05, "sp_yellow", seg=4)
             rod((xp0, 738.0, zp + 3.5), (xp1, 738.0, zp + 3.5), .06, "sp_yellow", seg=4)
+            rod((xp0, 629.0, zp + 3.5), (xp1, 629.0, zp + 3.5), .06, "sp_yellow", seg=4)
             box(xp0, xp1, 610.0, Y0, zp, zp + .3, "sp_yellow") if False else None
-        # step-over from the top landing onto the casing roof (drum walkways by ladder from there)
-        box(663.4 + dx, X0, 612, 616, top - .3, top, "grating")
+        # bridge from the top landing north onto the casing roof (drum walkways by ladder from there)
+        box(663.4 + dx, 666.4 + dx, Y1, 630.0, top - .3, top, "grating")
+        for xs in (663.5 + dx, 666.3 + dx):
+            rod((xs, Y1, top + 3.5), (xs, 630.0, top + 3.5), .06, "sp_yellow", seg=4)
         dress(False)
 
 
@@ -318,7 +323,7 @@ def hrsg_cables_and_auxiliaries():
         it = find(f"HRSG {k + 1} + SCR")
         on(it)
         dress(True)
-        rx, ry = x1 + 3.2, 605.5
+        rx, ry = x1 + 7.3, 626.0
         for s_ in (-.75, .75):                                                        # riser EL 42 -> 79
             box(rx + s_ - .06, rx + s_ + .06, ry - .2, ry + .2, 42, 87, "pipe")
         z = 43
@@ -328,12 +333,14 @@ def hrsg_cables_and_auxiliaries():
         for m, col in enumerate(("cable_tc", "cable_inst", "cable_inst", "cable_tcx")):
             rod((rx - .5 + m * .33, ry - .05, 42), (rx - .5 + m * .33, ry - .05, 87), .1, col, seg=6)
         box(rx - 1.5, rx + 1.5, ry - 1, ry + 1, 87, 87.3, "grating")
-        box(x1 - 6, x1 - 2, 603, 606, 86, 88.5, "panel")                                # roof junction box
+        box(x1 - 6, x1 - 2, 631, 634, 86, 88.5, "panel")                                # roof junction box
+        pipe([(rx, ry, 87.45), (rx, 632.5, 87.45), (x1 - 2, 632.5, 87.45)], 87.45, .15, "cable_inst")
+        box(x1 + .2, rx + .6, 632.0, 633.0, 87.1, 87.25, "pipe")                        # short ladder tray to the roof
         box(594.8 + dx, 596.5 + dx, 688, 692, 37, 41.5, "panel")                        # west-wall marshalling JB
         box(594.6 + dx, 594.8 + dx, 688.4, 691.6, 37.4, 41.1, "steel")                # (EL 42 tray from R2 drops in)
         # cable runs along the drum-frame beam and drum-level bridles at each drum end
-        rod((x1 - 3, 606, 88.9), (x1 - 3, 740, 88.9), .2, "cable_inst", seg=6)
-        pipe([(x1 - 4, 604.5, 87.6), (x1 - 3, 604.5, 87.6), (x1 - 3, 604.5, 88.9), (x1 - 3, 606, 88.9)], 87.6, .2,
+        rod((x1 - 3, 634, 88.9), (x1 - 3, 740, 88.9), .2, "cable_inst", seg=6)
+        pipe([(x1 - 4, 632.5, 87.6), (x1 - 3, 632.5, 87.6), (x1 - 3, 632.5, 88.9), (x1 - 3, 634, 88.9)], 87.6, .2,
              "cable_inst")
         for (yy, rr) in ((660, 3.4), (700, 4.6), (732, 3.2)):
             zc = 89.2 + rr + 1
