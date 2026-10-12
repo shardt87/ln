@@ -121,7 +121,7 @@ def casing():
         # steam leads: over the east roof edge, down the north face beside the breeching, to the rack
         for (xl, zr, r, zt) in ((662.2 + dx, 91, 1.25, 27), (659.4 + dx, 92.2, 1.45, 25.5),
                                 (656.8 + dx, 93.4, .8, 24)):
-            pipe([(xl, 640, 86), (xl, 640, zr), (xl, 762, zr), (xl, 762, zt), (xl, 824, zt)], zr, r, "pipe")
+            pipe([(xl, 640, 86), (xl, 640, zr), (xl, 777, zr), (xl, 777, zt), (xl, 824, zt)], zr, r, "pipe")
         # feedwater from the boiler feed pumps up the east face to the economizer inlet
         pipe([(676 + dx, 652, 8), (664.6 + dx, 652, 8), (664.6 + dx, 652, 70), (664.6 + dx, 734, 70), (x1, 734, 70)], 70,
              .55, "pipe")
@@ -294,8 +294,9 @@ def stacks():
                 gy + 10.5 * math.sin(a), 184), .1, "copper", seg=4)
         # breeching expansion joint and stiffener frames
         on(find(f"HRSG {k + 1} outlet breeching"))
-        box(605.5 + dx, 654.5 + dx, 762, 764, 47.5, 78.5, "fanhub")
-        for (yf, xa, xb, za, zb) in ((770, 611, 649, 50, 76.5), (776, 616, 644, 52, 75.5)):
+        box(597.4 + dx, 662.6 + dx, 760.2, 761.8, 2.4, 84.6, "fanhub")                # expansion joint at the casing
+        for (yf, xa, xb, za, zb) in ((766, 602.9, 657.1, 5.9, 83.3), (772, 611.0, 649.0, 11.6, 81.9),
+                                     (777, 617.8, 642.2, 16.0, 80.6)):
             box(xa + dx, xa + dx + .5, yf - .25, yf + .25, za, zb, "steel")
             box(xb + dx - .5, xb + dx, yf - .25, yf + .25, za, zb, "steel")
             box(xa + dx, xb + dx, yf - .25, yf + .25, zb, zb + .5, "steel")

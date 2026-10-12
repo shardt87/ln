@@ -371,10 +371,13 @@ for i, gx in enumerate(GX, start=1):
          sheet="SK-3X1-01", info="Expands the GT exhaust into the HRSG face (SK-3X1-09 'exhaust transition').")
     # inlet diffuser: a long transition from the GT exhaust to the casing face (about 70 ft on H-class units)
     loft_y(560, (620 + dx, 640 + dx, 21, 38), 629, (598 + dx, 662 + dx, 3, 84), "hrsg")
-    item(L, f"HRSG {i} outlet breeching", (605 + dx, 655 + dx, 759, 779), (48, 78), area="A",
+    item(L, f"HRSG {i} outlet breeching", (597 + dx, 663 + dx, 759, 786), (2, 85), area="A",
          register=False)
-    # into the stack: the loft ends inside the shell (chord at y 786 is wider than the duct), no corners poke out
-    loft_y(759, (605 + dx, 655 + dx, 48, 78), 786, (621 + dx, 639 + dx, 54, 74), "hrsg")
+    # outlet hood: a short flanged section at the full casing outlet, then a converging hood into a tall
+    # rectangular inlet on the side of the stack (18 x 60 ft); the straight end pierces the shell and ends inside
+    loft_y(759, (598 + dx, 662 + dx, 3, 84), 762, (598 + dx, 662 + dx, 3, 84), "hrsg")
+    loft_y(762, (598 + dx, 662 + dx, 3, 84), 779, (621 + dx, 639 + dx, 18, 80), "hrsg")
+    loft_y(779, (621 + dx, 639 + dx, 18, 80), 786, (621 + dx, 639 + dx, 18, 80), "hrsg")
     # --- stack with CEMS platform
     item(L, f"HRSG {i} stack", (619 + dx, 641 + dx, 779, 801), (0, 180), tag=f"STK-{i}", area="A",
          sheet="SK-3X1-13", shape="circle",

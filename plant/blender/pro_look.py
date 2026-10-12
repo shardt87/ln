@@ -1080,6 +1080,8 @@ EPIC = [
                    (1960, 1303, 9, "3", "FC-5..12", ""), (2280, 1082, 11, "3", "MT-1..3", "")]),
     dict(k="E58", n="Cable reel yard: SIMpull Truck unloading SIMpull Reels on payoffs, reel rows",
          eye=(214, 702, 15), target=(160, 752, 6), lens=28, show="base"),
+    dict(k="E102", n="HRSG 1 outlet hood from the east: casing outlet converging into the stack's side inlet",
+         eye=(716, 846, 118), target=(632, 768, 46), lens=26, show="base", sun=(32, 95)),
     dict(k="E101", n="HRSG 1 from the west: GT exhaust diffuser, 130 ft casing with the drums on top, stack at the outlet",
          eye=(470, 640, 150), target=(640, 690, 50), lens=26, show="all", sun=(35, 230)),
     dict(k="E100", n="HRSG 1 west side: EL 42 control / instrument tray from the R2 e-house to the HRSG marshalling box",

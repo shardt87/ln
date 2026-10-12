@@ -496,3 +496,13 @@ tight at the outlet. The model had a 158 ft casing behind an abrupt 40 ft inlet 
 - The stair tower stays at the south-east corner beside the diffuser and bridges onto the roof. The east-wall
   platforms, the cable riser, the roof junction box and the steam leads follow the new south end.
 - Camera E101 (aerial from the west); E99 and E26 re-rendered. verify PASS (0 clashes), audit CLEAN, coastal PASS.
+
+### HRSG outlet hood (`build_model.py`, `hrsg.py`, `routes_base.json`)
+User question: is the connector between the HRSG and the stack realistic? No: a 50 x 30 ft box joined the middle
+of the 64 x 81 ft casing outlet to the stack. Built units take the whole casing outlet through a converging
+outlet hood into a tall rectangular inlet on the side of the stack.
+- A 3 ft flanged section at the full casing outlet with the expansion joint. Then a 17 ft hood converging to
+  18 x 62 ft, and a straight end that pierces the stack shell. Three stiffener frames on the hood.
+- The steam leads now come down north of the hood (y 777). The steam route starts there, and the condensate
+  line now enters the casing on its west wall instead of running under the hood.
+- Camera E102 (outlet hood from the north-east); E28 re-rendered. verify PASS (0 clashes), audit CLEAN, coastal PASS.
