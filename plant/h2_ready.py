@@ -104,6 +104,100 @@ def trailer(x0, y, heading=1):
           bg="#c8102e")
 
 
+def blending_station(routes):
+    """H2 30 rebuilt as a fenced blending station in the east corner of the plant gas yard: the hydrogen train
+    (ESD, filter, Coriolis meter, ratio-control valve, check valve) and a natural-gas slipstream from the fuel header
+    (metered) meet in a static mixer; the blend returns to the header upstream of the GT ESD. A hydrogen buffer
+    vessel, an H2-concentration / Wobbe analyser shelter, a local vent stack, an N2 purge rack, a remote-I/O panel,
+    gas and flame detection, lighting and Group B signs. Serves all three GT fuel branches."""
+    for r in routes:                                   # the hydrogen supply now ends at the station's east fence
+        if r["type"] == "hydrogen" and r["points"][-1] == [1840.0, 1485.0]:
+            r["points"][-1] = [1906.0, 1485.0]
+    G = fuel.G
+    it = fuel.find("H2 30: H2 / gas blending skid")
+    G["parts"][:] = [p for p in G["parts"] if p["item"] != it["id"]]
+    it["name"] = "H2 30: H2 / gas blending station (plant gas yard)"
+    it["fp"], it["z"] = [1782, 1906, 1440, 1500], [-1.5, 30]
+    it["info"] = ("Blends hydrogen into the plant fuel header that feeds all three GTs, ratio-controlled to the "
+                  "combustor limit (H-class: roughly 30-50 % by volume, about 10-25 % of the fuel energy); started as "
+                  "a 5 % pilot on GT-1. Group B hazardous area: hazardous-location instruments and motors, sealed "
+                  "glands, ARMOR-X MC-HL rated for Group B, gas and UV / IR flame detection.")
+    on(it)
+    fuel.D = False
+    box(1782, 1906, 1440, 1500, .59, .75, "gravel")
+    fuel.D = True
+    fence(1782, 1906, 1440, 1500, gate=("w", 4, 16))
+    # hydrogen train (from the east): ESD, filter, Coriolis meter run, ratio control valve, check valve
+    pipe([(1906, 1485, 4), (1846, 1485, 4), (1846, 1466, 4)], 4, .45, H2)
+    valve((1899, 1485, 4), 0, .45, "esd")
+    valve((1893, 1485, 4), 0, .45, "hand")
+    rod((1886, 1488.5, .75), (1886, 1488.5, 9), 1.3, H2, seg=16)                     # cartridge filter
+    rod((1886, 1488.5, 9), (1886, 1488.5, 9.8), 1.3, H2, r2=.6, seg=16)
+    pipe([(1888, 1485, 4), (1888, 1487.4, 4)], 4, .3, H2, elbows=False)
+    box(1862, 1880, 1481.5, 1488.5, .75, 1.5, "steel")                                # meter skid
+    rod((1868, 1485, 4), (1874, 1485, 4), .8, "machine", seg=16)                       # Coriolis meter
+    box(1870, 1872, 1484, 1486, 5, 6.4, "panel")
+    valve((1858, 1485, 4), 0, .45, "ctrl")                                           # ratio control valve
+    valve((1851, 1485, 4), 0, .45, "hand")                                           # check / isolation
+    for x in (1866, 1878, 1893):
+        box(x - .3, x + .3, 1484.7, 1485.3, .75, 3.55, "steel")
+    # natural-gas slipstream from the fuel header (buried tie, riser outside the fence), metered
+    rod((1772, 1452, -1.5), (1772, 1452, 4), .55, "fuelgas", seg=12)
+    pipe([(1772, 1452, 4), (1838, 1452, 4), (1838, 1466, 4)], 4, .55, "fuelgas")
+    box(1792, 1816, 1448, 1456, .75, 1.5, "steel")                                    # ultrasonic meter skid
+    rod((1801, 1452, 4), (1807, 1452, 4), .95, "machine", seg=16)
+    box(1803, 1805, 1450.8, 1453.2, 5, 6.4, "panel")
+    valve((1788, 1452, 4), 0, .55, "esd")
+    valve((1824, 1452, 4), 0, .55, "hand")
+    # static mixer and the blend back to the header (upstream of the GT ESD), with a sample point
+    rod((1812, 1466, 4), (1846, 1466, 4), .9, "fuelgas", seg=16)
+    for x in (1814, 1824, 1834, 1844):
+        rod((x - .12, 1466, 4), (x + .12, 1466, 4), 1.4, "steel", seg=16)               # mixer flanges
+        box(x - .4, x + .4, 1465, 1467, .75, 3.1, "steel")
+    pipe([(1812, 1466, 4), (1800, 1466, 4), (1800, 1488, 4)], 4, .55, "fuelgas")
+    valve((1800, 1478, 4), 1, .55, "mov")
+    rod((1808, 1466, 4.6), (1808, 1471, 4.6), .1, "pipe", seg=6)                     # sample line
+    # analyser shelter (H2 concentration / Wobbe index), sample cylinders
+    box(1817, 1831, 1472, 1482, .75, 1.2, "concrete")
+    box(1818, 1830, 1473, 1481, 1.2, 9.5, "ehouse")
+    box(1817.6, 1830.4, 1472.6, 1481.4, 9.5, 9.9, "roof")
+    box(1823, 1825, 1472.9, 1473, 1.6, 8, "door")
+    for k in range(3):
+        rod((1832 + k * .9, 1477, .75), (1832 + k * .9, 1477, 5), .35, "tank", seg=10)
+    # hydrogen buffer vessel with relief to a local vent stack
+    hvessel(1862, 1892, 1461, 4.5, 2.4, c=H2, saddles=(1868, 1886), psv=1889)
+    pipe([(1877, 1485, 4), (1877, 1470, 4), (1877, 1470, 7.2), (1877, 1463.6, 7.2)], 4, .3, H2)
+    pipe([(1890.2, 1461, 8.8), (1898, 1461, 8.8), (1898, 1446, 8.8)], 8.8, .25, "pipe")
+    rod((1898, 1446, .75), (1898, 1446, 30), .5, "steel", seg=10)                   # vent stack
+    rod((1898, 1446, 29), (1898, 1446, 30), .7, "steel", seg=10)
+    box(1897, 1899, 1445, 1447, .75, 1.4, "concrete")
+    # N2 purge rack and the remote-I/O / fire & gas panel
+    box(1880, 1897, 1490, 1497, .75, 1, "concrete")
+    for k in range(8):
+        rod((1881.5 + k * 2, 1493.5, 1), (1881.5 + k * 2, 1493.5, 6), .45, "tank", seg=10)
+    box(1880.5, 1896.5, 1492, 1492.4, 4.5, 4.9, "steel")
+    box(1786, 1794, 1489, 1494, .75, 7, "cabinet")
+    box(1785.5, 1794.5, 1488.5, 1494.5, 7, 7.3, "roof")
+    for k in range(4):
+        rod((1787 + k * 1.8, 1488.7, -1), (1787 + k * 1.8, 1488.7, 1.5), .12, "steel", seg=6)
+    for (x, y) in ((1850, 1478), (1880, 1455), (1830, 1460), (1900, 1495), (1796, 1460)):
+        rod((x, y, .75), (x, y, 6.5), .08, "steel", seg=6)
+        rod((x, y, 5.6), (x, y, 6.3), .22, "sp_yellow", seg=10)                       # gas detectors
+    for (x, y) in ((1784, 1442), (1904, 1442), (1904, 1498)):
+        rod((x, y, .75), (x, y, 12), .08, "steel", seg=6)
+        box(x - .3, x + .3, y - .3, y + .3, 12, 12.5, "panel")                          # UV / IR flame detectors
+    rod((1855, 1498, .75), (1855, 1498, 24), .25, "steel", seg=8)
+    box(1853.8, 1856.2, 1497.5, 1498.5, 23.2, 24, "lamp")
+    decal((1782 - .05, 1475, 5.5), (-1, 0, 0), 7, 3.6,
+          [("DANGER", .22, True, "#ffffff", False, "#c8102e"), ("HYDROGEN", .2, True, None),
+           ("CLASS I DIV 2 GROUP B", .13, True, None), ("NO IGNITION SOURCES", .13, False, None)], bg="#ffffff")
+    decal((1782 - .05, 1458, 5.0), (-1, 0, 0), 6, 2.2,
+          [("H2 30  BLENDING STATION", .3, True, None), ("TO GT-1 / GT-2 / GT-3 FUEL", .2, False, None)],
+          bg="#ffd200")
+    person(1858, 1474, .75, 1.57)
+    fuel.D = False
+
+
 def build(routes):
     G = fuel.G
     n_moved = alt_routes(routes)
@@ -281,9 +375,5 @@ def build(routes):
     fence(2328, 2372, 1438, 1482, gate=("s", 4, 16), h=6)
     fuel.D = False
 
-    # blending skid serves all three GT fuel branches
-    bl = fuel.find("H2 30: H2 / gas blending skid")
-    bl["info"] = ("Blends pipeline hydrogen into the plant fuel header that feeds all three GTs, ratio-controlled "
-                  "to the combustor limit (H-class: roughly 30-50 % by volume); started as a 5 % pilot on GT-1. "
-                  "Group B hazardous area.")
+    blending_station(routes)
     return n_moved

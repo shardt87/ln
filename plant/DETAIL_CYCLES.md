@@ -545,3 +545,17 @@ Intermountain). The base case for the zone is now:
   is the alternative layer OPT_H2P / OPT_H2P_ROUTES, with view O5P. The alternative is excluded from the "all"
   views, and its cameras E103 / E104 add it and hide the electrolysis layers. Both arrangements share the vent
   stack and the blending skid, which serves all three GTs.
+
+### H2 30 blending station (`h2_ready.py`)
+User question (screenshot of the gas yard): is this right? The routing was right: hydrogen from the electrolysis
+area blends into the plant fuel header. But the blending skid was a placeholder (a frame with two valves) alone in
+an empty corner of the gas-yard pad. It is now a fenced Group B blending station in that corner (x 1782-1906,
+y 1440-1500):
+- **Hydrogen train:** ESD valve, cartridge filter, Coriolis meter, ratio-control valve, check valve.
+- **Gas slipstream:** from the fuel header, buried tie and riser, with an ESD valve and an ultrasonic meter.
+- **Static mixer:** the blend returns to the header through an MOV, upstream of the GT ESD, with a sample point.
+- **Around them:** an H2-concentration / Wobbe analyser shelter, a hydrogen buffer vessel with relief to a local
+  30 ft vent stack, an N2 purge rack, a remote-I/O / fire & gas panel, gas and UV / IR flame detectors, a
+  light pole and Group B signs.
+- The hydrogen supply now ends at the station's east fence. Camera E105. verify PASS (0 clashes), audit CLEAN,
+  coastal PASS.
