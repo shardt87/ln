@@ -1546,6 +1546,11 @@ for fname, src, optional in [("routes_base.json", "SK-3X1-01", False), ("routes_
                 lay = layer
             routes.append(dict(type=rtype, layer=lay, label=label, z=z, w=w, h=h, color=colour,
                                points=pl, sheet=src))
+# inlet-chilling CHW headers to the GT inlets: carried overhead at EL 10 under the turbine deck (between the
+# pedestal legs and column lines), so the ground-floor walkways stay clear
+for r in routes:
+    if r["type"] == "chw" and r["points"][-1][0] in (910.0, 916.0):
+        r["z"] = 10
 # H-MOD 230 kV overhead tie in the reserved corridor COR-HMOD (SK-3X1-08)
 HMOD = [[2095, 870], [2095, 805], [1515, 805], [1515, 262], [1690, 262], [1690, 237], [1720, 130]]
 routes.append(dict(type="hmod", layer="HV_CORRIDOR", label=ROUTE_STYLE["hmod"][4], z=45, w=0.8, h=0.8,

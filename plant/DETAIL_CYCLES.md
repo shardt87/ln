@@ -506,3 +506,13 @@ outlet hood into a tall rectangular inlet on the side of the stack.
 - The steam leads now come down north of the hood (y 777). The steam route starts there, and the condensate
   line now enters the casing on its west wall instead of running under the hood.
 - Camera E102 (outlet hood from the north-east); E28 re-rendered. verify PASS (0 clashes), audit CLEAN, coastal PASS.
+
+### Turbine hall ground floor: crossover stiles removed (`hall_access.py`, `build_model.py`)
+User question: what is the up-and-down stair under the deck? It was a crossover stile over the inlet-chilling
+chilled-water headers at EL 3. Those headers are an optional system, so in most views the stile crossed nothing.
+Even with them shown, running the headers overhead under the slab is the realistic layout.
+- The CHW headers run at EL 10, between the pedestal legs and the column lines (9 ft clear below). The run from
+  the inlet-chilling plant is at the same level, except where it dips under the road.
+- The two stiles are removed. The ground-floor walk to each deck stair is clear, and the operator who stood on
+  the stile now walks at grade.
+- verify PASS (0 clashes), audit CLEAN, coastal PASS.

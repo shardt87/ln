@@ -9,10 +9,9 @@ machines. As in a real table-top turbine hall, people cross underneath:
 - stairs from the ground floor up through guarded openings in the slab between GT1 / GT2 and GT2 / GT3, joining
   the two existing deck stairs (laydown bay, south gallery east end), so the route is up - across - down - across
   - up;
-- crossover stiles (steps up, a short grated platform with handrails, steps down) where the north-south walk to
-  each stair meets the inlet-chilling chilled-water headers at EL 3;
-- operators on the ground floor, on a stile and on a stair.
-The chilled-water headers that were buried in the old block now run visibly under the deck.
+- operators on the ground floor and on a stair.
+The inlet-chilling chilled-water headers run overhead at EL 10 under the deck (set in build_model), so the
+ground-floor walkways need no crossover stiles.
 """
 import fuel
 from fuel import box, rod
@@ -119,13 +118,13 @@ def build():
             for x in (a + 2, b - 2):
                 box(x - 2, x + 2, y - 2, y + 2, 0, ZS - 5.0, "concrete")
     fuel.D = True
-    it = fuel.new_item("BASE_POWER_BLOCK", "Turbine hall access: stairs through the deck between the units, crossover "
-                       "stiles over the chilled-water headers, ground-floor lighting", (560, 1099, 404, 556), (0, 24),
+    it = fuel.new_item("BASE_POWER_BLOCK", "Turbine hall access: stairs through the deck between the units, ground-floor "
+                       "walkways and lighting", (560, 1099, 404, 556), (0, 24),
                        area="A", basis="typical", sheet="typical (hall access)", register=False,
                        info="People cross between units at grade under the operating floor: stairs up through guarded "
                             "slab openings between GT1 / GT2 and GT2 / GT3 (plus the laydown-bay and south-gallery "
-                            "stairs), crossover stiles where the walk meets the EL 3 chilled-water headers, LED fixtures "
-                            "under the slab.")
+                            "stairs), clear walkways under the EL 10 chilled-water headers, LED fixtures under the "
+                            "slab.")
     fuel.on(it)
     fuel.D = True
     for (a, b, c, d) in OPEN:
@@ -136,7 +135,6 @@ def build():
             box(xa, xb, ya, yb, 21.7, 21.85, "sp_yellow")                     # mid rail
         for (px, py) in ((a, c), (b, c), (a, d), (b, d), (a, (c + d) / 2), (b, (c + d) / 2)):
             rod((px, py, 20), (px, py, 23.5), .08, "sp_yellow", seg=6)
-        stile(a + 1, b - 1, 455.0, c + 1.5)                                  # over the CHW headers (y 464 / 470)
     for x in range(585, 1090, 30):                                           # LED fixtures under the slab
         for y in (440.0, 520.0):
             if _in_ped(x, y, 2):
@@ -149,7 +147,7 @@ def build():
             box(x, x + 30, 430.2, 430.4, 0, .02, "yellow")
     person(700, 427, 0, 0.0)                                                 # walking east on the ground floor
     person(864, 428, 0, 0.0, vest="hivis_o")
-    person(715, 466, 5.5, 1.5708)                                            # on the stile
+    person(715, 462, 0, 1.5708)                                              # walking to the stair
     person(875, 500, 12.5, 1.5708, vest="hivis_o")                           # climbing to the deck
     person(716, 520, 20, 1.5708)                                             # arriving on the deck
     fuel.D = False
