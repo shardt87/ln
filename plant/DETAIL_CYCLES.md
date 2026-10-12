@@ -460,3 +460,17 @@ for a crossover bridge over the machines. As in a real table-top turbine hall, p
   up, a grated platform with handrails, steps down) carries people over them.
 - Operators are shown on the ground floor, on a stile, on a stair and arriving on the deck.
 - Cameras E97 (ground floor), E98 (deck opening). verify PASS (0 clashes), audit CLEAN, coastal PASS.
+
+### HRSG shape review (`hrsg.py`, `build_model.py`)
+User question: does the HRSG look right? The type and arrangement are right: horizontal gas flow, three-pressure
+reheat with SCR, drums on the roof, diverging inlet transition from the GT exhaust, stack at the outlet. Three things
+made it read wrong against photos:
+- **Casing height:** raised from 78 to 85 ft, the upper value in the sheet-13 note; H-class units sit at the top of
+  that range. The drums keep their elevation on a shorter frame, so the top stays at EL 100. The roof, risers,
+  handrail, steam leads, downcomers, AIG riser and cable riser all follow the new roof.
+- **Stair tower:** was a solid grey block. It's now an open switchback stair tower at the north-east corner: four
+  columns on footings, 10 flights to the drum level, landings and yellow guard rails.
+- **Access platforms:** new grated platforms with yellow handrails along the east wall at every second landing
+  (about EL 18, 36, 54, 71), on brackets from the buckstays, plus a bridge from the top landing to the drum
+  walkways.
+- Camera E99 (north-east view); E26 and E28 re-rendered. verify PASS (0 clashes), audit CLEAN, coastal PASS.

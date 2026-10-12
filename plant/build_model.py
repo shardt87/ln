@@ -345,15 +345,15 @@ for i, gx in enumerate(GX, start=1):
          info="70 x 160 ft, top EL 100 (501G HRSG ~70 ft; largest casing 85 ft). Three-pressure "
          "reheat with SCR. HP, IP and LP drums on the roof steel.")
     B(595 + dx, 665 + dx, 600, 760, 0, 1.5, "concrete")
-    # casing about 78 ft tall (the sheet-13 note gives ~70 ft for a 501G HRSG, 85 ft the largest);
-    # the drums stand on an open steel frame above it, so the overall top stays at EL 100
-    B(597 + dx, 663 + dx, 601, 759, 1.5, 78, "hrsg")
+    # casing 85 ft tall (the sheet-13 note: ~70 ft for a 501G HRSG, 85 ft the largest; H-class units are at the
+    # top of that range); the drums sit on a short steel frame above it, so the overall top stays at EL 100
+    B(597 + dx, 663 + dx, 601, 759, 1.5, 85, "hrsg")
     for yy in range(620, 760, 20):                            # casing stiffener bands
-        B(596.5 + dx, 663.5 + dx, yy - 0.6, yy + 0.6, 1.5, 78, "steel")
-    B(596.6 + dx, 663.4 + dx, 600.6, 759.4, 78, 79, "roof")    # casing roof (headers below)
-    for fx in (600, 630, 660):                                 # open drum-support frame, EL 79-89
+        B(596.5 + dx, 663.5 + dx, yy - 0.6, yy + 0.6, 1.5, 85, "steel")
+    B(596.6 + dx, 663.4 + dx, 600.6, 759.4, 85, 86, "roof")    # casing roof (headers below)
+    for fx in (600, 630, 660):                                 # drum-support frame, EL 86-89
         for fy in (650, 670, 690, 710, 724, 740):
-            B(fx + dx - .6, fx + dx + .6, fy - .6, fy + .6, 79, 88.6, "steel")
+            B(fx + dx - .6, fx + dx + .6, fy - .6, fy + .6, 86, 88.6, "steel")
         B(fx + dx - .5, fx + dx + .5, 649, 741, 88.6, 89.2, "steel")
     for fy in (650, 670, 690, 710, 724, 740):
         B(600 + dx, 660 + dx, fy - .4, fy + .4, 88.6, 89.2, "steel")
@@ -369,7 +369,7 @@ for i, gx in enumerate(GX, start=1):
     B(665 + dx, 673 + dx, 738, 752, 0, 92, "stair")
     item(L, f"HRSG {i} inlet transition duct", (595 + dx, 665 + dx, 560, 600), (2, 96), area="A",
          sheet="SK-3X1-01", info="Expands the GT exhaust into the HRSG face (SK-3X1-09 'exhaust transition').")
-    loft_y(560, (620 + dx, 640 + dx, 21, 38), 600, (598 + dx, 662 + dx, 3, 77), "hrsg")
+    loft_y(560, (620 + dx, 640 + dx, 21, 38), 600, (598 + dx, 662 + dx, 3, 84), "hrsg")
     item(L, f"HRSG {i} outlet breeching", (605 + dx, 655 + dx, 759, 779), (48, 78), area="A",
          register=False)
     # into the stack: the loft ends inside the shell (chord at y 786 is wider than the duct), no corners poke out
