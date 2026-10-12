@@ -516,3 +516,25 @@ Even with them shown, running the headers overhead under the slab is the realist
 - The two stiles are removed. The ground-floor walk to each deck stair is clear, and the operator who stood on
   the stile now walks at grade.
 - verify PASS (0 clashes), audit CLEAN, coastal PASS.
+
+### Hydrogen-ready zone K (`h2_ready.py`, `build_model.py`, `verify.py`)
+User question: does the hydrogen area mean the GTs are hydrogen-ready, and does a plant need on-site
+production? The turbines are hydrogen-capable H-class units, which burn blends of roughly 30-50 % by volume. A
+plant does not need its own production: the usual supply is a pipeline from a hub (e.g. ACES Delta at
+Intermountain). The base case for the zone is now:
+- **H2R receiving station** (fenced, Group B):
+  - pipeline riser with an insulating joint and ESD valve, a pig receiver, twin filter / coalescers;
+  - a two-run ultrasonic metering skid with a purity analyser shelter;
+  - two pressure-reduction trains (slam-shut, monitor, active regulator; no preheater, since hydrogen warms on
+    expansion), with relief to the existing vent stack;
+  - an N2 purge skid, and an e-house (480 V, UPS, fire & gas / ESD);
+  - gas and UV / IR flame detection, lighting and Group B signs.
+- **H2T tube-trailer bay**: two trailers, unloading posts with earthing reels, a canopy. Used to commission
+  and test the blend before the pipeline is in.
+- **H2X reserve pad** for a Phase 2 on-site plant: graded, fenced, with conduit stub-ups and a sign.
+  **H2F** is the future T-H2 foundation, where the 230 kV cable from D6 comes up (capped).
+- The station feeds the blending skid in the gas yard, which now serves all three GT fuel branches.
+- The 25 MW electrolysis complex (sheet 14) and its routes move to the alternative layers OPT_H2E /
+  OPT_H2E_ROUTES. These are excluded from the "all" views. View O5H shows them, and verify skips clashes
+  between the two alternatives.
+- Cameras E103 (receiving station) and E104 (zone overview). verify PASS (0 clashes), audit CLEAN, coastal PASS.

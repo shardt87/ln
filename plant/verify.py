@@ -197,6 +197,11 @@ TOUCH = [
 TOUCH = [(re.compile(a), re.compile(b)) for a, b in TOUCH]
 
 
+# alternative arrangements of one zone: the H2 receiving station / reserve pad vs on-site electrolysis
+ALT_A = {"OPT_H2", "OPT_H2_ROUTES"}
+ALT_B = {"OPT_H2E", "OPT_H2E_ROUTES"}
+
+
 def allowed(n1, n2):
     return any((a.search(n1) and b.search(n2)) or (a.search(n2) and b.search(n1)) for a, b in TOUCH)
 
@@ -219,6 +224,8 @@ for cell in grid.values():
         (p, a), (q, b) = solid_parts[i], solid_parts[j]
         if p["item"] == q["item"]:
             continue
+        if {p["layer"], q["layer"]} & ALT_A and {p["layer"], q["layer"]} & ALT_B:
+            continue                     # mutually exclusive design options, never shown together
         ov = [min(a[2 * k + 1], b[2 * k + 1]) - max(a[2 * k], b[2 * k]) for k in range(3)]
         if min(ov) <= 0.05:
             continue
@@ -236,7 +243,7 @@ cl = sorted(clashes.values(), key=lambda c: -c["volume_ft3"])
 results["clashes"] = dict(pairs_tested=len(seen), clashes=cl, ok=not cl)
 
 # 5. bounds -------------------------------------------------------------------
-below_ok = re.compile(r"Stormwater|cable basement|Compound|sump pump|MC-cable risers|^FH-\d|^Underground:|^LS-1|cable termination structure|Service-entrance handhole|^Ground over the|^BESS PCS / MV skid|^Cable pull: DC")
+below_ok = re.compile(r"Stormwater|cable basement|Compound|sump pump|MC-cable risers|^FH-\d|^Underground:|^LS-1|cable termination structure|Service-entrance handhole|^Ground over the|^BESS PCS / MV skid|^Cable pull: DC|^H2[RXF]: ")
 oob = []
 for p, b in PB_ALL:
     n = items[p["item"]]["name"]

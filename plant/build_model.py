@@ -1696,11 +1696,13 @@ LAYERS = {
     "OPT_MODX_ROUTES": ("I+ modular expansion routes", "Optional routes"),
     "OPT_IC": ("J GT inlet chilling", "Optional / adjacent"),
     "OPT_LNG": ("K LNG satellite", "Optional / adjacent"),
-    "OPT_H2": ("K 25 MW green hydrogen", "Optional / adjacent"),
+    "OPT_H2": ("K hydrogen-ready: pipeline receiving, trailer bay, reserve pad", "Optional / adjacent"),
+    "OPT_H2E": ("K alt: on-site 25 MW electrolysis (in place of the reserve pad)", "Optional / adjacent"),
     "OPT_CCS_ROUTES": ("G routes", "Optional routes"), "OPT_CCSU_ROUTES": ("G utility routes", "Optional routes"),
     "OPT_BESS_ROUTES": ("H routes", "Optional routes"), "OPT_MOD_ROUTES": ("I modular routes", "Optional routes"),
     "OPT_TMP_ROUTES": ("I portable-pad routes", "Optional routes"), "OPT_IC_ROUTES": ("J routes", "Optional routes"),
     "OPT_LNG_ROUTES": ("K LNG routes", "Optional routes"), "OPT_H2_ROUTES": ("K H2 routes", "Optional routes"),
+    "OPT_H2E_ROUTES": ("K electrolysis routes", "Optional routes"),
     "OPT_DC": ("L BTM data centre (~150 MW, design option)", "Optional / adjacent"),
     "OPT_DC_ROUTES": ("L BTM routes", "Optional routes"),
     "OPT_UNDERGROUND": ("Underground: option duct banks", "Optional routes"),
@@ -1759,9 +1761,11 @@ VIEWS = [
     dict(k="O4", n="O4 Inlet chilling", show=BASE_SHOW + ["OPT_IC", "OPT_IC_ROUTES"], t=[180, 1160, 20], c=[-150, 820, 420]),
     dict(k="O5", n="O5 Gas, LNG, H2", show=BASE_SHOW + ["OPT_LNG", "OPT_H2", "OPT_LNG_ROUTES", "OPT_H2_ROUTES",
          "SWYD_FUTURE"], t=[1980, 1650, 10], c=[1650, 1150, 700]),
-    dict(k="O6", n="Add-on: plant + BTM data centre", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND")],
+    dict(k="O5H", n="O5H Alt: on-site hydrogen (25 MW electrolysis)", show=BASE_SHOW + ["OPT_LNG", "OPT_H2E", "OPT_LNG_ROUTES",
+         "OPT_H2E_ROUTES", "OPT_H2_ROUTES", "SWYD_FUTURE"], t=[2190, 1520, 10], c=[2050, 1250, 380]),
+    dict(k="O6", n="Add-on: plant + BTM data centre", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND", "OPT_H2E", "OPT_H2E_ROUTES")],
          t=[2200, 850, 30], c=[700, -1400, 1700]),
-    dict(k="ALL", n="Complete plant", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND")
+    dict(k="ALL", n="Complete plant", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND", "OPT_H2E", "OPT_H2E_ROUTES")
                                             and not l.startswith("OPT_DC")],
          t=[1210, 900, 40], c=[-350, -750, 1400]),
 ]
@@ -1799,6 +1803,7 @@ FIT = {
     "O3": dict(layers=["OPT_CCS", "OPT_CCSU"]),
     "O4": dict(layers=["OPT_IC"]),
     "O5": dict(layers=["OPT_LNG", "OPT_H2"], box=[1560, 2400, 1410, 1910, 0, 30]),
+    "O5H": dict(layers=["OPT_H2E"], box=[1985, 2400, 1410, 1640, 0, 40]),
     "O6": dict(box=[0, 3380, 0, 1920, 0, 120]),
     "ALL": dict(box=[0, 2420, 0, 1920, 0, 120]),
 }
@@ -1925,6 +1930,8 @@ for _r in routes:
 _ccs.build(); _ccsd.build(); import zone_detail as _zd; _zd.build()              # cycle 6: carbon capture flue-gas path, amine piping and rack, regeneration, CT   # cycle 5: gate, fence wire and CCTV, drainage, lighting, admin / workshop dressing
 import placeholders as _ph
 _ph.build()               # single-box placeholders rebuilt as equipment (CCS, LNG, H2, BTM)
+import h2_ready as _h2r
+N_H2R = _h2r.build(routes)  # hydrogen-ready: pipeline receiving station, trailer bay, reserve pad; electrolysis -> OPT_H2E
 _dc.color_parts()         # BTM data centre: colour by supply path (islanded / modular yard / grid tie)
 
 # Wiring applications: every powered / instrumented item gets its cable applications, and a buried
