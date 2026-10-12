@@ -559,3 +559,22 @@ y 1440-1500):
   light pole and Group B signs.
 - The hydrogen supply now ends at the station's east fence. Camera E105. verify PASS (0 clashes), audit CLEAN,
   coastal PASS.
+
+### Electrolyzer hall H2 22 at LOD 3 (`h2_hall.py`)
+The building was a solid block. It is now an open hall, with its roof and ridge vents on layer H2_ROOF.
+- **Building:** portal frames every 20 ft, insulated walls with a liner, an epoxy floor, LED high-bays, ceiling
+  hydrogen detectors at the ridge, and exhaust fans.
+- **Five PEM skids:** four stack modules each with end plates, tie rods and DC terminals; H2 and O2 separators,
+  a circulation pump and a control cabinet. H2 goes to an overhead header out of the east wall; the O2 vents
+  rise through the roof.
+- **Five rectifiers** with doors, roof vents and a status strip.
+- **DC bus, per unit:** a ladder tray at EL 14 from the rectifier over the aisle to the stack bus bar, carrying
+  eight parallel 1/C DC cables (red +, black -) on trapeze hangers.
+- **13.8 kV supply:** from the rectifier transformers in covered floor trenches, with conduits up into each
+  cabinet.
+- **Also inside:** an LV / control room with an MCC lineup and PLC / UPS cabinets, cooling-water headers with
+  drops to each skid, and technicians.
+- **Outside:** a pipe track under the dry coolers (N2, instrument air, cooling water) and a covered cable trench
+  to the dryer and compressors.
+- New viewer view O5E (roof off). Cameras E106 (roof off) and E107 (aisle). verify PASS (0 clashes), audit
+  CLEAN, coastal PASS.

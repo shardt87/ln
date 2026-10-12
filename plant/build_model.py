@@ -1678,6 +1678,7 @@ LAYERS = {
     "R4_ROOF": ("R4 roof", "Base plant"), "R4_WALL_E": ("R4 east wall", "Base plant"),
     "R4_INTERIOR": ("R4 VFD interior", "Base plant"),
     "CR_ROOF": ("Control / admin building roof and ceiling", "Base plant"),
+    "H2_ROOF": ("Electrolyzer hall roof (K)", "Optional / adjacent"),
     "CR_INTERIOR": ("Control room and admin interior", "Base plant"),
     "BASE_SWITCHYARD": ("C Grid interface: 230 kV switchyard", "Base plant"),
     "BASE_UTILITIES": ("D/E Fuel gas, water and BOP utilities, pipe racks, M&R", "Base plant"),
@@ -1761,6 +1762,8 @@ VIEWS = [
     dict(k="O4", n="O4 Inlet chilling", show=BASE_SHOW + ["OPT_IC", "OPT_IC_ROUTES"], t=[180, 1160, 20], c=[-150, 820, 420]),
     dict(k="O5", n="O5 Gas, LNG, H2", show=BASE_SHOW + ["OPT_LNG", "OPT_H2", "OPT_LNG_ROUTES", "OPT_H2_ROUTES",
          "SWYD_FUTURE"], t=[1980, 1650, 10], c=[1650, 1150, 700]),
+    dict(k="O5E", n="O5E Electrolyzer hall (roof off): PEM skids, rectifiers, DC cable trays", show=BASE_SHOW + ["OPT_H2",
+         "OPT_H2_ROUTES"], t=[2090, 1480, 6], c=[2000, 1395, 120]),
     dict(k="O5P", n="O5P Alt: hydrogen by pipeline (receiving station)", show=BASE_SHOW + ["OPT_LNG", "OPT_H2P", "OPT_LNG_ROUTES",
          "OPT_H2P_ROUTES", "SWYD_FUTURE"], t=[2190, 1520, 10], c=[2050, 1250, 380]),
     dict(k="O6", n="Add-on: plant + BTM data centre", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND", "OPT_H2P", "OPT_H2P_ROUTES")],
@@ -1774,6 +1777,8 @@ VIEWS.insert(3, dict(
 for _v in VIEWS:                              # the control-building roof travels with the rest of the services
     if "BASE_SERVICES" in _v["show"] and "CR_ROOF" not in _v["show"] and _v["k"] != "B3":
         _v["show"].append("CR_ROOF")
+    if "OPT_H2" in _v["show"] and "H2_ROOF" not in _v["show"] and _v["k"] != "O5E":
+        _v["show"].append("H2_ROOF")
 
 
 # Fit sets for the orthographic cameras (SK-3X1-11: "its fit set is projected
@@ -1804,6 +1809,7 @@ FIT = {
     "O4": dict(layers=["OPT_IC"]),
     "O5": dict(layers=["OPT_LNG", "OPT_H2"], box=[1560, 2400, 1410, 1910, 0, 30]),
     "O5P": dict(layers=["OPT_H2P"], box=[1985, 2400, 1410, 1640, 0, 40]),
+    "O5E": dict(box=[2010, 2170, 1440, 1520, 0, 26]),
     "O6": dict(box=[0, 3380, 0, 1920, 0, 120]),
     "ALL": dict(box=[0, 2420, 0, 1920, 0, 120]),
 }
@@ -1979,6 +1985,9 @@ N_DETAIL += _cr.build()
 # turbine hall: open operating floor on columns, pedestals, stairs between the units, crossover stiles
 import hall_access as _ha
 N_DETAIL += _ha.build()
+# electrolyzer hall: open hall with PEM skids, rectifiers, DC cable trays, 13.8 kV trenches; roof on H2_ROOF
+import h2_hall as _h2h
+N_DETAIL += _h2h.build()
 # Tray review (user screenshots): short tray stubs drawn between a duct-bank end and pad equipment
 # rode the EL +36 rack tier, so a 10 ft connection became a 36 ft goalpost over the transformer. A
 # duct bank comes up straight into the equipment: those stubs are now buried, with rigid-conduit
