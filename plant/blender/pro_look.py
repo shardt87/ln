@@ -1080,7 +1080,7 @@ EPIC = [
                    (1960, 1303, 9, "3", "FC-5..12", ""), (2280, 1082, 11, "3", "MT-1..3", "")]),
     dict(k="E58", n="Cable reel yard: SIMpull Truck unloading SIMpull Reels on payoffs, reel rows",
          eye=(214, 702, 15), target=(160, 752, 6), lens=28, show="base"),
-    dict(k="E103", n="Hydrogen receiving station: pipeline ESD, pig receiver, filters, metering, pressure reduction, N2 purge, e-house",
+    dict(k="E103", n="Hydrogen receiving station: ESD, pig receiver, filters, metering, pressure reduction",
          eye=(2262, 1446, 52), target=(2318, 1530, 4), lens=24, show="all", sun=(38, 200)),
     dict(k="E104", n="Hydrogen-ready zone: reserve pad for on-site electrolysis, receiving station and the tube-trailer bay",
          eye=(1990, 1700, 150), target=(2215, 1530, 0), lens=26, show="all", sun=(40, 200)),
