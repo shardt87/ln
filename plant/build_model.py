@@ -1530,6 +1530,10 @@ for fname, src, optional in [("routes_base.json", "SK-3X1-01", False), ("routes_
         pieces = []
         for pl in polys:
             pieces += clip_out(pl, R1_BOX) if rtype in ("mv_tray", "lv_tray", "control_tray") else [pl]
+        if rtype in ("mv_tray", "lv_tray", "control_tray"):
+            # a ladder tray runs straight: a diagonal segment on the drawing becomes an L (along x, then y)
+            pieces = [[q for a, c in zip(pl, pl[1:]) for q in ([a, [c[0], a[1]]] if a[0] != c[0] and a[1] != c[1]
+                                                                else [a])] + [pl[-1]] for pl in pieces]
         for pl in pieces:
             if len(pl) < 2 or sum(abs(b[0] - a[0]) + abs(b[1] - a[1]) for a, b in zip(pl, pl[1:])) < 3:
                 continue

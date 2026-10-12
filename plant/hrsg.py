@@ -308,6 +308,7 @@ def stacks():
 
 def hrsg_cables_and_auxiliaries():
     """Instrument and control cabling up each HRSG, and the auxiliaries that go with it:
+    the EL 42 control tray from the R2 e-house ending over a marshalling junction box on the west wall,
     a ladder-tray riser on the south-east corner from the EL 42 control tray to the roof, roof
     junction boxes, cable runs along the drum frame to drum-level transmitter bridles, motor-
     operated stop valves on the steam leads, and a chemical-feed skid (phosphate / amine) at grade."""
@@ -328,6 +329,8 @@ def hrsg_cables_and_auxiliaries():
             rod((rx - .5 + m * .33, ry - .05, 42), (rx - .5 + m * .33, ry - .05, 87), .1, col, seg=6)
         box(rx - 1.5, rx + 1.5, ry - 1, ry + 1, 87, 87.3, "grating")
         box(x1 - 6, x1 - 2, 603, 606, 86, 88.5, "panel")                                # roof junction box
+        box(594.8 + dx, 596.5 + dx, 688, 692, 37, 41.5, "panel")                        # west-wall marshalling JB
+        box(594.6 + dx, 594.8 + dx, 688.4, 691.6, 37.4, 41.1, "steel")                # (EL 42 tray from R2 drops in)
         # cable runs along the drum-frame beam and drum-level bridles at each drum end
         rod((x1 - 3, 606, 88.9), (x1 - 3, 740, 88.9), .2, "cable_inst", seg=6)
         pipe([(x1 - 4, 604.5, 87.6), (x1 - 3, 604.5, 87.6), (x1 - 3, 604.5, 88.9), (x1 - 3, 606, 88.9)], 87.6, .2,

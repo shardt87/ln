@@ -476,3 +476,12 @@ made it read wrong against photos:
   (about EL 17, 34, 52, 69), running north from the tower on brackets from the buckstays, plus a step-over from
   the top landing onto the casing roof.
 - Camera E99 (south-east view); E26 and E28 re-rendered. verify PASS (0 clashes), audit CLEAN, coastal PASS.
+
+### HRSG control tray fix (`routes_base.json`, `build_model.py`, `hrsg.py`)
+User question: a tray rising from the R2 e-house roof ended in mid-air at the HRSG. The drawing has the EL 42
+control / instrument tray from each R2 e-house to its HRSG as a diagonal line. The tray generator only builds
+straight runs, so it dropped the run and kept only the riser and elbow at the e-house end.
+- The route now runs as a real tray would: riser from the e-house roof, north along the EL 30 LV tray line
+  (sharing its supports), east to the HRSG west wall, ending over a new marshalling junction box there.
+- Any other diagonal tray segment on the drawings now becomes an L (along x, then y) when the routes load.
+- Camera E100 (west side close-up); E26 and E28 re-rendered. verify PASS (0 clashes), audit CLEAN, coastal PASS.
