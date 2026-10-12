@@ -39,7 +39,7 @@ model["views"].append(dict(k="COAST", n="Coastal: LNG terminal",
                            t=[1450, 2900, 20], c=[3900, 100, 3100]))
 model["views"].append(dict(k="EVERY", n="Everything: plant + all LNG + BTM data centre",
                            show=[l for l in model["layers"] if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND",
-                                                                         "OPT_UNDERGROUND", "OPT_H2E", "OPT_H2E_ROUTES")],
+                                                                         "OPT_UNDERGROUND", "OPT_H2P", "OPT_H2P_ROUTES")],
                            t=[1700, 1800, 20], c=[-900, -2600, 4300]))
 model["views"].append(dict(k="FUEL", n="Fuel systems: M&R, gas yard, ULSD", show=list(full["show"]),
                            t=[1640, 1660, 4], c=[1330, 1330, 330]))

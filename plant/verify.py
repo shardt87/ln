@@ -197,9 +197,9 @@ TOUCH = [
 TOUCH = [(re.compile(a), re.compile(b)) for a, b in TOUCH]
 
 
-# alternative arrangements of one zone: the H2 receiving station / reserve pad vs on-site electrolysis
+# alternative arrangements of one zone: on-site electrolysis vs the H2 pipeline receiving station / reserve pad
 ALT_A = {"OPT_H2", "OPT_H2_ROUTES"}
-ALT_B = {"OPT_H2E", "OPT_H2E_ROUTES"}
+ALT_B = {"OPT_H2P", "OPT_H2P_ROUTES"}
 
 
 def allowed(n1, n2):

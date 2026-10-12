@@ -1,9 +1,10 @@
-"""Hydrogen-ready plant (zone K): pipeline supply as the base case, on-site electrolysis as the alternative.
+"""Hydrogen zone K: on-site 25 MW electrolysis is the base case (sheet 14, as FPL Cavendish at Okeechobee); pipeline
+supply is the alternative arrangement on layer OPT_H2P.
 
-A hydrogen-ready H-class plant does not need to make hydrogen on site. The usual arrangement is a pipeline from a
-production / storage hub (e.g. ACES Delta at Intermountain: electrolysis and salt-cavern storage), a receiving
-station at the plant, and a blending skid that mixes hydrogen into the gas turbines' fuel (published H-class
-blends roughly 30-50 % by volume, about 10-25 % of the fuel energy). So the zone now shows:
+A hydrogen-ready H-class plant does not have to make hydrogen on site: it can take it by pipeline from a production /
+storage hub (e.g. ACES Delta at Intermountain: electrolysis and salt-cavern storage) through a receiving station,
+with a blending skid that mixes hydrogen into the gas turbines' fuel (published H-class blends roughly 30-50 % by
+volume, about 10-25 % of the fuel energy). The alternative layer shows that arrangement:
 - a fenced hydrogen receiving station: pipeline riser with insulating joint and ESD valve, pig receiver,
   twin filter / coalescers, a two-run ultrasonic metering skid with a purity analyser shelter, two pressure-
   reduction trains (no preheater: hydrogen warms on expansion), relief to the existing vent stack, a nitrogen
@@ -12,8 +13,8 @@ blends roughly 30-50 % by volume, about 10-25 % of the fuel energy). So the zone
 - a tube-trailer unloading bay (two trailers) used to commission and test the blend before the pipeline is in;
 - a fenced, graded reserve pad for a later on-site electrolysis / storage phase, with the 230 kV cable from D6
   ending at a future T-H2 foundation and conduit stub-ups already in the pad.
-The 25 MW electrolysis complex (sheet 14) moves to its own alternative layer, OPT_H2E, so it can still be shown
-in place of the reserve. All typical, not engineered.
+The two arrangements share the vent stack and the blending skid (which serves all three GTs) and are never shown
+together. All typical, not engineered.
 """
 import math
 
@@ -21,8 +22,7 @@ import fuel
 from fuel import box, rod, pipe, valve, hvessel, skid_runs, sleepers, canopy, on
 
 H2 = "hydrogen"
-ALT = "OPT_H2E"
-KEEP = ("H2 29", "H2 30")                 # vent stack and blending skid serve both arrangements
+ALT = "OPT_H2P"                            # the pipeline-supply alternative
 
 
 def decal(*a, **k):
@@ -35,41 +35,17 @@ def person(x, y, z=0.0, a=0.0, vest="hivis"):
     mt.person(x, y, z, a, vest=vest)
 
 
-def relayer(routes):
-    """Move the electrolysis complex and its routes to the alternative layers."""
-    G = fuel.G
-    ids = set()
-    for it in G["items"]:
-        if it["layer"] == "OPT_H2" and not it["name"].startswith(KEEP):
-            it["layer"] = ALT
-            ids.add(it["id"])
-    for p in G["parts"]:
-        if p["item"] in ids and p["layer"] == "OPT_H2":
-            p["layer"] = ALT
-    for p in G["parts"]:                                   # dressing parts drawn on the route layer
-        if p["layer"] == "OPT_H2_ROUTES" and p["item"] in ids:
-            p["layer"] = ALT + "_ROUTES"
-    n = 0
-    for r in routes:
-        if r["layer"] != "OPT_H2_ROUTES":
-            continue
-        P = r["points"]
-        if r["type"] == "hv_cable" and P[0][1] < 400:      # 230 kV from D6: stays, ends at the future T-H2 pad
-            continue
-        if r["type"] == "hydrogen" and P[0] == [2250.0, 1575.0]:
-            # tube banks -> blending skid becomes receiving station -> blending skid
-            r["points"] = [[2268.0, 1510.0], [2203.0, 1510.0], [2203.0, 1435.0], [1980.0, 1435.0],
-                           [1980.0, 1485.0], [1840.0, 1485.0]]
-            continue
-        if r["type"] == "hydrogen" and P[-1][0] <= 1978.0:  # road crossing and the run into the blending skid
-            continue
-        if r["type"] == "mvlv_cable" and P[0] == [1840.0, 1485.0]:
-            # blending-skid power / control: from the station e-house instead of the electrolyzer building
-            r["points"] = [[1840.0, 1487.0], [1990.0, 1487.0], [1990.0, 1438.0], [2222.0, 1438.0], [2222.0, 1530.0]]
-            continue
-        r["layer"] = ALT + "_ROUTES"
-        n += 1
-    return n
+def alt_routes(routes):
+    """Routes of the pipeline-supply alternative (OPT_H2P_ROUTES): receiving station -> blending skid, and the
+    blending skid's power / control from the station e-house."""
+    lay = ALT + "_ROUTES"
+    routes.append(dict(type="hydrogen", layer=lay, label="Hydrogen", z=4, w=1, h=1, color="hydrogen",
+                       points=[[2268.0, 1510.0], [2203.0, 1510.0], [2203.0, 1435.0], [1980.0, 1435.0],
+                               [1980.0, 1485.0], [1840.0, 1485.0]], sheet="typical (hydrogen-ready)"))
+    routes.append(dict(type="mvlv_cable", layer=lay, label="MV / LV cable (optional systems)", z=-2, w=2, h=1,
+                       color="copper", points=[[1840.0, 1487.0], [1990.0, 1487.0], [1990.0, 1438.0], [2222.0, 1438.0],
+                                               [2222.0, 1530.0]], sheet="typical (hydrogen-ready)"))
+    return 2
 
 
 def fence(x0, x1, y0, y1, gate=None, h=7.0):
@@ -130,8 +106,8 @@ def trailer(x0, y, heading=1):
 
 def build(routes):
     G = fuel.G
-    n_moved = relayer(routes)
-    L = "OPT_H2"
+    n_moved = alt_routes(routes)
+    L = ALT
     fuel.D = False
 
     # ---- receiving station -------------------------------------------------------------------------------
@@ -265,7 +241,7 @@ def build(routes):
     rp = fuel.new_item(L, "H2X: reserve pad, future on-site electrolysis / storage (Phase 2)",
                        (2009, 2196, 1439, 1631), (-1.5, 8), tag="H2X", area="K", sheet="typical (hydrogen-ready)",
                        register=False,
-                       info="Graded and fenced land held for the 25 MW electrolysis option (layer OPT_H2E, sheet 14). "
+                       info="Graded and fenced land held for the 25 MW electrolysis option (sheet 14, the base layer OPT_H2). "
                             "Conduit stub-ups and the 230 kV feed from D6 are in place.")
     on(rp)
     box(2010, 2195, 1440, 1630, 0, .25, "gravel")

@@ -538,3 +538,10 @@ Intermountain). The base case for the zone is now:
   OPT_H2E_ROUTES. These are excluded from the "all" views. View O5H shows them, and verify skips clashes
   between the two alternatives.
 - Cameras E103 (receiving station) and E104 (zone overview). verify PASS (0 clashes), audit CLEAN, coastal PASS.
+- **Revised the same day:** shown as the default, the receiving station left the zone looking empty. The 25 MW
+  on-site electrolysis complex (sheet 14) is the base case again. This is a real precedent: FPL Cavendish is
+  built at the Okeechobee plant, and it is the stronger cable showcase (rectifier DC cables, the 230 kV feed,
+  Group B areas). Pipeline supply (receiving station, tube-trailer bay, reserve pad, future T-H2 foundation)
+  is the alternative layer OPT_H2P / OPT_H2P_ROUTES, with view O5P. The alternative is excluded from the "all"
+  views, and its cameras E103 / E104 add it and hide the electrolysis layers. Both arrangements share the vent
+  stack and the blending skid, which serves all three GTs.
