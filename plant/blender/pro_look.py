@@ -33,7 +33,7 @@ def lin(h):
 # surface type, colour (sRGB), roughness, metallic
 LOOK = {
     "ground": ("gravel", "#8b8a84", .95, 0), "road": ("asphalt", "#3b3d3f", .9, 0),
-    "gravel": ("gravel", "#83837f", .95, 0), "corridor": ("gravel", "#928e83", .95, 0),
+    "gravel": ("gravel", "#83837f", .95, 0), "gravel_yard": ("gravel", "#6c6a63", .95, 0), "corridor": ("gravel", "#928e83", .95, 0),
     "pad": ("concrete", "#a9a69e", .85, 0), "concrete": ("concrete", "#a6a39b", .85, 0),
     "basement": ("concrete", "#8f8c86", .9, 0), "future": ("gravel", "#b3afa4", .95, 0),
     "building": ("clad", "#c2bfb7", .55, .05), "hall": ("clad", "#c3c8ca", .45, .3),
@@ -1080,6 +1080,10 @@ EPIC = [
                    (1960, 1303, 9, "3", "FC-5..12", ""), (2280, 1082, 11, "3", "MT-1..3", "")]),
     dict(k="E58", n="Cable reel yard: SIMpull Truck unloading SIMpull Reels on payoffs, reel rows",
          eye=(214, 702, 15), target=(160, 752, 6), lens=28, show="base"),
+    dict(k="E108", n="Plant gas yard: inlet ESD, metering, regulation, performance heater, filter-separators, GT header",
+         eye=(1622, 1432, 46), target=(1700, 1512, 4), lens=24, show="base", sun=(38, 215)),
+    dict(k="E109", n="Pipeline M&R station: pig receiver, filter-separator, line heaters, custody meters, regulation",
+         eye=(1600, 1712, 80), target=(1680, 1815, 3), lens=26, show="base", sun=(38, 215)),
     dict(k="E106", n="Electrolyzer hall, roof off: five PEM skids, rectifiers and the DC cable trays over the aisle",
          eye=(2046, 1408, 78), target=(2078, 1482, 2), lens=24, show="all", sun=(45, 200), hide_layers=["H2_ROOF"]),
     dict(k="E107", n="Electrolyzer hall aisle: DC cable trays from the rectifiers to the PEM stacks, H2 header",

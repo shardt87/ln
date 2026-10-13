@@ -1988,6 +1988,9 @@ N_DETAIL += _ha.build()
 # electrolyzer hall: open hall with PEM skids, rectifiers, DC cable trays, 13.8 kV trenches; roof on H2_ROOF
 import h2_hall as _h2h
 N_DETAIL += _h2h.build()
+# gas yard and pipeline M&R at LOD 3: fences, floods, gas detection, JB stands with sealed conduit, signs, people
+import gas_lod3 as _glod
+N_DETAIL += _glod.build()
 # Tray review (user screenshots): short tray stubs drawn between a duct-bank end and pad equipment
 # rode the EL +36 rack tier, so a 10 ft connection became a 36 ft goalpost over the transformer. A
 # duct bank comes up straight into the equipment: those stubs are now buried, with rigid-conduit

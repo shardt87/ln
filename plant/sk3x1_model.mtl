@@ -378,6 +378,11 @@ Kd 0.737 0.765 0.776
 Ka 0 0 0
 d 1
 
+newmtl gravel_yard
+Kd 0.655 0.639 0.596
+Ka 0 0 0
+d 1
+
 newmtl ground
 Kd 0.875 0.890 0.863
 Ka 0 0 0

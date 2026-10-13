@@ -578,3 +578,26 @@ The building was a solid block. It is now an open hall, with its roof and ridge 
   to the dryer and compressors.
 - New viewer view O5E (roof off). Cameras E106 (roof off) and E107 (aisle). verify PASS (0 clashes), audit
   CLEAN, coastal PASS.
+
+### Gas yard and pipeline M&R station at LOD 3 (`gas_lod3.py`)
+User question: what happened to the gas yard, it looks dull and lost stuff? Nothing was lost: the gas-yard and
+M&R equipment has been unchanged for about 100 versions. It was simply the least detailed zone left. This pass:
+- **New gas-yard equipment:**
+  - final coalescers (2 x 100 %) tied into the GT header;
+  - E-202 electric start-up / dew-point heater skid with its SCR power panel;
+  - a gas-chromatograph / Wobbe analyser shelter fed by a sample line from the meters;
+  - a drains / condensate tank in a bund;
+  - the yard's 480 V pad-mount transformer and LV panel.
+- **Surface:** crushed-stone gravel (new colour gravel_yard) with a concrete drive from the north gate, a
+  turning apron and walkways.
+- **Yard furniture, both pads (Class I Div 2 Group D):**
+  - chain-link fences, opened wherever pipes cross, with vehicle gates and hazard signs;
+  - explosion-proof LED flood poles, fixed gas detectors, wheeled dry-chemical extinguishers and windsocks;
+  - instrument JB stands with sealed rigid conduit rising from the buried duct bank (ARMOR-X MC-HL / TC-ER
+    in conduit inside the hazardous area).
+- **Building dressing:** the gas-yard control enclosure (door, HVAC, conduit bank, sign), the M&R gas-quality
+  building (calibration cylinders), the M&R service panel (doors, sunshade), the SCADA antenna mast and the CP
+  test station.
+- Insulation bands and nameplates on the heater and the filter-separators. Operators and a pickup in each area.
+- Everything is placed by a clearance test against the existing parts. Cameras E108 (gas yard) and E109 (M&R).
+  verify PASS (0 clashes), audit CLEAN, coastal PASS.
