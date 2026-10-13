@@ -603,13 +603,14 @@ def conduit_rack(S, pts, z, w, cables, stand, name, tag):
                     decal((px, py - w / 2 - .12, z - .15), (0, -1, 0), 2.0, .38, [(tag, .7, True, None)], bg="#ffd200")
                 else:
                     decal((px - w / 2 - .12, py, z - .15), (-1, 0, 0), 2.0, .38, [(tag, .7, True, None)], bg="#ffd200")
-        spots, worst = post_spots(S, a, b, z, .3, maxgap=9.0)
+        spots, worst = post_spots(S, a, b, z, .3, maxgap=10.0)
         if worst > 12:
             print("gas_lod3: long span", name, round(worst, 1), a, b)
         for t in spots:                                                           # strut stanchions, <= ~9 ft apart
             px, py = a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t
-            box(px - .07, px + .07, py - .07, py + .07, 0, z - .08, "steel")      # 1-5/8 strut post
-            box(px - .35, px + .35, py - .35, py + .35, 0, .35, "concrete")
+            rod((px, py, 0), (px, py, z - .08), .18, "steel", seg=10)          # 4 in galvanized pipe post
+            box(px - .25, px + .25, py - .25, py + .25, z - .12, z - .08, "steel")  # cap plate
+            box(px - .6, px + .6, py - .6, py + .6, 0, .45, "concrete")             # footing
             if alongx:
                 box(px - .08, px + .08, py - w / 2 - .1, py + w / 2 + .1, z - .1, z, "steel")   # strut crossarm
             else:
