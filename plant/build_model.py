@@ -1742,6 +1742,12 @@ VIEWS = [
          show=BASE_SHOW + ["OPT_MOD", "OPT_MOD_ROUTES"], t=[1960, 899, 1.6], c=[1953, 911, 4.5]),
     dict(k="CBE", n="Cable installed: BESS skid elbows and the open DC trench",
          show=BASE_SHOW + ["OPT_BESS", "OPT_BESS_ROUTES"], t=[1610, 490, 3.3], c=[1619, 483, 5.5]),
+    dict(k="SH2", n="Story: green hydrogen - 2 kV DC conductors pulled into the electrolyzer DC tray",
+         show=BASE_SHOW + ["OPT_H2", "OPT_H2_ROUTES"], t=[2106, 1478, 11], c=[2126, 1500, 20]),
+    dict(k="SLN", n="Story: LNG - ARMOR-X MC-HL pulled from the e-house to the send-out pumps",
+         show=BASE_SHOW + ["OPT_LNG", "OPT_LNG_ROUTES"], t=[2010, 1845, 7], c=[1985, 1895, 30]),
+    dict(k="SMR", n="Story: gas meter house (M&R) - instrumentation terminated at the meter-run JB",
+         show=BASE_SHOW, t=[1648, 1790, 4], c=[1638, 1772, 12]),
     dict(k="SD", n="Story: SIMpull Truck delivers reels to the modular-yard cable pull",
          show=BASE_SHOW + ["OPT_MOD", "OPT_MOD_ROUTES"], t=[1752, 944, 5], c=[1702, 906, 7.5]),
     dict(k="SB", n="Story: BESS crew pulling DC cable into the trench",
@@ -1777,7 +1783,7 @@ VIEWS.insert(3, dict(
 for _v in VIEWS:                              # the control-building roof travels with the rest of the services
     if "BASE_SERVICES" in _v["show"] and "CR_ROOF" not in _v["show"] and _v["k"] != "B3":
         _v["show"].append("CR_ROOF")
-    if "OPT_H2" in _v["show"] and "H2_ROOF" not in _v["show"] and _v["k"] != "O5E":
+    if "OPT_H2" in _v["show"] and "H2_ROOF" not in _v["show"] and _v["k"] not in ("O5E", "SH2"):
         _v["show"].append("H2_ROOF")
 
 
@@ -1801,6 +1807,9 @@ FIT = {
     "CBE": dict(box=[1600, 1620, 480, 500, 0, 9]),
     "SL": dict(box=[600, 665, 534, 554, 40, 51]),
     "ST": dict(box=[518, 606, 436, 556, 0, 50]),
+    "SH2": dict(box=[2100, 2124, 1466, 1490, 0, 16]),
+    "SLN": dict(box=[1985, 2035, 1795, 1885, 0, 14]),
+    "SMR": dict(box=[1636, 1658, 1782, 1796, 0, 8]),
     "SD": dict(box=[1700, 1785, 915, 965, 0, 14]),
     "SB": dict(box=[1700, 1760, 525, 550, 0, 10]),
     "O1": dict(layers=["OPT_MOD", "OPT_TMP", "OPT_MODX"]),
@@ -1991,6 +2000,9 @@ N_DETAIL += _h2h.build()
 # gas yard and pipeline M&R at LOD 3: fences, floods, gas detection, JB stands with sealed conduit, signs, people
 import gas_lod3 as _glod
 N_DETAIL += _glod.build()
+# wire-and-cable hero moments for the growth markets: green hydrogen DC pull, LNG ARMOR-X pull, M&R terminations
+import cable_moments as _cm
+print("cable moments legends", _cm.build())
 # Tray review (user screenshots): short tray stubs drawn between a duct-bank end and pad equipment
 # rode the EL +36 rack tier, so a 10 ft connection became a 36 ft goalpost over the transformer. A
 # duct bank comes up straight into the equipment: those stubs are now buried, with rigid-conduit

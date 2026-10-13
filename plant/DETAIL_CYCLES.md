@@ -620,3 +620,25 @@ M&R equipment has been unchanged for about 100 versions. It was simply the least
   - Short spurs drop into each JB stand: drop ladders with rungs, armored cable and sealing glands at the JB.
   - Yellow tray ID tags (GY-T1, GY-T2, MR-T1, MR-T2) every 30 ft.
   - E110 is re-aimed down the corridor.
+
+### Cable hero moments for the growth markets (`cable_moments.py`)
+User request: a wire-and-cable hero moment for green hydrogen, LNG and the gas meter house yard, like the
+turbine-hall and BESS pulls.
+- **Green hydrogen (electrolyzer hall):**
+  - 2 kV DC 1/C 1000 kcmil (RHW-2 / USE-2) is pulled from a reel on Maxis JAX stands, over a sheave into the
+    DC tray of electrolyzer 5.
+  - Two electricians on a scissor lift feed it; a reel tender, a supervisor and a gang box are on the floor.
+  - Printed legends (POSITIVE / NEGATIVE) on all the DC conductors in the five trays.
+  - Viewer story SH2 (roof off); camera E111.
+- **LNG:**
+  - New visible ladder tray LNG-T1 from the LNG 17 e-house to the send-out pumps, with a riser and a drop to a
+    pump JB stand.
+  - ARMOR-X MC-HL is paid off an RR-SW45 reel roller over a sheave into the tray; a rope runs to a capstan puller
+    with tension monitor and Triggers box at the pump end, with crew.
+  - Printed legends on the tray cables. Viewer story SLN; camera E112.
+- **Gas meter house (M&R):**
+  - An instrument technician terminates PLTC-ER into an open explosion-proof JB at the custody-transfer meter
+    run (cover hinged down, terminal rail, fanned conductors).
+  - A SIMpull wire wagon feeds the pull from the tray drop.
+  - Printed legends on the MR and GY tray cables. Viewer story SMR; camera E113.
+- verify PASS (0 clashes), audit CLEAN, coastal PASS.
