@@ -1084,6 +1084,8 @@ EPIC = [
          eye=(1622, 1432, 46), target=(1700, 1512, 4), lens=24, show="base", sun=(38, 215)),
     dict(k="E109", n="Pipeline M&R station: pig receiver, filter-separator, line heaters, custody meters, regulation",
          eye=(1600, 1712, 80), target=(1680, 1815, 3), lens=26, show="base", sun=(38, 215)),
+    dict(k="E110", n="Gas yard cable: MC-HL and TC-ER in ladder tray on T-stanchions, drops to explosion-proof JB stands",
+         eye=(1612, 1446, 22), target=(1690, 1468, 7), lens=24, show="base", sun=(38, 215)),
     dict(k="E106", n="Electrolyzer hall, roof off: five PEM skids, rectifiers and the DC cable trays over the aisle",
          eye=(2046, 1408, 78), target=(2078, 1482, 2), lens=24, show="all", sun=(45, 200), hide_layers=["H2_ROOF"]),
     dict(k="E107", n="Electrolyzer hall aisle: DC cable trays from the rectifiers to the PEM stacks, H2 header",

@@ -601,3 +601,14 @@ M&R equipment has been unchanged for about 100 versions. It was simply the least
 - Insulation bands and nameplates on the heater and the filter-separators. Operators and a pickup in each area.
 - Everything is placed by a clearance test against the existing parts. Cameras E108 (gas yard) and E109 (M&R).
   verify PASS (0 clashes), audit CLEAN, coastal PASS.
+- **Follow-up, visible cable:** the user asked where the cable is in the gas areas. It was all in buried conduit,
+  so only the stub-ups showed. Both areas now carry it the other code-compliant way, in tray, per NEC 501.10(B):
+  ARMOR-X MC-HL power, TC-ER control, instrument and fire-alarm cable in ladder tray on T-stanchions (EL 9,
+  raised where pipes cross).
+  - **Gas yard:** the trunk rises at the control enclosure, runs along the south side and up the east side to
+    the inlet ESD, with branches to the meters and the compressors.
+  - **M&R station:** the trunk runs from the service panel to the heaters and the pig receiver.
+  - **Spurs and drops:** spur trays carry drops down to each explosion-proof JB stand and to the start-up heater
+    panel, the analyser shelter and the yard transformer.
+  - Lighting circuits run in conduit up each flood pole.
+  - Camera E110 (cable close-up).

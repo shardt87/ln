@@ -137,6 +137,7 @@ def light_pole(S, x, y, h=26.0):
     if not p:
         return
     x, y = p
+    rod((x + .4, y, .2), (x + .4, y, h - 1.6), .07, "steel", seg=6)              # lighting circuit conduit up the pole
     box(x - .8, x + .8, y - .8, y + .8, 0, 1.2, "concrete")
     rod((x, y, 1.2), (x, y, h), .28, "steel", seg=8, r2=.18)
     for s in (-1, 1):                                                         # two explosion-proof LED floods
@@ -161,6 +162,7 @@ def jb_stand(S, x, y, tag=None):
     if not p:
         return
     x, y = p
+    JBS.append((x, y))
     box(x - 1.4, x + 1.4, y - .8, y + .8, 0, .35, "concrete")
     for dx in (-1.1, 1.1):
         rod((x + dx, y, .35), (x + dx, y, 6.5), .12, "steel", seg=6)              # unistrut posts
@@ -173,6 +175,9 @@ def jb_stand(S, x, y, tag=None):
     rod((x + .9, y - .35, 5.6), (x + .9, y - .35, 6.2), .08, "cable_inst", seg=6)  # flex to the instruments
     if tag:
         decal((x, y - .56, 5.05), (0, -1, 0), 1.5, .5, [(tag, .6, True, None)], bg="#ffffff")
+
+
+JBS = []
 
 
 def extinguisher(S, x, y):
@@ -451,9 +456,162 @@ def yard_equipment(S):
     box(1640, 1755, 1541, 1545, .59, .63, "concrete")
 
 
+# ---------------------------------------------------------------------------------------------------------
+# visible cable: ladder tray on T-stanchions (MC-HL / TC-ER in tray is permitted in Class I Div 2, NEC 501.10(B))
+CABLES = (("cable_mc", .2), ("cable_mc", .2), ("cable_tc", .14), ("cable_inst", .11), ("cable_inst", .11),
+          ("cable_fa", .09))
+
+
+def _seg_box(a, b, z, w):
+    x0, x1 = min(a[0], b[0]), max(a[0], b[0])
+    y0, y1 = min(a[1], b[1]), max(a[1], b[1])
+    if a[1] == b[1]:
+        y0, y1 = y0 - w / 2, y1 + w / 2
+    else:
+        x0, x1 = x0 - w / 2, x1 + w / 2
+    return x0, x1, y0, y1
+
+
+def tray(S, pts, z, w=1.5, cables=CABLES, stand=16.0, name=""):
+    """Ladder tray along an orthogonal polyline at elevation z (raised in 1.5 ft steps until clear)."""
+    for zz in (z, z + 1.5, z + 3, z + 4.5):
+        if all(S.free(*_seg_box(a, b, zz, w), zz - .6, zz + .9, m=.15) for a, b in zip(pts, pts[1:])):
+            z = zz
+            break
+    else:
+        print("gas_lod3: tray blocked", name, pts[0])
+        return None
+    for a, b in zip(pts, pts[1:]):
+        x0, x1, y0, y1 = _seg_box(a, b, z, w)
+        S.add([x0, y0, z - .6, x1, y1, z + .9])
+        alongx = a[1] == b[1]
+        for s in (-1, 1):                                                         # side rails
+            if alongx:
+                box(x0, x1, a[1] + s * w / 2 - .06, a[1] + s * w / 2 + .06, z - .35, z + .15, "pipe")
+            else:
+                box(a[0] + s * w / 2 - .06, a[0] + s * w / 2 + .06, y0, y1, z - .35, z + .15, "pipe")
+        L = abs(b[0] - a[0]) + abs(b[1] - a[1])
+        for k in range(int(L) + 1):                                               # rungs every foot
+            t = k / max(L, 1)
+            px, py = a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t
+            if alongx:
+                box(px - .05, px + .05, py - w / 2, py + w / 2, z - .3, z - .22, "pipe")
+            else:
+                box(px - w / 2, px + w / 2, py - .05, py + .05, z - .3, z - .22, "pipe")
+        for j, (c, r) in enumerate(cables):                                       # cables laid in the tray
+            off = -w / 2 + .25 + j * (w - .5) / max(1, len(cables) - 1)
+            pa = (a[0], a[1] + off) if alongx else (a[0] + off, a[1])
+            pb = (b[0], b[1] + off) if alongx else (b[0] + off, b[1])
+            rod((pa[0], pa[1], z - .22 + r), (pb[0], pb[1], z - .22 + r), r, c, seg=6)
+        n = max(1, int(L // stand))
+        for k in range(n + 1):                                                    # T-stanchions
+            t = k / n
+            px, py = a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t
+            if not S.free(px - .5, px + .5, py - .5, py + .5, .7, z - .7, m=.1):
+                continue
+            box(px - .3, px + .3, py - .3, py + .3, 0, z - .4, "steel")
+            box(px - .6, px + .6, py - .6, py + .6, 0, .5, "concrete")
+            if alongx:
+                box(px - .2, px + .2, py - w / 2 - .2, py + w / 2 + .2, z - .6, z - .35, "steel")
+            else:
+                box(px - w / 2 - .2, px + w / 2 + .2, py - .2, py + .2, z - .6, z - .35, "steel")
+    return z
+
+
+def drop(S, x, y, z_top, z_bot, n=3):
+    """Armored cable drop from the tray to a JB / panel: cables in a short vertical ladder."""
+    if not S.free(x - .5, x + .5, y - .3, y + .3, max(z_bot + .2, 7.1), z_top - .5, m=0):
+        return False
+    for s in (-.4, .4):
+        box(x + s - .05, x + s + .05, y - .05, y + .05, z_bot, z_top, "pipe")
+    for j in range(n):
+        c = "cable_mc" if j == 0 else "cable_inst"
+        rod((x - .25 + j * .25, y, z_top - .2), (x - .25 + j * .25, y, z_bot), .1, c, seg=6)
+    S.add([x - .5, y - .3, z_bot, x + .5, y + .3, z_top])
+    return True
+
+
+def trunk_to(S, pts, jx, jy):
+    """Nearest point on the trunk polyline to (jx, jy) along an orthogonal spur."""
+    best = None
+    for a, b in zip(pts, pts[1:]):
+        if a[1] == b[1] and min(a[0], b[0]) <= jx <= max(a[0], b[0]):
+            d = abs(jy - a[1])
+            if best is None or d < best[0]:
+                best = (d, (jx, a[1]))
+        if a[0] == b[0] and min(a[1], b[1]) <= jy <= max(a[1], b[1]):
+            d = abs(jx - a[0])
+            if best is None or d < best[0]:
+                best = (d, (a[0], jy))
+    return best
+
+
+def cable_runs(S, area, trunks, riser, jbs, extra=()):
+    """Trunk trays from the control building riser, spurs to each JB stand with a cable drop, and extra drops."""
+    it = fuel.new_item("BASE_UTILITIES", f"{area}: cable tray and drops (ARMOR-X MC-HL power, TC-ER control, "
+                       "instrument and fire-alarm cable)", (1560, 1940, 1430, 1900), (0, 14), area="D",
+                       sheet="typical (fuel detail)", register=False,
+                       info="Class I Div 2 Group D: MC-HL and TC-ER in ladder tray on T-stanchions (NEC 501.10(B)), "
+                            "drops to explosion-proof JBs through sealed fittings; heat-trace and lighting circuits.")
+    on(it)
+    fuel.D = True
+    zt = None
+    allpts = []
+    for pts in trunks:
+        z = tray(S, pts, 9.0, name=area)
+        if z:
+            zt = z if zt is None else zt
+            allpts.append((pts, z))
+    rx, ry, rz0 = riser
+    if zt and allpts:
+        z = allpts[0][1]
+        for s in (-.6, .6):
+            box(rx + s - .06, rx + s + .06, ry - .06, ry + .06, rz0, z, "pipe")
+        for j, (c, r) in enumerate(CABLES[:4]):
+            rod((rx - .4 + j * .27, ry, rz0), (rx - .4 + j * .27, ry, z - .2), r * .8, c, seg=6)
+    n = 0
+    for (jx, jy) in jbs:
+        for (pts, z) in allpts:
+            b = trunk_to(S, pts, jx, jy - .35)
+            if b and b[0] < 60:
+                (tx, ty) = b[1]
+                sp = [(tx, ty), (jx, ty), (jx, jy - .35)] if abs(tx - jx) > .5 else [(tx, ty), (jx, jy - .35)]
+                sp = [p for i, p in enumerate(sp) if i == 0 or p != sp[i - 1]]
+                if len(sp) > 1 and tray(S, sp, z, w=.75, cables=(("cable_mc", .14), ("cable_inst", .1)),
+                                        stand=12, name=area + " spur") and drop(S, jx, jy - .35, z, 6.5):
+                    n += 1
+                break
+    for (x, y, zb) in extra:
+        for (pts, z) in allpts:
+            b = trunk_to(S, pts, x, y)
+            if b and b[0] < 40:
+                (tx, ty) = b[1]
+                sp = [(tx, ty), (x, ty), (x, y)] if abs(tx - x) > .5 and abs(ty - y) > .5 else [(tx, ty), (x, y)]
+                sp = [p for i, p in enumerate(sp) if i == 0 or p != sp[i - 1]]
+                if len(sp) > 1 and tray(S, sp, z, w=.75, cables=(("cable_mc", .16), ("cable_tc", .1)),
+                                        stand=12, name=area + " spur") and drop(S, x, y, z, zb):
+                    n += 1
+                break
+    fuel.D = False
+    print(f"gas_lod3: {area}: {len(allpts)} trunks, {n} drops")
+
+
 def build():
     S = Space()
     yard_equipment(S)
     gas_yard(S)
+    jb_yard = list(JBS)
+    del JBS[:]
     mr_station(S)
+    jb_mr = list(JBS)
+    cable_runs(S, "Gas yard",
+               [[(1580, 1455.5), (1580, 1460), (1765, 1460), (1765, 1600), (1715, 1600)],
+                [(1637.5, 1460), (1637.5, 1546), (1688, 1546)],
+                [(1765, 1556), (1866, 1556)]],
+               (1580, 1455.5, 5.5), jb_yard,
+               extra=((1788.5, 1527.4, 8.8), (1699, 1557.2, 9.4), (1592.5, 1452.3, 7.2)))
+    cable_runs(S, "Pipeline M&R station",
+               [[(1748, 1742), (1748, 1806), (1600, 1806), (1600, 1866)],
+                [(1748, 1776), (1733, 1776)]],
+               (1748, 1742, 2.0), jb_mr)
     return 1
