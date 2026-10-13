@@ -377,9 +377,11 @@ def build_cable(key, origin, coll, label=True):
 
 
 def animate_strip(parts, start):
-    """Layers start flush with the oversheath, then slide out to the stepped state."""
+    """Layers start as a clean cut end, then slide out to the stepped state.
+    Inner layers keep 1% of their step at the start so the cut face shows every
+    layer instead of coplanar end caps fighting each other."""
     for obj, L in parts:
-        obj.scale.x = BASE_LENGTH / L
+        obj.scale.x = (BASE_LENGTH + 0.01 * (L - BASE_LENGTH)) / L
         obj.keyframe_insert("scale", index=0, frame=start)
         obj.scale.x = 1.0
         obj.keyframe_insert("scale", index=0, frame=start + ANIM_LENGTH)
