@@ -472,7 +472,7 @@ def _seg_box(a, b, z, w):
     return x0, x1, y0, y1
 
 
-def tray(S, pts, z, w=1.5, cables=CABLES, stand=16.0, name=""):
+def tray(S, pts, z, w=1.5, cables=CABLES, stand=16.0, name="", tag=None):
     """Ladder tray along an orthogonal polyline at elevation z (raised in 1.5 ft steps until clear)."""
     for zz in (z, z + 1.5, z + 3, z + 4.5):
         if all(S.free(*_seg_box(a, b, zz, w), zz - .6, zz + .9, m=.15) for a, b in zip(pts, pts[1:])):
@@ -503,6 +503,14 @@ def tray(S, pts, z, w=1.5, cables=CABLES, stand=16.0, name=""):
             pa = (a[0], a[1] + off) if alongx else (a[0] + off, a[1])
             pb = (b[0], b[1] + off) if alongx else (b[0] + off, b[1])
             rod((pa[0], pa[1], z - .22 + r), (pb[0], pb[1], z - .22 + r), r, c, seg=6)
+        if tag:                                                                   # tray ID tags on the outer rail
+            for k in range(1, int(L // 30) + 1):
+                t = k * 30 / L
+                px, py = a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t
+                if alongx:
+                    decal((px, py - w / 2 - .08, z - .1), (0, -1, 0), 2.4, .42, [(tag, .7, True, None)], bg="#ffd200")
+                else:
+                    decal((px - w / 2 - .08, py, z - .1), (-1, 0, 0), 2.4, .42, [(tag, .7, True, None)], bg="#ffd200")
         n = max(1, int(L // stand))
         for k in range(n + 1):                                                    # T-stanchions
             t = k / n
@@ -526,7 +534,10 @@ def drop(S, x, y, z_top, z_bot, n=3):
         box(x + s - .05, x + s + .05, y - .05, y + .05, z_bot, z_top, "pipe")
     for j in range(n):
         c = "cable_mc" if j == 0 else "cable_inst"
-        rod((x - .25 + j * .25, y, z_top - .2), (x - .25 + j * .25, y, z_bot), .1, c, seg=6)
+        rod((x - .25 + j * .25, y, z_top - .2), (x - .25 + j * .25, y, z_bot + .4), .13, c, seg=6)
+        rod((x - .25 + j * .25, y, z_bot + .4), (x - .25 + j * .25, y, z_bot), .2, "steel", seg=8)   # sealing gland
+    for zc in range(int(z_bot) + 1, int(z_top)):
+        box(x - .45, x + .45, y - .05, y + .05, zc, zc + .08, "pipe")                 # drop-ladder rungs
     S.add([x - .5, y - .3, z_bot, x + .5, y + .3, z_top])
     return True
 
@@ -546,6 +557,9 @@ def trunk_to(S, pts, jx, jy):
     return best
 
 
+TAGS = {"Gas yard": "GY-T", "Pipeline M&R station": "MR-T"}
+
+
 def cable_runs(S, area, trunks, riser, jbs, extra=()):
     """Trunk trays from the control building riser, spurs to each JB stand with a cable drop, and extra drops."""
     it = fuel.new_item("BASE_UTILITIES", f"{area}: cable tray and drops (ARMOR-X MC-HL power, TC-ER control, "
@@ -558,7 +572,7 @@ def cable_runs(S, area, trunks, riser, jbs, extra=()):
     zt = None
     allpts = []
     for pts in trunks:
-        z = tray(S, pts, 9.0, name=area)
+        z = tray(S, pts, 9.0, name=area, tag=TAGS.get(area, "T-1") + f"{len(allpts) + 1}")
         if z:
             zt = z if zt is None else zt
             allpts.append((pts, z))
@@ -605,8 +619,8 @@ def build():
     mr_station(S)
     jb_mr = list(JBS)
     cable_runs(S, "Gas yard",
-               [[(1580, 1455.5), (1580, 1460), (1765, 1460), (1765, 1600), (1715, 1600)],
-                [(1637.5, 1460), (1637.5, 1546), (1688, 1546)],
+               [[(1580, 1455.5), (1580, 1462), (1631.5, 1462), (1631.5, 1510), (1755, 1510), (1755, 1600),
+                 (1715, 1600)],
                 [(1765, 1556), (1866, 1556)]],
                (1580, 1455.5, 5.5), jb_yard,
                extra=((1788.5, 1527.4, 8.8), (1699, 1557.2, 9.4), (1592.5, 1452.3, 7.2)))

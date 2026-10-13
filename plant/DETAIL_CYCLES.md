@@ -612,3 +612,11 @@ M&R equipment has been unchanged for about 100 versions. It was simply the least
     panel, the analyser shelter and the yard transformer.
   - Lighting circuits run in conduit up each flood pole.
   - Camera E110 (cable close-up).
+- **Follow-up, tray routing:** the gas-yard trunk followed the pad edge, away from the equipment, and the drops
+  weren't visible. Trunk GY-T1 now rises at the control enclosure and runs north between the coalescers and the
+  filter-separators. It then runs east down the corridor between the two equipment rows (filter-separators /
+  heater and meters / regulation), and north past the start-up heater to the inlet ESD. GY-T2 branches to the
+  compressors.
+  - Short spurs drop into each JB stand: drop ladders with rungs, armored cable and sealing glands at the JB.
+  - Yellow tray ID tags (GY-T1, GY-T2, MR-T1, MR-T2) every 30 ft.
+  - E110 is re-aimed down the corridor.
