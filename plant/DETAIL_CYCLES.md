@@ -652,3 +652,11 @@ turbine-hall and BESS pulls.
   - **LNG:** tray LNG-T1 only along the e-house; MC-HL on strut (LNG-C1) to the send-out pumps.
   - **Electrolyzer DC conductors:** black jackets with red / black polarity tape at both ends (they were bright
     red). The pull reel is black too.
+- **Fix, floating conduit racks:** the user found racks floating with dangling ends in the eye-level render. A
+  clearance-test bug made every strut post collide with the rack it was meant to hold, so all posts were skipped.
+  - Fixed: supports now slide along each span to the nearest clear spot, no more than ~9 ft apart. A run whose
+    spans can't all be supported isn't built.
+  - A spur is built only if its JB drop also fits.
+  - Spurs raised above the trunk to clear pipes now get a vertical step (conduits and MC-HL bent up, with a strut
+    bracket).
+  - A check script confirms 0 spans over 14 ft unsupported in the gas yard, the M&R and LNG.

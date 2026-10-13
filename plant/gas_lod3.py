@@ -516,12 +516,11 @@ def tray(S, pts, z, w=1.5, cables=CABLES, stand=16.0, name="", tag=None, style="
                     decal((px, py - w / 2 - .08, z - .1), (0, -1, 0), 2.4, .42, [(tag, .7, True, None)], bg="#ffd200")
                 else:
                     decal((px - w / 2 - .08, py, z - .1), (-1, 0, 0), 2.4, .42, [(tag, .7, True, None)], bg="#ffd200")
-        n = max(1, int(L // stand))
-        for k in range(n + 1):                                                    # T-stanchions
-            t = k / n
+        spots, worst = post_spots(S, a, b, z, .5, maxgap=10.0)
+        if worst > 12:
+            print("gas_lod3: long span", name, round(worst, 1), a, b)
+        for t in spots:                                                           # T-stanchions
             px, py = a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t
-            if not S.free(px - .5, px + .5, py - .5, py + .5, .7, z - .7, m=.1):
-                continue
             box(px - .3, px + .3, py - .3, py + .3, 0, z - .4, "steel")
             box(px - .6, px + .6, py - .6, py + .6, 0, .5, "concrete")
             if alongx:
@@ -529,6 +528,38 @@ def tray(S, pts, z, w=1.5, cables=CABLES, stand=16.0, name="", tag=None, style="
             else:
                 box(px - w / 2 - .2, px + w / 2 + .2, py - .2, py + .2, z - .6, z - .35, "steel")
     return z
+
+
+def post_spots(S, a, b, z, hw, maxgap=10.0, zt=None):
+    """Support positions along a-b: start at a, then step to the farthest clear spot within maxgap, ending at b.
+    Returns (positions, worst gap)."""
+    zt = z - .7 if zt is None else zt
+    L = abs(b[0] - a[0]) + abs(b[1] - a[1])
+    ok = lambda t: S.free(a[0] + (b[0] - a[0]) * t - hw, a[0] + (b[0] - a[0]) * t + hw,
+                          a[1] + (b[1] - a[1]) * t - hw, a[1] + (b[1] - a[1]) * t + hw, .7, zt, m=.05)
+    cand = [i / max(L, 1) for i in range(int(L) + 1)] + [1.0]
+    good = [t for t in cand if ok(t)]
+    out, last, worst = [], 0.0, 0.0
+    first = next((t for t in good if t * L <= 4), None)
+    if first is not None:
+        out.append(first)
+        last = first
+    else:
+        worst = max(worst, (good[0] if good else 1.0) * L)
+    while good and (1.0 - last) * L > maxgap * .8:
+        nxt = [t for t in good if last < t <= last + maxgap / max(L, 1)]
+        if not nxt:
+            nxt2 = [t for t in good if t > last]
+            if not nxt2:
+                break
+            t = nxt2[0]
+            worst = max(worst, (t - last) * L)
+        else:
+            t = max(nxt)
+        out.append(t)
+        last = t
+    worst = max(worst, (1.0 - last) * L - 4 if out else L)
+    return out, worst
 
 
 def conduit_rack(S, pts, z, w, cables, stand, name, tag):
@@ -539,6 +570,10 @@ def conduit_rack(S, pts, z, w, cables, stand, name, tag):
     else:
         print("gas_lod3: rack blocked", name, pts[0])
         return None
+    for a_, b_ in zip(pts, pts[1:]):                                          # every span must be supportable
+        if post_spots(S, a_, b_, z, .3, maxgap=9.0)[1] > 12:
+            print("gas_lod3: rack skipped (no room for supports)", name, a_, b_)
+            return None
     nc = max(2, sum(1 for c, r in cables if c != "cable_mc"))                  # conduits for control / inst / FA
     mc = [(c, r) for c, r in cables if c == "cable_mc"] or [("cable_mc", .16)]
     for a, b in zip(pts, pts[1:]):
@@ -568,12 +603,11 @@ def conduit_rack(S, pts, z, w, cables, stand, name, tag):
                     decal((px, py - w / 2 - .12, z - .15), (0, -1, 0), 2.0, .38, [(tag, .7, True, None)], bg="#ffd200")
                 else:
                     decal((px - w / 2 - .12, py, z - .15), (-1, 0, 0), 2.0, .38, [(tag, .7, True, None)], bg="#ffd200")
-        n = max(1, int(L // 8))
-        for k in range(n + 1):                                                    # strut stanchions every ~8 ft
-            t = k / n
+        spots, worst = post_spots(S, a, b, z, .3, maxgap=9.0)
+        if worst > 12:
+            print("gas_lod3: long span", name, round(worst, 1), a, b)
+        for t in spots:                                                           # strut stanchions, <= ~9 ft apart
             px, py = a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t
-            if not S.free(px - .3, px + .3, py - .3, py + .3, .7, z - .3, m=.05):
-                continue
             box(px - .07, px + .07, py - .07, py + .07, 0, z - .08, "steel")      # 1-5/8 strut post
             box(px - .35, px + .35, py - .35, py + .35, 0, .35, "concrete")
             if alongx:
@@ -581,6 +615,23 @@ def conduit_rack(S, pts, z, w, cables, stand, name, tag):
             else:
                 box(px - w / 2 - .1, px + w / 2 + .1, py - .08, py + .08, z - .1, z, "steel")
     return z
+
+
+def step_up(p, z0, z1):
+    """Vertical step where a spur had to rise above the trunk to clear pipes: conduits and MC-HL bent up, with a strut
+    bracket. Returns the spur elevation (or None)."""
+    if not z1:
+        return None
+    if z1 - z0 > .3:
+        x, y = p
+        for dx, c, r in ((-.25, "steel", .1), (0, "steel", .1), (.25, "cable_mc", .14)):
+            rod((x + dx, y, z0 + .1), (x + dx, y, z1 + .1), r, c, seg=8)
+        box(x - .45, x + .45, y + .12, y + .2, z0, z1 + .2, "steel")
+    return z1
+
+
+def drop_ok(S, x, y, z_top, z_bot=6.5):
+    return S.free(x - .5, x + .5, y - .3, y + .3, max(z_bot + .2, 7.1), z_top - .5, m=0)
 
 
 def drop(S, x, y, z_top, z_bot, n=3):
@@ -649,8 +700,8 @@ def cable_runs(S, area, trunks, riser, jbs, extra=()):
                 (tx, ty) = b[1]
                 sp = [(tx, ty), (jx, ty), (jx, jy - .35)] if abs(tx - jx) > .5 else [(tx, ty), (jx, jy - .35)]
                 sp = [p for i, p in enumerate(sp) if i == 0 or p != sp[i - 1]]
-                if len(sp) > 1 and tray(S, sp, z, w=.75, cables=(("cable_mc", .14), ("cable_inst", .1)),
-                                        stand=12, name=area + " spur") and drop(S, jx, jy - .35, z, 6.5):
+                if len(sp) > 1 and drop_ok(S, sp[-1][0], sp[-1][1], z) and (zs := step_up(sp[0], z, tray(S, sp, z, w=.75, cables=(("cable_mc", .14), ("cable_inst", .1)),
+                                        stand=12, name=area + " spur"))) and drop(S, jx, jy - .35, zs, 6.5):
                     n += 1
                 break
     for (x, y, zb) in extra:
@@ -660,8 +711,8 @@ def cable_runs(S, area, trunks, riser, jbs, extra=()):
                 (tx, ty) = b[1]
                 sp = [(tx, ty), (x, ty), (x, y)] if abs(tx - x) > .5 and abs(ty - y) > .5 else [(tx, ty), (x, y)]
                 sp = [p for i, p in enumerate(sp) if i == 0 or p != sp[i - 1]]
-                if len(sp) > 1 and tray(S, sp, z, w=.75, cables=(("cable_mc", .16), ("cable_tc", .1)),
-                                        stand=12, name=area + " spur") and drop(S, x, y, z, zb):
+                if len(sp) > 1 and drop_ok(S, sp[-1][0], sp[-1][1], z) and (zs := step_up(sp[0], z, tray(S, sp, z, w=.75, cables=(("cable_mc", .16), ("cable_tc", .1)),
+                                        stand=12, name=area + " spur"))) and drop(S, x, y, zs, zb):
                     n += 1
                 break
     fuel.D = False
