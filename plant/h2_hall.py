@@ -155,7 +155,10 @@ def rectifier_and_dc(x0):
         box(xa, xb, ye - .08, ye + .08, zz, zz + .1, "pipe")
     for j in range(8):                                                       # parallel 1/C DC cables
         xcab = xa + .35 + j * .6
-        col = "red" if j < 4 else "cable_tc"
+        col = "cable_tc"                                                     # black jackets, polarity by tape
+        tape = "red" if j < 4 else "sp_black"
+        for (pa, pb) in (((xcab, ys, 9.0), (xcab, ys, 9.5)), ((xcab, ye, 9.0), (xcab, ye, 9.5))):
+            rod(pa, pb, .19, tape, seg=8)
         rod((xcab, ys, 8.6), (xcab, ys, zt - .1), .17, col, seg=8)
         rod((xcab, ys, zt - .1), (xcab, ye, zt - .1), .17, col, seg=8)
         rod((xcab, ye, zt - .1), (xcab, ye, 8.3), .17, col, seg=8)

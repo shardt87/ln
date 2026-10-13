@@ -102,13 +102,13 @@ def hydrogen():
                             "electricians on a scissor lift dress the tray. Cable supplier: Southwire (as requested).")
     on(it)
     xr, yr, D, W, zf = 2117.5, 1481.0, 6.0, 3.0, .55
-    showcase.jack_reel(xr, yr, D, W, "red", "2 kV DC  1/C 1000 KCMIL  RHW-2", 1500, z=zf)
+    showcase.jack_reel(xr, yr, D, W, "cable_tc", "2 kV DC  1/C 1000 KCMIL  RHW-2", 1500, z=zf)
     top = (xr - D * .3, yr, zf + .5 + D * .85)
     sx, sy, sz = 2107.0, 1481.0, 12.8
     sheave(sx, sy, sz, axis="y", r=.7)
-    poly(bez(top, ((top[0] + sx) / 2, sy, sz + 2.2), (sx + .5, sy, sz + .6), 12), .17, "red", seg=10)
-    poly(bez((sx - .4, sy, sz + .65), (sx - .9, sy, sz + 1.2), (2105.6, 1481.0, 13.95), 5), .17, "red", seg=10)
-    rod((2105.6, 1481.0, 13.95), (2105.6, 1469.0, 13.95), .17, "red", seg=10)        # laid in the tray
+    poly(bez(top, ((top[0] + sx) / 2, sy, sz + 2.2), (sx + .5, sy, sz + .6), 12), .17, "cable_tc", seg=10)
+    poly(bez((sx - .4, sy, sz + .65), (sx - .9, sy, sz + 1.2), (2105.6, 1481.0, 13.95), 5), .17, "cable_tc", seg=10)
+    rod((2105.6, 1481.0, 13.95), (2105.6, 1469.0, 13.95), .17, "cable_tc", seg=10)        # laid in the tray
     rod((2105.6, 1469.0, 13.95), (2105.6, 1468.2, 12.0), .05, "rope", seg=6)         # pulling grip and rope
     scissor_lift(2108.4, 2112.2, 1478.4, 1481.4, zf, 9.4)
     person(2109.4, 1479.4, 9.4, 3.14, vest="hivis_o")                                   # feeding at the sheave
@@ -118,7 +118,7 @@ def hydrogen():
     box(2120.6, 2123.0, 1486.4, 1487.6, zf, zf + .9, "sp_yellow")                        # gang box
     # printed legends on the DC conductors in all five trays (red + / black -)
     ids = {i["id"] for i in fuel.G["items"] if i["name"].startswith("Rectifier ")}
-    texts = {"red": H2_DC + "  POSITIVE", "cable_tc": H2_DC + "  NEGATIVE"}
+    texts = {"cable_tc": H2_DC}
     return legends(ids, texts, (2010, 2170, 1468.5, 1493.5, 13.5, 14.2), step=5.5)
 
 
@@ -126,17 +126,20 @@ def lng(S):
     from maintenance import bez, poly
     import gas_lod3 as G3
     import simpull
-    it = fuel.new_item("OPT_LNG", "LNG: cable tray LNG-T1, e-house to the send-out pumps, with the ARMOR-X pull",
+    it = fuel.new_item("OPT_LNG", "LNG: cable tray LNG-T1 at the e-house, MC-HL on strut to the send-out pumps, with the ARMOR-X pull",
                        (1985, 2075, 1790, 1895), (0, 16), basis="typical", register=False, area="K",
                        sheet="typical (cable installation)",
                        info="ARMOR-X MC-HL (Class I Div 1 & 2) power, TC-ER control, PLTC-ER instrumentation and FPLR "
-                            "fire-alarm cable in ladder tray from the LNG 17 e-house to the send-out pumps; a reel of "
+                            "fire-alarm cable in a short ladder tray along the LNG 17 e-house, then MC-HL exposed on "
+                            "strut with the control cables in rigid conduit to the send-out pumps; a reel of "
                             "ARMOR-X MC-HL on an RR-SW45 reel roller pays off over a sheave into the tray, a capstan "
                             "puller with tension monitor at the pump end. Cable supplier: Southwire (as requested).")
     on(it)
     fuel.D = True
-    z = G3.tray(S, [(1991.0, 1857.0), (2015.0, 1857.0), (2015.0, 1801.0), (2027.0, 1801.0)], 9.0,
-                name="LNG", tag="LNG-T1")
+    z = G3.tray(S, [(1991.0, 1857.0), (2015.0, 1857.0)], 9.0, name="LNG", tag="LNG-T1", style="tray")
+    if z:                                                                         # beyond the e-house: MC-HL on strut
+        G3.tray(S, [(2015.0, 1857.0), (2015.0, 1801.0), (2027.0, 1801.0)], z, w=1.0, name="LNG", tag="LNG-C1",
+                cables=(("cable_inst", .1), ("cable_fa", .08), ("cable_mc", .19), ("cable_mc", .19)))
     fuel.D = False
     if not z:
         return 0
@@ -145,7 +148,7 @@ def lng(S):
     G3.jb_stand(S, 2031.5, 1798.6, "JB-LNG-13")
     if G3.JBS:
         jx, jy = G3.JBS[-1]
-        if G3.tray(S, [(2027.0, 1801.0), (jx, 1801.0), (jx, jy - .35)], z, w=.75,
+        if G3.tray(S, [(2027.0, 1801.0), (jx, 1801.0), (jx, jy - .35)], z, w=.6,
                    cables=(("cable_mc", .14), ("cable_inst", .1)), stand=12, name="LNG spur"):
             G3.drop(S, jx, jy - .35, z, 6.5)
     # the pull: ARMOR-X MC-HL on a reel roller north of the e-house, over a sheave into the tray
@@ -161,9 +164,9 @@ def lng(S):
         poly(bez(top, (xr, (yr + sy) / 2, sz + 3.0), (sx, sy + .7, sz + .4), 14), .19, "cable_mc", seg=10)
         poly(bez((sx, sy - .6, sz + .3), (sx, sy - 1.0, sz + .1), (sx, 1857.2, z - .02), 4), .19, "cable_mc", seg=10)
         rod((sx, 1857.2, z - .02), (2014.6, 1857.2, z - .02), .19, "cable_mc", seg=10)   # being pulled along the tray
-        rod((2014.6, 1857.2, z - .02), (2014.6, 1801.6, z - .02), .05, "rope", seg=6)
-        rod((2014.6, 1801.6, z - .02), (2022.0, 1801.6, z - .02), .05, "rope", seg=6)
-        rod((2022.0, 1801.6, z - .02), (2022.0, 1806.0, 1.6), .05, "rope", seg=6)
+        rod((2014.6, 1857.2, z - .02), (2014.6, 1801.6, z + .5), .05, "rope", seg=6)
+        rod((2014.6, 1801.6, z + .5), (2022.0, 1801.6, z + .5), .05, "rope", seg=6)
+        rod((2022.0, 1801.6, z + .5), (2022.0, 1806.0, 1.6), .05, "rope", seg=6)
         # capstan puller at the pump end
         if S.free(2019, 2026, 1805, 1811, .7, 4, m=.2):
             box(2019, 2025, 1806, 1810, 0, 1.2, "sw_red")
@@ -211,11 +214,11 @@ def mr(S):
         simpull.wire_wagon(wx, wy)
         poly(bez((wx - .8, wy + .6, 3.2), (jx + 3.0, jy - 1.5, 5.5), (jx + .4, jy - .4, 6.3), 10), .1, "cable_inst", seg=8)
         person(wx + 2.2, wy - .5, 0, 3.4)
-    ids = {i["id"] for i in fuel.G["items"] if i["name"].startswith("Pipeline M&R station: cable tray")}
+    ids = {i["id"] for i in fuel.G["items"] if i["name"].startswith("Pipeline M&R station: conduit racks")}
     texts = {k: v for k, v in LEG.items() if k in ("cable_mc", "cable_inst", "cable_fa")}
     texts["cable_tc"] = "TYPE TC-ER  600 V  12/C 14 AWG CU  XHHW-2  SUN RES  UL 1277"
     n = legends(ids, texts, (1560, 1800, 1690, 1900, 8, 14))
-    ids = {i["id"] for i in fuel.G["items"] if i["name"].startswith("Gas yard: cable tray")}
+    ids = {i["id"] for i in fuel.G["items"] if i["name"].startswith("Gas yard: conduit racks")}
     return n + legends(ids, texts, (1560, 1940, 1430, 1640, 8, 14))
 
 

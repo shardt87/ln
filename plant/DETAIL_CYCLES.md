@@ -642,3 +642,13 @@ turbine-hall and BESS pulls.
   - A SIMpull wire wagon feeds the pull from the tray drop.
   - Printed legends on the MR and GY tray cables. Viewer story SMR; camera E113.
 - verify PASS (0 clashes), audit CLEAN, coastal PASS.
+- **Realism review of the gas-area cable:** the user checked photos of real stations and asked whether the cable trays
+  are realistic. They aren't at this scale. Gas yards and M&R stations run control and instrument cable in rigid
+  galvanized conduit on Unistrut racks, and ARMOR-X MC-HL power cable exposed on strut; ladder tray belongs to large
+  compressor stations, refineries and LNG plants on the main pipe rack.
+  - **Gas yard and M&R:** the trays are now conduit banks (2 in rigid conduit with couplings) plus exposed MC-HL on
+    strut T-stanchions every 8 ft. Tags read GY-C / MR-C. Each drop to an explosion-proof JB is a rigid conduit
+    with an EYS seal, plus an MC-HL drop with a Class I gland, clamped to a strut riser.
+  - **LNG:** tray LNG-T1 only along the e-house; MC-HL on strut (LNG-C1) to the send-out pumps.
+  - **Electrolyzer DC conductors:** black jackets with red / black polarity tape at both ends (they were bright
+    red). The pull reel is black too.

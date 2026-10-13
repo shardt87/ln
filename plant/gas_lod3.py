@@ -472,8 +472,13 @@ def _seg_box(a, b, z, w):
     return x0, x1, y0, y1
 
 
-def tray(S, pts, z, w=1.5, cables=CABLES, stand=16.0, name="", tag=None):
-    """Ladder tray along an orthogonal polyline at elevation z (raised in 1.5 ft steps until clear)."""
+def tray(S, pts, z, w=1.5, cables=CABLES, stand=16.0, name="", tag=None, style="conduit"):
+    """Cable route along an orthogonal polyline at elevation z (raised in 1.5 ft steps until clear).
+    style "conduit" (gas areas, as built at stations of this size): a bank of rigid galvanized conduits clamped on a
+    Unistrut T-stanchion rack, with the ARMOR-X MC-HL power cables run exposed on the same strut beside them
+    (MC-HL is listed for exposed runs in Class I areas); style "tray": ladder tray with the cables laid in it."""
+    if style == "conduit":
+        return conduit_rack(S, pts, z, w, cables, stand, name, tag)
     for zz in (z, z + 1.5, z + 3, z + 4.5):
         if all(S.free(*_seg_box(a, b, zz, w), zz - .6, zz + .9, m=.15) for a, b in zip(pts, pts[1:])):
             z = zz
@@ -526,18 +531,70 @@ def tray(S, pts, z, w=1.5, cables=CABLES, stand=16.0, name="", tag=None):
     return z
 
 
+def conduit_rack(S, pts, z, w, cables, stand, name, tag):
+    for zz in (z, z + 1.5, z + 3, z + 4.5):
+        if all(S.free(*_seg_box(a, b, zz, w), zz - .5, zz + .6, m=.15) for a, b in zip(pts, pts[1:])):
+            z = zz
+            break
+    else:
+        print("gas_lod3: rack blocked", name, pts[0])
+        return None
+    nc = max(2, sum(1 for c, r in cables if c != "cable_mc"))                  # conduits for control / inst / FA
+    mc = [(c, r) for c, r in cables if c == "cable_mc"] or [("cable_mc", .16)]
+    for a, b in zip(pts, pts[1:]):
+        x0, x1, y0, y1 = _seg_box(a, b, z, w)
+        S.add([x0, y0, z - .5, x1, y1, z + .6])
+        alongx = a[1] == b[1]
+        L = abs(b[0] - a[0]) + abs(b[1] - a[1])
+        slots = [-w / 2 + .15 + j * (w - .3) / max(1, nc + len(mc) - 1) for j in range(nc + len(mc))]
+        for j, off in enumerate(slots):
+            pa = (a[0], a[1] + off) if alongx else (a[0] + off, a[1])
+            pb = (b[0], b[1] + off) if alongx else (b[0] + off, b[1])
+            if j < nc:
+                rod((pa[0], pa[1], z + .1), (pb[0], pb[1], z + .1), .1, "steel", seg=8)        # 2 in rigid conduit
+                for k in range(1, int(L // 10) + 1):                                         # couplings every 10 ft
+                    t = k * 10 / L
+                    px, py = pa[0] + (pb[0] - pa[0]) * t, pa[1] + (pb[1] - pa[1]) * t
+                    d = (.12, 0) if alongx else (0, .12)
+                    rod((px - d[0], py - d[1], z + .1), (px + d[0], py + d[1], z + .1), .13, "steel", seg=8)
+            else:
+                c, r = mc[j - nc]
+                rod((pa[0], pa[1], z + .02 + r), (pb[0], pb[1], z + .02 + r), r, c, seg=8)     # exposed MC-HL
+        if tag:
+            for k in range(1, int(L // 30) + 1):
+                t = k * 30 / L
+                px, py = a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t
+                if alongx:
+                    decal((px, py - w / 2 - .12, z - .15), (0, -1, 0), 2.0, .38, [(tag, .7, True, None)], bg="#ffd200")
+                else:
+                    decal((px - w / 2 - .12, py, z - .15), (-1, 0, 0), 2.0, .38, [(tag, .7, True, None)], bg="#ffd200")
+        n = max(1, int(L // 8))
+        for k in range(n + 1):                                                    # strut stanchions every ~8 ft
+            t = k / n
+            px, py = a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t
+            if not S.free(px - .3, px + .3, py - .3, py + .3, .7, z - .3, m=.05):
+                continue
+            box(px - .07, px + .07, py - .07, py + .07, 0, z - .08, "steel")      # 1-5/8 strut post
+            box(px - .35, px + .35, py - .35, py + .35, 0, .35, "concrete")
+            if alongx:
+                box(px - .08, px + .08, py - w / 2 - .1, py + w / 2 + .1, z - .1, z, "steel")   # strut crossarm
+            else:
+                box(px - w / 2 - .1, px + w / 2 + .1, py - .08, py + .08, z - .1, z, "steel")
+    return z
+
+
 def drop(S, x, y, z_top, z_bot, n=3):
     """Armored cable drop from the tray to a JB / panel: cables in a short vertical ladder."""
     if not S.free(x - .5, x + .5, y - .3, y + .3, max(z_bot + .2, 7.1), z_top - .5, m=0):
         return False
-    for s in (-.4, .4):
-        box(x + s - .05, x + s + .05, y - .05, y + .05, z_bot, z_top, "pipe")
-    for j in range(n):
-        c = "cable_mc" if j == 0 else "cable_inst"
-        rod((x - .25 + j * .25, y, z_top - .2), (x - .25 + j * .25, y, z_bot + .4), .13, c, seg=6)
-        rod((x - .25 + j * .25, y, z_bot + .4), (x - .25 + j * .25, y, z_bot), .2, "steel", seg=8)   # sealing gland
-    for zc in range(int(z_bot) + 1, int(z_top)):
-        box(x - .45, x + .45, y - .05, y + .05, zc, zc + .08, "pipe")                 # drop-ladder rungs
+    box(x - .5, x + .5, y + .06, y + .16, z_bot, z_top, "steel")                    # strut riser
+    rod((x - .25, y, z_top), (x - .25, y, z_bot + .9), .1, "steel", seg=8)           # rigid conduit down
+    rod((x - .25, y, z_bot + 1.0), (x - .25, y, z_bot + 1.6), .15, "steel", seg=8)   # EYS conduit seal
+    rod((x - .25, y, z_bot + .9), (x - .25, y, z_bot), .13, "steel", seg=8)
+    rod((x + .2, y, z_top), (x + .2, y, z_bot + .45), .14, "cable_mc", seg=8)        # exposed MC-HL drop
+    rod((x + .2, y, z_bot + .45), (x + .2, y, z_bot), .2, "steel", seg=8)            # Class I MC-HL gland
+    for zc in range(int(z_bot) + 1, int(z_top), 2):
+        box(x + .05, x + .35, y - .02, y + .06, zc, zc + .1, "steel")                # cable clamps on the strut
     S.add([x - .5, y - .3, z_bot, x + .5, y + .3, z_top])
     return True
 
@@ -557,15 +614,16 @@ def trunk_to(S, pts, jx, jy):
     return best
 
 
-TAGS = {"Gas yard": "GY-T", "Pipeline M&R station": "MR-T"}
+TAGS = {"Gas yard": "GY-C", "Pipeline M&R station": "MR-C"}
 
 
 def cable_runs(S, area, trunks, riser, jbs, extra=()):
     """Trunk trays from the control building riser, spurs to each JB stand with a cable drop, and extra drops."""
-    it = fuel.new_item("BASE_UTILITIES", f"{area}: cable tray and drops (ARMOR-X MC-HL power, TC-ER control, "
-                       "instrument and fire-alarm cable)", (1560, 1940, 1430, 1900), (0, 14), area="D",
+    it = fuel.new_item("BASE_UTILITIES", f"{area}: conduit racks and exposed ARMOR-X MC-HL on strut (control, "
+                       "instrument and fire-alarm in rigid conduit)", (1560, 1940, 1430, 1900), (0, 14), area="D",
                        sheet="typical (fuel detail)", register=False,
-                       info="Class I Div 2 Group D: MC-HL and TC-ER in ladder tray on T-stanchions (NEC 501.10(B)), "
+                       info="Class I Div 2 Group D: control / instrument / fire-alarm cable in rigid conduit banks on Unistrut racks, "
+                            "ARMOR-X MC-HL power run exposed on the same strut (NEC 501.10(B)); "
                             "drops to explosion-proof JBs through sealed fittings; heat-trace and lighting circuits.")
     on(it)
     fuel.D = True
