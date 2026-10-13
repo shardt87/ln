@@ -31,6 +31,7 @@ ROW_SPACING = 1.8
 LABEL_SIZE = 0.2
 ANIMATE = True
 ANIM_START, ANIM_LENGTH, ANIM_STAGGER = 1, 48, 6
+HERO_HOLD = 48           # frames the hero shot holds after the strip animation
 CLEAR_SCENE = True
 
 # --------------------------------------------------------------- MATERIALS --
@@ -359,7 +360,7 @@ def add_label(text, location, parent, coll):
     return obj
 
 
-def build_cable(key, origin, coll):
+def build_cable(key, origin, coll, label=True):
     spec = CABLES[key]
     r_out = outer_radius(spec["layers"])
     s = DISPLAY_DIAMETER / (2 * r_out) if SCALE_MODE == "normalized" else TRUE_SCALE
@@ -369,7 +370,8 @@ def build_cable(key, origin, coll):
     root.location = origin
     coll.objects.link(root)
     parts = build_layers(spec["layers"], BASE_LENGTH, s, 0.0, 0.0, root, coll, key)
-    add_label(f"{spec['title']}\n{spec['app']}", (-0.35, 0, 0), root, coll)
+    if label:
+        add_label(f"{spec['title']}\n{spec['app']}", (-0.35, 0, 0), root, coll)
     total = max(L for _, L in parts)
     return root, parts, total
 
@@ -418,23 +420,37 @@ def setup_scene(bounds, single):
     cam = bpy.data.objects.new("Camera", cam_data)
     bpy.context.collection.objects.link(cam)
     scene.camera = cam
-    if single:  # hero 3/4 view onto the stripped end
+    if single:  # hero 3/4 view onto the stripped end, slow push-in
         cam_data.lens = 60
+        cam_data.dof.use_dof = True
+        cam_data.dof.aperture_fstop = 2.8
         target = Vector((xmax - 1.0, 0, 0))
+        aim = bpy.data.objects.new("CameraTarget", None)
+        aim.location = target
+        bpy.context.collection.objects.link(aim)
+        track = cam.constraints.new("TRACK_TO")
+        track.target = aim
+        track.track_axis, track.up_axis = "TRACK_NEGATIVE_Z", "UP_Y"
+        cam_data.dof.focus_object = aim
+        end = ANIM_START + ANIM_LENGTH + HERO_HOLD
+        cam.location = target + Vector((3.6, -5.6, 1.0))
+        cam.keyframe_insert("location", frame=ANIM_START)
         cam.location = target + Vector((2.6, -4.2, 1.6))
+        cam.keyframe_insert("location", frame=end)
+        scene.frame_start, scene.frame_end = ANIM_START, end
     else:       # catalogue wall, orthographic front view
         cam_data.type = "ORTHO"
         cam_data.ortho_scale = max(width * 1.12, height * 1.12 * 16 / 9)
         target = Vector((cx, 0, cz))
         cam.location = (cx, -20, cz)
-    cam.rotation_euler = (target - cam.location).to_track_quat("-Z", "Y").to_euler()
+        cam.rotation_euler = (target - Vector(cam.location)).to_track_quat("-Z", "Y").to_euler()
+        scene.frame_start = ANIM_START
+        scene.frame_end = ANIM_START + ANIM_LENGTH + ANIM_STAGGER * 12 + 24
 
     scene.render.resolution_x, scene.render.resolution_y = 1920, 1080
     scene.render.engine = "CYCLES"
     scene.cycles.samples = 128
     scene.cycles.use_denoising = True
-    scene.frame_start = ANIM_START
-    scene.frame_end = ANIM_START + ANIM_LENGTH + ANIM_STAGGER * 12 + 24
 
 
 def main():
@@ -451,7 +467,7 @@ def main():
     for idx, key in enumerate(keys):
         col, row = idx % COLUMNS, idx // COLUMNS
         origin = (col * col_width, 0.0, -row * ROW_SPACING)
-        root, parts, total = build_cable(key, origin, coll)
+        root, parts, total = build_cable(key, origin, coll, label=len(keys) > 1)
         if ANIMATE:
             animate_strip(parts, ANIM_START + idx * ANIM_STAGGER)
         xs += [origin[0] - label_room, origin[0] + total]
