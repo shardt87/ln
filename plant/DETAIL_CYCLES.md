@@ -710,7 +710,7 @@ User: the modular yard looked empty next to the gas yard. Same LOD 3 standard, e
 ### Carbon capture facelift and CCS identity (`ccs_lod3.py`)
 User: bring the CCS area up to the same standard and label the absorbers "CCS" in green so they're recognizable.
 - **Absorbers A-C:** a painted green band (new colour `ccs_green`, #1f8a4c) round each shell between the EL 200 and
-  EL 250 platforms, white pinstripes, "CCS" lettered seven times round (gaps left at the ladder and the tray riser)
+  EL 250 platforms, white pinstripes, "CCS" lettered four times round (N, E, S, W; clear of the ladder and the tray riser)
   with "CARBON CAPTURE · ABSORBER x" beneath, so the towers read as carbon capture from any side.
 - **Surfaces:** crushed stone over the CCS block (ring road to utilities road), a concrete drive north of the absorbers.
 - **Nameplates:** DCC-A-C (with casing stiffeners on the west face), BF-A-C, STR-A-C, CO2 compression, amine solvent

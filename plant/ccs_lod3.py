@@ -1,7 +1,7 @@
 """Carbon-capture area at LOD 3, the gas-yard standard, and a recognizable CCS identity on the absorbers.
 
 - absorbers A-C: a painted green band round the shell between the EL 200 and EL 250 platforms with "CCS" lettered
-  on it seven times round (clear of the ladder, the tray riser and the amine risers), "CARBON CAPTURE · ABSORBER x"
+  on it four times round (clear of the ladder, the tray riser and the amine risers), "CARBON CAPTURE · ABSORBER x"
   under the lettering;
 - surfaces: crushed stone over the CCS block (ring road to utilities road, west edge to the east spine road),
   a concrete drive north of the absorbers;
@@ -37,7 +37,7 @@ def absorber_identity():
         rod((gx, cy, 207), (gx, cy, 243), R + .08, "ccs_green", seg=64)              # painted band
         for zb in (207, 243):                                                        # white pinstripes
             rod((gx, cy, zb - .6), (gx, cy, zb), R + .09, "label", seg=64)
-        for a in (0, 45, 90, 135, -160, -110, -30):                                 # lettering all round (gaps at the ladder / riser)
+        for a in (0, 90, 180, -90):                                                  # lettering, four faces (clear of ladder / riser)
             ca, sa = math.cos(math.radians(a)), math.sin(math.radians(a))
             Rp = R + .25
             decal((gx + Rp * ca, cy + Rp * sa, 227.5), (ca, sa, 0), 24, 20,
