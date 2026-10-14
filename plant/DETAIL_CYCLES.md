@@ -663,3 +663,21 @@ turbine-hall and BESS pulls.
   - Rack posts are 4 in galvanized pipe with cap plates on concrete footings, about 10 ft apart; thin strut posts
     read as a forest of wires from eye level.
   - JB drops now end at the JB top (EL 5.6), not 1 ft above it on the stand frame, where the conduit looked cut off.
+
+### Turbine hall realism pass (`hall_trays.py`, `hall_detail.py`)
+User question: is the turbine hall (trays, turbines, equipment) as accurate and detailed as the gas yard? An
+eye-level audit of the deck found:
+- **Tray supports:** 392 thin per-tray trapeze posts on the EL 20 floor, because every parallel N-S branch to each
+  unit had its own trapeze. Real halls carry parallel trays on shared tray-support frames.
+  - `hall_trays.py` replaces them with 77 frames: two W8 columns on base plates, a cross-beam per tray level
+    spanning the group, knee braces, about every 20 ft.
+  - A frame is built only where it's clear of the equipment; otherwise the group keeps its own trapezes.
+  - 360 posts were removed. Every tray stays supported, within 21 ft of a frame in its band.
+- **Lube-oil skids (GT1-3, ST)** were plain blocks. They now have reservoir stiffeners, bolted manways, a vent, a
+  level gauge, a lid handrail, and plate heat-exchanger oil coolers instead of a solid bundle. A label too.
+- **ST LP casing:** stiffeners on all faces, the horizontal-joint flange all round, cladding seams, a nameplate.
+- **Nameplates** on GT1-3 and GTG-1-3.
+- The GTs and generators already had compressor rings, combustor cans, the fuel manifold ring and pigtails,
+  thermocouple rings and KX cable, lube piping, JBs and conduits, generator coolers and ribs: right for this scale.
+- New eye-level photo camera P21 (along GT1 at the combustor and fuel manifold). E21-E23 re-rendered.
+- verify PASS (0 clashes), audit CLEAN, coastal PASS.

@@ -1994,6 +1994,9 @@ N_DETAIL += _cr.build()
 # turbine hall: open operating floor on columns, pedestals, stairs between the units, crossover stiles
 import hall_access as _ha
 N_DETAIL += _ha.build()
+# turbine hall: lube-oil skid reservoirs / plate coolers, ST casing stiffeners and joint, nameplates
+import hall_detail as _hd
+N_DETAIL += _hd.build()
 # electrolyzer hall: open hall with PEM skids, rectifiers, DC cable trays, 13.8 kV trenches; roof on H2_ROOF
 import h2_hall as _h2h
 N_DETAIL += _h2h.build()
@@ -2076,6 +2079,8 @@ N_CAB = _cables.build(routes)
 # trays last, so their supports and drops see every stair, platform and pipe already in the model
 import trays as _trays
 N_TRAY = _trays.build(item, items, parts, routes)     # ladder trays, cables, supports, drops, IPB
+import hall_trays as _htr
+print("hall tray frames (frames, posts replaced)", _htr.build())
 # realism pass last: firewater, small-bore piping, signage, people, vehicles, scaffolding, HRSG harps
 import realism as _realism
 N_REAL = _realism.build(item, items, parts, routes)
