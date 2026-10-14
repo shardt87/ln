@@ -702,7 +702,7 @@ def cable_runs(S, area, trunks, riser, jbs, extra=()):
                 sp = [(tx, ty), (jx, ty), (jx, jy - .35)] if abs(tx - jx) > .5 else [(tx, ty), (jx, jy - .35)]
                 sp = [p for i, p in enumerate(sp) if i == 0 or p != sp[i - 1]]
                 if len(sp) > 1 and drop_ok(S, sp[-1][0], sp[-1][1], z) and (zs := step_up(sp[0], z, tray(S, sp, z, w=.75, cables=(("cable_mc", .14), ("cable_inst", .1)),
-                                        stand=12, name=area + " spur"))) and drop(S, jx, jy - .35, zs, 6.5):
+                                        stand=12, name=area + " spur"))) and drop(S, jx, jy - .35, zs, 5.6):
                     n += 1
                 break
     for (x, y, zb) in extra:

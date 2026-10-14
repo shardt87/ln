@@ -150,7 +150,7 @@ def lng(S):
         jx, jy = G3.JBS[-1]
         if G3.tray(S, [(2027.0, 1801.0), (jx, 1801.0), (jx, jy - .35)], z, w=.6,
                    cables=(("cable_mc", .14), ("cable_inst", .1)), stand=12, name="LNG spur"):
-            G3.drop(S, jx, jy - .35, z, 6.5)
+            G3.drop(S, jx, jy - .35, z, 5.6)
     # the pull: ARMOR-X MC-HL on a reel roller north of the e-house, over a sheave into the tray
     xr, yr = 2004.0, 1878.0
     if S.free(xr - 3.2, xr + 3.2, yr - 4.2, yr + 6.8, .7, 9, m=.2):

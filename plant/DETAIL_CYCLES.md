@@ -662,3 +662,4 @@ turbine-hall and BESS pulls.
   - A check script confirms 0 spans over 14 ft unsupported in the gas yard, the M&R and LNG.
   - Rack posts are 4 in galvanized pipe with cap plates on concrete footings, about 10 ft apart; thin strut posts
     read as a forest of wires from eye level.
+  - JB drops now end at the JB top (EL 5.6), not 1 ft above it on the stand frame, where the conduit looked cut off.
