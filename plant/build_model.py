@@ -1750,6 +1750,8 @@ VIEWS = [
          show=BASE_SHOW, t=[1648, 1790, 4], c=[1638, 1772, 12]),
     dict(k="SMY", n="Story: modular yard - 13.8 kV MV-105 generator cables on the tray bridge to the PCM",
          show=BASE_SHOW + ["OPT_MOD", "OPT_MOD_ROUTES"], t=[1833, 1113, 11.5], c=[1852, 1099, 16.5]),
+    dict(k="CCS", n="Carbon capture: absorbers A-C with the green CCS band",
+         show=BASE_SHOW + ["OPT_CCS", "OPT_CCS_ROUTES", "OPT_CCSU"], t=[800, 1225, 215], c=[420, 960, 150]),
     dict(k="SD", n="Story: SIMpull Truck delivers reels to the modular-yard cable pull",
          show=BASE_SHOW + ["OPT_MOD", "OPT_MOD_ROUTES"], t=[1752, 944, 5], c=[1702, 906, 7.5]),
     dict(k="SB", n="Story: BESS crew pulling DC cable into the trench",
@@ -1814,6 +1816,7 @@ FIT = {
     "SMR": dict(box=[1636, 1658, 1782, 1796, 0, 8]),
     "SD": dict(box=[1700, 1785, 915, 965, 0, 14]),
     "SMY": dict(box=[1808, 1850, 1100, 1142, 0, 14]),
+    "CCS": dict(box=[599, 981, 1189, 1251, 200, 250]),
     "SB": dict(box=[1700, 1760, 525, 550, 0, 10]),
     "O1": dict(layers=["OPT_MOD", "OPT_TMP", "OPT_MODX"]),
     "O2": dict(layers=["OPT_BESS"]),
@@ -2012,6 +2015,9 @@ print("cable moments legends", _cm.build())
 # modular power yard at LOD 3: crushed stone and drives, conduit / MC racks, MV tray bridge, SCR / aero detail, people
 import modular_lod3 as _mlod
 N_DETAIL += _mlod.build()
+# carbon capture at LOD 3: green CCS band and lettering on the absorbers, crushed stone, nameplates, safety showers
+import ccs_lod3 as _clod
+N_DETAIL += _clod.build()
 # Tray review (user screenshots): short tray stubs drawn between a duct-bank end and pad equipment
 # rode the EL +36 rack tier, so a 10 ft connection became a 36 ft goalpost over the transformer. A
 # duct bank comes up straight into the equipment: those stubs are now buried, with rigid-conduit

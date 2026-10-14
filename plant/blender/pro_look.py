@@ -104,7 +104,7 @@ LOOK = {
     "binder_k": ("paint", "#2b2d2f", .5, 0), "shirt": ("paint", "#3e5f80", .85, 0), "shirt_w": ("paint", "#dfe3e6", .85, 0),
     "trousers": ("paint", "#2d3238", .85, 0), "hair": ("paint", "#2b221b", .7, 0),
     # SIMpull / Maxis equipment (simpull.py)
-    "sp_black": ("paint", "#1c1d1f", .45, 0), "sp_yellow": ("paint", "#f2c200", .4, 0),
+    "sp_black": ("paint", "#1c1d1f", .45, 0), "sp_yellow": ("paint", "#f2c200", .4, 0), "ccs_green": ("paint", "#1f8a4c", .4, 0),
     "coilpak_p": ("paint", "#8a7fd0", .15, 0), "coilpak_b": ("paint", "#6f9ad8", .15, 0), "barrel_w": ("paint", "#eceae4", .45, 0),
 }
 ALPHA = {"glass_in": .18, "coilpak_p": .7, "coilpak_b": .7}
@@ -1100,6 +1100,10 @@ EPIC = [
          eye=(1822, 1228, 9), target=(1720, 1160, 7), lens=26, show="all", sun=(30, 240)),
     dict(k="E117", n="Modular power yard from above: RICE hall, aero units, drives, racks and the PCM",
          eye=(1560, 760, 230), target=(1930, 1130, 0), lens=32, show="all", sun=(36, 230)),
+    dict(k="E118", n="Carbon capture: absorbers A-C with the green CCS band, strippers and compression beyond",
+         eye=(420, 960, 150), target=(800, 1225, 215), lens=30, show="all", sun=(30, 225)),
+    dict(k="E119", n="Carbon capture train A: rich / lean amine pump skid, safety showers, pipe rack, absorber beyond",
+         eye=(716, 1020, 30), target=(680, 1090, 4), lens=24, show="all", sun=(30, 225)),
     dict(k="P110", n="Gas yard at eye level: conduit rack and ARMOR-X MC-HL on Unistrut between the equipment rows",
          eye=(1646, 1499.0, 5.4), target=(1690, 1511.0, 7.4), lens=35, show="base", sun=(14, 250),
          look=LOOK_GOLDEN, dof=(26, 4.0), hide=("People (scale figures", "Gas yard: operators")),

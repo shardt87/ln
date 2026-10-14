@@ -706,3 +706,18 @@ User: the modular yard looked empty next to the gas yard. Same LOD 3 standard, e
 - New cameras E114 (services rack corridor), E115 (MV tray bridge and crew), E116 (radiator feeders), E117 (yard
   from above); E14 re-rendered. Viewer story view SMY.
 - verify PASS (0 clashes), audit CLEAN, coastal PASS.
+
+### Carbon capture facelift and CCS identity (`ccs_lod3.py`)
+User: bring the CCS area up to the same standard and label the absorbers "CCS" in green so they're recognizable.
+- **Absorbers A-C:** a painted green band (new colour `ccs_green`, #1f8a4c) round each shell between the EL 200 and
+  EL 250 platforms, white pinstripes, "CCS" lettered seven times round (gaps left at the ladder and the tray riser)
+  with "CARBON CAPTURE · ABSORBER x" beneath, so the towers read as carbon capture from any side.
+- **Surfaces:** crushed stone over the CCS block (ring road to utilities road), a concrete drive north of the absorbers.
+- **Nameplates:** DCC-A-C (with casing stiffeners on the west face), BF-A-C, STR-A-C, CO2 compression, amine solvent
+  storage.
+- **Amine-area safety:** 12 combined safety shower / eyewash stations (green, blue beacon, sign) at every pump skid,
+  the DCC pumps, the water-wash pumps, the reclaimer and the solvent storage; DANGER AMINE signs on posts at the
+  skids; a CO2 asphyxiant warning at compression; extinguishers.
+- 15 flood-light poles, a sampling technician at each absorber's analyser panel, operators, 3 pickups.
+- New cameras E118 (absorbers with the CCS band), E119 (train A amine skid, safety shower); viewer view CCS.
+- verify PASS (0 clashes), audit CLEAN, coastal PASS.
