@@ -1202,9 +1202,10 @@ DC = dict(area="I", basis="design change", sheet="beyond Rev 14")
 # the north-west corner stays open: maintenance laydown for engine and turbine exchanges
 pad(L, "Maintenance laydown (gravel)", 45, 405, 1705, 1880, "gravel", z1=0.25, area="I", basis="design change",
     sheet="beyond Rev 14")
-# two trailer-mounted aeroderivatives (TM2500 class) south of the portable pad
+# two trailer-mounted aeroderivatives (TM2500 class) north of SC-1 / SC-2, beside the other aeroderivatives
+# (user review: swapped with the fuel cells and microturbines, which now sit on the portable pad)
 for k in range(2):
-    x, y = 2010 + 120 * k, 335
+    x, y = 1905 + 140 * k, 1280
     item(L, f"TM-{k + 1}: trailer-mounted aeroderivative GT (TM2500 class, ~35 MW)", (x, x + 78, y, y + 55),
          (0, 42), tag=f"TM-{k + 1}", info="Design change: gas turbine + generator trailer, control/aux trailer, "
          "inlet filter on the trailer, exhaust stack.", **DC)
@@ -1228,15 +1229,15 @@ for k in range(6):
     V(x + 12, y + 4, 2.2, 11, 12, "fan", seg=12); V(x + 28, y + 4, 2.2, 11, 12, "fan", seg=12)
     R((x + 36, y + 6, 11), (x + 36, y + 6, 18), 0.8, "stack", seg=10)
 ehouse(L, "CONT paralleling switchgear e-house", 2195, 2240, 527, 545, 12, tag="CONT-EH", **DC)
-# eight more fuel-cell modules and three more microturbines north of SC-1/SC-2
+# eight more fuel-cell modules and three more microturbines south of the portable pad (feeding PAD-LV)
 for k in range(8):
-    x = 1900 + 14 * k
-    solid(L, f"FC-{k + 5}: SOFC module (Bloom ES5 class, 200-300 kW)", x, x + 9, 1290, 1316, 0, 7, "bess",
+    x = 2010 + 14 * k
+    solid(L, f"FC-{k + 5}: SOFC module (Bloom ES5 class, 200-300 kW)", x, x + 9, 350, 376, 0, 7, "bess",
           tag=f"FC-{k + 5}", **DC)
-ehouse(L, "FC-5..12 inverter / AC cabinet / desulfurizer", 2016, 2056, 1292, 1316, 8, **DC)
+ehouse(L, "FC-5..12 inverter / AC cabinet / desulfurizer", 2126, 2166, 352, 376, 8, **DC)
 for k in range(3):
-    x = 2072 + 14 * k
-    solid(L, f"MT-{k + 4}: microturbine 1 MW (Capstone C1000 class)", x, x + 8, 1289, 1317, 0, 9.5, "machine",
+    x = 2180 + 14 * k
+    solid(L, f"MT-{k + 4}: microturbine 1 MW (Capstone C1000 class)", x, x + 8, 349, 377, 0, 9.5, "machine",
           tag=f"MT-{k + 4}", **DC)
 
 # ---------------------------------------------------------------------------
@@ -1594,25 +1595,29 @@ for row, y in ((0, 505), (1, 560)):                       # CONT-3..8 -> CONT-EH
 add_route("mvlv_cable", [(2263, 575), (2290, 575), (2290, 564), (2295, 564)], "OPT_TMP_ROUTES",
           sheet="typical (portable pad)")                                                   # PIC -> load bank
 add_route("mvlv_cable", [(2217, 527), (2217, 492), (2185, 492), (2185, 484)], MX)          # CONT-EH -> PAD-EH
-add_route("mvlv_cable", [(2060, 390), (2060, 410), (2165, 410), (2165, 470)], MX)         # TM-1 -> PAD-EH
-add_route("mvlv_cable", [(2180, 390), (2180, 403), (2205, 403), (2205, 477), (2200, 477)], MX)   # TM-2
-add_route("mvlv_cable", [(1904, 1290), (1904, 1285), (2030, 1285), (2030, 1292)], MX)     # FC-5..12 -> inverter
-add_route("mvlv_cable", [(2056, 1304), (2064, 1304), (2064, 1322), (2285, 1322), (2285, 1003),
-                         (2250, 1003), (2250, 982)], MX)                                    # inverter -> MOD-LV
-add_route("mvlv_cable", [(2114, 1303), (2124, 1303), (2124, 1322)], MX)                   # MT-4..6 join
+# TM-1 / TM-2 generator leads leave the trailer's ground tray at the north edge, run in the yard duct bank
+# between SC-1 and SC-2 down to the modular collector e-house MOD-EH
+add_route("mvlv_cable", [(1955, 1335), (1955, 1345), (2075, 1345), (2075, 1000), (2000, 1000), (2000, 890),
+                         (1995, 890)], MX)                                                  # TM-1 -> MOD-EH
+add_route("mvlv_cable", [(2095, 1335), (2095, 1349), (2079, 1349), (2079, 1004), (2004, 1004), (2004, 894),
+                         (1995, 894)], MX)                                                  # TM-2 -> MOD-EH
+add_route("mvlv_cable", [(2014, 350), (2014, 345), (2146, 345), (2146, 352)], MX)         # FC-5..12 -> inverter
+add_route("mvlv_cable", [(2146, 376), (2146, 420), (2165, 420), (2165, 430)], MX)         # inverter -> PAD-LV
+add_route("mvlv_cable", [(2198, 377), (2198, 415), (2175, 415), (2175, 430)], MX)         # MT-4..6 -> PAD-LV
+add_route("mvlv_cable", [(2150, 1252), (2235, 1252), (2235, 1324), (2240, 1324)], "OPT_MOD_ROUTES")   # SC-2 PCM -> ammonia skid
 add_route("fuel_gas", [(2340, 440), (2340, 452), (1985, 452), (1985, 536), (2130, 536)], MX)   # pad skid -> TM / CONT
-for x in (2082, 2202):
-    add_route("fuel_gas", [(x, 452), (x, 377)], MX)
+add_route("fuel_gas", [(2049.5, 452), (2049.5, 377)], MX)                                # header -> FC-5..12
+add_route("fuel_gas", [(2205, 452), (2205, 378)], MX)                                     # header -> MT-4..6
 for x in (2010, 2070, 2130):
     add_route("fuel_gas", [(x, 536), (x, 513)], MX)
     add_route("fuel_gas", [(x, 536), (x, 560)], MX)
-add_route("fuel_gas", [(1955, 1350), (1955, 1316)], MX)                                    # header -> FC-5..12
+add_route("fuel_gas", [(1977, 1350), (1977, 1322)], MX)                                    # header -> TM-1 fuel skid
+add_route("fuel_gas", [(2117, 1350), (2117, 1322)], MX)                                    # header -> TM-2 fuel skid
 for k in range(8):                                                                          # FC tails to the DC feeder
-    add_route("mvlv_cable", [(1904 + 14 * k, 1290), (1904 + 14 * k, 1285)], MX)
+    add_route("mvlv_cable", [(2014 + 14 * k, 350), (2014 + 14 * k, 345)], MX)
 # SC-1 / SC-2 fuel gas from the fuel-gas compressor building (not drawn on sheet 07)
 add_route("fuel_gas", [(2290, 1182), (1940, 1182), (1940, 1190)], "OPT_MOD_ROUTES")
 add_route("fuel_gas", [(2140, 1182), (2140, 1190)], "OPT_MOD_ROUTES")
-add_route("fuel_gas", [(2093, 1350), (2093, 1317)], MX)                                    # header -> MT-4..6
 # BESS main power transformer to the D4 upper position (230 kV cable to the take-off gantry)
 add_route("hv_cable", [(1756, 352), (1756, 170)], "OPT_BESS_ROUTES", sheet="typical (switchyard build-out)")
 # Turbine-hall cabling the drawing leaves to the vendor (typical): a control / instrument backbone

@@ -41,8 +41,6 @@ def convert(routes):
         P = r["points"]
         if P == [[2213.0, 695.0], [2263.0, 695.0], [2263.0, 575.0]]:       # MOB-1 -> PIC through the C-L01 ramp
             r["points"] = P = [[2213.0, 695.0], [2245.0, 695.0], [2245.0, 575.0], [2255.0, 575.0]]
-        if P == [[2060.0, 390.0], [2060.0, 410.0], [2165.0, 410.0], [2165.0, 470.0]]:   # TM-1: around PAD-LV
-            P = [[2060.0, 390.0], [2060.0, 410.0], [2155.0, 410.0], [2155.0, 455.0], [2165.0, 455.0], [2165.0, 470.0]]
         r["points"] = P = _trim(P)
         tray = r["layer"] == "OPT_MODX_ROUTES"
         r.update(type="mvlv_cable", z=.3, w=1.5, h=.3, color="cable_mv", surface=True,

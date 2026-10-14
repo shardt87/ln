@@ -721,3 +721,16 @@ User: bring the CCS area up to the same standard and label the absorbers "CCS" i
 - 15 flood-light poles, a sampling technician at each absorber's analyser panel, operators, 3 pickups.
 - New cameras E118 (absorbers with the CCS band), E119 (train A amine skid, safety shower); viewer view CCS.
 - verify PASS (0 clashes), audit CLEAN, coastal PASS.
+
+### Aeroderivatives and fuel cells swapped (user review)
+The TM2500 trailer aeroderivatives (TM-1, TM-2) were on the portable pad's south row and the expansion fuel cells /
+microturbines (FC-5..12, inverter, MT-4..6) north of the simple-cycle units. Swapped:
+- TM-1 / TM-2 now north of SC-1 / SC-2 (x 1905-2123, y 1280-1335), beside the other aeroderivatives. The 15 kV
+  generator leads leave each trailer's ground tray north, then run in the yard duct bank between SC-1 and SC-2
+  down to MOD-EH. Fuel-gas branches go from the y 1350 header to each fuel / water-wash skid.
+- FC-5..12, their inverter and MT-4..6 now on the portable pad's south row (x 2010-2224, y 349-377): FC tails to
+  the inverter, inverter and microturbines to PAD-LV 480 V, gas branches from the pad header between the modules.
+- The firewater branch that ended at TM-2 now ends at MT-4. The SC-2 aqueous-ammonia skid gets its own 480 V feed
+  from the SC-2 PCM; before, a passing route had been covering it by accident.
+- Cameras E72 / E73 (TM-2) moved with the units; E16 / E17 / E80 labels updated.
+- verify PASS (0 clashes), audit CLEAN, coastal PASS.
