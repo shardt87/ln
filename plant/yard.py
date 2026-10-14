@@ -347,9 +347,9 @@ def tm2500(it):
     # interconnect cables between the trailers, under a yellow cable protector across the walkway
     for k in range(4):
         xc = x + 34.5 + k * .45
-        rod((xc, A1 + .1, 5), (xc, A1 + .9, .3), .1, "cable_tc", seg=6)
+        rod((xc, A1 - .4, 5), (xc, A1 + .9, .3), .1, "cable_tc", seg=6)
         rod((xc, A1 + .9, .3), (xc, T0 - 1, .3), .1, "cable_tc", seg=6)
-        rod((xc, T0 - 1, .3), (xc, T0 + .2, 3.4), .1, "cable_tc", seg=6)
+        rod((xc, T0 - 1, .3), (xc, T0 + .6, D - .1), .1, "cable_tc", seg=6)
     box(x + 33.6, x + 37.2, y + 22, y + 24.5, 0, .45, "amber")
     # fuel-gas / water-wash skid at the east end, flexible hose to the gooseneck end
     box(x + 72, x + 78, T0 - 1, T1 + 1, 0, .5, "concrete")

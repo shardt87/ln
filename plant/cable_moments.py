@@ -212,7 +212,7 @@ def mr(S):
     wx, wy = jx + 5.0, jy - 5.0
     if S.free(wx - 2, wx + 2, wy - 2, wy + 2, .7, 5, m=.2):
         simpull.wire_wagon(wx, wy)
-        poly(bez((wx - .8, wy + .6, 3.2), (jx + 3.0, jy - 1.5, 5.5), (jx + .4, jy - .4, 6.3), 10), .1, "cable_inst", seg=8)
+        poly(bez((wx + .5, wy + .65, 3.65), (jx + 3.0, jy - 1.5, 5.5), (jx + .4, jy - .4, 6.3), 10), .1, "cable_inst", seg=8)
         person(wx + 2.2, wy - .5, 0, 3.4)
     ids = {i["id"] for i in fuel.G["items"] if i["name"].startswith("Pipeline M&R station: conduit racks")}
     texts = {k: v for k, v in LEG.items() if k in ("cable_mc", "cable_inst", "cable_fa")}

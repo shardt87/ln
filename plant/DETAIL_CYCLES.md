@@ -750,3 +750,21 @@ microturbines (FC-5..12, inverter, MT-4..6) north of the simple-cycle units. Swa
   - FC-1..4, their inverter and MT-1..3 are back where sheet 12 draws them, with their drawn cable and gas routes.
   - FC-5..12 and MT-4..6 stay on the pad's south row. Cameras E72 / E73 / E76 / E17 / E80 updated.
   - verify PASS (211/211, 0 clashes), audit CLEAN, coastal PASS.
+
+### Cable continuity audit (`cable_links.py`)
+User screenshot: TM-1 / TM-2 generator-lead ground trays ended in the gravel. A plant-wide scan of every cable rod
+end (it must touch another part, or grade) found these gaps, now fixed:
+- **TM-1 / TM-2 feeders:** made surface ground trays from the trailer trays to PAD-EH, crossing the pad lane on the
+  C-L01 drive-over ramp beside MOB-1's feeder (`surface_cable.REGION` extended north). They had been buried routes
+  with nothing drawn between the tray end and the duct bank.
+- **TM trailer interconnects:** now start inside the control-trailer wall and end on the GT trailer deck; they had
+  stopped short at both ends.
+- **Tray tier changes:** ladder risers with a 9-cable bundle wherever two tray tiers meet at one point without a
+  vertical cable (9 junctions, e.g. the EL 44 hall power tray at x 1010 over the EL 30 branches).
+- **Turbine hall roof:** the exterior MC risers now cross the eave and run up the roof on a ladder tray, across the
+  ridge, into both exhauster trays (they stopped at the eave, 40 ft short).
+- **M&R wire wagon:** the pull now pays off the upper spool.
+- Extinguisher hoses recoloured, so they no longer read as cable.
+- Remaining free ends are deliberate: 36 tagged pigtails awaiting termination at the pre-wire workstation, and the
+  cut armour sample at the turbine-hall dressing scene.
+- New cameras E120 (TM feeders), E121 (hall roof). verify PASS (0 clashes), audit CLEAN, coastal PASS.

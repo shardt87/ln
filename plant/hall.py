@@ -472,6 +472,26 @@ def hall_electrical():
             rod((482, yr - .4 + c * .4, z + .7), (1098, yr - .4 + c * .4, z + .7), .1, "cable_mc", seg=6)
         for x in range(500, 1098, 20):
             box(x - .3, x + .3, yr - .8, yr + .8, z, z + .45, "steel")                       # roof supports
+    # riser tops to the roof trays: over the eave, up the roof slope beside the gable, across the ridge to both trays
+    for (xo, xe, y0, ys) in ((1101.65, 1097.0, 430, (470, 482, 494)), (478.35, 483.0, 530, (494, 482, 470))):
+        pts = [(xo, y0), (xe, y0)] + [(xe, y) for y in ys]
+        for c in range(3):
+            off = -.4 + c * .4
+            P = [(px + (off if i > 0 else 0), py + (off if i == 0 else 0), roof(py) + .7) for i, (px, py) in enumerate(pts)]
+            P[0] = (P[0][0], P[0][1], roof(y0) + .6)
+            for a_, b_ in zip(P, P[1:]):
+                rod(a_, b_, .1, "cable_mc", seg=6)
+        xt = 1098 if xe > 700 else 482
+        for yt in (470, 494):                                                               # into each roof tray end
+            for c in range(3):
+                off = -.4 + c * .4
+                rod((xe + off, yt, roof(yt) + .7), (xt, yt + off, roof(yt) + .7), .1, "cable_mc", seg=6)
+        for s_ in (-.7, .7):                                                                # ladder tray rails
+            Q = [(xe + s_, y, roof(y) + .5) for (_, y) in pts[1:]]
+            for a_, b_ in zip(Q, Q[1:]):
+                rod(a_, b_, .06, "pipe", seg=4)
+        for y in range(min(y0, ys[-1]) + 4, max(y0, ys[-1]), 10):                           # roof supports
+            box(xe - .9, xe + .9, y - .3, y + .3, roof(y), roof(y) + .45, "steel")
     for x in range(520, 1090, 48):                                                          # roof exhausters
         for yr in (470, 494):
             z = roof(yr) + .2

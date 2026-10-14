@@ -1597,9 +1597,11 @@ add_route("mvlv_cable", [(2263, 575), (2290, 575), (2290, 564), (2295, 564)], "O
 add_route("mvlv_cable", [(2217, 527), (2217, 492), (2185, 492), (2185, 484)], MX)          # CONT-EH -> PAD-EH
 # TM-1 / TM-2 generator leads leave the trailer's ground tray at the north edge, run in the yard duct bank
 # between SC-1 and SC-2 down to the modular collector e-house MOD-EH
-add_route("mvlv_cable", [(2200, 795), (2200, 805), (2142, 805), (2142, 490), (2165, 490), (2165, 484)],
+# portable power cable in ground trays (surface_cable), across the pad lane on the C-L01 drive-over ramp beside
+# the MOB-1 feeder, down past CONT-EH to the north face of PAD-EH
+add_route("mvlv_cable", [(2200, 795), (2200, 805), (2241, 805), (2241, 500), (2180, 500), (2180, 484)],
           MX)                                                                               # TM-1 -> PAD-EH
-add_route("mvlv_cable", [(2310, 795), (2310, 809), (2146, 809), (2146, 494), (2175, 494), (2175, 484)],
+add_route("mvlv_cable", [(2310, 795), (2310, 809), (2249, 809), (2249, 504), (2188, 504), (2188, 484)],
           MX)                                                                               # TM-2 -> PAD-EH
 add_route("mvlv_cable", [(2014, 350), (2014, 345), (2146, 345), (2146, 352)], MX)         # FC-5..12 -> inverter
 add_route("mvlv_cable", [(2146, 376), (2146, 420), (2165, 420), (2165, 430)], MX)         # inverter -> PAD-LV
@@ -2098,6 +2100,8 @@ import trays as _trays
 N_TRAY = _trays.build(item, items, parts, routes)     # ladder trays, cables, supports, drops, IPB
 import hall_trays as _htr
 print("hall tray frames (frames, posts replaced)", _htr.build())
+import cable_links as _cl
+print("tier risers added", _cl.build(routes))
 # realism pass last: firewater, small-bore piping, signage, people, vehicles, scaffolding, HRSG harps
 import realism as _realism
 N_REAL = _realism.build(item, items, parts, routes)

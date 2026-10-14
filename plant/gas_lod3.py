@@ -187,7 +187,7 @@ def extinguisher(S, x, y):
     x, y = p
     rod((x, y, .9), (x, y, 3.6), .6, "red", seg=12)                                 # 150 lb wheeled dry chemical
     rod((x - .6, y, .55), (x + .6, y, .55), .55, "tyre", seg=12)
-    rod((x, y + .5, 3.2), (x, y + .9, 1.2), .07, "cable_tc", seg=4)                # hose
+    rod((x, y + .5, 3.2), (x, y + .9, 1.2), .07, "hdpe", seg=4)                    # hose
 
 
 def windsock(S, x, y):

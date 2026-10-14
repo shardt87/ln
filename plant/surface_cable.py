@@ -16,7 +16,7 @@ Printed jacket legends at a few points along the runs.
 import fuel
 from fuel import box, rod
 
-REGION = (1985, 2350, 375, 715)
+REGION = (1985, 2350, 375, 815)        # portable pad + the TM2500 plot north of it
 LANES = [(2130, 2370, 620, 640)]                       # portable pad lanes (cable protectors where crossed)
 RAMP = (2238, 2252, 617, 643)                          # drive-over cable ramp (C-L01), already drawn
 LV_TAGS = ("GEN-E", "GEN-O", "PAD-LV")                 # 480 V equipment (Type W sets)
