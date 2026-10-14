@@ -743,3 +743,10 @@ microturbines (FC-5..12, inverter, MT-4..6) north of the simple-cycle units. Swa
     follow them.
   - FC-5..12 and MT-4..6 stay on the portable pad's south row.
   - Cameras E72 / E73 / E76 / E17 / E80 updated. Verify: footprints 211/211, 0 clashes. Audit CLEAN, coastal PASS.
+- **Second follow-up (user screenshot):** the plot south of SC-1 / SC-2 was the wrong place for the aeroderivatives.
+  - TM-1 and TM-2 now stand on the empty ground north of the portable pad, east of MOB-1 (x 2150-2338,
+    y 740-795). Leads go in a duct bank to PAD-EH; fuel goes on a branch of the pad gas header along the east
+    fence.
+  - FC-1..4, their inverter and MT-1..3 are back where sheet 12 draws them, with their drawn cable and gas routes.
+  - FC-5..12 and MT-4..6 stay on the pad's south row. Cameras E72 / E73 / E76 / E17 / E80 updated.
+  - verify PASS (211/211, 0 clashes), audit CLEAN, coastal PASS.

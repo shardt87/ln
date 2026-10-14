@@ -1153,16 +1153,14 @@ ehouse(L, "MOD-EH: 13.8 kV modular collector e-house", 1915, 1995, 880, 900, 16,
        sheet="SK-3X1-08")
 xfmr(L, "T-MOD-1: 13.8/230 kV", 2045, 2085, 870, 905, 24, bushing=13, tag="T-MOD-1", area="I", sheet="SK-3X1-08")
 xfmr(L, "T-MOD-2: 13.8/230 kV", 2105, 2145, 870, 905, 24, bushing=13, tag="T-MOD-2", area="I", sheet="SK-3X1-08")
-# FC-1..4 and MT-1..3 (sheet 12) moved north of SC-1 (user review): their drawn plot south of the
-# simple-cycle units now carries the two TM2500 trailer aeroderivatives (OPT_MODX)
 for k in range(4):
-    x = 1900 + 14 * k
-    solid(L, f"FC-{k+1}: SOFC module (Bloom ES5 class, 200-300 kW)", x, x + 9, 1290, 1316, 0, 7, "bess",
+    x = 1995 + 14 * k
+    solid(L, f"FC-{k+1}: SOFC module (Bloom ES5 class, 200-300 kW)", x, x + 9, 1070, 1096, 0, 7, "bess",
           area="I", basis="vendor", sheet="SK-3X1-12", info="26 ft 5 in x 8 ft 7 in x 6 ft 9 in.")
-solid(L, "Fuel-cell inverter / AC cabinet / desulfurizer", 1960, 2002, 1292, 1316, 0, 8, "ehouse", area="I")
+solid(L, "Fuel-cell inverter / AC cabinet / desulfurizer", 2060, 2102, 1072, 1096, 0, 8, "ehouse", area="I")
 for k in range(3):
-    x = 2014 + 14 * k
-    solid(L, f"MT-{k+1}: microturbine 1 MW (Capstone C1000 class)", x, x + 8, 1289, 1317, 0, 9.5, "machine",
+    x = 2260 + 14 * k
+    solid(L, f"MT-{k+1}: microturbine 1 MW (Capstone C1000 class)", x, x + 8, 1068, 1096, 0, 9.5, "machine",
           area="I", basis="vendor", sheet="SK-3X1-12", info="2438 x 8534 x 2896 mm.")
 ehouse(L, "MOD-LV 480 V board + 480 V : 13.8 kV step-up", 2215, 2267, 970, 982, 10, area="I", sheet="SK-3X1-08")
 L = "OPT_TMP"
@@ -1204,11 +1202,10 @@ DC = dict(area="I", basis="design change", sheet="beyond Rev 14")
 # the north-west corner stays open: maintenance laydown for engine and turbine exchanges
 pad(L, "Maintenance laydown (gravel)", 45, 405, 1705, 1880, "gravel", z1=0.25, area="I", basis="design change",
     sheet="beyond Rev 14")
-# two trailer-mounted aeroderivatives (TM2500 class) south of SC-1 / SC-2, beside the other aeroderivatives, on the
-# plot drawn for FC-1..4 / MT-1..3 (user review; the fuel cells and microturbines moved north of SC-1 and to the
-# portable pad's south row)
+# two trailer-mounted aeroderivatives (TM2500 class) on the open ground north of the portable pad, east of MOB-1
+# (user review; the expansion fuel cells and microturbines took their old row south of the pad)
 for k in range(2):
-    x, y = 2000 + 120 * k, 1045
+    x, y = 2150 + 110 * k, 740
     item(L, f"TM-{k + 1}: trailer-mounted aeroderivative GT (TM2500 class, ~35 MW)", (x, x + 78, y, y + 55),
          (0, 42), tag=f"TM-{k + 1}", info="Design change: gas turbine + generator trailer, control/aux trailer, "
          "inlet filter on the trailer, exhaust stack.", **DC)
@@ -1590,21 +1587,6 @@ add_route("feedwater", [(985, 748), (1004, 748), (1004, 873), (1522, 873), (1522
 for r in routes:
     if r["type"] == "cw" and r["points"][-1] == [770.0, 1360.0]:
         r["points"].append([770.0, 1255.0])
-# FC-1..4 / MT-1..3 moved north of SC-1 (user review): their drawn cable and gas routes follow them; the gas line
-# that fed the fuel-cell desulfurizer now feeds the TM-1 fuel skid on the old plot
-_old = {((2000.0, 1070.0), (2066.0, 1072.0)), ((2082.0, 1076.0), (2225.0, 982.0)), ((2309.0, 1076.0), (2240.0, 982.0)),
-        ((2268.0, 1076.0), (2309.0, 1076.0)), ((2285.0, 1110.0), (2278.0, 1096.0))}
-routes[:] = [r for r in routes if (tuple(r["points"][0]), tuple(r["points"][-1])) not in _old]
-for r in routes:
-    if r["type"] == "fuel_gas" and r["points"] == [[2285.0, 1350.0], [2285.0, 1110.0], [2097.0, 1110.0], [2097.0, 1096.0]]:
-        r["points"] = [[2285.0, 1350.0], [2285.0, 1110.0], [2072.0, 1110.0], [2072.0, 1087.0]]
-MR = "OPT_MOD_ROUTES"
-add_route("mvlv_cable", [(1904, 1290), (1904, 1285), (1981, 1285), (1981, 1292)], MR)      # FC-1..4 -> inverter
-add_route("mvlv_cable", [(2002, 1304), (2008, 1304), (2008, 1324), (2287, 1324), (2287, 1003), (2225, 1003),
-                         (2225, 982)], MR)                                                  # inverter -> MOD-LV
-add_route("mvlv_cable", [(2050, 1303), (2058, 1303), (2058, 1324)], MR)                   # MT-1..3 join
-add_route("fuel_gas", [(1981, 1350), (1981, 1316)], MR)                                    # header -> FC desulfurizer
-add_route("fuel_gas", [(2039, 1350), (2039, 1317)], MR)                                    # header -> MT-1..3
 # modular expansion (OPT_MODX): MV cables to the portable-pad and modular collectors, gas stubs
 MX = "OPT_MODX_ROUTES"
 for row, y in ((0, 505), (1, 560)):                       # CONT-3..8 -> CONT-EH (paralleling e-house)
@@ -1615,10 +1597,10 @@ add_route("mvlv_cable", [(2263, 575), (2290, 575), (2290, 564), (2295, 564)], "O
 add_route("mvlv_cable", [(2217, 527), (2217, 492), (2185, 492), (2185, 484)], MX)          # CONT-EH -> PAD-EH
 # TM-1 / TM-2 generator leads leave the trailer's ground tray at the north edge, run in the yard duct bank
 # between SC-1 and SC-2 down to the modular collector e-house MOD-EH
-add_route("mvlv_cable", [(2050, 1100), (2050, 1102), (2085, 1102), (2085, 1004), (2004, 1004), (2004, 894),
-                         (1995, 894)], MX)                                                  # TM-1 -> MOD-EH
-add_route("mvlv_cable", [(2170, 1100), (2170, 1102), (2089, 1102), (2089, 1000), (2000, 1000), (2000, 890),
-                         (1995, 890)], MX)                                                  # TM-2 -> MOD-EH
+add_route("mvlv_cable", [(2200, 795), (2200, 805), (2142, 805), (2142, 490), (2165, 490), (2165, 484)],
+          MX)                                                                               # TM-1 -> PAD-EH
+add_route("mvlv_cable", [(2310, 795), (2310, 809), (2146, 809), (2146, 494), (2175, 494), (2175, 484)],
+          MX)                                                                               # TM-2 -> PAD-EH
 add_route("mvlv_cable", [(2014, 350), (2014, 345), (2146, 345), (2146, 352)], MX)         # FC-5..12 -> inverter
 add_route("mvlv_cable", [(2146, 376), (2146, 420), (2165, 420), (2165, 430)], MX)         # inverter -> PAD-LV
 add_route("mvlv_cable", [(2198, 377), (2198, 415), (2175, 415), (2175, 430)], MX)         # MT-4..6 -> PAD-LV
@@ -1629,7 +1611,8 @@ add_route("fuel_gas", [(2205, 452), (2205, 378)], MX)                           
 for x in (2010, 2070, 2130):
     add_route("fuel_gas", [(x, 536), (x, 513)], MX)
     add_route("fuel_gas", [(x, 536), (x, 560)], MX)
-add_route("fuel_gas", [(2192, 1110), (2192, 1087)], MX)                                    # header -> TM-2 fuel skid
+add_route("fuel_gas", [(2340, 452), (2378, 452), (2378, 805), (2222, 805), (2222, 782)], MX)   # pad header -> TM-1 skid
+add_route("fuel_gas", [(2332, 805), (2332, 782)], MX)                                      # -> TM-2 skid
 for k in range(8):                                                                          # FC tails to the DC feeder
     add_route("mvlv_cable", [(2014 + 14 * k, 350), (2014 + 14 * k, 345)], MX)
 # SC-1 / SC-2 fuel gas from the fuel-gas compressor building (not drawn on sheet 07)
