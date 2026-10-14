@@ -681,3 +681,28 @@ eye-level audit of the deck found:
   thermocouple rings and KX cable, lube piping, JBs and conduits, generator coolers and ribs: right for this scale.
 - New eye-level photo camera P21 (along GT1 at the combustor and fuel manifold). E21-E23 re-rendered.
 - verify PASS (0 clashes), audit CLEAN, coastal PASS.
+
+### Modular power yard facelift (`modular_lod3.py`)
+User: the modular yard looked empty next to the gas yard. Same LOD 3 standard, every piece placed only where clear
+(`gas_lod3.Space`):
+- **Surfaces:** crushed stone over the yard (kept off the open collector manholes), concrete drives between the
+  equipment rows (south of the exhaust trains, PCM / aero units N-S, radiators / lube building, both sides of the
+  aero units), door aprons.
+- **Visible cable:**
+  - MY-C1: conduit bank + exposed ARMOR-X MC on strut along the exhaust trains (between the SCRs and the stacks),
+    drops into each urea-dosing cabinet, spur to the CEMS shelter; heated sample lines down each stack.
+  - MY-C2: radiator-fan feeders along the hall's north wall, a fused disconnect per radiator bank, MC on strut up
+    each radiator gap with a branch and motor JB per fan (40 fans).
+  - MY-T1: the 13.8 kV generator cables (MV-105, printed legends) on a 36 in ladder-tray bridge from the hall's
+    east wall to PCM-1, wall sleeves at both ends; two electricians on a scissor lift dressing the cables, a spare
+    MV-105 reel on the drive.
+  - SC1-T1 / SC2-T1: generator-to-PCM ladder trays on both simple-cycle units.
+  - Gap check: 0 unsupported spans over 14 ft.
+- **Equipment:** SCR housings with stiffeners, catalyst access doors and nameplates; silencer bands; ENGINE 1-8
+  and the hall name on the facade; PCM-1 signage; aero filter-house weather hoods, enclosure vent fans, panel joints
+  and nameplates.
+- **Furniture:** 20 flood-light poles, extinguishers, an engine-spares / cable-reel laydown (ISO containers,
+  4 reels, pallets, forklift), 4 pickups, operators.
+- New cameras E114 (services rack corridor), E115 (MV tray bridge and crew), E116 (radiator feeders), E117 (yard
+  from above); E14 re-rendered. Viewer story view SMY.
+- verify PASS (0 clashes), audit CLEAN, coastal PASS.

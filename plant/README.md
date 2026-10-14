@@ -365,6 +365,8 @@ The model is improved zone by zone, one cycle per zone (`DETAIL_CYCLES.md` has t
 5. render close-ups;
 6. re-export and republish.
 
+**Modular yard facelift (`modular_lod3.py`).** The modular power yard is brought to the gas-yard standard: crushed stone and concrete drives; a conduit + ARMOR-X MC rack along the exhaust trains with drops into the urea-dosing cabinets and the CEMS, heated sample lines down the stacks; radiator-fan feeders with a disconnect per bank; the 13.8 kV MV-105 generator cables on a ladder-tray bridge to PCM-1 with a crew dressing them; generator-to-PCM trays on the aero units; SCR, silencer and aero-package detail; signage, flood lights, a spares and cable-reel laydown, vehicles and people. Renders E14, E114-E117; viewer story SMY.
+
 **Cycle 10: coastal variant (`coastal/coastal_detail.py`).**
 - **Wiring:** every keyed terminal item (tank, vaporizers, HP pumps, BOG, substation, control building, metering, intake, flare, jetty, berth) and the landfall valve station now carry their cable applications (MV-105, ARMOR-X MC-HL in the hazardous areas, IS instrumentation, thermocouple extension, fibre ship-shore link, fire and gas, grounding).
 - **LNG tank:** water-curtain / deluge rings with risers, roof-platform handrail, level and temperature gauge housings, ID band, gas detectors round the tank.

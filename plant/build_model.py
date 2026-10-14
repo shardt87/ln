@@ -1748,6 +1748,8 @@ VIEWS = [
          show=BASE_SHOW + ["OPT_LNG", "OPT_LNG_ROUTES"], t=[2010, 1845, 7], c=[1985, 1895, 30]),
     dict(k="SMR", n="Story: gas meter house (M&R) - instrumentation terminated at the meter-run JB",
          show=BASE_SHOW, t=[1648, 1790, 4], c=[1638, 1772, 12]),
+    dict(k="SMY", n="Story: modular yard - 13.8 kV MV-105 generator cables on the tray bridge to the PCM",
+         show=BASE_SHOW + ["OPT_MOD", "OPT_MOD_ROUTES"], t=[1833, 1113, 11.5], c=[1852, 1099, 16.5]),
     dict(k="SD", n="Story: SIMpull Truck delivers reels to the modular-yard cable pull",
          show=BASE_SHOW + ["OPT_MOD", "OPT_MOD_ROUTES"], t=[1752, 944, 5], c=[1702, 906, 7.5]),
     dict(k="SB", n="Story: BESS crew pulling DC cable into the trench",
@@ -1811,6 +1813,7 @@ FIT = {
     "SLN": dict(box=[1985, 2035, 1795, 1885, 0, 14]),
     "SMR": dict(box=[1636, 1658, 1782, 1796, 0, 8]),
     "SD": dict(box=[1700, 1785, 915, 965, 0, 14]),
+    "SMY": dict(box=[1808, 1850, 1100, 1142, 0, 14]),
     "SB": dict(box=[1700, 1760, 525, 550, 0, 10]),
     "O1": dict(layers=["OPT_MOD", "OPT_TMP", "OPT_MODX"]),
     "O2": dict(layers=["OPT_BESS"]),
@@ -2006,6 +2009,9 @@ N_DETAIL += _glod.build()
 # wire-and-cable hero moments for the growth markets: green hydrogen DC pull, LNG ARMOR-X pull, M&R terminations
 import cable_moments as _cm
 print("cable moments legends", _cm.build())
+# modular power yard at LOD 3: crushed stone and drives, conduit / MC racks, MV tray bridge, SCR / aero detail, people
+import modular_lod3 as _mlod
+N_DETAIL += _mlod.build()
 # Tray review (user screenshots): short tray stubs drawn between a duct-bank end and pad equipment
 # rode the EL +36 rack tier, so a 10 ft connection became a 36 ft goalpost over the transformer. A
 # duct bank comes up straight into the equipment: those stubs are now buried, with rigid-conduit
