@@ -734,3 +734,12 @@ microturbines (FC-5..12, inverter, MT-4..6) north of the simple-cycle units. Swa
   from the SC-2 PCM; before, a passing route had been covering it by accident.
 - Cameras E72 / E73 (TM-2) moved with the units; E16 / E17 / E80 labels updated.
 - verify PASS (0 clashes), audit CLEAN, coastal PASS.
+- **Follow-up (user screenshot):** the aeroderivatives belong where FC-1..4 / MT-1..3 stood, south of SC-1 / SC-2.
+  - TM-1 and TM-2 now stand on that plot (x 2000-2198, y 1045-1100). Their leads run in the duct bank between them
+    to MOD-EH. The modular gas line that fed the fuel-cell desulfurizer now feeds TM-1's skid, with a branch to
+    TM-2.
+  - FC-1..4, their inverter and MT-1..3 moved north of SC-1 (x 1900-2050, y 1289-1317), where the expansion fuel
+    cells had been. Their drawn cable (FC tails, inverter and MT to MOD-LV) and gas (from the y 1350 header)
+    follow them.
+  - FC-5..12 and MT-4..6 stay on the portable pad's south row.
+  - Cameras E72 / E73 / E76 / E17 / E80 updated. Verify: footprints 211/211, 0 clashes. Audit CLEAN, coastal PASS.
