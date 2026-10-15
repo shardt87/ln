@@ -43,5 +43,45 @@ def build(routes):
                     rod((x + dx, y + dy, z0 - .2), (x + dx, y + dy, z1 + .3), r * .8, c, seg=6)
                     k += 1
             n += 1
+    # tray ends that got no drop (e.g. a pipe below the end blocked the drop ladder) over equipment 0.5-4 ft below:
+    # the cables bend down into top glands on it
+    parts = fuel.G["parts"]
+    items = {i["id"]: i for i in fuel.G["items"]}
+    def has_drop(x, y, z):
+        return any(p["kind"] == "rod" and str(p["color"]).startswith("cable") and abs(p["a"][0] - x) < 2.5
+                   and abs(p["a"][1] - y) < 2.5 and abs(p["a"][0] - p["b"][0]) < .05 and abs(p["a"][1] - p["b"][1]) < .05
+                   and min(p["a"][2], p["b"][2]) < z - .5 for p in parts)
+    fuel.on(tr)
+    fuel.D = True
+    for r in routes:
+        if r.get("surface") or r["z"] <= 0 or not r["type"].endswith("tray"):
+            continue
+        for p0, p1 in ((r["points"][0], r["points"][1] if len(r["points"]) > 1 else None),
+                       (r["points"][-1], r["points"][-2] if len(r["points"]) > 1 else None)):
+            if p1 is None:
+                continue
+            x, y, z = p0[0], p0[1], r["z"]
+            if any(len(r2["points"]) > 1 and r2 is not r and r2["z"] > 0 and not r2.get("surface") and
+                   any((abs(q[0] - x) < .2 and abs(q[1] - y) < .2) for q in r2["points"]) for r2 in routes):
+                continue                                                   # continues on another tray / riser
+            if has_drop(x, y, z):
+                continue
+            tops = [b["max"][2] for b in parts if b["kind"] == "box" and b["item"] != tr["id"]
+                    and b["min"][0] <= x <= b["max"][0] and b["min"][1] <= y <= b["max"][1]
+                    and items[b["item"]]["layer"] not in ("SITE",) and .5 <= z - b["max"][2] <= 4
+                    and not any(w in items[b["item"]]["name"].lower() for w in ("building", "e-house", "hall"))]
+            if not tops:
+                continue
+            top = max(tops)
+            ux, uy = (p0[0] - p1[0]), (p0[1] - p1[1])
+            L = (ux * ux + uy * uy) ** .5 or 1
+            ux, uy = ux / L, uy / L
+            for k, (c, rr) in enumerate(CAB):
+                off = -.45 + k * .3
+                sx, sy = x - ux * .6 + uy * off, y - uy * .6 - ux * off
+                rod((sx, sy, z + .2), (sx + ux * .5, sy + uy * .5, z - .3), rr * .8, c, seg=6)
+                rod((sx + ux * .5, sy + uy * .5, z - .3), (sx + ux * .5, sy + uy * .5, top), rr * .8, c, seg=6)
+                rod((sx + ux * .5, sy + uy * .5, top), (sx + ux * .5, sy + uy * .5, top + .3), rr * .8 + .08, "steel", seg=8)
+            n += 1
     fuel.D = False
     return n

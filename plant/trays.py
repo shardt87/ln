@@ -789,10 +789,23 @@ class Trays:
         hw = w / 2
         # the drop lands on whatever is below it (equipment top, pipe, platform), never passes through
         bottom = max(self.top_under(x, y, z), self.highest_below(x - hw, x + hw, y - hw, y + hw, z)) + .3
-        if z - bottom < 2 or not self.free((x - hw, x + hw, y - hw, y + hw, bottom + .05, z)):
-            return
         dx, dy = (1 if abs(d[0]) > abs(d[1]) else 0) * (1 if d[0] > 0 else -1), (1 if abs(d[1]) >= abs(d[0]) else 0) * (1 if d[1] > 0 else -1)
         lat = (abs(dy), abs(dx))                                                  # across the tray
+        if z - bottom < 2 or not self.free((x - hw, x + hw, y - hw, y + hw, bottom + .05, z)):
+            # no room for a drop ladder: the tray ends just above (or on) the equipment it feeds, so the cables
+            # bend straight down into top glands on it (user audit: cables ending at a tray end)
+            top = self.top_under(x, y, z)
+            if z - top > 4 or z - top < .5:                                   # nothing near below, or the tray rests on it
+                return
+            for (col, r, v, zc) in self.lanes(rtype, w, z):
+                bx, by = x + lat[0] * v + dx * (hw - .4), y + lat[1] * v + dy * (hw - .4)
+                pts = [(bx - dx * .9 * (1 - math.sin(math.pi / 2 * k / 6)) + dx * .0, by - dy * .9 * (1 - math.sin(math.pi / 2 * k / 6)),
+                        zc - .9 * (1 - math.cos(math.pi / 2 * k / 6))) for k in range(7)]
+                pts.append((pts[-1][0], pts[-1][1], top))
+                for p, q in zip(pts, pts[1:]):
+                    self.rod(p, q, r, col, layer, seg=6)
+                self.rod((pts[-1][0], pts[-1][1], top), (pts[-1][0], pts[-1][1], top + .3), r + .08, "steel", layer, seg=8)
+            return
         for s in (-1, 1):                                                       # vertical side rails
             cx, cy = x + lat[0] * s * hw, y + lat[1] * s * hw
             ox, oy = x + dx * hw, y + dy * hw                                     # channel rails on the outer face

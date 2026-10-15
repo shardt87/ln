@@ -815,3 +815,23 @@ The control trays carry nine cables. The red FPLR fire-alarm cable and the orang
 drops and wall risers only drew the first six lanes, so those cables stopped at the tray end while the others
 dropped. Every lane now drops (waterfall to the gland) and climbs the wall risers. The continuity scan had missed
 it because those cable ends sat inside the tray rails.
+
+### Plant-wide discrepancy sweep (`discrepancy_scan.py`, `attach.py`, `cable_links.py`, `trays.py`)
+User: check the rest of the plant for discrepancies like the cable that stopped at the tray end. A new scan
+(`discrepancy_scan.py`) looks for what verify / audit do not catch, alongside `cable_continuity.py`:
+- **Floating parts** (above grade, touching nothing): 114 found, now 0. `attach.py` runs last on the part list:
+  - a post down onto the support below: ladder-cage hoops on the RICE SCR and aero ladders, CO2 cylinders,
+    platform handrails on the SC filter houses, wastewater and filter-house stair-tower tops;
+  - a short mounting bracket across sideways gaps: wall lamps and beacons on the e-houses and hall walls,
+    radiator panels, pull boxes;
+  - 5 leftover wall louvres with no wall within 3.5 ft removed (wastewater, auxiliary boiler, booster fans).
+- **Tray ends going nowhere:** 17 flagged, 4 real, now 0.
+  - Three LV hall trays ending just above the excitation cubicles: when a drop ladder doesn't fit, the cables now
+    bend straight down into top glands.
+  - The EL 30 branch over the GT3 gas fuel module, whose drop was blocked by a pipe: a general rule in
+    `cable_links.py` now feeds the equipment top under any tray end that still has no drop.
+  - The other 13 were tees onto another tray (the scan now recognises them).
+- **Signs in mid-air:** 4 free-standing panels now stand on two posts to grade.
+  (The others already had posts at their edges.)
+- Remaining cable free ends are deliberate: 36 tagged tails at the pre-wire workstation and the cut armour sample.
+- verify PASS (0 clashes), audit CLEAN, coastal PASS.

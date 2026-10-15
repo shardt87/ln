@@ -2246,6 +2246,10 @@ if __name__ == "__main__":
         if isinstance(o, dict):
             return {k: _r(v) for k, v in o.items()}
         return o
+    # nothing floating: posts / brackets for parts that touch nothing, stray leftovers removed
+    import attach as _att
+    print("attach (posts, brackets, removed)", _att.run(model["parts"], {it["id"]: it["layer"] for it in model["items"]}))
+    print("free-standing signs posted", _att.signs(model["parts"], model.get("decals", [])))
     # one crushed-stone finish across the site (user review): every yard / pad / corridor surfacing in the
     # gravel_yard colour; the switchyard keeps its own (lighter) gravel
     _nm = {it["id"]: it["name"] for it in model["items"]}
