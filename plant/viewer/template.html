@@ -302,6 +302,8 @@ const CLASS = {hall:'glass', building:'panel', ehouse:'clad', windwall:'clad', f
   conductor:'metal', stair:'paint', door:'paint', rollup:'clad', motor:'paint', pump:'paint', tank:'paint', ccs:'clad', acc:'clad', bess:'paint',
   cabinet:'paint', swgr:'paint', panel:'paint', battery:'paint', lamp:'paint', fence:'fence', barrier:'fence', safety:'paint', soil:'gravel', timber:'paint', ductcase:'ductcase', ductcap:'ductcap', pvc_grey:'paint', pvc_orange:'paint', window:'window',
   hull:'paint', super:'paint', mosscover:'paint', lngpipe:'paint', sea:'water'};
+// phones / tablets: lighter geometry (the in-app viewer has a tight memory budget)
+const LITE = matchMedia('(pointer:coarse)').matches || innerWidth < 820;
 const mats = {};
 function surfMat(cls){
   if(mats[cls]) return mats[cls];
@@ -343,7 +345,8 @@ function partGeo(p){
     g = new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0).toNonIndexed(); g.translate((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);
   } else if(p.kind==='rod'){
     const a=new THREE.Vector3(...p.a), b=new THREE.Vector3(...p.b), d=b.clone().sub(a), L=d.length();
-    const seg = p.seg || (Math.max(p.r,p.r2)>10?36:16);
+    let seg = p.seg || (Math.max(p.r,p.r2)>10?36:16);
+    if(LITE) seg = Math.min(seg, Math.max(p.r,p.r2)>3 ? 20 : 8);   // phones: fewer facets on small round parts
     g = new THREE.CylinderGeometry(p.r2, p.r, L, seg).toNonIndexed(); // along +Y, r at -Y
     const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), d.normalize());
     g.applyQuaternion(q); g.translate((p.a[0]+p.b[0])/2,(p.a[1]+p.b[1])/2,(p.a[2]+p.b[2])/2);
@@ -360,8 +363,9 @@ function partGeo(p){
 
 const layerGroups = {}, itemMeshes = {}, pickables = [], detailObjs = [], surfMeshes = [];
 function grp(l){ if(!layerGroups[l]){ const g=new THREE.Group(); g.name=l; scene.add(g); layerGroups[l]=g; } return layerGroups[l]; }
-const buckets = {};
+const buckets = {}, PARTN = {};
 for(const p of MODEL.parts){
+  PARTN[p.item] = (PARTN[p.item]||0) + 1;
   let cls = CLASS[p.color] || 'paint';
   if(p.kind==='rod' && ['clad','panel','concrete','fins','grating','louvre'].includes(cls)) cls = 'paint'; // box-projected textures only suit flat faces
   const dd = !!p.d && !p.pipe;   // round pipes are dressing in the model but always shown
@@ -372,6 +376,7 @@ for(const p of MODEL.parts){
 }
 for(const b of Object.values(buckets)){
   let merged = THREE.BufferGeometryUtils.mergeBufferGeometries(b.geos, false);
+  b.geos.forEach(g=>g.dispose()); b.geos = null;          // per-part geometry is no longer needed (phones run out of memory)
   if(SURF[b.cls] && SURF[b.cls].map) boxUV(merged, SURF[b.cls].tile);
   merged = toThree(merged);
   const m = new THREE.Mesh(merged, surfMat(b.cls));
@@ -381,10 +386,11 @@ for(const b of Object.values(buckets)){
   if(!site) pickables.push(m);
   (itemMeshes[b.item] ||= []).push(m);
   if(b.d){ detailObjs.push(m); continue; }
-  if(b.cls!=='glass' && !site && merged.attributes.position.count < 60000){
+  if(!LITE && b.cls!=='glass' && !site && merged.attributes.position.count < 60000){
     const e = new THREE.LineSegments(new THREE.EdgesGeometry(merged, 35), edgeMat); grp(b.layer).add(e);
   }
 }
+const NPARTS = MODEL.parts.length; MODEL.parts = null;                      // free the raw part list
 // printed panels (placards, reel stencils, truck livery): canvas textures on thin planes
 const decalMats = {};   // identical panels share one texture; resolution follows the panel's real size (phones run out of GPU memory otherwise)
 for(const d of (MODEL.decals||[])){
@@ -557,7 +563,7 @@ function selectItem(id){ clearSel(); if(!id){ showDefault(); return; } selId=id;
   (itemMeshes[id]||[]).forEach(m=>{ m.userData.mat=m.material; m.material=matHi; }); showItem(items[id]); if(XR.on) xrayItem(id); }
 function selectRoute(mesh){ clearSel(); selRoute=mesh; mesh.material=matHi; showRoute(MODEL.routes[mesh.userData.route]); }
 function showItem(it){
-  const d=dims(it), nParts=MODEL.parts.filter(p=>p.item===it.id).length;
+  const d=dims(it), nParts=PARTN[it.id]||0;
   insp.innerHTML=`<p class="lbl">${esc(MODEL.areas[it.area]?`Area ${it.area} · ${MODEL.areas[it.area]}`:MODEL.layers[it.layer].label)}</p>
    <h2>${it.tag?`<span class="tagbox">${esc(it.tag)}</span>`:''}${esc(it.name)}</h2>
    <p style="margin:8px 0"><span class="pill b-${it.basis}">${esc(it.basis)}</span> <span class="muted" style="margin-left:6px">${esc(it.sheet)} · ${esc(it.layer)}</span></p>
@@ -608,7 +614,7 @@ for(const r of MODEL.routes){ if(seenL.has(r.label)) continue; seenL.add(r.label
 const reg = MODEL.items.filter(i=>i.register);
 const R = REPORT;
 document.getElementById('stats').innerHTML = [
-  [reg.length.toLocaleString('en-US'), `register items · ${MODEL.parts.length.toLocaleString('en-US')} modelled parts`],
+  [reg.length.toLocaleString('en-US'), `register items · ${NPARTS.toLocaleString('en-US')} modelled parts`],
   [`${R.footprints.matched}/${R.footprints.checked}`, `drawn shapes matched within ${R.footprints.tolerance_ft} ft`, R.footprints.ok],
   [`${R.heights.rows.filter(r=>r.ok).length}/${R.heights.rows.length}`, 'sheet-13 heights reproduced', R.heights.ok],
   [`${R.sheet09.clearances.filter(r=>r.ok).length+R.sheet09.hook.filter(r=>r.ok).length}/${R.sheet09.clearances.length+R.sheet09.hook.length}`, 'sheet-09 crane checks reproduced', R.sheet09.ok],
@@ -788,5 +794,5 @@ function tick(now){
 }
 goView(MODEL.views.find(v=>v.k==='ALL') || MODEL.views[0], true);   // open on the complete plant
 requestAnimationFrame(tick);
-document.getElementById('foot').textContent=`${MODEL.items.length} items · ${MODEL.parts.length} parts · ${MODEL.routes.length} routes`;
+document.getElementById('foot').textContent=`${MODEL.items.length} items · ${NPARTS} parts · ${MODEL.routes.length} routes`;
 </script>

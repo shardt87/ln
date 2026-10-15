@@ -786,3 +786,11 @@ Yard surfacing came in several stone colours: modular / CCS / gas-yard crushed s
 campus and the reserved 230 kV corridor. All of it is now one crushed-stone finish, matched to the compound ground
 in the viewer (palette + material) and in the Blender renders. Only the switchyard keeps its own gravel. Done as a
 last pass in build_model.py before the model is written.
+
+### Viewer memory on phones
+The Claude iOS app started showing "Something went wrong" on the viewer. The page loads without errors, but its
+JS heap had grown to about 490 MB, over what the in-app viewer allows. Fixes in `viewer/template.html`:
+- per-part geometries are disposed once merged, and the raw part list is released after the build;
+- on touch / narrow screens (LITE), small round parts get fewer facets (8, or 20 above 3 ft radius) and edge
+  outlines are skipped.
+Heap on a phone viewport: about 490 MB down to about 365 MB. Desktop rendering is unchanged.
