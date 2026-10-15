@@ -23,7 +23,7 @@ if GENERIC:
         if d["lines"] or d.get("img"):
             dd.append(d)
     model["decals"] = dd
-COASTAL = "--coastal" in sys.argv   # the sheet-15 marine LNG import terminal is a separate study: off unless asked for
+COASTAL = "--no-coastal" not in sys.argv   # the sheet-15 marine LNG import terminal (on unless --no-coastal)
 ov = {"items": []}
 full = next(v for v in model["views"] if v["k"] == "ALL")
 if COASTAL:
@@ -35,8 +35,6 @@ if COASTAL:
     model["parts"] += ov["parts"]
     model["coastal"] = meta
     coast = [l for l, v in model["layers"].items() if v["group"].startswith("Coastal")]
-    for v in model["views"]:
-        v["show"] = [l for l in v["show"] if l not in coast]
     model["views"].append(dict(k="COAST", n="Coastal: LNG terminal",
                                show=[l for l in full["show"] if not l.startswith("OPT_LNG")] + coast,
                                t=[1450, 2900, 20], c=[3900, 100, 3100]))
@@ -47,6 +45,16 @@ model["views"].append(dict(k="EVERY", n="Everything: plant + all LNG + BTM data 
                            c=[-900, -2600, 4300] if COASTAL else [500, -1700, 2100]))
 model["views"].append(dict(k="FUEL", n="Fuel systems: M&R, gas yard, ULSD", show=list(full["show"]),
                            t=[1640, 1660, 4], c=[1330, 1330, 330]))
+# every view shows the whole campus (options, BTM campus, coastal terminal), so equipment never drops out when the
+# view changes; a view still leaves out the roofs / walls it cuts away, and the underground views keep their own set
+ROOFS = {"HALL_ROOF", "R1_ROOF", "R1_WALL_E", "R4_ROOF", "R4_WALL_E", "CR_ROOF", "H2_ROOF"}
+FULL = [l for l in model["layers"] if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND",
+                                                "OPT_H2P", "OPT_H2P_ROUTES", "NOBESS_GROUND", "NOMOD_GROUND")]
+for v in model["views"]:
+    if v["k"] in ("U", "U2"):
+        continue
+    keep = set(v["show"])
+    v["show"] = list(dict.fromkeys(v["show"] + [l for l in FULL if l not in ROOFS or l in keep]))
 # screen decals (control-room SCADA / CCTV displays): small JPEG data URIs, one per image
 import io, base64 as _b64
 try:

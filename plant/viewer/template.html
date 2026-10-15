@@ -833,6 +833,8 @@ function tourLayers(s){
   const show = new Set(v.show); (s.add||[]).forEach(l=>show.add(l)); (s.hide||[]).forEach(l=>show.delete(l));
   setLayers([...show]); for(const m of surfMeshes) m.visible = true;
   const bc=document.getElementById('bCab'); if(!!s.xray !== XR.on) bc.click();
+  const bp=document.getElementById('bPaths'); if(!!s.paths !== pathsOn) bp.click();
+  labelsEl.hidden = true;
 }
 function tourGo(i){
   if(!TOUR) return; i=Math.max(0,Math.min(TOUR.stops.length-1,i)); const s=TOUR.stops[i]; T.i=i;
@@ -868,6 +870,7 @@ function tourStart(i=0){
 function tourExit(){
   if(!T.on) return; T.on=false; T.fly=null; T.base=null; T.pending=null; document.body.classList.remove('tour'); tourEl.hidden=true;
   if(XR.on) document.getElementById('bCab').click();
+  if(pathsOn) document.getElementById('bPaths').click();
   camera.near=T.saved.near; camera.fov=T.saved.fov; camera.updateProjectionMatrix(); labelsEl.hidden=T.saved.tags; controls.enabled=true;
   requestAnimationFrame(resize);
 }

@@ -857,5 +857,9 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
   Teams share, deck-style captions (Equipment / System / Cable), arrow keys / space / clicker, Esc to exit.
 - presentation/record_tour.js records the tour frame by frame (fixed clock, frames read from the canvas);
   presentation/compose_tour.py adds the captions and encodes one H.264 MP4 per stop plus the full tour.
-- The sheet-15 marine LNG import terminal (jetty, carrier, sea) is no longer built into the viewer; it is a
-  separate study, available with `build_viewer.py --coastal`.
+- Every viewer view now shows the whole campus (all options, the BTM campus and the sheet-15 marine LNG terminal),
+  so equipment such as the modular yard no longer drops out when the view changes; cutaway views still leave out
+  their roofs / walls and the underground views keep their own layers. `--no-coastal` builds without the terminal.
+- Tour extended to 29 stops: the LNG import terminal; the modular yard (RICE hall, RICE generator cables to the PCM,
+  LM6000-class simple cycle, TM2500-class trailer units, fuel cells and microturbines, portable pad, Type W into
+  PAD-LV); behind the meter (the data-centre campus, the three supply paths).
