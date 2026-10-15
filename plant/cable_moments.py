@@ -5,8 +5,8 @@ pull do, with the printed jacket legends on the installed cable:
 - H2 (electrolyzer hall): a 2 kV DC 1/C 1000 kcmil conductor pulled from a reel on Maxis JAX stands, over a sheave
   into the DC ladder tray of electrolyzer 5; two electricians on a scissor lift feed and dress it; legends on all
   the DC cables in the five trays;
-- LNG: a visible ladder tray LNG-T1 from the LNG e-house to the send-out pumps; a reel of ARMOR-X MC-HL on an
-  RR-SW45 reel roller beside the e-house paying off over a sheave into the tray, a capstan puller with tension
+- LNG: one MC-HL strut rack LNG-C1 at one elevation from a roof penetration on the LNG e-house to the send-out
+  pumps; a reel of ARMOR-X MC-HL on an RR-SW45 reel roller beside the e-house paying off over a sheave onto the rack, a capstan puller with tension
   monitor at the pump end, crew, drops to the pump JB; legends on the tray cables;
 - M&R (gas meter house yard): an instrument technician terminating PLTC-ER instrumentation cable in an open
   explosion-proof JB at the custody-transfer meter run, a SIMpull wire wagon feeding the pull from the tray drop;
@@ -126,42 +126,35 @@ def lng(S):
     from maintenance import bez, poly
     import gas_lod3 as G3
     import simpull
-    it = fuel.new_item("OPT_LNG", "LNG: cable tray LNG-T1 at the e-house, MC-HL on strut to the send-out pumps, with the ARMOR-X pull",
-                       (1985, 2075, 1790, 1895), (0, 16), basis="typical", register=False, area="K",
+    it = fuel.new_item("OPT_LNG", "LNG: MC-HL rack LNG-C1 from the e-house roof to the send-out pumps, with the ARMOR-X pull",
+                       (1980, 2075, 1790, 1895), (0, 20), basis="typical", register=False, area="K",
                        sheet="typical (cable installation)",
                        info="ARMOR-X MC-HL (Class I Div 1 & 2) power, TC-ER control, PLTC-ER instrumentation and FPLR "
-                            "fire-alarm cable in a short ladder tray along the LNG 17 e-house, then MC-HL exposed on "
-                            "strut with the control cables in rigid conduit to the send-out pumps; a reel of "
-                            "ARMOR-X MC-HL on an RR-SW45 reel roller pays off over a sheave into the tray, a capstan "
+                            "fire-alarm cable on one strut rack at one elevation: it enters the LNG 17 e-house "
+                            "through a roof penetration and runs MC-HL exposed with the control cables in rigid "
+                            "conduit to the send-out pumps, dropping into the pump JB; a reel of "
+                            "ARMOR-X MC-HL on an RR-SW45 reel roller pays off over a sheave onto the rack, a capstan "
                             "puller with tension monitor at the pump end. Cable supplier: Southwire (as requested).")
     on(it)
     fuel.D = True
-    z = G3.tray(S, [(1991.0, 1857.0), (2015.0, 1857.0)], 9.0, name="LNG", tag="LNG-T1", style="tray")
-    z1 = None
-    if z:                                                                         # beyond the e-house: MC-HL on strut
-        z1 = G3.tray(S, [(2015.6, 1857.0), (2015.6, 1801.0), (2027.0, 1801.0)], z, w=1.0, name="LNG", tag="LNG-C1",
-                     cables=(("cable_inst", .1), ("cable_fa", .08), ("cable_mc", .19), ("cable_mc", .19)))
-        if z1 and abs(z1 - z) > .3:                                               # the rack had to rise: a step up
-            G3.step_up((2015.3, 1857.0), z, z1)
-        for c, (dy, r) in enumerate(((-.3, .1), (0, .08), (.3, .19))):            # tray end -> rack: cables carried over
-            rod((2014.5, 1857.0 + dy, z - .1 + r), (2015.6, 1857.0 + dy, (z1 or z) + .1 + r), r,
-                ("cable_inst", "cable_fa", "cable_mc")[c], seg=6)
+    # one rack at one elevation (user review): it starts over the LNG 17 e-house, drops through a roof penetration
+    # into it, and runs on strut to the send-out pumps and down into the pump JB
+    G3.jb_stand(S, 2031.5, 1798.6, "JB-LNG-13")
+    jx, jy = G3.JBS[-1] if G3.JBS else (2031.5, 1798.6)
+    path = [(1984.0, 1857.0), (2015.6, 1857.0), (2015.6, 1801.0), (jx, 1801.0), (jx, jy - .35)]
+    z = G3.tray(S, path, 16.0, w=1.0, name="LNG", tag="LNG-C1",
+                cables=(("cable_inst", .1), ("cable_fa", .08), ("cable_mc", .19), ("cable_mc", .19)))
     fuel.D = False
     if not z:
         return 0
-    for s in (-.6, .6):                                                             # riser out of the e-house wall
-        box(1994.0 + s - .06, 1994.0 + s + .06, 1857.0 - .06, 1857.0 + .06, 6.0, z, "pipe")
-    G3.jb_stand(S, 2031.5, 1798.6, "JB-LNG-13")
-    zr = z1 or z
-    if G3.JBS:
-        jx, jy = G3.JBS[-1]
-        zs = G3.tray(S, [(2027.0, 1801.0), (jx, 1801.0), (jx, jy - .35)], zr, w=.6,
-                     cables=(("cable_mc", .14), ("cable_inst", .1)), stand=12, name="LNG spur")
-        if zs:
-            if abs(zs - zr) > .3:
-                G3.step_up((2027.0, 1801.0), zr, zs)
-            G3.drop(S, jx, jy - .35, zs, 5.6)
-    # the pull: ARMOR-X MC-HL on a reel roller north of the e-house, over a sheave into the tray
+    fuel.D = True
+    box(1983.0, 1985.0, 1856.0, 1858.0, 14.0, 14.55, "steel")                     # roof penetration curb + gland plate
+    box(1983.3, 1984.7, 1856.3, 1857.7, 14.55, 14.7, "machine")
+    G3.drop(S, 1984.0, 1857.0, z, 14.7)                                            # into the e-house roof
+    G3.drop(S, jx, jy - .35, z, 5.6)                                               # into the pump JB
+    zr = z
+    fuel.D = False
+    # the pull: ARMOR-X MC-HL on a reel roller north of the e-house, over a sheave onto the rack
     xr, yr = 2004.0, 1878.0
     if S.free(xr - 3.2, xr + 3.2, yr - 4.2, yr + 6.8, .7, 9, m=.2):
         simpull.reel_roller(xr, yr, 45, 7.0, 4.4, "cable_mc", "ARMOR-X MC-HL  600 V  3/C 4/0", steel=True)
@@ -170,10 +163,10 @@ def lng(S):
         top = (xr, yr - 3.5 * .5, zc + 3.5 * .85)
         sx, sy, sz = 2004.0, 1858.4, z + .8
         sheave(sx, sy, sz, axis="x", r=.8)
-        rod((sx, sy, sz + 1.8), (sx, 1857.0, z + .15), .05, "steel", seg=4)
+        rod((sx, sy, sz + 1.8), (sx, 1857.0, z + .15), .05, "steel", seg=4)          # sheave hung off the rack
         poly(bez(top, (xr, (yr + sy) / 2, sz + 3.0), (sx, sy + .7, sz + .4), 14), .19, "cable_mc", seg=10)
-        poly(bez((sx, sy - .6, sz + .3), (sx, sy - 1.0, sz + .1), (sx, 1857.2, z - .02), 4), .19, "cable_mc", seg=10)
-        rod((sx, 1857.2, z - .02), (2014.6, 1857.2, z - .02), .19, "cable_mc", seg=10)   # being pulled along the tray
+        poly(bez((sx, sy - .6, sz + .3), (sx, sy - 1.0, sz + .1), (sx, 1857.2, z + .2), 4), .19, "cable_mc", seg=10)
+        rod((sx, 1857.2, z + .2), (2014.6, 1857.2, z + .2), .19, "cable_mc", seg=10)     # being pulled along the rack
         # pulling rope from the cable head back along the rack to the capstan, then down to its drum
         zp = zr + .65
         for a_, b_ in (((2014.6, 1857.2, z + .2), (2015.9, 1857.2, zp)), ((2015.9, 1857.2, zp), (2015.9, 1801.6, zp)),

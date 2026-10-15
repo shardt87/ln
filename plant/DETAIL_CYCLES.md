@@ -844,3 +844,10 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
 - The pulling rope no longer cuts diagonally through the air: it runs back along the rack to a turning block, then
   down to the capstan drum.
 - New camera E122 (the pull from above). verify PASS, audit CLEAN, scans at zero.
+
+### LNG cable route: one level, roof entry (user review: step-ups were a band-aid)
+- The short LNG-T1 ladder tray, the wall riser at the e-house and both step-ups are gone. One strut rack LNG-C1
+  (conduits plus exposed MC-HL) runs at a single elevation (16 ft) from over the LNG 17 e-house to the send-out
+  pumps. It drops through a roof penetration (curb and gland plate) into the e-house and down into JB-LNG-13.
+- The sheave, pulled cable and rope sit on that one rack level. E112 and E122 re-rendered.
+- verify PASS, audit CLEAN, coastal PASS, discrepancy and continuity scans unchanged (0 floating, 0 open tray ends).
