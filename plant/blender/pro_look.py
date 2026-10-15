@@ -890,11 +890,11 @@ BTM_CALLOUTS = [
 ]
 EPIC = [
     dict(k="E1", n="The three HRSG stacks from beside the absorbers", eye=(700, 1100, 150), target=(790, 780, 110), lens=24,
-         show="all"),
+         show="all", plumes=True),
     dict(k="E2", n="Long lens from the west road: stacks and absorbers stacked up", eye=(-1500, 880, 120),
          target=(800, 1000, 130), lens=135, show="all"),
     dict(k="E3", n="Low pass over the air-cooled condenser", eye=(1500, 300, 165), target=(1100, 800, 90),
-         lens=20, show="all"),
+         lens=20, show="all", plumes=True),
     dict(k="E4", n="Along the 230 kV switchyard at eye level", eye=(560, 150, 7), target=(1600, 175, 40),
          lens=35, show="all"),
     dict(k="E5", n="Beneath the carbon-capture absorbers", eye=(880, 1115, 6), target=(790, 1220, 210), lens=16,
@@ -1109,7 +1109,7 @@ EPIC = [
     dict(k="E121", n="Turbine hall roof: MC risers over the eave and up the roof to the exhauster trays",
          eye=(1125, 410, 112), target=(1098, 465, 99), lens=26, show="all", sun=(34, 230)),
     dict(k="E123", n="The SK-3X1 campus from the south-west: power block, carbon capture, modular yard and the BTM campus",
-         eye=(-700, -1250, 1050), target=(1350, 900, 0), lens=34, show="dc", plumes=True),
+         eye=(-420, -820, 760), target=(1250, 880, 0), lens=34, show="dc", plumes=True, look=LOOK_GOLDEN),
     dict(k="E124", n="Along the main E-W pipe and cable rack, the HRSG stacks alongside",
          eye=(500, 846, 52), target=(860, 800, 70), lens=22, show="all", plumes=True, sun=(30, 230)),
     dict(k="E122", n="LNG cable pull from above: one MC-HL rack from the e-house roof entry, rope to the capstan",

@@ -1,9 +1,9 @@
 """'Hero shots' slide (16:9, PNG + PDF): six renders of the SK-3X1 model in the deck style of slide_modular.py.
-The campus aerial is the large tile; two tiles beside it and three across the bottom show the cable with the
-HRSGs and stacks behind.
+The campus aerial is the large tile; the others are cinematic shots of the power block and its cable,
+with the HRSGs and stacks in every frame.
 
     python blender/slide_hero6.py RENDER_DIR [OUT_STEM]
-RENDER_DIR holds the finished E123, E124, E71, E70, E121 and E99 renders (<k>_pro_clean.jpg, from finish_pro.py)."""
+RENDER_DIR holds the finished E123, E2, E1, E71, E124 and E3 renders (<k>_pro_clean.jpg, from finish_pro.py)."""
 import os
 import sys
 
@@ -17,12 +17,12 @@ W, H = 2000 * S, 1125 * S
 NAVY, GREY, COPPER, BG, RULE = (31, 45, 61), (98, 104, 110), (166, 84, 40), (247, 247, 245), (214, 214, 210)
 # (camera, caption, focus x, focus y): focus is the crop centre as a fraction of the render
 TILES = [
-    ("E123", "The SK-3X1 campus: 3x1 combined cycle, carbon capture, modular yard, BTM campus", .5, .5),
+    ("E123", "The SK-3X1 campus: 3x1 combined cycle, carbon capture, modular yard and the BTM campus", .5, .5),
+    ("E2", "Long lens from the west road: carbon capture and the HRSG stacks", .5, .5),
+    ("E1", "The three HRSG stacks from beside the absorbers", .5, .45),
     ("E71", "ARMOR-X and MV-105 in the R1 tray, HRSG 1 and its stack ahead", .5, .62),
     ("E124", "Main pipe and cable rack beside the HRSG stacks", .5, .55),
-    ("E70", "Cable legends in the hall tray, HRSG 2 beyond", .5, .6),
-    ("E121", "MC risers up the turbine-hall roof, the stacks behind", .5, .45),
-    ("E99", "HRSG 1: stair tower and access platforms, cable on the east wall", .5, .5),
+    ("E3", "Low pass over the air-cooled condenser, the stacks beyond", .5, .45),
 ]
 
 
