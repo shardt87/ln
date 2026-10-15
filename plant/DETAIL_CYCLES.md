@@ -775,3 +775,8 @@ end (it must touch another part, or grade) found these gaps, now fixed:
 - Absorber and stripper shells: muted grey cladding (#8d9597 in renders, close to the HRSG casing / stack greys)
   instead of bright white. The strippers' white tank parts are recoloured to match.
 - Safety-shower signs use the muted green.
+- Follow-up: the HRSG stacks are now in the HRSG casing colour, so the combined-cycle block reads as one. Every CCS
+  equipment body is now in the absorbers' cladding: flue ducts and dampers, DCCs, booster-fan housings, reboilers,
+  reclaimer, storage and carbon-filter tanks, compression / wastewater buildings, e-houses, dehydration,
+  instrument air, the CCS cooling tower. Piping, structure, motors, pumps, exchangers and transformers keep their
+  own finishes.

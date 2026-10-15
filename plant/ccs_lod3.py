@@ -28,12 +28,22 @@ def new(name, fp, z, info=""):
     return it
 
 
+BODY = {"tank", "duct", "rollup", "ehouse", "tower", "cabinet"}
+
+
 def shells():
-    """Strippers in the same muted cladding as the absorbers (their shells were drawn in bright tank white)."""
-    ids = {i["id"] for i in fuel.G["items"] if i["name"].startswith(("STR-A:", "STR-B:", "STR-C:"))}
+    """Colour identity (user review): every CCS equipment body (strippers, DCC / flue ducts, booster fans, reboilers,
+    reclaimer, storage, carbon filter, compression and wastewater buildings, e-houses, dehydration, instrument air,
+    cooling tower) in the absorbers' muted cladding, so the carbon capture reads as one family behind the power
+    block; piping, structure, motors, pumps, exchangers and transformers keep their own finishes. The HRSG stacks take
+    the HRSG casing colour so the combined-cycle block reads as one."""
+    ids = {i["id"] for i in fuel.G["items"] if i["layer"] in ("OPT_CCS", "OPT_CCSU")}
+    stacks = {i["id"] for i in fuel.G["items"] if i["name"] in ("HRSG 1 stack", "HRSG 2 stack", "HRSG 3 stack")}
     for p in fuel.G["parts"]:
-        if p["item"] in ids and p["color"] == "tank":
+        if p["item"] in ids and p["color"] in BODY:
             p["color"] = "ccs"
+        elif p["item"] in stacks and p["color"] == "stack":
+            p["color"] = "hrsg"
 
 
 def absorber_identity():
