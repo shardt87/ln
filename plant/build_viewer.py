@@ -23,24 +23,28 @@ if GENERIC:
         if d["lines"] or d.get("img"):
             dd.append(d)
     model["decals"] = dd
-ov = json.load(open(os.path.join(HERE, "coastal", "sk3x1_coastal_A.json")))
-meta = ov["coastal"]
-model["layers"].update(ov["layers"])
-model["layers"]["COASTAL_SEA"] = dict(label="A Sea and shoreline", group="Coastal (sheet 15)")
-model["items"] += ov["items"]
-model["parts"] += ov["parts"]
-model["coastal"] = meta
-coast = [l for l, v in model["layers"].items() if v["group"].startswith("Coastal")]
-for v in model["views"]:
-    v["show"] = [l for l in v["show"] if l not in coast]
+COASTAL = "--coastal" in sys.argv   # the sheet-15 marine LNG import terminal is a separate study: off unless asked for
+ov = {"items": []}
 full = next(v for v in model["views"] if v["k"] == "ALL")
-model["views"].append(dict(k="COAST", n="Coastal: LNG terminal",
-                           show=[l for l in full["show"] if not l.startswith("OPT_LNG")] + coast,
-                           t=[1450, 2900, 20], c=[3900, 100, 3100]))
-model["views"].append(dict(k="EVERY", n="Everything: plant + all LNG + BTM data centre",
+if COASTAL:
+    ov = json.load(open(os.path.join(HERE, "coastal", "sk3x1_coastal_A.json")))
+    meta = ov["coastal"]
+    model["layers"].update(ov["layers"])
+    model["layers"]["COASTAL_SEA"] = dict(label="A Sea and shoreline", group="Coastal (sheet 15)")
+    model["items"] += ov["items"]
+    model["parts"] += ov["parts"]
+    model["coastal"] = meta
+    coast = [l for l, v in model["layers"].items() if v["group"].startswith("Coastal")]
+    for v in model["views"]:
+        v["show"] = [l for l in v["show"] if l not in coast]
+    model["views"].append(dict(k="COAST", n="Coastal: LNG terminal",
+                               show=[l for l in full["show"] if not l.startswith("OPT_LNG")] + coast,
+                               t=[1450, 2900, 20], c=[3900, 100, 3100]))
+model["views"].append(dict(k="EVERY", n="Everything: plant + all LNG + BTM data centre" if COASTAL else "Everything: plant, all options and the BTM data centre",
                            show=[l for l in model["layers"] if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND",
                                                                          "OPT_UNDERGROUND", "OPT_H2P", "OPT_H2P_ROUTES")],
-                           t=[1700, 1800, 20], c=[-900, -2600, 4300]))
+                           t=[1700, 1800, 20] if COASTAL else [1700, 900, 30],
+                           c=[-900, -2600, 4300] if COASTAL else [500, -1700, 2100]))
 model["views"].append(dict(k="FUEL", n="Fuel systems: M&R, gas yard, ULSD", show=list(full["show"]),
                            t=[1640, 1660, 4], c=[1330, 1330, 330]))
 # screen decals (control-room SCADA / CCTV displays): small JPEG data URIs, one per image

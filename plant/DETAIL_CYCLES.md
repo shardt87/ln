@@ -851,3 +851,11 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
   pumps. It drops through a roof penetration (curb and gland plate) into the e-house and down into JB-LNG-13.
 - The sheave, pulled cable and rope sit on that one rack level. E112 and E122 re-rendered.
 - verify PASS, audit CLEAN, coastal PASS, discrepancy and continuity scans unchanged (0 floating, 0 open tray ends).
+
+### Guided tour and the coastal terminal (Nov 11 training session)
+- Viewer: Tour mode (▶ Tour): 19 stops along the power path from presentation/tour.json, full-screen stage for a
+  Teams share, deck-style captions (Equipment / System / Cable), arrow keys / space / clicker, Esc to exit.
+- presentation/record_tour.js records the tour frame by frame (fixed clock, frames read from the canvas);
+  presentation/compose_tour.py adds the captions and encodes one H.264 MP4 per stop plus the full tour.
+- The sheet-15 marine LNG import terminal (jetty, carrier, sea) is no longer built into the viewer; it is a
+  separate study, available with `build_viewer.py --coastal`.

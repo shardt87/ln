@@ -722,7 +722,7 @@ Other collections include `BASE_POWER_BLOCK`, `HALL_ROOF`, `BASE_INLET_AIR`, `BA
 ```sh
 python3 plant/build_model.py        # model JSON
 python3 plant/verify.py             # checks -> verify_report.json
-python3 plant/build_viewer.py       # viewer/index.html (inlines model, palette, report)
+python3 plant/build_viewer.py       # viewer/index.html (inlines model, palette, report); --coastal adds the sheet-15 marine LNG terminal
 python3 plant/export_obj.py         # OBJ (add --zup or --base as needed)
 go run ./plant                      # ln line art for every view -> plant/renders/
 go run ./plant -view B              # one view; -list shows the keys
