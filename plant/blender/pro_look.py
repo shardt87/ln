@@ -40,7 +40,7 @@ LOOK = {
     "roof": ("clad", "#5f676d", .5, .35), "ehouse": ("clad", "#bfc4c2", .5, .1),
     "hrsg": ("clad", "#7e8e99", .48, .4), "hrsg_b": ("clad", "#76858f", .48, .4), "filter": ("clad", "#a5afb4", .5, .25),
     "windwall": ("clad", "#adb4b8", .5, .3), "tower": ("clad", "#b3bab7", .6, 0),
-    "ccs": ("clad", "#d2d6d6", .55, .1), "acc": ("clad", "#b4bbbe", .5, .25),
+    "ccs": ("clad", "#8d9597", .62, .15), "acc": ("clad", "#b4bbbe", .5, .25),
     "partition": ("paint", "#e4e4df", .7, 0),
     "steel": ("galv", "#8e959a", .38, .85), "stair": ("galv", "#8a9196", .4, .8),
     "grating": ("galv", "#9aa1a5", .45, .8), "pipe": ("galv", "#a2a8ab", .35, .85),
@@ -104,7 +104,7 @@ LOOK = {
     "binder_k": ("paint", "#2b2d2f", .5, 0), "shirt": ("paint", "#3e5f80", .85, 0), "shirt_w": ("paint", "#dfe3e6", .85, 0),
     "trousers": ("paint", "#2d3238", .85, 0), "hair": ("paint", "#2b221b", .7, 0),
     # SIMpull / Maxis equipment (simpull.py)
-    "sp_black": ("paint", "#1c1d1f", .45, 0), "sp_yellow": ("paint", "#f2c200", .4, 0), "ccs_green": ("paint", "#1f8a4c", .4, 0),
+    "sp_black": ("paint", "#1c1d1f", .45, 0), "sp_yellow": ("paint", "#f2c200", .4, 0), "ccs_green": ("paint", "#9dbba5", .55, 0),
     "coilpak_p": ("paint", "#8a7fd0", .15, 0), "coilpak_b": ("paint", "#6f9ad8", .15, 0), "barrel_w": ("paint", "#eceae4", .45, 0),
 }
 ALPHA = {"glass_in": .18, "coilpak_p": .7, "coilpak_b": .7}

@@ -768,3 +768,10 @@ end (it must touch another part, or grade) found these gaps, now fixed:
 - Remaining free ends are deliberate: 36 tagged pigtails awaiting termination at the pre-wire workstation, and the
   cut armour sample at the turbine-hall dressing scene.
 - New cameras E120 (TM feeders), E121 (hall roof). verify PASS (0 clashes), audit CLEAN, coastal PASS.
+
+### CCS toned down (user review: the CCS read as the hero, not the combined-cycle plant)
+- CCS band: muted sage (#9dbba5) instead of saturated green. "CCS" lettering in dark grey-green instead of white;
+  grey pinstripes.
+- Absorber and stripper shells: muted grey cladding (#8d9597 in renders, close to the HRSG casing / stack greys)
+  instead of bright white. The strippers' white tank parts are recoloured to match.
+- Safety-shower signs use the muted green.

@@ -1,6 +1,6 @@
 """Carbon-capture area at LOD 3, the gas-yard standard, and a recognizable CCS identity on the absorbers.
 
-- absorbers A-C: a painted green band round the shell between the EL 200 and EL 250 platforms with "CCS" lettered
+- absorbers A-C: a painted green band round the shell between the EL 200 and EL 250 platforms with "CCS" lettered (muted sage band, dark grey-green letters, so the CCS stays secondary to the power block)
   on it four times round (clear of the ladder, the tray riser and the amine risers), "CARBON CAPTURE · ABSORBER x"
   under the lettering;
 - surfaces: crushed stone over the CCS block (ring road to utilities road, west edge to the east spine road),
@@ -19,13 +19,21 @@ from fuel import box, rod, on, find
 from gas_lod3 import Space, light_pole, extinguisher, pickup, person, decal
 
 L = "OPT_CCS"
-GREEN = "#1f8a4c"
+GREEN = "#5f8a6c"
 
 
 def new(name, fp, z, info=""):
     it = fuel.new_item(L, name, fp, z, area="G", sheet="typical (carbon capture detail)", register=False, info=info)
     on(it)
     return it
+
+
+def shells():
+    """Strippers in the same muted cladding as the absorbers (their shells were drawn in bright tank white)."""
+    ids = {i["id"] for i in fuel.G["items"] if i["name"].startswith(("STR-A:", "STR-B:", "STR-C:"))}
+    for p in fuel.G["parts"]:
+        if p["item"] in ids and p["color"] == "tank":
+            p["color"] = "ccs"
 
 
 def absorber_identity():
@@ -36,14 +44,14 @@ def absorber_identity():
         fuel.D = True
         rod((gx, cy, 207), (gx, cy, 243), R + .08, "ccs_green", seg=64)              # painted band
         for zb in (207, 243):                                                        # white pinstripes
-            rod((gx, cy, zb - .6), (gx, cy, zb), R + .09, "label", seg=64)
+            rod((gx, cy, zb - .6), (gx, cy, zb), R + .09, "steel", seg=64)
         for a in (0, 90, 180, -90):                                                  # lettering, four faces (clear of ladder / riser)
             ca, sa = math.cos(math.radians(a)), math.sin(math.radians(a))
             Rp = R + .25
             decal((gx + Rp * ca, cy + Rp * sa, 227.5), (ca, sa, 0), 24, 20,
-                  [("CCS", .85, True, "#ffffff")], bg=None)
+                  [("CCS", .85, True, "#3d5c47")], bg=None)
             decal((gx + Rp * ca, cy + Rp * sa, 212.4), (ca, sa, 0), 22, 2.8,
-                  [(f"CARBON CAPTURE  ·  ABSORBER {t}", .7, True, "#ffffff")], bg=None)
+                  [(f"CARBON CAPTURE  ·  ABSORBER {t}", .7, True, "#3d5c47")], bg=None)
         fuel.D = False
 
 
@@ -161,6 +169,7 @@ def people(S):
 
 
 def build():
+    shells()
     absorber_identity()
     surfaces()
     nameplates()
