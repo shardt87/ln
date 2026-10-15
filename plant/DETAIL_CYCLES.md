@@ -805,3 +805,6 @@ accent and light:
 - Blender plumes come from the HRSG stacks only (absorber plumes dropped), a little stronger.
 - Viewer: a "Power block" button keeps the GTs, HRSGs, stacks and turbine hall in full colour and ghosts the rest.
 No geometry changes. verify PASS, audit CLEAN, coastal PASS.
+- Follow-up (user): the hero accent is now a clean-energy green (#2f9e5a) instead of orange: HRSG / stack rails and
+  stairs, "HRSG 1/2/3" lettering, and a wider 7 ft band below each stack's top platform. It stays distinct from the
+  muted sage CCS band.
