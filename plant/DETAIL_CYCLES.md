@@ -835,3 +835,12 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
   (The others already had posts at their edges.)
 - Remaining cable free ends are deliberate: 36 tagged tails at the pre-wire workstation and the cut armour sample.
 - verify PASS (0 clashes), audit CLEAN, coastal PASS.
+
+### LNG cable pull cleaned up (user screenshot: "trays messed up and cut")
+- LNG-T1 tray, the LNG-C1 MC-HL strut rack and the JB spur each search for a clear elevation. The rack and the spur
+  had risen above the tray with nothing between the levels, so the runs looked cut. The rack and spur now report
+  their elevation and get a step-up (conduits and MC-HL bent up on a strut bracket) where they rise; the tray's
+  cables carry across onto the rack.
+- The pulling rope no longer cuts diagonally through the air: it runs back along the rack to a turning block, then
+  down to the capstan drum.
+- New camera E122 (the pull from above). verify PASS, audit CLEAN, scans at zero.

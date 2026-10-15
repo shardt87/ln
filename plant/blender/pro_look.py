@@ -1108,6 +1108,8 @@ EPIC = [
          eye=(2282, 830, 26), target=(2232, 760, 2), lens=24, show="all", sun=(30, 235)),
     dict(k="E121", n="Turbine hall roof: MC risers over the eave and up the roof to the exhauster trays",
          eye=(1125, 410, 112), target=(1098, 465, 99), lens=26, show="all", sun=(34, 230)),
+    dict(k="E122", n="LNG cable pull from above: LNG-T1 tray off the e-house, step up to the MC-HL strut rack, rope to the capstan",
+         eye=(2042, 1880, 32), target=(2010, 1835, 6), lens=26, show="all", sun=(34, 230)),
     dict(k="P110", n="Gas yard at eye level: conduit rack and ARMOR-X MC-HL on Unistrut between the equipment rows",
          eye=(1646, 1499.0, 5.4), target=(1690, 1511.0, 7.4), lens=35, show="base", sun=(14, 250),
          look=LOOK_GOLDEN, dof=(26, 4.0), hide=("People (scale figures", "Gas yard: operators")),

@@ -137,20 +137,30 @@ def lng(S):
     on(it)
     fuel.D = True
     z = G3.tray(S, [(1991.0, 1857.0), (2015.0, 1857.0)], 9.0, name="LNG", tag="LNG-T1", style="tray")
+    z1 = None
     if z:                                                                         # beyond the e-house: MC-HL on strut
-        G3.tray(S, [(2015.0, 1857.0), (2015.0, 1801.0), (2027.0, 1801.0)], z, w=1.0, name="LNG", tag="LNG-C1",
-                cables=(("cable_inst", .1), ("cable_fa", .08), ("cable_mc", .19), ("cable_mc", .19)))
+        z1 = G3.tray(S, [(2015.6, 1857.0), (2015.6, 1801.0), (2027.0, 1801.0)], z, w=1.0, name="LNG", tag="LNG-C1",
+                     cables=(("cable_inst", .1), ("cable_fa", .08), ("cable_mc", .19), ("cable_mc", .19)))
+        if z1 and abs(z1 - z) > .3:                                               # the rack had to rise: a step up
+            G3.step_up((2015.3, 1857.0), z, z1)
+        for c, (dy, r) in enumerate(((-.3, .1), (0, .08), (.3, .19))):            # tray end -> rack: cables carried over
+            rod((2014.5, 1857.0 + dy, z - .1 + r), (2015.6, 1857.0 + dy, (z1 or z) + .1 + r), r,
+                ("cable_inst", "cable_fa", "cable_mc")[c], seg=6)
     fuel.D = False
     if not z:
         return 0
     for s in (-.6, .6):                                                             # riser out of the e-house wall
         box(1994.0 + s - .06, 1994.0 + s + .06, 1857.0 - .06, 1857.0 + .06, 6.0, z, "pipe")
     G3.jb_stand(S, 2031.5, 1798.6, "JB-LNG-13")
+    zr = z1 or z
     if G3.JBS:
         jx, jy = G3.JBS[-1]
-        if G3.tray(S, [(2027.0, 1801.0), (jx, 1801.0), (jx, jy - .35)], z, w=.6,
-                   cables=(("cable_mc", .14), ("cable_inst", .1)), stand=12, name="LNG spur"):
-            G3.drop(S, jx, jy - .35, z, 5.6)
+        zs = G3.tray(S, [(2027.0, 1801.0), (jx, 1801.0), (jx, jy - .35)], zr, w=.6,
+                     cables=(("cable_mc", .14), ("cable_inst", .1)), stand=12, name="LNG spur")
+        if zs:
+            if abs(zs - zr) > .3:
+                G3.step_up((2027.0, 1801.0), zr, zs)
+            G3.drop(S, jx, jy - .35, zs, 5.6)
     # the pull: ARMOR-X MC-HL on a reel roller north of the e-house, over a sheave into the tray
     xr, yr = 2004.0, 1878.0
     if S.free(xr - 3.2, xr + 3.2, yr - 4.2, yr + 6.8, .7, 9, m=.2):
@@ -164,9 +174,13 @@ def lng(S):
         poly(bez(top, (xr, (yr + sy) / 2, sz + 3.0), (sx, sy + .7, sz + .4), 14), .19, "cable_mc", seg=10)
         poly(bez((sx, sy - .6, sz + .3), (sx, sy - 1.0, sz + .1), (sx, 1857.2, z - .02), 4), .19, "cable_mc", seg=10)
         rod((sx, 1857.2, z - .02), (2014.6, 1857.2, z - .02), .19, "cable_mc", seg=10)   # being pulled along the tray
-        rod((2014.6, 1857.2, z - .02), (2014.6, 1801.6, z + .5), .05, "rope", seg=6)
-        rod((2014.6, 1801.6, z + .5), (2022.0, 1801.6, z + .5), .05, "rope", seg=6)
-        rod((2022.0, 1801.6, z + .5), (2022.0, 1806.0, 1.6), .05, "rope", seg=6)
+        # pulling rope from the cable head back along the rack to the capstan, then down to its drum
+        zp = zr + .65
+        for a_, b_ in (((2014.6, 1857.2, z + .2), (2015.9, 1857.2, zp)), ((2015.9, 1857.2, zp), (2015.9, 1801.6, zp)),
+                       ((2015.9, 1801.6, zp), (2022.0, 1801.6, zp)), ((2022.0, 1801.6, zp), (2022.0, 1801.6, 2.9)),
+                       ((2022.0, 1801.6, 2.9), (2022.0, 1805.9, 2.2))):
+            rod(a_, b_, .05, "rope", seg=6)
+        rod((2021.6, 1801.6, zp + .3), (2022.4, 1801.6, zp + .3), .35, "crane", seg=12)    # turning block on the rack
         # capstan puller at the pump end
         if S.free(2019, 2026, 1805, 1811, .7, 4, m=.2):
             box(2019, 2025, 1806, 1810, 0, 1.2, "sw_red")
