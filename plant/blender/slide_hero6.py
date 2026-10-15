@@ -1,9 +1,9 @@
-"""'Hero shots' slide (16:9, PNG + PDF): six renders of the SK-3X1 model in the deck style of slide_modular.py.
+"""'Hero shots' slide (16:9, PNG + PDF): seven renders of the SK-3X1 model in the deck style of slide_modular.py.
 The campus aerial is the large tile; the others are cinematic shots of the power block and its cable,
-with the HRSGs and stacks in every frame.
+with the HRSGs and stacks in view, and the main control room.
 
     python blender/slide_hero6.py RENDER_DIR [OUT_STEM]
-RENDER_DIR holds the finished E123, E2, E1, E71, E124 and E70 renders (<k>_pro_clean.jpg, from finish_pro.py)."""
+RENDER_DIR holds the finished E123, E2, E1, E71, E124, E70 and E86 renders (<k>_pro_clean.jpg, from finish_pro.py)."""
 import os
 import sys
 
@@ -20,9 +20,10 @@ TILES = [
     ("E123", "The SK-3X1 campus: 3x1 combined cycle, carbon capture, modular yard and the BTM campus", .5, .5),
     ("E2", "Long lens from the west road: carbon capture and the HRSG stacks", .5, .5),
     ("E1", "The three HRSG stacks from beside the absorbers", .5, .45),
-    ("E71", "ARMOR-X and MV-105 in the R1 tray, HRSG 1 and its stack ahead", .5, .62),
+    ("E71", "ARMOR-X and MV-105 in the R1 tray, HRSG 1 ahead", .5, .62),
     ("E124", "Main pipe and cable rack beside the HRSG stacks", .5, .55),
     ("E70", "Cable legends in the hall tray, HRSG 2 beyond", .5, .6),
+    ("E86", "Main control room: six-position console facing the video wall", .5, .5),
 ]
 
 
@@ -54,7 +55,7 @@ def main(rdir, stem):
     img = Image.new("RGB", (W, H), BG)
     d = ImageDraw.Draw(img)
     d.text((73 * S, 34 * S), "SK-3X1 IN 3D", font=f("DejaVuSans-Bold.ttf", 40), fill=NAVY)
-    d.text((74 * S, 92 * S), "The power block from above, and the cable that connects it, with the HRSGs and stacks in view.",
+    d.text((74 * S, 92 * S), "The campus from above, the cable that connects the power block, and the control room that runs it.",
            font=f("DejaVuSans.ttf", 20), fill=GREY)
     gx0, gy0, gx1, gy1, g = 37 * S, 140 * S, 1963 * S, 1015 * S, 10 * S
     cw = (gx1 - gx0 - 2 * g) / 3
@@ -63,14 +64,13 @@ def main(rdir, stem):
     small_h = (gy1 - gy0 - g) - big_h
     sh_ = (big_h - g) / 2
     c = [round(gx0 + i * (cw + g)) for i in range(3)]
+    c4w = (gx1 - gx0 - 3 * g) / 4                                   # bottom row: four tiles
+    c4 = [round(gx0 + i * (c4w + g)) for i in range(4)]
     boxes = [
         (c[0], gy0, round(c[1] + cw), gy0 + big_h),                                 # campus: two columns
         (c[2], gy0, gx1, round(gy0 + sh_)),
         (c[2], round(gy0 + sh_ + g), gx1, gy0 + big_h),
-        (c[0], gy0 + big_h + g, round(c[0] + cw), gy1),
-        (c[1], gy0 + big_h + g, round(c[1] + cw), gy1),
-        (c[2], gy0 + big_h + g, gx1, gy1),
-    ]
+    ] + [(c4[i], gy0 + big_h + g, gx1 if i == 3 else round(c4[i] + c4w), gy1) for i in range(4)]
     assert small_h > 0
     for (k, cap, fx, fy), box in zip(TILES, boxes):
         tile(img, os.path.join(rdir, f"{k}_pro_clean.jpg"), box, fx, fy, cap)
