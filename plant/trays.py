@@ -235,7 +235,7 @@ class Trays:
         Rb = .9
         for ti, key in enumerate(sorted(keys, key=lambda k: k[2])):
             lay, rtype, z, kw, kh = key
-            lanes = self.lanes(rtype, kw, z)[:6]
+            lanes = self.lanes(rtype, kw, z)
             for (col, r, v, zc) in lanes:
                 uc = u0 + sg * (.2 + r + .12 * ti)
                 self.rod(Pt(face + sg * .13, v, zs + .4 + ti * .25), Pt(uc, v, zs + .4 + ti * .25), r, col, layer, seg=6)
@@ -811,7 +811,7 @@ class Trays:
         # waterfall: each cable leaves the tray, curves down over a 1.2 ft radius and drops against the
         # rungs to a gland at the equipment
         Rb, e0 = 1.2, hw - .5 - 1.2
-        for (col, r, v, zc) in self.lanes(rtype, w, z)[:6]:
+        for (col, r, v, zc) in self.lanes(rtype, w, z):
             bx, by = x + lat[0] * v, y + lat[1] * v
             S = (bx + dx * e0, by + dy * e0)
             pts = []

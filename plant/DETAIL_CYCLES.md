@@ -809,3 +809,9 @@ No geometry changes. verify PASS, audit CLEAN, coastal PASS.
   stairs, "HRSG 1/2/3" lettering, and a wider 7 ft band below each stack's top platform. It stays distinct from the
   muted sage CCS band.
 - Follow-up: a thin 2 ft green band a third of the way down each HRSG stack (EL 124-126), below the 7 ft top band.
+
+### Tray drops carry every cable (user screenshot)
+The control trays carry nine cables. The red FPLR fire-alarm cable and the orange fibre are lanes 8 and 9, but tray
+drops and wall risers only drew the first six lanes, so those cables stopped at the tray end while the others
+dropped. Every lane now drops (waterfall to the gland) and climbs the wall risers. The continuity scan had missed
+it because those cable ends sat inside the tray rails.
