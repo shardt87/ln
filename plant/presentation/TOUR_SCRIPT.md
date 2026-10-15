@@ -29,6 +29,32 @@ Backup: the full tour as one MP4 and the deck as PDF, open on the laptop before 
 
 ---
 
+## Deck plan: what to take from the Wesco deck (Oct 6, 36 slides)
+
+The Wesco deck is a channel-partner deck (pursuits, coverage, joint operating model). This session is
+technical training for an R&D audience, so it keeps the market and the cable science and drops the channel
+material. Slide numbers are the Wesco deck's.
+
+| Section | Keep | Change | New |
+|---|---|---|---|
+| Opening | 1 (re-title for Nov 11, keep the cover style) | Hero image: the new campus aerial E123 | Basis / disclaimer line |
+| **Fundamentals** (not in the Wesco deck) | none | none | **How a combined cycle works** (Brayton + Rankine, 3x1, why the HRSG matters); **the gas generation family** (CCGT, simple cycle, aeroderivative, RICE, fuel cells, BESS) with where each fits |
+| Market | 5 load growth, 6 OEM backlogs, 8 the ~$1.2B cable opportunity | Merge 3 and 7 into 8; one slide of "where the build is" (10) only if time allows | none |
+| How the plant is bought | 15 (the owner's engineer writes the spec: why R&D and specs matter) | none | none |
+| The engineering problem | 18 "Every megawatt travels through a cable" | none | none |
+| The campus | 20 seven cable systems | Replace 19 (old model) with the new 16-zone slide on SK-3X1; replace 21's image with the Cable X-ray view | Hero-shots slide; simplified one-line |
+| The tour | none | Dividers re-shot on the new model (CCS, turbine hall, gas power dividers already built) | 8 stop slides, each with its tour clip |
+| Cable lineup | 22 one supplier / every circuit, 23 cable in detail, 24 North American specs, 25 modular | none | none |
+| Close | 35 end card, 36 sources (trimmed to what is shown) | none | **What the plant asks of cable** (heat, cycling, VFD noise, hazardous areas, DC, prefab): the R&D hook for the SVP |
+
+**Leave out:** 2, 4, 9, 11 to 14, 16, 17 (old divider), 26 to 34. Pursuits, named projects, coverage and
+the joint model are commercial-confidential and off-topic for training.
+
+**Check before reuse:** slides 5 to 8 carry Aug to Sep 2026 figures with sources on slide 36; keep the
+source lines on each slide and re-check anything that moved before Nov 11.
+
+---
+
 ## The tour: 8 stops, about 3.5 minutes each
 
 ### Stop 1. Gas turbine to generator to the step-up transformer *(the power path)*
@@ -121,7 +147,9 @@ Backup: the full tour as one MP4 and the deck as PDF, open on the laptop before 
 
 ## Open items
 
-- [ ] Wesco deck .pptx (Stephan to upload): fundamentals and market slides to extract and re-date.
+- [x] Wesco deck received (PDF, 36 slides); mapping in "Deck plan" above. The .pptx is still needed to edit the
+      kept slides natively; otherwise the new slides are delivered as a separate .pptx in the same style.
+- [ ] New slides: combined-cycle fundamentals, the gas generation family, one-line, "what the plant asks of cable".
 - [ ] SME reviewer named; review pass on the **[check]** items and the cable family per application.
 - [ ] Tour mode in the viewer (Next / Back through the 8 stops, captions, cable highlight); recorded to MP4.
 - [ ] Simplified one-line slide (generator to grid, plus the auxiliary system).
