@@ -808,3 +808,4 @@ No geometry changes. verify PASS, audit CLEAN, coastal PASS.
 - Follow-up (user): the hero accent is now a clean-energy green (#2f9e5a) instead of orange: HRSG / stack rails and
   stairs, "HRSG 1/2/3" lettering, and a wider 7 ft band below each stack's top platform. It stays distinct from the
   muted sage CCS band.
+- Follow-up: a thin 2 ft green band a third of the way down each HRSG stack (EL 124-126), below the 7 ft top band.
