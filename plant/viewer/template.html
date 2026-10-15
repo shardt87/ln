@@ -1,7 +1,7 @@
 <title>SK-3X1 Plant Model</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&display=swap">
 <style>
 :root{
   --paper:#eef0ee; --panel:#f8f9f7; --ink:#1f2b33; --ink2:#55636c; --rule:#cfd5d4;
@@ -57,6 +57,29 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .stamp{position:absolute;right:10px;bottom:8px;font:500 10.5px/1.3 var(--sans);letter-spacing:.6px;text-transform:uppercase;color:var(--copper);pointer-events:none;text-align:right}
 .loading[hidden]{display:none}
 .loading{position:absolute;inset:0;display:grid;place-items:center;font:500 13px var(--mono);color:var(--ink2)}
+/* guided tour: the stage fills the screen (Teams share / recording), deck-style captions, keyboard and clicker */
+.tourgo{position:absolute;left:10px;top:44px;z-index:3;font:600 13px var(--sans);letter-spacing:.4px;background:#c8692b;color:#fff;border:0;padding:7px 12px;cursor:pointer}
+.tourgo:focus-visible,#tour button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+body.tour{overflow:hidden}
+body.tour .stage{position:fixed;inset:0;z-index:50;height:100vh;width:100vw;min-height:0;border:0}
+body.tour .read,body.tour .hud,body.tour .north,body.tour .tourgo,body.tour #labels{display:none}
+#tour[hidden]{display:none}
+#tour{position:absolute;inset:0;pointer-events:none;z-index:4;font-family:"Barlow Condensed","IBM Plex Sans Condensed","Arial Narrow",sans-serif}
+#tour .tbar{position:absolute;left:0;right:0;top:0;height:4px;background:rgba(20,24,27,.35)}
+#tour .tbar i{display:block;height:100%;background:#c8692b;width:0}
+#tour .tcap{position:absolute;left:clamp(16px,3vw,56px);bottom:clamp(16px,4.5vh,56px);max-width:min(820px,calc(100% - 32px));background:rgba(22,26,29,.88);color:#f3f1ec;
+  border-top:4px solid #c8692b;padding:clamp(12px,1.6vw,26px) clamp(14px,2vw,32px) clamp(12px,1.5vw,24px)}
+#tour .tsec{margin:0 0 4px;font:600 clamp(12px,1vw,17px)/1.2 inherit;letter-spacing:.22em;text-transform:uppercase;color:#e08a4a}
+#tour h2{margin:0 0 clamp(8px,1vw,16px);font:700 clamp(24px,2.6vw,46px)/1.02 inherit;text-transform:uppercase;letter-spacing:.01em;text-wrap:balance}
+#tour dl{display:grid;grid-template-columns:auto 1fr;gap:clamp(4px,.5vw,8px) clamp(10px,1.2vw,20px);margin:0;font:500 clamp(14px,1.15vw,21px)/1.25 "IBM Plex Sans Condensed","Arial Narrow",sans-serif}
+#tour dt{font:600 clamp(11px,.85vw,15px)/1.6 inherit;letter-spacing:.16em;text-transform:uppercase;color:#a9b3b8}
+#tour dd{margin:0}
+#tour dd.cab{color:#f0a46b}
+#tour .tnav{position:absolute;right:clamp(12px,2vw,32px);bottom:clamp(12px,2vh,28px);display:flex;gap:6px;align-items:center;pointer-events:auto;font:600 14px "IBM Plex Mono",monospace;color:#f3f1ec}
+#tour .tnav button{font:600 15px "IBM Plex Sans Condensed",sans-serif;background:rgba(22,26,29,.82);color:#f3f1ec;border:1px solid rgba(255,255,255,.25);padding:6px 12px;cursor:pointer}
+#tour .tnav span{background:rgba(22,26,29,.82);padding:6px 10px}
+body.rec #tour .tnav{display:none}
+body.tour .stamp{z-index:5;bottom:clamp(52px,6vh,72px);right:clamp(12px,2vw,32px);color:#e08a4a;text-shadow:0 1px 2px rgba(0,0,0,.5)}
 .insp h2{font-size:18px;margin:0;line-height:1.2;text-wrap:balance}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:13px;margin:0}
 .kv dt{color:var(--ink2)} .kv dd{margin:0;font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums}
@@ -153,6 +176,13 @@ footer{color:var(--ink2);font-size:12px;border-top:1px solid var(--rule);padding
     <div class="hud">drag orbit · right-drag pan · scroll zoom · click to inspect · double-click to fly</div>
     <div class="stamp">Conceptual illustration<br>Not engineered · not for construction</div>
     <div class="loading" id="loading">building model…</div>
+    <button class="tourgo" id="tourGo" title="Guided tour: the power path, the electrical systems and the cable (keys: arrows / space / Esc)">▶ Tour</button>
+    <div id="tour" hidden aria-live="polite">
+      <div class="tbar"><i id="tprog"></i></div>
+      <div class="tcap" id="tcap"><p class="tsec" id="tsec"></p><h2 id="ttl"></h2>
+        <dl><dt>Equipment</dt><dd id="teq"></dd><dt>System</dt><dd id="tsys"></dd><dt>Cable</dt><dd class="cab" id="tcab"></dd></dl></div>
+      <div class="tnav"><button id="tPrev" aria-label="Previous stop">‹ Back</button><span id="tnum"></span><button id="tNext" aria-label="Next stop">Next ›</button><button id="tExit">Exit</button></div>
+    </div>
   </div>
 
   <aside class="insp" aria-label="Inspector" aria-live="polite">
@@ -537,6 +567,7 @@ cut.addEventListener('input',()=>{ const v=+cut.value; cutPlane.constant = v>=32
 
 // ---------- views ----------
 const viewsEl=document.getElementById('views'); let anim=null;
+const now = () => (window.__clock ?? performance.now());   // recording sets window.__clock
 function goView(v, instant){
   setLayers(v.show);
   // underground view: surface pads (switchyard gravel, yard slabs) are lifted away with the ground
@@ -544,14 +575,14 @@ function goView(v, instant){
   [...viewsEl.children].forEach(b=>b.setAttribute('aria-pressed', b.dataset.k===v.k));
   const t=P(...v.t), c=P(...v.c);
   if(instant || matchMedia('(prefers-reduced-motion: reduce)').matches){ controls.target.copy(t); camera.position.copy(c); return; }
-  anim={t0:performance.now(), ft:controls.target.clone(), fc:camera.position.clone(), t, c};
+  anim={t0:now(), ft:controls.target.clone(), fc:camera.position.clone(), t, c};
 }
 for(const v of [...MODEL.views].sort((a,b)=>(b.k==='ALL')-(a.k==='ALL'))){ const b=document.createElement('button'); b.textContent=v.n; b.dataset.k=v.k; b.onclick=()=>goView(v); viewsEl.appendChild(b); }
 function envelope(it){ return {c:[(it.fp[0]+it.fp[1])/2,(it.fp[2]+it.fp[3])/2,(it.z[0]+it.z[1])/2], s:Math.max(it.fp[1]-it.fp[0], it.fp[3]-it.fp[2], it.z[1]-it.z[0])}; }
 function flyTo(id){
   const it=items[id], e=envelope(it); (itemMeshes[id]||[]).forEach(m=>{ m.parent.visible=true; if(layerBoxes[m.parent.name]) layerBoxes[m.parent.name].checked=true; });
   const t=P(...e.c), dir=camera.position.clone().sub(controls.target).normalize();
-  anim={t0:performance.now(), ft:controls.target.clone(), fc:camera.position.clone(), t, c:t.clone().add(dir.multiplyScalar(Math.max(e.s,30)*2.6+60))};
+  anim={t0:now(), ft:controls.target.clone(), fc:camera.position.clone(), t, c:t.clone().add(dir.multiplyScalar(Math.max(e.s,30)*2.6+60))};
 }
 
 // ---------- labels ----------
@@ -781,7 +812,7 @@ function xrayList(ids, title){
   el.innerHTML=`<p class="lbl">${esc(title)}</p><div style="max-height:340px;overflow:auto"><table style="width:100%;font-size:11px;border-collapse:collapse">${rows}</table></div>${ids.length>200?`<p class="muted">first 200 of ${ids.length}</p>`:''}`;
   el.querySelector('table').onclick=e=>{ const tr=e.target.closest('tr'); if(!tr) return; const i=+tr.dataset.i, c=CAB.cables[i];
     xrayHighlight([i]); const pi=c[12]; if(pi>=0){ const p=CAB.paths[pi], m=Math.floor(p.length/6)*3; const t=P(p[m],p[m+1],p[m+2]);
-      const dir=camera.position.clone().sub(controls.target).normalize(); anim={t0:performance.now(), ft:controls.target.clone(), fc:camera.position.clone(), t, c:t.clone().add(dir.multiplyScalar(420))}; } };
+      const dir=camera.position.clone().sub(controls.target).normalize(); anim={t0:now(), ft:controls.target.clone(), fc:camera.position.clone(), t, c:t.clone().add(dir.multiplyScalar(420))}; } };
 }
 function xrayItem(id){ if(!XR.on||!CAB) return;
   const ids=[]; CAB.cables.forEach((c,i)=>{ if(c[9]===id||c[10]===id) ids.push(i); });
@@ -791,14 +822,81 @@ toggle('bCab', on=>{ XR.on=on; if(on){ xrayBuild(); xrayPanel(); } else { xrayHi
 toggle('bFill', on=>{ XR.fill=on; xrayBuild(); xraySync();
   if(on && !XR.on) insp.innerHTML=`<p class="lbl">Tray fill</p><h2>Cables per tray / bank segment</h2><p class="info" style="margin-top:6px">Each segment of the cable network coloured by the number of schedule cables it carries: blue few, red most (max ${XR.fillMax}).</p>`; });
 
+// ---------- guided tour: the power path, the electrical systems and the cable ----------
+const TOUR = /*TOUR_JSON*/null;
+const T = {on:false, i:-1, fly:null, arrive:0, base:null, saved:null, pending:null};
+const tourEl=document.getElementById('tour'), tcap=document.getElementById('tcap'), tprog=document.getElementById('tprog');
+const lensFov = lens => 2*Math.atan((18/lens)/camera.aspect)*180/Math.PI;
+const ease = k => k<.5 ? 4*k*k*k : 1-Math.pow(-2*k+2,3)/2;
+function tourLayers(s){
+  const v = MODEL.views.find(w=>w.k===(s.show||'ALL')) || MODEL.views.find(w=>w.k==='ALL');
+  const show = new Set(v.show); (s.add||[]).forEach(l=>show.add(l)); (s.hide||[]).forEach(l=>show.delete(l));
+  setLayers([...show]); for(const m of surfMeshes) m.visible = true;
+  const bc=document.getElementById('bCab'); if(!!s.xray !== XR.on) bc.click();
+}
+function tourGo(i){
+  if(!TOUR) return; i=Math.max(0,Math.min(TOUR.stops.length-1,i)); const s=TOUR.stops[i]; T.i=i;
+  if(T.pending) tourLayers(T.pending); T.pending=s;            // the new stop's layers switch in mid-flight
+  const t0=now(), fc=camera.position.clone(), ft=T.base ? T.base.t.clone() : controls.target.clone(), c=P(...s.c), t=P(...s.t);
+  const d=fc.distanceTo(c), dur=Math.min(6500, Math.max(2600, 1800 + d*1.6));
+  camera.near = Math.min(camera.near, s.near||1); camera.updateProjectionMatrix();
+  T.fly={t0, dur, fc, ft, c, t, f0:camera.fov, f1:lensFov(s.lens||30), lift: d>160 ? Math.min(d*.28, 520) : 0, near:s.near||1};
+  T.base=null;
+  document.getElementById('tsec').textContent=s.sec; document.getElementById('ttl').textContent=s.title;
+  document.getElementById('teq').textContent=s.eq; document.getElementById('tsys').textContent=s.sys; document.getElementById('tcab').textContent=s.cab;
+  document.getElementById('tnum').textContent=`${i+1} / ${TOUR.stops.length}`;
+  tprog.style.width=((i+1)/TOUR.stops.length*100)+'%';
+  return dur;
+}
+function tourTick(now_){
+  if(T.fly){ const f=T.fly, k=Math.min((now_-f.t0)/f.dur,1), e=ease(k);
+    camera.position.lerpVectors(f.fc,f.c,e); camera.position.y += f.lift*Math.sin(Math.PI*e);
+    const tg=new THREE.Vector3().lerpVectors(f.ft,f.t,e); camera.fov=f.f0+(f.f1-f.f0)*e; camera.updateProjectionMatrix(); camera.lookAt(tg); controls.target.copy(tg);
+    tcap.style.opacity = Math.max(0, 1-k*4);
+    if(T.pending && k>=.45){ tourLayers(T.pending); T.pending=null; }
+    if(k>=1){ if(T.pending){ tourLayers(T.pending); T.pending=null; } T.fly=null; T.arrive=f.t0+f.dur; T.base={c:f.c.clone(), t:f.t.clone()}; camera.near=f.near; camera.updateProjectionMatrix(); } }
+  else if(T.base){ const s=TOUR.stops[T.i], sec=(now_-T.arrive)/1000, a=THREE.MathUtils.degToRad((s.drift??1)*sec);
+    const off=T.base.c.clone().sub(T.base.t).applyAxisAngle(new THREE.Vector3(0,1,0), a).multiplyScalar(1-Math.min(.06, .005*sec));
+    camera.position.copy(T.base.t).add(off); camera.lookAt(T.base.t); controls.target.copy(T.base.t);
+    tcap.style.opacity = Math.min(1, Math.max(0,(sec-.15)/.6)); }
+}
+function tourStart(i=0){
+  if(!TOUR) return; T.on=true; T.saved={near:camera.near, fov:camera.fov, tags:labelsEl.hidden};
+  document.body.classList.add('tour'); tourEl.hidden=false; labelsEl.hidden=true; controls.enabled=false; T.base=null;
+  resize(); tourGo(i);
+}
+function tourExit(){
+  if(!T.on) return; T.on=false; T.fly=null; T.base=null; T.pending=null; document.body.classList.remove('tour'); tourEl.hidden=true;
+  if(XR.on) document.getElementById('bCab').click();
+  camera.near=T.saved.near; camera.fov=T.saved.fov; camera.updateProjectionMatrix(); labelsEl.hidden=T.saved.tags; controls.enabled=true;
+  requestAnimationFrame(resize);
+}
+document.getElementById('tourGo').onclick=()=>tourStart(0);
+document.getElementById('tNext').onclick=()=>tourGo(T.i+1);
+document.getElementById('tPrev').onclick=()=>tourGo(T.i-1);
+document.getElementById('tExit').onclick=tourExit;
+addEventListener('keydown', e=>{ if(!T.on) return;
+  if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){ e.preventDefault(); tourGo(T.i+1); }
+  else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){ e.preventDefault(); tourGo(T.i-1); }
+  else if(e.key==='Escape') tourExit(); });
+if(!TOUR) document.getElementById('tourGo').hidden=true;
+window.tourAPI = {start:tourStart, go:tourGo, exit:tourExit, n:()=>TOUR?TOUR.stops.length:0, state:()=>({i:T.i, flying:!!T.fly, cam:camera.position.toArray().map(Math.round), tgt:controls.target.toArray().map(Math.round), fov:Math.round(camera.fov)}),
+  stop:i=>TOUR.stops[i], advance:t=>{ window.__rec=true; window.__clock=t; tourTick(t); },
+  // recording: one deterministic frame at clock t, read straight from the canvas (captions are composited afterwards)
+  frame:(t,q=.92)=>{ window.__rec=true; window.__clock=t; tourTick(t); fitShadow(); renderer.render(scene,camera); return cv.toDataURL('image/jpeg',q); }};
+
 // ---------- loop ----------
 function resize(){ const w=stage.clientWidth,h=stage.clientHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix(); }
 new ResizeObserver(resize).observe(stage); resize();
 const narrow=document.getElementById('narrow'), v3=new THREE.Vector3();
-function tick(now){
-  if(anim){ const k=Math.min((now-anim.t0)/900,1), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+function tick(){
+  if(window.__rec){ requestAnimationFrame(tick); return; }
+  const t_=now();
+  if(T.on) tourTick(t_);
+  else { if(anim){ const k=Math.min((t_-anim.t0)/900,1), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
     controls.target.lerpVectors(anim.ft,anim.t,e); camera.position.lerpVectors(anim.fc,anim.c,e); if(k>=1) anim=null; }
-  controls.update(); fitShadow(); renderer.render(scene,camera);
+    controls.update(); }
+  fitShadow(); renderer.render(scene,camera);
   const az=Math.atan2(camera.position.x-controls.target.x, camera.position.z-controls.target.z);
   narrow.setAttribute('transform',`rotate(${az*180/Math.PI})`);
   if(!labelsEl.hidden){ const w=stage.clientWidth,h=stage.clientHeight;

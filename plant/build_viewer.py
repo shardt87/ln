@@ -79,7 +79,10 @@ tpl = tpl.replace("const CAB = /*CABLES_JSON*/null;",
                   "const CAB = await (async () => { const b = Uint8Array.from(atob(document.getElementById('cz').textContent), c => c.charCodeAt(0));\n"
                   "  return JSON.parse(await new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream('gzip'))).text()); })();")
 tpl = tpl.replace('<script id="mz" type="text/plain">', '<script id="cz" type="text/plain">' + cz + '</script>\n<script id="mz" type="text/plain">', 1)
-for key, data in (("PALETTE", open(os.path.join(HERE, "palette.json")).read()),
+tour = open(os.path.join(HERE, "presentation", "tour.json")).read()
+if GENERIC:                                           # unbranded build: generic cable names in the tour captions
+    tour = tour.replace("ARMOR-X MC-HL", "MC-HL").replace("ARMOR-X ", "")
+for key, data in (("TOUR", tour), ("PALETTE", open(os.path.join(HERE, "palette.json")).read()),
                   ("REPORT", open(os.path.join(HERE, "verify_report.json")).read())):
     tpl = tpl.replace(f"/*{key}_JSON*/null", data)
 OUT = sys.argv[sys.argv.index("--out") + 1] if "--out" in sys.argv else os.path.join(HERE, "viewer", "index.html")
