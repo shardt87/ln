@@ -3,7 +3,7 @@ The campus aerial is the large tile; the others are cinematic shots of the power
 with the HRSGs and stacks in every frame.
 
     python blender/slide_hero6.py RENDER_DIR [OUT_STEM]
-RENDER_DIR holds the finished E123, E2, E1, E71, E124 and E3 renders (<k>_pro_clean.jpg, from finish_pro.py)."""
+RENDER_DIR holds the finished E123, E2, E1, E71, E124 and E70 renders (<k>_pro_clean.jpg, from finish_pro.py)."""
 import os
 import sys
 
@@ -22,7 +22,7 @@ TILES = [
     ("E1", "The three HRSG stacks from beside the absorbers", .5, .45),
     ("E71", "ARMOR-X and MV-105 in the R1 tray, HRSG 1 and its stack ahead", .5, .62),
     ("E124", "Main pipe and cable rack beside the HRSG stacks", .5, .55),
-    ("E3", "Low pass over the air-cooled condenser, the stacks beyond", .5, .45),
+    ("E70", "Cable legends in the hall tray, HRSG 2 beyond", .5, .6),
 ]
 
 
