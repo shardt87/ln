@@ -2025,6 +2025,9 @@ N_DETAIL += _mlod.build()
 # carbon capture at LOD 3: green CCS band and lettering on the absorbers, crushed stone, nameplates, safety showers
 import ccs_lod3 as _clod
 N_DETAIL += _clod.build()
+# visual hierarchy: orange accents and lettering on the HRSGs / stacks only (hero)
+import hero as _hero
+print("hero accents", _hero.build())
 # Tray review (user screenshots): short tray stubs drawn between a duct-bank end and pad equipment
 # rode the EL +36 rack tier, so a 10 ft connection became a 36 ft goalpost over the transformer. A
 # duct bank comes up straight into the equipment: those stubs are now buried, with rigid-conduit

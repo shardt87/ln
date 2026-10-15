@@ -794,3 +794,14 @@ JS heap had grown to about 490 MB, over what the in-app viewer allows. Fixes in 
 - on touch / narrow screens (LITE), small round parts get fewer facets (8, or 20 above 3 ft radius) and edge
   outlines are skipped.
 Heap on a phone viewport: about 490 MB down to about 365 MB. Desktop rendering is unchanged.
+
+### Visual hierarchy: the power block as the hero (`hero.py`, pro_look, palette, viewer)
+The drawn heights can't change (the absorbers stay taller), so the HRSGs and stacks lead through contrast,
+accent and light:
+- HRSG / stack cladding is now the darkest, richest finish (#596a76 in renders). CCS cladding is a step lighter and
+  more neutral. Handrails elsewhere are galvanized grey instead of safety yellow.
+- The only accent colour is the deck orange (#e07a2e), on the hero only: HRSG and stack handrails, stair tower and
+  platforms, a 3 ft band below each stack's top platform, and "HRSG 1/2/3" lettered on both casing faces.
+- Blender plumes come from the HRSG stacks only (absorber plumes dropped), a little stronger.
+- Viewer: a "Power block" button keeps the GTs, HRSGs, stacks and turbine hall in full colour and ghosts the rest.
+No geometry changes. verify PASS, audit CLEAN, coastal PASS.

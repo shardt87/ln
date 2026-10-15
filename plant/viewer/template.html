@@ -127,6 +127,7 @@ footer{color:var(--ink2);font-size:12px;border-top:1px solid var(--rule);padding
         <button id="bTags" aria-pressed="true">Tags</button>
         <button id="bShadow" aria-pressed="true">Shadows</button>
         <button id="bDetail" aria-pressed="true">Detail</button>
+        <button id="bHero" aria-pressed="false" title="Keep the power block (GTs, HRSGs, stacks, turbine hall) in full colour and ghost everything else">Power block</button>
         <button id="bPaths" aria-pressed="false" title="Data centre: show the three supply paths">BTM power paths</button>
         <button id="bOpt" aria-pressed="false">All optional</button>
         <button id="bCab" aria-pressed="false" title="Every cable of the cable schedule on its routed path">Cable X-ray</button>
@@ -504,6 +505,20 @@ bOpt.onclick=()=>{ const on=bOpt.getAttribute('aria-pressed')!=='true'; for(cons
 const toggle=(id,fn)=>{ const b=document.getElementById(id); b.onclick=()=>{ const on=b.getAttribute('aria-pressed')!=='true'; b.setAttribute('aria-pressed',on); fn(on); }; };
 toggle('bXray', on=>{ matGlass.opacity = on?.26:1; matGlass.transparent=on; matGlass.depthWrite=!on; matGlass.needsUpdate=true; });
 toggle('bDetail', on=>{ detailObjs.forEach(m=>m.visible=on); });
+// focus: the power block in full colour, everything else ghosted to a light grey
+const HERO_LAYERS = new Set(['BASE_POWER_BLOCK','BASE_INLET_AIR','HALL_ROOF','SITE']);
+const heroGhost = new THREE.MeshStandardMaterial({color:0xdfe2e1, roughness:1, transparent:true, opacity:.22, depthWrite:false, clippingPlanes:CLIP});
+toggle('bHero', on=>{
+  for(const [l,g] of Object.entries(layerGroups)){
+    if(HERO_LAYERS.has(l)) continue;
+    g.traverse(o=>{
+      if(o.isLineSegments){ o.visible = !on; return; }
+      if(!o.isMesh) return;
+      if(on){ if(!o.userData.mat0){ o.userData.mat0 = o.material; o.material = heroGhost; o.castShadow0 = o.castShadow; o.castShadow = false; } }
+      else if(o.userData.mat0){ o.material = o.userData.mat0; o.userData.mat0 = null; o.castShadow = o.castShadow0; }
+    });
+  }
+});
 toggle('bTags', on=>{ labelsEl.hidden=!on; });
 // BTM power paths: the data centre's three supply paths, tinted and labelled on demand (real finishes otherwise)
 const PATH_MAT = {}, PATH_NAME = {btm_island:'1  Islanded BTM power: campus gensets + battery', btm_mod:'2  From the modular yard: 13.8 kV to the step-ups',
