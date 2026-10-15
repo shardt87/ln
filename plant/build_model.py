@@ -2243,6 +2243,16 @@ if __name__ == "__main__":
         if isinstance(o, dict):
             return {k: _r(v) for k, v in o.items()}
         return o
+    # one crushed-stone finish across the site (user review): every yard / pad / corridor surfacing in the
+    # gravel_yard colour; the switchyard keeps its own (lighter) gravel
+    _nm = {it["id"]: it["name"] for it in model["items"]}
+    _stone = ("Maintenance laydown (gravel)", "BTM data-centre campus (crushed stone)")
+    for _p in model["parts"]:
+        n = _nm.get(_p["item"], "")
+        if "switchyard" in n:
+            continue
+        if _p["color"] in ("gravel", "corridor") or (_p["color"] == "pad" and n.startswith(_stone)):
+            _p["color"] = "gravel_yard"
     with open(out, "w") as f:
         json.dump(_r(model), f, separators=(",", ":"))
     reg = sum(1 for it in items if it["register"])

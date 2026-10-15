@@ -780,3 +780,9 @@ end (it must touch another part, or grade) found these gaps, now fixed:
   reclaimer, storage and carbon-filter tanks, compression / wastewater buildings, e-houses, dehydration,
   instrument air, the CCS cooling tower. Piping, structure, motors, pumps, exchangers and transformers keep their
   own finishes.
+
+### One gravel finish (user review)
+Yard surfacing came in several stone colours: modular / CCS / gas-yard crushed stone, BESS, H2, laydown, data-centre
+campus and the reserved 230 kV corridor. All of it is now one crushed-stone finish, matched to the compound ground
+in the viewer (palette + material) and in the Blender renders. Only the switchyard keeps its own gravel. Done as a
+last pass in build_model.py before the model is written.

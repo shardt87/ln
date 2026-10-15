@@ -238,11 +238,6 @@ Kd 0.541 0.310 0.114
 Ka 0 0 0
 d 1
 
-newmtl corridor
-Kd 0.827 0.867 0.902
-Ka 0 0 0
-d 1
-
 newmtl crane
 Kd 0.851 0.663 0.180
 Ka 0 0 0
@@ -384,7 +379,7 @@ Ka 0 0 0
 d 1
 
 newmtl gravel_yard
-Kd 0.655 0.639 0.596
+Kd 0.875 0.890 0.863
 Ka 0 0 0
 d 1
 

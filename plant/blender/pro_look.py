@@ -33,7 +33,7 @@ def lin(h):
 # surface type, colour (sRGB), roughness, metallic
 LOOK = {
     "ground": ("gravel", "#8b8a84", .95, 0), "road": ("asphalt", "#3b3d3f", .9, 0),
-    "gravel": ("gravel", "#83837f", .95, 0), "gravel_yard": ("gravel", "#6c6a63", .95, 0), "corridor": ("gravel", "#928e83", .95, 0),
+    "gravel": ("gravel", "#83837f", .95, 0), "gravel_yard": ("gravel", "#8b8a84", .95, 0), "corridor": ("gravel", "#8b8a84", .95, 0),
     "pad": ("concrete", "#a9a69e", .85, 0), "concrete": ("concrete", "#a6a39b", .85, 0),
     "basement": ("concrete", "#8f8c86", .9, 0), "future": ("gravel", "#b3afa4", .95, 0),
     "building": ("clad", "#c2bfb7", .55, .05), "hall": ("clad", "#c3c8ca", .45, .3),
