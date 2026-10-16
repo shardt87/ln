@@ -401,9 +401,25 @@ def nearest(cands, it):
 
 
 def gt_no(it):
-    m = re.search(r"(?:GT|GTG-|SOS-|FS-GT|WASH-GT|GFM-|TCP-|FH-|INL-|SFC-|EXC-|NGT-|SPC-|ET-|UAT-|GCB-|BFP-|HRSG[- ]|SCRB-|CEMS-)(\d)",
+    m = re.search(r"(?:GT|GTG-|SOS-|FS-GT|WASH-GT|GFM-|TCP-|FH-|INL-|SFC-|EXC-|NGT-|SPC-|ET-|UAT-|GCB-|GSU-|BFP-|HRSG[- ]|SCRB-|CEMS-)(\d)",
                   it["name"] + " " + (it.get("tag") or ""))
     return int(m.group(1)) if m else None
+
+
+UNIT_EH = {1: BY_TAG["R2A"], 2: BY_TAG["R2B"], 3: BY_TAG["R2C"]}
+
+
+def unit_eh(it):
+    """Power-block equipment belongs to its own unit's e-house (R2A / R2B / R2C for units 1-3, R3 for the steam
+    turbine), never to the nearest one: a unit outage then never reaches another unit's controls or auxiliaries."""
+    if it["area"] != "A":
+        return None
+    n = gt_no(it)
+    if n in UNIT_EH:
+        return UNIT_EH[n]
+    if re.search(r"\bST\b|STG|steam turbine|GSU-ST|GCB-ST|EHC-ST|ST aux", it["name"] + " " + (it.get("tag") or "")):
+        return BY_TAG["R3"]
+    return None
 
 
 def lv_src(it):
@@ -411,13 +427,13 @@ def lv_src(it):
     n = gt_no(it)
     if a == "A" and n and re.search(r"GT\d|GTG|SOS|FS-GT|WASH|GFM|FH-|TCP|INL", it["name"]):
         return BY_TAG[f"MCC-GT{n}"]
-    return nearest(LVS.get(a, [BY_TAG["MCC-C1"]]), it)
+    return unit_eh(it) or nearest(LVS.get(a, [BY_TAG["MCC-C1"]]), it)
 
 
 def ctl_src(it):
     if re.search(r"230 kV breaker|entrance|terminal tower", it["name"]):
         return RH
-    return nearest(CTRLS.get(it["area"], [R1]), it)
+    return unit_eh(it) or nearest(CTRLS.get(it["area"], [R1]), it)
 
 
 # MV distribution and large drives ---------------------------------------------------------------------------

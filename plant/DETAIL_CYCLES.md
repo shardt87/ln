@@ -879,3 +879,13 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
   scale and depth range it softened textures and muddied close views without a visible gain from the air, so it was
   taken out rather than left switched off. The photoreal look needs a GPU renderer (Blender Cycles on a workstation,
   or Twinmotion / D5 / Unreal from the GLB export).
+
+### Electrical buildings audit (unit segregation)
+- The cable schedule picked each power-block load's control / LV e-house by distance, so unit 1's BFP, CEMS, UAT,
+  static starter and SCR blowers landed on R2B (unit 2), unit 2's on R2C, and unit 3's GSU / UAT / GCB on R3 (ST).
+  Now unit-aware: unit n equipment (GT, HRSG, BFP, CEMS, SCR blower, GSU, UAT, ET, GCB, SFC) on its own unit
+  e-house R2A / R2B / R2C, steam-turbine equipment on R3; "nearest" only for common plant. Schedule audit unchanged.
+- Building count reviewed against typical 3x1 practice: R1 main electrical building, one unit e-house per GT/HRSG,
+  ST e-house, ACC VFD e-house, switchyard relay house, control building, plus one per optional package area (CCS,
+  BESS, modular yard PCM / MOD-EH, LNG, H2, inlet chilling, water treatment room). Consolidation candidate noted:
+  CONT-EH and PAD-EH are both 13.8 kV paralleling switchgear 70 ft apart on the portable pad.
