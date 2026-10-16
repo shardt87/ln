@@ -61,10 +61,30 @@ class Pipes:
                 continue
             if hi[2] <= .8 or (hi[0] - lo[0]) * (hi[1] - lo[1]) > 40000 or min(hi[0] - lo[0], hi[1] - lo[1]) < .3:
                 continue
+            cyl = (p["a"], p["b"], max(p["r"], p.get("r2") or 0)) if p["kind"] == "rod" else None
             for i in range(int(lo[0] // 20), int(hi[0] // 20) + 1):
                 for j in range(int(lo[1] // 20), int(hi[1] // 20) + 1):
-                    g.setdefault((i, j), []).append((lo, hi))
+                    g.setdefault((i, j), []).append((lo, hi, cyl))
         return g
+
+    @staticmethod
+    def _on_surface(p, lo, hi, cyl):
+        """Point on the part nearest p (just inside its skin): a box face, or a round shell for a cylinder,
+        so a connector meets a vessel's wall, not the empty corner of its bounding box."""
+        if cyl is None:
+            return [min(max(p[k], lo[k] + min(.3, (hi[k] - lo[k]) / 2)), hi[k] - min(.3, (hi[k] - lo[k]) / 2))
+                    for k in range(3)]
+        a, b, r = cyl
+        d = [b[k] - a[k] for k in range(3)]
+        L2 = sum(v * v for v in d) or 1e-9
+        t = max(0.0, min(1.0, sum((p[k] - a[k]) * d[k] for k in range(3)) / L2))
+        ax = [a[k] + d[k] * t for k in range(3)]
+        v = [p[k] - ax[k] for k in range(3)]
+        n = math.sqrt(sum(x * x for x in v))
+        if n < 1e-6:
+            return ax
+        rr = max(r - .3, r * .5)
+        return [ax[k] + v[k] / n * min(rr, n) for k in range(3)]
 
     def _target(self, p, reach, u=None):
         """Nearest equipment part to point p within reach: the point on it to connect to, or None. With u (the
@@ -74,9 +94,8 @@ class Pipes:
         n = int(reach // 20) + 1
         for i in range(int(p[0] // 20) - n, int(p[0] // 20) + n + 1):
             for j in range(int(p[1] // 20) - n, int(p[1] // 20) + n + 1):
-                for lo, hi in self.eq.get((i, j), ()):
-                    c = [min(max(p[k], lo[k] + min(.3, (hi[k] - lo[k]) / 2)), hi[k] - min(.3, (hi[k] - lo[k]) / 2))
-                         for k in range(3)]
+                for lo, hi, cyl in self.eq.get((i, j), ()):
+                    c = self._on_surface(p, lo, hi, cyl)
                     d = math.sqrt(sum((p[k] - c[k]) ** 2 for k in range(3)))
                     if u is not None and (c[0] - p[0]) * u[0] + (c[1] - p[1]) * u[1] < -.5:
                         continue

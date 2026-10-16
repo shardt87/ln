@@ -1641,10 +1641,15 @@ add_route("feedwater", [(985, 740), (1000, 740), (1000, 877), (1518, 877), (1518
           sheet="typical (fuel detail)")
 add_route("feedwater", [(985, 748), (1004, 748), (1004, 873), (1522, 873), (1522, 1497), (1729, 1497),
                         (1729, 1493)], sheet="typical (fuel detail)")
-# CCS circulating water: the drawn line stops on the utilities road; carry it to absorber B's foot
+# CCS circulating water: the drawn line stops on the utilities road. It serves the absorber intercoolers (plate
+# exchangers), not the absorber shells: carry it to a distribution header north of the absorbers (clear of the
+# shells at y 1251) and branch to each intercooler's exchanger
 for r in routes:
     if r["type"] == "cw" and r["points"][-1] == [770.0, 1360.0]:
-        r["points"].append([770.0, 1255.0])
+        r["points"].append([770.0, 1262.0])
+add_route("cw", [(686, 1262), (1006, 1262)], layer="OPT_CCSU_ROUTES", sheet="typical (CCS cooling water)")
+for _dx in (0, 160, 320):
+    add_route("cw", [(686 + _dx, 1262), (686 + _dx, 1251)], layer="OPT_CCSU_ROUTES", sheet="typical (CCS cooling water)")
 # modular expansion (OPT_MODX): MV cables to the portable-pad and modular collectors, gas stubs
 MX = "OPT_MODX_ROUTES"
 for row, y in ((0, 505), (1, 560)):                       # CONT-3..8 -> the PAD-EH extension (north face)

@@ -980,3 +980,10 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
   phase lands on the GSU / UAT / generator terminal with a bushing and flange.
 - `discrepancy_scan.py` gained a permanent check: open ends of pipes / bus / tray cables (rendered geometry).
   Pipes, bus phases and tray cables: 0 open ends; pipes through trays: 0. verify PASS, audit CLEAN, coastal PASS.
+
+### CCS cooling water to the intercoolers (user review: pipe ending at absorber B)
+- The CCS circulating-water line from the CCS cooling tower ended against absorber B's shell with a flange in the air.
+  Cooling water serves the absorber intercoolers (plate exchangers), not the shell: the line now tees into a
+  header north of the three absorbers (y 1262, clear of the shells) with a branch into each intercooler skid.
+- Pipe connectors now land on the real surface of round parts (vessel / drum shells), not the corner of their
+  bounding box. verify PASS, audit CLEAN, coastal PASS, scans at zero (open ends 0).
