@@ -10,6 +10,7 @@ dressing ("d": 1) so it never counts as a clash.
     import fuel; fuel.build(ns)      # ns: build_model's item(), items, parts, layers
 """
 import math
+from collections import defaultdict
 
 G = {}            # build_model namespace: item, items, parts
 D = False         # current parts are dressing
@@ -522,7 +523,15 @@ GAS_AREAS = ((1490, 1960, 1425, 1645), (1555, 1805, 1685, 1905))     # plant gas
 
 
 def _roads():
-    return [it["fp"] for it in G["items"] if it["layer"] == "SITE" and "road" in it["name"].lower()]
+    """Site roads, plus every paved drive in an area surfacing (CCS, modular yard, gas yard ...): any 'road'
+    surface at grade, so low pipes are sleeved under all of them, not only the named site roads."""
+    out = [it["fp"] for it in G["items"] if it["layer"] == "SITE" and "road" in it["name"].lower()]
+    for p in G["parts"]:
+        if p["kind"] == "box" and p.get("color") == "road" and p["max"][2] <= .8 and p["min"][2] >= -.5:
+            x0, y0, x1, y1 = p["min"][0], p["min"][1], p["max"][0], p["max"][1]
+            if min(x1 - x0, y1 - y0) >= 8 and (x1 - x0) * (y1 - y0) >= 400:
+                out.append([x0, x1, y0, y1])
+    return out
 
 
 def road_crossings(routes):
@@ -552,7 +561,14 @@ def road_crossings(routes):
                     if hi - lo > 6:
                         ivs.append((lo, hi))
             sgn = 1 if (bx - ax) + (by - ay) > 0 else -1
-            ivs.sort(key=lambda iv: sgn * iv[0])
+            ivs.sort()
+            mg = []
+            for lo, hi in ivs:                               # a road and its paved surface overlap: one crossing
+                if mg and lo <= mg[-1][1] + 6:
+                    mg[-1][1] = max(mg[-1][1], hi)
+                else:
+                    mg.append([lo, hi])
+            ivs = sorted(map(tuple, mg), key=lambda iv: sgn * iv[0])
             for lo, hi in ivs:
                 s0, s1 = (lo, hi) if sgn > 0 else (hi, lo)
                 p0 = [s0, ay] if ay == by else [ax, s0]
@@ -582,8 +598,35 @@ def supports(routes):
     Supports stay out of buildings, equipment and roads."""
     global D
     roads = _roads()
-    solid = [it["fp"] for it in G["items"] if it["layer"] != "SITE" and it["z"][1] > 1.5 and it["z"][0] < 1
-             and not it["name"].startswith(("Pipe supports", "Pipe runs", "Cable trays", "Firewater hydrants", "Small-bore piping", "HRSG 3 tube harps", "Equipment ID", "People", "Vehicles"))]
+    skip = ("Pipe supports", "Pipe runs", "Cable trays", "Firewater hydrants", "Small-bore piping", "HRSG 3 tube harps",
+            "Equipment ID", "People", "Vehicles")
+    keep = {it["id"] for it in G["items"] if it["layer"] != "SITE" and it["z"][1] > 1.5 and it["z"][0] < 1
+            and not it["name"].startswith(skip)}
+    # equipment and buildings block by footprint; area-wide dressing items (lights, people, conduit racks spread
+    # over a whole yard) block only where their parts actually stand
+    solid = [it["fp"] for it in G["items"] if it["id"] in keep
+             and (it["fp"][1] - it["fp"][0]) * (it["fp"][3] - it["fp"][2]) <= 15000]
+    big = {it["id"] for it in G["items"] if it["id"] in keep} - {it["id"] for it in G["items"]
+                                                                 if it["id"] in keep and (it["fp"][1] - it["fp"][0]) * (it["fp"][3] - it["fp"][2]) <= 15000}
+    occ = defaultdict(list)                                  # grade-standing parts of the area-wide items, 10 ft grid
+    for p in G["parts"]:
+        if p.get("item") not in big:
+            continue
+        if p["kind"] == "rod":
+            q = max(p["r"], p.get("r2") or 0)
+            lo = [min(p["a"][i], p["b"][i]) - q for i in range(3)]
+            hi = [max(p["a"][i], p["b"][i]) + q for i in range(3)]
+        elif "min" in p:
+            lo, hi = p["min"], p["max"]
+        else:
+            continue
+        if hi[2] <= .8 or lo[2] > 6:
+            continue
+        for i in range(int(lo[0] // 10), int(hi[0] // 10) + 1):
+            for j in range(int(lo[1] // 10), int(hi[1] // 10) + 1):
+                occ[(i, j)].append((lo[0], hi[0], lo[1], hi[1]))
+    standing = lambda x, y, m: any(f[0] - m <= x <= f[1] + m and f[2] - m <= y <= f[3] + m
+                                   for f in occ[(int(x // 10), int(y // 10))])
     xs = [p[0] for r in routes for p in r["points"]]
     ys = [p[1] for r in routes for p in r["points"]]
     new_item("PROCESS_PIPING", "Pipe supports and road-crossing sleeves (low pipe routes, typical)",
@@ -609,7 +652,7 @@ def supports(routes):
             for k in range(1, n + 1):
                 t = k / (n + 1)
                 x, y = ax + (bx - ax) * t, ay + (by - ay) * t
-                if inside(x, y, solid, 1.5) or inside(x, y, roads, 2):
+                if inside(x, y, solid, 1.5) or inside(x, y, roads, 2) or standing(x, y, 1.5):
                     continue
                 along_x = ay == by
                 hx, hy = (.5, w / 2 + 1) if along_x else (w / 2 + 1, .5)

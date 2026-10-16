@@ -2,10 +2,10 @@
 (north-west corner, gravel, fenced): away from energised plant, reached from the west spine road, the east half of
 the laydown left clear for engine / turbine exchanges. Finished skids go out on a lowboy to the modular yard.
 
-On an expansion the electrical crew wires skids at waist height under cover before the crane sets them: junction
+On an expansion the electrical crew wires skids at waist height on a work pad before the crane sets them: junction
 boxes, skid-edge tray and conduit are mounted, the skid wiring is pulled and terminated, the field tails are cut to
 length, coiled and tagged, and continuity / insulation-resistance (megger) tests are recorded. Here:
-- a fabric shelter (arched frame, roll-up east side, open south end) as the workstation, with a fuel-gas
+- an open concrete work pad as the workstation (no shelter), with a fuel-gas
   conditioning skid and a pump skid on cribbing being pre-wired, workbenches, a wire wagon, test gear, JB and
   tray-fitting kits, temporary power and lights, and the crew;
 - a ready-to-set row outside: a lube-oil skid and a second fuel-gas skid, finished and tagged TESTED - READY TO SET;
@@ -34,36 +34,6 @@ def hexpart(v, c):
     fuel._add("hex", v=[[round(t, 3) for t in p] for p in v], color=c)
 
 
-# ------------------------------------------------------------------------------- shelter
-def shelter(cx, y0, y1, W=50.0, H=24.0, wall=2.0, open_east=.55):
-    """Arched fabric shelter along y: ribs every 10 ft, ballast blocks, fabric panels (east side rolled up)."""
-    a, b = W / 2, H - wall
-    n = 14
-    ts = [math.pi * k / n for k in range(n + 1)]
-    P = lambda t, r=0.0: (cx + (a + r) * math.cos(t), wall + (b + r) * math.sin(t))
-    for k in range(n):
-        t0, t1 = ts[k], ts[k + 1]
-        if t1 <= open_east:
-            continue
-        (x0, z0), (x1, z1) = P(t0), P(t1)
-        (X0, Z0), (X1, Z1) = P(t0, .12), P(t1, .12)
-        hexpart([(x0, y1, z0), (x1, y1, z1), (x1, y0, z1), (x0, y0, z0),
-                 (X0, y1, Z0), (X1, y1, Z1), (X1, y0, Z1), (X0, y0, Z0)], "tent")
-    (xr, zr) = P(open_east)
-    rod((xr, y0, zr - .3), (xr, y1, zr - .3), .5, "tent", seg=12)                      # rolled-up east curtain
-    for y in [y0 + 10 * k for k in range(int((y1 - y0) / 10) + 1)]:
-        for k in range(n):
-            (x0, z0), (x1, z1) = P(ts[k], -.15), P(ts[k + 1], -.15)
-            rod((x0, y, z0), (x1, y, z1), .18, "steel", seg=6)
-        for s in (-1, 1):
-            rod((cx + s * a, y, 0), (cx + s * a, y, wall), .18, "steel", seg=6)
-            box(cx + s * a - 1, cx + s * a + 1, y - 1, y + 1, 0, 1.0, "concrete")   # ballast block
-    for k in (3, 7, 11):                                                               # purlins
-        (x0, z0) = P(ts[k], -.2)
-        rod((x0, y0, z0), (x0, y1, z0), .1, "steel", seg=6)
-
-
-# ------------------------------------------------------------------------------- skids
 def cribbing(x0, x1, y0, y1, h=1.0):
     for (x, y) in ((x0 + 1, y0 + 1.5), (x1 - 1, y0 + 1.5), (x0 + 1, y1 - 1.5), (x1 - 1, y1 - 1.5),
                    ((x0 + x1) / 2, y0 + 1.5), ((x0 + x1) / 2, y1 - 1.5)):
@@ -179,10 +149,10 @@ def pdc_split(x0, x1, y0, y1, z, face, name):
 
 # ------------------------------------------------------------------------------- build
 def _build():
-    it = fuel.new_item("OPT_MODX", "Skid pre-assembly / pre-wire workstation (modular-yard expansion): fabric shelter, skids "
+    it = fuel.new_item("OPT_MODX", "Skid pre-assembly / pre-wire workstation (modular-yard expansion): work pad, skids "
                        "on cribbing, ready-to-set row, PDC shipping splits", (1996, 2118, 914, 1050), (0, 25), basis="typical",
                        register=False, area="I", sheet="typical (prefab cable installation)",
-                       info="Skids wired at waist height under cover before setting: JBs, skid-edge tray and conduit mounted, "
+                       info="Skids wired at waist height on a concrete work pad before setting: JBs, skid-edge tray and conduit mounted, "
                             "skid wiring pulled and terminated, field tails cut to length, coiled and tagged, continuity and "
                             "insulation-resistance tests recorded. Fuel-gas and pump skids in progress; lube-oil and a second "
                             "fuel-gas skid tested and ready to set; a PDC e-house in two shipping splits with pre-terminated "
@@ -190,8 +160,7 @@ def _build():
                             "integrated) and are not pre-wired on site.")
     fuel.on(it)
     fuel.D = True
-    # shelter (x 2000-2050, y 956-1016), open to the south, east side rolled up
-    shelter(2025, 956, 1016)
+    # open-air work pad (x 2000-2050, y 956-1016): no shelter, the crane sets the skids straight from here
     box(2001, 2049, 956, 1016, 0, .12, "concrete")                                  # slab
     cribbing(2004, 2016, 962, 994)
     fuel_gas_skid(2004, 2016, 962, 994, 1.0)
@@ -220,7 +189,7 @@ def _build():
     person(2018.5, 984, 0, math.pi)                                                 # pulling skid wiring
     person(2037, 978, 0, math.pi)                                                   # at the pump skid JB
     person(2044.5, 966, 0, math.pi, vest="hivis_o")                                 # megger at the bench
-    # ready-to-set row outside the shelter
+    # ready-to-set row beside the pad
     cribbing(2062, 2074, 958, 986)
     lube_skid(2062, 2074, 958, 986, 1.0)
     prewire(2062, 2074, 958, 986, 1.0, done=True, side=1, label="LUBE OIL SKID LOS-2")

@@ -2043,10 +2043,6 @@ for r in routes:
                                       for x, y in r["points"]):
         r["z"], r["h"] = -2, 0.6
         r["label"] = "LV / instrument cable, buried conduit (gas area)"
-N_XING = _fuel.road_crossings(routes)
-N_SUPPORTS = _fuel.supports(routes)
-import pipes as _pipes
-N_PIPE = _pipes.build(item, items, parts, routes)     # round pipes, elbows, flanges, jackets
 
 
 # Detail pass (LOD 2): stairs, rails, ladders, sheds, lattice, rack piping, doors, poles
@@ -2082,6 +2078,12 @@ N_DETAIL += _mlod.build()
 # carbon capture at LOD 3: green CCS band and lettering on the absorbers, crushed stone, nameplates, safety showers
 import ccs_lod3 as _clod
 N_DETAIL += _clod.build()
+# low pipe routes: road crossings below grade in sleeves, then supports and round pipe geometry. Runs after
+# the LOD 3 area passes so their paved drives (CCS, modular yard) count as roads too.
+N_XING = _fuel.road_crossings(routes)
+N_SUPPORTS = _fuel.supports(routes)
+import pipes as _pipes
+N_PIPE = _pipes.build(item, items, parts, routes)     # round pipes, elbows, flanges, jackets
 # visual hierarchy: orange accents and lettering on the HRSGs / stacks only (hero)
 import hero as _hero
 print("hero accents", _hero.build())

@@ -951,3 +951,15 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
 - The BESS 230 kV cable end keeps its termination structure (network ties no longer count as a continuing bank).
 - Schedule: 5,695 runs, about 1,123 miles (was 1,131; formerly estimated runs now carry their routed length).
   verify PASS, audit CLEAN, coastal PASS, scans at zero, underground audit no loose ends.
+
+### Pre-wire canopy removed; low pipes sleeved under every drive (user review)
+- Skid pre-wire workstation (maintenance laydown): the arched fabric shelter is removed; the skids, benches,
+  tripod lights and crew stay on an open concrete work pad. Item text and camera E96 name updated.
+- The CCS cooling-water line (x 770) lay at grade across the CCS-area drive, in front of a parked pickup; fuel-gas
+  and hydrogen lines did the same on modular-yard drives. Cause: the road-crossing rule knew only the named site
+  roads, and ran before the LOD 3 passes that pave the area drives. Now every paved 'road' surface counts, road and
+  surface overlaps merge into one crossing, and the crossing / support / pipe steps run after the LOD 3 passes.
+  Road crossings 21 -> 39 sleeves; low pipe parts on a road surface: 0.
+- Pipe supports now avoid the parts that actually stand in an area, not the whole footprint of area-wide dressing
+  items (lights, people, conduit racks): supports 716 -> 773, unsupported low spans over 45 ft 19 -> 14.
+  verify PASS, audit CLEAN, coastal PASS, scans at zero.
