@@ -739,7 +739,7 @@ function applyTheme(){ const cs=getComputedStyle(document.documentElement);
   const dark = cs.getPropertyValue('color-scheme').includes('dark') || new THREE.Color(cs.getPropertyValue('--scene').trim()||'#e7ebe8').getHSL({}).l<.4;
   scene.background = dark ? skyTex('#0e1822','#27384a','#4a5a63') : skyTex('#7fa7cf','#c9dcec','#e9eef0');
   scene.fog = new THREE.Fog(dark ? 0x3d4c55 : 0xdfe7ec, MODEL.coastal ? 4200 : 2600, MODEL.coastal ? 15000 : 9000);
-  hemi.intensity = dark ? .55 : .95; sun.intensity = dark ? 1.2 : 2.1; renderer.toneMappingExposure = dark ? .9 : 1.05;
+  hemi.intensity = scene.environment ? (dark ? .35 : .6) : (dark ? .55 : .95); sun.intensity = dark ? 1.2 : 2.1; renderer.toneMappingExposure = dark ? .9 : 1.05;
   edgeMat.color.set(dark?0x05080a:0x27313a); edgeMat.opacity=dark?.45:.22; gridH.material.color.set(dark?0xffffff:0x000000);
   document.getElementById('north').style.color=cs.getPropertyValue('--ink'); }
 applyTheme(); matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme);
@@ -888,6 +888,21 @@ window.tourAPI = {start:tourStart, go:tourGo, exit:tourExit, n:()=>TOUR?TOUR.sto
   // recording: one deterministic frame at clock t, read straight from the canvas (captions are composited afterwards)
   frame:(t,q=.92)=>{ window.__rec=true; window.__clock=t; tourTick(t); fitShadow(); renderer.render(scene,camera); return cv.toDataURL('image/jpeg',q); }};
 
+// ---------- sky environment: metal, cladding and glass reflect the sky instead of reading flat ----------
+{
+  const pm = new THREE.PMREMGenerator(renderer), es = new THREE.Scene();
+  const dome = new THREE.Mesh(new THREE.SphereGeometry(100, 32, 16), new THREE.MeshBasicMaterial({map:skyTex('#6f9bc9','#c6d9ea','#eef1ef'), side:THREE.BackSide}));
+  es.add(dome);
+  const gnd = new THREE.Mesh(new THREE.CircleGeometry(99, 32), new THREE.MeshBasicMaterial({color:new THREE.Color('#7d8272').convertSRGBToLinear()}));
+  gnd.rotation.x = -Math.PI/2; gnd.position.y = -2; es.add(gnd);
+  const sunM = new THREE.MeshBasicMaterial(); sunM.color.setRGB(14, 12.5, 10.5);
+  const sd = new THREE.Mesh(new THREE.SphereGeometry(4, 16, 8), sunM); sd.position.copy(SUN_DIR).multiplyScalar(85); es.add(sd);
+  scene.environment = pm.fromScene(es, 0.02).texture; pm.dispose();
+  hemi.intensity = .6;
+  const REFL = {metal:.95, copper:.9, window:1, water:1, glass:.8, clad:.6, fins:.6, louvre:.6, grating:.6};   // metals and glazing reflect most
+  scene.traverse(o=>{ for(const m of [].concat(o.material||[])) if(m.isMeshStandardMaterial) m.envMapIntensity = .45; });
+  for(const k in REFL) if(mats[k]) mats[k].envMapIntensity = REFL[k];
+}
 // ---------- loop ----------
 function resize(){ const w=stage.clientWidth,h=stage.clientHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix(); }
 new ResizeObserver(resize).observe(stage); resize();

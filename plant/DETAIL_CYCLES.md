@@ -871,3 +871,11 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
 - Underground in the tour: three stops on the all-zones underground set (U2: every zone's equipment plus all MV, LV and
   230 kV duct banks, manholes, ground grid and services, ground removed): the whole campus, the power block, and the
   modular yard with the BESS (51 stops).
+
+### Viewer rendering pass
+- Sky environment lighting (PMREM of a sky dome, ground and sun): metal, cladding, glazing and water reflect the sky;
+  hemisphere fill reduced to match. Cheap, runs on phones.
+- Tried and removed: screen-space ambient occlusion with FXAA (single scene pass, depth-based AO). At this model's
+  scale and depth range it softened textures and muddied close views without a visible gain from the air, so it was
+  taken out rather than left switched off. The photoreal look needs a GPU renderer (Blender Cycles on a workstation,
+  or Twinmotion / D5 / Unreal from the GLB export).
