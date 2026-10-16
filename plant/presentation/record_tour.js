@@ -7,10 +7,15 @@ const fs = require('fs'), path = require('path');
 const [page, out, stopsArg, fpsArg, dwellArg] = process.argv.slice(2);
 const FPS = +(fpsArg || 24), DWELL = +(dwellArg || 6000);
 (async () => {
-  const b = await chromium.launch({executablePath: '/opt/pw-browsers/chromium',
-    args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist']});
+  // on a desktop with a graphics card a visible browser window uses the GPU (fast); SOFTWARE_GL=1 renders on the CPU
+  // (cloud machines without a GPU); CHROMIUM=path picks a browser, otherwise Playwright's own Chromium is used
+  const soft = !!process.env.SOFTWARE_GL;
+  const exe = process.env.CHROMIUM || (fs.existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined);
+  const b = await chromium.launch({executablePath: exe, headless: soft,
+    args: soft ? ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist']
+               : ['--ignore-gpu-blocklist', '--enable-gpu-rasterization', '--window-size=1920,1180']});
   const p = await b.newPage({viewport: {width: 1920, height: 1080}});
-  await p.goto('file://' + path.resolve(page), {waitUntil: 'commit', timeout: 180000});
+  await p.goto(page.startsWith('http') ? page : require('url').pathToFileURL(path.resolve(page)).href, {waitUntil: 'commit', timeout: 180000});
   await p.waitForFunction(() => window.tourAPI && document.getElementById('loading').hidden, null, {timeout: 600000});
   await p.addStyleTag({content: '#tour{display:none!important} .stamp{display:none!important}'});
   await p.evaluate(() => { window.__clock = 0; tourAPI.start(0); });

@@ -680,7 +680,8 @@ for v in (model["views"] if args.style != "pro" else []):
         print(f"rendered {v['k']:<3} {v['n']:<26} ortho {info['ortho_ft']} ft  "
               f"margins L/R {info['margin_lr']}% T/B {info['margin_tb']}%  {info['seconds']}s")
     manifest.append(info)
-json.dump(manifest, open(os.path.join(args.out, f"manifest_{args.style}_{'-'.join(keys)}.json"), "w"), indent=1)
+_mk = '-'.join(keys) if len(keys) <= 12 else f"{args.set or 'plates'}_{len(keys)}_views"   # long camera sets: short name
+json.dump(manifest, open(os.path.join(args.out, f"manifest_{args.style}_{_mk}.json"), "w"), indent=1)
 set_visibility([c for c in collections])
 if args.blend:
     bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(args.blend))

@@ -14,7 +14,7 @@ import imageio_ffmpeg
 from PIL import Image, ImageDraw, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-FD = os.path.join(os.path.dirname(HERE), "blender", "deck")
+FD = os.path.join(HERE, "fonts") if os.path.isdir(os.path.join(HERE, "fonts")) else os.path.join(os.path.dirname(HERE), "blender", "deck")
 TOUR = json.load(open(os.path.join(HERE, "tour.json")))["stops"]
 W, H = 1920, 1080
 COPPER, LIGHT, GREY, CAB = (200, 105, 43), (243, 241, 236), (169, 179, 184), (240, 164, 107)
