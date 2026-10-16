@@ -176,11 +176,9 @@ def steam_turbine():
     # two crossover pipes HP/IP -> LP over the casing shoulders, inside the EL 46 envelope
     for s in (-1, 1):
         xc = sx + s * 6.8
-        rod((xc, 538, sz + 5.5), (xc, 538, 43.4), 1.8, "machine", seg=24)
-        rod((xc, 538, 43.4), (xc, 515, 43.4), 1.8, "machine", seg=24)
-        rod((xc, 515, 43.4), (xc, 515, 41.5), 1.8, "machine", seg=24)
-        for yy in (538, 515):                                                      # elbows
-            rod((xc, yy, 43.4), (xc, yy, 43.4), 1.8, "machine", seg=24)
+        rod((xc, 538, sz + 5.5), (xc, 538, 45.2), 1.8, "machine", seg=24)
+        rod((xc, 539.8, 43.4), (xc, 513.2, 43.4), 1.8, "machine", seg=24)
+        rod((xc, 515, 45.2), (xc, 515, 41.5), 1.8, "machine", seg=24)
     # main stop / control valve chests beside the HP/IP casing
     for xv in (1029, 1071):
         rod((xv, 545, 21.5), (xv, 545, 36), 2.5, "machine", seg=24)
