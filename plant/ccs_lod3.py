@@ -74,8 +74,8 @@ def surfaces():
 
 def nameplates():
     plates = [
-        ("DCC-{t}:", lambda dx: ((567.7 + dx, 1022, 72), (-1, 0, 0)), "DCC-{t}", "DIRECT-CONTACT COOLER"),
-        ("BF-{t}:", lambda dx: ((635 + dx, 997.85, 42), (0, -1, 0)), "BF-{t}", "FLUE-GAS BOOSTER FAN  ·  16 MW"),
+        ("DCC-{t}:", lambda dx: ((553.7 + dx, 1022, 60), (-1, 0, 0)), "DCC-{t}", "DIRECT-CONTACT COOLER"),
+        ("BF-{t}:", lambda dx: ((630 + dx, 984.85, 36), (0, -1, 0)), "BF-{t}", "FLUE-GAS BOOSTER FAN  ·  16 MW"),
     ]
     for i, dx in enumerate((0, 160, 320)):
         t = "ABC"[i]
@@ -85,14 +85,12 @@ def nameplates():
             c, n = pos(dx)
             decal(c, n, 9, 2.2, [(title.format(t=t), .42, True, None), (sub, .24, False, None)], bg="#ffffff")
             fuel.D = False
-    # DCC casing stiffeners on the west face (the face seen from the ring road)
+    # DCC insulation-cladding bands (as on the absorbers)
     for i, dx in enumerate((0, 160, 320)):
         on(find(f"DCC-{'ABC'[i]}:"))
         fuel.D = True
-        for y in range(990, 1060, 5):
-            box(567.8 + dx, 568 + dx, y - .15, y + .15, 2, 88, "steel")
-        for z in (20, 40, 60, 80):
-            box(567.8 + dx, 568 + dx, 985.5, 1059.5, z - .15, z + .15, "steel")
+        for z in (14, 28, 42, 56, 70):
+            rod((584 + dx, 1022, z - .25), (584 + dx, 1022, z + .25), 30.15, "steel", seg=64)
         fuel.D = False
     for (nm, c, n, w, title, sub) in (
             ("STR-A:", (1070, 1164.6, 30), (0, -1, 0), 9, "STR-A", "CO2 STRIPPER"),

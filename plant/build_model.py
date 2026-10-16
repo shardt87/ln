@@ -1000,16 +1000,36 @@ for i, dx in enumerate([0, 160, 320]):
     B(621 + dx, 639 + dx, 826, 985, 44, 62, "duct")
     for yy in (870, 930):
         B(624 + dx, 636 + dx, yy - 1, yy + 1, 0, 44, "steel")
-    item(L, f"DCC-{t}: direct-contact cooler (quench)", (568 + dx, 608 + dx, 985, 1060), (0, 90),
-         tag=f"DCC-{t}", area="G", basis="typical", sheet="SK-3X1-13", info="90 ft; no public value found.")
-    B(568 + dx, 608 + dx, 985, 1060, 0, 86, "ccs")
-    P(568 + dx, 608 + dx, 985, 1060, 86, 90, "ccs", ridge="y")
+    # DCC sized for the train's flue gas: an H-class GT exhausts ~790 kg/s; saturated at ~40 C that is ~730 m3/s,
+    # and a packed / spray quench tower runs at ~3 m/s superficial velocity -> ~260 m2, a 60 ft diameter (close to the
+    # 62 ft absorber, as on large-scale capture plants). Counter-current: gas in low from the booster fan, out at the top.
+    cx = 584 + dx
+    item(L, f"DCC-{t}: direct-contact cooler (quench)", (cx - 30, cx + 30, 992, 1052), (0, 90),
+         tag=f"DCC-{t}", area="G", basis="typical", sheet="SK-3X1-13",
+         info="60 ft dia x 90 ft (height per sheet 13). Sized for ~790 kg/s of H-class flue gas (~730 m3/s saturated "
+              "at ~40 C) at ~3 m/s superficial velocity. Counter-current: flue gas in low from the booster fan, "
+              "quench water sprayed from the top, cooled gas out of the top nozzle to the absorber.")
+    R((cx, 1022, 0), (cx, 1022, 1.5), 31, "concrete", seg=48)                       # ring foundation
+    R((cx, 1022, 1.5), (cx, 1022, 76), 30, "ccs", seg=64)                           # shell
+    R((cx, 1022, 76), (cx, 1022, 86), 30, "ccs", r2=10.5, seg=64)                   # conical head
+    R((cx, 1022, 86), (cx, 1022, 90), 10, "duct", seg=32)                           # 20 ft outlet nozzle
+    B(605 + dx, 615 + dx, 1004, 1018, 4, 22, "duct")                                 # gas inlet from the fan
     solid(L, f"DCC-{t} pumps + water filter", 568 + dx, 608 + dx, 1066, 1090, 0, 8, "pump", area="G",
           sheet="SK-3X1-06")
     item(L, f"BF-{t}: booster fan (~16 MW)", (615 + dx, 655 + dx, 985, 1035), (0, 30), tag=f"BF-{t}", area="G",
          sheet="SK-3X1-06", info="NZT: 16.4 MWe per H-class train; VFD from the CCS MV building.")
     B(615 + dx, 655 + dx, 985, 1035, 0, 2, "concrete")
     R((635 + dx, 990, 16), (635 + dx, 1012, 16), 13, "motor", seg=28)
+    B(621 + dx, 639 + dx, 985, 1003, 30, 62, "duct")                                 # HRSG flue gas down into the fan
+    B(615 + dx, 623 + dx, 1004, 1018, 4, 22, "duct")                                 # fan outlet to the DCC inlet
+    # cooled gas: out of the DCC top, arched over and down into the overhead duct that runs north to the absorber
+    item(L, f"Flue-gas duct, DCC-{t} to Absorber {t}", (cx - 10, 645 + dx, 1012, 1189), (34, 113), area="G",
+         sheet="typical (carbon capture)", register=False)
+    for a_, b_ in (((cx, 1022, 90), (cx, 1022, 96)), ((cx, 1022, 96), (cx + 8, 1022, 103)),
+                   ((cx + 8, 1022, 103), (627 + dx, 1022, 103)), ((627 + dx, 1022, 103), (635 + dx, 1022, 96)),
+                   ((635 + dx, 1022, 96), (635 + dx, 1022, 50))):
+        R(a_, b_, 10, "duct", seg=32)
+    B(625 + dx, 645 + dx, 1012, 1189, 34, 50, "duct")
     R((635 + dx, 1014, 12), (635 + dx, 1033, 12), 7, "motor", seg=20)
     solid(L, f"Rich/lean pumps, cross exchanger, lean cooler {t}", 660 + dx, 705 + dx, 1040, 1100, 0, 15,
           "equip", area="G", sheet="SK-3X1-06")

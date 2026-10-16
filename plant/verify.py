@@ -182,6 +182,7 @@ TOUCH = [
     (r"ST exhaust duct", r"Common turbine hall"), (r"^Bridge crane", r"Common turbine hall"),
     (r"Turbine deck", r".*"), (r"Laydown bay floor", r".*"),
     (r"^Flue-gas duct", r"^DMP-"), (r"^Flue-gas duct", r"^DCC-"), (r"^Flue-gas duct", r"stack$"),
+    (r"^Flue-gas duct", r"^BF-"), (r"^Flue-gas duct", r"^Absorber"), (r"^BF-", r"^DCC-"),
     (r"^Flue-gas duct", r"pipe and cable rack"), (r"^DMP-", r"stack$"),
     (r"pipe and cable rack", r"N-S pipe rack"), (r"N-S pipe rack", r"ST exhaust duct"),
     (r"^R1 ", r"^R1: main"), (r"^R1 ", r"^R1 "), (r"^R4 ", r"^R4: ACC"),

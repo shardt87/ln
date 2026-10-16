@@ -893,3 +893,15 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
   removed. PAD-EH, as drawn on sheet 08, gains a west extension section (PAD-EH-X, 36 ft, same lineup) carrying the
   CONT-3..8 feeder breakers; the six genset feeders run straight to it (no CONT-EH to PAD-EH interconnect). Cable
   schedule 5,701 -> 5,695 runs. verify PASS, audit CLEAN, coastal PASS, scans at zero.
+
+### Direct-contact coolers: sized, cylindrical, counter-current (user review vs a site photo)
+- Sizing: an H-class GT exhausts ~790 kg/s (430 MW at ~43 %: ~1,000 MW fuel, ~560 MW in the exhaust at ~630 C);
+  saturated at ~40 C that is ~730 m3/s, and a packed / spray quench tower runs at ~3 m/s superficial velocity ->
+  ~260 m2 -> **60 ft diameter**, close to the 62 ft absorbers (as on large capture plants). Height 90 ft (sheet 13).
+- DCC-A..C rebuilt from a rectangular box to a 60 ft clad cylinder on a ring foundation, conical head, 20 ft outlet
+  nozzle at EL 90, cladding bands, two north-face platforms with manways on brackets, ladder from grade, quench riser
+  to the spray header near the top and the sump return.
+- Gas path corrected: before, gas entered mid-height and left low. Now HRSG duct -> down into the booster fan -> DCC
+  bottom inlet -> up counter-current to the quench water -> out of the top through an arched 20 ft duct (new item
+  "Flue-gas duct, DCC-x to Absorber x") into the overhead duct to the absorber. New camera E125 (from grade, like a
+  site photo). verify PASS (0 clashes, DCC height 90 ft), audit CLEAN, scans at zero.

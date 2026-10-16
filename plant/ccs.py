@@ -1,8 +1,8 @@
 """Carbon capture at LOD 3 (detail cycle 6).
 
 Per train (A, B, C), as dressing inside the drawn footprints and sheet-13 heights:
-- flue-gas path closed: the HRSG flue duct turns west into the direct-contact cooler (DCC); the
-  cooled gas leaves the DCC low on its east face into the booster fan, and the fan discharges up
+- flue-gas path closed: the HRSG flue duct drops into the booster fan, the fan blows into the bottom of the
+  60 ft direct-contact cooler (DCC); the cooled gas leaves the DCC top through an arched duct that comes down
   into an overhead duct on steel bents north to the absorber inlet;
 - DCC: quench-water riser from its pumps to the spray header, a platform with handrail and a
   caged ladder;
@@ -48,26 +48,30 @@ def trains():
         # ---- flue gas: duct elbow into the DCC, DCC outlet to the booster fan, fan to the absorber
         on(find(f"DCC-{t}:"))
         dress(True)
-        box(608 + dx, 639 + dx, 985, 1003, 44, 62, "duct")                     # elbow west into the DCC
-        box(606 + dx, 608 + dx, 983, 1005, 42, 64, "steel")                    # flange frame
-        box(608 + dx, 623 + dx, 993, 1009, 8, 24, "duct")                      # DCC outlet to the fan
-        box(606 + dx, 608 + dx, 991, 1011, 6, 26, "steel")
-        # quench-water riser from the DCC pumps to the spray header, platform, ladder
-        rod((600 + dx, 1062, 6), (600 + dx, 1062, 80), .9, "pipe", seg=12)
-        rod((600 + dx, 1062, 80), (600 + dx, 1059, 80), .9, "pipe", seg=12)
-        rod((576 + dx, 1062, 6), (576 + dx, 1062, 60), .7, "pipe", seg=12)    # circulation return
-        box(568 + dx, 608 + dx, 1060, 1064, 60, 60.5, "grating")
-        rod((568 + dx, 1064, 63.5), (608 + dx, 1064, 63.5), .07, "rail", seg=4)
-        for z in range(2, 60, 2):
-            box(588 + dx, 590 + dx, 1060.3, 1060.6, z - .06, z + .06, "steel")
-        for s in (588, 590):
-            box(s + dx - .06, s + dx + .06, 1060.2, 1060.7, 0, 63, "steel")
+        cx = 584 + dx
+        box(614.6 + dx, 615.4 + dx, 1003, 1019, 3, 23, "steel")                 # flange, fan outlet / DCC inlet
+        rod((cx, 1022, 89), (cx, 1022, 90), 11, "steel", seg=32)                 # outlet nozzle flange
+        # quench water: riser from the DCC pumps to the spray header near the top, sump return to the pumps
+        rod((600 + dx, 1062, 6), (600 + dx, 1062, 72), .9, "pipe", seg=12)
+        rod((600 + dx, 1062, 72), (600 + dx, 1047, 72), .9, "pipe", seg=12)
+        rod((576 + dx, 1062, 6), (576 + dx, 1062, 12), .7, "pipe", seg=12)
+        rod((576 + dx, 1062, 12), (576 + dx, 1050.5, 12), .7, "pipe", seg=12)
+        # two platforms on the north face (instrument / manway levels) on brackets, ladder from grade
+        for z in (30, 62):
+            box(cx - 14, cx + 14, 1050, 1056, z, z + .5, "grating")
+            rod((cx - 14, 1056, z + 3.5), (cx + 14, 1056, z + 3.5), .07, "rail", seg=4)
+            for x in (cx - 14, cx + 14):
+                rod((x, 1050, z + 3.5), (x, 1056, z + 3.5), .07, "rail", seg=4)
+                box(x - .2, x + .2, 1048, 1056, z - 2.5, z, "steel")                 # bracket to the shell
+            box(cx - 3, cx + 3, 1048.2, 1050.2, z + .5, z + 7, "door")               # manway
+        for z in range(2, 62, 2):
+            box(cx + 6, cx + 8, 1056.3, 1056.6, z - .06, z + .06, "steel")
+        for s in (cx + 6, cx + 8):
+            box(s - .06, s + .06, 1056.2, 1056.7, 0, 65.5, "steel")
         dress(False)
-        on(find(f"BF-{t}:"))
+        on(find(f"Flue-gas duct, DCC-{t} to Absorber {t}"))
         dress(True)
-        box(627 + dx, 643 + dx, 998, 1010, 28, 34, "duct")                     # fan discharge up
-        box(625 + dx, 645 + dx, 998, 1189, 34, 50, "duct")                     # overhead duct to the absorber
-        for y in (1030, 1060, 1090, 1160):
+        for y in (1045, 1060, 1090, 1160):
             for x in (626 + dx, 644 + dx):
                 box(x - .6, x + .6, y - .6, y + .6, 0, 34, "steel")
             box(624 + dx, 646 + dx, y - .7, y + .7, 32.6, 34, "steel")
