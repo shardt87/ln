@@ -932,3 +932,22 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
   cooler housings with cooler panels and cooling-water in / out lines, collector end on its pedestal, bearing
   pedestals, lifting trunnions, line-side terminal box, H2 / CO2 purge panel, coupling guard meeting the ST coupling.
   verify PASS (0 clashes), audit CLEAN, coastal PASS, scans at zero.
+
+### Cable integrity check (network connectivity, X-ray terminations)
+- New check: does every schedule run follow modelled routes, and does every X-ray cable end on its equipment?
+- Found 105 runs (2 %) the schedule could only "estimate" because five pieces of the network were cut off: the D4/D5
+  bay trenches crossed the main switchyard trench with no tee; the utilities-area banks (aux boiler, NH3, fire pump,
+  WWT, demin), the CCS banks, the inlet-chilling bank and a data-hall LV stub stopped short of the plant network.
+  Fixed with tees in the trench routes and short duct-bank ties.
+- Found 97 "conduit links" (about 3,500 ft) the schedule used to bridge gaps on paper with no geometry in the model.
+  The route graph moved to `network.py`, shared by the build and the schedule; `build_model.py` now lays real
+  buried conduit (EL -2, square L, in the layer of the system it serves) for every link that joins the network or
+  saves a real detour (network path > 3x the link + 100 ft): 119 ties, about 4,200 ft. The schedule now has no
+  estimated runs and no paper links, and the network is a single connected piece.
+- X-ray: cable ends used to stop at the footprint centre, often in mid-air, joined by a diagonal line. They now
+  land on the nearest solid part of the equipment, running along at route level and then dropping or stubbing up;
+  ACC fan legs squared. 0 diagonal segments; ends off equipment 248 -> 18 (area items such as the BESS yard, and ACC
+  fan motors within 1.8 ft).
+- The BESS 230 kV cable end keeps its termination structure (network ties no longer count as a continuing bank).
+- Schedule: 5,695 runs, about 1,123 miles (was 1,131; formerly estimated runs now carry their routed length).
+  verify PASS, audit CLEAN, coastal PASS, scans at zero, underground audit no loose ends.

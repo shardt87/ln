@@ -2149,6 +2149,31 @@ for p in [q for q in parts if q["kind"] == "box" and q["color"] == "fence"]:
         N_POSTS += 1
     a, b = ([x0, c, z1], [x1, c, z1]) if along_x else ([c, y0, z1], [c, y1, z1])
     parts.append(dict(kind="rod", a=a, b=b, r=.08, r2=.08, color="steel", seg=6, item=p["item"], layer=p["layer"], d=1))
+# cable-network ties: pieces of the buried network that stopped short of the plant network (found by the
+# cable-schedule connectivity check: their loads could only be "estimated")
+_TIE = "typical (cable network ties)"
+add_route("duct_bank", [(460, 1420), (590, 1420), (590, 1425)], sheet=_TIE)            # utilities-area bank to the west trunk
+add_route("mvlv_cable", [(1307, 1046), (1500, 1046)], layer="OPT_CCS_ROUTES", sheet=_TIE)  # CCS banks to the x 1500 trunk
+add_route("mvlv_cable", [(305, 1062), (355, 1062)], layer="OPT_IC_ROUTES", sheet=_TIE)    # inlet-chilling bank to the x 355 trunk
+add_route("mvlv_cable", [(2726, 1150), (2678.7, 1150)], layer="OPT_DC_ROUTES", sheet=_TIE)  # data-hall LV stub to its bank
+# every other gap in the cable network gets real buried conduit (the schedule used to bridge these on paper):
+# an L at EL -2 from below one piece's nearest node to the other's, in the layer of the piece it serves
+import network as _net
+_NODE_LAYER = {}
+for _r in routes:
+    if _r["type"] in _net.ELEC:
+        for _p in _r["points"]:
+            _NODE_LAYER.setdefault((round(_p[0], 1), round(_p[1], 1)), _r["layer"])
+N_TIES = 0
+for _v, _w in _net.ties(routes):
+    _lay = [_NODE_LAYER.get(n[:2], "ROUTES_BASE") for n in (_v, _w)]
+    _lay = next((l for l in _lay if l != "ROUTES_BASE"), "ROUTES_BASE")              # optional systems keep their layer
+    _pts = [(_v[0], _v[1]), (_w[0], _v[1]), (_w[0], _w[1])]
+    _pts = [p for i, p in enumerate(_pts) if i == 0 or p != _pts[i - 1]]
+    if len(_pts) > 1:
+        add_route("duct_bank", _pts, layer=_lay, sheet="typical (cable network ties)")
+        routes[-1]["label"] = "Conduit (buried, network tie)"
+        N_TIES += 1
 # underground systems in real geometry (duct banks, chambers, ground grid, firewater, drains, water mains)
 import underground as _ug
 N_UG = _ug.build(items, routes)

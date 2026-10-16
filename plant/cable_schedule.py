@@ -43,142 +43,7 @@ def centre(it):
     return ((f[0] + f[1]) / 2, (f[2] + f[3]) / 2)
 
 
-# ------------------------------------------------------------------------------------------------ route graph
-ELEC = {"mv_tray": "Tray", "lv_tray": "Tray", "control_tray": "Tray", "duct_bank": "Duct bank",
-        "mvlv_cable": "Duct bank", "hv_cable": "HV duct bank", "cable_trench": "Trench"}
-
-
-class Graph:
-    def __init__(self, routes):
-        self.adj = defaultdict(list)
-        self.kind = {}
-        segs = []
-        for r in routes:
-            if r["type"] not in ELEC:
-                continue
-            z = r["z"]
-            kind = "Surface" if r.get("surface") else ELEC[r["type"]]
-            P = [(round(p[0], 1), round(p[1], 1), z) for p in r["points"]]
-            for a, b in zip(P, P[1:]):
-                segs.append((a, b, kind))
-        # split each segment at every route vertex lying on it (T-junctions), then join coincident / stacked nodes
-        verts = {s[0] for s in segs} | {s[1] for s in segs}
-        grid = defaultdict(list)
-        for v in verts:
-            grid[(int(v[0] // 20), int(v[1] // 20))].append(v)
-
-        def near(x, y, rad):
-            gx, gy = int(x // 20), int(y // 20)
-            for i in range(gx - 1, gx + 2):
-                for j in range(gy - 1, gy + 2):
-                    for v in grid[(i, j)]:
-                        if abs(v[0] - x) <= rad and abs(v[1] - y) <= rad:
-                            yield v
-        for a, b, kind in segs:
-            horiz = abs(a[1] - b[1]) < abs(a[0] - b[0])
-            lo, hi = (min(a[0], b[0]), max(a[0], b[0])) if horiz else (min(a[1], b[1]), max(a[1], b[1]))
-            pts = [a, b]
-            n = max(1, int((hi - lo) // 20))
-            for k in range(n + 1):                      # sample along the segment for vertices on it
-                t = k / n
-                x, y = a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t
-                for v in near(x, y, 12):
-                    if (lo - .5 <= (v[0] if horiz else v[1]) <= hi + .5 and
-                            abs((v[1] - a[1]) if horiz else (v[0] - a[0])) <= 3):
-                        q = (v[0], a[1], a[2]) if horiz else (a[0], v[1], a[2])
-                        pts.append(q)
-            pts = sorted(set(pts), key=lambda p: (p[0], p[1]) if horiz else (p[1], p[0]))
-            for p, q in zip(pts, pts[1:]):
-                d = math.dist(p[:2], q[:2])
-                self.adj[p].append((q, d))
-                self.adj[q].append((p, d))
-                self.kind[(p, q)] = self.kind[(q, p)] = kind
-        nodes = list(self.adj)
-        ng = defaultdict(list)
-        for v in nodes:
-            ng[(int(v[0] // 6), int(v[1] // 6))].append(v)
-        for v in nodes:                                  # vertical / stacked transitions (risers, tray to bank)
-            gx, gy = int(v[0] // 6), int(v[1] // 6)
-            for i in range(gx - 1, gx + 2):
-                for j in range(gy - 1, gy + 2):
-                    for w in ng[(i, j)]:
-                        if w != v and math.dist(v[:2], w[:2]) <= 4:
-                            d = math.dist(v[:2], w[:2]) + abs(v[2] - w[2])
-                            self.adj[v].append((w, d))
-                            self.kind[(v, w)] = "Riser"
-        # bridge separate pieces of the network (tray ends to a nearby bank or tray) with short conduit links
-        comp = {}
-        for v in nodes:
-            if v in comp:
-                continue
-            stack, comp[v] = [v], v
-            while stack:
-                u = stack.pop()
-                for w, _ in self.adj[u]:
-                    if w not in comp:
-                        comp[w] = v
-                        stack.append(w)
-        bg = defaultdict(list)
-        for v in nodes:
-            bg[(int(v[0] // 110), int(v[1] // 110))].append(v)
-        best = {}
-        for v in nodes:
-            gx, gy = int(v[0] // 110), int(v[1] // 110)
-            for i in range(gx - 1, gx + 2):
-                for j in range(gy - 1, gy + 2):
-                    for w in bg[(i, j)]:
-                        if comp[w] != comp[v]:
-                            d = abs(v[0] - w[0]) + abs(v[1] - w[1])
-                            key = tuple(sorted((comp[v], comp[w])))
-                            if d <= 110 and (key not in best or d < best[key][0]):
-                                best[key] = (d, v, w)
-        for d, v, w in best.values():
-            c = d * 1.2 + abs(v[2] - w[2])
-            self.adj[v].append((w, c))
-            self.adj[w].append((v, c))
-            self.kind[(v, w)] = self.kind[(w, v)] = "Conduit link"
-        self.n_links = len(best)
-        self.nodes = nodes
-        ag = defaultdict(list)
-        for v in nodes:
-            ag[(int(v[0] // 50), int(v[1] // 50))].append(v)
-        self.ag = ag
-
-    def access(self, it, k=4):
-        """The k network nodes nearest to an item's footprint, with the drop length (horizontal + vertical)."""
-        f = it["fp"]
-        cx, cy = centre(it)
-        cand = []
-        for rad in (1, 2, 4, 8, 16):
-            gx, gy = int(cx // 50), int(cy // 50)
-            cand = [v for i in range(gx - rad, gx + rad + 1) for j in range(gy - rad, gy + rad + 1) for v in self.ag[(i, j)]]
-            if len(cand) >= k:
-                break
-        out = []
-        for v in cand:
-            dx = max(f[0] - v[0], 0, v[0] - f[1])
-            dy = max(f[2] - v[1], 0, v[1] - f[3])
-            out.append((dx + dy + abs(v[2] - 4) + 10, v))
-        return sorted(out)[:k]
-
-    def dijkstra(self, starts):
-        dist = {}
-        pq = [(d, v) for d, v in starts]
-        heapq.heapify(pq)
-        prev = {}
-        while pq:
-            d, v = heapq.heappop(pq)
-            if v in dist:
-                continue
-            dist[v] = d
-            for w, c in self.adj[v]:
-                if w not in dist:
-                    nd = d + c
-                    heapq.heappush(pq, (nd, w))
-                    prev.setdefault(w, (nd, v))
-                    if nd < prev[w][0]:
-                        prev[w] = (nd, v)
-        return dist, prev
+from network import ELEC, Graph  # noqa: E402  (route graph shared with build_model.py)
 
 
 G = Graph(M["routes"])
@@ -190,6 +55,45 @@ def term(it):
     c = centre(it)
     z0, z1 = it["z"]
     return (round(c[0], 1), round(c[1], 1), round(z0 + min(6, (z1 - z0) / 2), 1))
+
+
+BOXES = defaultdict(list)                               # item id -> solid part boxes (x0, x1, y0, y1, z0, z1)
+for _p in M["parts"]:
+    if _p["kind"] == "rod":
+        _r = max(_p["r"], _p.get("r2") or 0)
+        if _r < .3:
+            continue
+        _a, _b = _p["a"], _p["b"]
+        _bb = (min(_a[0], _b[0]) - _r, max(_a[0], _b[0]) + _r, min(_a[1], _b[1]) - _r, max(_a[1], _b[1]) + _r,
+               min(_a[2], _b[2]) - _r, max(_a[2], _b[2]) + _r)
+    elif "min" in _p:
+        _bb = (_p["min"][0], _p["max"][0], _p["min"][1], _p["max"][1], _p["min"][2], _p["max"][2])
+    else:
+        continue
+    if (_bb[1] - _bb[0]) * (_bb[3] - _bb[2]) < 1 or _bb[5] - _bb[4] < .5 or _bb[5] < 0:
+        continue
+    BOXES[_p.get("item")].append(_bb)
+
+
+def leg(it, v):
+    """Drop / stub-up from network node v onto the item's nearest solid part: along at route level, then vertical."""
+    best = None
+    for b in BOXES.get(it["id"], ()):
+        dx = max(b[0] - v[0], 0, v[0] - b[1])
+        dy = max(b[2] - v[1], 0, v[1] - b[3])
+        d = dx + dy + .2 * max(b[4] - v[2], 0, v[2] - b[5])
+        if best is None or d < best[0]:
+            best = (d, b)
+    if best is None:                                      # no solid part (yard / area item): square leg to its centre
+        t = term(it)
+        return [(t[0], v[1], v[2]), (t[0], t[1], v[2]), t]
+    b = best[1]
+    i = .3                                                # land just inside the part's face
+    x = min(max(v[0], b[0] + i), b[1] - i) if b[1] - b[0] > 2 * i else (b[0] + b[1]) / 2
+    y = min(max(v[1], b[2] + i), b[3] - i) if b[3] - b[2] > 2 * i else (b[2] + b[3]) / 2
+    z = b[5] if v[2] > b[5] else max(b[4], 0.0) if v[2] < b[4] else v[2]
+    pts = [(x, v[1], v[2]), (x, y, v[2]), (x, y, z)]                     # square: along x, along y, then vertical
+    return [tuple(round(q, 1) for q in p) for p in pts]
 
 
 def route_len(src, dst):
@@ -222,7 +126,8 @@ def route_len(src, dst):
         kinds[k] += seg
         cur = p
         n += 1
-    PATHS[(src["id"], dst["id"])] = [term(src)] + [tuple(round(q, 1) for q in c) for c in reversed(chain)] + [term(dst)]
+    ch = [tuple(round(q, 1) for q in c) for c in reversed(chain)]
+    PATHS[(src["id"], dst["id"])] = list(reversed(leg(src, ch[0]))) + ch + leg(dst, ch[-1])
     d_start = min(d for d, w in acc_s)
     route = max(0.0, total - d_end - d_start - vert)
     kind = max(kinds, key=kinds.get) if kinds else "Tray"
@@ -478,7 +383,7 @@ for k in range(80):
     add(r4, cell, f"ACC fan F{k + 1:02d} vibration / RTD / local station", "CT", "7/C", "14", length=(route + extra, vert, kind))
     pa = PATHS.get((r4["id"], acc["id"]))
     if pa:
-        fan = pa[:-1] + [(pa[-1][0], pa[-1][1], 70.0), (round(x, 1), round(y, 1), 70.0)]
+        fan = pa[:-1] + [(pa[-1][0], pa[-1][1], 70.0), (pa[-1][0], round(y, 1), 70.0), (round(x, 1), round(y, 1), 70.0)]
         ROWS[-1]["path"] = ROWS[-2]["path"] = fan
 
 # carbon capture

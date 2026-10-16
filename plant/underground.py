@@ -500,7 +500,7 @@ def terminations(routes, items):
             x, y = p
             if any(it["fp"][0] - 6 <= x <= it["fp"][1] + 6 and it["fp"][2] - 6 <= y <= it["fp"][3] + 6 for it in pads):
                 continue
-            if any(q is not r and any(min(a[0], b[0]) - 1 <= x <= max(a[0], b[0]) + 1 and min(a[1], b[1]) - 1 <= y <= max(a[1], b[1]) + 1
+            if any(q is not r and "network tie" not in q.get("label", "") and any(min(a[0], b[0]) - 1 <= x <= max(a[0], b[0]) + 1 and min(a[1], b[1]) - 1 <= y <= max(a[1], b[1]) + 1
                                       for a, b in zip(q["points"], q["points"][1:])) for q in bur):
                 continue
             nb = r["points"][1] if k == 0 else r["points"][-2]

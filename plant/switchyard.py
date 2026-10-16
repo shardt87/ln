@@ -29,7 +29,7 @@ def routes(add_route):
     add_route("cable_trench", [(1300, TRENCH_Y), (DIAMETERS[-1] - 12.5, TRENCH_Y)], "SWYD_FUTURE", sheet=sheet)
     for x in DIAMETERS:
         lay = "ROUTES_BASE" if x < 1300 else "SWYD_FUTURE"
-        add_route("cable_trench", [(x - 12.5, 72), (x - 12.5, 230)], lay, sheet=sheet)
+        add_route("cable_trench", [(x - 12.5, 72), (x - 12.5, TRENCH_Y), (x - 12.5, 230)], lay, sheet=sheet)   # tee into the main trench
 
 
 def trench_parts(routes_):

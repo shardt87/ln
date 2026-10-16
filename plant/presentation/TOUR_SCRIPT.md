@@ -8,7 +8,7 @@ system is it part of, and which cable does it use and why.**
 
 > Basis (say it on slide 2): SK-3X1 is a *typical* 3x1 H-class combined-cycle campus built from a 15-sheet
 > concept drawing set (Rev 14). Equipment, ratings and cable selections are typical for the class, not
-> engineered for a project. Cable quantities come from the model's cable schedule (5,701 runs), routed along
+> engineered for a project. Cable quantities come from the model's cable schedule (5,695 runs), routed along
 > the modelled trays and duct banks.
 
 Numbers marked **[check]** should be confirmed by a subject-matter engineer before the session.

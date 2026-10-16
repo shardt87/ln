@@ -17,7 +17,7 @@ drawing set (`reference_docs/SK-3X1_Drawing_Set_Rev14.pdf`) and checked back aga
 - green hydrogen
 - a ~150 MW behind-the-meter (BTM) data centre
 
-Every powered item has its cable routed: trays, duct banks, trenches, conduit. A cable schedule (5,701 runs, about 1,120
+Every powered item has its cable routed: trays, duct banks, trenches, conduit. A cable schedule (5,695 runs, about 1,120
 miles) is derived from the model.
 
 Purpose now: a **1-hour Southwire technical training on Nov 11, 2026** (Teams; SVP of R&D attending):
@@ -115,7 +115,7 @@ open them locally in Chrome or Edge).
 |---|---|
 | `build_model.py`, `fuel.py` | Master build and the part / item helpers |
 | `*_lod3.py`, `hall*.py`, `hrsg.py`, `modular*.py`, `yard.py`, `ccs*.py`, `lng_h2.py`, `datacenter.py`, ... | Detail passes per area (see README "Files") |
-| `trays.py`, `wiring.py`, `cables.py`, `cable_*.py`, `surface_cable.py`, `underground.py` | Cable routing, drops, risers, duct banks |
+| `trays.py`, `wiring.py`, `cables.py`, `cable_*.py`, `surface_cable.py`, `underground.py`, `network.py` | Cable routing, drops, risers, duct banks; `network.py` is the route graph shared by the build and the schedule |
 | `verify.py`, `audit.py`, `discrepancy_scan.py`, `cable_continuity.py` | Checks |
 | `sk3x1_model.json` | The built model (also regenerable) |
 | `viewer/` | Viewer template and built viewers |
