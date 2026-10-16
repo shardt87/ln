@@ -207,16 +207,36 @@ def steam_turbine():
         pipe([(1050, 552, 27), (xv, 552, 27), (xv, 546.5, 27)], 27, 1.1, "pipe")
     box(1076, 1080, 487, 513, 31, 57, "duct")                                        # transition to the exhaust duct
     dress(False)
+    # ---- steam-turbine generator, on the ST shaft line (EL 31), top EL 38
     sg = find("STG:")
     strip(sg)
+    gx, gz = 1050, 31.0
     box(1041, 1059, 410, 460, 20, 21.5, "steel")
-    rod((1050, 416, 29), (1050, 454, 29), 8.0, "machine", seg=32)
-    for (ya, yb) in ((412.5, 416), (454, 457)):
-        rod((1050, ya, 29), (1050, yb, 29), 7.2, "machine", seg=28)
-    box(1042, 1058, 422, 448, 37, 38, "machine")
-    rod((1050, 410.3, 29), (1050, 412.5, 29), 3.8, "steel", seg=20)
-    box(1045, 1055, 410, 418, 21.5, 24.5, "steel")
-    rod((1050, 457, 29), (1050, 460, 29), 2.6, "steel", seg=18)
+    rod((gx, 417, gz), (gx, 453, gz), 7.0, "machine", seg=64)                       # stator frame
+    rod((gx, 413.5, gz), (gx, 417, gz), 5.4, "machine", r2=6.6, seg=48)            # end shields
+    rod((gx, 453, gz), (gx, 456.5, gz), 6.6, "machine", r2=5.4, seg=48)
+    for xs in (1041.6, 1055.9):                                                    # side-mounted H2 cooler housings
+        box(xs, xs + 2.5, 421, 449, 26.5, 35.5, "machine")
+        for y in (425.5, 435, 444.5):
+            box(xs - .05 if xs < gx else xs + 2.45, xs + .05 if xs < gx else xs + 2.55, y - 3.6, y + 3.6, 27.5, 34.5,
+                "radiator")
+    rod((gx, 410.4, gz), (gx, 413.5, gz), 3.8, "steel", seg=32)                    # collector / exciter end
+    box(gx - 4.6, gx + 4.6, 410.2, 413.2, 21.5, 26.5, "steel")                     # collector pedestal
+    box(1045, 1055, 413.5, 419, 21.5, 24.2, "steel")                                # line-side terminal box
+    for y in (415.2, 454.8):
+        box(gx - 4.5, gx + 4.5, y - 1.3, y + 1.3, 21.5, gz - 3, "steel")           # bearing pedestals
+    rod((gx, 456.5, gz), (gx, 460, gz), 2.4, "steel", seg=32)                       # coupling guard to the ST
+    dress(True)
+    for y in range(420, 452, 5):                                                    # frame ribs
+        rod((gx, y - .2, gz), (gx, y + .2, gz), 7.2, "steel", seg=64)
+    for y in (420, 450):                                                            # lifting trunnions
+        for s in (-1, 1):
+            rod((gx + s * 6.9, y, 36), (gx + s * 6.9, y, 37.2), .5, "steel", seg=12)
+    for xs, xo in ((1041.6, 1041.15), (1058.4, 1058.85)):                            # cooler water in / out
+        for y in (423, 447):
+            pipe([(xs, y, 30), (xo, y, 30), (xo, y, 21.6)], 30, .2, "cw")
+    rod((1057.4, 452, 22), (1057.4, 452, 26), .6, "red", seg=10)                      # H2 / CO2 purge panel
+    dress(False)
 
 
 def _add_prism(x0, x1, y0, y1, z0, z1, it):

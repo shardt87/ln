@@ -924,3 +924,11 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
 - Parts that sat on the old casing moved with it: LP junction boxes, LP admission line (now enters the hood top),
   gland leak-off line (now ends at the LP gland), nameplate. verify PASS (0 clashes, ST crane checks ok), audit
   CLEAN, coastal PASS, scans at zero.
+
+### Steam-turbine generator: review follow-up
+- Review found the STG shaft at EL 29 while the ST shaft is at EL 31, so the coupling did not line up; and the STG was
+  a plain cylinder with a thin slab on top, below the standard of the GT generators.
+- STG rebuilt on the ST shaft line (EL 31, top EL 38 kept): ribbed stator frame, tapered end shields, side-mounted H2
+  cooler housings with cooler panels and cooling-water in / out lines, collector end on its pedestal, bearing
+  pedestals, lifting trunnions, line-side terminal box, H2 / CO2 purge panel, coupling guard meeting the ST coupling.
+  verify PASS (0 clashes), audit CLEAN, coastal PASS, scans at zero.
