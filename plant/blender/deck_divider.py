@@ -142,7 +142,7 @@ TITLE = dict(photo=os.path.join(PLANT, "renders", "cover", "K11_pro.png"),
              sub="GAS POWER CAMPUS", claim="ACCELERATING TIME TO POWER™", date="OCTOBER 6, 2026",
              out="SK-3X1_title_cover")
 
-# photo: viewer X-ray, view O6, camera c=[1200,-962,2465] t=[1800,1800,0] lens 34, 915x810 @2x; LNG carrier,
+# photo: viewer X-ray, view O6, camera c=[1550,-1100,950] t=[1550,1330,60] lens 27.5 (straight north, low oblique), ghost opacity .12, 915x810 @2x; LNG carrier,
 # data halls, DC admin and gensets lifted from the ghost (white, 30 %) so the ship and the BTM data centre read
 STRATEGY_OCT = dict(photo=os.path.join(PLANT, "renders", "cover", "xray_campus.jpg"),
                     kicker="SK-3X1 POWER CAMPUS", title=("STRATEGY", "MONTHLY", "UPDATE"),
