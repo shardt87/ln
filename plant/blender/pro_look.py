@@ -866,6 +866,17 @@ COASTAL_A = [
          dof=(24, 8.0)),
     dict(k="K5", n="Cover photo (1170 x 1080): the whole facility from the south-west", eye=(-260, -520, 900),
          target=(1650, 1550, 20), lens=27, show="everything", site=True, res=(1170, 1080)),
+    # Strategy Update cover (915 x 810 pt photo panel): golden hour, the power block with its copper-banded stacks in
+    # front, the LNG carrier at the berth beyond and the BTM data centre to the right
+    dict(k="SC1", n="Strategy cover: from the south-west, power block forward, LNG carrier and BTM data centre beyond",
+         eye=(300, -500, 1150), target=(1350, 1400, 30), lens=26, show="everything", site=True, res=(1830, 1620),
+         sun=(11, 250), look=LOOK_GOLDEN, plumes=True, wind=150),
+    dict(k="SC2", n="Strategy cover: from the south, the whole campus face on, LNG carrier and BTM data centre beyond",
+         eye=(450, -650, 1100), target=(1400, 1400, 30), lens=27, show="everything", site=True, res=(1830, 1620),
+         sun=(11, 250), look=LOOK_GOLDEN, plumes=True, wind=150),
+    dict(k="SC3", n="Strategy cover: low from the south-west, power block close, the campus and the sea beyond",
+         eye=(100, -300, 750), target=(1300, 1300, 30), lens=24, show="everything", site=True, res=(1830, 1620),
+         sun=(11, 250), look=LOOK_GOLDEN, plumes=True, wind=150),
 ]
 COASTAL_B = [
     dict(k="F1", n="FSRU and LNG carrier, ship-to-ship transfer", eye=(25300, -300, 300), target=(24300, 950, 40),
