@@ -53,7 +53,8 @@ LOOK = {
     "bundle": ("fins", "#8b9396", .45, .5), "fan": ("paint", "#5e666b", .45, .4),
     "fanhub": ("paint", "#3e4549", .45, .4), "motor": ("paint", "#3d6c8c", .35, .05),
     "pump": ("paint", "#3f6f8e", .35, .05), "tank": ("paint", "#dcdcd6", .45, 0),
-    "rail": ("paint", "#9aa1a4", .45, .3), "hero_accent": ("paint", "#9a5530", .32, .75), "hero_rail": ("paint", "#1d1f21", .4, .25), "crane": ("paint", "#e0b01a", .38, 0),
+    "rail": ("paint", "#9aa1a4", .45, .3), "hero_accent": ("paint", "#9a5530", .32, .75), "hero_rail": ("paint", "#1d1f21", .16, .35),
+    "hero_stack": ("paint", "#eceff1", .22, .08), "hero_ring": ("paint", "#b9c0c5", .25, .55), "crane": ("paint", "#e0b01a", .38, 0),
     "red": ("paint", "#b3342c", .4, 0), "amber": ("paint", "#d8a63a", .45, 0),
     "door": ("paint", "#4f6f86", .4, .1), "rollup": ("clad", "#9ca3a7", .5, .3),
     "louvre": ("fins", "#7c8489", .5, .3), "lamp": ("paint", "#f2efe4", .3, 0),
@@ -869,10 +870,10 @@ COASTAL_A = [
     # Strategy Update cover (915 x 810 pt photo panel): golden hour, the power block with its copper-banded stacks in
     # front, the LNG carrier at the berth beyond and the BTM data centre to the right
     dict(k="SC1", n="Strategy cover: from the south-west, power block forward, LNG carrier and BTM data centre beyond",
-         eye=(300, -500, 1150), target=(1350, 1400, 30), lens=26, show="everything", site=True, res=(1830, 1620),
-         sun=(11, 250), look=LOOK_GOLDEN, plumes=True, wind=150),
+         eye=(300, -380, 900), target=(1160, 1220, 75), lens=30, show="everything", site=True, res=(1830, 1620),
+         sun=(19, 235), look=LOOK_GOLDEN, plumes=True, wind=45),
     dict(k="SC2", n="Strategy cover: from the south, the whole campus face on, LNG carrier and BTM data centre beyond",
-         eye=(450, -650, 1100), target=(1400, 1400, 30), lens=27, show="everything", site=True, res=(1830, 1620),
+         eye=(700, -350, 620), target=(1300, 1150, 90), lens=27, show="everything", site=True, res=(1830, 1620),
          sun=(11, 250), look=LOOK_GOLDEN, plumes=True, wind=150),
     dict(k="SC3", n="Strategy cover: low from the south-west, power block close, the campus and the sea beyond",
          eye=(100, -300, 750), target=(1300, 1300, 30), lens=24, show="everything", site=True, res=(1830, 1620),

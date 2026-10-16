@@ -1,8 +1,8 @@
 """Visual hierarchy (user review): the combined-cycle power block, the three HRSGs and their stacks, is the hero.
 - the brand palette, only on the hero: stack platform and HRSG access handrails in black (hero_rail),
   a 7 ft burnished-copper band (hero_accent) and a thin 2 ft band a third of the way down below each stack's top platform, "HRSG 1/2/3" lettered large in copper on both casing faces;
-- the HRSG / stack cladding is the darkest, richest finish in the plant (pro_look / palette), everything else a
-  step lighter and more neutral, and handrails elsewhere galvanized grey instead of safety yellow.
+- the stack shells are light gloss (hero_stack) with silver stiffener rings (hero_ring), so the copper band and the
+  black crown read against them; the HRSG casing keeps the darkest, richest finish; everything else neutral, and handrails elsewhere galvanized grey instead of safety yellow.
 Colour and lettering only: no drawn geometry changes."""
 import fuel
 from fuel import rod, on, find
@@ -20,7 +20,15 @@ def build():
     for k in range(3):
         dx = 160 * k
         ids = {find(f"HRSG {k + 1} stack")["id"], find(f"HRSG {k + 1} + SCR")["id"]}
+        stack = find(f"HRSG {k + 1} stack")["id"]
         for p in fuel.G["parts"]:
+            if p["item"] == stack and p["kind"] == "rod" and p.get("r", 0) >= 10.9:
+                if p["color"] == "hrsg":
+                    p["color"] = "hero_stack"           # stack shell: light gloss, the brightest thing on the skyline
+                    continue
+                if p["color"] == "steel":
+                    p["color"] = "hero_ring"            # stiffener rings: silver, so the shell stays light
+                    continue
             if p["item"] in ids and p["color"] in ("rail", "sp_yellow", "steel", "grating", "stair"):
                 p["color"] = "hero_rail"            # Southwire black: handrails, platforms, stairs, ladders, brackets
                 n += 1
