@@ -2080,6 +2080,15 @@ import ccs_lod3 as _clod
 N_DETAIL += _clod.build()
 # low pipe routes: road crossings below grade in sleeves, then supports and round pipe geometry. Runs after
 # the LOD 3 area passes so their paved drives (CCS, modular yard) count as roads too.
+# pipes run square: a drawn diagonal (sheet 01 sketches a few) gets a corner, x first, so it is rendered and supported
+for _r in routes:
+    if _r["type"] in _fuel.LOW + ("steam", "condensate", "ccw"):
+        _q = [_r["points"][0]]
+        for _a, _b in zip(_r["points"], _r["points"][1:]):
+            if _a[0] != _b[0] and _a[1] != _b[1]:
+                _q.append([_b[0], _a[1]])
+            _q.append(_b)
+        _r["points"] = _q
 N_XING = _fuel.road_crossings(routes)
 N_SUPPORTS = _fuel.supports(routes)
 import pipes as _pipes

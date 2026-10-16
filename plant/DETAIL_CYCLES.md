@@ -963,3 +963,20 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
 - Pipe supports now avoid the parts that actually stand in an area, not the whole footprint of area-wide dressing
   items (lights, people, conduit racks): supports 716 -> 773, unsupported low spans over 45 ft 19 -> 14.
   verify PASS, audit CLEAN, coastal PASS, scans at zero.
+
+### Pipe and bus connections (user review: "pipes connect to the right equipment, no cut-outs")
+- Audit of every process-pipe route end: 31 ends met neither equipment nor another pipe. Causes: the renderer
+  dropped every elevated end to grade (HRSG steam mains at EL 27 fell to the ground beside the stacks), low lines
+  stopped 2-4 ft short of their skids (LNG pumps / vaporizers, BOG compressor, H2 dryer, SOFC / microturbine,
+  gas-conditioning skid, CW pumps), and four drawn routes with diagonal legs (condensate to the CST, the three BFP
+  feedwater loops) were silently not rendered.
+- `pipes.py` now finishes every end: a tee / continuation joins its pipe; an end beside equipment at its own level
+  connects straight in; otherwise it drops to grade and connects there; road-sleeve ends drop into the sleeve; a
+  pipeline at the boundary goes into the ground. Connectors run square, look only ahead of or beside the end (never
+  back along the pipe), and end in a nozzle flange. Diagonal pipe routes get a corner before rendering. 86 ends
+  connected.
+- Isolated-phase bus: the three phases were offset per segment, so at every bend the outer phases stopped short
+  (50 open tube ends). Phases now follow mitred offset paths, touching bus routes merge into one run, and each
+  phase lands on the GSU / UAT / generator terminal with a bushing and flange.
+- `discrepancy_scan.py` gained a permanent check: open ends of pipes / bus / tray cables (rendered geometry).
+  Pipes, bus phases and tray cables: 0 open ends; pipes through trays: 0. verify PASS, audit CLEAN, coastal PASS.

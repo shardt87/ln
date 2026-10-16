@@ -104,3 +104,26 @@ for n, v in sorted(hang.items(), key=lambda t: -len(t[1]))[:15]:
 print(f"tray ends with no drop / entry / continuation: {len(dead)}")
 for d in dead[:25]:
     print("  ", d)
+
+# open ends of round runs: every pipe, bus-duct phase and tray cable must end on something (another run, an
+# elbow, equipment, a sleeve or grade); an end in the air reads as a cut-off pipe / tray
+import math as _m
+people_items = {i["id"] for i in G["items"] if i["name"].startswith(("People", "Vehicles"))}
+_open = []
+for k, p in enumerate(P):
+    if p["kind"] != "rod" or not p.get("pipe") or p["color"] in ("steel", "label"):
+        continue
+    a, b = p["a"], p["b"]
+    L = _m.dist(a, b)
+    if L <= 1.0:
+        continue
+    for e, o in ((a, b), (b, a)):
+        if e[2] <= .8:
+            continue
+        q = [e[i] + (e[i] - o[i]) / L * .1 for i in range(3)]
+        if not [j for j in near([q[0] - .3, q[1] - .3, q[2] - .3, q[0] + .3, q[1] + .3, q[2] + .3], 0)
+                if j != k and P[j].get("item") not in people_items]:
+            _open.append((p["color"], [round(v, 1) for v in e]))
+print(f"open ends of pipes / bus / tray cables: {len(_open)}")
+for d in _open[:25]:
+    print("  ", d)

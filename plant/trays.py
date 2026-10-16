@@ -450,10 +450,60 @@ class Trays:
             self.entry(key, x, y, d, it)
         for (x, y, _), (b, d, keys) in self.risers.items():
             self.riser(x, y, b, d, keys)
-        for r in self.routes:
-            if r["type"] == "ipb" and r["z"] > 0:
-                self.ipb(r)
+        for r in self._ipb_chains():
+            self.ipb(r)
         return len(self.parts) - self.n0
+
+    def _ipb_chains(self):
+        """IPB routes joined end to end (same level, a shared end point that no third route uses) into single
+        polylines, so the three phases turn together at every bend instead of stopping at a route break."""
+        rs = [dict(r, points=[tuple(p) for p in r["points"]]) for r in self.routes if r["type"] == "ipb" and r["z"] > 0]
+        merged = True
+        while merged:
+            merged = False
+            for i, a in enumerate(rs):
+                for j, b in enumerate(rs):
+                    if i == j or a["z"] != b["z"] or a["layer"] != b["layer"]:
+                        continue
+                    if a["points"][-1] == b["points"][0]:
+                        shared = sum(1 for r in rs for p in (r["points"][0], r["points"][-1]) if p == b["points"][0])
+                        if shared == 2:
+                            a["points"] = a["points"] + b["points"][1:]
+                            rs.pop(j)
+                            merged = True
+                            break
+                if merged:
+                    break
+        return rs
+
+    def _ipb_target(self, p, reach=12.0):
+        """Nearest equipment part (generator terminal box, breaker, GSU / UAT tank) to an IPB phase end."""
+        if not hasattr(self, "_ipb_eq"):
+            names = {it["id"]: it["name"] for it in self.items}
+            keys = ("GTG-", "STG", "GSU-", "UAT-", "GCB-", "SPC-", "ST: ", "Unit auxiliary", "generator")
+            self._ipb_eq = []
+            for q in self.parts:
+                nm = names.get(q.get("item"), "")
+                if not nm.startswith(keys) or q.get("color") in ("concrete", "ipb", "label"):
+                    continue
+                if q["kind"] == "rod":
+                    rr = max(q["r"], q.get("r2") or 0)
+                    lo = [min(q["a"][i], q["b"][i]) - rr for i in range(3)]
+                    hi = [max(q["a"][i], q["b"][i]) + rr for i in range(3)]
+                elif "min" in q:
+                    lo, hi = q["min"], q["max"]
+                else:
+                    continue
+                if hi[2] - lo[2] < .2 or (hi[0] - lo[0]) * (hi[1] - lo[1]) < 4:
+                    continue
+                self._ipb_eq.append((lo, hi))
+        best = None
+        for lo, hi in self._ipb_eq:
+            c = [min(max(p[k], lo[k]), hi[k]) for k in range(3)]
+            d = math.dist(p, c)
+            if d <= reach and (best is None or d < best[0]):
+                best = (d, c)
+        return None if best is None else best[1]
 
     def tray_racks(self, merged_runs):
         """Parallel tray runs at different tiers in one corridor get a shared cable-tray rack: portal frames
@@ -837,26 +887,75 @@ class Trays:
                 self.rod(p, q, r, col, layer, seg=6)
             self.rod((ex, ey, bottom), (ex, ey, bottom + .5), r + .08, "steel", layer, seg=8)   # cable gland
 
+    @staticmethod
+    def _offset(pts, d):
+        """Orthogonal polyline offset by d to its left, mitred at the corners, so a phase keeps its lane
+        through every bend and its segments meet."""
+        def nrm(a, b):
+            L = math.hypot(b[0] - a[0], b[1] - a[1]) or 1
+            return (-(b[1] - a[1]) / L, (b[0] - a[0]) / L)
+        out = []
+        for k, p in enumerate(pts):
+            ns = []
+            if k > 0:
+                ns.append(nrm(pts[k - 1], p))
+            if k < len(pts) - 1:
+                ns.append(nrm(p, pts[k + 1]))
+            if len(ns) == 2 and abs(ns[0][0] * ns[1][0] + ns[0][1] * ns[1][1]) < .01:
+                ox, oy = ns[0][0] + ns[1][0], ns[0][1] + ns[1][1]          # square corner: mitre point
+            else:
+                ox, oy = ns[0]
+            out.append((p[0] + d * ox, p[1] + d * oy))
+        return out
+
     def ipb(self, r):
         z, layer = r["z"], r["layer"]
-        for a, b in zip(r["points"], r["points"][1:]):
-            ax = "x" if a[1] == b[1] else "y"
-            if a[0] != b[0] and a[1] != b[1]:
-                continue
-            for off in (-3.2, 0, 3.2):
-                if ax == "x":
-                    pa, pb = (a[0], a[1] + off, z), (b[0], b[1] + off, z)
-                else:
-                    pa, pb = (a[0] + off, a[1], z), (b[0] + off, b[1], z)
+        pts = [tuple(p) for p in r["points"]]
+        if any(a[0] != b[0] and a[1] != b[1] for a, b in zip(pts, pts[1:])):
+            return
+        for off in (-3.2, 0, 3.2):
+            ph = self._offset(pts, off)
+            for k, (a, b) in enumerate(zip(ph, ph[1:])):
+                L = math.hypot(b[0] - a[0], b[1] - a[1])
+                if L < .05:
+                    continue
+                u = ((b[0] - a[0]) / L, (b[1] - a[1]) / L)
+                ea = 1.0 if k > 0 else 0.0                                          # run through the corner: closed bend
+                eb = 1.0 if k < len(ph) - 2 else 0.0
+                pa = (a[0] - u[0] * ea, a[1] - u[1] * ea, z)
+                pb = (b[0] + u[0] * eb, b[1] + u[1] * eb, z)
                 self.rod(pa, pb, 1.0, "ipb", layer, seg=16)
-                L = abs(b[0] - a[0]) + abs(b[1] - a[1])
                 n = int(L // 10)
                 for m in range(1, n + 1):                                         # joint bands
                     t = m / (n + 1)
-                    q = [pa[j] + (pb[j] - pa[j]) * t for j in range(3)]
-                    d = [(pb[j] - pa[j]) / L * .2 for j in range(3)]
-                    self.rod([q[j] - d[j] for j in range(3)], [q[j] + d[j] for j in range(3)], 1.12, "steel", layer,
+                    q = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, z]
+                    dd = [u[0] * .2, u[1] * .2, 0]
+                    self.rod([q[j] - dd[j] for j in range(3)], [q[j] + dd[j] for j in range(3)], 1.12, "steel", layer,
                              seg=16)
+        # each phase end lands on its equipment: across, then down onto the tank / terminal box (bushing)
+        for off in (-3.2, 0, 3.2):
+            ph = self._offset(pts, off)
+            for e in (ph[0], ph[-1]):
+                p = (e[0], e[1], z)
+                c = self._ipb_target(p)
+                if c is None or math.dist(p, c) < .9:
+                    continue
+                legs = [p, (c[0], p[1], z), (c[0], c[1], z), (c[0], c[1], c[2])]
+                legs = [q for k, q in enumerate(legs) if k == 0 or math.dist(q, legs[k - 1]) > .05]
+                if len(legs) < 2:
+                    continue
+                qa, qb = legs[-2], legs[-1]                       # stop one tube radius off the tank face
+                L = math.dist(qa, qb)
+                legs[-1] = tuple(qb[j] - (qb[j] - qa[j]) / L * min(1.0, L - .05) for j in range(3))
+                gap = math.dist(legs[-1], qb)                      # what is left to the face
+                for k, (qa, qb) in enumerate(zip(legs, legs[1:])):
+                    self.rod(qa, qb, 1.0, "ipb", layer, seg=16)
+                e, d = legs[-1], [(legs[-1][j] - legs[-2][j]) for j in range(3)]
+                n = math.sqrt(sum(v * v for v in d)) or 1
+                self.rod(e, [e[j] + d[j] / n * max(gap - .05, .05) for j in range(3)], .55, "steel", layer, seg=16)   # bushing
+                self.rod([e[j] - d[j] / n * .25 for j in range(3)], e, 1.3, "steel", layer, seg=16)  # flange
+        for a, b in zip(r["points"], r["points"][1:]):
+            ax = "x" if a[1] == b[1] else "y"
             # support frames about every 12 ft
             L = abs(b[0] - a[0]) + abs(b[1] - a[1])
             n = max(1, int(L // 12))
