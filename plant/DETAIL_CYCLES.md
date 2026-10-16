@@ -860,6 +860,6 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
 - Every viewer view now shows the whole campus (all options, the BTM campus and the sheet-15 marine LNG terminal),
   so equipment such as the modular yard no longer drops out when the view changes; cutaway views still leave out
   their roofs / walls and the underground views keep their own layers. `--no-coastal` builds without the terminal.
-- Tour extended to 29 stops: the LNG import terminal; the modular yard (RICE hall, RICE generator cables to the PCM,
-  LM6000-class simple cycle, TM2500-class trailer units, fuel cells and microturbines, portable pad, Type W into
-  PAD-LV); behind the meter (the data-centre campus, the three supply paths).
+- Tour extended to 36 stops: the LNG import terminal; every modular power type (RICE hall, RICE generator cables to the PCM, black-start gensets,
+  LM6000-class simple cycle, TM2500-class trailer units, containerized gensets, trailer genset with SHD-GC, open-skid and enclosed gensets, fuel cells, microturbines, the MOD-EH collector, portable pad, Type W into
+  PAD-LV, BESS); behind the meter (the data-centre campus, the backup diesel gensets, the three supply paths).

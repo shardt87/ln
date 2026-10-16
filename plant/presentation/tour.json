@@ -368,6 +368,25 @@
   },
   {
    "sec": "07 · Modular power",
+   "title": "Black-start gensets",
+   "eq": "Two gas gensets with their own switchgear, a battery alternative beside them",
+   "sys": "Restarting with no grid: the gensets energize the auxiliaries so a gas turbine can start",
+   "cab": "MV-105 from the genset breakers to the black-start switchgear and on to the station bus",
+   "c": [
+    1665,
+    838,
+    32
+   ],
+   "t": [
+    1605,
+    885,
+    4
+   ],
+   "lens": 24,
+   "drift": 1.2
+  },
+  {
+   "sec": "07 · Modular power",
    "title": "Simple-cycle aeroderivative units",
    "eq": "Two LM6000-class units: inlet filter house, turbine enclosure, SCR, 80 ft stack",
    "sys": "Peaking power in about ten minutes from start; 13.8 kV generators onto the collector",
@@ -406,19 +425,58 @@
   },
   {
    "sec": "07 · Modular power",
-   "title": "Fuel cells and microturbines",
-   "eq": "Solid-oxide fuel-cell modules, 1 MW microturbines, inverters, the 480 V to 13.8 kV step-up",
-   "sys": "Quiet, low-emission distributed generation; inverter-based output",
-   "cab": "DC from the fuel-cell stacks to the inverters; 600 V Type TC-ER to the step-up transformer",
+   "title": "Containerized gas gensets",
+   "eq": "Eight 2 MW-class gas gensets in 40 ft containers, generator breakers, the paralleling e-house",
+   "sys": "13.8 kV units paralleled in the e-house, then onto the pad switchgear",
+   "cab": "MV-105 15 kV from each container in ground tray to the paralleling switchgear",
    "c": [
-    2140,
-    960,
-    60
+    2205,
+    455,
+    42
    ],
    "t": [
-    2130,
-    1120,
-    5
+    2075,
+    560,
+    4
+   ],
+   "lens": 26,
+   "drift": 1.2
+  },
+  {
+   "sec": "07 · Modular power",
+   "title": "Trailer genset and its portable feeder",
+   "eq": "MOB-1 trailer genset, the drive-over cable ramp, the portable input cabinet",
+   "sys": "Plug-in power: the feeder crosses the road on a ramp, no trench",
+   "cab": "Type SHD-GC 15 kV portable cable (two grounds and a ground check), through the C-L01 ramp",
+   "c": [
+    2229,
+    668,
+    8
+   ],
+   "t": [
+    2247,
+    628,
+    1
+   ],
+   "lens": 26,
+   "drift": 1.2,
+   "near": 0.3
+  },
+  {
+   "sec": "07 · Modular power",
+   "title": "Open-skid and enclosed gensets",
+   "eq": "GEN-O open engine-generator skid and GEN-E 2 MW enclosed industrial genset",
+   "sys": "480 V generators into the PAD-LV paralleling switchboard",
+   "cab": "Type W 480 V sets with cam-lock plugs; flexible cable rated for vibration and oil",
+   "c": [
+    2058,
+    398,
+    16
+   ],
+   "t": [
+    2024,
+    440,
+    3
    ],
    "lens": 26,
    "drift": 1.2
@@ -464,6 +522,63 @@
   },
   {
    "sec": "07 · Modular power",
+   "title": "Solid-oxide fuel cells",
+   "eq": "Twelve fuel-cell modules (200 to 300 kW class), inverter / AC cabinet and desulfurizer",
+   "sys": "Gas to DC electrochemically, then inverters to AC: no combustion, very low NOx",
+   "cab": "DC from the stacks to the inverter; 600 V Type TC-ER from the AC cabinet to the step-up",
+   "c": [
+    2058,
+    322,
+    22
+   ],
+   "t": [
+    2068,
+    366,
+    4
+   ],
+   "lens": 24,
+   "drift": 1.2
+  },
+  {
+   "sec": "07 · Modular power",
+   "title": "Microturbines",
+   "eq": "Six 1 MW microturbines (Capstone C1000 class) in two groups",
+   "sys": "Small gas turbines with high-speed generators and power electronics; 480 V output",
+   "cab": "600 V Type TC-ER power to the 480 V board and the 480 V : 13.8 kV step-up",
+   "c": [
+    2214,
+    322,
+    18
+   ],
+   "t": [
+    2198,
+    364,
+    4
+   ],
+   "lens": 24,
+   "drift": 1.2
+  },
+  {
+   "sec": "07 · Modular power",
+   "title": "The modular collector",
+   "eq": "MOD-EH 13.8 kV collector e-house and two 13.8/230 kV step-up transformers",
+   "sys": "Every modular unit lands on one 13.8 kV bus, stepped up to 230 kV for the switchyard",
+   "cab": "MV-105 15 kV feeders into MOD-EH; bus duct to the step-ups (about 5,000 A)",
+   "c": [
+    1955,
+    790,
+    85
+   ],
+   "t": [
+    2060,
+    892,
+    8
+   ],
+   "lens": 28,
+   "drift": 1.2
+  },
+  {
+   "sec": "07 · Modular power",
    "title": "Battery energy storage",
    "eq": "Battery containers, PCS / MV skids, DC trenches, collector feeders",
    "sys": "Rides through load steps and supports the grid in seconds",
@@ -499,6 +614,25 @@
    ],
    "lens": 24,
    "drift": 0.8
+  },
+  {
+   "sec": "08 · Behind the meter",
+   "title": "Backup diesel gensets",
+   "eq": "36 diesel gensets of 3.6 MW (130 MW), paralleling switchgear, two 75 MVA step-ups",
+   "sys": "Carry the IT load and critical cooling if every other source is lost",
+   "cab": "MV-105 15 kV genset feeders to the 13.8 kV paralleling switchgear; 35 kV to buses A and B",
+   "c": [
+    2760,
+    380,
+    70
+   ],
+   "t": [
+    2950,
+    510,
+    5
+   ],
+   "lens": 26,
+   "drift": 1.2
   },
   {
    "sec": "08 · Behind the meter",
