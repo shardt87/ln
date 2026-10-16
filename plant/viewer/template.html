@@ -23,6 +23,7 @@ header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-be
 h1{font-weight:700;font-size:26px;line-height:1.1;margin:0;text-wrap:balance;letter-spacing:.2px}
 h1 span{color:var(--copper)}
 .sub{color:var(--ink2);margin:4px 0 0;max-width:95ch}
+.byline{margin:4px 0 0;font:600 13px/1.3 var(--sans);letter-spacing:.3px;color:var(--copper)}
 .docno{font:500 12px/1.4 var(--mono);text-align:right;color:var(--ink2)}
 .docno b{color:var(--ink);font-weight:500}
 .grid{display:grid;grid-template-columns:260px minmax(0,1fr) 310px;gap:12px}
@@ -55,6 +56,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .hud{position:absolute;left:10px;bottom:8px;font:400 11px/1.3 var(--mono);color:var(--ink2);pointer-events:none}
 .north{position:absolute;right:12px;top:10px;width:44px;height:44px;pointer-events:none}
 .stamp{position:absolute;right:10px;bottom:8px;font:500 10.5px/1.3 var(--sans);letter-spacing:.6px;text-transform:uppercase;color:var(--copper);pointer-events:none;text-align:right}
+.stamp .credit{display:block;margin-top:3px;text-transform:none;letter-spacing:.3px;font-weight:600;color:var(--ink2)}
+body.tour .stamp .credit{color:#f2f2ee}
+@media (max-width:700px){.hud{bottom:62px;right:10px}}       /* phones: the mouse hint sits above the stamp, never on it */
 .loading[hidden]{display:none}
 .loading{position:absolute;inset:0;display:grid;place-items:center;font:500 13px var(--mono);color:var(--ink2)}
 /* guided tour: the stage fills the screen (Teams share / recording), deck-style captions, keyboard and clicker */
@@ -130,6 +134,7 @@ footer{color:var(--ink2);font-size:12px;border-top:1px solid var(--rule);padding
 <header>
   <div>
     <h1>3x1 Combined-Cycle Plant <span>/ 3D model</span></h1>
+    <p class="byline">Created by Stephan Hardt · Power Generation Solutions</p>
     <p class="sub">Coordinate model rebuilt from drawing set SK-3X1 Rev 14 and checked back against it: footprints against sheets 01 and 05, heights against sheet 13, crane clearances against sheet 09, plus a full clash check.</p>
   </div>
   <div class="docno"><b>SK-3X1-3D / REV 14</b><br>X east, Y north, Z up, feet<br>Compound 2,420 x 1,920 ft</div>
@@ -174,7 +179,7 @@ footer{color:var(--ink2);font-size:12px;border-top:1px solid var(--rule);padding
     <div class="read" id="read"><span>X</span> — <span>Y</span> — <span>EL</span> —</div>
     <svg class="north" viewBox="-22 -22 44 44" aria-hidden="true" id="north"><circle r="20" fill="none" stroke="currentColor" opacity=".35"/><g id="narrow"><path d="M0,-18 L5,-2 L0,-5 L-5,-2 Z" fill="currentColor"/><text x="0" y="9" text-anchor="middle" font-size="10" font-family="IBM Plex Mono,monospace" fill="currentColor">N</text></g></svg>
     <div class="hud">drag orbit · right-drag pan · scroll zoom · click to inspect · double-click to fly</div>
-    <div class="stamp">Conceptual illustration<br>Not engineered · not for construction</div>
+    <div class="stamp">Conceptual illustration<br>Not engineered · not for construction<span class="credit">Model by Stephan Hardt</span></div>
     <div class="loading" id="loading">building model…</div>
     <button class="tourgo" id="tourGo" title="Guided tour: the power path, the electrical systems and the cable (keys: arrows / space / Esc)">▶ Tour</button>
     <div id="tour" hidden aria-live="polite">
