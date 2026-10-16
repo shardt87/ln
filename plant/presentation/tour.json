@@ -2,7 +2,7 @@
  "note": "Guided tour of the SK-3X1 viewer (Tour button). Cameras in model feet (x east, y north, z up), matched to the Blender cameras in blender/pro_look.py; lens in mm on a 36 mm sensor. show = a viewer view key whose layers are shown; add / hide = extra layers. Captions are typical, not engineered.",
  "stops": [
   {
-   "sec": "SK-3X1",
+   "sec": "SK-3X1 power campus · combined cycle, RICE and every type of gas generation",
    "title": "A 3x1 gas power campus",
    "eq": "Three H-class gas turbines, three HRSGs and stacks, one steam turbine, an 80-cell air-cooled condenser",
    "sys": "230 kV breaker-and-a-half switchyard; modular power, BESS, carbon capture, LNG, hydrogen and a behind-the-meter data centre",
@@ -60,7 +60,7 @@
    "drift": 1.0
   },
   {
-   "sec": "SK-3X1",
+   "sec": "SK-3X1 power campus · combined cycle, RICE and every type of gas generation",
    "title": "Sixteen zones, one cable network",
    "eq": "Switchyard · BESS · reel staging and prefab · admin and control · e-houses · HRSGs · turbine hall · GT inlets · MCC / VFD rooms · modular yard · ACC · chillers and cooling towers · water treatment · carbon capture · gas metering · cable corridor",
    "sys": "Every zone is a different electrical environment: heat, vibration, hazardous gas, water, DC",
@@ -984,7 +984,7 @@
    "drift": 1.0
   },
   {
-   "sec": "SK-3X1",
+   "sec": "SK-3X1 power campus · combined cycle, RICE and every type of gas generation",
    "title": "Every megawatt travels through a cable",
    "eq": "One campus, from the gas turbine to the grid and the data centre",
    "sys": "Power, control, instrumentation, fire alarm and fibre",
