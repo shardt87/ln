@@ -353,7 +353,8 @@ const edgeMat = new THREE.LineBasicMaterial({color:0x27313a, transparent:true, o
 
 // ---------- geometry ----------
 const col = {}; for(const k in PALETTE) col[k] = new THREE.Color(PALETTE[k].hex).convertSRGBToLinear();
-function paint(g, c){ g.deleteAttribute('uv'); g.deleteAttribute('normal'); const n=g.attributes.position.count, a=new Float32Array(n*3);
+function paint(g, c){ g.deleteAttribute('uv'); if(!g.attributes.normal) g.computeVertexNormals();   // keep each part's own normals: round parts shade smooth, boxes stay crisp
+  const n=g.attributes.position.count, a=new Float32Array(n*3);
   for(let i=0;i<n;i++){ a[i*3]=c.r; a[i*3+1]=c.g; a[i*3+2]=c.b; } g.setAttribute('color', new THREE.BufferAttribute(a,3)); return g; }
 function boxUV(g, tile){ // world-space box projection, per triangle, in model coordinates
   const p=g.attributes.position, n=p.count, uv=new Float32Array(n*2), a=new THREE.Vector3(), b=new THREE.Vector3(), c=new THREE.Vector3(), nn=new THREE.Vector3();
@@ -365,7 +366,10 @@ function boxUV(g, tile){ // world-space box projection, per triangle, in model c
   g.setAttribute('uv', new THREE.BufferAttribute(uv,2)); return g; }
 function toThree(g){ // model coords (x east, y north, z up) -> three (x, y up, -z north)
   const p=g.attributes.position; for(let i=0;i<p.count;i++){ const x=p.getX(i),y=p.getY(i),z=p.getZ(i); p.setXYZ(i,x-CX,z,-(y-CY)); }
-  g.computeVertexNormals(); return g; }
+  const nm=g.attributes.normal;
+  if(nm){ for(let i=0;i<nm.count;i++){ const x=nm.getX(i),y=nm.getY(i),z=nm.getZ(i); nm.setXYZ(i,x,z,-y); } nm.needsUpdate=true; }
+  else g.computeVertexNormals();
+  return g; }
 function fromTris(v, tris){ const pos=[]; for(const t of tris) for(const k of t) pos.push(...v[k]);
   const g=new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos,3)); return g; }
 function quadsToTris(qs){ const t=[]; for(const q of qs){ t.push([q[0],q[1],q[2]]); if(q.length===4) t.push([q[0],q[2],q[3]]); } return t; }
@@ -376,8 +380,8 @@ function partGeo(p){
     g = new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0).toNonIndexed(); g.translate((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);
   } else if(p.kind==='rod'){
     const a=new THREE.Vector3(...p.a), b=new THREE.Vector3(...p.b), d=b.clone().sub(a), L=d.length();
-    let seg = p.seg || (Math.max(p.r,p.r2)>10?36:16);
-    if(LITE) seg = Math.min(seg, Math.max(p.r,p.r2)>3 ? 20 : 8);   // phones: fewer facets on small round parts
+    let seg = p.seg || (Math.max(p.r,p.r2)>25?64:Math.max(p.r,p.r2)>10?36:16);
+    const rr=Math.max(p.r,p.r2); if(LITE) seg = Math.min(seg, rr>15 ? 48 : rr>3 ? 20 : 8);   // phones: fewer facets on small round parts, big vessels stay round
     g = new THREE.CylinderGeometry(p.r2, p.r, L, seg).toNonIndexed(); // along +Y, r at -Y
     const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), d.normalize());
     g.applyQuaternion(q); g.translate((p.a[0]+p.b[0])/2,(p.a[1]+p.b[1])/2,(p.a[2]+p.b[2])/2);

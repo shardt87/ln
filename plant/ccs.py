@@ -51,6 +51,7 @@ def trains():
         cx = 584 + dx
         box(614.6 + dx, 615.4 + dx, 1003, 1019, 3, 23, "steel")                 # flange, fan outlet / DCC inlet
         rod((cx, 1022, 89), (cx, 1022, 90), 11, "steel", seg=32)                 # outlet nozzle flange
+        rod((635 + dx, 1022, 50), (635 + dx, 1022, 52), 10.6, "steel", seg=40)  # collar into the overhead duct
         # quench water: riser from the DCC pumps to the spray header near the top, sump return to the pumps
         rod((600 + dx, 1062, 6), (600 + dx, 1062, 72), .9, "pipe", seg=12)
         rod((600 + dx, 1062, 72), (600 + dx, 1047, 72), .9, "pipe", seg=12)

@@ -905,3 +905,11 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
   bottom inlet -> up counter-current to the quench water -> out of the top through an arched 20 ft duct (new item
   "Flue-gas duct, DCC-x to Absorber x") into the overhead duct to the absorber. New camera E125 (from grade, like a
   site photo). verify PASS (0 clashes, DCC height 90 ft), audit CLEAN, scans at zero.
+
+### Smooth curved surfaces (user review: "looks choppy")
+- The viewer flat-shaded every round part: it dropped each part's normals and recomputed them on the merged
+  (non-indexed) mesh, so cylinders, cones and bends showed as facets. Normals are now kept from each part and
+  rotated into the viewer frame; boxes stay crisp, round parts shade as smooth curves.
+- Bends are swept (`sweep()` / `arc_pts()` in `build_model.py`): each segment is extended by r·tan(turn/2) at the
+  joint, so the DCC outlet arches are continuous pipes instead of stacked boxes. Steel collar at the duct joint.
+- More facets on large radii (64 above 25 ft radius, 36 above 10 ft), with a cap in phone mode.

@@ -73,6 +73,36 @@ def R(a, b, r, c="equip", r2=None, seg=None, layer=None):
     _part(**kw)
 
 
+def sweep(pts, r, c="equip", seg=32):
+    """Round duct / pipe along a polyline: each straight run is extended into the joints by r*tan(turn/2), so short
+    runs on an arc (see arc_pts) read as one smooth bend with no notches or open seams."""
+    import math as _m
+    def turn(i):
+        if i <= 0 or i >= len(pts) - 1:
+            return 0.0
+        u = [pts[i][k] - pts[i - 1][k] for k in range(3)]; v = [pts[i + 1][k] - pts[i][k] for k in range(3)]
+        nu = _m.sqrt(sum(x * x for x in u)); nv = _m.sqrt(sum(x * x for x in v))
+        return _m.acos(max(-1.0, min(1.0, sum(a * b for a, b in zip(u, v)) / (nu * nv))))
+    for i in range(len(pts) - 1):
+        a, b = pts[i], pts[i + 1]
+        d = [b[k] - a[k] for k in range(3)]; L = _m.sqrt(sum(x * x for x in d)); u = [x / L for x in d]
+        ea, eb = r * _m.tan(turn(i) / 2), r * _m.tan(turn(i + 1) / 2)
+        R([a[k] - u[k] * ea for k in range(3)], [b[k] + u[k] * eb for k in range(3)], r, c, seg=seg)
+
+
+def arc_pts(centre, rad, ang0, ang1, plane="xz", n=12):
+    """Points on a circular arc (degrees) in the x-z or y-z plane through centre (x, y, z): bend centrelines."""
+    import math as _m
+    out = []
+    for k in range(n + 1):
+        t = _m.radians(ang0 + (ang1 - ang0) * k / n)
+        if plane == "xz":
+            out.append((centre[0] + rad * _m.cos(t), centre[1], centre[2] + rad * _m.sin(t)))
+        else:
+            out.append((centre[0], centre[1] + rad * _m.cos(t), centre[2] + rad * _m.sin(t)))
+    return out
+
+
 def V(cx, cy, r, z0, z1, c="equip", r2=None, seg=None):
     """Vertical cylinder."""
     R((cx, cy, z0), (cx, cy, z1), r, c, r2, seg)
@@ -1023,12 +1053,14 @@ for i, dx in enumerate([0, 160, 320]):
     B(621 + dx, 639 + dx, 985, 1003, 30, 62, "duct")                                 # HRSG flue gas down into the fan
     B(615 + dx, 623 + dx, 1004, 1018, 4, 22, "duct")                                 # fan outlet to the DCC inlet
     # cooled gas: out of the DCC top, arched over and down into the overhead duct that runs north to the absorber
-    item(L, f"Flue-gas duct, DCC-{t} to Absorber {t}", (cx - 10, 645 + dx, 1012, 1189), (34, 113), area="G",
+    item(L, f"Flue-gas duct, DCC-{t} to Absorber {t}", (cx - 10, 645 + dx, 1012, 1189), (34, 117), area="G",
          sheet="typical (carbon capture)", register=False)
-    for a_, b_ in (((cx, 1022, 90), (cx, 1022, 96)), ((cx, 1022, 96), (cx + 8, 1022, 103)),
-                   ((cx + 8, 1022, 103), (627 + dx, 1022, 103)), ((627 + dx, 1022, 103), (635 + dx, 1022, 96)),
-                   ((635 + dx, 1022, 96), (635 + dx, 1022, 50))):
-        R(a_, b_, 10, "duct", seg=32)
+    # 20 ft round duct: up from the nozzle, a long-radius bend (R 15 ft) to horizontal, across, a bend down, and down
+    # into the overhead duct; each bend swept on a 7.5 degree arc so it reads as one smooth elbow
+    H, Rb, xe = 106, 15, 635 + dx
+    path = [(cx, 1022, 90)] + arc_pts((cx + Rb, 1022, H - Rb), Rb, 180, 90) + \
+        arc_pts((xe - Rb, 1022, H - Rb), Rb, 90, 0) + [(xe, 1022, 50)]
+    sweep(path, 10, "duct", seg=40)
     B(625 + dx, 645 + dx, 1012, 1189, 34, 50, "duct")
     R((635 + dx, 1014, 12), (635 + dx, 1033, 12), 7, "motor", seg=20)
     solid(L, f"Rich/lean pumps, cross exchanger, lean cooler {t}", 660 + dx, 705 + dx, 1040, 1100, 0, 15,
