@@ -1228,7 +1228,13 @@ for k in range(6):
     B(x + 2, x + 38, y + 0.5, y + 7.5, 9.5, 11, "radiator")
     V(x + 12, y + 4, 2.2, 11, 12, "fan", seg=12); V(x + 28, y + 4, 2.2, 11, 12, "fan", seg=12)
     R((x + 36, y + 6, 11), (x + 36, y + 6, 18), 0.8, "stack", seg=10)
-ehouse(L, "CONT paralleling switchgear e-house", 2195, 2240, 527, 545, 12, tag="CONT-EH", **DC)
+# CONT-3..8 land on the portable pad's own 13.8 kV lineup (one switchgear, not a second paralleling e-house): PAD-EH
+# is extended west by a section carrying their feeder breakers, joined to the drawn PAD-EH as one lineup
+item(L, "PAD-EH extension: CONT-3..8 feeder breakers (same 13.8 kV lineup)", (2124, 2160, 470, 484), (0, 14),
+     tag="PAD-EH-X", **DC)
+B(2124, 2160, 470, 484, 0, 2.5, "concrete")
+B(2124.3, 2160, 470.3, 483.7, 2.5, 13.4, "ehouse")
+B(2124, 2160, 470, 484, 13.4, 14, "roof")
 # eight more fuel-cell modules and three more microturbines south of the portable pad (feeding PAD-LV)
 for k in range(8):
     x = 2010 + 14 * k
@@ -1589,16 +1595,15 @@ for r in routes:
         r["points"].append([770.0, 1255.0])
 # modular expansion (OPT_MODX): MV cables to the portable-pad and modular collectors, gas stubs
 MX = "OPT_MODX_ROUTES"
-for row, y in ((0, 505), (1, 560)):                       # CONT-3..8 -> CONT-EH (paralleling e-house)
-    ys = y - 4 if row == 0 else y + 12
-    add_route("mvlv_cable", [(2010, y), (2010, ys), (2190, ys), (2190, 536), (2195, 536)], MX)
+for row, y in ((0, 505), (1, 560)):                       # CONT-3..8 -> the PAD-EH extension (north face)
+    ys, xd = (y - 4, 2135) if row == 0 else (y + 12, 2155)
+    add_route("mvlv_cable", [(2010, y), (2010, ys), (xd, ys), (xd, 484)], MX)
 add_route("mvlv_cable", [(2263, 575), (2290, 575), (2290, 564), (2295, 564)], "OPT_TMP_ROUTES",
           sheet="typical (portable pad)")                                                   # PIC -> load bank
-add_route("mvlv_cable", [(2217, 527), (2217, 492), (2185, 492), (2185, 484)], MX)          # CONT-EH -> PAD-EH
 # TM-1 / TM-2 generator leads leave the trailer's ground tray at the north edge, run in the yard duct bank
 # between SC-1 and SC-2 down to the modular collector e-house MOD-EH
 # portable power cable in ground trays (surface_cable), across the pad lane on the C-L01 drive-over ramp beside
-# the MOB-1 feeder, down past CONT-EH to the north face of PAD-EH
+# the MOB-1 feeder, down to the north face of PAD-EH
 add_route("mvlv_cable", [(2200, 795), (2200, 805), (2241, 805), (2241, 500), (2180, 500), (2180, 484)],
           MX)                                                                               # TM-1 -> PAD-EH
 add_route("mvlv_cable", [(2310, 795), (2310, 809), (2249, 809), (2249, 504), (2188, 504), (2188, 484)],

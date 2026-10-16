@@ -889,3 +889,7 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
   ST e-house, ACC VFD e-house, switchyard relay house, control building, plus one per optional package area (CCS,
   BESS, modular yard PCM / MOD-EH, LNG, H2, inlet chilling, water treatment room). Consolidation candidate noted:
   CONT-EH and PAD-EH are both 13.8 kV paralleling switchgear 70 ft apart on the portable pad.
+- Consolidated the portable pad's 13.8 kV switchgear: CONT-EH (a second paralleling e-house 70 ft from PAD-EH) is
+  removed. PAD-EH, as drawn on sheet 08, gains a west extension section (PAD-EH-X, 36 ft, same lineup) carrying the
+  CONT-3..8 feeder breakers; the six genset feeders run straight to it (no CONT-EH to PAD-EH interconnect). Cable
+  schedule 5,701 -> 5,695 runs. verify PASS, audit CLEAN, coastal PASS, scans at zero.

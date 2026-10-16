@@ -697,9 +697,9 @@
   {
    "sec": "08 · Modular power",
    "title": "Containerized gas gensets",
-   "eq": "Eight 2 MW-class gas gensets in 40 ft containers, generator breakers, the paralleling e-house",
-   "sys": "13.8 kV units paralleled in the e-house, then onto the pad switchgear",
-   "cab": "MV-105 15 kV from each container in ground tray to the paralleling switchgear",
+   "eq": "Eight 2 MW-class gas gensets in 40 ft containers with their generator breakers",
+   "sys": "13.8 kV units paralleled on the pad's one switchgear lineup, PAD-EH (no separate paralleling e-house)",
+   "cab": "MV-105 15 kV from each container in ground tray to the PAD-EH lineup",
    "c": [
     2205,
     455,

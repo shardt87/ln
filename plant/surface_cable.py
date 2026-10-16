@@ -7,7 +7,7 @@ way rental power is installed, and connect to the permanent network at the pad s
   three-conductor Type SHD-GC (yellow jacket); 480 V links are single-conductor Type W sets (black) with
   colour-coded cam-lock plugs at the equipment. Every lane crossing goes through a drive-over cable
   protector (the C-L01 ramp of sheet 08 now carries the MOB-1 feeder);
-- bridge-power units (OPT_MODX: CONT-3..8, the CONT paralleling e-house, TM-1/2): the same SHD-GC
+- bridge-power units (OPT_MODX: CONT-3..8 into the PAD-EH extension, TM-1/2): the same SHD-GC
   cable in open ground trays on timber sleepers, since the units stay for months.
 Routes whose every point lies inside the pad area are re-tagged `surface` (z just above grade) so the
 underground pass skips them and the renderers draw these parts instead of a strip.

@@ -529,7 +529,6 @@ mv_feeder(coll, mpt, 100000, 34.5, "BESS MPT 34.5 kV side", motor=False, note="1
 # modular yard
 mod_eh = BY_TAG["MOD-EH"]
 pad_eh = BY_TAG["PAD-EH"]
-cont_eh = BY_TAG["CONT-EH"]
 pcm = src_of(r"^PCM: power control")
 for k in range(8):
     eg = one(rf"^RICE engine-generator {k + 1}$")
@@ -549,13 +548,12 @@ for k in range(1, 9):
     g = BY_TAG.get(f"CONT-{k}")
     if not g:
         continue
-    dst = cont_eh if k > 2 else BY_TAG.get(f"GSP-{k}")
+    dst = pad_eh if k > 2 else BY_TAG.get(f"GSP-{k}")
     if k <= 2:
         add(g, dst, f"CONT-{k} 13.8 kV leads to GSP-{k}", "SHD", "3/C", "2", 1, 1, 2000, 13800, 93, "portable, on grade")
         add(dst, pad_eh, f"GSP-{k} to PAD-EH", "SHD", "3/C", "2", 1, 1, 2000, 13800, 93, "portable, on grade")
     else:
-        add(g, dst, f"CONT-{k} 13.8 kV to CONT-EH (ground tray)", "MV15", "1/C", "2", 1, 3, 2000, 13800, 93)
-add(cont_eh, pad_eh, "CONT-EH to PAD-EH", "MV15", "1/C", "500", 2, 3, 12000, 13800, 558)
+        add(g, dst, f"CONT-{k} 13.8 kV to PAD-EH (extension section, ground tray)", "MV15", "1/C", "2", 1, 3, 2000, 13800, 93)
 for k in (1, 2):
     tm = BY_TAG[f"TM-{k}"]
     add(tm, pad_eh, f"TM-{k} (TM2500) generator leads to PAD-EH", "MV15", "1/C", "1000", 3, 3, 35000, 13800, 1464,

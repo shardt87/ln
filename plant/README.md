@@ -91,7 +91,7 @@ The first run found connections the drawing leaves open. They are now routed as 
 - **GT fuel gas:** the drawn header stopped over HRSG 1. It now ends at the GT1 branch, and each GT gets a branch between the HRSGs to its fuel skid, clear of the feed pumps and the ST.
 - **SC-1/SC-2 fuel gas:** a line from the fuel-gas compressor building to both packages.
 - **CCS circulating water:** carried from the utilities road to absorber B.
-- **Modular expansion:** `OPT_MODX_ROUTES` connects the gensets to the paralleling e-house and on to PAD-EH, and the trailer turbines to PAD-EH. It runs the fuel cells (a tail each) and microturbines to MOD-LV, and gas stubs from the portable-pad skid and the modular gas header.
+- **Modular expansion:** `OPT_MODX_ROUTES` connects the gensets straight to the PAD-EH lineup (its west extension section), and the trailer turbines to PAD-EH. It runs the fuel cells (a tail each) and microturbines to MOD-LV, and gas stubs from the portable-pad skid and the modular gas header.
 - **LNG terminal (coastal A):**
   - a buried power cable from the plant switchyard to the terminal substation;
   - the MV trench extended to the send-out pumps and the seawater intake;
@@ -624,7 +624,7 @@ Layer `OPT_MODX` adds some of the smaller modular technologies from sheets 07 an
 | Technology | Rev 14 | Added | Total |
 |---|---|---|---|
 | Trailer-mounted aeroderivatives (TM2500 class, ~35 MW each) | – | TM-1, TM-2 | 2 |
-| Containerized gas gensets (~2 MW each) | 2 | CONT-3 to CONT-8, plus a paralleling e-house | 8 |
+| Containerized gas gensets (~2 MW each) | 2 | CONT-3 to CONT-8, on the PAD-EH lineup (west extension section) | 8 |
 | Fuel-cell modules (SOFC, 200–300 kW) | 4 | FC-5 to FC-12 | 12 |
 | Microturbines (1 MW) | 3 | MT-4 to MT-6 | 6 |
 
