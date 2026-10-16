@@ -111,9 +111,9 @@ def main(src, out):
         if not os.path.exists(os.path.join(fd, "meta.json")):
             continue
         o = os.path.join(out, "SK-3X1_tour_%02d.mp4" % (i + 1))
-        encode(fd, o, i, n)
+        if not os.path.exists(o):                    # clips already encoded are kept (incremental runs)
+            encode(fd, o, i, n)
         done.append(o)
-        print("wrote", o)
     if len(done) == n:
         lst = os.path.join(out, "concat.txt")
         open(lst, "w").write("".join(f"file '{os.path.abspath(p)}'\n" for p in done))
