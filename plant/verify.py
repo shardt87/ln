@@ -169,6 +169,11 @@ results["sheet09"] = dict(clearances=srows, hook=hrows9,
 # 4. clashes ------------------------------------------------------------------
 # Pairs the drawings define as touching or nested.
 TOUCH = [
+    # alternative turbine-island layout (viewer view ALT only): never shown with the common hall; the GT exhaust,
+    # generator shaft / collector end and the ST exhaust duct pass through their enclosure / building walls by design
+    (r"^ALT: ", r"^Common turbine hall|^Bridge crane \(parked|^Turbine hall exterior"),
+    (r"^ALT: GT\d acoustic enclosure", r"^GT\d: H-class"), (r"^ALT: GTG-\d generator enclosure", r"^GTG-\d|^GT\d: H-class"),
+    (r"^ALT: steam turbine building", r"ST exhaust duct"),
     (r"removable plenum spool", r"inlet duct \(drop"),        # spool bolts to the duct
     (r"removable plenum spool", r"^GT\d: H-class"),           # 'touches the GT lift column by design' (sheet 09)
     (r"^GCB-", r"UAT-\d tap"), (r"exhaust duct to HRSG", r"inlet transition"),

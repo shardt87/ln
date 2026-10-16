@@ -1740,6 +1740,9 @@ LAYERS = {
     "SITE": ("Site, roads and fence", "Base plant"),
     "BASE_POWER_BLOCK": ("A/B Power block: hall, GTs, ST, HRSGs, stacks, ACC", "Base plant"),
     "HALL_ROOF": ("Turbine hall and gallery roofs", "Base plant"),
+    "HALL_SHELL": ("Turbine hall walls, columns, crane", "Base plant"),
+    "ALT_OUTDOOR": ("Alternative layout: GTs outdoors in enclosures, ST building", "Alternative layout"),
+    "ALT_ROOF": ("Alternative layout: ST building roof", "Alternative layout"),
     "BASE_INLET_AIR": ("Filter houses and inlet ducts", "Base plant"),
     "BASE_ELECTRICAL": ("Electrical: GSUs, UATs, GCBs, e-houses, EDGs", "Base plant"),
     "R1_ROOF": ("R1 roof", "Base plant"), "R1_WALL_E": ("R1 east wall", "Base plant"),
@@ -1845,12 +1848,18 @@ VIEWS = [
          "OPT_H2_ROUTES"], t=[2090, 1480, 6], c=[2000, 1395, 120]),
     dict(k="O5P", n="O5P Alt: hydrogen by pipeline (receiving station)", show=BASE_SHOW + ["OPT_LNG", "OPT_H2P", "OPT_LNG_ROUTES",
          "OPT_H2P_ROUTES", "SWYD_FUTURE"], t=[2190, 1520, 10], c=[2050, 1250, 380]),
-    dict(k="O6", n="Add-on: plant + BTM data centre", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND", "OPT_H2P", "OPT_H2P_ROUTES")],
+    dict(k="O6", n="Add-on: plant + BTM data centre", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND", "OPT_H2P", "OPT_H2P_ROUTES")
+                                                                      and not l.startswith("ALT_")],
          t=[2200, 850, 30], c=[700, -1400, 1700]),
     dict(k="ALL", n="Complete plant", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND", "OPT_H2P", "OPT_H2P_ROUTES")
-                                            and not l.startswith("OPT_DC")],
+                                            and not l.startswith(("OPT_DC", "ALT_"))],
          t=[1210, 900, 40], c=[-350, -750, 1400]),
 ]
+VIEWS.append(dict(k="ALT", n="Alternative: GTs outdoors in enclosures, ST in its own building",
+                  show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND",
+                                                       "OPT_UNDERGROUND", "OPT_H2P", "OPT_H2P_ROUTES", "HALL_SHELL",
+                                                       "HALL_ROOF", "ALT_ROOF") and not l.startswith("OPT_DC")],
+                  hide=["HALL_SHELL", "HALL_ROOF", "ALT_ROOF"], t=[850, 480, 30], c=[700, 180, 230]))
 VIEWS.insert(3, dict(
     k="B3", n="B3 Control room (roof off)", show=["SITE", "BASE_SERVICES", "CR_INTERIOR"], t=[262, 370, 4], c=[205, 255, 120]))
 for _v in VIEWS:                              # the control-building roof travels with the rest of the services
@@ -1885,6 +1894,7 @@ FIT = {
     "SMR": dict(box=[1636, 1658, 1782, 1796, 0, 8]),
     "SD": dict(box=[1700, 1785, 915, 965, 0, 14]),
     "SMY": dict(box=[1808, 1850, 1100, 1142, 0, 14]),
+    "ALT": dict(box=[560, 1110, 400, 565, 0, 90]),
     "CCS": dict(box=[599, 981, 1189, 1251, 200, 250]),
     "SB": dict(box=[1700, 1760, 525, 550, 0, 10]),
     "O1": dict(layers=["OPT_MOD", "OPT_TMP", "OPT_MODX"]),
@@ -2101,6 +2111,9 @@ N_PIPE = _pipes.build(item, items, parts, routes)     # round pipes, elbows, fla
 # visual hierarchy: orange accents and lettering on the HRSGs / stacks only (hero)
 import hero as _hero
 print("hero accents", _hero.build())
+# alternative turbine-island layout for comparison: hall shell on HALL_SHELL, GT enclosures + ST building on ALT_*
+import alt_outdoor as _alt
+print("alternative layout: hall shell parts", _alt.run(items, parts))
 # Tray review (user screenshots): short tray stubs drawn between a duct-bank end and pad equipment
 # rode the EL +36 rack tier, so a 10 ft connection became a 36 ft goalpost over the transformer. A
 # duct bank comes up straight into the equipment: those stubs are now buried, with rigid-conduit

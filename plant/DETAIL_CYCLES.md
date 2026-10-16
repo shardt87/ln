@@ -987,3 +987,15 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
   header north of the three absorbers (y 1262, clear of the shells) with a branch into each intercooler skid.
 - Pipe connectors now land on the real surface of round parts (vessel / drum shells), not the corner of their
   bounding box. verify PASS, audit CLEAN, coastal PASS, scans at zero (open ends 0).
+
+### Alternative turbine-island layout (for the training: common hall vs outdoor GTs)
+- New viewer view "Alternative: GTs outdoors in enclosures, ST in its own building". The common hall's walls, columns,
+  crane and roof-mounted electrical moved to layer HALL_SHELL (shown in every other view as before); the new
+  `alt_outdoor.py` adds, on ALT_OUTDOOR / ALT_ROOF (shown only in that view): an acoustic turbine-compartment
+  enclosure and a generator enclosure per GT (solid panels, doors, roof vent fans), and an ST building (frame,
+  panels, girts, roll-up door, bridge crane on runway girders) around the ST, STG and ST auxiliaries.
+- Same machines, deck, trays, bus and piping in both layouts. The GT enclosures sit between the GT-side trays (which
+  run just outside the walls). verify / audit exemptions document the by-design penetrations (GT exhaust, generator
+  shaft and collector end, bus entry, ST exhaust duct) and that the hall and the alternative never show together.
+- ALT layers are kept out of the other views, the Blender "all" set and the plant OBJ.
+  verify PASS (0 clashes), audit CLEAN, coastal PASS, scans at zero.

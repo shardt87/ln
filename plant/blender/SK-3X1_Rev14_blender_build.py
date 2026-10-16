@@ -580,7 +580,8 @@ manifest = []
 if args.style == "pro":
     heroes = HERO_SET["heroes"]
     keys = [k for k in args.views.split(",") if k] or [h["k"] for h in heroes]
-    ALL = [l for l in model["layers"] if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND", "OPT_H2P", "OPT_H2P_ROUTES")]
+    ALL = [l for l in model["layers"] if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND", "OPT_H2P", "OPT_H2P_ROUTES")
+           and not l.startswith("ALT_")]                                    # alternative layout: its own camera only
     COAST = [l for l, v in model["layers"].items() if v.get("group", "").startswith("Coastal")]
     BASE = [l for l in ALL if not l.startswith(("OPT_", "HV_CORRIDOR", "SWYD_FUTURE")) and l not in COAST]
     DCL = [l for l in ALL if l.startswith("OPT_DC")]      # BTM data centre: an add-on, shown only by "dc" cameras

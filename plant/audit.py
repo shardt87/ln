@@ -104,7 +104,8 @@ def main():
     #    allowed: the IPB entering its GCB and generator terminals, trays through the R1 wall sleeves
     tray = next((i["id"] for i in M["items"] if i["name"].startswith("Cable trays")), None)
     allowed = re.compile(r"^GCB-|^Cable pull: |^Cable dressing: |^GTG-\d|R1 east-wall tray exits|^Common turbine hall|^Turbine deck|^Laydown|"
-                         r"^230 kV switchyard|^Pipe supports|^Underground:")
+                         r"^230 kV switchyard|^Pipe supports|^Underground:|"
+                         r"^ALT: GTG-\d generator enclosure|^ALT: steam turbine building")   # bus / tray entries, as the hall
 
     def pbox(p):
         if p["kind"] in ("box", "prism"):
