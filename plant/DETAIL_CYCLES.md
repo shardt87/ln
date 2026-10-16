@@ -866,3 +866,5 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
 - Tour extended to 47 stops: the 16-zone overview, GSUs, GT air inlet, the ACC, the inlet-chilling cooling tower,
   underground duct banks (ground removed) and a duct bank under construction, cable logistics (reel yard, prefab
   staging bay, prefab spine going in) and the carbon-capture cooling tower; sections renumbered 01 to 10.
+- Tour opening: from the campus aerial the camera comes in to the main gate, then the EV charging carport over the
+  staff parking (49 stops).

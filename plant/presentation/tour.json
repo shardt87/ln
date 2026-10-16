@@ -22,6 +22,44 @@
    "drift": 1.2
   },
   {
+   "sec": "Arrival",
+   "title": "The main gate",
+   "eq": "Sliding gate, barrier arms, card readers, CCTV, the gatehouse and the entrance sign",
+   "sys": "Access control and security: the first electrical system every visitor meets",
+   "cab": "600 V power and control cable to the gate operators; fibre and data cable to the CCTV and card readers",
+   "c": [
+    -70,
+    268,
+    16
+   ],
+   "t": [
+    130,
+    300,
+    8
+   ],
+   "lens": 28,
+   "drift": 0.8
+  },
+  {
+   "sec": "Arrival",
+   "title": "EV charging carport",
+   "eq": "Charging carport over the staff parking, the control / admin building beyond",
+   "sys": "Chargers fed from the plant's 480 V distribution, the same as any building load",
+   "cab": "600 V feeders in conduit to the charger pedestals",
+   "c": [
+    150,
+    98,
+    6
+   ],
+   "t": [
+    215,
+    330,
+    12
+   ],
+   "lens": 28,
+   "drift": 1.0
+  },
+  {
    "sec": "SK-3X1",
    "title": "Sixteen zones, one cable network",
    "eq": "Switchyard · BESS · reel staging and prefab · admin and control · e-houses · HRSGs · turbine hall · GT inlets · MCC / VFD rooms · modular yard · ACC · chillers and cooling towers · water treatment · carbon capture · gas metering · cable corridor",
