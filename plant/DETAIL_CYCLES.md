@@ -994,3 +994,10 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
   common hall (SK-3X1) / GTs outdoors with an ST building / everything outdoors, each with an elevation sketch,
   where, why, trade-off and what it asks of cable, plus the key difference.
 - The "Common turbine hall" item info (click in the viewer) now carries a short layout note on the outdoor option.
+
+### Hero accents in the Southwire palette (user direction)
+- HRSG stack accent bands: burnished copper (viewer #8c4a24 on the copper surface; Blender #9a5530, metallic .75)
+  instead of green; stack-platform and HRSG access handrails black (new `hero_rail`); "HRSG 1/2/3" lettering in the
+  deck copper #a65428. Ties the renders and brochure to the Southwire deck colours without a logo on the plant.
+- Blender test render of E1 at preview quality checked; hero renders and the recorded tour clips still show green
+  until re-rendered / re-recorded.

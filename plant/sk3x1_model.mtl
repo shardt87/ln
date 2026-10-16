@@ -409,7 +409,12 @@ Ka 0 0 0
 d 1
 
 newmtl hero_accent
-Kd 0.184 0.620 0.353
+Kd 0.549 0.290 0.141
+Ka 0 0 0
+d 1
+
+newmtl hero_rail
+Kd 0.110 0.114 0.122
 Ka 0 0 0
 d 1
 

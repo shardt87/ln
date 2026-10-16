@@ -53,7 +53,7 @@ LOOK = {
     "bundle": ("fins", "#8b9396", .45, .5), "fan": ("paint", "#5e666b", .45, .4),
     "fanhub": ("paint", "#3e4549", .45, .4), "motor": ("paint", "#3d6c8c", .35, .05),
     "pump": ("paint", "#3f6f8e", .35, .05), "tank": ("paint", "#dcdcd6", .45, 0),
-    "rail": ("paint", "#9aa1a4", .45, .3), "hero_accent": ("paint", "#2f9e5a", .38, 0), "crane": ("paint", "#e0b01a", .38, 0),
+    "rail": ("paint", "#9aa1a4", .45, .3), "hero_accent": ("paint", "#9a5530", .32, .75), "hero_rail": ("paint", "#1d1f21", .4, .25), "crane": ("paint", "#e0b01a", .38, 0),
     "red": ("paint", "#b3342c", .4, 0), "amber": ("paint", "#d8a63a", .45, 0),
     "door": ("paint", "#4f6f86", .4, .1), "rollup": ("clad", "#9ca3a7", .5, .3),
     "louvre": ("fins", "#7c8489", .5, .3), "lamp": ("paint", "#f2efe4", .3, 0),
