@@ -143,7 +143,10 @@ source lines on each slide and re-check anything that moved before Nov 11.
    window, not the whole screen.
 2. Orbit the campus once, then "Cable X-ray" to show every tray route at once.
 3. Take questions as "show me": click a piece of equipment to show its tag and description.
-4. If the share stutters: switch back to the MP4, no apology needed.
+4. Layout question ("why one big turbine hall?"): the slide `renders/deck/SK-3X1_turbine_island_layouts.png`
+   (common hall / GTs outdoors with an ST building / everything outdoors); the hall's info panel in the viewer
+   carries the same note.
+5. If the share stutters: switch back to the MP4, no apology needed.
 
 ## Open items
 

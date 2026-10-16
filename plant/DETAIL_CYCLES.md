@@ -987,3 +987,10 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
   header north of the three absorbers (y 1262, clear of the shells) with a branch into each intercooler skid.
 - Pipe connectors now land on the real surface of round parts (vessel / drum shells), not the corner of their
   bounding box. verify PASS, audit CLEAN, coastal PASS, scans at zero (open ends 0).
+
+### Turbine-island layouts: slide instead of a model variant (user decision)
+- The alternative-layout viewer option (GTs outdoors in enclosures, ST building) was reverted at the user's request.
+- Instead: a deck slide `renders/deck/SK-3X1_turbine_island_layouts.png` (`blender/slide_turbine_island.py`):
+  common hall (SK-3X1) / GTs outdoors with an ST building / everything outdoors, each with an elevation sketch,
+  where, why, trade-off and what it asks of cable, plus the key difference.
+- The "Common turbine hall" item info (click in the viewer) now carries a short layout note on the outdoor option.

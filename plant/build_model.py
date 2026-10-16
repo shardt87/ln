@@ -290,7 +290,12 @@ item(L, "Common turbine hall", (480, 1100, 370, 560), (0, 101), tag="HALL", area
      sheet="SK-3X1-09",
      info="Main bay y 404-560 with roof EL 98-101 (raised 6 ft in Rev 09 so the ST lift "
      "clears). Bridge-crane runway y 404-556, bridge travel EL 84-96, hook max EL 82. "
-     "South inlet gallery y 370-404, roof EL 60, holds GCBs and IPB outside crane coverage.")
+     "South inlet gallery y 370-404, roof EL 60, holds GCBs and IPB outside crane coverage. "
+     "Layout note: a common hall over all GTs and the ST is typical of cold or noise-sensitive sites and owners who "
+     "maintain with their own crews (one crane for every unit, all-weather outages). Many plants in warm regions "
+     "instead set each GT outdoors in its own OEM acoustic enclosure (no hall) and keep a building only for the ST "
+     "(crane for casings and rotors, valves and lube / EHC protected): lower cost and faster to build, mobile cranes "
+     "for outages, and outdoor-rated, sunlight-resistant cable in more conduit.")
 t = 1.0
 B(480, 1100, 559, 560, 0, 98, "hall")            # north wall
 B(1099, 1100, 404, 556, 0, 98, "hall")           # east wall main bay
