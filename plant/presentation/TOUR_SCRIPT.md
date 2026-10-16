@@ -143,12 +143,7 @@ source lines on each slide and re-check anything that moved before Nov 11.
    window, not the whole screen.
 2. Orbit the campus once, then "Cable X-ray" to show every tray route at once.
 3. Take questions as "show me": click a piece of equipment to show its tag and description.
-4. Layout question ("why one big turbine hall?"): switch between "Complete plant" and the view "Alternative: GTs
-   outdoors in enclosures, ST in its own building". Common hall: one crane for every unit, all-weather maintenance,
-   noise (cold or noise-sensitive sites). Outdoor GTs: lower cost and faster build (warm sites); the ST keeps a
-   building for its crane, valves and lube / EHC systems. Cable angle: indoor tray vs sunlight-resistant, wet-rated
-   outdoor cable, more conduit and heat tracing, cold-impact ratings in cold regions.
-5. If the share stutters: switch back to the MP4, no apology needed.
+4. If the share stutters: switch back to the MP4, no apology needed.
 
 ## Open items
 

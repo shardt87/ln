@@ -40,8 +40,7 @@ if COASTAL:
                                t=[1450, 2900, 20], c=[3900, 100, 3100]))
 model["views"].append(dict(k="EVERY", n="Everything: plant + all LNG + BTM data centre" if COASTAL else "Everything: plant, all options and the BTM data centre",
                            show=[l for l in model["layers"] if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND",
-                                                                         "OPT_UNDERGROUND", "OPT_H2P", "OPT_H2P_ROUTES")
-                                 and not l.startswith("ALT_")],
+                                                                         "OPT_UNDERGROUND", "OPT_H2P", "OPT_H2P_ROUTES")],
                            t=[1700, 1800, 20] if COASTAL else [1700, 900, 30],
                            c=[-900, -2600, 4300] if COASTAL else [500, -1700, 2100]))
 model["views"].append(dict(k="FUEL", n="Fuel systems: M&R, gas yard, ULSD", show=list(full["show"]),
@@ -49,18 +48,13 @@ model["views"].append(dict(k="FUEL", n="Fuel systems: M&R, gas yard, ULSD", show
 # every view shows the whole campus (options, BTM campus, coastal terminal), so equipment never drops out when the
 # view changes; a view still leaves out the roofs / walls it cuts away, and the underground views keep their own set
 ROOFS = {"HALL_ROOF", "R1_ROOF", "R1_WALL_E", "R4_ROOF", "R4_WALL_E", "CR_ROOF", "H2_ROOF"}
-ROOFS |= {"ALT_ROOF"}
 FULL = [l for l in model["layers"] if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND",
-                                                "OPT_H2P", "OPT_H2P_ROUTES", "NOBESS_GROUND", "NOMOD_GROUND")
-        and not l.startswith("ALT_")]          # the alternative turbine-island layout shows only in its own view
+                                                "OPT_H2P", "OPT_H2P_ROUTES", "NOBESS_GROUND", "NOMOD_GROUND")]
 for v in model["views"]:
     if v["k"] in ("U", "U2"):
         continue
     keep = set(v["show"])
     v["show"] = list(dict.fromkeys(v["show"] + [l for l in FULL if l not in ROOFS or l in keep]))
-    if v.get("hide"):                           # e.g. the alternative layout leaves out the common hall's shell
-        v["show"] = [l for l in v["show"] if l not in v["hide"]]
-        v["show"] += [l for l in model["layers"] if l.startswith("ALT_") and l not in v["hide"] and l not in v["show"]]
 # screen decals (control-room SCADA / CCTV displays): small JPEG data URIs, one per image
 import io, base64 as _b64
 try:
