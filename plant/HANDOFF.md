@@ -87,7 +87,7 @@ open them locally in Chrome or Edge).
 - **Realism first:** cables visible and connected end to end, nothing floating or disconnected, no empty areas.
 - **Fix it properly, not with a band-aid.** Example: the LNG cable runs on one rack level and drops into the e-house
   roof, with no step-ups.
-- **The HRSGs and stacks are the visual hero.** They are darker grey, with burnished-copper accent bands, black handrails and copper "HRSG k"
+- **The HRSGs and stacks are the visual hero.** They are darker grey, with a black crown, burnished-copper accent bands framed in black, black access steel and copper "HRSG k"
   lettering. Carbon capture stays secondary: muted sage (#9dbba5) with four "CCS" letterings per absorber.
 - **One gravel colour** everywhere except the switchyard.
 - **Every view shows the whole campus** (modular yard, BTM, the marine terminal); views remove only cutaway roofs and walls.

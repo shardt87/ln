@@ -1001,3 +1001,6 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
   deck copper #a65428. Ties the renders and brochure to the Southwire deck colours without a logo on the plant.
 - Blender test render of E1 at preview quality checked; hero renders and the recorded tour clips still show green
   until re-rendered / re-recorded.
+- Follow-up (user: "make the Southwire black more noticeable"): the black now covers the stack and HRSG access
+  steel (platform framing, grating, stairs, ladders, brackets, stack stiffener rings), black pinstripes frame the
+  copper band, and each stack has a 7 ft black crown at the top.

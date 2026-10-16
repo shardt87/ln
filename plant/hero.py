@@ -21,13 +21,16 @@ def build():
         dx = 160 * k
         ids = {find(f"HRSG {k + 1} stack")["id"], find(f"HRSG {k + 1} + SCR")["id"]}
         for p in fuel.G["parts"]:
-            if p["item"] in ids and p["color"] in ("rail", "sp_yellow"):
-                p["color"] = "hero_rail"                                                   # black handrails
+            if p["item"] in ids and p["color"] in ("rail", "sp_yellow", "steel", "grating", "stair"):
+                p["color"] = "hero_rail"            # Southwire black: handrails, platforms, stairs, ladders, brackets
                 n += 1
         on(find(f"HRSG {k + 1} stack"))
         fuel.D = True
         rod((630 + dx, 790, 156), (630 + dx, 790, 163), 11.08, "hero_accent", seg=48)     # accent band (copper)
+        for (z0, z1) in ((154.6, 156), (163, 164.4)):                                   # black pinstripes framing it
+            rod((630 + dx, 790, z0), (630 + dx, 790, z1), 11.09, "hero_rail", seg=48)
         rod((630 + dx, 790, 124), (630 + dx, 790, 126), 11.08, "hero_accent", seg=48)     # thin second band
+        rod((630 + dx, 790, 171), (630 + dx, 790, 178), 11.08, "hero_rail", seg=48)       # black crown at the stack top
         fuel.D = False
         on(find(f"HRSG {k + 1} + SCR"))
         fuel.D = True
