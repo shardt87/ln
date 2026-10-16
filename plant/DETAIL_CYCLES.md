@@ -1004,5 +1004,5 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
 - Follow-up (user: "make the Southwire black more noticeable"): the black now covers the stack and HRSG access
   steel (platform framing, grating, stairs, ladders, brackets, stack stiffener rings), black pinstripes frame the
   copper band, and each stack has a 7 ft black crown at the top.
-- "Complete plant" view camera pulled back and aimed north (t 1250, 2150, 0; c -250, -2700, 3400) so the opening frame
+- "Complete plant" view camera: same oblique angle as before, swung to face north (t 1250, 1500, 0; c 350, -1500, 1750) so the opening frame
   shows the whole campus with the LNG terminal, jetty and carrier at the top, on phone and desktop.

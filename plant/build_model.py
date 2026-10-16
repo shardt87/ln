@@ -1854,7 +1854,7 @@ VIEWS = [
          t=[2200, 850, 30], c=[700, -1400, 1700]),
     dict(k="ALL", n="Complete plant", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND", "OPT_H2P", "OPT_H2P_ROUTES")
                                             and not l.startswith("OPT_DC")],
-         t=[1250, 2150, 0], c=[-250, -2700, 3400]),
+         t=[1250, 1500, 0], c=[350, -1500, 1750]),
 ]
 VIEWS.insert(3, dict(
     k="B3", n="B3 Control room (roof off)", show=["SITE", "BASE_SERVICES", "CR_INTERIOR"], t=[262, 370, 4], c=[205, 255, 120]))
