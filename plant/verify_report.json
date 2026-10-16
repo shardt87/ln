@@ -197,7 +197,7 @@
    },
    {
     "check": "ST lift-out over the ST",
-    "model": 7,
+    "model": 7.2,
     "sheet": 7,
     "ok": true
    },
@@ -211,7 +211,7 @@
   "assumptions": {
    "gt_top": 38,
    "gen_top": 36,
-   "st_top": 46,
+   "st_top": 45.8,
    "lift_gap": 5,
    "hook_max": 82,
    "rigging": 10,
@@ -223,7 +223,7 @@
   "ok": true
  },
  "clashes": {
-  "pairs_tested": 1428628,
+  "pairs_tested": 1429083,
   "clashes": [],
   "ok": true
  },
@@ -234,7 +234,7 @@
  "summary": {
   "ok": true,
   "items": 959,
-  "parts": 134973,
+  "parts": 134986,
   "routes": 577
  }
 }

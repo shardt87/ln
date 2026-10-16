@@ -64,17 +64,10 @@ def st_casing():
     it = find("ST: steam turbine")
     on(it)
     fuel.D = True
-    for x in range(1030, 1072, 6):                                                  # stiffeners on the N / S faces
-        for (ya, yb) in ((471.6, 472), (528, 528.4)):
-            box(x - .3, x + .3, ya, yb, 21.5, 40, "steel")
-    for y in range(476, 528, 6):                                                    # east face (west face exists)
-        box(1074, 1074.4, y - .3, y + .3, 21.5, 29, "steel")
-    for (a0, a1, b0, b1) in ((1025.6, 1074.4, 471.6, 472), (1025.6, 1074.4, 528, 528.4)):
-        box(a0, a1, b0, b1, 30.7, 31.3, "steel")                                    # horizontal-joint flange all round
-    for zc in (25.5, 35.5):                                                         # cladding seams
-        for (a0, a1, b0, b1) in ((1026, 1074, 471.9, 472), (1026, 1074, 528, 528.1)):
-            box(a0, a1, b0, b1, zc - .04, zc + .04, "machine")
-    decal((1050, 471.55, 37.5), (0, -1, 0), 7, 1.8,
+    for x in list(range(1031, 1044, 4)) + list(range(1057, 1072, 4)):                # lower-hood ribs, N / S faces
+        for (ya, yb) in ((473.6, 474), (526, 526.4)):
+            box(x - .3, x + .3, ya, yb, 21.5, 33, "steel")
+    decal((1037.5, 473.55, 28), (0, -1, 0), 7, 1.8,
           [("STEAM TURBINE  HP-IP / LP", .34, True, None), ("ST-1  ·  3,600 RPM", .24, False, None)], bg="#e9ecef")
     fuel.D = False
 

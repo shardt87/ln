@@ -159,32 +159,51 @@ def steam_turbine():
     st = find("ST: steam turbine")
     strip(st)
     sx, sz = 1050, 31.0
+    bz, br = 33.0, 12.8                                                             # LP upper-casing barrel axis / radius
     box(1020, 1080, 460, 552, 20, 21.5, "steel")
-    # LP casing with the east side-exhaust hood (exhaust duct y 487-513)
-    box(1026, 1074, 472, 528, 21.5, 40, "machine")
-    _add_prism(1026, 1074, 472, 528, 40, 46, st)
+    # LP: lower exhaust hood (wide, on the deck), horizontal joint at EL 33, rounded upper casing
+    box(1028, 1072, 474, 526, 21.5, bz, "machine")
+    rod((sx, 477, bz), (sx, 523, bz), br, "machine", seg=64)
+    for (ya, yb) in ((477, 474.6), (523, 525.4)):                                  # dished end walls to the glands
+        rod((sx, ya, bz), (sx, yb, bz), br, "machine", r2=4.2, seg=64)
+    # east side-exhaust hood into the 26 ft exhaust duct (y 487-513)
+    box(1062, 1076, 483, 517, 21.5, 44, "machine")
     box(1074, 1076, 485, 515, 29, 45.5, "machine")                                 # hood flange to the duct
-    # HP/IP casing at the north end
-    rod((sx, 530, sz), (sx, 534, sz), 4.5, "machine", r2=6.6, seg=28)
-    rod((sx, 534, sz), (sx, 548, sz), 6.6, "machine", seg=28)
-    rod((sx, 548, sz), (sx, 551.5, sz), 6.6, "machine", r2=4.2, seg=28)
-    # crossover HP/IP -> LP, inside the EL 46 envelope
-    rod((sx, 538, sz + 6.4), (sx, 538, 43.5), 2.2, "machine", seg=16)
-    rod((sx, 538, 43.5), (sx, 526, 43.5), 2.2, "machine", seg=16)
-    rod((sx, 526, 43.5), (sx, 526, 41), 2.2, "machine", seg=16)
+    # HP/IP casing at the north end: barrel with tapered ends
+    rod((sx, 529.5, sz), (sx, 532.5, sz), 4.6, "machine", r2=7.6, seg=48)
+    rod((sx, 532.5, sz), (sx, 547.5, sz), 7.6, "machine", seg=48)
+    rod((sx, 547.5, sz), (sx, 551, sz), 7.6, "machine", r2=4.6, seg=48)
+    # two crossover pipes HP/IP -> LP over the casing shoulders, inside the EL 46 envelope
+    for s in (-1, 1):
+        xc = sx + s * 6.8
+        rod((xc, 538, sz + 5.5), (xc, 538, 43.4), 1.8, "machine", seg=24)
+        rod((xc, 538, 43.4), (xc, 515, 43.4), 1.8, "machine", seg=24)
+        rod((xc, 515, 43.4), (xc, 515, 41.5), 1.8, "machine", seg=24)
+        for yy in (538, 515):                                                      # elbows
+            rod((xc, yy, 43.4), (xc, yy, 43.4), 1.8, "machine", seg=24)
     # main stop / control valve chests beside the HP/IP casing
     for xv in (1029, 1071):
-        rod((xv, 545, 21.5), (xv, 545, 36), 2.5, "machine", seg=18)
+        rod((xv, 545, 21.5), (xv, 545, 36), 2.5, "machine", seg=24)
         actuator(xv, 545, 36, 4.8, r=1.3)
-        rod((xv, 545, 30), (sx + (6.4 if xv > sx else -6.4), 541, sz), 1.2, "machine", seg=14)
-    for y in (470, 529.5, 552):
-        box(sx - 5, sx + 5, y - 1.2, min(y + 1.2, 552), 21.5, sz - 3.5, "steel")    # bearing pedestals
+        rod((xv, 545, 30), (sx + (7.4 if xv > sx else -7.4), 541, sz), 1.2, "machine", seg=16)
+    # bearing pedestals with round bearing housings on the shaft line, shaft and coupling to the generator
+    for y in (470.5, 528.2, 552):
+        box(sx - 5, sx + 5, y - 1.6, min(y + 1.6, 552), 21.5, sz - 2.5, "steel")
+        rod((sx, y - 1.6, sz), (sx, min(y + 1.6, 552), sz), 3.4, "machine", seg=32)
+    rod((sx, 460, sz), (sx, 474.6, sz), 1.3, "steel", seg=24)                      # shaft
+    rod((sx, 461, sz), (sx, 465, sz), 2.6, "steel", seg=32)                        # coupling guard
     dress(True)
-    for s in (-1, 1):                                                              # horizontal joint
-        box(sx + s * 6.6 - .35, sx + s * 6.6 + .35, 534, 548, sz - .3, sz + .3, "steel")
-        box(1026 - .4 if s < 0 else 1074, 1026 if s < 0 else 1074.4, 472, 528, sz - .3, sz + .3, "steel")
-    for y in range(476, 528, 6):                                                    # LP casing ribs
-        box(1025.6, 1026, y - .3, y + .3, 21.5, 40, "steel")
+    for s in (-1, 1):                                                              # horizontal joints
+        box(sx + s * 7.6 - .35, sx + s * 7.6 + .35, 532.5, 547.5, sz - .3, sz + .3, "steel")
+    box(1027.6, 1072.4, 473.6, 526.4, bz - .3, bz + .3, "steel")                   # LP joint flange all round
+    for y in range(480, 523, 7):                                                   # barrel stiffener rings
+        rod((sx, y - .25, bz), (sx, y + .25, bz), br + .3, "steel", seg=64)
+    for y in (536, 544):                                                           # HP/IP lagging bands
+        rod((sx, y - .2, sz), (sx, y + .2, sz), 7.85, "steel", seg=48)
+    for y in range(477, 526, 6):                                                    # lower-hood ribs (west face)
+        box(1027.6, 1028, y - .3, y + .3, 21.5, bz, "steel")
+    for y in range(486, 516, 6):                                                    # exhaust hood ribs (top)
+        box(1062, 1074, y - .3, y + .3, 44, 44.4, "steel")
     # main steam from the drawn route end into both valve chests
     for xv in (1029, 1071):
         pipe([(1050, 552, 27), (xv, 552, 27), (xv, 546.5, 27)], 27, 1.1, "pipe")
@@ -699,19 +718,19 @@ def gt_st_audit():
     for xv in (1029, 1071):                                                          # combined reheat valves
         rod((xv, 536, 21.5), (xv, 536, 34), 2.2, "machine", seg=18)
         actuator(xv, 536, 34, 4.6, r=1.2)
-        rod((xv, 536, 29), (sx + (6.4 if xv > sx else -6.4), 538, sz - 1), 1.1, "machine", seg=14)
+        rod((xv, 536, 29), (sx + (7.4 if xv > sx else -7.4), 538, sz - 1), 1.1, "machine", seg=14)
     dress(True)
     for s in (-1, 1):                                                                # hot reheat into the CRVs
         xr = sx + s * 8.5
         pipe([(xr, 552, 23.4), (xr, 536, 23.4), (sx + s * 21, 536, 23.4)], 23.4, 1.0, "pipe")
-    pipe([(1063, 552, 41.2), (1063, 527.6, 41.2)], 41.2, .9, "pipe")                  # LP admission
-    actuator(1063, 545.5, 42.2, 3.6, r=.9)                                             # LP admission valve actuator
-    rod((1063, 545.5, 40.2), (1063, 545.5, 42.2), 1.3, "machine", seg=12)
-    rod((sx, 462, sz - 3.6), (sx, 467.5, sz - 3.6), 3.6, "steel", seg=18)              # turning-gear housing
+    pipe([(1065, 552, 41.2), (1065, 521, 41.2), (1065, 521, 33.3)], 41.2, .9, "pipe")                  # LP admission
+    actuator(1065, 545.5, 42.2, 3.6, r=.9)                                             # LP admission valve actuator
+    rod((1065, 545.5, 40.2), (1065, 545.5, 42.2), 1.3, "machine", seg=12)
+    rod((sx, 465.4, sz), (sx, 468.8, sz), 3.4, "steel", seg=32)                         # turning-gear housing
     box(1055, 1060, 462.5, 467, 21.5, 26, "motor")                                     # turning-gear motor
     for y in (492, 512):                                                              # LP casing junction boxes
-        box(1024.2, 1025.6, y - 1.2, y + 1.2, 28.5, 31.5, "panel")
-        pipe([(1024.2, y, 30), (1021, y, 30), (1021, y, 21.8), (1021, 463, 21.8)], 30, .1, "steel")
+        box(1026.6, 1028, y - 1.2, y + 1.2, 28.5, 31.5, "panel")
+        pipe([(1026.6, y, 30), (1021, y, 30), (1021, y, 21.8), (1021, 463, 21.8)], 30, .1, "steel")
     for y in (470, 529.5, 552):                                                       # bearing proximity-probe housings
         rod((sx + 3.5, min(y, 551), sz - 3.5), (sx + 3.5, min(y, 551), sz - 1.6), .3, "steel", seg=8)
     box(1020.3, 1023, 461, 464.5, 21.5, 22.4, "panel")                                # floor box
@@ -741,7 +760,7 @@ def gt_st_audit():
         box(xb - 1.3, xb + 1.3, 458, 461, 20.6, 23, "motor")
         rod((xb, 455.5, 24), (xb, 455.5, 27.8), .45, "pipe", seg=10)                  # vent
     dress(True)
-    pipe([(1082, 447, 25), (1080.6, 447, 25), (1080.6, 466, 25), (1074.4, 466, 25)], 25, .3, "steam")   # leak-off
+    pipe([(1082, 447, 25), (1080.6, 447, 25), (1080.6, 466, 25), (1066, 466, 25), (1066, 474, 25)], 25, .3, "steam")   # leak-off
     dress(False)
     # ---- stairs onto the EL 20 deck
     for name, (x0, x1, y0, y1), axis in (("Turbine deck stair (laydown bay)", (528, 560, 474, 480), "x"),

@@ -913,3 +913,14 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
 - Bends are swept (`sweep()` / `arc_pts()` in `build_model.py`): each segment is extended by r·tan(turn/2) at the
   joint, so the DCC outlet arches are continuous pipes instead of stacked boxes. Steel collar at the duct joint.
 - More facets on large radii (64 above 25 ft radius, 36 above 10 ft), with a cap in phone mode.
+
+### Steam turbine reshaped (user review: "looks wrong and clunky")
+- The LP casing was a 48 x 56 ft box with a gabled roof. It is now built like a real ST: a wide lower exhaust hood
+  on the EL 20 deck, a horizontal joint flange at EL 33, a rounded upper casing (25.6 ft barrel with dished end walls
+  and stiffener rings), and the east side-exhaust hood into the 26 ft duct.
+- HP/IP casing is a 15 ft lagged barrel with tapered ends and joint flanges; two crossover pipes run over the
+  casing shoulders into the LP; round bearing housings on the pedestals, exposed shaft, coupling guard and
+  turning gear to the generator. The top stays at EL 46 (sheet 13).
+- Parts that sat on the old casing moved with it: LP junction boxes, LP admission line (now enters the hood top),
+  gland leak-off line (now ends at the LP gland), nameplate. verify PASS (0 clashes, ST crane checks ok), audit
+  CLEAN, coastal PASS, scans at zero.
