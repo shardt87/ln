@@ -863,3 +863,6 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
 - Tour extended to 36 stops: the LNG import terminal; every modular power type (RICE hall, RICE generator cables to the PCM, black-start gensets,
   LM6000-class simple cycle, TM2500-class trailer units, containerized gensets, trailer genset with SHD-GC, open-skid and enclosed gensets, fuel cells, microturbines, the MOD-EH collector, portable pad, Type W into
   PAD-LV, BESS); behind the meter (the data-centre campus, the backup diesel gensets, the three supply paths).
+- Tour extended to 47 stops: the 16-zone overview, GSUs, GT air inlet, the ACC, the inlet-chilling cooling tower,
+  underground duct banks (ground removed) and a duct bank under construction, cable logistics (reel yard, prefab
+  staging bay, prefab spine going in) and the carbon-capture cooling tower; sections renumbered 01 to 10.
