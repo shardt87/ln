@@ -868,3 +868,6 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
   staging bay, prefab spine going in) and the carbon-capture cooling tower; sections renumbered 01 to 10.
 - Tour opening: from the campus aerial the camera comes in to the main gate, then the EV charging carport over the
   staff parking (49 stops).
+- Underground in the tour: three stops on the all-zones underground set (U2: every zone's equipment plus all MV, LV and
+  230 kV duct banks, manholes, ground grid and services, ground removed): the whole campus, the power block, and the
+  modular yard with the BESS (51 stops).

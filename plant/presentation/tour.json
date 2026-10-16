@@ -324,10 +324,30 @@
   },
   {
    "sec": "04 · Where cable lives",
-   "title": "Underground: duct banks and manholes",
-   "eq": "MV and LV duct banks, manholes and the cable trench, with the ground removed",
-   "sys": "Concrete-encased conduit protects the cable and lets it be pulled again later",
-   "cab": "MV-105 and Type TC-ER in duct, pulled manhole to manhole",
+   "title": "Underground: the whole campus",
+   "eq": "MV, LV and 230 kV duct banks, manholes, the ground grid, firewater and drains, with the ground removed",
+   "sys": "Every zone tied together below grade: power block, switchyard, modular yard, BESS, carbon capture, gas, hydrogen",
+   "cab": "MV-105 and Type TC-ER in concrete-encased duct; HV XLPE in the 230 kV banks; bare copper ground grid",
+   "c": [
+    600,
+    -500,
+    1300
+   ],
+   "t": [
+    1500,
+    900,
+    -4
+   ],
+   "lens": 30,
+   "show": "U2",
+   "drift": 0.6
+  },
+  {
+   "sec": "04 · Where cable lives",
+   "title": "Underground: the power block",
+   "eq": "Duct banks from R1 and the e-houses to the turbine hall, GSUs, HRSGs and the switchyard; manholes",
+   "sys": "Feeders, control and the 230 kV links run below the roads and pipe racks",
+   "cab": "MV-105 and Type TC-ER in duct, pulled manhole to manhole; HV XLPE to the switchyard",
    "c": [
     560,
     40,
@@ -339,8 +359,28 @@
     -4
    ],
    "lens": 30,
-   "drift": 0.8,
-   "show": "U"
+   "show": "U2",
+   "drift": 0.8
+  },
+  {
+   "sec": "04 · Where cable lives",
+   "title": "Underground: modular yard and BESS",
+   "eq": "13.8 kV collector banks from every modular unit to MOD-EH, BESS DC trenches and collector feeders",
+   "sys": "Many small generators, one collector: the cable network is the plant",
+   "cab": "MV-105 15 kV collector circuits; 2 kV DC in the BESS trenches; MV-105 35 kV aluminium feeders",
+   "c": [
+    1560,
+    560,
+    420
+   ],
+   "t": [
+    1880,
+    920,
+    -4
+   ],
+   "lens": 30,
+   "show": "U2",
+   "drift": 0.8
   },
   {
    "sec": "04 · Where cable lives",
