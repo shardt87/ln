@@ -20,6 +20,7 @@ W, H = 2880, 1620                                      # 1440 x 810 pt at 2x, as
 M = 120
 FOOT = 96                                              # footer band height
 NOTE = B.NOTE
+INSET_CROP = {"02": (220, 690, 880, 1050)}             # the jacket legends in the current E70 (1170 x 1080)
 
 
 def para(d, xy, text, font, fill, width, lead=1.4):
@@ -200,7 +201,8 @@ def zone(z, n):
     # bottom right: inset photo and the locator map, over the shaded photo
     iw, ih = 600, 340
     ix, iy = 1500, H - FOOT - 60 - ih - 60
-    framed(img, d, z["inset"], (ix, iy), (iw, ih), (.5, .5), z.get("inset_crop"), z["inset_cap"])
+    crop = INSET_CROP.get(z["n"], z.get("inset_crop"))
+    framed(img, d, z["inset"], (ix, iy), (iw, ih), (.5, .5), crop, z["inset_cap"])
     mw, mh = 560, 340
     mx = W - M - mw
     mp = B.plan_map((mw, mh), z["areas"])
