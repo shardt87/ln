@@ -35,6 +35,7 @@ const FPS = +(fpsArg || 24), DWELL = +(dwellArg || 6000);
     const t0 = Date.now();
     for (let f = 0; f < nf; f++) {
       const fn = path.join(dir, 'f_' + String(f).padStart(4, '0') + '.jpg');
+      if (fs.existsSync(fn) && fs.statSync(fn).size > 0) continue;      // resumed after a restart: frames are deterministic
       const d = await p.evaluate(([tt]) => tourAPI.frame(tt, .93), [t + f * 1000 / FPS]);
       fs.writeFileSync(fn, Buffer.from(d.split(',')[1], 'base64'));
       if (f % 24 === 0) console.log('stop', i, 'frame', f, '/', nf, ((Date.now() - t0) / (f + 1) / 1000).toFixed(1), 's/frame');
