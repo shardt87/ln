@@ -142,6 +142,11 @@ TITLE = dict(photo=os.path.join(PLANT, "renders", "cover", "K11_pro.png"),
              sub="GAS POWER CAMPUS", claim="ACCELERATING TIME TO POWER™", date="OCTOBER 6, 2026",
              out="SK-3X1_title_cover")
 
+STRATEGY_OCT = dict(photo=os.path.join(PLANT, "renders", "cover", "xray_campus.jpg"),
+                    kicker="SK-3X1 POWER CAMPUS", title=("STRATEGY", "MONTHLY", "UPDATE"),
+                    sub=None, claim="EVERY MEGAWATT\nTRAVELS THROUGH A CABLE", date="OCTOBER 2026",
+                    out="SK-3X1_cover_strategy_update_October")
+
 
 def make_title(c=TITLE):
     """Title slide in the deck's cover layout: photo 525-1440 pt behind a dark diagonal (696 pt at the top, 528 pt at
@@ -181,7 +186,8 @@ def make_title(c=TITLE):
     if c.get("sub"):
         d.text(P(96, 470.2), c["sub"], font=font("BarlowCondensed-Bold.ttf", 27), fill=GREY, anchor="la")
     if c.get("claim"):
-        d.text(P(96, 513.8 if len(t) == 3 else 480), c["claim"], font=font("BarlowCondensed-ExtraBold.ttf", 33), fill=ORANGE, anchor="la")
+        cy = 513.8 if c.get("sub") and len(t) == 3 else 480 if c.get("sub") else 470.2
+        d.multiline_text(P(96, cy), c["claim"], spacing=int(4 * S), font=font("BarlowCondensed-ExtraBold.ttf", 33), fill=ORANGE, anchor="la")
     d.text(P(96, 618.8), c["date"], font=font("BarlowCondensed-Bold.ttf", 21), fill=WHITE, anchor="la")
     ff = font("Barlow-Regular.ttf", 18)
     d.text(P(96, 650.2), "Stephan Hardt · Power Generation Solutions", font=ff, fill=GREY, anchor="la")
@@ -198,4 +204,9 @@ def make_title(c=TITLE):
 if __name__ == "__main__":
     import sys
     for key in (sys.argv[1:] or list(SLIDES) + ["title"]):
-        make_title() if key == "title" else make(SLIDES[key])
+        if key == "title":
+            make_title()
+        elif key == "strategy":
+            make_title(STRATEGY_OCT)
+        else:
+            make(SLIDES[key])
