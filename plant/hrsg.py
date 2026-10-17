@@ -50,10 +50,10 @@ def casing():
         for y in range(632, 758, 8):
             if any(abs(y - b) < 1.5 for b in bands):
                 continue
-            box(x0 - .8, x0, y - .35, y + .35, 1.5, 85, "steel")
-            box(x1, x1 + .8, y - .35, y + .35, 1.5, 85, "steel")
+            box(x0 - .8, x0, y - .35, y + .35, 1.5, 85, "hero_rail")             # buckstays: Southwire black
+            box(x1, x1 + .8, y - .35, y + .35, 1.5, 85, "hero_rail")
         for z in (20, 40, 60, 80):
-            box(x0 - 1.0, x0 - .8, 629, 759, z - .5, z + .5, "steel")
+            box(x0 - 1.0, x0 - .8, 629, 759, z - .5, z + .5, "hero_rail")         # wale bands
         # insulated casing panels: thin skins between the buckstays and wale bands, two tones
         ys = [y for y in range(632, 758, 8) if not any(abs(y - b) < 1.5 for b in bands)]
         edges = sorted(set([629] + ys + [759]))
