@@ -215,10 +215,25 @@ def access():
             rod((xp0, 738.0, zp + 3.5), (xp1, 738.0, zp + 3.5), .06, "sp_yellow", seg=4)
             rod((xp0, 629.0, zp + 3.5), (xp1, 629.0, zp + 3.5), .06, "sp_yellow", seg=4)
             box(xp0, xp1, 610.0, Y0, zp, zp + .3, "sp_yellow") if False else None
-        # bridge from the top landing north onto the casing roof (drum walkways by ladder from there)
+        # top deck over the whole tower (the last flight lands at the south side, the bridge leaves from the north),
+        # on the four columns, with a guard rail round its open sides and a gap only where the bridge leaves
+        box(X0 - .4, X1 + .4, Y0 - .4, Y1 + .4, top - .3, top, "grating")
+        box(X0 - .4, X1 + .4, Y0 - .4, Y1 + .4, top - .9, top - .3, "steel")                  # deck edge beam
+        for (xa_, ya_, xb_, yb_) in ((X0 - .3, Y0 - .3, X1 + .3, Y0 - .3), (X1 + .3, Y0 - .3, X1 + .3, Y1 + .3),
+                                     (X0 + 2.6, Y1 + .3, X1 + .3, Y1 + .3)):
+            for zr in (top + 1.75, top + 3.5):
+                rod((xa_, ya_, zr), (xb_, yb_, zr), .06, "sp_yellow", seg=4)
+            for t in range(4):
+                xq, yq = xa_ + (xb_ - xa_) * t / 3, ya_ + (yb_ - ya_) * t / 3
+                rod((xq, yq, top), (xq, yq, top + 3.5), .05, "sp_yellow", seg=4)
+        # bridge from the top deck north onto the casing roof (drum walkways by ladder from there), on a beam
         box(663.4 + dx, 666.4 + dx, Y1, 630.0, top - .3, top, "grating")
+        box(663.4 + dx, 666.4 + dx, Y1, 630.0, top - .9, top - .3, "steel")
         for xs in (663.5 + dx, 666.3 + dx):
             rod((xs, Y1, top + 3.5), (xs, 630.0, top + 3.5), .06, "sp_yellow", seg=4)
+            rod((xs, Y1, top + 1.75), (xs, 630.0, top + 1.75), .05, "sp_yellow", seg=4)
+            for y in (Y1, (Y1 + 630.0) / 2, 630.0):
+                rod((xs, y, top), (xs, y, top + 3.5), .05, "sp_yellow", seg=4)
         dress(False)
 
 
