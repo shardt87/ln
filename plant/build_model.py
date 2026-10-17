@@ -2208,6 +2208,10 @@ import hall_trays as _htr
 print("hall tray frames (frames, posts replaced)", _htr.build())
 import cable_links as _cl
 print("tier risers added", _cl.build(routes))
+# rooftop equipment on the buildings (HVAC units, exhaust fans, vents, hatches), before the realism pass sees them
+import rooftop as _rooftop
+N_ROOF = _rooftop.build(item, items, parts, routes)
+print("rooftop", N_ROOF)
 # realism pass last: firewater, small-bore piping, signage, people, vehicles, scaffolding, HRSG harps
 import realism as _realism
 N_REAL = _realism.build(item, items, parts, routes)

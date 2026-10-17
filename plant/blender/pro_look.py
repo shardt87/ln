@@ -37,7 +37,7 @@ LOOK = {
     "pad": ("concrete", "#a9a69e", .85, 0), "concrete": ("concrete", "#a6a39b", .85, 0),
     "basement": ("concrete", "#8f8c86", .9, 0), "future": ("gravel", "#b3afa4", .95, 0),
     "building": ("clad", "#c2bfb7", .55, .05), "hall": ("clad", "#c3c8ca", .45, .3),
-    "roof": ("clad", "#c2c9cd", .5, .2), "ehouse": ("clad", "#bfc4c2", .5, .1),   # roof: light grey as in the viewer
+    "roof": ("roofing", "#868d92", .55, .3), "ehouse": ("clad", "#bfc4c2", .5, .1),   # roof: weathered standing seam
     "hrsg": ("clad", "#596a76", .42, .45), "hrsg_b": ("clad", "#52626d", .42, .45), "filter": ("clad", "#a5afb4", .5, .25),
     "windwall": ("clad", "#adb4b8", .5, .3), "tower": ("clad", "#b3bab7", .6, 0),
     "ccs": ("clad", "#a0a7a9", .65, .1), "acc": ("clad", "#b4bbbe", .5, .25),
@@ -157,7 +157,7 @@ def material(key):
     mix.inputs[6].default_value = lin(hexc)
     L.new(ramp.outputs["Color"], mix.inputs[7])
     base_out = mix.outputs[2]
-    if kind in ("paint", "clad", "galv", "concrete", "fins", "louvre") and key not in WEATHER_SKIP:
+    if kind in ("paint", "clad", "galv", "concrete", "fins", "louvre", "roofing") and key not in WEATHER_SKIP:
         # weathering: grime near grade (splash zone, first ~2 m), vertical rain streaks, and light
         # rust bloom on bare / galvanised steel; all a few percent, varied by world position
         sep = _node(nt, "ShaderNodeSeparateXYZ", (-1200, 650))
@@ -207,7 +207,22 @@ def material(key):
             L.new(base_out, rust.inputs[6])
             rust.inputs[7].default_value = (.23, .1, .04, 1)
             base_out = rust.outputs[2]
-    if kind in ("clad", "fins"):
+    if kind == "roofing":
+        # roof weathering: broad water stains and ponding marks, darker along the low edges of the panels
+        rs = _node(nt, "ShaderNodeTexNoise", (-800, 1400), Scale=.06, Detail=6.0, Roughness=.6)
+        L.new(geo.outputs["Position"], rs.inputs["Vector"])
+        rsm = _node(nt, "ShaderNodeMapRange", (-600, 1400))
+        rsm.inputs["From Min"].default_value, rsm.inputs["From Max"].default_value = .45, .7
+        rsm.inputs["To Min"].default_value, rsm.inputs["To Max"].default_value = 0.0, .38
+        L.new(rs.outputs["Fac"], rsm.inputs["Value"])
+        stain = _node(nt, "ShaderNodeMix", (-100, 1100))
+        stain.data_type = "RGBA"
+        stain.blend_type = "MULTIPLY"
+        L.new(rsm.outputs["Result"], stain.inputs["Factor"])
+        L.new(base_out, stain.inputs[6])
+        stain.inputs[7].default_value = (.5, .49, .46, 1)
+        base_out = stain.outputs[2]
+    if kind in ("clad", "fins", "roofing"):
         pv = _node(nt, "ShaderNodeTexVoronoi", (-800, 1200), Scale=.25, Randomness=1.0)
         L.new(geo.outputs["Position"], pv.inputs["Vector"])
         pr = _node(nt, "ShaderNodeMapRange", (-600, 1200))
@@ -225,7 +240,19 @@ def material(key):
         base_out = tone.outputs[2]
     L.new(base_out, b.inputs["Base Color"])
     normal_src = None
-    if kind in ("clad", "fins", "louvre"):
+    if kind == "roofing":
+        # standing seams about every 2 ft along X, sharp ridges
+        wave = _node(nt, "ShaderNodeTexWave", (-600, -300), Scale=1.4, Distortion=0.0, Detail=0.0)
+        wave.bands_direction = "X"
+        wave.wave_profile = "SAW"
+        L.new(geo.outputs["Position"], wave.inputs["Vector"])
+        sr = _node(nt, "ShaderNodeMapRange", (-450, -300))
+        sr.inputs["From Min"].default_value, sr.inputs["From Max"].default_value = .9, 1.0
+        L.new(wave.outputs["Fac"], sr.inputs["Value"])
+        bump = _node(nt, "ShaderNodeBump", (-300, -300), Strength=.6, Distance=.03)
+        L.new(sr.outputs["Result"], bump.inputs["Height"])
+        normal_src = bump
+    elif kind in ("clad", "fins", "louvre"):
         # ribs: wave bands on (x + y), so every wall orientation gets vertical ribs
         sep = _node(nt, "ShaderNodeSeparateXYZ", (-1200, -300))
         L.new(geo.outputs["Position"], sep.inputs[0])
@@ -670,7 +697,7 @@ LOOK_DEFAULT = dict(dust=2.5, air=1.2, haze=.28, sat=1.0, exposure=-.3, sun_col=
                     gain=(1.03, 1.0, .97), lift=(1.0, 1.0, 1.02))
 LOOK_GOLDEN = dict(dust=.9, air=1.0, haze=.05, sat=1.22, exposure=-.12, sun_col=(1.0, .78, .55), sun_energy=4.2,
                    gain=(1.08, 1.0, .9), lift=(.99, 1.0, 1.04))
-LOOK_CLEAR = dict(dust=.6, air=1.0, haze=.04, sat=1.14, exposure=.05, sun_col=(1.0, .96, .9), sun_energy=4.6,
+LOOK_CLEAR = dict(dust=.8, air=1.0, haze=.06, sat=1.16, exposure=-1.0, sun_col=(1.0, .95, .88), sun_energy=3.4,
                   gain=(1.02, 1.0, .98), lift=(1.0, 1.0, 1.02))      # crisp clear day: blue sky, white plumes, contrast
 
 

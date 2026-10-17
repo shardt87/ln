@@ -109,9 +109,18 @@ class Detail3:
                 band(h * .55, h * .55 + 3, 5, 24, "louvre")
             else:
                 # industrial: ribbed metal cladding (recolour the primary walls and parapets)
+                body = None
                 for p in self.own.get(it["id"], []):
                     if p["color"] == "building":
                         p["color"] = "rollup"
+                        if p["kind"] == "box":
+                            ar = (p["max"][0] - p["min"][0]) * (p["max"][1] - p["min"][1])
+                            if body is None or ar > body[0]:
+                                body = (ar, p)
+                # the body box's top face is the roof: a standing-seam roof deck over it (not wall cladding)
+                if body:
+                    (bx0, by0, _), (bx1, by1, bz1) = body[1]["min"], body[1]["max"]
+                    self.box(it, bx0 + .05, bx1 - .05, by0 + .05, by1 - .05, bz1, bz1 + .25, "roof")
                 # high translucent strip under the eaves, wall louvres at mid height
                 band(h - 5.5, h - 3.2, 9, 10, "panel")
                 band(h * .45, h * .45 + 3, 6, 30, "louvre", faces=faces[2:])
