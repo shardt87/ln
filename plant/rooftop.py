@@ -134,6 +134,45 @@ class Roofs(realism.Realism):
 
 
 
+    def hall(self, it, pr, annex):
+        """Turbine hall: large louvred roof ventilators on both lower slopes of the pitched roof (each at the local
+        roof height, clear of the existing roof fans and the ridge lightning conductor), and the flat south annex
+        roof treated like any building roof (rooftop air handlers, exhaust fans, vents, hatch)."""
+        (x0, y0, z0), (x1, y1, z1) = pr["min"], pr["max"]
+        yc, half = (y0 + y1) / 2, (y1 - y0) / 2
+        zat = lambda y: z0 + (z1 - z0) * (1 - abs(y - yc) / half)
+        skip = realism._pbox(pr)                     # the pitched roof itself is not an obstacle to things on it
+
+        def clear(a0, a1, b0, b1, c0, c1, m):
+            a0, a1, b0, b1 = a0 - m, a1 + m, b0 - m, b1 + m
+            for gx in range(int(a0 // 10), int(a1 // 10) + 1):
+                for gy in range(int(b0 // 10), int(b1 // 10) + 1):
+                    for k in self.grid.get((gx, gy), ()):
+                        b = self.obs[k]
+                        if b == skip:
+                            continue
+                        if b[0] < a1 and b[3] > a0 and b[1] < b1 and b[4] > b0 and b[2] < c1 and b[5] > c0:
+                            return False
+            return True
+        self.new(it["layer"], "Common turbine hall: roof ventilators", (x0, x1, y0, y1), (round(z0, 1), round(z1 + 8, 1)),
+                 info="Large powered roof ventilators (louvred housings with weather hoods) on both slopes (typical).")
+        for yy, x_start in ((yc - half * .45, 40), (yc + half * .45, 72), (yc - half * .75, 72), (yc + half * .75, 40)):
+            x = x0 + x_start
+            while x < x1 - 30:
+                zb = zat(yy) - .35
+                if clear(x - 8, x + 8, yy - 8, yy + 8, zb + .7, zb + 10, .5):
+                    self.box(x - 6.8, x + 6.8, yy - 6.8, yy + 6.8, zb, zb + 1.4, "steel")            # curb on the slope
+                    self.box(x - 6, x + 6, yy - 6, yy + 6, zb + 1.4, zb + 6.4, "equip")              # ventilator housing
+                    for sgn in (-1, 1):                                                               # louvre faces
+                        self.box(x - 5, x + 5, yy + sgn * 6 - .05, yy + sgn * 6 + .05, zb + 2.2, zb + 5.6, "louvre")
+                        self.box(x + sgn * 6 - .05, x + sgn * 6 + .05, yy - 5, yy + 5, zb + 2.2, zb + 5.6, "louvre")
+                    self.box(x - 7, x + 7, yy - 7, yy + 7, zb + 6.4, zb + 7.0, "steel")              # weather hood
+                    self.rod((x, yy, zb + 7.0), (x, yy, zb + 8.2), 3.0, "fan", r2=1.4, seg=20)       # fan cowl
+                    self.count("hall roof ventilators")
+                x += 64
+        if annex:
+            self.building(dict(it, name="Turbine hall south annex"), annex)
+
 def build(item, items, parts, routes):
     R = Roofs(item, items, parts, routes)
     boxes = {}
@@ -152,4 +191,12 @@ def build(item, items, parts, routes):
             todo.append((it, roof))
     for it, roof in todo:
         R.building(it, roof)
+    hall = next((i for i in items if i["name"] == "Common turbine hall"), None)
+    if hall:
+        own = [p for p in parts if p["item"] == hall["id"] and p["color"] == "roof"]
+        pr = next((p for p in own if p["kind"] == "prism"), None)
+        an = next((p for p in own if p["kind"] == "box"), None)
+        annex = (0, an["min"][0], an["max"][0], an["min"][1], an["max"][1], an["max"][2]) if an else None
+        if pr:
+            R.hall(hall, pr, annex)
     return dict(R.counts, buildings=len(todo))
