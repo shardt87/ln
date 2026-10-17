@@ -754,7 +754,7 @@ def compositor(scene):
     L.new(hs.outputs["Image"], comp.inputs["Image"])
 
 
-LOOK_DEFAULT = dict(dust=1.0, air=1.0, haze=.12, sat=1.04, exposure=-.6, sun_col=(1.0, .975, .94), sun_energy=3.2,
+LOOK_DEFAULT = dict(dust=1.0, air=1.0, haze=.1, sat=1.06, exposure=-.25, sun_col=(1.0, .975, .94), sun_energy=3.2,
                     gain=(1.0, 1.0, 1.0), lift=(1.0, 1.0, 1.01))      # neutral daylight (colour system: no warm cast)
 LOOK_GOLDEN = dict(dust=.9, air=1.0, haze=.05, sat=1.22, exposure=-.12, sun_col=(1.0, .78, .55), sun_energy=4.2,
                    gain=(1.08, 1.0, .9), lift=(.99, 1.0, 1.04))
