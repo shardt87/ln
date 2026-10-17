@@ -132,7 +132,7 @@ COLOUR_SYSTEM = {
     "motor": ("paint", "#5d707c", .35, .05), "pump": ("paint", "#5d707c", .35, .05), "door": ("paint", "#5e6e78", .4, .1),
     "rail": ("paint", "#a3a9ac", .45, .3),
     # hero: dark HRSG casing, light stacks, copper accent, black ribs
-    "hrsg": ("clad", "#434e56", .42, .4), "hrsg_b": ("clad", "#3d4850", .42, .4),
+    "hrsg": ("clad", "#6b757c", .42, .4), "hrsg_b": ("clad", "#646e75", .42, .4),
     "stack": ("paint", "#cfd3d5", .45, .15), "hero_accent": ("paint", "#a65a30", .32, .7),
     "hero_rail": ("paint", "#1c1d1f", .3, .3),
     # carbon capture and the rest: quiet
