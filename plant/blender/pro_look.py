@@ -206,9 +206,9 @@ def hero_finish(nt, key, geo, base_out, b, normal_src, rough):
         br = _node(nt, "ShaderNodeTexBrick", (-1050, -900), Scale=1.0, **{"Mortar Size": .008, "Mortar Smooth": .3,
                    "Brick Width": 1.219, "Row Height": 2.438, "Bias": 0.0})
         br.offset, br.offset_frequency, br.squash, br.squash_frequency = 0.0, 1, 1.0, 1
-        br.inputs["Color1"].default_value = (.93, .93, .93, 1)
-        br.inputs["Color2"].default_value = (1.05, 1.05, 1.05, 1)
-        br.inputs["Mortar"].default_value = (.62, .62, .62, 1)
+        br.inputs["Color1"].default_value = (.88, .88, .88, 1)
+        br.inputs["Color2"].default_value = (1.08, 1.08, 1.08, 1)
+        br.inputs["Mortar"].default_value = (.5, .5, .5, 1)
         L.new(cv.outputs[0], br.inputs["Vector"])
         m = _node(nt, "ShaderNodeMix", (-800, -900))
         m.data_type, m.blend_type = "RGBA", "MULTIPLY"
@@ -283,8 +283,8 @@ def hero_finish(nt, key, geo, base_out, b, normal_src, rough):
         rr = _mr(nt, (-850, -2000), rn.outputs["Fac"], .3, .7, rough - .12, rough + .14)
         L.new(rr.outputs["Result"], b.inputs["Roughness"])
     elif key == "hero_accent":
-        # burnished copper: brushed around the stack (horizontal grain), uneven polish, faint darker oxidation
-        b.inputs["Anisotropic"].default_value = .55
+        # burnished copper: brushed grain around the stack (in the roughness, not anisotropy, which seams on the
+        # cylinder's UV-less tangent), uneven polish, faint darker oxidation
         gr = _node(nt, "ShaderNodeTexNoise", (-1250, -900), Scale=1.0, Detail=10.0, Roughness=.7)
         vm = _node(nt, "ShaderNodeVectorMath", (-1400, -900))
         vm.operation = "MULTIPLY"
