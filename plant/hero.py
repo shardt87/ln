@@ -1,7 +1,7 @@
 """Visual hierarchy (user review): the combined-cycle power block, the three HRSGs and their stacks, is the hero.
 - the brand accent, only on the hero: a 7 ft burnished-copper band (hero_accent) below each stack's top platform and
   a thin 2 ft band a third of the way down, "HRSG 1/2/3" lettered large in copper on both casing faces; the stack
-  platforms, handrails and ladders are black like the HRSG ribs, the stiffener rings stay steel (the earlier black
+  platforms, handrails, caged ladder and CEMS ladder tray are black like the HRSG ribs, the stiffener rings stay steel (the earlier black
   crown / pinstripe and white-shell trials stay reverted);
 - the stack shells light matte grey (stack) so they and their copper bands read against the muted CCS; the HRSG
   casing slate grey with black ribs (pro_look / palette), everything else a
@@ -27,8 +27,9 @@ def build():
             if p["item"] == stack["id"] and p["kind"] == "rod" and p["color"] == "hrsg" and p.get("r", 0) >= 10.9:
                 p["color"] = "stack"
             elif p["item"] == stack["id"] and (p["color"] in ("rail", "grating")
-                                               or (p["color"] == "steel" and p.get("r", 0) < 1)):
-                p["color"] = "hero_rail"            # platforms, handrails, ladders, brackets black, like the HRSG ribs
+                                               or (p["color"] == "steel" and p.get("r", 0) < 1)
+                                               or (p["color"] == "pipe" and p["kind"] == "box")):
+                p["color"] = "hero_rail"            # platforms, handrails, caged ladder, CEMS ladder tray, brackets black
         on(stack)
         fuel.D = True
         rod((630 + dx, 790, 156), (630 + dx, 790, 163), 11.08, "hero_accent", seg=48)     # accent band (copper)
