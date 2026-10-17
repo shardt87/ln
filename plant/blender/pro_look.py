@@ -107,6 +107,39 @@ LOOK = {
     "sp_black": ("paint", "#1c1d1f", .45, 0), "sp_yellow": ("paint", "#f2c200", .4, 0), "ccs_green": ("paint", "#9dbba5", .55, 0),
     "coilpak_p": ("paint", "#8a7fd0", .15, 0), "coilpak_b": ("paint", "#6f9ad8", .15, 0), "barrel_w": ("paint", "#eceae4", .45, 0),
 }
+# ---- plant colour system (one scheme for the whole campus, user review) -------------------------------------------
+# value hierarchy: neutral cool ground < light buildings < three equipment greys (light / mid / dark); the power block
+# is the hero: the darkest element is the HRSG casing (black ribs), the stacks are light, copper is the only accent and
+# only on the hero; CCS and everything else quiet; colour only on small safety items. No warm cast anywhere.
+COLOUR_SYSTEM = {
+    # site
+    "ground": ("gravel", "#5e6262", .95, 0), "gravel": ("gravel", "#5a5e5e", .95, 0),
+    "gravel_yard": ("gravel", "#5e6262", .95, 0), "corridor": ("gravel", "#5e6262", .95, 0),
+    "future": ("gravel", "#a7aaa9", .95, 0), "road": ("asphalt", "#2e3032", .9, 0),
+    "pad": ("concrete", "#8c8d8a", .85, 0), "concrete": ("concrete", "#898a87", .85, 0),
+    "basement": ("concrete", "#94958f", .9, 0),
+    # buildings: off-white walls, mid-grey roofs
+    "building": ("clad", "#dcdedb", .55, .05), "rollup": ("clad", "#d2d5d4", .5, .2),
+    "ehouse": ("clad", "#d5d8d7", .5, .1), "hall": ("clad", "#cdd1d2", .45, .2),
+    "roof": ("roofing", "#7e858a", .55, .3), "partition": ("paint", "#e6e6e2", .7, 0),
+    # equipment greys: light / mid / dark
+    "equip": ("paint", "#c6cbce", .5, .1), "panel": ("paint", "#cfd3d5", .4, .1), "cabinet": ("paint", "#c3c9cc", .4, .1),
+    "swgr": ("paint", "#b2b9bd", .4, .1), "tank": ("paint", "#dadcdb", .45, 0), "bess": ("paint", "#dfe1e0", .45, 0),
+    "filter": ("clad", "#b9bfc2", .5, .2), "acc": ("clad", "#b8bdbf", .5, .25), "windwall": ("clad", "#b4b9bc", .5, .25),
+    "machine": ("paint", "#8f979b", .4, .3), "duct": ("paint", "#949b9f", .5, .3), "xfmr": ("paint", "#848e94", .42, .1),
+    "radiator": ("fins", "#808a90", .42, .15), "bundle": ("fins", "#8e9598", .45, .4), "louvre": ("fins", "#6d7479", .5, .3),
+    "fan": ("paint", "#50575c", .45, .3), "fanhub": ("paint", "#3a4044", .45, .3),
+    "motor": ("paint", "#5d707c", .35, .05), "pump": ("paint", "#5d707c", .35, .05), "door": ("paint", "#5e6e78", .4, .1),
+    "rail": ("paint", "#a3a9ac", .45, .3),
+    # hero: dark HRSG casing, light stacks, copper accent, black ribs
+    "hrsg": ("clad", "#434e56", .42, .4), "hrsg_b": ("clad", "#3d4850", .42, .4),
+    "stack": ("paint", "#cfd3d5", .45, .15), "hero_accent": ("paint", "#a65a30", .32, .7),
+    "hero_rail": ("paint", "#1c1d1f", .3, .3),
+    # carbon capture and the rest: quiet
+    "ccs": ("clad", "#959b9e", .7, .1), "ccs_green": ("paint", "#a9bdb0", .6, 0), "tower": ("clad", "#b6bbbb", .6, 0),
+}
+LOOK.update(COLOUR_SYSTEM)
+GRIME = (.44, .44, .44, 1)              # neutral weathering (was warm brown, which tinted the whole plant)
 ALPHA = {"glass_in": .18, "coilpak_p": .7, "coilpak_b": .7}
 EMIT = {"led_r": 4.0, "led_g": 4.0, "led_a": 4.0, "hmi": .8, "lamp_in": 12.0}
 _mats = {}
@@ -189,7 +222,7 @@ def material(key):
         grime.blend_type = "MULTIPLY"
         L.new(mx.outputs[0], grime.inputs["Factor"])
         L.new(base_out, grime.inputs[6])
-        grime.inputs[7].default_value = (.42, .38, .33, 1)
+        grime.inputs[7].default_value = GRIME
         base_out = grime.outputs[2]
         if kind == "galv" or key in ("steel", "stair", "grating"):
             rn = _node(nt, "ShaderNodeTexNoise", (-800, 1000), Scale=1.6, Detail=8.0)
@@ -693,12 +726,12 @@ def compositor(scene):
     L.new(hs.outputs["Image"], comp.inputs["Image"])
 
 
-LOOK_DEFAULT = dict(dust=2.5, air=1.2, haze=.28, sat=1.0, exposure=-.3, sun_col=(1.0, .9, .78), sun_energy=3.1,
-                    gain=(1.03, 1.0, .97), lift=(1.0, 1.0, 1.02))
+LOOK_DEFAULT = dict(dust=1.0, air=1.0, haze=.12, sat=1.04, exposure=-.6, sun_col=(1.0, .975, .94), sun_energy=3.2,
+                    gain=(1.0, 1.0, 1.0), lift=(1.0, 1.0, 1.01))      # neutral daylight (colour system: no warm cast)
 LOOK_GOLDEN = dict(dust=.9, air=1.0, haze=.05, sat=1.22, exposure=-.12, sun_col=(1.0, .78, .55), sun_energy=4.2,
                    gain=(1.08, 1.0, .9), lift=(.99, 1.0, 1.04))
-LOOK_CLEAR = dict(dust=.8, air=1.0, haze=.06, sat=1.16, exposure=-1.0, sun_col=(1.0, .95, .88), sun_energy=3.4,
-                  gain=(1.02, 1.0, .98), lift=(1.0, 1.0, 1.02))      # crisp clear day: blue sky, white plumes, contrast
+LOOK_CLEAR = dict(dust=.45, air=1.0, haze=.05, sat=1.1, exposure=-.8, sun_col=(.95, .975, 1.0), sun_energy=3.4,
+                  gain=(1.0, 1.0, 1.0), lift=(1.0, 1.0, 1.01))      # neutral clear day: no warm cast, white plumes, contrast
 
 
 def apply_look(scene, look=None):
