@@ -53,8 +53,7 @@ LOOK = {
     "bundle": ("fins", "#8b9396", .45, .5), "fan": ("paint", "#5e666b", .45, .4),
     "fanhub": ("paint", "#3e4549", .45, .4), "motor": ("paint", "#3d6c8c", .35, .05),
     "pump": ("paint", "#3f6f8e", .35, .05), "tank": ("paint", "#dcdcd6", .45, 0),
-    "rail": ("paint", "#9aa1a4", .45, .3), "hero_accent": ("paint", "#9a5530", .32, .75), "hero_rail": ("paint", "#1d1f21", .16, .35),
-    "hero_stack": ("paint", "#eceff1", .22, .08), "hero_ring": ("paint", "#b9c0c5", .25, .55), "crane": ("paint", "#e0b01a", .38, 0),
+    "rail": ("paint", "#9aa1a4", .45, .3), "hero_accent": ("paint", "#9a5530", .32, .75), "hero_rail": ("paint", "#1d1f21", .16, .35), "crane": ("paint", "#e0b01a", .38, 0),
     "red": ("paint", "#b3342c", .4, 0), "amber": ("paint", "#d8a63a", .45, 0),
     "door": ("paint", "#4f6f86", .4, .1), "rollup": ("clad", "#9ca3a7", .5, .3),
     "louvre": ("fins", "#7c8489", .5, .3), "lamp": ("paint", "#f2efe4", .3, 0),
@@ -671,6 +670,8 @@ LOOK_DEFAULT = dict(dust=2.5, air=1.2, haze=.28, sat=1.0, exposure=-.3, sun_col=
                     gain=(1.03, 1.0, .97), lift=(1.0, 1.0, 1.02))
 LOOK_GOLDEN = dict(dust=.9, air=1.0, haze=.05, sat=1.22, exposure=-.12, sun_col=(1.0, .78, .55), sun_energy=4.2,
                    gain=(1.08, 1.0, .9), lift=(.99, 1.0, 1.04))
+LOOK_CLEAR = dict(dust=.6, air=1.0, haze=.04, sat=1.14, exposure=.05, sun_col=(1.0, .96, .9), sun_energy=4.6,
+                  gain=(1.02, 1.0, .98), lift=(1.0, 1.0, 1.02))      # crisp clear day: blue sky, white plumes, contrast
 
 
 def apply_look(scene, look=None):
@@ -871,7 +872,7 @@ COASTAL_A = [
     # front, the LNG carrier at the berth beyond and the BTM data centre to the right
     dict(k="SC1", n="Strategy cover: from the south-west, power block forward, LNG carrier and BTM data centre beyond",
          eye=(300, -380, 900), target=(1160, 1220, 75), lens=30, show="everything", site=True, res=(1830, 1620),
-         sun=(19, 235), look=LOOK_GOLDEN, plumes=True, wind=45),
+         sun=(36, 215), look=LOOK_CLEAR, plumes=True, wind=45),
     dict(k="SC2", n="Strategy cover: from the south, the whole campus face on, LNG carrier and BTM data centre beyond",
          eye=(700, -350, 620), target=(1300, 1150, 90), lens=27, show="everything", site=True, res=(1830, 1620),
          sun=(11, 250), look=LOOK_GOLDEN, plumes=True, wind=150),
