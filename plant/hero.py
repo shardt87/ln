@@ -1,9 +1,10 @@
 """Visual hierarchy (user review): the combined-cycle power block, the three HRSGs and their stacks, is the hero.
 - the brand accent, only on the hero: a 7 ft burnished-copper band (hero_accent) below each stack's top platform and
-  a thin 2 ft band a third of the way down, "HRSG 1/2/3" lettered large in copper on both casing faces; stacks,
-  railings and platforms keep their original finishes (the black rails / crown and white-shell trials were reverted);
+  a thin 2 ft band a third of the way down, "HRSG 1/2/3" lettered large in copper on both casing faces; stack
+  platforms keep their original finishes, the stack handrails are black like the HRSG ribs (the earlier black crown /
+  pinstripe and white-shell trials stay reverted);
 - the stack shells light matte grey (stack) so they and their copper bands read against the muted CCS; the HRSG
-  casing is the darkest, richest finish in the plant (pro_look / palette), everything else a
+  casing slate grey with black ribs (pro_look / palette), everything else a
   step lighter and more neutral, and handrails elsewhere galvanized grey instead of safety yellow.
 Colour and lettering only: no drawn geometry changes."""
 import fuel
@@ -25,6 +26,8 @@ def build():
         for p in fuel.G["parts"]:                   # stack shell in light matte grey, apart from the dark HRSG casing
             if p["item"] == stack["id"] and p["kind"] == "rod" and p["color"] == "hrsg" and p.get("r", 0) >= 10.9:
                 p["color"] = "stack"
+            elif p["item"] == stack["id"] and p["color"] == "rail":
+                p["color"] = "hero_rail"            # stack platform handrails and ladder cages black, like the HRSG ribs
         on(stack)
         fuel.D = True
         rod((630 + dx, 790, 156), (630 + dx, 790, 163), 11.08, "hero_accent", seg=48)     # accent band (copper)
