@@ -16,6 +16,7 @@
 All of it is visual dressing; the model geometry is the verified one.
 """
 import math
+import os
 import random
 
 import bpy
@@ -139,6 +140,10 @@ COLOUR_SYSTEM = {
     "ccs": ("clad", "#959b9e", .7, .1), "ccs_green": ("paint", "#a9bdb0", .6, 0), "tower": ("clad", "#b6bbbb", .6, 0),
 }
 LOOK.update(COLOUR_SYSTEM)
+CABLE_KEYS = ("cable", "cable_mv", "cable_tc", "cable_mc", "cable_inst", "cable_tcx", "cable_fa", "cable_fo", "cable_armor")
+if os.environ.get("SK_CABLE_MASK"):        # mask pass for the hero-cable composite (blender/hero_cable.py): cables pure red
+    for _k in CABLE_KEYS:
+        LOOK[_k] = ("paint", "#ff0000", .5, 0)
 GRIME = (.44, .44, .44, 1)              # neutral weathering (was warm brown, which tinted the whole plant)
 ALPHA = {"glass_in": .18, "coilpak_p": .7, "coilpak_b": .7}
 EMIT = {"led_r": 4.0, "led_g": 4.0, "led_a": 4.0, "hmi": .8, "lamp_in": 12.0}
@@ -1157,8 +1162,8 @@ BTM_CALLOUTS = [
 EPIC = [
     dict(k="E1", n="The three HRSG stacks from beside the absorbers", eye=(700, 1100, 150), target=(790, 780, 110), lens=24,
          show="all", plumes=True),
-    dict(k="HX1", n="HRSG 2 and its stack up close: casing panels, black steel, copper band", eye=(565, 505, 168),
-         target=(790, 775, 122), lens=34, show="all", plumes=False, sun=(15, 210), res=(1920, 1440)),
+    dict(k="HX1", n="Cable trays leading into the power block: HRSGs, stacks and CCS behind", eye=(470, 560, 120),
+         target=(700, 770, 80), lens=24, show="all", plumes=False, sun=(13, 128), res=(1920, 1440)),
     dict(k="E2", n="Long lens from the west road: stacks and absorbers stacked up", eye=(-1500, 880, 120),
          target=(800, 1000, 130), lens=135, show="all"),
     dict(k="E3", n="Low pass over the air-cooled condenser", eye=(1500, 300, 165), target=(1100, 800, 90),
