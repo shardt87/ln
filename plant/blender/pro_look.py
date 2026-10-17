@@ -849,6 +849,7 @@ def render_settings(scene, samples):
     c.diffuse_bounces = 4
     c.glossy_bounces = 4
     c.transparent_max_bounces = 8
+    c.volume_bounces = 3                    # multiple scattering: vapour plumes read white, not grey smoke
     c.caustics_reflective = c.caustics_refractive = False
     c.sample_clamp_indirect = 8
     scene.view_settings.view_transform = "AgX"
@@ -935,6 +936,9 @@ def apply_look(scene, look=None):
     scene.cycles.volume_bounces = 3 if look else 0
 
 
+PLUME_DENSITY = .45
+
+
 def add_plumes(coll, sources, wind_deg=25):
     """White vapour plumes above stacks and absorbers, as chains of soft overlapping puffs (Principled Volume in
     unit spheres: density = noise x radial falloff x per-puff strength), drifting downwind to the east-north-east
@@ -949,7 +953,8 @@ def add_plumes(coll, sources, wind_deg=25):
     out = next(nd for nd in nt.nodes if nd.type == "OUTPUT_MATERIAL")
     vol = _node(nt, "ShaderNodeVolumePrincipled", (200, 0))
     vol.inputs["Color"].default_value = (.97, .97, .97, 1)
-    vol.inputs["Anisotropy"].default_value = .5
+    vol.inputs["Absorption Color"].default_value = (1, 1, 1, 1)          # scatter, don't absorb: water vapour, never smoke
+    vol.inputs["Anisotropy"].default_value = .2
     L.new(vol.outputs["Volume"], out.inputs["Volume"])
     tc = _node(nt, "ShaderNodeTexCoord", (-1200, 0))
     ln = _node(nt, "ShaderNodeVectorMath", (-950, -200))
@@ -975,7 +980,11 @@ def add_plumes(coll, sources, wind_deg=25):
     mul2 = _node(nt, "ShaderNodeMath", (-200, 0))
     mul2.operation = "MULTIPLY"
     L.new(mul.outputs[0], mul2.inputs[0]); L.new(att.outputs["Fac"], mul2.inputs[1])
-    L.new(mul2.outputs[0], vol.inputs["Density"])
+    thin = _node(nt, "ShaderNodeMath", (0, 0))                          # a faint gas-turbine exhaust haze
+    thin.operation = "MULTIPLY"
+    thin.inputs[1].default_value = PLUME_DENSITY
+    L.new(mul2.outputs[0], thin.inputs[0])
+    L.new(thin.outputs[0], vol.inputs["Density"])
     bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2, radius=1)
     proto = bpy.context.active_object
     proto.data.materials.append(m)
@@ -1148,8 +1157,8 @@ BTM_CALLOUTS = [
 EPIC = [
     dict(k="E1", n="The three HRSG stacks from beside the absorbers", eye=(700, 1100, 150), target=(790, 780, 110), lens=24,
          show="all", plumes=True),
-    dict(k="HX1", n="HRSG 2 and its stack up close: casing panels, black steel, copper band", eye=(585, 560, 125),
-         target=(770, 760, 100), lens=28, show="all", plumes=True, sun=(32, 240)),
+    dict(k="HX1", n="HRSG 2 and its stack up close: casing panels, black steel, copper band", eye=(565, 505, 168),
+         target=(790, 775, 122), lens=34, show="all", plumes=True, sun=(15, 210), res=(1920, 1440)),
     dict(k="E2", n="Long lens from the west road: stacks and absorbers stacked up", eye=(-1500, 880, 120),
          target=(800, 1000, 130), lens=135, show="all"),
     dict(k="E3", n="Low pass over the air-cooled condenser", eye=(1500, 300, 165), target=(1100, 800, 90),

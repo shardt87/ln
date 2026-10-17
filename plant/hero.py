@@ -37,8 +37,10 @@ def build():
         fuel.D = False
         on(find(f"HRSG {k + 1} + SCR"))
         fuel.D = True
-        for (x, nx) in ((596.7 + dx, -1), (663.3 + dx, 1)):
-            decal((x, 694, 70), (nx, 0, 0), 34, 9, [(f"HRSG {k + 1}", .9, True, COPPER)], bg=None)
+        # lettering on the clear 32 ft bay between the two drum risers (y 700 / 732), above the EL 52 east platform
+        # and below the EL 69 one, set just proud of the buckstay faces so no rib or riser cuts through it
+        for (x, nx) in ((596.15 + dx, -1), (663.85 + dx, 1)):
+            decal((x, 716, 61.5), (nx, 0, 0), 28, 7.4, [(f"HRSG {k + 1}", .9, True, COPPER)], bg=None)
         fuel.D = False
         n += 1
     return n
