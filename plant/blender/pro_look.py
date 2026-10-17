@@ -37,7 +37,7 @@ LOOK = {
     "pad": ("concrete", "#a9a69e", .85, 0), "concrete": ("concrete", "#a6a39b", .85, 0),
     "basement": ("concrete", "#8f8c86", .9, 0), "future": ("gravel", "#b3afa4", .95, 0),
     "building": ("clad", "#c2bfb7", .55, .05), "hall": ("clad", "#c3c8ca", .45, .3),
-    "roof": ("clad", "#5f676d", .5, .35), "ehouse": ("clad", "#bfc4c2", .5, .1),
+    "roof": ("clad", "#c2c9cd", .5, .2), "ehouse": ("clad", "#bfc4c2", .5, .1),   # roof: light grey as in the viewer
     "hrsg": ("clad", "#596a76", .42, .45), "hrsg_b": ("clad", "#52626d", .42, .45), "filter": ("clad", "#a5afb4", .5, .25),
     "windwall": ("clad", "#adb4b8", .5, .3), "tower": ("clad", "#b3bab7", .6, 0),
     "ccs": ("clad", "#a0a7a9", .65, .1), "acc": ("clad", "#b4bbbe", .5, .25),
