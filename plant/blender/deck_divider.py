@@ -142,10 +142,10 @@ TITLE = dict(photo=os.path.join(PLANT, "renders", "cover", "K11_pro.png"),
              sub="GAS POWER CAMPUS", claim="ACCELERATING TIME TO POWER™", date="OCTOBER 6, 2026",
              out="SK-3X1_title_cover")
 
-# photo: the viewer's cable X-ray (tour stop 51 look), view O6, camera c=[200,-700,1300] t=[1250,1150,40] lens 30,
-# ghost .10, LNG carrier / data halls / DC admin / gensets lifted; 915 x 810 @2x. COVER_PHOTO=SC1_pro.png uses the
-# Blender render instead.
-STRATEGY_OCT = dict(photo=os.path.join(PLANT, "renders", "cover", os.environ.get("COVER_PHOTO", "xray_campus.jpg")),
+# photo: the viewer's cable X-ray with the whole cable network in copper (linear-corrected class colours), view O6,
+# camera c=[200,-700,1300] t=[1250,1150,40] lens 30, ghost .09, LNG carrier / data halls lifted, 915 x 810 @2x, then
+# electrify.py (energised cores, copper bloom, current pulses). COVER_PHOTO=xray_campus.jpg: X-ray colours by type.
+STRATEGY_OCT = dict(photo=os.path.join(PLANT, "renders", "cover", os.environ.get("COVER_PHOTO", "xray_copper_energy.jpg")),
                     kicker="SK-3X1 POWER CAMPUS", title=("STRATEGY", "MONTHLY", "UPDATE"),
                     sub=None, claim="EVERY MEGAWATT\nTRAVELS THROUGH A CABLE", date="OCTOBER 2026",
                     out="SK-3X1_cover_strategy_update_October")
