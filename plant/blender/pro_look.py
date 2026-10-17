@@ -40,7 +40,7 @@ LOOK = {
     "roof": ("roofing", "#868d92", .55, .3), "ehouse": ("clad", "#bfc4c2", .5, .1),   # roof: weathered standing seam
     "hrsg": ("clad", "#596a76", .42, .45), "hrsg_b": ("clad", "#52626d", .42, .45), "filter": ("clad", "#a5afb4", .5, .25),
     "windwall": ("clad", "#adb4b8", .5, .3), "tower": ("clad", "#b3bab7", .6, 0),
-    "ccs": ("clad", "#a0a7a9", .65, .1), "acc": ("clad", "#b4bbbe", .5, .25),
+    "ccs": ("clad", "#7a8184", .7, .1), "acc": ("clad", "#b4bbbe", .5, .25),   # ccs muted: recedes behind the hero stacks
     "partition": ("paint", "#e4e4df", .7, 0),
     "steel": ("galv", "#8e959a", .38, .85), "stair": ("galv", "#8a9196", .4, .8),
     "grating": ("galv", "#9aa1a5", .45, .8), "pipe": ("galv", "#a2a8ab", .35, .85),
@@ -48,7 +48,7 @@ LOOK = {
     "soil": ("gravel", "#7a6347", 1, 0), "timber": ("paint", "#9a7448", .8, 0), "ductcase": ("concrete", "#b4b0a6", .9, 0),
     "pvc_grey": ("paint", "#8f969a", .5, 0), "pvc_orange": ("paint", "#d0752a", .5, 0),
     "copper_dark": ("paint", "#6f787d", .4, .5), "duct": ("paint", "#8a949a", .5, .4),
-    "stack": ("paint", "#6c7378", .5, .45), "machine": ("paint", "#8a9499", .4, .3),
+    "stack": ("paint", "#b9bfc3", .45, .15), "machine": ("paint", "#8a9499", .4, .3),
     "xfmr": ("paint", "#7d898f", .42, .1), "radiator": ("fins", "#7b878d", .42, .15),
     "bundle": ("fins", "#8b9396", .45, .5), "fan": ("paint", "#5e666b", .45, .4),
     "fanhub": ("paint", "#3e4549", .45, .4), "motor": ("paint", "#3d6c8c", .35, .05),
