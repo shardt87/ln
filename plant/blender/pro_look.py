@@ -113,10 +113,10 @@ LOOK = {
 # only on the hero; CCS and everything else quiet; colour only on small safety items. No warm cast anywhere.
 COLOUR_SYSTEM = {
     # site
-    "ground": ("gravel", "#5e6262", .95, 0), "gravel": ("gravel", "#5a5e5e", .95, 0),
-    "gravel_yard": ("gravel", "#5e6262", .95, 0), "corridor": ("gravel", "#5e6262", .95, 0),
+    "ground": ("gravel", "#8a8882", .95, 0), "gravel": ("gravel", "#7d7c76", .95, 0),
+    "gravel_yard": ("gravel", "#94928c", .95, 0), "corridor": ("gravel", "#8e8c86", .95, 0),
     "future": ("gravel", "#a7aaa9", .95, 0), "road": ("asphalt", "#2e3032", .9, 0),
-    "pad": ("concrete", "#8c8d8a", .85, 0), "concrete": ("concrete", "#898a87", .85, 0),
+    "pad": ("concrete", "#b1b2ae", .85, 0), "concrete": ("concrete", "#adaeaa", .85, 0),
     "basement": ("concrete", "#94958f", .9, 0),
     # buildings: off-white walls, mid-grey roofs
     "building": ("clad", "#dcdedb", .55, .05), "rollup": ("clad", "#d2d5d4", .5, .2),
@@ -255,6 +255,34 @@ def material(key):
         L.new(base_out, stain.inputs[6])
         stain.inputs[7].default_value = (.5, .49, .46, 1)
         base_out = stain.outputs[2]
+    if kind == "gravel":
+        # crushed stone: broad patches (wheel paths, fresher stone, damp), then fine stone-to-stone speckle
+        gp = _node(nt, "ShaderNodeTexNoise", (-800, 1500), Scale=.02, Detail=6.0, Roughness=.6)
+        L.new(geo.outputs["Position"], gp.inputs["Vector"])
+        gpr = _node(nt, "ShaderNodeMapRange", (-600, 1500))
+        gpr.inputs["From Min"].default_value, gpr.inputs["From Max"].default_value = .35, .65
+        gpr.inputs["To Min"].default_value, gpr.inputs["To Max"].default_value = .78, 1.18
+        L.new(gp.outputs["Fac"], gpr.inputs["Value"])
+        gs = _node(nt, "ShaderNodeTexVoronoi", (-800, 1700), Scale=55.0, Randomness=1.0)
+        gs.feature = "F1"
+        L.new(geo.outputs["Position"], gs.inputs["Vector"])
+        gsr = _node(nt, "ShaderNodeMapRange", (-600, 1700))
+        gsr.inputs["To Min"].default_value, gsr.inputs["To Max"].default_value = .9, 1.08
+        L.new(gs.outputs["Color"], gsr.inputs["Value"])
+        gm = _node(nt, "ShaderNodeMath", (-400, 1600))
+        gm.operation = "MULTIPLY"
+        L.new(gpr.outputs["Result"], gm.inputs[0])
+        L.new(gsr.outputs["Result"], gm.inputs[1])
+        gc = _node(nt, "ShaderNodeCombineColor", (-250, 1600))
+        for ch in ("Red", "Green", "Blue"):
+            L.new(gm.outputs[0], gc.inputs[ch])
+        gmix = _node(nt, "ShaderNodeMix", (-100, 1400))
+        gmix.data_type = "RGBA"
+        gmix.blend_type = "MULTIPLY"
+        gmix.inputs["Factor"].default_value = 1
+        L.new(base_out, gmix.inputs[6])
+        L.new(gc.outputs[0], gmix.inputs[7])
+        base_out = gmix.outputs[2]
     if kind in ("clad", "fins", "roofing"):
         pv = _node(nt, "ShaderNodeTexVoronoi", (-800, 1200), Scale=.25, Randomness=1.0)
         L.new(geo.outputs["Position"], pv.inputs["Vector"])
