@@ -162,6 +162,160 @@ def _node(nt, t, loc, **inputs):
     return n
 
 
+# Photoreal finish for the hero (HRSG casings, stacks, copper bands, black access steel). World units are metres.
+HERO_FINISH = {"hrsg", "hrsg_b", "stack", "hero_accent", "hero_rail"}
+STACK_TOP = 178 * .3048                    # stack exit, EL 178 ft
+STACK_PLATFORMS = (101.2 * .3048, 169.2 * .3048)
+
+
+def _mr(nt, loc, src, a, b_, c, d, clamp=True):
+    m = _node(nt, "ShaderNodeMapRange", loc)
+    m.inputs["From Min"].default_value, m.inputs["From Max"].default_value = a, b_
+    m.inputs["To Min"].default_value, m.inputs["To Max"].default_value = c, d
+    m.clamp = clamp
+    nt.links.new(src, m.inputs["Value"])
+    return m
+
+
+def _mul_col(nt, loc, col_in, fac, colour):
+    m = _node(nt, "ShaderNodeMix", loc)
+    m.data_type, m.blend_type = "RGBA", "MULTIPLY"
+    nt.links.new(fac, m.inputs["Factor"])
+    nt.links.new(col_in, m.inputs[6])
+    m.inputs[7].default_value = colour
+    return m.outputs[2]
+
+
+def hero_finish(nt, key, geo, base_out, b, normal_src, rough):
+    """Layers on top of the generic material: sheet-panel joints with panel-to-panel tone and sheen, weld seams,
+    rain and drip streaks, soot at the stack exit, brushed copper. Returns the new normal source."""
+    L = nt.links
+    sep = _node(nt, "ShaderNodeSeparateXYZ", (-1600, -900))
+    L.new(geo.outputs["Position"], sep.inputs[0])
+    col = base_out
+    height = None
+    if key in ("hrsg", "hrsg_b"):
+        # external casing lagging: 4 ft x 8 ft panels on (x + y, z), joints as fine grooves, each sheet a slightly
+        # different tone and sheen (the single biggest cue that it is real sheet metal, not a CG block)
+        uv = _node(nt, "ShaderNodeMath", (-1400, -900))
+        L.new(sep.outputs["X"], uv.inputs[0])
+        L.new(sep.outputs["Y"], uv.inputs[1])
+        cv = _node(nt, "ShaderNodeCombineXYZ", (-1250, -900))
+        L.new(uv.outputs[0], cv.inputs["X"])
+        L.new(sep.outputs["Z"], cv.inputs["Y"])
+        br = _node(nt, "ShaderNodeTexBrick", (-1050, -900), Scale=1.0, **{"Mortar Size": .008, "Mortar Smooth": .3,
+                   "Brick Width": 1.219, "Row Height": 2.438, "Bias": 0.0})
+        br.offset, br.offset_frequency, br.squash, br.squash_frequency = 0.0, 1, 1.0, 1
+        br.inputs["Color1"].default_value = (.93, .93, .93, 1)
+        br.inputs["Color2"].default_value = (1.05, 1.05, 1.05, 1)
+        br.inputs["Mortar"].default_value = (.62, .62, .62, 1)
+        L.new(cv.outputs[0], br.inputs["Vector"])
+        m = _node(nt, "ShaderNodeMix", (-800, -900))
+        m.data_type, m.blend_type = "RGBA", "MULTIPLY"
+        m.inputs["Factor"].default_value = 1
+        L.new(col, m.inputs[6])
+        L.new(br.outputs["Color"], m.inputs[7])
+        col = m.outputs[2]
+        bw = _node(nt, "ShaderNodeRGBToBW", (-850, -1100))
+        L.new(br.outputs["Color"], bw.inputs[0])
+        rr = _mr(nt, (-650, -1100), bw.outputs[0], .6, 1.05, rough + .12, rough - .1)
+        L.new(rr.outputs["Result"], b.inputs["Roughness"])
+        height = br.outputs["Fac"]
+        # rain streaks washing down from the casing roof edge, a little stronger than the plant-wide ones
+        vm = _node(nt, "ShaderNodeVectorMath", (-1250, -1300))
+        vm.operation = "MULTIPLY"
+        vm.inputs[1].default_value = (3.0, 3.0, .08)
+        L.new(geo.outputs["Position"], vm.inputs[0])
+        st = _node(nt, "ShaderNodeTexNoise", (-1050, -1300), Scale=1.0, Detail=6.0, Roughness=.6)
+        L.new(vm.outputs[0], st.inputs["Vector"])
+        sm = _mr(nt, (-850, -1300), st.outputs["Fac"], .5, .72, 0.0, .28)
+        col = _mul_col(nt, (-600, -1300), col, sm.outputs["Result"], (.62, .62, .63, 1))
+    elif key == "stack":
+        # welded shell cans every 8 ft (fine raised seams), heat / soot at the exit, drip stains below each platform,
+        # vertical rain streaks and a semi-gloss sheen that breaks up over the shell
+        wv = _node(nt, "ShaderNodeTexWave", (-1250, -900), Scale=1.0 / 2.438, Distortion=0.0, Detail=0.0)
+        wv.bands_direction, wv.wave_profile = "Z", "SAW"
+        L.new(geo.outputs["Position"], wv.inputs["Vector"])
+        seam = _mr(nt, (-1050, -900), wv.outputs["Fac"], .985, 1.0, 0.0, 1.0)
+        height = seam.outputs["Result"]
+        col = _mul_col(nt, (-800, -900), col, seam.outputs["Result"], (.82, .82, .82, 1))
+        nz = _node(nt, "ShaderNodeTexNoise", (-1250, -1100), Scale=.9, Detail=6.0, Roughness=.6)
+        L.new(geo.outputs["Position"], nz.inputs["Vector"])
+        top = _mr(nt, (-1050, -1150), sep.outputs["Z"], STACK_TOP - 4.5, STACK_TOP, 0.0, 1.0)
+        tn = _node(nt, "ShaderNodeMath", (-850, -1150))
+        tn.operation = "MULTIPLY"
+        L.new(top.outputs["Result"], tn.inputs[0])
+        nb = _mr(nt, (-1050, -1250), nz.outputs["Fac"], .35, .65, .55, 1.0)
+        L.new(nb.outputs["Result"], tn.inputs[1])
+        soot = _node(nt, "ShaderNodeMath", (-700, -1150))
+        soot.operation = "POWER"
+        L.new(tn.outputs[0], soot.inputs[0])
+        soot.inputs[1].default_value = 1.6
+        col = _mul_col(nt, (-500, -1150), col, soot.outputs[0], (.2, .19, .18, 1))
+        for i, zp in enumerate(STACK_PLATFORMS):                     # drip stains: darkest right under the deck
+            d = _mr(nt, (-1050, -1400 - 150 * i), sep.outputs["Z"], zp - 3.5, zp, 0.0, .3)
+            dm = _node(nt, "ShaderNodeMath", (-850, -1400 - 150 * i))
+            dm.operation = "MULTIPLY"
+            L.new(d.outputs["Result"], dm.inputs[0])
+            vm = _node(nt, "ShaderNodeVectorMath", (-1250, -1400 - 150 * i))
+            vm.operation = "MULTIPLY"
+            vm.inputs[1].default_value = (6.0, 6.0, .3)
+            L.new(geo.outputs["Position"], vm.inputs[0])
+            dn = _node(nt, "ShaderNodeTexNoise", (-1100, -1500 - 150 * i), Scale=1.0, Detail=4.0)
+            L.new(vm.outputs[0], dn.inputs["Vector"])
+            L.new(dn.outputs["Fac"], dm.inputs[1])
+            dd = _node(nt, "ShaderNodeMath", (-700, -1400 - 150 * i))
+            dd.operation = "MULTIPLY"
+            dd.inputs[1].default_value = 2.0
+            dd.use_clamp = True
+            L.new(dm.outputs[0], dd.inputs[0])
+            col = _mul_col(nt, (-500, -1400 - 150 * i), col, dd.outputs[0], (.6, .58, .55, 1))
+        vm = _node(nt, "ShaderNodeVectorMath", (-1250, -1800))
+        vm.operation = "MULTIPLY"
+        vm.inputs[1].default_value = (4.0, 4.0, .06)
+        L.new(geo.outputs["Position"], vm.inputs[0])
+        st = _node(nt, "ShaderNodeTexNoise", (-1050, -1800), Scale=1.0, Detail=6.0, Roughness=.6)
+        L.new(vm.outputs[0], st.inputs["Vector"])
+        sm = _mr(nt, (-850, -1800), st.outputs["Fac"], .5, .75, 0.0, .22)
+        col = _mul_col(nt, (-600, -1800), col, sm.outputs["Result"], (.66, .66, .67, 1))
+        rn = _node(nt, "ShaderNodeTexNoise", (-1050, -2000), Scale=1.3, Detail=5.0)
+        L.new(geo.outputs["Position"], rn.inputs["Vector"])
+        rr = _mr(nt, (-850, -2000), rn.outputs["Fac"], .3, .7, rough - .12, rough + .14)
+        L.new(rr.outputs["Result"], b.inputs["Roughness"])
+    elif key == "hero_accent":
+        # burnished copper: brushed around the stack (horizontal grain), uneven polish, faint darker oxidation
+        b.inputs["Anisotropic"].default_value = .55
+        gr = _node(nt, "ShaderNodeTexNoise", (-1250, -900), Scale=1.0, Detail=10.0, Roughness=.7)
+        vm = _node(nt, "ShaderNodeVectorMath", (-1400, -900))
+        vm.operation = "MULTIPLY"
+        vm.inputs[1].default_value = (2.0, 2.0, 60.0)
+        L.new(geo.outputs["Position"], vm.inputs[0])
+        L.new(vm.outputs[0], gr.inputs["Vector"])
+        rr = _mr(nt, (-1050, -900), gr.outputs["Fac"], .3, .7, rough - .1, rough + .12)
+        L.new(rr.outputs["Result"], b.inputs["Roughness"])
+        ox = _node(nt, "ShaderNodeTexNoise", (-1250, -1100), Scale=.8, Detail=6.0)
+        L.new(geo.outputs["Position"], ox.inputs["Vector"])
+        om = _mr(nt, (-1050, -1100), ox.outputs["Fac"], .5, .7, 0.0, .35)
+        col = _mul_col(nt, (-800, -1100), col, om.outputs["Result"], (.55, .45, .4, 1))
+        height = gr.outputs["Fac"]
+    elif key == "hero_rail":
+        # black semi-gloss paint: sheen breaks up, edges and treads dulled by use
+        rn = _node(nt, "ShaderNodeTexNoise", (-1050, -900), Scale=4.0, Detail=6.0)
+        L.new(geo.outputs["Position"], rn.inputs["Vector"])
+        rr = _mr(nt, (-850, -900), rn.outputs["Fac"], .3, .7, rough - .06, rough + .22)
+        L.new(rr.outputs["Result"], b.inputs["Roughness"])
+    L.new(col, b.inputs["Base Color"])
+    if height is None:
+        return normal_src
+    bump = _node(nt, "ShaderNodeBump", (-300, -900), Strength=(.12 if key == "hero_accent" else .5),
+                 Distance=(.004 if key == "hero_accent" else .015))
+    bump.invert = key in ("hrsg", "hrsg_b")                      # panel joints are grooves, can seams are raised
+    L.new(height, bump.inputs["Height"])
+    if normal_src is not None:
+        L.new(normal_src.outputs["Normal"], bump.inputs["Normal"])
+    return bump
+
+
 def material(key):
     if key in _mats:
         return _mats[key]
@@ -388,6 +542,8 @@ def material(key):
         # chain-link reads as a light haze, not a wall
         b.inputs["Alpha"].default_value = .22
         m.blend_method = "HASHED"
+    if key in HERO_FINISH:
+        normal_src = hero_finish(nt, key, geo, base_out, b, normal_src, rough)
     if kind in ("clad", "paint", "galv", "concrete", "fins", "ceramic"):
         bev = _node(nt, "ShaderNodeBevel", (-150, -500))
         bev.samples = 6
