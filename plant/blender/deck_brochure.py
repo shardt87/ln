@@ -108,7 +108,7 @@ def cards(d, xy, cw, ch, items, cols=2, gap=24):
 # ------------------------------------------------------------------------------------------------------------ slides
 def overview(n):
     img = Image.new("RGB", (W, H), BG)
-    photo_right(img, "K5_pro.png", 1420, 1180, (.5, .5))
+    photo_right(img, "HX1_pro.png", 1420, 1180, (.55, .35))      # HRSG 2, stacks and CCS up close (was the K5 aerial)
     d = ImageDraw.Draw(img)
     tracked(d, (M, 130), "SK-3X1 POWER CAMPUS", F(BOLD, 30), COPPER, 4)
     d.rectangle([M, 190, M + 96, 199], fill=COPPER)

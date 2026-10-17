@@ -1158,7 +1158,7 @@ EPIC = [
     dict(k="E1", n="The three HRSG stacks from beside the absorbers", eye=(700, 1100, 150), target=(790, 780, 110), lens=24,
          show="all", plumes=True),
     dict(k="HX1", n="HRSG 2 and its stack up close: casing panels, black steel, copper band", eye=(565, 505, 168),
-         target=(790, 775, 122), lens=34, show="all", plumes=True, sun=(15, 210), res=(1920, 1440)),
+         target=(790, 775, 122), lens=34, show="all", plumes=False, sun=(15, 210), res=(1920, 1440)),
     dict(k="E2", n="Long lens from the west road: stacks and absorbers stacked up", eye=(-1500, 880, 120),
          target=(800, 1000, 130), lens=135, show="all"),
     dict(k="E3", n="Low pass over the air-cooled condenser", eye=(1500, 300, 165), target=(1100, 800, 90),
