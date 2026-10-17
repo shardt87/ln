@@ -142,9 +142,10 @@ TITLE = dict(photo=os.path.join(PLANT, "renders", "cover", "K11_pro.png"),
              sub="GAS POWER CAMPUS", claim="ACCELERATING TIME TO POWER™", date="OCTOBER 6, 2026",
              out="SK-3X1_title_cover")
 
-# photo: Blender pro render SC1 (pro_look.COASTAL_A, overlay A): golden hour from the south-west, power block and
-# plumed stacks forward, LNG carrier at the berth and the BTM data centre beyond; 1830 x 1620 for the 915 x 810 panel
-STRATEGY_OCT = dict(photo=os.path.join(PLANT, "renders", "cover", "SC1_pro.png"),
+# photo: the 3D viewer (light theme, tour frame without labels) from the south-east, camera c=[1080,-260,520]
+# t=[660,800,70] lens 30, 915 x 810 @2x: CCS absorbers, copper-banded stacks, HRSGs, turbine hall and GSUs, LNG
+# carrier and tank beyond. COVER_PHOTO=SC1_pro.png switches to the Blender render.
+STRATEGY_OCT = dict(photo=os.path.join(PLANT, "renders", "cover", os.environ.get("COVER_PHOTO", "viewer_campus.jpg")),
                     kicker="SK-3X1 POWER CAMPUS", title=("STRATEGY", "MONTHLY", "UPDATE"),
                     sub=None, claim="EVERY MEGAWATT\nTRAVELS THROUGH A CABLE", date="OCTOBER 2026",
                     out="SK-3X1_cover_strategy_update_October")
