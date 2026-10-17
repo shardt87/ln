@@ -1,5 +1,6 @@
-"""Rooftop equipment on the plant's buildings (LOD 3, user review): packaged rooftop HVAC units on curbs, exhaust
-fans, plumbing vents and a roof hatch with its guard rail, on every occupied building, e-house and module.
+"""Rooftop equipment on the plant's occupied buildings (LOD 3, user review): one to three packaged rooftop HVAC units
+on curbs, a few exhaust fans, plumbing vents and a roof hatch with its guard rail. E-houses and modules keep their
+wall-mounted end-wall HVAC, and the turbine hall its own roof fans, so neither gets rooftop units.
 
 Count scales with roof area; every unit is placed on the building's own roof slab and tested against the geometry
 already in the model (parapets, fans, stacks, cable entries), so nothing floats or clashes. The turbine hall's pitched
@@ -9,11 +10,10 @@ import re
 
 import realism
 
-KEEP = re.compile(r"building|house|e-house|room|module|PCM|warehouse|workshop|gallery|switchgear|treatment|NOC|"
-                  r"^R[1-4][A-C]?:|^RH:|MCC|control|compression", re.I)
+KEEP = re.compile(r"building|warehouse|workshop|treatment|NOC|^R1:|^RH:|compression|control / admin", re.I)
 SKIP = re.compile(r"interior|canopy|skid|unloading|duct|damper|catalyst|aeroderivative|laydown|gas yard|pickup|"
                   r"cable pull|scaffold|underground|ground over|engine hall|electrolyzer|gatehouse|fire pump|"
-                  r"rooftop|trailer|container|enclosure|filter|M&R 7", re.I)
+                  r"rooftop|trailer|container|enclosure|filter|M&R 7|e-house|module|PCM|EH\b|MCC|gallery", re.I)
 ROOFC = ("roof", "building", "ehouse", "ccs", "swgr", "panel", "concrete", "rollup")
 
 
@@ -107,7 +107,7 @@ class Roofs(realism.Realism):
         L, D = (X1 - X0, Y1 - Y0) if along_x else (Y1 - Y0, X1 - X0)
         at = (lambda u, v: (X0 + u, Y0 + v)) if along_x else (lambda u, v: (X0 + v, Y0 + u))
         big = A >= 1800 and D >= 12
-        n_rtu = max(1, min(6, round(A / 2600)))
+        n_rtu = max(1, min(3, round(A / 6000)))
         placed = 0
         for k in range(n_rtu * 3):
             if placed >= n_rtu:
@@ -117,17 +117,17 @@ class Roofs(realism.Realism):
             v += (k // n_rtu) * 2.5 * (1 if k % 2 else -1)
             x, y = at(u, min(max(v, 3.5), D - 3.5))
             placed += self.rtu(x, y, big, along_x)
-        n_fan = max(1, min(8, round(A / 1700)))
+        n_fan = max(1, min(3, round(A / 5000)))
         for k in range(n_fan):
             u = L * (k + .25) / n_fan
             v = D * (.18 if k % 2 == 0 else .82)
             x, y = at(u, min(max(v, 2), D - 2))
             if not self.exhaust_fan(x, y):
                 self.exhaust_fan(*at(min(u + 4, L - 2), min(max(v, 2), D - 2)))
-        for k in range(max(2, min(6, round(A / 1500)))):
-            u = L * (k + .7) / max(2, min(6, round(A / 1500)))
+        for k in range(2):
+            u = L * (k + .7) / 2
             self.vent(*at(min(u, L - 1), D * (.08 if k % 2 else .92)))
-        if A >= 1200:
+        if A >= 3000:
             for u in (L - 4.5, 4.5, L / 2):
                 if self.hatch(*at(u, D * .5 if D < 14 else D * .25)):
                     break
@@ -191,7 +191,7 @@ def build(item, items, parts, routes):
             todo.append((it, roof))
     for it, roof in todo:
         R.building(it, roof)
-    hall = next((i for i in items if i["name"] == "Common turbine hall"), None)
+    hall = None                     # the turbine hall keeps its own roof fans and lightning protection (hall.py)
     if hall:
         own = [p for p in parts if p["item"] == hall["id"] and p["color"] == "roof"]
         pr = next((p for p in own if p["kind"] == "prism"), None)
