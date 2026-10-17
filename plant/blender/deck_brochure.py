@@ -108,7 +108,7 @@ def cards(d, xy, cw, ch, items, cols=2, gap=24):
 # ------------------------------------------------------------------------------------------------------------ slides
 def overview(n):
     img = Image.new("RGB", (W, H), BG)
-    photo_right(img, "HX1_hero_cable.jpg", 1420, 1180, (.6, .45))   # energised cable trays into the power block (was the K5 aerial)
+    photo_right(img, "K5_pro.png", 1420, 1180, (.5, .5))
     d = ImageDraw.Draw(img)
     tracked(d, (M, 130), "SK-3X1 POWER CAMPUS", F(BOLD, 30), COPPER, 4)
     d.rectangle([M, 190, M + 96, 199], fill=COPPER)
