@@ -142,7 +142,7 @@ COLOUR_SYSTEM = {
 LOOK.update(COLOUR_SYSTEM)
 CABLE_KEYS = ("cable", "cable_mv", "cable_tc", "cable_mc", "cable_inst", "cable_tcx", "cable_fa", "cable_fo", "cable_armor")
 if os.environ.get("SK_CABLE_MASK"):        # mask pass for the hero-cable composite (blender/hero_cable.py): cables pure red
-    for _k in CABLE_KEYS:
+    for _k in (("cable_mv", "cable_armor") if os.environ["SK_CABLE_MASK"] == "mv" else CABLE_KEYS):   # mv: MV spine only
         LOOK[_k] = ("paint", "#ff0000", .5, 0)
 GRIME = (.44, .44, .44, 1)              # neutral weathering (was warm brown, which tinted the whole plant)
 ALPHA = {"glass_in": .18, "coilpak_p": .7, "coilpak_b": .7}
@@ -1167,6 +1167,11 @@ EPIC = [
     dict(k="HALL1", n="Inside the turbine hall: GT2 and GT3 under the tray stack, from the west gallery",
          eye=(575, 455, 92), target=(870, 500, 24), lens=26, show="all", res=(1920, 1080),
          hide=("Common turbine hall",), hide_layers=("HALL_ROOF",), sun=(42, 200)),
+    dict(k="HALL2", n="Turbine hall interior from the crane level at the west end, down the GT row, roof on",
+         eye=(515, 468, 72), target=(880, 497, 26), lens=22, show="all", res=(1920, 1080), lamps=6500, sun=(40, 200)),
+    dict(k="HALL3", n="Turbine hall interior, see-through cladding as in the viewer",
+         eye=(515, 468, 72), target=(880, 497, 26), lens=22, show="all", res=(1920, 1080), lamps=6500, hall_alpha=.25,
+         sun=(40, 200)),
     dict(k="E2", n="Long lens from the west road: stacks and absorbers stacked up", eye=(-1500, 880, 120),
          target=(800, 1000, 130), lens=135, show="all"),
     dict(k="E3", n="Low pass over the air-cooled condenser", eye=(1500, 300, 165), target=(1100, 800, 90),
