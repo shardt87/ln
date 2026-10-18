@@ -87,8 +87,9 @@ open them locally in Chrome or Edge).
 - **Realism first:** cables visible and connected end to end, nothing floating or disconnected, no empty areas.
 - **Fix it properly, not with a band-aid.** Example: the LNG cable runs on one rack level and drops into the e-house
   roof, with no step-ups.
-- **The HRSGs and stacks are the visual hero.** They are darker grey, with a black crown, burnished-copper accent bands framed in black, black access steel and copper "HRSG k"
-  lettering. Carbon capture stays secondary: muted sage (#9dbba5) with four "CCS" letterings per absorber.
+- **The HRSGs and stacks are the visual hero.** HRSG casings slate grey (#6b757c) with black buckstays / wale bands,
+  light-grey stacks (#cfd3d5) with burnished-copper bands, black platforms / rails / ladders, copper "HRSG k"
+  lettering (no black crown: tried and rejected). See the root `HANDOFF.md` for the Oct 17-18 session. Carbon capture stays secondary: muted sage (#9dbba5) with four "CCS" letterings per absorber.
 - **One gravel colour** everywhere except the switchyard.
 - **Every view shows the whole campus** (modular yard, BTM, the marine terminal); views remove only cutaway roofs and walls.
 - **Commits:** checks must be clean (verify PASS, audit CLEAN, scans at zero) before a commit.

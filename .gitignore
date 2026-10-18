@@ -19,3 +19,8 @@ plant/model/*.zip
 # guided-tour video clips (~25 MB each, ~1 GB in all): delivered as files, rebuilt by plant/presentation/record_tour.js + compose_tour.py
 plant/renders/tour/*.mp4
 plant/presentation/dist/
+
+# X-ray capture tool workspace
+plant/tools/xray_capture/node_modules/
+plant/tools/xray_capture/capture.html
+plant/tools/xray_capture/xw_*.jpg
