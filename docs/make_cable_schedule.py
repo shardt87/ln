@@ -32,11 +32,11 @@ cover = [
     ("Combined Cycle Power Plant with Post-Combustion CCS, Gas Metering / LNG and Modular RICE Plant", BOLD),
     ("", None),
     ("Document No.", "CCPP-E-CS-0001"),
-    ("Revision", "B (Preliminary - issued for review, NOT FOR CONSTRUCTION). Rev B: converted to US NEC practice - 13.8 kV / 480 V, AWG/kcmil, Type MC-HL armored cable."),
+    ("Revision", "C (Preliminary - issued for review, NOT FOR CONSTRUCTION). Rev B: converted to US NEC practice - 13.8 kV / 480 V, AWG/kcmil, Type MC-HL armored cable. Rev C: CO2 compressor VFD line/output split; ACC fan local disconnects with flexible Machine Flex type VFD final drops."),
     ("Date", "2026-10-18"),
     ("Basis of layout", "Equipment positions from the 3D line-art model examples/powerplant.go (repo shardt87/ln, branch claude/powerplant-example). Coordinates in metres, site grid: X east, Y north, Z up. Lengths reported in metres and feet."),
     ("Basis of ratings", "Representative ratings for a ~1x1 F-class CCGT (GT ~290 MVA, ST ~175 MVA), amine CCS train, 8 x 2.5 MVA containerised gas engines, 230 kV switchyard. Ratings are typical values, NOT taken from a specific project. See 'Design Basis'."),
-    ("Cable construction", "Power, VFD and control: 600 V and 15 kV Type MC-HL, Cu, XHHW-2 / EPR (MV-105) insulation, continuous corrugated welded aluminum armor (CCW) with PVC jacket - e.g. Southwire Armor-X (product named as an example of the construction only). Instrument: armored PLTC / ITC-HL. All tray-rated (-TC/-ER), sunlight resistant, UL 1685 / IEEE 1202 FT4. MC-HL with listed fittings is suitable for Class I Div 1 & 2 areas (gas metering, LNG, BOG) per NEC 501.10."),
+    ("Cable construction", "Power, VFD and control: 600 V and 15 kV Type MC-HL, Cu, XHHW-2 / EPR (MV-105) insulation, continuous corrugated welded aluminum armor (CCW) with PVC jacket - e.g. Southwire Armor-X (product named as an example of the construction only). Final drops to vibrating VFD-driven motors (ACC fans): flexible shielded VFD cable Type TC-ER with 3 symmetrical grounds - e.g. Southwire Machine Flex. Instrument: armored PLTC / ITC-HL. All tray-rated (-TC/-ER), sunlight resistant, UL 1685 / IEEE 1202 FT4. MC-HL with listed fittings is suitable for Class I Div 1 & 2 areas (gas metering, LNG, BOG) per NEC 501.10."),
     ("", None),
     ("Sheets", None),
     ("Design Basis", "Global inputs: route slack, termination allowance, sag allowance, wastage, voltage drop limits, standards."),
@@ -205,6 +205,7 @@ fan = 1
 for x in (104, 112, 120, 128, 136):
     for y in (32, 43, 54):
         E.append((f"M-ACC-{fan:02d}", f"ACC fan motor {fan:02d}, 200 kW 690 V (VFD)", "30", x, y, 20.5, f"Fan ring ({x},{y}) on deck z=20"))
+        E.append((f"DS-ACC-{fan:02d}", f"ACC fan {fan:02d} local disconnect switch (in sight of motor, NEC 430.102)", "30", x + 4, y, 20.5, f"Fan bridge beside ring ({x},{y})"))
         fan += 1
 E += [
     # 40 CCS
@@ -222,6 +223,7 @@ E += [
     ("M-RBC-A", "Reboiler condensate pump A 110 kW, 400 V", "40", 200, 24, 0.5, "Reboiler at (198,20)"),
     ("M-CO2C", "CO2 compressor motor 14 MW, 11 kV (VFD)", "40", 195, 39, 0.5, "Compressor bldg (180-210,32-46)"),
     ("UCP-CO2", "CO2 compressor unit control panel", "40", 192, 34, 0.5, "Compressor bldg"),
+    ("VFD-CO2", "CO2 compressor MV variable frequency drive, 13.8 kV in / out", "40", 186, 40, 0.5, "Compressor bldg - assumed"),
     ("PKG-DEH", "CO2 dehydration package (TEG) 250 kVA", "40", 214, 39, 0.5, "Dehydration (210-218,34-44)"),
     ("FC-CO2", "CO2 export fiscal meter skid / flow computer", "40", 242, 39, 1, "Meter skid (240-244,37-41)"),
     ("JB-ABS-01", "Absorber instrument junction box (mid-height)", "40", 170, -2.5, 30, "Absorber"),
@@ -315,7 +317,7 @@ ct = wb.create_sheet("Cable Types")
 # Voltage drop factors from NEC Chapter 9.
 # 3-phase AC: line-to-line drop per A per m = sqrt(3) x Z(ohm/kft) / 304.8 m  ->  mV/A/m = 5.683 x Z
 # DC / 1-phase: loop drop = 2 x R(ohm/kft) / 304.8 m                           ->  mV/A/m = 6.562 x R
-Z085 = {"10": 1.1, "6": 0.45, "2": 0.19, "1/0": 0.12, "4/0": 0.069, "350": 0.048, "500": 0.039}  # Table 9, Cu, Al conduit, 0.85 PF
+Z085 = {"2/0": 0.10, "10": 1.1, "6": 0.45, "2": 0.19, "1/0": 0.12, "4/0": 0.069, "350": 0.048, "500": 0.039}  # Table 9, Cu, Al conduit, 0.85 PF
 RDC = {"10": 1.24, "6": 0.491, "2": 0.194, "500": 0.0258}  # Table 8, Cu uncoated, 75 C
 ZMV = {"2": 0.188, "1/0": 0.126, "4/0": 0.075, "500": 0.045, "750": 0.037, "1000": 0.033}  # 15 kV shielded, R cos + X sin at 0.85 PF
 def mv3(z):
@@ -351,6 +353,7 @@ T = [
     ("LV-3C-350", f"600 V 3/C 350 kcmil + G Cu XHHW-2, {MCHL}", "LV Power", 1, 57, 310, mv3(Z085["350"]), 7.2, 300),
     ("LV-3C-500", f"600 V 3/C 500 kcmil + G Cu XHHW-2, {MCHL}", "LV Power", 1, 66, 380, mv3(Z085["500"]), 9.8, 300),
     ("LV-VFD-500", f"600/1000 V VFD 3/C 500 kcmil + 3 symmetrical G, Cu XLPE, {MCHL}", "LV Power", 1, 70, 380, mv3(Z085["500"]), 11.0, 300),
+    ("LV-MFX-2/0", "1000 V 3/C 2/0 AWG + 3 symmetrical G, flexible tinned Cu XHHW-2, foil + braid shield, TPE jkt, Type TC-ER, NFPA 79 (Machine Flex type)", "LV Power", 1, 38, 175, mv3(Z085["2/0"]), 2.6, 300),
     ("LV-2C-10", f"600 V 2/C #10 AWG + G Cu XHHW-2, {MCHL}", "DC Power", 1, 18, 35, mvdc(RDC["10"]), 0.5, 600),
     ("LV-2C-6", f"600 V 2/C #6 AWG + G Cu XHHW-2, {MCHL}", "DC Power", 1, 22, 65, mvdc(RDC["6"]), 0.8, 600),
     ("LV-2C-2", f"600 V 2/C #2 AWG + G Cu XHHW-2, {MCHL}", "DC Power", 1, 28, 115, mvdc(RDC["2"]), 1.4, 600),
@@ -498,7 +501,8 @@ add("70-MV-013", "60", "MV Power", "BOG compressor motor", "MVS-1", "C-BOG", "MV
 add("70-MV-014", "50", "MV Power", "RICE black-start / island tie to MVS-1", "MVS-RICE", "MVS-1", "MV-1C-500-TPX", 2, "DB-02", "M", None, 13800, 3, 10000, 1, 1.0)
 # CCS MV
 add("40-MV-001", "40", "MV Power", "Flue gas booster fan", "MVS-CCS", "M-BF", "MV-1C-500-TPX", 1, "TR-05", "M", None, 13800, 3, 6500, 0.86, note="Across-the-line start - check voltage dip")
-add("40-MV-002", "40", "MV Power", "CO2 compressor motor (via VFD)", "MVS-CCS", "M-CO2C", "MV-1C-750-TPX", 2, "TR-05", "M", None, 13800, 3, 14000, 0.90, note="VFD in compressor bldg")
+add("40-MV-002", "40", "MV Power", "CO2 compressor VFD line side", "MVS-CCS", "VFD-CO2", "MV-1C-750-TPX", 2, "TR-05", "M", None, 13800, 3, 14000, 0.90, note="Input transformer integral to VFD")
+add("40-MV-010", "40", "MV Power", "CO2 compressor VFD output to motor", "VFD-CO2", "M-CO2C", "MV-1C-750-TPX", 2, "LOCAL", "M", None, 13800, 3, 14000, 0.90, note="VFD output: shielded, symmetrical triplexed sets; confirm insulation for dv/dt with VFD vendor")
 add("40-MV-003", "40", "MV Power", "Lean amine pump A", "MVS-CCS", "M-LAP-A", "MV-3C-2", 1, "TR-05", "M", None, 13800, 3, 800, 0.84)
 add("40-MV-004", "40", "MV Power", "Lean amine pump B", "MVS-CCS", "M-LAP-B", "MV-3C-2", 1, "TR-05", "M", None, 13800, 3, 800, 0.84)
 add("40-MV-005", "40", "MV Power", "Rich amine pump A", "MVS-CCS", "M-RAP-A", "MV-3C-2", 1, "TR-05", "M", None, 13800, 3, 700, 0.84)
@@ -532,7 +536,9 @@ add("20-LV-004", "20", "LV Power", "HRSG recirculation pump", "MCC-HRSG", "M-HRS
 add("20-LV-005", "20", "LV Power", "ST turning gear", "MCC-ST", "M-ST-TG", "LV-3C-2", 1, "LOCAL", "M", None, 480, 3, 37, 0.78)
 add("20-LV-006", "20", "LV Power", "ST AC lube oil pump", "MCC-ST", "M-ST-LOP", "LV-3C-1/0", 1, "LOCAL", "M", None, 480, 3, 55, 0.80)
 for i in range(15):
-    add(f"30-LV-{i+1:03d}", "30", "LV Power", f"ACC fan motor {i+1:02d} (VFD output)", "MCC-ACC", f"M-ACC-{i+1:02d}", "LV-VFD-500", 1, "TR-06", "M", None, 480, 3, 150, 0.85, note="Armor-X type VFD cable, symmetrical grounds")
+    add(f"30-LV-{i+1:03d}", "30", "LV Power", f"ACC fan {i+1:02d} VFD output to local disconnect", "MCC-ACC", f"DS-ACC-{i+1:02d}", "LV-VFD-500", 1, "TR-06", "M", None, 480, 3, 150, 0.85, note="Armor-X type VFD cable, symmetrical grounds")
+for i in range(15):
+    add(f"30-LV-{i+16:03d}", "30", "LV Power", f"ACC fan {i+1:02d} disconnect to motor (flexible final drop)", f"DS-ACC-{i+1:02d}", f"M-ACC-{i+1:02d}", "LV-MFX-2/0", 2, "LOCAL", "M", 6, 480, 3, 150, 0.85, note="Machine Flex type TC-ER VFD cable for vibration; 360 deg shield termination glands")
 add("40-LV-001", "40", "LV Power", "Reboiler condensate pump A", "PMCC-CCS", "M-RBC-A", "LV-3C-350", 1, "TR-05", "M", None, 480, 3, 110, 0.82)
 add("40-LV-002", "40", "LV Power", "CO2 dehydration package", "PMCC-CCS", "PKG-DEH", "LV-3C-350", 2, "TR-05", "M", None, 480, 3, 250, 1, note="Load in kVA")
 add("40-LV-003", "40", "LV Power", "CO2 fiscal meter skid", "PMCC-CCS", "FC-CO2", "LV-3C-10", 1, "TR-05", "M", None, 480, 3, 15, 1)
@@ -648,7 +654,7 @@ heads = [
     ("AR", "OD (mm)", 7), ("AS", "Base Ampacity (A)", 8), ("AT", "mV/A/m", 7),
 ]
 HELPERS = ("AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ", "AR", "AS", "AT")
-cs["A1"] = "CABLE SCHEDULE - CCPP-E-CS-0001 Rev B (PRELIMINARY) - US NEC practice, Type MC-HL armored cable"
+cs["A1"] = "CABLE SCHEDULE - CCPP-E-CS-0001 Rev C (PRELIMINARY) - US NEC practice, Type MC-HL armored cable"
 cs["A1"].font = Font(name=F, bold=True, size=12)
 cs["AI1"] = "Calculation helpers (lookups - do not edit)"
 cs["AI1"].font = BOLD
@@ -849,6 +855,8 @@ refs = [
     ("Cable product", "Southwire SPEC 45352 - 600 V XLPE XHHW-2 Armor-X (MC-HL) power cable with ground", "https://cabletechsupport.southwire.com/tile/26/spec/45352/?country=US"),
     ("Cable product", "Southwire SPEC 45227 - 600 V XLPE XHHW-2 Armor-X (MC-HL) control cable with ground", "https://www.southwire.com/wire-cable/armored-power-cable/cu-600v-xlpe-xhhw-2-armor-x-pvc-control-cable-with-ground/p/55061899"),
     ("Cable product", "Southwire SPEC 45302 - 600/1000 V Armor-X VFD cable", "https://www.southwire.com/wire-cable/armored-power-cable/cu-600-1000v-xlpe-insulation-armor-x-sup-sup-thermoplastic-lszh-tp-jacket-xhhw-2-vfd-cable-ct-rated-sunlight-resistant-for-direct-burial-silicone-free/p/67267399"),
+    ("Cable product", "Southwire SPEC 45443 - Machine Flex TC-ER 1000 V flexible VFD cable, 3 symmetrical grounds", "https://cabletechsupport.southwire.com/tile/1/spec/45443/?country=US"),
+    ("Cable product", "Southwire SPEC 45442 - reduced diameter flexible VFD cable, Type TC-ER", "https://www.southwire.com/wire-cable/power-control/cu-600v-xlpe-insulation-shielded-tpe-jacket-xhhw-2-reduced-diameter-flexible-variable-frequency-drive-vfd-/p/SPEC45442"),
     ("Switchyard / SLD", "SPP GEN-2008-006 facility study - 2-on-1 CCGT, 138 kV one-lines", "https://opsportal.spp.org/documents/studies/files/2008_Generation_Studies/GEN-2008-006FS.pdf"),
 ]
 for j, h in enumerate(("Topic", "Document", "URL"), start=1):
