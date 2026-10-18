@@ -55,6 +55,7 @@ def build():
             box(a0, a1, b0, b1, 20.0, 20.02, "deck_line")
             n += 1
     fuel.D = False
+    n += accents()
     n += end_wall()
     n += south_cladding()
     return n
@@ -79,7 +80,50 @@ def south_cladding():
         if upper or outer or roof:
             p["item"] = it["id"]
             n += 1
-    return n
+    on(it)                                              # the south wall's copper band lifts off with the cladding
+    fuel.D = True
+    box(481.0, 1098.8, 404.05, 404.25, 64.0, 65.6, "hero_accent")
+    fuel.D = False
+    return n + 1
+
+
+def accents():
+    """Southwire black and copper, as on the HRSGs and stacks: black stiffener rings and generator ribs, one copper
+    band per machine (the GT turbine strut flange, the ST HP/IP lagging bands), and a copper band round the hall walls
+    at EL 64 (the structural steel itself is hall_steel, now Southwire black). Yellow safety rails stay yellow."""
+    n = 0
+    gens = {find(g)["id"] for g in GENERATORS}
+    gts = {find(f"GT{k + 1}: H-class")["id"] for k in range(3)}
+    st = find("ST: steam turbine")["id"]
+    for p in fuel.G["parts"]:
+        if p["kind"] != "rod" or p["color"] != "steel":
+            continue
+        r, ys = p.get("r", 0), (p["a"][1] + p["b"][1]) / 2
+        thin = abs(p["a"][1] - p["b"][1]) <= 1.3 and p["a"][0] == p["b"][0] and p["a"][2] == p["b"][2]
+        if not thin:
+            continue
+        if p["item"] in gts and 472 <= ys <= 494 and r > 5:
+            p["color"] = "hero_rail"                    # VGV ring and compressor stiffener rings
+        elif p["item"] in gts and 524 <= ys <= 525.5 and r > 8:
+            p["color"] = "hero_accent"                  # turbine strut flange: the copper band
+        elif p["item"] in gens and r > 7:
+            p["color"] = "hero_rail"                    # generator frame ribs
+        elif p["item"] == st and r > 13:
+            p["color"] = "hero_rail"                    # LP barrel stiffener rings
+        elif p["item"] == st and 7.8 < r < 7.9:
+            p["color"] = "hero_accent"                  # HP/IP lagging bands
+        else:
+            continue
+        n += 1
+    on(find("Common turbine hall"))
+    fuel.D = True
+    zb = (64.0, 65.6)                                   # copper band, above the gallery roof and below the flag
+    box(481.0, 1098.8, 558.75, 558.95, *zb, "hero_accent")             # north wall
+    box(480.05, 480.25, 404.3, 558.7, *zb, "hero_accent")              # west wall
+    for (y0, y1) in ((404.3, 412.0), (538.0, 558.7)):                  # east wall, either side of the sign and flag
+        box(1098.75, 1098.95, y0, y1, *zb, "hero_accent")
+    fuel.D = False
+    return n + 5
 
 
 def end_wall():
@@ -88,7 +132,14 @@ def end_wall():
     on(find("Common turbine hall"))
     fuel.D = True
     xf = 1099.0
-    showcase.decal((xf - .1, 448, 73), (-1, 0, 0), 58, 14, [("3x1 CCGT", .8, True, "#1e2833")], bg=None)
+    # the plain lettering for the unbranded build; the branded build prints the full graphic (blender/hall_sign.py):
+    # 3x1 CCGT, a copper rule, WIRE & CABLE PARTNER and the Southwire logo
+    showcase.decal((xf - .1, 448, 73), (-1, 0, 0), 58, 14, [("3x1 CCGT", .8, True, "#1e2833")], bg=None,
+                   generic_only=True)
+    it = fuel.G["cur"]
+    fuel.G.setdefault("decals", []).append(dict(c=[xf - .1, 448.0, 74.0], n=[-1, 0, 0], w=58.0, h=24.0, bg=None, lines=[],
+                                                item=it["id"], layer=it["layer"], brand=1, img="hall_wall_sign.png",
+                                                print=1))
     # flag: seen from the west, north (+y) is on the viewer's left, so the canton sits at the high-y, top corner
     w, h = 28.0, 28.0 / 1.9
     y0, y1, z0 = 501.0, 529.0, 66.0

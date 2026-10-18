@@ -66,7 +66,14 @@ for d in model.get("decals", []):
     n = d.get("img")
     if n and n not in model["screens"]:
         p = os.path.join(HERE, "screens", n)
-        if _Image:
+        fmt = "jpeg"
+        if _Image and d.get("print"):                       # printed wall graphic: keep its transparency
+            im = _Image.open(p).convert("RGBA")
+            im.thumbnail((1024, 1024))
+            buf = io.BytesIO()
+            im.save(buf, "PNG", optimize=True)
+            raw, fmt = buf.getvalue(), "png"
+        elif _Image:
             im = _Image.open(p).convert("RGB")
             im.thumbnail((720 if d["w"] > 3 else 480, 405))
             buf = io.BytesIO()
@@ -74,7 +81,8 @@ for d in model.get("decals", []):
             raw = buf.getvalue()
         else:
             raw = open(p, "rb").read()
-        model["screens"][n] = "data:image/%s;base64," % ("png" if not _Image and p.endswith(".png") else "jpeg") + _b64.b64encode(raw).decode()
+            fmt = "png" if p.endswith(".png") else "jpeg"
+        model["screens"][n] = "data:image/%s;base64," % fmt + _b64.b64encode(raw).decode()
 # the model travels gzip-compressed (base64) and is inflated in the browser with DecompressionStream:
 # the page drops from ~12 MB to ~2-3 MB, which mobile viewers load reliably
 import base64, gzip

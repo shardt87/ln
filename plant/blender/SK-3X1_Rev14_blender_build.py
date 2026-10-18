@@ -322,7 +322,7 @@ def make_decals():
         nt.links.new(tex.outputs["Color"], b.inputs["Base Color"])
         nt.links.new(tex.outputs["Alpha"], b.inputs["Alpha"])
         b.inputs["Roughness"].default_value = .55
-        if d.get("img"):                                           # self-lit display behind a glass face
+        if d.get("img") and not d.get("print"):                    # self-lit display behind a glass face
             nt.links.new(tex.outputs["Color"], b.inputs["Emission Color" if "Emission Color" in b.inputs else "Emission"])
             b.inputs["Emission Strength"].default_value = d.get("emit", 1.4)
             b.inputs["Roughness"].default_value = .18

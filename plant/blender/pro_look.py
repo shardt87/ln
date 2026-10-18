@@ -138,7 +138,7 @@ COLOUR_SYSTEM = {
     "hero_rail": ("paint", "#1c1d1f", .3, .3),
     # turbine hall interior (hall_finish.py): dark epoxy deck, painted generators, blue-grey structural steel
     "deck_epoxy": ("paint", "#4e5856", .3, 0), "gen_paint": ("paint", "#33475a", .36, .1),
-    "hall_steel": ("paint", "#5a6874", .45, .2),
+    "hall_steel": ("paint", "#26292d", .42, .25),            # Southwire black structural steel
     "gt_cold": ("paint", "#5d666c", .34, .55), "gt_comb": ("paint", "#454c51", .4, .5),
     "gt_blanket": ("paint", "#c2c4c1", .62, .15), "deck_line": ("paint", "#d9b21c", .5, 0),
     "flag_red": ("paint", "#b22234", .55, 0), "flag_white": ("paint", "#f1f0ea", .55, 0), "flag_blue": ("paint", "#3c3b6e", .55, 0),

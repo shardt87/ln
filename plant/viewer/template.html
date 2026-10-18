@@ -440,7 +440,9 @@ for(const d of (MODEL.decals||[])){
   let mat = decalMats[key];
   if(!mat && d.img){                 // control-room displays: rendered SCADA / CCTV images, self-lit
     const tex = new THREE.TextureLoader().load((MODEL.screens||{})[d.img]||''); tex.encoding=THREE.sRGBEncoding; tex.anisotropy=4;
-    mat = decalMats[key] = new THREE.MeshBasicMaterial({map:tex, clippingPlanes:CLIP, toneMapped:false, polygonOffset:true, polygonOffsetFactor:-2, polygonOffsetUnits:-2});
+    mat = decalMats[key] = d.print
+      ? new THREE.MeshLambertMaterial({map:tex, transparent:true, alphaTest:.4, clippingPlanes:CLIP, polygonOffset:true, polygonOffsetFactor:-2, polygonOffsetUnits:-2})  // printed wall graphic, lit like paint
+      : new THREE.MeshBasicMaterial({map:tex, clippingPlanes:CLIP, toneMapped:false, polygonOffset:true, polygonOffsetFactor:-2, polygonOffsetUnits:-2});
   }
   if(!mat){
   const cw = Math.min(512, Math.max(128, Math.round(d.w*96))), ch = Math.min(256, Math.max(24, Math.round(cw*d.h/d.w)));
