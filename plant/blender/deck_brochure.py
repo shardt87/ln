@@ -3,7 +3,7 @@ strategy): same copy, products and model-measured numbers as brochure.py, laid o
 (charcoal field, diagonal photo edge, Barlow Condensed, copper). Pictures are the current renders of the SK-3X1
 model (renders/epic, renders/cover).
 
-    python blender/deck_brochure.py        # -> renders/deck/brochure_slides/slide_02..12.png + one PDF with the cover
+    python blender/deck_brochure.py        # -> renders/deck/brochure_slides/slide_02..13.png + one PDF with the cover
 """
 import os
 
@@ -133,50 +133,63 @@ def overview(n):
     return img
 
 
-def where(n):
-    img = Image.new("RGB", (W, H), BG)
-    d = ImageDraw.Draw(img)
-    tracked(d, (M, 110), "THE PLANT AT A GLANCE", F(BOLD, 30), COPPER, 4)
-    d.text((M, 150), "WHERE THE CABLE GOES", font=F(XBOLD, 112), fill=WHITE)
-    cent = {}
-    for z in B.ZONES[:5]:
-        xs, ys = [], []
-        for it in B.MODEL["items"]:
-            f = it.get("fp")
-            if it.get("area") in z["areas"] and f and len(f) == 4 and (f[1] - f[0]) < 400 and it["z"][1] > 2:
-                xs.append((f[0] + f[1]) / 2)
-                ys.append((f[2] + f[3]) / 2)
-        cent[z["n"]] = (sorted(xs)[len(xs) // 2], sorted(ys)[len(ys) // 2])
-    mw, mh = 1640, 1060
-    mp = B.plan_map((mw, mh), sum((z["areas"] for z in B.ZONES[:5]), ()), cent, soft=True)
-    img.paste(mp, (M - 10, 300), mp)
-    tracked(d, (M, 300 + mh + 10), "SK-3X1 CAMPUS PLAN, DRAWN FROM THE 3D MODEL  ·  NORTH UP", F(BOLD, 22), DIM, 3)
-    # right column: legend and the numbers
-    cx = 1880
-    cw = W - M - cx
-    y = 330
-    for z in B.ZONES[:5]:
-        d.text((cx, y), z["n"], font=F(XBOLD, 40), fill=COPPER)
-        d.text((cx + 74, y + 4), z["kicker"].split("  ·  ")[0], font=F(BOLD, 36), fill=WHITE)
-        y += 62
-    y += 30
-    d.line([(cx, y), (W - M, y)], fill=RULE, width=2)
-    tracked(d, (cx, y + 26), "BY THE NUMBERS", F(BOLD, 30), COPPER, 4)
+def stats():
     L = B.route_feet()
     wired = sum(1 for it in B.MODEL["items"] if it.get("wiring") and it.get("area") != "L")
-    stats = [(f"{L.get('tray', 0) / 5280:.1f} MI", "of cable tray routes on the racks and in the halls"),
-             (f"{L.get('buried', 0) / 5280:.1f} MI", "of duct-bank and buried cable routes"),
-             (f"{L.get('hv', 0):,.0f} FT", "of 230 kV underground cable routes"),
-             (f"{wired}", "pieces of equipment with their own cable applications")]
+    return L, [(f"{L.get('tray', 0) / 5280:.1f} MI", "of cable tray routes on the racks and in the halls"),
+               (f"{L.get('buried', 0) / 5280:.1f} MI", "of duct-bank and buried cable routes"),
+               (f"{L.get('hv', 0):,.0f} FT", "of 230 kV underground cable routes"),
+               (f"{wired}", "pieces of equipment with their own cable applications")]
+
+
+def where(n):
+    """The reveal: the same plant with the steel taken away, only the cable network left, lit in copper."""
+    img = Image.new("RGB", (W, H), BG)
+    photo_right(img, "xray_reveal.jpg", 1240, 1000, (.5, .5))
+    d = ImageDraw.Draw(img)
+    tracked(d, (M, 110), "THE PLANT AT A GLANCE", F(BOLD, 30), COPPER, 4)
+    d.rectangle([M, 170, M + 96, 179], fill=COPPER)
+    big = F(XBOLD, 118)
+    d.text((M, 200), "WHERE THE", font=big, fill=WHITE)
+    d.text((M, 320), "CABLE GOES.", font=big, fill=COPPER)
+    y = para(d, (M, 490), "Take the steel away and this is what is left: one network, from the 230 kV grid "
+             "connection to the last instrument loop, in every zone of the campus.", F(REG, 30), GREY, 900, 1.42)
+    y += 40
+    d.line([(M, y), (M + 900, y)], fill=RULE, width=2)
+    tracked(d, (M, y + 26), "BY THE NUMBERS", F(BOLD, 30), COPPER, 4)
+    _, st = stats()
     y += 90
-    sw = cw // 2
-    for k, (v, t) in enumerate(stats):
-        x = cx + (k % 2) * sw
-        yy = y + (k // 2) * 230
-        d.text((x, yy), v, font=F(XBOLD, 84), fill=WHITE)
-        para(d, (x, yy + 104), t, F(REG, 24), GREY, sw - 40, 1.3)
-    para(d, (cx, H - FOOT - 100), "Route lengths measured along the modelled tray, duct-bank and cable routes "
-         "(not cable footage); data-centre campus excluded.", F(REG, 20), DIM, cw, 1.35)
+    sw = 450
+    for k, (v, t) in enumerate(st):
+        x = M + (k % 2) * sw
+        yy = y + (k // 2) * 220
+        d.text((x, yy), v, font=F(XBOLD, 80), fill=WHITE)
+        para(d, (x, yy + 98), t, F(REG, 24), GREY, sw - 50, 1.3)
+    para(d, (M, H - FOOT - 90), "Route lengths measured along the modelled tray, duct-bank and cable routes "
+         "(not cable footage); data-centre campus excluded. Picture: the 3D model in cable X-ray.", F(REG, 20), DIM, 900, 1.35)
+    footer(d, n)
+    return img
+
+
+def bookend(n):
+    """Close: the whole campus as cable, with the cover's claim."""
+    img = Image.new("RGB", (W, H), BG)
+    img.paste(photo("xray_bookend.jpg", (W, H - FOOT), (.6, .5)), (0, 0))
+    g = Image.new("L", (1400, 1))
+    g.putdata([int(235 * (1 - k / 1400) ** 1.6) for k in range(1400)])
+    img.paste(Image.new("RGB", (1400, H - FOOT), BG), (0, 0), g.resize((1400, H - FOOT)))
+    d = ImageDraw.Draw(img)
+    tracked(d, (M, 380), "SK-3X1 POWER CAMPUS", F(BOLD, 30), COPPER, 4)
+    d.rectangle([M, 440, M + 96, 449], fill=COPPER)
+    big = F(XBOLD, 140)
+    d.text((M, 470), "EVERY MEGAWATT", font=big, fill=WHITE)
+    d.text((M, 610), "TRAVELS THROUGH", font=big, fill=WHITE)
+    d.text((M, 750), "A CABLE.", font=big, fill=COPPER)
+    L, _ = stats()
+    total = (L.get("tray", 0) + L.get("buried", 0) + L.get("hv", 0)) / 5280
+    d.text((M, 980), f"{total:.0f} MILES", font=F(XBOLD, 96), fill=WHITE)
+    para(d, (M, 1090), "of modelled cable routes on one campus, from the 230 kV grid connection to the last "
+         "instrument loop.", F(REG, 30), GREY, 1000, 1.4)
     footer(d, n)
     return img
 
@@ -205,9 +218,13 @@ def zone(z, n):
     framed(img, d, z["inset"], (ix, iy), (iw, ih), (.5, .5), crop, z["inset_cap"])
     mw, mh = 560, 340
     mx = W - M - mw
-    mp = B.plan_map((mw, mh), z["areas"])
     d.rectangle([mx - 2, iy - 2, mx + mw + 2, iy + mh + 2], fill=(18, 20, 23), outline=RULE, width=2)
-    img.paste(mp, (mx, iy), mp)
+    loc = os.path.join(PLANT, "renders", "cover", f"xray_loc{z['n']}.jpg")
+    if os.path.exists(loc):                        # the campus X-ray with this zone lit in copper (as slide 3)
+        img.paste(photo(loc, (mw, mh), (.5, .5)), (mx, iy))
+    else:
+        mp = B.plan_map((mw, mh), z["areas"])
+        img.paste(mp, (mx, iy), mp)
     tracked(d, (mx, iy + mh + 16), "WHERE IN THE PLANT", F(BOLD, 22), DIM, 3)
     footer(d, n, NOTE)
     return img
@@ -315,7 +332,7 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     z = {q["n"]: q for q in B.ZONES}
     slides = [overview(2), where(3), zone(z["01"], 4), grid_detail(5), zone(z["02"], 6), hall_detail(7),
-              zone(z["03"], 8), zone(z["04"], 9), zone(z["05"], 10), zone(z["06"], 11), index(12)]
+              zone(z["03"], 8), zone(z["04"], 9), zone(z["05"], 10), zone(z["06"], 11), bookend(12), index(13)]
     for k, s in enumerate(slides, 2):
         s.save(os.path.join(OUT, f"slide_{k:02d}.png"))
         s.resize((W // 2, H // 2), Image.LANCZOS).save(os.path.join(OUT, f"slide_{k:02d}_preview.jpg"), quality=88)
