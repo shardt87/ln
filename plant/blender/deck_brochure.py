@@ -286,25 +286,25 @@ def hall_detail(n):
 
 
 def hall_inside(n):
-    """Inside the turbine hall: down the GT row from the crane level, roof on (camera HALL2), the visible cable energised in copper
+    """Inside the turbine hall: down the GT row from the crane level, roof on (camera HALL4), the visible cable energised in copper
     (hero_cable.py), callouts projected from the model, and the hall's cable numbers measured from the model."""
     import math
     img = Image.new("RGB", (W, H), BG)
     x_top, x_bot = 1240, 1000
-    photo_right(img, "HALL2_hero_cable.jpg", x_top, x_bot, (.42, .5))
+    photo_right(img, "HALL4_hero_cable.jpg", x_top, x_bot, (.5, .55))
     ox = min(x_top, x_bot)                           # photo's left edge on the slide
     d = ImageDraw.Draw(img)
     # callouts: model points through the HALL1 camera (sensor fit on the longer side, as Blender's AUTO)
-    eye, tgt, lens = (515, 468, 72), (880, 497, 26), 22
+    eye, tgt, lens = (515, 468, 72), (760, 497, 14), 48
     f = [t - e for t, e in zip(tgt, eye)]
     fl = math.sqrt(sum(v * v for v in f)); f = [v / fl for v in f]
     r = [f[1], -f[0], 0]; rl = math.hypot(r[0], r[1]); r = [v / rl for v in r]
     u = [r[1] * f[2] - r[2] * f[1], r[2] * f[0] - r[0] * f[2], r[0] * f[1] - r[1] * f[0]]
-    sw, sh = 1920, 1080                              # render size; cover-fit into the photo box as photo() does
+    sw, sh = 1920, 1440                              # render size; cover-fit into the photo box as photo() does
     bw, bh = W - ox, H - FOOT
     sc = max(bw / sw, bh / sh)
-    cx0 = (sw * sc - bw) * .42
-    cy0 = (sh * sc - bh) * .5
+    cx0 = (sw * sc - bw) * .5
+    cy0 = (sh * sc - bh) * .55
     k = lens / 36 * sw
     def proj(p):
         dv = [a - b for a, b in zip(p, eye)]
