@@ -62,11 +62,11 @@ def build():
 
 def south_cladding():
     """Split the south cladding (upper south wall over the gallery roof, the gallery's outer wall, its doors and
-    lights) into its own item, so cutaway cameras can lift it off and look in at all four machine trains side by side.
+    lights) and the main roof panels into their own item, so cutaway cameras can lift it off and look in at all four machine trains side by side.
     The structure (columns, girders) stays with the hall."""
     hall = find("Common turbine hall")
-    it = new_item(hall["layer"], "Turbine hall south cladding (lifted off in the cutaway views)", [480, 1100, 369, 404],
-                  [0, 98], area=hall.get("area", "A"), info="Insulated wall panels, gallery doors and wall lights.")
+    it = new_item(hall["layer"], "Turbine hall south cladding and roof (lifted off in the cutaway views)", [480, 1100, 369, 560],
+                  [0, 101], area=hall.get("area", "A"), info="Insulated wall panels, gallery doors and wall lights.")
     on(hall)
     n = 0
     for p in fuel.G["parts"]:
@@ -74,8 +74,9 @@ def south_cladding():
             continue
         lo, hi = p["min"], p["max"]
         upper = p["color"] == "hall" and lo[1] >= 402.5 and hi[1] <= 404.5 and lo[2] >= 59
+        roof = p["color"] == "roof" and lo[2] >= 95                     # main roof panels
         outer = p["color"] in ("hall", "door", "lamp") and lo[1] >= 369.5 and hi[1] <= 372.5
-        if upper or outer:
+        if upper or outer or roof:
             p["item"] = it["id"]
             n += 1
     return n
