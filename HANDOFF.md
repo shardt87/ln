@@ -51,8 +51,8 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
 
 ## In progress / not yet done
 
-- **Viewer not republished** since the hall / ST / branding changes. Rebuild `plant/viewer/index.html` and
-  `index_southwire.html` (`build_viewer.py`) and republish the artifact https://claude.ai/artifact/9bfQJUnJ6GCH35zmjBq7cP
+- **Viewer rebuilt (Oct 18) but not republished** since the hall / ST / branding changes: `plant/viewer/index.html` and
+  `index_southwire.html` are current; republish the artifact https://claude.ai/artifact/9bfQJUnJ6GCH35zmjBq7cP
   (publish `plant/viewer/index.html` with that url). The new `print` image decal (wall sign) is supported in
   `viewer/template.html` but untested in the browser.
 - **Older deck pictures** (slides 4-7, 9-12 heroes, K5 aerial on slide 2) predate the slate HRSG / black-copper look
@@ -63,6 +63,34 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
 - ST close-up: the thermocouple leads over the LP hood top hang in the air (`st_detail.py`, exhaust-hood leads at
   EL 45.4); route them flush on the casing if ST1 is used in the deck.
 - `DETAIL_CYCLES.md` / `README.md` have no entries yet for the Oct 17-18 work (the commit messages describe it).
+
+## 3D assets (files, format, size, what uses them)
+
+All under `plant/`. Units: the model JSON and OBJ are in feet; GLB / USDZ / .blend are in metres (Blender units).
+
+| File | Format | Size | Built | Used by |
+|---|---|---|---|---|
+| `sk3x1_model.json` | master model (items, parts, routes, decals) | 22.8 MB | Oct 18 | everything: viewer build, Blender, exports, checks, cable schedule |
+| `sk3x1_model.obj` + `sk3x1_model.mtl` | Wavefront OBJ, colour-only materials (no textures), Y-up, feet | 87.1 MB + 9 KB | Oct 18 | SketchUp / Rhino / Revit / 3ds Max hand-off |
+| `model/sk3x1_model.obj` + `.mtl` | same files, beside the other exports | 87.1 MB + 9 KB | Oct 18 | model download folder |
+| `model/SK-3X1_plant.blend` | Blender 4.2, images packed, every camera | 47.5 MB | Oct 18 | renders, re-export source |
+| `model/SK-3X1_coastal_A.blend` | Blender 4.2 (plant + LNG terminal, jetty, carrier) | 47.7 MB | Oct 18 | renders, re-export source |
+| `model/SK-3X1_plant_datacenter.blend` | Blender 4.2 (plant + BTM data centre) | 47.5 MB | Oct 18 | re-export source |
+| `model/SK-3X1_everything_datacenter.blend` | Blender 4.2 (everything) | 47.7 MB | Oct 18 | re-export source |
+| `model/current/*_glb.zip` (4) | zipped GLB, glTF 2.0 binary, self-contained (232 images embedded) | 35.6-36.4 MB each (raw 140-147 MB) | Oct 18 | current model for PowerPoint 3D, web, Windows 3D Viewer |
+| `model/current/*_usdz.zip` (4) | zipped USDZ, no decal textures | 17.2-17.7 MB each (raw 115-120 MB) | Oct 18 | iPhone / iPad AR Quick Look |
+| `model/SK-3X1_*.glb` (4) | GLB, self-contained (no images, no external refs) | 80.7-87.3 MB | **Oct 5, stale** | older download; superseded by `model/current/` |
+| `model/SK-3X1_*.usdz` (4) | USDZ | 69.0-73.7 MB | **Oct 5, stale** | older download; superseded by `model/current/` |
+| `viewer/index.html`, `viewer/index_southwire.html` | single-file three.js viewer, model inlined (gzip) | 2.7 / 2.9 MB | Oct 18 | the interactive viewer and the tour (republish pending) |
+| `renders/epic/*_pro.png` (19 committed), `renders/cover/*.png`, `*.jpg` | Blender renders | ~70 MB + | Oct 2-18 | deck slides and cover |
+| `screens/*.png`, `screens/hall_wall_sign.png` | images placed on the model (control-room screens, hall sign) | 2 MB | Oct 18 | viewer + Blender decals |
+
+Why the raw current GLB / USDZ are not committed: they are 115-147 MB, over GitHub's 100 MB file limit, and Git LFS
+is not available in this environment. The zips hold the same files. To restore raw files in the repo, enable Git LFS
+(`git lfs track "plant/model/*.glb" "plant/model/*.usdz"`) on a machine that has it, or export with Draco mesh
+compression (smaller, but PowerPoint does not read Draco). Re-export: `python blender/export_model.py plant/model
+[NAME [SOURCE]]` (see its docstring); Blender segfaults on exit after writing, the files are complete.
+No committed file is over 100 MB; the largest is the 87 MB OBJ (GitHub warns above 50 MB).
 
 ## Key decisions and why
 
@@ -116,4 +144,4 @@ Hall cameras in `blender/pro_look.py` EPIC: HX1 (cover), HALL2-HALL8, ST1, E1, K
   Pillow 12.3.0) and is gone with the container; recreate it. Background jobs max 2 h. **Never `pkill -f` / `pgrep -f`
   with a pattern that also appears in the same command line** (it kills the shell); run the kill as its own command.
 - Root `.gitignore` ignores `*.png`; force-add PNGs that the build needs (e.g. `screens/hall_wall_sign.png`).
-- No file in the repo is over 100 MB (largest: `plant/model/*.glb` and `plant/sk3x1_model.obj`, ~80-87 MB).
+- No file in the repo is over 100 MB (largest: the OBJ, 87 MB). Current GLB / USDZ are in `plant/model/current/` as zips.

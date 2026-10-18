@@ -21,3 +21,6 @@ The OBJ group names carry the full name.
 
 Conceptual illustration. Not engineered. Not for construction.
 Stephan Hardt | Power Generation Solutions
+
+Oct 18, 2026: the GLB / USDZ in this folder are the Oct 5 exports. The current ones (with the Oct 17-18 work) are
+zipped in current/ (raw files exceed GitHub's 100 MB limit); the .blend files here are current.
