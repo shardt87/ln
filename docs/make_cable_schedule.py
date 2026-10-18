@@ -32,7 +32,7 @@ cover = [
     ("Combined Cycle Power Plant with Post-Combustion CCS, Gas Metering / LNG and Modular RICE Plant", BOLD),
     ("", None),
     ("Document No.", "CCPP-E-CS-0001"),
-    ("Revision", "C (Preliminary - issued for review, NOT FOR CONSTRUCTION). Rev B: converted to US NEC practice - 13.8 kV / 480 V, AWG/kcmil, Type MC-HL armored cable. Rev C: CO2 compressor VFD line/output split; ACC fan local disconnects with flexible Machine Flex type VFD final drops."),
+    ("Revision", "D (Preliminary - issued for review, NOT FOR CONSTRUCTION). Rev B: converted to US NEC practice - 13.8 kV / 480 V, AWG/kcmil, Type MC-HL armored cable. Rev C: CO2 compressor VFD line/output split; ACC fan local disconnects with flexible Machine Flex type VFD final drops. Rev D: aligned with published product data and industry cable schedule formats - 3/C Armor-X MV-105 (220 mil NL-EPR) replaces 1/C triplexed MV, UAT-1 via non-segregated phase bus, hazardous area classification per equipment, connector type / hub size per end and pull-termination tracking register."),
     ("Date", "2026-10-18"),
     ("Basis of layout", "Equipment positions from the 3D line-art model examples/powerplant.go (repo shardt87/ln, branch claude/powerplant-example). Coordinates in metres, site grid: X east, Y north, Z up. Lengths reported in metres and feet."),
     ("Basis of ratings", "Representative ratings for a ~1x1 F-class CCGT (GT ~290 MVA, ST ~175 MVA), amine CCS train, 8 x 2.5 MVA containerised gas engines, 230 kV switchyard. Ratings are typical values, NOT taken from a specific project. See 'Design Basis'."),
@@ -45,6 +45,8 @@ cover = [
     ("Raceways", "Trays, trenches, duct banks, busducts, OHL - elevation, correction factor and fill check."),
     ("Cable Schedule", "One row per circuit. Route length, total length, running and design current, loading, voltage drop and check are all formulas."),
     ("BOQ Summary", "Quantities by cable type (with wastage, reels, mass) and by system."),
+    ("Termination & Pull", "Per-cable connector type and hub size at each end (from area classification and cable OD), routing reference, and construction tracking (reel, pulled, terminated, tested)."),
+    ("Fittings", "Connector hub trade size by cable OD (approximate - verify against fitting manufacturer)."),
     ("References", "Public documents identified as references for typical arrangements, and cable product data."),
     ("", None),
     ("Legend", None),
@@ -287,7 +289,12 @@ def us(s):
         s = s.replace(a, b)
     return s
 E = [(t, us(d), *rest) for t, d, *rest in E]
-eh = ["Tag", "Description", "Area", "X (m)", "Y (m)", "Z term. (m)", "Location in 3D model / basis"]
+DIV1 = {"M-LNG-P1", "M-LNG-P2", "LT-LNG"}
+DIV2 = {"C-BOG", "JB-LNG", "HTP-LNG", "XV-001", "FT-101A", "FT-101B", "FT-101C", "PCV-101", "H-101", "JB-GAS",
+        "M-GT-VNT-A", "M-GT-VNT-B", "JB-FG-GT", "TK-LNG"}
+def area_class(tag):
+    return "Class I Div 1" if tag in DIV1 else "Class I Div 2" if tag in DIV2 else "Unclassified"
+eh = ["Tag", "Description", "Area", "X (m)", "Y (m)", "Z term. (m)", "Location in 3D model / basis", "Area classification (NEC 500)"]
 for j, h in enumerate(eh, start=1):
     c = eq.cell(row=1, column=j, value=h)
     c.font = HDR; c.fill = HFILL; c.alignment = CENTER; c.border = BORDER
@@ -300,11 +307,15 @@ for i, row in enumerate(E, start=2):
             c.number_format = "0.0"
     if "assumed" in row[6].lower() or "not drawn" in row[6].lower():
         eq.cell(row=i, column=7).fill = YELLOW
+    c = eq.cell(row=i, column=8, value=area_class(row[0]))
+    c.font = BLUE; c.border = BORDER
+    if c.value != "Unclassified":
+        c.fill = YELLOW
 EQ_LAST = len(E) + 1
-for col, w in zip("ABCDEFG", (13, 62, 6, 8, 8, 10, 36)):
+for col, w in zip("ABCDEFGH", (13, 62, 6, 8, 8, 10, 36, 18)):
     eq.column_dimensions[col].width = w
 eq.freeze_panes = "B2"
-eq.auto_filter.ref = f"A1:G{EQ_LAST}"
+eq.auto_filter.ref = f"A1:H{EQ_LAST}"
 tags = [r[0] for r in E]
 assert len(tags) == len(set(tags)), "duplicate tag"
 EQ_TAG = f"Equipment!$A$2:$A${EQ_LAST}"
@@ -337,14 +348,13 @@ T = [
     ("IPB-3K", "Isolated phase tap bus 24 kV, 3 kA (per phase metre)", "Busduct", 3, None, 3000, None, 70, None),
     ("LVBD-4000", "600 V busway 4000 A, Cu, 3-ph + ground, outdoor feeder", "Busduct", 1, None, 4000, None, 45, None),
     ("LVBD-2500", "600 V busway 2500 A, Cu, 3-ph + ground, outdoor feeder", "Busduct", 1, None, 2500, None, 30, None),
-    ("MV-1C-2-NGR", f"15 kV MV-105 1/C #2 AWG Cu EPR 133% shielded, {MCHL}", "MV Power", 1, 33, 195, None, 1.6, 300),
-    ("MV-3C-2", f"15 kV MV-105 3/C #2 AWG Cu EPR 133% shielded + GC, {MCHL}", "MV Power", 1, 61, 165, mv3(ZMV["2"]), 4.0, 300),
-    ("MV-3C-1/0", f"15 kV MV-105 3/C 1/0 AWG Cu EPR 133% shielded + GC, {MCHL}", "MV Power", 1, 66, 215, mv3(ZMV["1/0"]), 5.3, 300),
-    ("MV-3C-4/0", f"15 kV MV-105 3/C 4/0 AWG Cu EPR 133% shielded + GC, {MCHL}", "MV Power", 1, 76, 310, mv3(ZMV["4/0"]), 8.0, 300),
-    ("MV-3C-500", f"15 kV MV-105 3/C 500 kcmil Cu EPR 133% shielded + GC, {MCHL}", "MV Power", 1, 94, 515, mv3(ZMV["500"]), 15.5, 300),
-    ("MV-1C-500-TPX", f"15 kV MV-105 1/C 500 kcmil Cu EPR 133% shielded, {MCHL}, triplexed set", "MV Power", 3, 41, 585, mv3(ZMV["500"]), 4.4, 300),
-    ("MV-1C-750-TPX", f"15 kV MV-105 1/C 750 kcmil Cu EPR 133% shielded, {MCHL}, triplexed set", "MV Power", 3, 46, 740, mv3(ZMV["750"]), 6.2, 300),
-    ("MV-1C-1000-TPX", f"15 kV MV-105 1/C 1000 kcmil Cu EPR 133% shielded, {MCHL}, triplexed set", "MV Power", 3, 51, 860, mv3(ZMV["1000"]), 7.9, 300),
+    ("MV-1C-2-NGR", f"15 kV MV-105 1/C #2 AWG Cu 220 mil NL-EPR 133%, Cu tape shield, {MCHL}", "MV Power", 1, 33, 195, None, 1.6, 300),
+    ("MV-3C-2", f"15 kV MV-105 3/C #2 AWG Cu 220 mil NL-EPR 133%, Cu tape shield + GC, {MCHL}", "MV Power", 1, 61, 165, mv3(ZMV["2"]), 4.0, 300),
+    ("MV-3C-1/0", f"15 kV MV-105 3/C 1/0 AWG Cu 220 mil NL-EPR 133%, Cu tape shield + GC, {MCHL}", "MV Power", 1, 66, 215, mv3(ZMV["1/0"]), 5.3, 300),
+    ("MV-3C-4/0", f"15 kV MV-105 3/C 4/0 AWG Cu 220 mil NL-EPR 133%, Cu tape shield + GC, {MCHL}", "MV Power", 1, 76, 310, mv3(ZMV["4/0"]), 8.0, 300),
+    ("MV-3C-500", f"15 kV MV-105 3/C 500 kcmil Cu 220 mil NL-EPR 133%, Cu tape shield + GC, {MCHL}", "MV Power", 1, 94, 515, mv3(ZMV["500"]), 15.5, 300),
+    ("MV-3C-750", f"15 kV MV-105 3/C 750 kcmil Cu 220 mil NL-EPR 133%, Cu tape shield + GC, {MCHL}", "MV Power", 1, 107, 635, mv3(ZMV["750"]), 21.0, 300),
+    ("NSPB-3000", "Non-segregated phase bus 15 kV, 3000 A, Cu, IEEE C37.23", "Busduct", 1, None, 3000, None, 90, None),
     ("LV-3C-10", f"600 V 3/C #10 AWG + G Cu XHHW-2, {MCHL}", "LV Power", 1, 20, 35, mv3(Z085["10"]), 0.6, 600),
     ("LV-3C-6", f"600 V 3/C #6 AWG + G Cu XHHW-2, {MCHL}", "LV Power", 1, 24, 65, mv3(Z085["6"]), 0.95, 600),
     ("LV-3C-2", f"600 V 3/C #2 AWG + G Cu XHHW-2, {MCHL}", "LV Power", 1, 31, 115, mv3(Z085["2"]), 1.8, 600),
@@ -352,8 +362,8 @@ T = [
     ("LV-3C-4/0", f"600 V 3/C 4/0 AWG + G Cu XHHW-2, {MCHL}", "LV Power", 1, 47, 230, mv3(Z085["4/0"]), 4.6, 300),
     ("LV-3C-350", f"600 V 3/C 350 kcmil + G Cu XHHW-2, {MCHL}", "LV Power", 1, 57, 310, mv3(Z085["350"]), 7.2, 300),
     ("LV-3C-500", f"600 V 3/C 500 kcmil + G Cu XHHW-2, {MCHL}", "LV Power", 1, 66, 380, mv3(Z085["500"]), 9.8, 300),
-    ("LV-VFD-500", f"600/1000 V VFD 3/C 500 kcmil + 3 symmetrical G, Cu XLPE, {MCHL}", "LV Power", 1, 70, 380, mv3(Z085["500"]), 11.0, 300),
-    ("LV-MFX-2/0", "1000 V 3/C 2/0 AWG + 3 symmetrical G, flexible tinned Cu XHHW-2, foil + braid shield, TPE jkt, Type TC-ER, NFPA 79 (Machine Flex type)", "LV Power", 1, 38, 175, mv3(Z085["2/0"]), 2.6, 300),
+    ("LV-VFD-500", f"600 V VFD 3/C 500 kcmil + 3 symmetrical G, Cu XLPE XHHW-2, {MCHL} (SPEC 45226 type)", "LV Power", 1, 70, 380, mv3(Z085["500"]), 11.0, 300),
+    ("LV-MFX-2/0", "1000 V 3/C 2/0 AWG + 3 symmetrical G, flexible tinned Cu XHHW-2, foil + braid shield, TPE jkt, Type TC-ER, NFPA 79 (Machine Flex type, SPEC 45443) - confirm 2/0 is in size range", "LV Power", 1, 38, 175, mv3(Z085["2/0"]), 2.6, 300),
     ("LV-2C-10", f"600 V 2/C #10 AWG + G Cu XHHW-2, {MCHL}", "DC Power", 1, 18, 35, mvdc(RDC["10"]), 0.5, 600),
     ("LV-2C-6", f"600 V 2/C #6 AWG + G Cu XHHW-2, {MCHL}", "DC Power", 1, 22, 65, mvdc(RDC["6"]), 0.8, 600),
     ("LV-2C-2", f"600 V 2/C #2 AWG + G Cu XHHW-2, {MCHL}", "DC Power", 1, 28, 115, mvdc(RDC["2"]), 1.4, 600),
@@ -380,7 +390,7 @@ for j, h in enumerate(th, start=1):
 basis = {
     "HV Overhead": "IEEE 738 typical (40 C ambient, 75 C conductor, 2 ft/s wind)",
     "Busduct": "Vendor nominal rating (IEEE C37.23 / UL 857)",
-    "MV Power": "NEC 311.60(C) 15 kV Cu 90 C in air, 40 C ambient (approx.); VD from R cos + X sin at 0.85 PF",
+    "MV Power": "NEC 311.60(C) 15 kV Cu 3/C in air, 90 C column (conservative - MV-105 is rated 105 C), 40 C ambient (approx.); VD from R cos + X sin at 0.85 PF",
     "LV Power": "NEC 310.16 Cu 75 C column (termination limit); NEC 392.80(A)(1); VD NEC Ch.9 Table 9, 0.85 PF",
     "DC Power": "NEC 310.16 75 C (1/C in tray: 392.80(A)(2), 75% of 310.17); VD NEC Ch.9 Table 8 DC loop",
     "Control": "Not current-rated here",
@@ -485,11 +495,11 @@ add("20-IPB-004", "20", "Busduct", "ST IPB tap to UAT-2", "GEN-ST", "UAT-2", "IP
 add("20-MV-001", "20", "MV Power", "GT generator neutral to NGR", "GEN-GT", "NGR-GT", "MV-1C-2-NGR", 1, "LOCAL", note="Neutral - fault current limited by NGR")
 add("20-MV-002", "20", "MV Power", "ST generator neutral to NGR", "GEN-ST", "NGR-ST", "MV-1C-2-NGR", 1, "LOCAL", note="Neutral - fault current limited by NGR")
 # MV main
-add("70-MV-001", "70", "MV Power", "UAT-1 to 13.8 kV main switchgear incomer", "UAT-1", "MVS-1", "MV-1C-1000-TPX", 4, "DB-03", "M", None, 13800, 3, 45000, 1, 1.0, "Transformer secondary - 4 triplexed sets")
-add("70-MV-002", "70", "MV Power", "UAT-2 to CCS 13.8 kV switchgear incomer", "UAT-2", "MVS-CCS", "MV-1C-750-TPX", 3, "TR-02", "M", None, 13800, 3, 30000, 1, 1.0, "Transformer secondary - 3 triplexed sets")
-add("70-MV-003", "70", "MV Power", "MVS-1 / MVS-CCS bus tie", "MVS-1", "MVS-CCS", "MV-1C-500-TPX", 1, "TR-02", "M", None, 13800, 3, 10000, 1, 1.0)
+add("70-MV-001", "70", "Busduct", "UAT-1 to 13.8 kV main switchgear incomer", "UAT-1", "MVS-1", "NSPB-3000", 1, "BD", "M", None, 13800, 3, 45000, 1, 1.0, "Transformer secondary - non-segregated phase bus (typical above ~2000 A)")
+add("70-MV-002", "70", "MV Power", "UAT-2 to CCS 13.8 kV switchgear incomer", "UAT-2", "MVS-CCS", "MV-3C-750", 3, "TR-02", "M", None, 13800, 3, 30000, 1, 1.0, "Transformer secondary - 3 parallel 3/C cables")
+add("70-MV-003", "70", "MV Power", "MVS-1 / MVS-CCS bus tie", "MVS-1", "MVS-CCS", "MV-3C-750", 1, "TR-02", "M", None, 13800, 3, 10000, 1, 1.0)
 add("70-MV-004", "70", "MV Power", "MVS-1 to GT LCI isolation transformer", "MVS-1", "LCI-TX", "MV-3C-500", 1, "TR-01", "M", None, 13800, 3, 8000, 1)
-add("70-MV-005", "20", "MV Power", "LCI output to GT generator (start-up)", "LCI-GT", "GEN-GT", "MV-1C-500-TPX", 2, "TR-01", "M", None, 6000, 3, 8000, 1, 1.0, "Variable frequency; LCI max output voltage assumed 6 kV")
+add("70-MV-005", "20", "MV Power", "LCI output to GT generator (start-up)", "LCI-GT", "GEN-GT", "MV-3C-750", 2, "TR-01", "M", None, 6000, 3, 8000, 1, 1.0, "Variable frequency; LCI max output voltage assumed 6 kV")
 add("70-MV-006", "20", "MV Power", "Boiler feed pump A", "MVS-1", "M-BFP-A", "MV-3C-4/0", 1, "TR-01", "M", None, 13800, 3, 3200, 0.86, note="Motor: 125% FLC (NEC 430.22)")
 add("70-MV-007", "20", "MV Power", "Boiler feed pump B", "MVS-1", "M-BFP-B", "MV-3C-4/0", 1, "TR-01", "M", None, 13800, 3, 3200, 0.86)
 add("70-MV-008", "20", "MV Power", "Condensate extraction pump A", "MVS-1", "M-CEP-A", "MV-3C-2", 1, "TR-02", "M", None, 13800, 3, 500, 0.82, note="#2 AWG minimum for 15 kV / fault withstand")
@@ -498,11 +508,11 @@ add("70-MV-010", "70", "MV Power", "Main LV transformer LVT-1", "MVS-1", "LVT-1"
 add("70-MV-011", "30", "MV Power", "ACC fan transformer LVT-ACC", "MVS-1", "LVT-ACC", "MV-3C-1/0", 1, "TR-02", "M", None, 13800, 3, 3000, 1)
 add("70-MV-012", "60", "MV Power", "Gas station transformer LVT-GAS", "MVS-1", "LVT-GAS", "MV-3C-2", 1, "TR-03", "M", None, 13800, 3, 1600, 1)
 add("70-MV-013", "60", "MV Power", "BOG compressor motor", "MVS-1", "C-BOG", "MV-3C-2", 1, "TR-03", "M", None, 13800, 3, 900, 0.82, note="Class I Div 2 - " + HZ)
-add("70-MV-014", "50", "MV Power", "RICE black-start / island tie to MVS-1", "MVS-RICE", "MVS-1", "MV-1C-500-TPX", 2, "DB-02", "M", None, 13800, 3, 10000, 1, 1.0)
+add("70-MV-014", "50", "MV Power", "RICE black-start / island tie to MVS-1", "MVS-RICE", "MVS-1", "MV-3C-750", 2, "DB-02", "M", None, 13800, 3, 10000, 1, 1.0)
 # CCS MV
-add("40-MV-001", "40", "MV Power", "Flue gas booster fan", "MVS-CCS", "M-BF", "MV-1C-500-TPX", 1, "TR-05", "M", None, 13800, 3, 6500, 0.86, note="Across-the-line start - check voltage dip")
-add("40-MV-002", "40", "MV Power", "CO2 compressor VFD line side", "MVS-CCS", "VFD-CO2", "MV-1C-750-TPX", 2, "TR-05", "M", None, 13800, 3, 14000, 0.90, note="Input transformer integral to VFD")
-add("40-MV-010", "40", "MV Power", "CO2 compressor VFD output to motor", "VFD-CO2", "M-CO2C", "MV-1C-750-TPX", 2, "LOCAL", "M", None, 13800, 3, 14000, 0.90, note="VFD output: shielded, symmetrical triplexed sets; confirm insulation for dv/dt with VFD vendor")
+add("40-MV-001", "40", "MV Power", "Flue gas booster fan", "MVS-CCS", "M-BF", "MV-3C-750", 1, "TR-05", "M", None, 13800, 3, 6500, 0.86, note="Across-the-line start - check voltage dip")
+add("40-MV-002", "40", "MV Power", "CO2 compressor VFD line side", "MVS-CCS", "VFD-CO2", "MV-3C-750", 2, "TR-05", "M", None, 13800, 3, 14000, 0.90, note="Input transformer integral to VFD")
+add("40-MV-010", "40", "MV Power", "CO2 compressor VFD output to motor", "VFD-CO2", "M-CO2C", "MV-3C-750", 2, "LOCAL", "M", None, 13800, 3, 14000, 0.90, note="VFD output: shielded 3/C, symmetrical grounds preferred; confirm insulation for dv/dt with VFD vendor")
 add("40-MV-003", "40", "MV Power", "Lean amine pump A", "MVS-CCS", "M-LAP-A", "MV-3C-2", 1, "TR-05", "M", None, 13800, 3, 800, 0.84)
 add("40-MV-004", "40", "MV Power", "Lean amine pump B", "MVS-CCS", "M-LAP-B", "MV-3C-2", 1, "TR-05", "M", None, 13800, 3, 800, 0.84)
 add("40-MV-005", "40", "MV Power", "Rich amine pump A", "MVS-CCS", "M-RAP-A", "MV-3C-2", 1, "TR-05", "M", None, 13800, 3, 700, 0.84)
@@ -513,7 +523,7 @@ add("40-MV-009", "40", "MV Power", "CCS LV transformer LVT-CCS", "MVS-CCS", "LVT
 # RICE MV
 for i in range(8):
     add(f"50-MV-{i+1:03d}", "50", "MV Power", f"Genset {i+1} to collector switchgear", f"GEN-R{i+1:02d}", "MVS-RICE", "MV-3C-2", 1, "TR-04", "M", None, 13800, 3, 2500, 1, 1.15, "Generator: 115% (NEC 445.13); load in kVA")
-add("50-MV-009", "50", "MV Power", "Collector switchgear to RICE step-up transformer LV", "MVS-RICE", "RICE-TX-LV", "MV-1C-750-TPX", 2, "LOCAL", "M", None, 13800, 3, 22000, 1, 1.0, "2 triplexed sets")
+add("50-MV-009", "50", "MV Power", "Collector switchgear to RICE step-up transformer LV", "MVS-RICE", "RICE-TX-LV", "MV-3C-750", 2, "LOCAL", "M", None, 13800, 3, 22000, 1, 1.0, "2 parallel 3/C cables")
 add("50-MV-010", "50", "MV Power", "RICE auxiliary transformer LVT-RICE", "MVS-RICE", "LVT-RICE", "MV-3C-2", 1, "LOCAL", "M", None, 13800, 3, 1000, 1)
 # LV busway (transformer secondaries)
 add("70-BD-001", "70", "Busduct", "LVT-1 to PMCC-1 main", "LVT-1", "PMCC-1", "LVBD-4000", 1, "BD", "M", None, 480, 3, 2500, 1, 1.0)
@@ -654,7 +664,7 @@ heads = [
     ("AR", "OD (mm)", 7), ("AS", "Base Ampacity (A)", 8), ("AT", "mV/A/m", 7),
 ]
 HELPERS = ("AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ", "AR", "AS", "AT")
-cs["A1"] = "CABLE SCHEDULE - CCPP-E-CS-0001 Rev C (PRELIMINARY) - US NEC practice, Type MC-HL armored cable"
+cs["A1"] = "CABLE SCHEDULE - CCPP-E-CS-0001 Rev D (PRELIMINARY) - US NEC practice, Type MC-HL armored cable"
 cs["A1"].font = Font(name=F, bold=True, size=12)
 cs["AI1"] = "Calculation helpers (lookups - do not edit)"
 cs["AI1"].font = BOLD
@@ -829,12 +839,115 @@ for col, w in zip("ABCDEFGHIJ", (16, 70, 13, 12, 14, 14, 14, 12, 10, 10)):
     bq.column_dimensions[col].width = w
 bq.freeze_panes = "A4"
 
+# ---------------------------------------------------------------- Fittings
+fs = wb.create_sheet("Fittings")
+fs["A1"] = "CONNECTOR HUB TRADE SIZE BY CABLE OD (approximate - verify against fitting manufacturer's range table)"
+fs["A1"].font = Font(name=F, bold=True, size=12)
+for j, h in enumerate(("Cable OD from (mm)", "Hub trade size (in)"), start=1):
+    c = fs.cell(row=3, column=j, value=h)
+    c.font = HDR; c.fill = HFILL; c.border = BORDER; c.alignment = CENTER
+HUBS = [(0, '3/4"'), (21, '1"'), (27, '1-1/4"'), (35, '1-1/2"'), (41, '2"'), (52, '2-1/2"'),
+        (63, '3"'), (78, '3-1/2"'), (90, '4"'), (110, "Special - consult")]
+for i, (od, hub) in enumerate(HUBS, start=4):
+    a = fs.cell(row=i, column=1, value=od); a.font = BLUE; a.border = BORDER; a.fill = YELLOW
+    b = fs.cell(row=i, column=2, value=hub); b.font = BLUE; b.border = BORDER
+HUB_LAST = 3 + len(HUBS)
+HUB_OD = f"Fittings!$A$4:$A${HUB_LAST}"
+HUB_SZ = f"Fittings!$B$4:$B${HUB_LAST}"
+fs.cell(row=HUB_LAST + 2, column=1, value="Connector selection rules used on 'Termination & Pull':").font = BOLD
+rules = [
+    "Power / control (MC-HL): Unclassified -> watertight CCW armor connector; Class I Div 2 -> MC-HL connector listed for Class I Div 2 (UL 2225); Class I Div 1 -> MC-HL connector listed for Class I Div 1 plus seal (NEC 501.15).",
+    "VFD cables: add 360 deg EMC shield termination at both ends. Machine Flex type (TC-ER, unarmored): shielded TC-ER connector; not permitted in Class I Div 1.",
+    "Instrument (PLTC / ITC-HL): armored connector, Class I listed where classified; IS circuits segregated (NEC 504).",
+    "Fiber: armored fiber connector. Overhead conductors, busduct and grounding: no connector (n/a).",
+]
+for i, t in enumerate(rules, start=HUB_LAST + 3):
+    fs.cell(row=i, column=1, value=t).font = BLACK
+fs.column_dimensions["A"].width = 22
+fs.column_dimensions["B"].width = 22
+
+# ---------------------------------------------------------------- Termination & Pull
+tp = wb.create_sheet("Termination & Pull", 5)
+tp["A1"] = "TERMINATION & PULL REGISTER - connector selection per end, and construction tracking"
+tp["A1"].font = Font(name=F, bold=True, size=12)
+tp["A2"] = ("Columns A-N are formulas from the Cable Schedule / Equipment / Fittings sheets. Fill columns O-U during construction "
+            "(blue): e.g. Reel No. 'R-0123', Pulled '2027-03-14', Terminated '2027-03-20', IR test '>1000' (Mohm at 1000 V DC for 600 V cable; 5000 V DC for 15 kV), VLF '2027-03-22'.")
+tp["A2"].font = Font(name=F, italic=True, size=9)
+tph = [("A", "Cable No.", 11), ("B", "System", 11), ("C", "Cable Type", 15), ("D", "From Tag", 11),
+       ("E", "From Area Class", 13), ("F", "From Connector", 52), ("G", "From Hub Size", 9),
+       ("H", "To Tag", 11), ("I", "To Area Class", 13), ("J", "To Connector", 52), ("K", "To Hub Size", 9),
+       ("L", "Routing Ref.", 12), ("M", "Pull Length (ft)", 9), ("N", "MV VLF Test", 9),
+       ("O", "Reel No.", 10), ("P", "Pulled (date)", 11), ("Q", "Terminated From (date)", 11),
+       ("R", "Terminated To (date)", 11), ("S", "IR Test (Mohm)", 9), ("T", "VLF / Hi-pot (date)", 11),
+       ("U", "Remarks", 30), ("V", "Status", 11)]
+for col, h, w in tph:
+    c = tp[f"{col}3"]
+    c.value = h; c.font = HDR; c.fill = HFILL; c.alignment = CENTER; c.border = BORDER
+    tp.column_dimensions[col].width = w
+tp.row_dimensions[3].height = 42
+SCS = "'Cable Schedule'"
+
+def connector(cls, r):
+    cat = f"INDEX({CTCOL('C')},MATCH($C{r},{CT_CODE},0))"
+    emc = f'IF(OR(ISNUMBER(SEARCH("VFD",$C{r})),ISNUMBER(SEARCH("MFX",$C{r}))),", 360 deg EMC shield termination","")'
+    return (f'=IF(OR({cat}="HV Overhead",{cat}="Busduct",{cat}="Earthing"),"n/a",'
+            f'IF({cat}="Fibre Optic","Armored fiber connector"&IF({cls}<>"Unclassified",", Class I listed",""),'
+            f'IF({cat}="Instrument",IF({cls}="Class I Div 1","ITC-HL/PLTC armored connector, Class I Div 1 listed + seal (NEC 501.15)",'
+            f'IF({cls}="Class I Div 2","ITC-HL/PLTC armored connector, Class I Div 2 listed","Armored instrument connector, watertight")),'
+            f'IF(ISNUMBER(SEARCH("MFX",$C{r})),"TC-ER shielded VFD cable connector"&IF({cls}<>"Unclassified",", Class I Div 2 listed","")&", 360 deg EMC shield termination",'
+            f'IF({cls}="Class I Div 1","MC-HL connector, Class I Div 1 listed (UL 2225) + seal (NEC 501.15)",'
+            f'IF({cls}="Class I Div 2","MC-HL connector, Class I Div 2 listed (UL 2225)","CCW armor connector, watertight"))&{emc}))))')
+
+def hub(r):
+    cat = f"INDEX({CTCOL('C')},MATCH($C{r},{CT_CODE},0))"
+    od = f"INDEX({CTCOL('E')},MATCH($C{r},{CT_CODE},0))"
+    return (f'=IF(OR({cat}="HV Overhead",{cat}="Busduct",{cat}="Earthing",{od}=""),"n/a",'
+            f'INDEX({HUB_SZ},MATCH({od},{HUB_OD},1)))')
+
+for k in range(len(C)):
+    r = 4 + k
+    s_row = r0 + k
+    f = {
+        "A": f"={SCS}!A{s_row}",
+        "B": f"={SCS}!C{s_row}",
+        "C": f"={SCS}!I{s_row}",
+        "D": f"={SCS}!E{s_row}",
+        "E": f"=INDEX({EQCOL('H')},MATCH(D{r},{EQ_TAG},0))",
+        "F": connector(f"E{r}", r),
+        "G": hub(r),
+        "H": f"={SCS}!G{s_row}",
+        "I": f"=INDEX({EQCOL('H')},MATCH(H{r},{EQ_TAG},0))",
+        "J": connector(f"I{r}", r),
+        "K": hub(r),
+        "L": f'="E-RW-"&{SCS}!L{s_row}',
+        "M": f"={SCS}!P{s_row}",
+        "N": f'=IF(B{r}="MV Power","Required","n/a")',
+        "V": f'=IF(AND(P{r}<>"",Q{r}<>"",R{r}<>"",S{r}<>"",OR(N{r}="n/a",T{r}<>"")),"Complete",IF(P{r}<>"","In progress","Not started"))',
+    }
+    for col, val in f.items():
+        c = tp[f"{col}{r}"]
+        c.value = val
+        c.font = GREEN if col in ("A", "B", "C", "D", "E", "H", "I", "M") else BLACK
+    for col, _, _ in tph:
+        c = tp[f"{col}{r}"]
+        c.border = BORDER
+        if col in ("O", "P", "Q", "R", "S", "T", "U"):
+            c.font = BLUE
+    tp[f"M{r}"].number_format = "#,##0"
+TP_LAST = 3 + len(C)
+tp.freeze_panes = "B4"
+tp.auto_filter.ref = f"A3:V{TP_LAST}"
+tp.conditional_formatting.add(f"V4:V{TP_LAST}", CellIsRule(operator="equal", formula=['"Complete"'], fill=PatternFill("solid", fgColor="C6EFCE")))
+tp.conditional_formatting.add(f"V4:V{TP_LAST}", CellIsRule(operator="equal", formula=['"In progress"'], fill=PatternFill("solid", fgColor="FFEB9C")))
+tp.conditional_formatting.add(f"E4:E{TP_LAST}", CellIsRule(operator="notEqual", formula=['"Unclassified"'], fill=PatternFill("solid", fgColor="FCE4D6")))
+tp.conditional_formatting.add(f"I4:I{TP_LAST}", CellIsRule(operator="notEqual", formula=['"Unclassified"'], fill=PatternFill("solid", fgColor="FCE4D6")))
+
 # ---------------------------------------------------------------- References
 rf = wb.create_sheet("References")
 rf["A1"] = "PUBLIC REFERENCE DOCUMENTS"
 rf["A1"].font = Font(name=F, bold=True, size=12)
 rf["A2"] = ("These public documents were identified as references for typical plant arrangements. They were NOT opened or "
-            "transcribed for this schedule: equipment positions come from the 3D model and ratings are representative values. Cable product pages are cited as examples of the MC-HL / CCW armor construction; sizes, ODs and masses in 'Cable Types' are typical values - confirm against the selected manufacturer's data sheets. "
+            "transcribed for this schedule: equipment positions come from the 3D model and ratings are representative values. Cable product pages are cited as examples of the MC-HL / CCW armor construction (insulation, armor, temperature and hazardous-location ratings were checked against the published listings); the data-sheet tables could not be downloaded from this environment, so ODs, masses and size ranges in 'Cable Types' remain typical values - confirm against the selected manufacturer's data sheets. "
             "Replace with project data before use.")
 rf["A2"].font = Font(name=F, italic=True, size=9)
 rf["A2"].alignment = WRAP
@@ -851,10 +964,17 @@ refs = [
     ("Gas metering", "Adams County CO - regulator station site plan submittal", "https://adcogov.org/sites/default/files/2024-05/RCU2024-00010-submittal1.pdf"),
     ("RICE", "KYMEA Energy Center (4 x Wartsila 18V50SG) - KY PSC case 2024-00290", "https://psc.ky.gov/pscecf/2024-00290/tosterloh@sturgillturner.com/10042024124833/07_Attachment_E_-_Public_Meeting_Information.pdf"),
     ("RICE", "We Energies Paris RICE generation project", "https://www.we-energies.com/company/paris-generation-project"),
+    ("Schedule format", "CFIHOS cable schedule register (standard attribute set for cable schedules)", "https://cfihos.kraken.im/registers/cable-schedule"),
+    ("Schedule format", "GlobalSpec CR4 - typical cable schedule fields (tag, type, cores, size, voltage, from/to, gland each end, length, routing drawing)", "https://cr4.globalspec.com/thread/64321/Cable-Schedule"),
+    ("Schedule format", "AVEVA Electrical - cable schedule grid", "https://docs.aveva.com/bundle/electrical/page/882885.html"),
+    ("Schedule format", "Engineers Universe - cable schedule template (design, procurement pull list, commissioning trace)", "https://engineersuniverse.com/resources/templates/cable-schedule"),
     ("Switchyard / SLD", "PJM facilities study - 1,100 MW combined cycle interconnection (one-lines)", "https://www.pjm.com/pjmfiles/pub/planning/project-queues/facilities/b03_fac.pdf"),
     ("Cable product", "Southwire SPEC 45352 - 600 V XLPE XHHW-2 Armor-X (MC-HL) power cable with ground", "https://cabletechsupport.southwire.com/tile/26/spec/45352/?country=US"),
     ("Cable product", "Southwire SPEC 45227 - 600 V XLPE XHHW-2 Armor-X (MC-HL) control cable with ground", "https://www.southwire.com/wire-cable/armored-power-cable/cu-600v-xlpe-xhhw-2-armor-x-pvc-control-cable-with-ground/p/55061899"),
-    ("Cable product", "Southwire SPEC 45302 - 600/1000 V Armor-X VFD cable", "https://www.southwire.com/wire-cable/armored-power-cable/cu-600-1000v-xlpe-insulation-armor-x-sup-sup-thermoplastic-lszh-tp-jacket-xhhw-2-vfd-cable-ct-rated-sunlight-resistant-for-direct-burial-silicone-free/p/67267399"),
+    ("Cable product", "Southwire SPEC 45226 - 600 V XLPE XHHW-2 Armor-X PVC VFD cable with three grounds (3/C or 4/C)", "https://www.southwire.com/wire-cable/armored-power-cable/3-c-or-4-c-cu-600v-xlpe-xhhw-2-armor-x-pvc-cable-with-three-grounds-vfd-cable/p/55059199"),
+    ("Cable product", "Southwire SPEC 45302 - 600/1000 V Armor-X LSZH VFD cable", "https://www.southwire.com/wire-cable/armored-power-cable/cu-600-1000v-xlpe-insulation-armor-x-sup-sup-thermoplastic-lszh-tp-jacket-xhhw-2-vfd-cable-ct-rated-sunlight-resistant-for-direct-burial-silicone-free/p/67267399"),
+    ("Cable product", "Southwire SPEC 46454 - 3/C Cu 15 kV 220 mil NL-EPR 133% Armor-X PVC MV-105 (105 C; Class I/II/III Div 1 & 2)", "https://www.southwire.com/wire-cable/armored-power-cable/3-c-cu-15kv-220-nlepr-133-armor-x-pvc-mv-105/p/55043999"),
+    ("Cable product", "Southwire SPEC 45440 - Machine Flex TC-ER VFD cable, RHH/RHW-2, TPE jacket, NFPA 79", "https://cabletechsupport.southwire.com/en/tile/1/cable/3876/?country=US"),
     ("Cable product", "Southwire SPEC 45443 - Machine Flex TC-ER 1000 V flexible VFD cable, 3 symmetrical grounds", "https://cabletechsupport.southwire.com/tile/1/spec/45443/?country=US"),
     ("Cable product", "Southwire SPEC 45442 - reduced diameter flexible VFD cable, Type TC-ER", "https://www.southwire.com/wire-cable/power-control/cu-600v-xlpe-insulation-shielded-tpe-jacket-xhhw-2-reduced-diameter-flexible-variable-frequency-drive-vfd-/p/SPEC45442"),
     ("Switchyard / SLD", "SPP GEN-2008-006 facility study - 2-on-1 CCGT, 138 kV one-lines", "https://opsportal.spp.org/documents/studies/files/2008_Generation_Studies/GEN-2008-006FS.pdf"),
