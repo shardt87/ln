@@ -2106,6 +2106,8 @@ N_PIPE = _pipes.build(item, items, parts, routes)     # round pipes, elbows, fla
 # visual hierarchy: orange accents and lettering on the HRSGs / stacks only (hero)
 import hero as _hero
 print("hero accents", _hero.build())
+import hall_finish as _hall_finish
+print("turbine hall finish", _hall_finish.build())
 # Tray review (user screenshots): short tray stubs drawn between a duct-bank end and pad equipment
 # rode the EL +36 rack tier, so a 10 ft connection became a 36 ft goalpost over the transformer. A
 # duct bank comes up straight into the equipment: those stubs are now buried, with rigid-conduit

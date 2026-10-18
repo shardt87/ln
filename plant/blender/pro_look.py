@@ -136,6 +136,9 @@ COLOUR_SYSTEM = {
     "hrsg": ("clad", "#6b757c", .42, .4), "hrsg_b": ("clad", "#646e75", .42, .4),
     "stack": ("paint", "#cfd3d5", .45, .15), "hero_accent": ("paint", "#a65a30", .32, .7),
     "hero_rail": ("paint", "#1c1d1f", .3, .3),
+    # turbine hall interior (hall_finish.py): dark epoxy deck, painted generators, blue-grey structural steel
+    "deck_epoxy": ("paint", "#4e5856", .3, 0), "gen_paint": ("paint", "#33475a", .36, .1),
+    "hall_steel": ("paint", "#5a6874", .45, .2),
     # carbon capture and the rest: quiet
     "ccs": ("clad", "#959b9e", .7, .1), "ccs_green": ("paint", "#a9bdb0", .6, 0), "tower": ("clad", "#b6bbbb", .6, 0),
 }
@@ -1168,10 +1171,11 @@ EPIC = [
          eye=(575, 455, 92), target=(870, 500, 24), lens=26, show="all", res=(1920, 1080),
          hide=("Common turbine hall",), hide_layers=("HALL_ROOF",), sun=(42, 200)),
     dict(k="HALL2", n="Turbine hall interior from the crane level at the west end, down the GT row, roof on",
-         eye=(515, 468, 72), target=(880, 497, 26), lens=22, show="all", res=(1920, 1080), lamps=6500, sun=(40, 200)),
-    dict(k="HALL3", n="Turbine hall interior, see-through cladding as in the viewer",
-         eye=(515, 468, 72), target=(880, 497, 26), lens=22, show="all", res=(1920, 1080), lamps=6500, hall_alpha=.25,
-         sun=(40, 200)),
+         eye=(515, 468, 72), target=(880, 497, 26), lens=22, show="all", res=(1920, 1080), lamps=4000, sun=(40, 200)),
+    dict(k="HALL3", n="Turbine hall: over GT1 at the gallery level, the GT row and the tray stack receding",
+         eye=(568, 470, 54), target=(820, 500, 30), lens=24, show="all", res=(1920, 1080), lamps=4000, sun=(40, 200)),
+    dict(k="HALL4", n="Turbine hall: on the EL 20 deck between GT1 and GT2, GT2 and its generator with the tray overhead",
+         eye=(712, 432, 31), target=(792, 500, 33), lens=22, show="all", res=(1920, 1080), lamps=4000, sun=(40, 200)),
     dict(k="E2", n="Long lens from the west road: stacks and absorbers stacked up", eye=(-1500, 880, 120),
          target=(800, 1000, 130), lens=135, show="all"),
     dict(k="E3", n="Low pass over the air-cooled condenser", eye=(1500, 300, 165), target=(1100, 800, 90),
