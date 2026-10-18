@@ -3,8 +3,28 @@ Kd 0.765 0.788 0.776
 Ka 0 0 0
 d 1
 
+newmtl acoustic
+Kd 0.353 0.400 0.447
+Ka 0 0 0
+d 1
+
+newmtl alu
+Kd 0.722 0.741 0.757
+Ka 0 0 0
+d 1
+
 newmtl amber
 Kd 0.890 0.745 0.408
+Ka 0 0 0
+d 1
+
+newmtl barrel_w
+Kd 0.925 0.918 0.894
+Ka 0 0 0
+d 1
+
+newmtl barrier
+Kd 0.886 0.439 0.122
 Ka 0 0 0
 d 1
 
@@ -23,6 +43,36 @@ Kd 0.655 0.737 0.765
 Ka 0 0 0
 d 1
 
+newmtl binder_b
+Kd 0.184 0.353 0.541
+Ka 0 0 0
+d 1
+
+newmtl binder_k
+Kd 0.169 0.176 0.184
+Ka 0 0 0
+d 1
+
+newmtl binder_r
+Kd 0.639 0.200 0.173
+Ka 0 0 0
+d 1
+
+newmtl binder_w
+Kd 0.910 0.902 0.878
+Ka 0 0 0
+d 1
+
+newmtl blind
+Kd 0.863 0.847 0.800
+Ka 0 0 0
+d 1
+
+newmtl boot
+Kd 0.231 0.165 0.118
+Ka 0 0 0
+d 1
+
 newmtl building
 Kd 0.839 0.859 0.867
 Ka 0 0 0
@@ -33,6 +83,11 @@ Kd 0.663 0.714 0.698
 Ka 0 0 0
 d 1
 
+newmtl cab_in
+Kd 0.725 0.757 0.776
+Ka 0 0 0
+d 1
+
 newmtl cabinet
 Kd 0.722 0.761 0.784
 Ka 0 0 0
@@ -40,6 +95,11 @@ d 1
 
 newmtl cable
 Kd 0.141 0.161 0.173
+Ka 0 0 0
+d 1
+
+newmtl cable_armor
+Kd 0.420 0.165 0.137
 Ka 0 0 0
 d 1
 
@@ -59,12 +119,17 @@ Ka 0 0 0
 d 1
 
 newmtl cable_mc
-Kd 0.357 0.384 0.400
+Kd 0.125 0.141 0.153
 Ka 0 0 0
 d 1
 
 newmtl cable_mv
-Kd 0.557 0.169 0.137
+Kd 0.122 0.137 0.149
+Ka 0 0 0
+d 1
+
+newmtl cable_shd
+Kd 0.788 0.635 0.153
 Ka 0 0 0
 d 1
 
@@ -78,8 +143,38 @@ Kd 0.820 0.682 0.122
 Ka 0 0 0
 d 1
 
+newmtl camlock_b
+Kd 0.184 0.373 0.620
+Ka 0 0 0
+d 1
+
+newmtl camlock_g
+Kd 0.247 0.541 0.290
+Ka 0 0 0
+d 1
+
+newmtl camlock_r
+Kd 0.722 0.196 0.165
+Ka 0 0 0
+d 1
+
+newmtl camlock_w
+Kd 0.902 0.902 0.878
+Ka 0 0 0
+d 1
+
+newmtl carpet
+Kd 0.271 0.298 0.325
+Ka 0 0 0
+d 1
+
 newmtl ccs
-Kd 0.835 0.867 0.875
+Kd 0.710 0.733 0.741
+Ka 0 0 0
+d 1
+
+newmtl ccs_green
+Kd 0.616 0.733 0.647
 Ka 0 0 0
 d 1
 
@@ -88,8 +183,28 @@ Kd 0.490 0.561 0.306
 Ka 0 0 0
 d 1
 
+newmtl ceiling
+Kd 0.925 0.922 0.902
+Ka 0 0 0
+d 1
+
+newmtl chair
+Kd 0.141 0.153 0.165
+Ka 0 0 0
+d 1
+
 newmtl chw
 Kd 0.365 0.498 0.710
+Ka 0 0 0
+d 1
+
+newmtl coilpak_b
+Kd 0.435 0.604 0.847
+Ka 0 0 0
+d 1
+
+newmtl coilpak_p
+Kd 0.541 0.498 0.816
 Ka 0 0 0
 d 1
 
@@ -103,13 +218,13 @@ Kd 0.239 0.561 0.561
 Ka 0 0 0
 d 1
 
-newmtl conditional
-Kd 0.875 0.749 0.471
+newmtl conductor
+Kd 0.227 0.275 0.314
 Ka 0 0 0
 d 1
 
-newmtl conductor
-Kd 0.227 0.275 0.314
+newmtl console
+Kd 0.239 0.259 0.278
 Ka 0 0 0
 d 1
 
@@ -123,13 +238,13 @@ Kd 0.541 0.310 0.114
 Ka 0 0 0
 d 1
 
-newmtl corridor
-Kd 0.827 0.867 0.902
+newmtl crane
+Kd 0.851 0.663 0.180
 Ka 0 0 0
 d 1
 
-newmtl crane
-Kd 0.851 0.663 0.180
+newmtl cu_bus
+Kd 0.722 0.451 0.200
 Ka 0 0 0
 d 1
 
@@ -138,8 +253,28 @@ Kd 0.420 0.604 0.769
 Ka 0 0 0
 d 1
 
+newmtl deck_epoxy
+Kd 0.373 0.416 0.404
+Ka 0 0 0
+d 1
+
+newmtl deck_line
+Kd 0.851 0.698 0.110
+Ka 0 0 0
+d 1
+
+newmtl desk
+Kd 0.204 0.220 0.235
+Ka 0 0 0
+d 1
+
 newmtl door
 Kd 0.431 0.561 0.659
+Ka 0 0 0
+d 1
+
+newmtl door_in
+Kd 0.612 0.478 0.333
 Ka 0 0 0
 d 1
 
@@ -153,13 +288,33 @@ Kd 0.780 0.604 0.416
 Ka 0 0 0
 d 1
 
+newmtl ductcap
+Kd 0.557 0.231 0.180
+Ka 0 0 0
+d 1
+
+newmtl ductcase
+Kd 0.706 0.690 0.651
+Ka 0 0 0
+d 1
+
 newmtl ehouse
 Kd 0.682 0.722 0.745
 Ka 0 0 0
 d 1
 
+newmtl epoxy
+Kd 0.604 0.655 0.635
+Ka 0 0 0
+d 1
+
 newmtl equip
 Kd 0.702 0.737 0.757
+Ka 0 0 0
+d 1
+
+newmtl fabric
+Kd 0.373 0.420 0.455
 Ka 0 0 0
 d 1
 
@@ -193,6 +348,26 @@ Kd 0.722 0.196 0.165
 Ka 0 0 0
 d 1
 
+newmtl flag_blue
+Kd 0.235 0.231 0.431
+Ka 0 0 0
+d 1
+
+newmtl flag_red
+Kd 0.698 0.133 0.204
+Ka 0 0 0
+d 1
+
+newmtl flag_white
+Kd 0.945 0.941 0.918
+Ka 0 0 0
+d 1
+
+newmtl foliage
+Kd 0.294 0.478 0.216
+Ka 0 0 0
+d 1
+
 newmtl fuelgas
 Kd 0.612 0.478 0.235
 Ka 0 0 0
@@ -203,8 +378,23 @@ Kd 0.478 0.333 0.216
 Ka 0 0 0
 d 1
 
+newmtl gen_paint
+Kd 0.271 0.349 0.420
+Ka 0 0 0
+d 1
+
 newmtl glass
 Kd 0.169 0.227 0.267
+Ka 0 0 0
+d 1
+
+newmtl glass_in
+Kd 0.663 0.769 0.812
+Ka 0 0 0
+d 0.3
+
+newmtl glove
+Kd 0.788 0.706 0.541
 Ka 0 0 0
 d 1
 
@@ -218,8 +408,33 @@ Kd 0.737 0.765 0.776
 Ka 0 0 0
 d 1
 
+newmtl gravel_yard
+Kd 0.875 0.890 0.863
+Ka 0 0 0
+d 1
+
 newmtl ground
 Kd 0.875 0.890 0.863
+Ka 0 0 0
+d 1
+
+newmtl gt_blanket
+Kd 0.788 0.796 0.784
+Ka 0 0 0
+d 1
+
+newmtl gt_cold
+Kd 0.424 0.459 0.482
+Ka 0 0 0
+d 1
+
+newmtl gt_comb
+Kd 0.329 0.357 0.376
+Ka 0 0 0
+d 1
+
+newmtl hair
+Kd 0.169 0.133 0.106
 Ka 0 0 0
 d 1
 
@@ -228,8 +443,28 @@ Kd 0.788 0.835 0.863
 Ka 0 0 0
 d 0.25
 
+newmtl hall_steel
+Kd 0.173 0.184 0.200
+Ka 0 0 0
+d 1
+
 newmtl hardhat
 Kd 0.957 0.957 0.941
+Ka 0 0 0
+d 1
+
+newmtl hdpe
+Kd 0.165 0.173 0.180
+Ka 0 0 0
+d 1
+
+newmtl hero_accent
+Kd 0.549 0.290 0.141
+Ka 0 0 0
+d 1
+
+newmtl hero_rail
+Kd 0.110 0.114 0.122
 Ka 0 0 0
 d 1
 
@@ -243,13 +478,18 @@ Kd 0.910 0.455 0.165
 Ka 0 0 0
 d 1
 
+newmtl hmi
+Kd 0.173 0.353 0.298
+Ka 0 0 0
+d 1
+
 newmtl hrsg
-Kd 0.718 0.757 0.780
+Kd 0.498 0.561 0.608
 Ka 0 0 0
 d 1
 
 newmtl hrsg_b
-Kd 0.682 0.722 0.745
+Kd 0.471 0.533 0.580
 Ka 0 0 0
 d 1
 
@@ -273,6 +513,11 @@ Kd 0.604 0.639 0.659
 Ka 0 0 0
 d 1
 
+newmtl keycap
+Kd 0.165 0.176 0.188
+Ka 0 0 0
+d 1
+
 newmtl label
 Kd 0.949 0.949 0.933
 Ka 0 0 0
@@ -280,6 +525,26 @@ d 1
 
 newmtl lamp
 Kd 0.957 0.945 0.878
+Ka 0 0 0
+d 1
+
+newmtl lamp_in
+Kd 1.000 0.984 0.937
+Ka 0 0 0
+d 1
+
+newmtl led_a
+Kd 1.000 0.690 0.125
+Ka 0 0 0
+d 1
+
+newmtl led_g
+Kd 0.184 0.890 0.420
+Ka 0 0 0
+d 1
+
+newmtl led_r
+Kd 1.000 0.231 0.188
 Ka 0 0 0
 d 1
 
@@ -293,6 +558,11 @@ Kd 0.925 0.922 0.902
 Ka 0 0 0
 d 1
 
+newmtl locker
+Kd 0.490 0.549 0.588
+Ka 0 0 0
+d 1
+
 newmtl louvre
 Kd 0.435 0.478 0.510
 Ka 0 0 0
@@ -300,6 +570,21 @@ d 1
 
 newmtl machine
 Kd 0.498 0.549 0.584
+Ka 0 0 0
+d 1
+
+newmtl mat
+Kd 0.125 0.133 0.141
+Ka 0 0 0
+d 1
+
+newmtl mimic
+Kd 0.137 0.157 0.173
+Ka 0 0 0
+d 1
+
+newmtl monitor
+Kd 0.078 0.086 0.094
 Ka 0 0 0
 d 1
 
@@ -318,6 +603,11 @@ Kd 0.788 0.816 0.831
 Ka 0 0 0
 d 1
 
+newmtl panel_in
+Kd 0.784 0.808 0.820
+Ka 0 0 0
+d 1
+
 newmtl partition
 Kd 0.886 0.898 0.890
 Ka 0 0 0
@@ -333,18 +623,53 @@ Kd 0.561 0.639 0.682
 Ka 0 0 0
 d 1
 
+newmtl pvc_blue
+Kd 0.184 0.373 0.620
+Ka 0 0 0
+d 1
+
+newmtl pvc_green
+Kd 0.247 0.478 0.290
+Ka 0 0 0
+d 1
+
+newmtl pvc_grey
+Kd 0.561 0.588 0.604
+Ka 0 0 0
+d 1
+
+newmtl pvc_orange
+Kd 0.816 0.459 0.165
+Ka 0 0 0
+d 1
+
+newmtl rack
+Kd 0.106 0.118 0.129
+Ka 0 0 0
+d 1
+
 newmtl radiator
 Kd 0.596 0.639 0.659
 Ka 0 0 0
 d 1
 
 newmtl rail
-Kd 0.847 0.706 0.227
+Kd 0.663 0.690 0.702
+Ka 0 0 0
+d 1
+
+newmtl rcp
+Kd 0.663 0.643 0.604
 Ka 0 0 0
 d 1
 
 newmtl red
 Kd 0.710 0.322 0.290
+Ka 0 0 0
+d 1
+
+newmtl reflect
+Kd 0.843 0.859 0.863
 Ka 0 0 0
 d 1
 
@@ -368,6 +693,26 @@ Kd 0.725 0.761 0.780
 Ka 0 0 0
 d 1
 
+newmtl rope
+Kd 0.847 0.812 0.663
+Ka 0 0 0
+d 1
+
+newmtl safety
+Kd 0.184 0.604 0.290
+Ka 0 0 0
+d 1
+
+newmtl shirt
+Kd 0.243 0.373 0.502
+Ka 0 0 0
+d 1
+
+newmtl shirt_w
+Kd 0.875 0.890 0.902
+Ka 0 0 0
+d 1
+
 newmtl sign
 Kd 0.949 0.949 0.933
 Ka 0 0 0
@@ -375,6 +720,21 @@ d 1
 
 newmtl skin
 Kd 0.780 0.604 0.478
+Ka 0 0 0
+d 1
+
+newmtl soil
+Kd 0.478 0.388 0.278
+Ka 0 0 0
+d 1
+
+newmtl sp_black
+Kd 0.110 0.114 0.122
+Ka 0 0 0
+d 1
+
+newmtl sp_yellow
+Kd 0.949 0.761 0.000
 Ka 0 0 0
 d 1
 
@@ -398,8 +758,18 @@ Kd 0.435 0.478 0.510
 Ka 0 0 0
 d 1
 
+newmtl steel_dark
+Kd 0.235 0.259 0.278
+Ka 0 0 0
+d 1
+
 newmtl super
 Kd 0.937 0.933 0.910
+Ka 0 0 0
+d 1
+
+newmtl sw_red
+Kd 0.824 0.137 0.165
 Ka 0 0 0
 d 1
 
@@ -408,13 +778,43 @@ Kd 0.620 0.667 0.698
 Ka 0 0 0
 d 1
 
+newmtl swgr_in
+Kd 0.655 0.690 0.714
+Ka 0 0 0
+d 1
+
 newmtl tank
 Kd 0.859 0.890 0.898
 Ka 0 0 0
 d 1
 
+newmtl tankroof
+Kd 0.863 0.859 0.835
+Ka 0 0 0
+d 1
+
+newmtl tankwall
+Kd 0.812 0.796 0.761
+Ka 0 0 0
+d 1
+
+newmtl tent
+Kd 0.945 0.945 0.925
+Ka 0 0 0
+d 1
+
+newmtl timber
+Kd 0.604 0.455 0.282
+Ka 0 0 0
+d 1
+
 newmtl tower
 Kd 0.706 0.769 0.792
+Ka 0 0 0
+d 1
+
+newmtl trousers
+Kd 0.176 0.196 0.220
 Ka 0 0 0
 d 1
 
@@ -428,6 +828,26 @@ Kd 0.722 0.271 0.180
 Ka 0 0 0
 d 1
 
+newmtl turf
+Kd 0.541 0.604 0.388
+Ka 0 0 0
+d 1
+
+newmtl tyre
+Kd 0.106 0.114 0.122
+Ka 0 0 0
+d 1
+
+newmtl vinyl
+Kd 0.725 0.714 0.678
+Ka 0 0 0
+d 1
+
+newmtl wall_in
+Kd 0.890 0.878 0.851
+Ka 0 0 0
+d 1
+
 newmtl water
 Kd 0.498 0.651 0.722
 Ka 0 0 0
@@ -435,6 +855,11 @@ d 1
 
 newmtl waterline
 Kd 0.247 0.498 0.541
+Ka 0 0 0
+d 1
+
+newmtl white_truck
+Kd 0.925 0.933 0.933
 Ka 0 0 0
 d 1
 
@@ -448,6 +873,11 @@ Kd 0.804 0.827 0.816
 Ka 0 0 0
 d 1
 
+newmtl wood
+Kd 0.663 0.514 0.357
+Ka 0 0 0
+d 1
+
 newmtl workwear
 Kd 0.173 0.227 0.322
 Ka 0 0 0
@@ -455,6 +885,16 @@ d 1
 
 newmtl xfmr
 Kd 0.541 0.584 0.608
+Ka 0 0 0
+d 1
+
+newmtl xlpe
+Kd 0.902 0.886 0.827
+Ka 0 0 0
+d 1
+
+newmtl yellow
+Kd 0.886 0.714 0.133
 Ka 0 0 0
 d 1
 

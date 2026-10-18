@@ -24,3 +24,11 @@ plant/presentation/dist/
 plant/tools/xray_capture/node_modules/
 plant/tools/xray_capture/capture.html
 plant/tools/xray_capture/xw_*.jpg
+
+# assets the builds need: always tracked (the *.png rule above would drop them)
+!plant/blender/deck/*.png
+!plant/screens/*.png
+!plant/renders/deck/*.png
+!plant/renders/deck/**/*.png
+!plant/renders/cover/*.png
+plant/renders/cover/_decals/

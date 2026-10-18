@@ -253,6 +253,16 @@ Kd 0.420 0.604 0.769
 Ka 0 0 0
 d 1
 
+newmtl deck_epoxy
+Kd 0.373 0.416 0.404
+Ka 0 0 0
+d 1
+
+newmtl deck_line
+Kd 0.851 0.698 0.110
+Ka 0 0 0
+d 1
+
 newmtl desk
 Kd 0.204 0.220 0.235
 Ka 0 0 0
@@ -338,6 +348,21 @@ Kd 0.722 0.196 0.165
 Ka 0 0 0
 d 1
 
+newmtl flag_blue
+Kd 0.235 0.231 0.431
+Ka 0 0 0
+d 1
+
+newmtl flag_red
+Kd 0.698 0.133 0.204
+Ka 0 0 0
+d 1
+
+newmtl flag_white
+Kd 0.945 0.941 0.918
+Ka 0 0 0
+d 1
+
 newmtl foliage
 Kd 0.294 0.478 0.216
 Ka 0 0 0
@@ -350,6 +375,11 @@ d 1
 
 newmtl fueloil
 Kd 0.478 0.333 0.216
+Ka 0 0 0
+d 1
+
+newmtl gen_paint
+Kd 0.271 0.349 0.420
 Ka 0 0 0
 d 1
 
@@ -388,6 +418,21 @@ Kd 0.875 0.890 0.863
 Ka 0 0 0
 d 1
 
+newmtl gt_blanket
+Kd 0.788 0.796 0.784
+Ka 0 0 0
+d 1
+
+newmtl gt_cold
+Kd 0.424 0.459 0.482
+Ka 0 0 0
+d 1
+
+newmtl gt_comb
+Kd 0.329 0.357 0.376
+Ka 0 0 0
+d 1
+
 newmtl hair
 Kd 0.169 0.133 0.106
 Ka 0 0 0
@@ -397,6 +442,11 @@ newmtl hall
 Kd 0.788 0.835 0.863
 Ka 0 0 0
 d 0.25
+
+newmtl hall_steel
+Kd 0.173 0.184 0.200
+Ka 0 0 0
+d 1
 
 newmtl hardhat
 Kd 0.957 0.957 0.941
