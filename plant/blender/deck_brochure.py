@@ -291,7 +291,7 @@ def hall_inside(n):
     import math
     img = Image.new("RGB", (W, H), BG)
     x_top, x_bot = 1240, 1000
-    photo_right(img, "HALL7_hero_cable.jpg", x_top, x_bot, (.5, .5))
+    photo_right(img, "HALL7_hero_cable.jpg", x_top, x_bot, (.15, .5))
     ox = min(x_top, x_bot)                           # photo's left edge on the slide
     d = ImageDraw.Draw(img)
     # callouts: model points through the HALL1 camera (sensor fit on the longer side, as Blender's AUTO)
@@ -303,7 +303,7 @@ def hall_inside(n):
     sw, sh = 1920, 1440                              # render size; cover-fit into the photo box as photo() does
     bw, bh = W - ox, H - FOOT
     sc = max(bw / sw, bh / sh)
-    cx0 = (sw * sc - bw) * .5
+    cx0 = (sw * sc - bw) * .15
     cy0 = (sh * sc - bh) * .5
     k = lens / 36 * sw
     def proj(p):
@@ -312,17 +312,18 @@ def hall_inside(n):
         px = sw / 2 + sum(a * b for a, b in zip(dv, r)) / z * k
         py = sh / 2 - sum(a * b for a, b in zip(dv, u)) / z * k
         return ox + px * sc - cx0, py * sc - cy0
-    for name, p in (("GT1", (636, 497, 38)), ("GT2", (796, 497, 38)), ("GT3", (956, 497, 38)),
-                    ("STEAM TURBINE", (1050, 506, 46))):
+    for name, p, dy in (("GT1", (636, 497, 38), -90), ("GT2", (796, 497, 38), -90), ("GT3", (956, 497, 38), -90),
+                        ("STEAM TURBINE", (1050, 506, 40), 90)):       # ST label below: the wall sign is above it
         x, y = proj(p)
-        if not (ox + 120 < x < W - 120 and 160 < y < H - FOOT - 60):
+        if not (ox + 60 < x < W - 120 and 160 < y < H - FOOT - 60):
             continue
         d.ellipse([x - 9, y - 9, x + 9, y + 9], fill=COPPER)
-        d.line([(x, y), (x, y - 90)], fill=COPPER, width=3)
+        d.line([(x, y), (x, y + dy)], fill=COPPER, width=3)
         tf = F(BOLD, 28)
         tw = d.textlength(name, font=tf) + 2 * len(name) + 34      # tracked text plus padding
-        d.rectangle([x - 4, y - 140, x - 4 + tw, y - 90], fill=(20, 22, 25))
-        tracked(d, (x + 10, y - 132), name, tf, WHITE, 2)
+        yb = y + dy - 50 if dy < 0 else y + dy
+        d.rectangle([x - 4, yb, x - 4 + tw, yb + 50], fill=(20, 22, 25))
+        tracked(d, (x + 10, yb + 8), name, tf, WHITE, 2)
     tab(d, (M + 4, 104), "02  ·  POWER ISLAND  ·  INSIDE THE HALL")
     d.rectangle([M, 210, M + 96, 219], fill=COPPER)
     big = F(XBOLD, 112)
