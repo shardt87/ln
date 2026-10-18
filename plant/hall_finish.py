@@ -120,10 +120,9 @@ def accents():
     zb = (64.0, 65.6)                                   # copper band, above the gallery roof and below the flag
     box(481.0, 1098.8, 558.75, 558.95, *zb, "hero_accent")             # north wall
     box(480.05, 480.25, 404.3, 558.7, *zb, "hero_accent")              # west wall
-    for (y0, y1) in ((404.3, 412.0), (538.0, 558.7)):                  # east wall, either side of the sign and flag
-        box(1098.75, 1098.95, y0, y1, *zb, "hero_accent")
+    box(1098.75, 1098.95, 404.3, 558.7, *zb, "hero_accent")            # east wall, continuous under the sign and flag
     fuel.D = False
-    return n + 5
+    return n + 3
 
 
 def end_wall():
@@ -134,15 +133,15 @@ def end_wall():
     xf = 1099.0
     # the plain lettering for the unbranded build; the branded build prints the full graphic (blender/hall_sign.py):
     # 3x1 CCGT, a copper rule, WIRE & CABLE PARTNER and the Southwire logo
-    showcase.decal((xf - .1, 448, 73), (-1, 0, 0), 58, 14, [("3x1 CCGT", .8, True, "#1e2833")], bg=None,
+    showcase.decal((xf - .1, 446, 76), (-1, 0, 0), 58, 14, [("3x1 CCGT", .8, True, "#1e2833")], bg=None,
                    generic_only=True)
     it = fuel.G["cur"]
-    fuel.G.setdefault("decals", []).append(dict(c=[xf - .1, 448.0, 74.0], n=[-1, 0, 0], w=58.0, h=24.0, bg=None, lines=[],
+    fuel.G.setdefault("decals", []).append(dict(c=[xf - .1, 446.0, 81.5], n=[-1, 0, 0], w=60.0, h=30.0, bg=None, lines=[],
                                                 item=it["id"], layer=it["layer"], brand=1, img="hall_wall_sign.png",
                                                 print=1))
     # flag: seen from the west, north (+y) is on the viewer's left, so the canton sits at the high-y, top corner
     w, h = 28.0, 28.0 / 1.9
-    y0, y1, z0 = 501.0, 529.0, 66.0
+    y0, y1, z0 = 503.0, 531.0, 69.0                    # above the copper band (EL 64-65.6)
     st = h / 13
     n = 0
     for i in range(13):
