@@ -286,16 +286,16 @@ def hall_detail(n):
 
 
 def hall_inside(n):
-    """Inside the turbine hall: the GT row under the tray stack (camera HALL1), the visible cable energised in copper
+    """Inside the turbine hall: down the GT row from the crane level, roof on (camera HALL2), the visible cable energised in copper
     (hero_cable.py), callouts projected from the model, and the hall's cable numbers measured from the model."""
     import math
     img = Image.new("RGB", (W, H), BG)
     x_top, x_bot = 1240, 1000
-    photo_right(img, "HALL1_hero_cable.jpg", x_top, x_bot, (.42, .5))
+    photo_right(img, "HALL2_hero_cable.jpg", x_top, x_bot, (.42, .5))
     ox = min(x_top, x_bot)                           # photo's left edge on the slide
     d = ImageDraw.Draw(img)
     # callouts: model points through the HALL1 camera (sensor fit on the longer side, as Blender's AUTO)
-    eye, tgt, lens = (575, 455, 92), (870, 500, 24), 26
+    eye, tgt, lens = (515, 468, 72), (880, 497, 26), 22
     f = [t - e for t, e in zip(tgt, eye)]
     fl = math.sqrt(sum(v * v for v in f)); f = [v / fl for v in f]
     r = [f[1], -f[0], 0]; rl = math.hypot(r[0], r[1]); r = [v / rl for v in r]
@@ -312,15 +312,14 @@ def hall_inside(n):
         px = sw / 2 + sum(a * b for a, b in zip(dv, r)) / z * k
         py = sh / 2 - sum(a * b for a, b in zip(dv, u)) / z * k
         return ox + px * sc - cx0, py * sc - cy0
-    for name, p in (("GT2  ·  H-CLASS GAS TURBINE", (790, 497, 39)), ("GT3", (950, 497, 39)),
-                    ("TRAY STACK  ·  EL 30 – 48", (700, 548, 48))):
+    for name, p in (("GT1", (636, 497, 31)), ("GT2", (796, 497, 31))):
         x, y = proj(p)
         if not (ox + 200 < x < W - 300 and 200 < y < H - FOOT - 60):
             continue
         d.ellipse([x - 9, y - 9, x + 9, y + 9], fill=COPPER)
         d.line([(x, y), (x, y - 90)], fill=COPPER, width=3)
         tf = F(BOLD, 28)
-        tw = d.textlength(name, font=tf) + 28
+        tw = d.textlength(name, font=tf) + 2 * len(name) + 34      # tracked text plus padding
         d.rectangle([x - 4, y - 140, x - 4 + tw, y - 90], fill=(20, 22, 25))
         tracked(d, (x + 10, y - 132), name, tf, WHITE, 2)
     tab(d, (M + 4, 104), "02  ·  POWER ISLAND  ·  INSIDE THE HALL")
