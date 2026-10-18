@@ -1,6 +1,6 @@
 # Handoff: SK-3X1 power campus model, renders and the October strategy deck
 
-Branch: `claude/3d-plant-model-generation-a3ad3u`. Everything lives under `plant/`. The detailed pipeline guide is
+Branch: `claude/3d-plant-model-generation-a3ad3u-hdozc9` (continues `claude/3d-plant-model-generation-a3ad3u`). Everything lives under `plant/`. The detailed pipeline guide is
 `plant/HANDOFF.md` (read it too); this file covers the whole project briefly and the Oct 17-18, 2026 session in full.
 
 ## Goal
@@ -77,20 +77,29 @@ All under `plant/`. Units: the model JSON and OBJ are in feet; GLB / USDZ / .ble
 | `model/SK-3X1_coastal_A.blend` | Blender 4.2 (plant + LNG terminal, jetty, carrier) | 47.7 MB | Oct 18 | renders, re-export source |
 | `model/SK-3X1_plant_datacenter.blend` | Blender 4.2 (plant + BTM data centre) | 47.5 MB | Oct 18 | re-export source |
 | `model/SK-3X1_everything_datacenter.blend` | Blender 4.2 (everything) | 47.7 MB | Oct 18 | re-export source |
-| `model/current/*_glb.zip` (4) | zipped GLB, glTF 2.0 binary, self-contained (232 images embedded) | 35.6-36.4 MB each (raw 140-147 MB) | Oct 18 | current model for PowerPoint 3D, web, Windows 3D Viewer |
-| `model/current/*_usdz.zip` (4) | zipped USDZ, no decal textures | 17.2-17.7 MB each (raw 115-120 MB) | Oct 18 | iPhone / iPad AR Quick Look |
-| `model/SK-3X1_*.glb` (4) | GLB, self-contained (no images, no external refs) | 80.7-87.3 MB | **Oct 5, stale** | older download; superseded by `model/current/` |
-| `model/SK-3X1_*.usdz` (4) | USDZ | 69.0-73.7 MB | **Oct 5, stale** | older download; superseded by `model/current/` |
+| `model/SK-3X1_*.glb` (4) | GLB, glTF 2.0 binary, self-contained, every decal / screen embedded (227 images) | 94.8-101.1 MB (90.4-96.5 MiB) | Oct 18 (slim export) | PowerPoint 3D, web, Windows 3D Viewer |
+| `model/SK-3X1_*.usdz` (4) | USDZ with the decal textures | 88.9-93.4 MB | Oct 18 (slim export) | iPhone / iPad AR Quick Look |
 | `viewer/index.html`, `viewer/index_southwire.html` | single-file three.js viewer, model inlined (gzip) | 2.7 / 2.9 MB | Oct 18 | the interactive viewer and the tour (republish pending) |
 | `renders/epic/*_pro.png` (19 committed), `renders/cover/*.png`, `*.jpg` | Blender renders | ~70 MB + | Oct 2-18 | deck slides and cover |
 | `screens/*.png`, `screens/hall_wall_sign.png` | images placed on the model (control-room screens, hall sign) | 2 MB | Oct 18 | viewer + Blender decals |
 
-Why the raw current GLB / USDZ are not committed: they are 115-147 MB, over GitHub's 100 MB file limit, and Git LFS
-is not available in this environment. The zips hold the same files. To restore raw files in the repo, enable Git LFS
-(`git lfs track "plant/model/*.glb" "plant/model/*.usdz"`) on a machine that has it, or export with Draco mesh
-compression (smaller, but PowerPoint does not read Draco). Re-export: `python blender/export_model.py plant/model
-[NAME [SOURCE]]` (see its docstring); Blender segfaults on exit after writing, the files are complete.
-No committed file is over 100 MB; the largest is the 87 MB OBJ (GitHub warns above 50 MB).
+GLB / USDZ size (Oct 18, investigated and fixed): the first Oct 18 exports were 140-147 MB (GLB) / 115-120 MB
+(USDZ), over GitHub's 100 MiB file limit, so they went up as zips. Why they grew from the Oct 5 files (80-87 MB):
+- geometry: 2.65 M -> 4.12 M exported vertices (+56%) from the Oct 6-18 detail (tray stacks and cables +360 k,
+  R1 panels +200 k, modular yard, reel yard, people, duct banks, interiors); ~2.85 M of the 3.47 M mesh vertices are
+  round rods, and rod_geo gives every rod two separate flat cap rings (half its vertices);
+- 1,795 decal quads, each its own object / mesh (646 -> 2,522 meshes), plus 232 embedded images (14 MB; the Oct 5
+  files had no decals at all). The decals were never the size problem (7 k vertices, 14 MB of images).
+Fix, in the export only (`blender/export_slim.py`, called by `export_model.py`; the .blend and renders untouched):
+caps of thin rods (< 3 in radius) and of straight rod joints dropped (-25 MB), faces buried under the ground
+dropped (-7 MB), decal quads merged per item and image (2,522 -> 1,268 meshes), images recompressed and
+de-duplicated by `tools/glb_images.py` (14 -> 4 MB). Result: GLB 94.8-101.1 MB, USDZ 88.9-93.4 MB (now with the
+decal textures), all four raw files committed again, `model/current/` zips removed (in commit c3e0529 if needed).
+Checked: glTF validator 0 errors (same as before); three.js renders of old vs new files at four tour cameras
+differ in <= 0.02% of pixels. No glTF extensions added. Headroom is ~3.5 MiB on the "everything" GLB: if the model
+grows, the next lever is KHR_mesh_quantization (`gltfpack -kn -km -ke`, 140 -> 65 MB, lossless to the eye; fine
+for three.js / web, untested in PowerPoint) or Git LFS.
+No committed file is over 100 MiB; the largest is the 101.1 MB (96.5 MiB) everything GLB (GitHub warns above 50 MiB).
 
 ## Key decisions and why
 
@@ -140,8 +149,10 @@ Hall cameras in `blender/pro_look.py` EPIC: HX1 (cover), HALL2-HALL8, ST1, E1, K
 - The user's taste and review history above (what was rejected and liked); keep "not too busy, not too dark",
   realism first, power block as hero, copper accents, ship and BTM visible in campus views.
 - A reviewer's note adopted for the cover: one subject, sky above, no smoke, label unobstructed.
-- Environment: the Blender venv lived in the session scratchpad (`bvenv`, Python 3.11.15, bpy 4.2.0, numpy 2.4.6,
-  Pillow 12.3.0) and is gone with the container; recreate it. Background jobs max 2 h. **Never `pkill -f` / `pgrep -f`
+- Environment: the Blender venv lives in the session scratchpad and dies with the container. Recreate it:
+  `python3.11 -m venv bvenv && bvenv/bin/pip install bpy==4.2.0 pillow numpy openpyxl` (Oct 18 evening: bpy 4.2.0,
+  numpy 2.4.6, Pillow 13.0.0; installs in ~1 min). Blender segfaults on exit after an export; the files are complete. Background jobs max 2 h. **Never `pkill -f` / `pgrep -f`
   with a pattern that also appears in the same command line** (it kills the shell); run the kill as its own command.
 - Root `.gitignore` ignores `*.png`; force-add PNGs that the build needs (e.g. `screens/hall_wall_sign.png`).
-- No file in the repo is over 100 MB (largest: the OBJ, 87 MB). Current GLB / USDZ are in `plant/model/current/` as zips.
+- No file in the repo is over 100 MiB (largest: the everything GLB, 96.5 MiB). Current GLB / USDZ are raw in
+  `plant/model/` again (slim export, Oct 18 evening).
