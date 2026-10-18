@@ -290,15 +290,9 @@ def hall_inside(n):
     (hero_cable.py), callouts projected from the model, and the hall's cable numbers measured from the model."""
     import math
     img = Image.new("RGB", (W, H), BG)
-    ph = photo("HALL1_hero_cable.jpg", (W, H - FOOT), (.5, .5))
-    img.paste(ph, (0, 0))
-    fw = 1500
-    g = Image.new("L", (fw, 1))
-    g.putdata([int(250 * (1 - k / fw) ** 1.5) for k in range(fw)])
-    img.paste(Image.new("RGB", (fw, H - FOOT), BG), (0, 0), g.resize((fw, H - FOOT)))
-    g2 = Image.new("L", (1, 420))
-    g2.putdata([int(235 * (k / 420) ** 1.4) for k in range(420)])
-    img.paste(Image.new("RGB", (W, 420), BG), (0, H - FOOT - 420), g2.resize((W, 420)))
+    x_top, x_bot = 1240, 1000
+    photo_right(img, "HALL1_hero_cable.jpg", x_top, x_bot, (.42, .5))
+    ox = min(x_top, x_bot)                           # photo's left edge on the slide
     d = ImageDraw.Draw(img)
     # callouts: model points through the HALL1 camera (sensor fit on the longer side, as Blender's AUTO)
     eye, tgt, lens = (575, 455, 92), (870, 500, 24), 26
@@ -306,15 +300,22 @@ def hall_inside(n):
     fl = math.sqrt(sum(v * v for v in f)); f = [v / fl for v in f]
     r = [f[1], -f[0], 0]; rl = math.hypot(r[0], r[1]); r = [v / rl for v in r]
     u = [r[1] * f[2] - r[2] * f[1], r[2] * f[0] - r[0] * f[2], r[0] * f[1] - r[1] * f[0]]
-    k = lens / 36 * W
+    sw, sh = 1920, 1080                              # render size; cover-fit into the photo box as photo() does
+    bw, bh = W - ox, H - FOOT
+    sc = max(bw / sw, bh / sh)
+    cx0 = (sw * sc - bw) * .42
+    cy0 = (sh * sc - bh) * .5
+    k = lens / 36 * sw
     def proj(p):
         dv = [a - b for a, b in zip(p, eye)]
         z = sum(a * b for a, b in zip(dv, f))
-        return W / 2 + sum(a * b for a, b in zip(dv, r)) / z * k, (H - FOOT) / 2 - sum(a * b for a, b in zip(dv, u)) / z * k
+        px = sw / 2 + sum(a * b for a, b in zip(dv, r)) / z * k
+        py = sh / 2 - sum(a * b for a, b in zip(dv, u)) / z * k
+        return ox + px * sc - cx0, py * sc - cy0
     for name, p in (("GT2  ·  H-CLASS GAS TURBINE", (790, 497, 39)), ("GT3", (950, 497, 39)),
                     ("TRAY STACK  ·  EL 30 – 48", (700, 548, 48))):
         x, y = proj(p)
-        if not (1500 < x < W - 80 and 80 < y < H - FOOT - 460):
+        if not (ox + 200 < x < W - 300 and 200 < y < H - FOOT - 60):
             continue
         d.ellipse([x - 9, y - 9, x + 9, y + 9], fill=COPPER)
         d.line([(x, y), (x, y - 90)], fill=COPPER, width=3)
@@ -324,13 +325,13 @@ def hall_inside(n):
         tracked(d, (x + 10, y - 132), name, tf, WHITE, 2)
     tab(d, (M + 4, 104), "02  ·  POWER ISLAND  ·  INSIDE THE HALL")
     d.rectangle([M, 210, M + 96, 219], fill=COPPER)
-    big = F(XBOLD, 118)
+    big = F(XBOLD, 112)
     d.text((M, 240), "THREE TURBINES.", font=big, fill=WHITE)
-    d.text((M, 360), "ONE TRAY STACK.", font=big, fill=COPPER)
-    para(d, (M, 530), "Three H-class gas turbines and the steam turbine share one hall. Every auxiliary drive, "
+    d.text((M, 356), "ONE TRAY STACK.", font=big, fill=COPPER)
+    para(d, (M, 520), "Three H-class gas turbines and the steam turbine share one hall. Every auxiliary drive, "
          "enclosure fan, lube-oil skid and protection relay is fed from the tray stack that runs the length of "
          "the hall at EL 30 to 48: medium voltage on top, 600 V power below, control and instrumentation at the "
-         "bottom.", F(REG, 30), GREY, 1100, 1.42)
+         "bottom.", F(REG, 29), GREY, 960, 1.42)
     # numbers measured from the model inside the hall footprint
     X0, X1, Y0, Y1 = 480, 1100, 370, 560
     Lt = {}
@@ -348,13 +349,15 @@ def hall_inside(n):
           (f"{Lt.get('mv_tray', 0):,.0f} FT", "of it 15 kV medium-voltage tray"),
           (f"{Lt.get('ipb', 0):,.0f} FT", "of isolated-phase bus, generators to GSUs"),
           (f"{wired}", "pieces of equipment in the hall with their own cable")]
-    y0 = H - FOOT - 250
-    cw = (W - 2 * M) // 4
+    y0 = 860
+    cw = 480
+    d.line([(M, y0 - 30), (M + 960, y0 - 30)], fill=RULE, width=2)
+    tracked(d, (M, y0 - 4), "THE HALL BY THE NUMBERS", F(BOLD, 28), COPPER, 4)
     for i, (v, t) in enumerate(st):
-        x = M + i * cw
-        d.line([(x, y0 - 24), (x + cw - 60, y0 - 24)], fill=COPPER if i == 0 else RULE, width=3)
-        d.text((x, y0), v, font=F(XBOLD, 80), fill=WHITE)
-        para(d, (x, y0 + 98), t, F(REG, 26), GREY, cw - 80, 1.3)
+        x = M + (i % 2) * cw
+        yy = y0 + 64 + (i // 2) * 220
+        d.text((x, yy), v, font=F(XBOLD, 80), fill=WHITE)
+        para(d, (x, yy + 98), t, F(REG, 25), GREY, cw - 60, 1.3)
     footer(d, n, "Lengths measured along the modelled routes inside the hall.")
     return img
 
