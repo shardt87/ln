@@ -3,7 +3,7 @@ strategy): same copy, products and model-measured numbers as brochure.py, laid o
 (charcoal field, diagonal photo edge, Barlow Condensed, copper). Pictures are the current renders of the SK-3X1
 model (renders/epic, renders/cover).
 
-    python blender/deck_brochure.py        # -> renders/deck/brochure_slides/slide_02..13.png + one PDF with the cover
+    python blender/deck_brochure.py        # -> renders/deck/brochure_slides/slide_02..14.png + one PDF with the cover
 """
 import os
 
@@ -120,7 +120,7 @@ def overview(n):
              "connection to the last instrument loop, all of it runs on cable. The next slides follow that cable "
              "through the plant.", F(REG, 32), GREY, 1060, 1.45)
     y += 40
-    pages = {"01": 4, "02": 6, "03": 8, "04": 9, "05": 10, "06": 11}
+    pages = {"01": 4, "02": 6, "03": 9, "04": 10, "05": 11, "06": 12}
     for z in B.ZONES:
         d.line([(M, y), (M + 1060, y)], fill=RULE, width=2)
         d.text((M, y + 16), z["n"], font=F(XBOLD, 40), fill=COPPER)
@@ -285,6 +285,80 @@ def hall_detail(n):
                     "Control, protection and instrument circuits along the tray")])
 
 
+def hall_inside(n):
+    """Inside the turbine hall: the GT row under the tray stack (camera HALL1), the visible cable energised in copper
+    (hero_cable.py), callouts projected from the model, and the hall's cable numbers measured from the model."""
+    import math
+    img = Image.new("RGB", (W, H), BG)
+    ph = photo("HALL1_hero_cable.jpg", (W, H - FOOT), (.5, .5))
+    img.paste(ph, (0, 0))
+    fw = 1500
+    g = Image.new("L", (fw, 1))
+    g.putdata([int(250 * (1 - k / fw) ** 1.5) for k in range(fw)])
+    img.paste(Image.new("RGB", (fw, H - FOOT), BG), (0, 0), g.resize((fw, H - FOOT)))
+    g2 = Image.new("L", (1, 420))
+    g2.putdata([int(235 * (k / 420) ** 1.4) for k in range(420)])
+    img.paste(Image.new("RGB", (W, 420), BG), (0, H - FOOT - 420), g2.resize((W, 420)))
+    d = ImageDraw.Draw(img)
+    # callouts: model points through the HALL1 camera (sensor fit on the longer side, as Blender's AUTO)
+    eye, tgt, lens = (575, 455, 92), (870, 500, 24), 26
+    f = [t - e for t, e in zip(tgt, eye)]
+    fl = math.sqrt(sum(v * v for v in f)); f = [v / fl for v in f]
+    r = [f[1], -f[0], 0]; rl = math.hypot(r[0], r[1]); r = [v / rl for v in r]
+    u = [r[1] * f[2] - r[2] * f[1], r[2] * f[0] - r[0] * f[2], r[0] * f[1] - r[1] * f[0]]
+    k = lens / 36 * W
+    def proj(p):
+        dv = [a - b for a, b in zip(p, eye)]
+        z = sum(a * b for a, b in zip(dv, f))
+        return W / 2 + sum(a * b for a, b in zip(dv, r)) / z * k, (H - FOOT) / 2 - sum(a * b for a, b in zip(dv, u)) / z * k
+    for name, p in (("GT2  ·  H-CLASS GAS TURBINE", (790, 497, 39)), ("GT3", (950, 497, 39)),
+                    ("TRAY STACK  ·  EL 30 – 48", (700, 548, 48))):
+        x, y = proj(p)
+        if not (1500 < x < W - 80 and 80 < y < H - FOOT - 460):
+            continue
+        d.ellipse([x - 9, y - 9, x + 9, y + 9], fill=COPPER)
+        d.line([(x, y), (x, y - 90)], fill=COPPER, width=3)
+        tf = F(BOLD, 28)
+        tw = d.textlength(name, font=tf) + 28
+        d.rectangle([x - 4, y - 140, x - 4 + tw, y - 90], fill=(20, 22, 25))
+        tracked(d, (x + 10, y - 132), name, tf, WHITE, 2)
+    tab(d, (M + 4, 104), "02  ·  POWER ISLAND  ·  INSIDE THE HALL")
+    d.rectangle([M, 210, M + 96, 219], fill=COPPER)
+    big = F(XBOLD, 118)
+    d.text((M, 240), "THREE TURBINES.", font=big, fill=WHITE)
+    d.text((M, 360), "ONE TRAY STACK.", font=big, fill=COPPER)
+    para(d, (M, 530), "Three H-class gas turbines and the steam turbine share one hall. Every auxiliary drive, "
+         "enclosure fan, lube-oil skid and protection relay is fed from the tray stack that runs the length of "
+         "the hall at EL 30 to 48: medium voltage on top, 600 V power below, control and instrumentation at the "
+         "bottom.", F(REG, 30), GREY, 1100, 1.42)
+    # numbers measured from the model inside the hall footprint
+    X0, X1, Y0, Y1 = 480, 1100, 370, 560
+    Lt = {}
+    for rt in B.MODEL["routes"]:
+        pts = rt["points"]
+        for a, b in zip(pts, pts[1:]):
+            mx, my = (a[0] + b[0]) / 2, (a[1] + b[1]) / 2
+            if X0 <= mx <= X1 and Y0 <= my <= Y1:
+                Lt[rt["type"]] = Lt.get(rt["type"], 0) + math.dist(a, b)
+    tray = sum(v for t, v in Lt.items() if t.endswith("_tray"))
+    wired = sum(1 for it in B.MODEL["items"] if it.get("wiring") and it.get("fp") and len(it["fp"]) == 4
+                and not isinstance(it["fp"][0], list) and X0 <= (it["fp"][0] + it["fp"][1]) / 2 <= X1
+                and Y0 <= (it["fp"][2] + it["fp"][3]) / 2 <= Y1)
+    st = [(f"{tray:,.0f} FT", "of cable tray inside the hall"),
+          (f"{Lt.get('mv_tray', 0):,.0f} FT", "of it 15 kV medium-voltage tray"),
+          (f"{Lt.get('ipb', 0):,.0f} FT", "of isolated-phase bus, generators to GSUs"),
+          (f"{wired}", "pieces of equipment in the hall with their own cable")]
+    y0 = H - FOOT - 250
+    cw = (W - 2 * M) // 4
+    for i, (v, t) in enumerate(st):
+        x = M + i * cw
+        d.line([(x, y0 - 24), (x + cw - 60, y0 - 24)], fill=COPPER if i == 0 else RULE, width=3)
+        d.text((x, y0), v, font=F(XBOLD, 80), fill=WHITE)
+        para(d, (x, y0 + 98), t, F(REG, 26), GREY, cw - 80, 1.3)
+    footer(d, n, "Lengths measured along the modelled routes inside the hall.")
+    return img
+
+
 def index(n):
     img = Image.new("RGB", (W, H), BG)
     photo_right(img, "K1_pro.png", 1960, 1760, (.5, .5))
@@ -333,8 +407,8 @@ def index(n):
 def main():
     os.makedirs(OUT, exist_ok=True)
     z = {q["n"]: q for q in B.ZONES}
-    slides = [overview(2), where(3), zone(z["01"], 4), grid_detail(5), zone(z["02"], 6), hall_detail(7),
-              zone(z["03"], 8), zone(z["04"], 9), zone(z["05"], 10), zone(z["06"], 11), bookend(12), index(13)]
+    slides = [overview(2), where(3), zone(z["01"], 4), grid_detail(5), zone(z["02"], 6), hall_detail(7), hall_inside(8),
+              zone(z["03"], 9), zone(z["04"], 10), zone(z["05"], 11), zone(z["06"], 12), bookend(13), index(14)]
     for k, s in enumerate(slides, 2):
         s.save(os.path.join(OUT, f"slide_{k:02d}.png"))
         s.resize((W // 2, H // 2), Image.LANCZOS).save(os.path.join(OUT, f"slide_{k:02d}_preview.jpg"), quality=88)
