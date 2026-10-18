@@ -295,7 +295,7 @@ def hall_inside(n):
     ox = min(x_top, x_bot)                           # photo's left edge on the slide
     d = ImageDraw.Draw(img)
     # callouts: model points through the HALL1 camera (sensor fit on the longer side, as Blender's AUTO)
-    eye, tgt, lens = (515, 468, 72), (760, 497, 14), 48
+    eye, tgt, lens = (515, 468, 72), (760, 497, 17), 48
     f = [t - e for t, e in zip(tgt, eye)]
     fl = math.sqrt(sum(v * v for v in f)); f = [v / fl for v in f]
     r = [f[1], -f[0], 0]; rl = math.hypot(r[0], r[1]); r = [v / rl for v in r]

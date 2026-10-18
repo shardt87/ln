@@ -141,6 +141,7 @@ COLOUR_SYSTEM = {
     "hall_steel": ("paint", "#5a6874", .45, .2),
     "gt_cold": ("paint", "#5d666c", .34, .55), "gt_comb": ("paint", "#454c51", .4, .5),
     "gt_blanket": ("paint", "#c2c4c1", .62, .15), "deck_line": ("paint", "#d9b21c", .5, 0),
+    "flag_red": ("paint", "#b22234", .55, 0), "flag_white": ("paint", "#f1f0ea", .55, 0), "flag_blue": ("paint", "#3c3b6e", .55, 0),
     # carbon capture and the rest: quiet
     "ccs": ("clad", "#959b9e", .7, .1), "ccs_green": ("paint", "#a9bdb0", .6, 0), "tower": ("clad", "#b6bbbb", .6, 0),
 }
@@ -1199,7 +1200,7 @@ EPIC = [
     dict(k="HALL3", n="Turbine hall: down the GT row from crane level, 36 mm, the machines filling the frame",
          eye=(515, 468, 72), target=(720, 497, 10), lens=36, show="all", res=(1920, 1440), lamps=4000, sun=(40, 200)),
     dict(k="HALL4", n="Turbine hall: down the GT row from crane level, 48 mm, GT1 to GT3 stacked",
-         eye=(515, 468, 72), target=(760, 497, 14), lens=48, show="all", res=(1920, 1440), lamps=4000, sun=(40, 200)),
+         eye=(515, 468, 72), target=(760, 497, 17), lens=48, show="all", res=(1920, 1440), lamps=4000, sun=(40, 200)),
     dict(k="E2", n="Long lens from the west road: stacks and absorbers stacked up", eye=(-1500, 880, 120),
          target=(800, 1000, 130), lens=135, show="all"),
     dict(k="E3", n="Low pass over the air-cooled condenser", eye=(1500, 300, 165), target=(1100, 800, 90),

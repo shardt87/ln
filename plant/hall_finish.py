@@ -5,8 +5,10 @@
 - each gas turbine read in sections, as a real H-class unit does: inlet plenum in the generator blue (gen_paint), a
   dark machined compressor casing (gt_cold), a darker combustor section (gt_comb) and the hot end, turbine casing
   and exhaust diffuser, under quilted silver insulation blankets (gt_blanket); flanges and rings stay bright steel;
-- yellow walkway / keep-clear lines on the deck round each machine train (deck_line, flat on the deck surface).
-Colour and deck paint only: no equipment geometry changes."""
+- yellow walkway / keep-clear lines on the deck round each machine train (deck_line, flat on the deck surface);
+- on the east end wall, the one you see down the GT row: "3x1 CCGT" in large lettering and a US flag (28 x 14.7 ft,
+  13 stripes, 50 stars), both above the steam-turbine exhaust penetration.
+No equipment geometry changes."""
 import fuel
 from fuel import find, box, on
 
@@ -53,4 +55,34 @@ def build():
             box(a0, a1, b0, b1, 20.0, 20.02, "deck_line")
             n += 1
     fuel.D = False
+    n += end_wall()
     return n
+
+
+def end_wall():
+    """3x1 CCGT lettering and the US flag on the inside of the east end wall (inner face x 1099, facing west)."""
+    import showcase
+    on(find("Common turbine hall"))
+    fuel.D = True
+    xf = 1099.0
+    showcase.decal((xf - .1, 448, 73), (-1, 0, 0), 58, 14, [("3x1 CCGT", .8, True, "#1e2833")], bg=None)
+    # flag: seen from the west, north (+y) is on the viewer's left, so the canton sits at the high-y, top corner
+    w, h = 28.0, 28.0 / 1.9
+    y0, y1, z0 = 501.0, 529.0, 66.0
+    st = h / 13
+    n = 0
+    for i in range(13):
+        za = z0 + h - (i + 1) * st
+        box(xf - .15, xf - .05, y0, y1, za, za + st, "flag_red" if i % 2 == 0 else "flag_white")
+        n += 1
+    cw, ch = .4 * w, 7 * st
+    box(xf - .2, xf - .15, y1 - cw, y1, z0 + h - ch, z0 + h, "flag_blue")
+    for r in range(9):                                   # 50 stars: 9 rows alternating 6 and 5
+        k = 6 if r % 2 == 0 else 5
+        zs = z0 + h - ch * (r + 1) / 10
+        for c in range(k):
+            ys = y1 - cw * ((2 * c + 1) if k == 6 else (2 * c + 2)) / 12
+            box(xf - .24, xf - .2, ys - .22, ys + .22, zs - .22, zs + .22, "flag_white")
+            n += 1
+    fuel.D = False
+    return n + 2
