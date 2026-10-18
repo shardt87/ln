@@ -2210,6 +2210,8 @@ import hall_trays as _htr
 print("hall tray frames (frames, posts replaced)", _htr.build())
 import cable_links as _cl
 print("tier risers added", _cl.build(routes))
+import hall_wiring as _hall_wiring                     # after the trays: the drops route round the wall trays
+print("turbine hall interior electrical", _hall_wiring.build())
 # rooftop equipment on the buildings (HVAC units, exhaust fans, vents, hatches), before the realism pass sees them
 import rooftop as _rooftop
 N_ROOF = _rooftop.build(item, items, parts, routes)
