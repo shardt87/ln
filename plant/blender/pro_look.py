@@ -139,6 +139,8 @@ COLOUR_SYSTEM = {
     # turbine hall interior (hall_finish.py): dark epoxy deck, painted generators, blue-grey structural steel
     "deck_epoxy": ("paint", "#4e5856", .3, 0), "gen_paint": ("paint", "#33475a", .36, .1),
     "hall_steel": ("paint", "#5a6874", .45, .2),
+    "gt_cold": ("paint", "#5d666c", .34, .55), "gt_comb": ("paint", "#454c51", .4, .5),
+    "gt_blanket": ("paint", "#c2c4c1", .62, .15), "deck_line": ("paint", "#d9b21c", .5, 0),
     # carbon capture and the rest: quiet
     "ccs": ("clad", "#959b9e", .7, .1), "ccs_green": ("paint", "#a9bdb0", .6, 0), "tower": ("clad", "#b6bbbb", .6, 0),
 }
@@ -171,7 +173,7 @@ def _node(nt, t, loc, **inputs):
 
 
 # Photoreal finish for the hero (HRSG casings, stacks, copper bands, black access steel). World units are metres.
-HERO_FINISH = {"hrsg", "hrsg_b", "stack", "hero_accent", "hero_rail"}
+HERO_FINISH = {"hrsg", "hrsg_b", "stack", "hero_accent", "hero_rail", "gt_blanket"}
 STACK_TOP = 178 * .3048                    # stack exit, EL 178 ft
 STACK_PLATFORMS = (101.2 * .3048, 169.2 * .3048)
 
@@ -306,6 +308,28 @@ def hero_finish(nt, key, geo, base_out, b, normal_src, rough):
         om = _mr(nt, (-1050, -1100), ox.outputs["Fac"], .5, .7, 0.0, .35)
         col = _mul_col(nt, (-800, -1100), col, om.outputs["Result"], (.55, .45, .4, 1))
         height = gr.outputs["Fac"]
+    elif key == "gt_blanket":
+        # quilted insulation blankets on the GT hot end: stitched pads about 1.5 ft across, each a little puffed and
+        # a slightly different silver, with a fabric sheen
+        qv = _node(nt, "ShaderNodeTexVoronoi", (-1250, -900), Scale=1 / .45, Randomness=.15)
+        qv.feature = "DISTANCE_TO_EDGE"
+        L.new(geo.outputs["Position"], qv.inputs["Vector"])
+        height = _mr(nt, (-1050, -900), qv.outputs["Distance"], 0.0, .12, 0.0, 1.0).outputs["Result"]
+        qc = _node(nt, "ShaderNodeTexVoronoi", (-1250, -1100), Scale=1 / .45, Randomness=.15)
+        L.new(geo.outputs["Position"], qc.inputs["Vector"])
+        bw = _node(nt, "ShaderNodeRGBToBW", (-1050, -1100))
+        L.new(qc.outputs["Color"], bw.inputs[0])
+        tone = _mr(nt, (-850, -1100), bw.outputs[0], 0.0, 1.0, .88, 1.05)
+        cc = _node(nt, "ShaderNodeCombineColor", (-700, -1100))
+        for ch in ("Red", "Green", "Blue"):
+            L.new(tone.outputs["Result"], cc.inputs[ch])
+        m2 = _node(nt, "ShaderNodeMix", (-500, -1100))
+        m2.data_type, m2.blend_type = "RGBA", "MULTIPLY"
+        m2.inputs["Factor"].default_value = 1
+        L.new(col, m2.inputs[6])
+        L.new(cc.outputs[0], m2.inputs[7])
+        col = m2.outputs[2]
+        b.inputs["Sheen Weight"].default_value = .4
     elif key == "hero_rail":
         # black semi-gloss paint: sheen breaks up, edges and treads dulled by use
         rn = _node(nt, "ShaderNodeTexNoise", (-1050, -900), Scale=4.0, Detail=6.0)
@@ -315,8 +339,8 @@ def hero_finish(nt, key, geo, base_out, b, normal_src, rough):
     L.new(col, b.inputs["Base Color"])
     if height is None:
         return normal_src
-    bump = _node(nt, "ShaderNodeBump", (-300, -900), Strength=(.12 if key == "hero_accent" else .5),
-                 Distance=(.004 if key == "hero_accent" else .015))
+    bump = _node(nt, "ShaderNodeBump", (-300, -900), Strength=(.12 if key == "hero_accent" else .8 if key == "gt_blanket" else .5),
+                 Distance=(.004 if key == "hero_accent" else .03 if key == "gt_blanket" else .015))
     bump.invert = key in ("hrsg", "hrsg_b")                      # panel joints are grooves, can seams are raised
     L.new(height, bump.inputs["Height"])
     if normal_src is not None:
@@ -1172,10 +1196,10 @@ EPIC = [
          hide=("Common turbine hall",), hide_layers=("HALL_ROOF",), sun=(42, 200)),
     dict(k="HALL2", n="Turbine hall interior from the crane level at the west end, down the GT row, roof on",
          eye=(515, 468, 72), target=(880, 497, 26), lens=22, show="all", res=(1920, 1080), lamps=4000, sun=(40, 200)),
-    dict(k="HALL3", n="Turbine hall: over GT1 at the gallery level, the GT row and the tray stack receding",
-         eye=(568, 470, 54), target=(820, 500, 30), lens=24, show="all", res=(1920, 1080), lamps=4000, sun=(40, 200)),
-    dict(k="HALL4", n="Turbine hall: on the EL 20 deck between GT1 and GT2, GT2 and its generator with the tray overhead",
-         eye=(712, 432, 31), target=(792, 500, 33), lens=22, show="all", res=(1920, 1080), lamps=4000, sun=(40, 200)),
+    dict(k="HALL3", n="Turbine hall: down the GT row from crane level, 36 mm, the machines filling the frame",
+         eye=(515, 468, 72), target=(720, 497, 10), lens=36, show="all", res=(1920, 1440), lamps=4000, sun=(40, 200)),
+    dict(k="HALL4", n="Turbine hall: down the GT row from crane level, 48 mm, GT1 to GT3 stacked",
+         eye=(515, 468, 72), target=(760, 497, 14), lens=48, show="all", res=(1920, 1440), lamps=4000, sun=(40, 200)),
     dict(k="E2", n="Long lens from the west road: stacks and absorbers stacked up", eye=(-1500, 880, 120),
          target=(800, 1000, 130), lens=135, show="all"),
     dict(k="E3", n="Low pass over the air-cooled condenser", eye=(1500, 300, 165), target=(1100, 800, 90),

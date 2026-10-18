@@ -1,10 +1,14 @@
 """Turbine hall interior finish (user review: the hall read as one flat light grey). As in a real H-class hall:
 - the EL 20 turbine deck in a dark, low-sheen epoxy coating (deck_epoxy), so the machines stand on a dark floor;
 - the four generators (GTG-1..3, STG) in a deep painted blue-grey (gen_paint), the turbine casings stay steel;
-- the hall's structural steel (columns, girts, crane rails) painted mid blue-grey (hall_steel) against light cladding.
-Colour only: no geometry changes."""
+- the hall's structural steel (columns, girts, crane rails) painted mid blue-grey (hall_steel) against light cladding;
+- each gas turbine read in sections, as a real H-class unit does: inlet plenum in the generator blue (gen_paint), a
+  dark machined compressor casing (gt_cold), a darker combustor section (gt_comb) and the hot end, turbine casing
+  and exhaust diffuser, under quilted silver insulation blankets (gt_blanket); flanges and rings stay bright steel;
+- yellow walkway / keep-clear lines on the deck round each machine train (deck_line, flat on the deck surface).
+Colour and deck paint only: no equipment geometry changes."""
 import fuel
-from fuel import find
+from fuel import find, box, on
 
 GENERATORS = ("GTG-1: GT generator", "GTG-2: GT generator", "GTG-3: GT generator", "STG: steam-turbine generator")
 
@@ -24,4 +28,29 @@ def build():
         else:
             continue
         n += 1
+    for k in range(3):                                   # GT casing sections by position along the shaft (y)
+        gt = find(f"GT{k + 1}: H-class")["id"]
+        for p in fuel.G["parts"]:
+            if p["item"] != gt or p["color"] != "machine":
+                continue
+            ys = (p["a"][1] + p["b"][1]) / 2 if p["kind"] == "rod" else (p["min"][1] + p["max"][1]) / 2
+            if p["kind"] == "box" and p["max"][1] <= 467.5:
+                p["color"] = "gen_paint"                 # inlet plenum
+            elif p["kind"] == "rod" and 467 <= ys < 495 and p.get("r", 0) > 4:
+                p["color"] = "gt_cold"                   # bellmouth and compressor casing
+            elif p["kind"] == "rod" and 495 <= ys < 507 and p.get("r", 0) > 4:
+                p["color"] = "gt_comb"                   # combustor section
+            elif p["kind"] == "rod" and ys >= 507 and p.get("r", 0) > 4:
+                p["color"] = "gt_blanket"                # turbine casing and exhaust diffuser
+            else:
+                continue
+            n += 1
+    on(find("Turbine deck EL 20"))
+    fuel.D = True
+    for (x0, x1, y0, y1) in ((612, 648, 407, 543), (772, 808, 407, 543), (932, 968, 407, 543), (1016, 1084, 407, 554)):
+        w = .33                                                  # 4 in yellow line, 4 ft clear of the machine train
+        for (a0, a1, b0, b1) in ((x0, x1, y0, y0 + w), (x0, x1, y1 - w, y1), (x0, x0 + w, y0, y1), (x1 - w, x1, y0, y1)):
+            box(a0, a1, b0, b1, 20.0, 20.02, "deck_line")
+            n += 1
+    fuel.D = False
     return n
