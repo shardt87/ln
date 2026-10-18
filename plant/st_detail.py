@@ -12,7 +12,9 @@ As on a real HP/IP + LP reheat unit, all typical, not engineered:
 - electro-hydraulic control: shielded servo cable from both valve actuators to the HP/IP junction box, EHC
   hydraulic tubing from the skid;
 - each junction box in rigid conduit up to the EL 42 control tray that runs along x 1017 and over the generator;
-- generator (STG): RTD / vibration junction box with its conduit to the same tray, space-heater MC feed.
+- generator (STG): RTD / vibration junction box with its conduit to the same tray, space-heater MC feed;
+- the turning-gear motor fed in Type MC-HL from the EL 30 LV tray drop at x 1010 (the ST's 480 V comes from that
+  tray and from R3; the 15 kV tray rightly stops at GT3: the ST has no medium-voltage loads in the hall).
 Everything stays inside the ST / STG envelopes or on the deck beside them, clear of the trays and pedestals.
 """
 import math
@@ -114,6 +116,10 @@ def build():
         poly([(1082, 500, 23.0), (1077.5, 500, 23.0), (1077.5, 549.0, 23.0), (xv, 549.0, 23.0), (xv, 546.4, 23.0),
               (xv, 546.4, 36.5)], .1, "amber")
         n += 2
+    # ---- turning-gear motor (x 1055-1060, y 462.5-467): MC-HL from the EL 30 LV tray drop at x 1010, over the deck
+    poly([(1010.0, 524.4, 30.2), (1012.0, 524.4, 30.2), (1012.0, 464.7, 30.2), (1018.0, 464.7, 30.2),
+          (1018.0, 464.7, 27.0), (1057.5, 464.7, 27.0), (1057.5, 464.7, 26.0)], .11, "cable_mc")
+    n += 1
     fuel.D = False
     # ---- generator: RTD / vibration box with conduit up to the tray over the STG (y 431, EL 42), heater MC feed
     sg = find("STG:")

@@ -148,7 +148,9 @@ COLOUR_SYSTEM = {
 LOOK.update(COLOUR_SYSTEM)
 CABLE_KEYS = ("cable", "cable_mv", "cable_tc", "cable_mc", "cable_inst", "cable_tcx", "cable_fa", "cable_fo", "cable_armor")
 if os.environ.get("SK_CABLE_MASK"):        # mask pass for the hero-cable composite (blender/hero_cable.py): cables pure red
-    for _k in (("cable_mv", "cable_armor") if os.environ["SK_CABLE_MASK"] == "mv" else CABLE_KEYS):   # mv: MV spine only
+    _sel = {"mv": ("cable_mv", "cable_armor"),                         # mv: the 15 kV spine only
+            "power": ("cable_mv", "cable_armor", "cable_mc")}            # power: 15 kV and the 480 V MC-HL
+    for _k in _sel.get(os.environ["SK_CABLE_MASK"], CABLE_KEYS):
         LOOK[_k] = ("paint", "#ff0000", .5, 0)
 GRIME = (.44, .44, .44, 1)              # neutral weathering (was warm brown, which tinted the whole plant)
 ALPHA = {"glass_in": .18, "coilpak_p": .7, "coilpak_b": .7}
