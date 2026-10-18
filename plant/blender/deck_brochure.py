@@ -174,10 +174,12 @@ def where(n):
 def bookend(n):
     """Close: the whole campus as cable, with the cover's claim."""
     img = Image.new("RGB", (W, H), BG)
-    img.paste(photo("xray_bookend.jpg", (W, H - FOOT), (.6, .5)), (0, 0))
-    g = Image.new("L", (1400, 1))
-    g.putdata([int(235 * (1 - k / 1400) ** 1.6) for k in range(1400)])
-    img.paste(Image.new("RGB", (1400, H - FOOT), BG), (0, 0), g.resize((1400, H - FOOT)))
+    pw = 2200                                        # photo on the right two thirds, fading into the field
+    img.paste(photo("xray_bookend.jpg", (pw, H - FOOT), (.7, .5)), (W - pw, 0))
+    fw = 900
+    g = Image.new("L", (fw, 1))
+    g.putdata([int(255 * (1 - k / fw) ** 1.3) for k in range(fw)])
+    img.paste(Image.new("RGB", (fw, H - FOOT), BG), (W - pw, 0), g.resize((fw, H - FOOT)))
     d = ImageDraw.Draw(img)
     tracked(d, (M, 380), "SK-3X1 POWER CAMPUS", F(BOLD, 30), COPPER, 4)
     d.rectangle([M, 440, M + 96, 449], fill=COPPER)
