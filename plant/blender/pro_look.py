@@ -1213,6 +1213,8 @@ EPIC = [
          eye=(760, 300, 250), target=(845, 485, 20), lens=24, show="all", res=(1920, 1440), lamps=4000, sun=(45, 200),
          hide=("Turbine hall south cladding", "Turbine hall exterior electrical", "FH-1", "FH-2", "FH-3",
                "GT1 inlet duct", "GT2 inlet duct", "GT3 inlet duct"), hide_layers=("HALL_ROOF",)),
+    dict(k="ST1", n="Steam turbine close-up from the west aisle: LP casing, HP/IP under blankets, valves, cable to the tray",
+         eye=(996, 476, 50), target=(1050, 512, 31), lens=24, show="all", res=(1920, 1440), lamps=4000, sun=(40, 200)),
     dict(k="E2", n="Long lens from the west road: stacks and absorbers stacked up", eye=(-1500, 880, 120),
          target=(800, 1000, 130), lens=135, show="all"),
     dict(k="E3", n="Low pass over the air-cooled condenser", eye=(1500, 300, 165), target=(1100, 800, 90),

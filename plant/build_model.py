@@ -2108,6 +2108,8 @@ import hero as _hero
 print("hero accents", _hero.build())
 import hall_finish as _hall_finish
 print("turbine hall finish", _hall_finish.build())
+import st_detail as _st_detail
+print("steam turbine detail / cable", _st_detail.build())
 # Tray review (user screenshots): short tray stubs drawn between a duct-bank end and pad equipment
 # rode the EL +36 rack tier, so a 10 ft connection became a 36 ft goalpost over the transformer. A
 # duct bank comes up straight into the equipment: those stubs are now buried, with rigid-conduit
