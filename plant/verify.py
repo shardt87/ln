@@ -170,6 +170,7 @@ results["sheet09"] = dict(clearances=srows, hook=hrows9,
 # Pairs the drawings define as touching or nested.
 TOUCH = [
     (r"removable plenum spool", r"inlet duct \(drop"),        # spool bolts to the duct
+    (r"^Turbine hall south cladding", r"^Common turbine hall"),   # the hall's own wall panels on its columns / girder
     (r"removable plenum spool", r"^GT\d: H-class"),           # 'touches the GT lift column by design' (sheet 09)
     (r"^GCB-", r"UAT-\d tap"), (r"exhaust duct to HRSG", r"inlet transition"),
     (r"outlet breeching", r"stack$"), (r"outlet breeching", r"^HRSG \d \+ SCR"),

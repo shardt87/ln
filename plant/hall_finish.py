@@ -10,7 +10,7 @@
   13 stripes, 50 stars), both above the steam-turbine exhaust penetration.
 No equipment geometry changes."""
 import fuel
-from fuel import find, box, on
+from fuel import find, box, on, new_item
 
 GENERATORS = ("GTG-1: GT generator", "GTG-2: GT generator", "GTG-3: GT generator", "STG: steam-turbine generator")
 
@@ -56,6 +56,28 @@ def build():
             n += 1
     fuel.D = False
     n += end_wall()
+    n += south_cladding()
+    return n
+
+
+def south_cladding():
+    """Split the south cladding (upper south wall over the gallery roof, the gallery's outer wall, its doors and
+    lights) into its own item, so cutaway cameras can lift it off and look in at all four machine trains side by side.
+    The structure (columns, girders) stays with the hall."""
+    hall = find("Common turbine hall")
+    it = new_item(hall["layer"], "Turbine hall south cladding (lifted off in the cutaway views)", [480, 1100, 369, 404],
+                  [0, 98], area=hall.get("area", "A"), info="Insulated wall panels, gallery doors and wall lights.")
+    on(hall)
+    n = 0
+    for p in fuel.G["parts"]:
+        if p["item"] != hall["id"] or p["kind"] != "box" or p["layer"] != hall["layer"]:
+            continue
+        lo, hi = p["min"], p["max"]
+        upper = p["color"] == "hall" and lo[1] >= 402.5 and hi[1] <= 404.5 and lo[2] >= 59
+        outer = p["color"] in ("hall", "door", "lamp") and lo[1] >= 369.5 and hi[1] <= 372.5
+        if upper or outer:
+            p["item"] = it["id"]
+            n += 1
     return n
 
 
