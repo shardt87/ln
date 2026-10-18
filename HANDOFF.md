@@ -51,7 +51,7 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
 
 ## In progress / not yet done
 
-- **Viewer rebuilt (Oct 18) but not republished** since the hall / ST / branding changes: `plant/viewer/index.html` and
+- **Viewer rebuilt (Oct 18) but not republished** (verified current and wall sign tested Oct 18 evening, see Next steps) since the hall / ST / branding changes: `plant/viewer/index.html` and
   `index_southwire.html` are current; republish the artifact https://claude.ai/artifact/9bfQJUnJ6GCH35zmjBq7cP
   (publish `plant/viewer/index.html` with that url). The new `print` image decal (wall sign) is supported in
   `viewer/template.html` but untested in the browser.
@@ -136,11 +136,29 @@ python blender/hall_sign.py                  # end-wall graphic
 Hall cameras in `blender/pro_look.py` EPIC: HX1 (cover), HALL2-HALL8, ST1, E1, K5, SC1. X-ray captures:
 `plant/tools/xray_capture/README.md`.
 
-## Next steps (priority)
+## Next steps (priority) and the plan proposed Oct 18 evening (awaiting the owner's go)
 
-1. Rebuild and republish the viewer with the hall / ST / branding work; check the wall sign renders in the browser.
-2. Re-render the older deck pictures with the current look; rebuild the deck PDF.
-3. Log the Oct 17-18 work in `plant/DETAIL_CYCLES.md` and `plant/README.md`.
+1. **Viewer republish** (~10 min, no Blender). Checked Oct 18 evening: `viewer/index.html` and
+   `index_southwire.html` match a fresh `build_viewer.py` build (only the gzip timestamp differs), so they already
+   carry the hall / ST / branding work. The wall sign was tested headless (Chromium + SwiftShader, camera inside the
+   hall looking at the east end wall): branded build shows the full "3x1 CCGT / WIRE & CABLE PARTNER / Southwire"
+   graphic, generic build shows plain "3x1 CCGT", no page errors. Note: the hall cladding is 25% opaque in the
+   viewer, so the sign reads against see-through wall structure (legible). Steps: `Artifact read` the url
+   https://claude.ai/artifact/9bfQJUnJ6GCH35zmjBq7cP, publish `plant/viewer/index.html` to it, open it and check
+   the hall views / tour stops 4-7 and 14-15 on desktop and phone width.
+2. **Deck re-render** (old renders predate the slate HRSG / light stacks / black-copper hall / photoreal finish).
+   Slide -> cameras (`blender/deck_brochure.py`, `brochure.py` ZONES):
+   2 K5 · 4 E60 (+ inset E19) · 5 E20, E4, E31 · 6 E70 · 7 E66, E67, E23 · 9 E68 (+E57) · 10 E65 (+E62) ·
+   11 E77 (+E78) · 12 E64 (+E58) · 14 K1 (product index, also shows the plant).
+   - Tier 1, the hero or the hall is in frame (must): K5, E20, E70, E66, E67, E23, E68, E64 (8 cameras).
+   - Tier 2, no HRSG / stack in frame (consistency of light and finish only): E60, E19, E4, E31, E57, E65, E62,
+     E77, E78, E58, and optionally K1.
+   - Run as background batches under the 2 h job limit (4 CPUs, ~15-20 min per camera at 128 samples, scale 100):
+     batch A K5, E20, E70, E66; batch B E67, E23, E68, E64; then tier 2 if wanted. Each: render, `finish_pro.py`,
+     look at a contact sheet against the HX1 / HALL7 look, re-render any miss, then `deck_brochure.py` and commit the
+     PNG sources (force-add, `*.png` is ignored) plus the PDF. K5_pro.png / K1_pro.png are not in the repo (ignored,
+     lost with the container), so K5 and K1 must be rendered before `deck_brochure.py` can rebuild slides 2 / 14.
+3. Log the Oct 17-18 work in `plant/README.md` (DETAIL_CYCLES.md has the slim-export entry).
 4. ST close-up polish (flush thermocouple leads) if ST1 goes in the deck.
 5. Training prep from `plant/HANDOFF.md`: fundamentals slides, SME review, two Teams dry runs.
 
