@@ -8,7 +8,7 @@
   (44 ft) and at the corners, a clerestory window strip under the eaves of both long walls, a black fascia round the
   gallery roof edge, a black coping round the main roof edge, intake louvres on the gallery wall at each GT bay, a black surround and two wall lights at the
   west equipment door;
-- a Southwire SIMpull tractor-trailer where the generic flatbed stood (same size and heading, cab north): five 9 ft
+- a Southwire SIMpull tractor-trailer where the generic flatbed stood (same size and heading, cab north): four 10.5 ft
   steel reels, black flanges each filled by the copper Southwire meatball, red skirts with the SIMpull SOLUTIONS livery, crew at the tail, two more reels staged by the door, one standing, one laid flat (user, Oct 19, "better for branding").
 Every strip is cut back wherever something of another item stands within a few inches of the wall (pipes, trays,
 risers, filter-house frames, inlet ducts), so nothing new touches the plant. The south pieces sit in their own
@@ -177,7 +177,7 @@ def build():
 def simpull_delivery(lay, area):
     """A Southwire SIMpull tractor-trailer where the generic flatbed stood (x 436-444, y 459-522, cab to the north):
     a white tractor with a Southwire-red stripe and logos on the doors, a 52 ft flatbed with red skirts and the
-    SIMpull SOLUTIONS livery, five 9 ft steel reels with black flanges filled by the copper Southwire meatball, chocked across the deck
+    SIMpull SOLUTIONS livery, four 10.5 ft steel reels with black flanges filled by the copper Southwire meatball, chocked across the deck
     (paralleled, colour-coded conductors), a crew at the tail."""
     import showcase
     import simpull
@@ -192,8 +192,8 @@ def simpull_delivery(lay, area):
     xc, yt0, yt1 = 440.0, 459.0, 511.0                     # trailer deck (y 459-511), tractor y 511-522
     hw, zd = 4.25, 4.4                                     # half width, deck top
     it = new_item(lay, "Cable delivery: SIMpull tractor-trailer at the turbine hall west door",
-                  [434, 446, 452, 523], [0, 15], area=area, register=False, sheet="typical (cable installation)",
-                  info="Southwire SIMpull tractor-trailer delivering five steel reels of paralleled feeder conductors "
+                  [434, 446, 452, 523], [0, 16], area=area, register=False, sheet="typical (cable installation)",
+                  info="Southwire SIMpull tractor-trailer delivering four steel reels of paralleled feeder conductors "
                        "to the turbine hall through the west equipment door. Typical, not engineered.")
     on(it)
     fuel.D = True
@@ -224,11 +224,12 @@ def simpull_delivery(lay, area):
         for s in (-1, 1):
             rod((xc + s * (hw - 1.2), yw, 1.7), (xc + s * (hw + .05), yw, 1.7), 1.7, "tyre", seg=16)
     n += 20
-    # five 9 ft steel reels, flanges painted black, each filled by the copper Southwire meatball, axles across the trailer, on chocks
-    D, W = 9.0, 5.6
+    # four 10.5 ft steel reels, flanges painted black, each filled by the copper Southwire meatball, axles across the trailer,
+    # on chocks (an oversize load, as the big feeder reels are)
+    D, W = 10.5, 7.0
     R = D / 2
-    for k in range(5):
-        y = yt0 + 5.2 + k * 10.4
+    for k in range(4):
+        y = yt0 + 6.0 + k * 12.6
         zc = zd + .3 + R
         for s in (-1, 1):
             simpull.flange_disc((xc + s * (W / 2 - .3), y, zc), (s, 0, 0), R, .3, col="sp_black", spokes=12)
@@ -256,6 +257,8 @@ def simpull_delivery(lay, area):
                        "Typical, not engineered.")
     on(it)
     fuel.D = True
+    D, W = 9.0, 5.6                                        # the staged reels stay 9 ft
+    R = D / 2
     xs, ys, zc = 465.0, 428.5, R + .3                     # standing: axle along x, on chocks on the apron
     for s in (-1, 1):
         simpull.flange_disc((xs + s * (W / 2 - .3), ys, zc), (s, 0, 0), R, .3, col="sp_black", spokes=12)
