@@ -55,6 +55,15 @@ def main():
     p = os.path.join(os.path.dirname(OUT), "hall_west_lettering.png")
     w.save(p)
     print(p, w.size)
+    # painted unit letters over the gallery doors (GT1 / GT2 / GT3 / ST1), the WIRE & CABLE PARTNER face, cropped tight
+    f = ImageFont.truetype(os.path.join(HERE, "deck", "BarlowCondensed-ExtraBold.ttf"), 800)
+    for t in ("GT1", "GT2", "GT3", "ST1"):
+        im = Image.new("RGBA", (3000, 1200), (0, 0, 0, 0))
+        ImageDraw.Draw(im).text((1500, 600), t, font=f, fill=INK, anchor="mm")
+        im = im.crop(im.getbbox())
+        p = os.path.join(os.path.dirname(OUT), f"door_{t}.png")
+        im.save(p)
+        print(p, im.size)
 
 
 if __name__ == "__main__":

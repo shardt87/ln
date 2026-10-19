@@ -7,7 +7,8 @@
 - the inside copper band carried outside at the same EL 64 round all four walls, black pilasters on the column lines
   (44 ft) and at the corners, a clerestory window strip under the eaves of both long walls, a black fascia round the
   gallery roof edge, a black coping round the main roof edge, intake louvres on the gallery wall at each GT bay, the ST bay's gallery door (the GT bays had theirs) and black
-  door ID signs GAS TURBINE 1 / 2 / 3 and STEAM TURBINE over the four gallery doors, a black surround and two wall lights at the
+  door ID signs GAS TURBINE 1 / 2 / 3 and STEAM TURBINE over the four gallery doors with the units painted large
+  above them (GT1 / GT2 / GT3 / ST1, sign-wide, Barlow Condensed ExtraBold), a black surround and two wall lights at the
   west equipment door;
 - a Southwire SIMpull tractor-trailer where the generic flatbed stood (same size and heading, cab north): four 10.5 ft
   steel reels, black flanges each filled by the copper Southwire meatball, red skirts with the SIMpull SOLUTIONS livery, crew at the tail, two more reels staged by the door, one standing, one laid flat (user, Oct 19, "better for branding").
@@ -15,6 +16,7 @@ Every strip is cut back wherever something of another item stands within a few i
 risers, filter-house frames, inlet ducts), so nothing new touches the plant. The south pieces sit in their own
 "Turbine hall south cladding ..." item and lift off with the cladding in the cutaway views."""
 import math
+import os
 
 import fuel
 from fuel import box, find, new_item, on
@@ -179,8 +181,17 @@ def build():
     fuel.D = False
     # door ID signs over the four gallery doors, above the conduit run and the wall lights (EL 20.6-23)
     import showcase
-    for xc, t in ((576.0, "GAS TURBINE 1"), (736.0, "GAS TURBINE 2"), (896.0, "GAS TURBINE 3"), (1085.0, "STEAM TURBINE")):
+    # and above each sign the unit painted large on the cladding, the sign's width, in the WIRE & CABLE PARTNER face
+    # (Barlow Condensed ExtraBold), so the entrances read from far off. GT1 sits 1.6 ft east of its door's centre,
+    # clear of the black pilaster on the door's west edge.
+    from PIL import Image
+    for xc, t, u in ((577.6, "GAS TURBINE 1", "GT1"), (736.0, "GAS TURBINE 2", "GT2"), (896.0, "GAS TURBINE 3", "GT3"),
+                     (1085.0, "STEAM TURBINE", "ST1")):
         showcase.decal((xc, 369.45, 21.8), (0, -1, 0), 13.0, 2.4, [(t, .56, True, "#ffffff")], bg="#1d1f21")
+        iw, ih = Image.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "screens", f"door_{u}.png")).size
+        h = round(13.0 * ih / iw, 2)
+        fuel.G["decals"].append(dict(c=[xc, 369.45, round(24.0 + h / 2, 2)], n=[0, -1, 0], w=13.0, h=h, bg=None, lines=[],
+                                     item=b["id"], layer=b["layer"], brand=0, img=f"door_{u}.png", print=1))
     n += simpull_delivery(lay, area)
     return n
 
