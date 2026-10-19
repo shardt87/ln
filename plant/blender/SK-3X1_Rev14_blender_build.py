@@ -330,6 +330,9 @@ def make_decals():
             for l in list(nt.links):
                 if l.to_socket == b.inputs["Base Color"]:
                     nt.links.remove(l)
+        if d.get("print"):                                         # printed wall graphic: flat matte ink, no sheen
+            b.inputs["Roughness"].default_value = 1.0
+            b.inputs["Specular IOR Level"].default_value = 0.0
         if hasattr(m, "blend_method"):
             m.blend_method = "CLIP" if not d.get("bg") else "OPAQUE"
         mat_cache[path] = m

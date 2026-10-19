@@ -6,11 +6,11 @@ Solutions logo as wide as the rule (white wordmark recoloured black for the ligh
 """
 import os
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import ImageFilter, Image, ImageDraw, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(os.path.dirname(HERE), "screens", "hall_wall_sign.png")
-INK, COPPER = (28, 29, 31, 255), (184, 115, 51, 255)
+INK, COPPER = (17, 18, 20, 255), (166, 90, 44, 255)       # solid Southwire black, deep burnished copper
 W, H = 3000, 1500                                        # 60 x 30 ft at 50 px / ft
 
 
@@ -28,19 +28,24 @@ def main():
     big = ImageFont.truetype(os.path.join(HERE, "deck", "BarlowCondensed-ExtraBold.ttf"), 470)
     d.text((W / 2, 250), "3x1 CCGT", font=big, fill=INK, anchor="mm")
     d.rectangle([W / 2 - 1300, 540, W / 2 + 1300, 568], fill=COPPER)              # copper rule
-    small = ImageFont.truetype(os.path.join(HERE, "deck", "BarlowCondensed-Bold.ttf"), 120)
-    tracked(d, W / 2, 680, "WIRE & CABLE PARTNER", small, INK, 22)
+    small = ImageFont.truetype(os.path.join(HERE, "deck", "BarlowCondensed-ExtraBold.ttf"), 165)
+    tracked(d, W / 2, 690, "WIRE & CABLE PARTNER", small, INK, 26)
     logo = Image.open(os.path.join(HERE, "deck", "southwire_pgs_logo.png")).convert("RGBA")
-    px = logo.load()
-    for j in range(logo.height):                                                    # white wordmark -> Southwire black
-        for i in range(logo.width):
-            r, g, b, a = px[i, j]
-            if a and min(r, g, b) > 200:
-                px[i, j] = INK[:3] + (a,)
     lw = 2600                                                                       # the logo as wide as the rule
     lh = int(logo.height * lw / logo.width)
     logo = logo.resize((lw, lh), Image.LANCZOS)
-    img.alpha_composite(logo, (int(W / 2 - lw / 2), 790))
+    px = logo.load()
+    for j in range(lh):                   # solid print: white wordmark -> black, copper mark -> one deep copper,
+        for i in range(lw):               # edges fully opaque (no washed-out half-transparent pixels)
+            r, g, b, a = px[i, j]
+            if a < 110:
+                px[i, j] = (0, 0, 0, 0)
+            elif min(r, g, b) > 150:
+                px[i, j] = INK
+            else:
+                px[i, j] = COPPER
+    logo = logo.filter(ImageFilter.ModeFilter(5))                                   # clear stray specks
+    img.alpha_composite(logo, (int(W / 2 - lw / 2), 820))
     img.save(OUT)
     print(OUT, img.size)
 
