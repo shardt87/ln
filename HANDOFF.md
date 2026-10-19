@@ -58,6 +58,8 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
     west so the bridge crane over the laydown bay is in frame with GT1-GT3 and the ST; slide 8 now uses
     `renders/cover/HALL9_hero_cable.jpg` with a BRIDGE CRANE callout. The crane (left at its drawn parked position:
     sheet-09 checks) got web stiffeners down both girders and striped end-truck bumpers (hall_finish.crane_detail).
+  - camera HALL10 (Oct 19): angle shot inside the hall from the GT1 / GT2 aisle at EL 50, GT2 in front, GT3 and the
+    ST stepping back, the flag, chevrons and white-on-black Southwire sign on the east end wall at the back.
   - cable rejuvenation (Oct 19, user asked for a Southwire Rejuvenation Services van; kept away from the hall door
     so it does not crowd the SIMpull scene): `maintenance.rejuvenation()` opens the collector bank's west manhole
     (site 1690, 960, MH-C, next to the existing MH-A / MH-B cable-pull job) and parks a field-service van south of it,

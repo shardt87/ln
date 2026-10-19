@@ -1207,6 +1207,8 @@ EPIC = [
          eye=(528, 422, 60), target=(900, 505, 26), lens=24, show="all", res=(1920, 1440), lamps=4000, sun=(40, 200)),
     dict(k="HALL6", n="Turbine hall three-quarter, tighter: the four machine trains and the end wall",
          eye=(528, 440, 74), target=(920, 510, 24), lens=28, show="all", res=(1920, 1440), lamps=4000, sun=(40, 200)),
+    dict(k="HALL10", n="Turbine hall angle shot: GT1, GT2, GT3 and the ST leading to the Southwire sign on the east end wall",
+         eye=(700, 418, 50), target=(1060, 470, 50), lens=26, show="all", res=(1920, 1440), lamps=4000, sun=(40, 200)),
     dict(k="HALL7", n="Turbine hall cutaway from the south-west, south wall and roof lifted: GT1, GT2, GT3 and the ST",
          eye=(585, 278, 240), target=(828, 488, 22), lens=32, show="all", res=(1920, 1440), lamps=4000, sun=(45, 200),
          hide=("Turbine hall south cladding", "Turbine hall exterior electrical", "FH-1", "FH-2", "FH-3",
