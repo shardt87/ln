@@ -4,8 +4,8 @@
   "3x1 CCGT";
 - no unit numbers (tried "GT 1-3" on the filter houses and "ST" on the wall, Oct 19: read as confusing, removed);
 - the inside copper band carried outside at the same EL 64 round all four walls, black pilasters on the column lines
-  (44 ft) and at the corners, a clerestory window strip under the eaves of both long walls, a black fascia along the
-  gallery roof edge, intake louvres on the gallery wall at each GT bay, a black surround and two wall lights at the
+  (44 ft) and at the corners, a clerestory window strip under the eaves of both long walls, a black fascia round the
+  gallery roof edge, a black coping round the main roof edge, intake louvres on the gallery wall at each GT bay, a black surround and two wall lights at the
   west equipment door;
 - a Southwire SIMpull tractor-trailer where the generic flatbed stood (same size and heading, cab north): five 9 ft
   steel reels with black flanges and the Southwire logo, red skirts with the SIMpull SOLUTIONS livery, crew at the tail (user, Oct 19, "better for branding").
@@ -40,16 +40,16 @@ class Face:
         lo, hi = (v, v + 1.0) if s > 0 else (v - 1.0, v)          # the slab a strip can occupy, plus margin
         self.obs = []
         for p in fuel.G["parts"]:
-            if p["item"] in skip[0] or (p["item"] in skip[1] and p["color"] in ("hall", "roof")):
+            if p["item"] in skip[0] or (p["item"] in skip[1] and p["color"] in ("hall", "roof", "hall_steel")):
                 continue
             b = _bb(p)
             if b and b[0][ax] < hi and b[1][ax] > lo:
                 self.obs.append(b)
 
-    def free(self, a0, a1, z0, z1):
+    def free(self, a0, a1, z0, z1, pad=PAD):
         """Free sub-intervals of [a0, a1] along the face for a strip spanning z0..z1."""
         o = 1 - self.ax
-        cuts = sorted((b[0][o] - PAD, b[1][o] + PAD) for b in self.obs
+        cuts = sorted((b[0][o] - pad, b[1][o] + pad) for b in self.obs
                       if b[0][2] < z1 + PAD and b[1][2] > z0 - PAD and b[0][o] < a1 and b[1][o] > a0)
         out, x = [], a0
         for c0, c1 in cuts:
@@ -83,8 +83,9 @@ class Face:
         return 1
 
 
-def hstrip(f, a0, a1, z0, z1, depth, color):
-    return sum(f.put(p, q, z0, z1, depth, color) for p, q in f.free(a0, a1, z0, z1))
+def hstrip(f, a0, a1, z0, z1, depth, color, pad=.05):
+    """A horizontal band, fitted tight (pad) against whatever of another item stands at the wall."""
+    return sum(f.put(p, q, z0, z1, depth, color) for p, q in f.free(a0, a1, z0, z1, pad))
 
 
 def pilaster(f, a, z0, z1, w=2.0):
@@ -135,6 +136,9 @@ def build():
         n += pilaster(f, 557.0, 0, 98) + pilaster(f, 405.0, 60, 98)
     n += pilaster(N, 481.0, 0, 98) + pilaster(N, 1099.0, 0, 98)
     n += windows(N, 482, 1098)
+    # black coping round the main roof edge, all four walls (the south one is in the cladding item below)
+    n += hstrip(N, 480, 1100, 96.8, 98.2, .5, "hero_rail")
+    n += hstrip(W, 403, 560, 96.8, 98.2, .5, "hero_rail") + hstrip(E, 403, 560, 96.8, 98.2, .5, "hero_rail")
     # west equipment door (y 440-480, EL 0-36): black surround and two wall lights
     box(479.1, 479.5, 438.5, 440.0, 0, 37.5, "hero_rail"); box(479.1, 479.5, 480.0, 481.5, 0, 37.5, "hero_rail")
     box(479.1, 479.5, 438.5, 481.5, 36.0, 37.5, "hero_rail")
@@ -160,6 +164,8 @@ def build():
     n += pilaster(W, 371.0, 0, 56.5) + pilaster(E, 371.0, 0, 56.5)
     n += windows(SU, 482, 1098)
     n += hstrip(SG, 480, 1100, 56.5, 58.0, .35, "hero_rail")                    # gallery roof fascia
+    n += hstrip(W, 369.6, 403, 56.5, 58.0, .35, "hero_rail") + hstrip(E, 369.6, 403, 56.5, 58.0, .35, "hero_rail")
+    n += hstrip(SU, 480, 1100, 96.8, 98.2, .5, "hero_rail")                     # main roof coping, south
     for k in range(3):                                                           # intake louvres, each GT bay
         x0 = 694 + 160 * k
         for p, q in SG.free(x0, x0 + 30, 33.0, 43.0):
