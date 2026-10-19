@@ -69,7 +69,7 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
 
 - **Viewer: published.** The branded viewer (`plant/viewer/index_southwire.html`) is live at
   https://claude.ai/artifact/QtsCN1A1zmrgNTyMrqJbTL: version 3 (Oct 19) carries the UTF-8 / mobile-viewport fix
-  (commit 41836bb), the solid wall sign and the hall exterior branding (version 7: without unit numbers, SIMpull tractor-trailer with black steel reels at the hall's west door, roof coping; v9). To update: rebuild with `build_viewer.py --out viewer/index_southwire.html`
+  (commit 41836bb), the solid wall sign and the hall exterior branding (version 7: without unit numbers, SIMpull tractor-trailer with black steel reels at the hall's west door, roof coping, corners closed; v10). To update: rebuild with `build_viewer.py --out viewer/index_southwire.html`
   and publish that file to the same url. The older artifact https://claude.ai/artifact/9bfQJUnJ6GCH35zmjBq7cP
   (generic viewer) was not updated and is superseded.
 - **HALL7 / slide 8 with the solid sign:** the HALL7 128-sample re-render was running at the Oct 19 hand-off
