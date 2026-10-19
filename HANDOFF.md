@@ -47,6 +47,13 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
   - steam turbine brought to the GTs' level: lube oil to three bearings, casing thermocouples (KX), probes, EHC servo
     cable, junction boxes in conduit to the EL 42 control tray, STG box, turning-gear MC feed;
   - south wall + roof split into "Turbine hall south cladding and roof (lifted off in the cutaway views)" for cutaways.
+  - cable rejuvenation (Oct 19, user asked for a Southwire Rejuvenation Services van; kept away from the hall door
+    so it does not crowd the SIMpull scene): `maintenance.rejuvenation()` opens the collector bank's west manhole
+    (site 1690, 960, MH-C, next to the existing MH-A / MH-B cable-pull job) and parks a field-service van south of it,
+    rear doors open on injection tanks and a hose reel, colour-coded hoses under the guard chain and down the shaft,
+    two technicians. Livery after Southwire's field-service van (white cab, copper chevrons, black rear, logo,
+    CABLE REJUVENATION SERVICES) printed per side by `blender/van_livery.py` -> `screens/van_east.png`,
+    `van_west.png`. Camera HX6.
   - exterior (Oct 19, user: "the elevations look too plain"; `hall_exterior.py`, run last in `build_model.py`): brand
     once, design the rest. West gable: "3x1 CCGT" alone in Barlow ExtraBold over the equipment door
     (`screens/hall_west_lettering.png`, from `blender/hall_sign.py`); the full Southwire graphic was tried there and
@@ -77,7 +84,7 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
 
 - **Viewer: published.** The branded viewer (`plant/viewer/index_southwire.html`) is live at
   https://claude.ai/artifact/QtsCN1A1zmrgNTyMrqJbTL: version 3 (Oct 19) carries the UTF-8 / mobile-viewport fix
-  (commit 41836bb), the solid wall sign and the hall exterior branding (version 7: without unit numbers, SIMpull tractor-trailer with black steel reels at the hall's west door, roof coping, corners closed, west wall lettering only, meatball flanges, two staged reels, four 10.5 ft reels on the trailer, ST gallery door, door signs and painted GT1-ST1; v16). To update: rebuild with `build_viewer.py --out viewer/index_southwire.html`
+  (commit 41836bb), the solid wall sign and the hall exterior branding (version 7: without unit numbers, SIMpull tractor-trailer with black steel reels at the hall's west door, roof coping, corners closed, west wall lettering only, meatball flanges, two staged reels, four 10.5 ft reels on the trailer, ST gallery door, door signs and painted GT1-ST1, rejuvenation van; v17). To update: rebuild with `build_viewer.py --out viewer/index_southwire.html`
   and publish that file to the same url. The older artifact https://claude.ai/artifact/9bfQJUnJ6GCH35zmjBq7cP
   (generic viewer) was not updated and is superseded.
 - **HALL7 / slide 8 with the solid sign:** the HALL7 128-sample re-render was running at the Oct 19 hand-off

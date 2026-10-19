@@ -1219,6 +1219,8 @@ EPIC = [
          eye=(1112, 334, 20), target=(1080, 371, 12), lens=30, show="all", res=(1920, 1440), sun=(30, 215), plumes=False),
     dict(k="HX5", n="Turbine hall gallery from the south: the GT 2 door and its ID sign between the filter houses",
          eye=(736, 318, 24), target=(736, 371, 14), lens=30, show="all", res=(1920, 1440), sun=(30, 215), plumes=False),
+    dict(k="HX6", n="Southwire cable-rejuvenation van at the collector bank's west manhole, hoses down the open shaft",
+         eye=(1652, 974, 20), target=(1684, 946, 3), lens=32, show="all", res=(1920, 1440), sun=(30, 215), plumes=False),
     dict(k="HALL8", n="Turbine hall cutaway from the south, higher: the four machine trains side by side",
          eye=(760, 300, 250), target=(845, 485, 20), lens=24, show="all", res=(1920, 1440), lamps=4000, sun=(45, 200),
          hide=("Turbine hall south cladding", "Turbine hall exterior electrical", "FH-1", "FH-2", "FH-3",

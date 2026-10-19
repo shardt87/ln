@@ -12,7 +12,9 @@ A crew replaces a feeder in the bank, typical of an outage job:
   down the shaft, two workers at the puller;
 - between them (y 1236-1260): an open excavation exposing the duct bank, with a steel trench box, ladder, spoil
   pile, a mini excavator, orange barrier fence; the encasement is broken out over a short length so the conduits
-  show, two workers in the trench.
+  show, two workers in the trench;
+- manhole MH-C, the bank's west end (site 1690, 960): a Southwire cable-rejuvenation van, its injection hoses down
+  the open manhole, rejuvenating the neighbouring aged circuits in place instead of replacing them.
 The compound ground is cut at the openings so the shafts and the trench read from above. Typical, not engineered.
 """
 import math
@@ -22,8 +24,10 @@ from fuel import box, rod
 
 X = 355.0
 MH_A, MH_B = (X, 1153.0), (X, 1340.0)               # MH-B: a pulling manhole added for this job
+MH_C = (X, 1130.0)                                   # the bank's west-end manhole (site 1690, 960): cable rejuvenation
 EXC = (349.0, 361.0, 1236.0, 1260.0)                 # trench footprint
-OPEN = [(X - 1.3, X + 1.3, MH_A[1] - 1.3, MH_A[1] + 1.3), (X - 1.3, X + 1.3, MH_B[1] - 1.3, MH_B[1] + 1.3), EXC]
+OPEN = [(X - 1.3, X + 1.3, MH_A[1] - 1.3, MH_A[1] + 1.3), (X - 1.3, X + 1.3, MH_B[1] - 1.3, MH_B[1] + 1.3), EXC,
+        (X - 1.3, X + 1.3, MH_C[1] - 1.3, MH_C[1] + 1.3)]
 
 
 def person(x, y, z, a=0.0, vest="hivis", hat="hardhat"):
@@ -338,4 +342,54 @@ def build():
             new_chamber(cx, cy)
         fuel.G["cur"] = it
         open_manhole(cx, cy)
+    rejuvenation(*to_site(*MH_C))
+    fuel.G["cur"] = it
+    return it
+
+
+def rejuvenation(cx, cy):
+    """Southwire cable-rejuvenation crew at the bank's west-end manhole: while the failed feeder is replaced further
+    east, the aged circuits beside it in the same bank are rejuvenated in place (silicone fluid injected into the
+    strand under pressure) instead of being dug up. A field-service van parked south of the manhole, rear doors
+    open on its injection tanks and hose reels, colour-coded injection and vacuum hoses across the ground and down
+    the shaft to the splices, one technician at the van, one at the rim. Livery: blender/van_livery.py."""
+    it = fuel.new_item(LAYER, "Underground: cable rejuvenation, Southwire field-service van at the collector bank's west manhole",
+                       (cx - 16, cx + 9, cy - 40, cy + 9), (-9.3, 10), area="I", basis="typical", register=False,
+                       sheet="typical (underground maintenance scene)",
+                       info="Southwire Cable Rejuvenation Services: the aged 13.8 kV circuits in the collector bank are "
+                            "injected in place at the manhole splices while the failed feeder is replaced. Typical, "
+                            "not engineered.")
+    fuel.G["cur"] = it
+    open_manhole(cx, cy)
+    x0, x1, y0, y1 = cx - 14.5, cx - 7.5, cy - 38.0, cy - 14.0           # van, along y, cab south, rear north
+    xm = (x0 + x1) / 2
+    box(x0 + .2, x1 - .2, y0 + 1, y1 - .5, 1.4, 2.0, "steel_dark")                        # chassis
+    box(x0, x1, y0 + 4.0, y1, 2.0, 9.2, "white_truck")                                    # cargo body
+    box(x0 + .2, x1 - .2, y0 + 1.0, y0 + 4.0, 2.0, 5.0, "white_truck")                    # bonnet
+    box(x0 + .1, x1 - .1, y0 + 2.6, y0 + 4.0, 5.0, 8.6, "white_truck")                    # cab front
+    box(x0 + .5, x1 - .5, y0 + 2.55, y0 + 2.62, 5.4, 8.2, "glass")                        # windscreen
+    for x in (x0 - .03, x1 + .03):
+        box(min(x, x + (.06 if x > xm else -.06)), max(x, x + (.06 if x > xm else -.06)), y0 + 4.4, y0 + 7.2, 5.6, 8.2, "glass")
+    box(x0 + .4, x1 - .4, y0 + .7, y0 + 1.0, 1.4, 2.6, "steel_dark")                      # bumper
+    box(x0 + .6, x1 - .6, y1 - .4, y1, 2.0, 9.0, "sp_black")                              # rear opening, dark interior
+    for (a, b) in ((x0, x0 + .12), (x1 - .12, x1)):                                        # rear doors swung open 90 deg
+        box(a, b, y1, y1 + 3.3, 2.1, 9.0, "sp_black")
+    for (dx, c) in ((1.6, "alu"), (3.5, "alu")):                                           # injection tanks inside
+        rod((x0 + dx, y1 - 2.5, 2.1), (x0 + dx, y1 - 2.5, 6.6), .7, c, seg=16)
+    rod((x1 - 1.6, y1 - 2.2, 4.5), (x1 - .6, y1 - 2.2, 4.5), 1.1, "sw_red", seg=18)       # hose reel
+    for yw in (y0 + 3.0, y1 - 4.0):
+        for x in (x0 - .05, x1 - .9):
+            rod((x, yw, 1.35), (x + .95, yw, 1.35), 1.35, "tyre", seg=16)
+    # livery: the printed sides (brand only), white cab ahead of them
+    for (xs, nx, img) in ((x0 - .05, -1, "van_west.png"), (x1 + .05, 1, "van_east.png")):
+        fuel.G["decals"].append(dict(c=[round(xs, 2), round((y0 + 4.0 + y1) / 2 + .0, 2), 5.6], n=[nx, 0, 0],
+                                     w=round(y1 - y0 - 4.0, 2), h=6.6, bg=None, lines=[], item=it["id"], layer=LAYER,
+                                     brand=1, img=img, print=1))
+    # injection / vacuum hoses from the van's rear across the ground, under the guard chain, down the shaft
+    for k, c in enumerate(("hivis_o", "sp_yellow", "red")):
+        o = (k - 1) * .35
+        poly(bez((xm + o, y1 - .3, 2.2), (xm + o, y1 + 6, 0.1), (cx - 2.0 + o, cy - 6, 0.1), 7), .09, c, seg=6)
+        poly(bez((cx - 2.0 + o, cy - 6, 0.1), (cx - .4 + o, cy - 2.2, 0.15), (cx - .4 + o, cy - .4, -6.5), 6), .09, c, seg=6)
+    person(xm + 2.6, y1 + 1.6, 0, 1.57, vest="hivis_o")                                   # at the tanks
+    person(cx - 3.0, cy - 3.0, 0, .8)                                                     # at the rim, feeding the hoses
     return it
