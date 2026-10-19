@@ -53,7 +53,7 @@ def draw_sign(ink, out):
     print(out, img.size)
 
 
-def livery(out, W_ft, H_ft, chevrons, s, u_black, ppf=40):
+def livery(out, W_ft, H_ft, chevrons, s, u_black, ppf=40, notch=True):
     """The field-service van livery fitted to a wall: copper chevrons pointing right on the light wall and a
     Southwire-black field from u_black to the right edge, its leading edge notched like the van's (in ft from the
     image's left edge; s = how far the points run at mid-height). Transparent elsewhere: the wall shows through."""
@@ -61,7 +61,10 @@ def livery(out, W_ft, H_ft, chevrons, s, u_black, ppf=40):
     im = Image.new("RGBA", (Wp, Hp), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
     P = lambda u, v: (u * ppf, v * ppf)
-    d.polygon([P(u_black, 0), P(W_ft, 0), P(W_ft, H_ft), P(u_black, H_ft), P(u_black + s, H_ft / 2)], fill=FIELD)
+    if notch:
+        d.polygon([P(u_black, 0), P(W_ft, 0), P(W_ft, H_ft), P(u_black, H_ft), P(u_black + s, H_ft / 2)], fill=FIELD)
+    else:                                                # a plain rectangle
+        d.rectangle([P(u_black, 0), P(W_ft, H_ft)], fill=FIELD)
     for (u, w) in chevrons:
         d.polygon([P(u, 0), P(u + w, 0), P(u + w + s, H_ft / 2), P(u + w, H_ft), P(u, H_ft), P(u + s, H_ft / 2)],
                   fill=CHEV)
@@ -73,9 +76,10 @@ def main():
     draw_sign(INK, OUT)
     draw_sign(WHITE, OUT.replace(".png", "_dark.png"))        # inside east wall, on the black livery field
     S = os.path.dirname(OUT)
-    # west gable outside (u = 556 - y, z 0-63.8): chevrons y 522-505, black field from y 505 over the door to the
-    # SW corner (y 404)
-    livery(os.path.join(S, "livery_west.png"), 152.0, 63.8, [(34.0, 5.0), (42.5, 5.0)], 12.0, 51.0)
+    # west gable outside (u = 556 - y, z 0-63.8): the chevrons at the north end, between the corner and the riser
+    # (y 527.5-532), pointing at the door; a plain black rectangle from just past the riser (y 526) over the door to
+    # the SW corner (y 404)
+    livery(os.path.join(S, "livery_west.png"), 152.0, 63.8, [(3.0, 4.0), (10.0, 4.0)], 8.0, 30.0, notch=False)
     # east end wall inside (u = 503 - y, z 65.7-98): chevrons between the flag and the sign, black field behind the
     # sign to the SE corner (y 404)
     livery(os.path.join(S, "livery_east_in.png"), 99.0, 32.3, [(1.0, 3.0), (6.2, 3.0)], 5.0, 11.4)

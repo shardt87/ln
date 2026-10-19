@@ -1,6 +1,7 @@
 """Turbine hall exterior (user review: "the elevations look too plain", Oct 19). Brand once, design the rest:
 - west gable, the face toward the laydown bay and the road: the van livery below the band (copper chevrons
-  pointing at the door, a black field with the notched edge over the door; the gallery end stays plain), and "3x1 CCGT" in large black lettering over the door, the
+  at the north end by the riser, pointing at the door, and a plain black rectangle from the riser over the door to
+  the SW corner; the gallery end stays plain), and "3x1 CCGT" in large black lettering over the door, the
   copper band running unbroken below it (the full Southwire graphic was tried here and taken off, Oct 19: it did not
   sit well on the facade; the SIMpull trailer at the door carries the Southwire call-out; the graphic stays inside on
   the east end wall);
