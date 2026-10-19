@@ -47,6 +47,15 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
   - steam turbine brought to the GTs' level: lube oil to three bearings, casing thermocouples (KX), probes, EHC servo
     cable, junction boxes in conduit to the EL 42 control tray, STG box, turning-gear MC feed;
   - south wall + roof split into "Turbine hall south cladding and roof (lifted off in the cutaway views)" for cutaways.
+  - exterior (Oct 19, user: "the elevations look too plain"; `hall_exterior.py`, run last in `build_model.py`): brand
+    once, design the rest. One exterior sign, 100 x 50 ft over the west equipment door (same `hall_wall_sign.png`;
+    generic build plain "3x1 CCGT"); unit numbers GT 1-3 on the west sides of the inlet filter houses (their south
+    faces are weather hoods, the hall's south wall is behind them) and ST on the south wall; the EL 64 copper band
+    outside on all walls (stops at the sign's edges); black pilasters on the 44 ft column lines and corners;
+    clerestory strip under both eaves; black gallery fascia; intake louvres per GT bay; west door surround + lights.
+    Every strip is cut back round anything standing at the wall, so verify stays at 0 clashes. South pieces are a
+    separate "Turbine hall south cladding exterior ..." item (lifts off with the cladding). Camera HX2 = the
+    south-west exterior view (renders/cover/HX2_exterior.jpg).
 - Renders this session (all in `plant/renders/cover/`): `HX1_hero_cable.jpg`, `HX1_photoreal.jpg`,
   `HALL7_hero_cable.jpg`, `ST1_steam_turbine.jpg`, `HALL4_hero_cable.jpg` (down-the-row alternative),
   comparison sheets (`hrsg_grey_test.jpg`, `hrsg_slate_stacks_test.jpg`, `stack_*_test.jpg`, `hall_options.jpg`).
@@ -54,15 +63,15 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
 ## In progress / not yet done
 
 - **Viewer: published.** The branded viewer (`plant/viewer/index_southwire.html`) is live at
-  https://claude.ai/artifact/QtsCN1A1zmrgNTyMrqJbTL: version 2 (Oct 19) carries the UTF-8 / mobile-viewport fix
-  (commit 41836bb) and the solid wall sign. To update: rebuild with `build_viewer.py --out viewer/index_southwire.html`
+  https://claude.ai/artifact/QtsCN1A1zmrgNTyMrqJbTL: version 3 (Oct 19) carries the UTF-8 / mobile-viewport fix
+  (commit 41836bb), the solid wall sign and the hall exterior branding. To update: rebuild with `build_viewer.py --out viewer/index_southwire.html`
   and publish that file to the same url. The older artifact https://claude.ai/artifact/9bfQJUnJ6GCH35zmjBq7cP
   (generic viewer) was not updated and is superseded.
 - **HALL7 / slide 8 with the solid sign:** the HALL7 128-sample re-render was running at the Oct 19 hand-off
   (first try hit the 30 min background limit); then `hero_cable.py` -> `renders/cover/HALL7_hero_cable.jpg`,
   `deck_brochure.py`, commit. If lost: rerun the mask pass (`SK_CABLE_MASK=power ... --samples 8`) and the full pass
   (`--samples 128`, run in the background with a 2 h limit).
-- **GLB / USDZ / .blend predate the solid sign** (exported Oct 18): they embed the old faded sign texture. Re-export
+- **GLB / USDZ / .blend predate the solid sign and the hall exterior** (exported Oct 18): they embed the old faded sign texture and lack the exterior finish. Re-export
   (`blender/export_model.py`, slim) when the 3D files are next used.
 - **Older deck pictures** (slides 4-7, 9-12 heroes, K5 aerial on slide 2) predate the slate HRSG / black-copper look
   and the photoreal finishes. Re-render the cameras they use (`brochure.py` ZONES heroes E60/E70/E68/E65/E77/E64,
