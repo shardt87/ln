@@ -63,7 +63,8 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
     Every strip is cut back round anything of another item standing at the wall (bands fitted tight, 0.05 ft; the hall's own columns and panels do not cut them), so verify stays at 0 clashes. South pieces are a
     separate "Turbine hall south cladding exterior ..." item (lifts off with the cladding). Camera HX2 = the
     south-west exterior view (renders/cover/HX2_exterior.jpg and HX3_simpull_trailer.jpg are full renders from
-    before the last tweaks: no Southwire graphic on the west wall yet shown, five reels; re-render when needed).
+    before the last tweaks: they still show the Southwire graphic on the west wall and five reels with the white
+    logo; re-render when needed).
 - Renders this session (all in `plant/renders/cover/`): `HX1_hero_cable.jpg`, `HX1_photoreal.jpg`,
   `HALL7_hero_cable.jpg`, `ST1_steam_turbine.jpg`, `HALL4_hero_cable.jpg` (down-the-row alternative),
   comparison sheets (`hrsg_grey_test.jpg`, `hrsg_slate_stacks_test.jpg`, `stack_*_test.jpg`, `hall_options.jpg`).
