@@ -6,7 +6,8 @@
 - no unit numbers (tried "GT 1-3" on the filter houses and "ST" on the wall, Oct 19: read as confusing, removed);
 - the inside copper band carried outside at the same EL 64 round all four walls, black pilasters on the column lines
   (44 ft) and at the corners, a clerestory window strip under the eaves of both long walls, a black fascia round the
-  gallery roof edge, a black coping round the main roof edge, intake louvres on the gallery wall at each GT bay, a black surround and two wall lights at the
+  gallery roof edge, a black coping round the main roof edge, intake louvres on the gallery wall at each GT bay, the ST bay's gallery door (the GT bays had theirs) and black
+  door ID signs GT 1 / GT 2 / GT 3 / STEAM TURBINE over the four gallery doors, a black surround and two wall lights at the
   west equipment door;
 - a Southwire SIMpull tractor-trailer where the generic flatbed stood (same size and heading, cab north): four 10.5 ft
   steel reels, black flanges each filled by the copper Southwire meatball, red skirts with the SIMpull SOLUTIONS livery, crew at the tail, two more reels staged by the door, one standing, one laid flat (user, Oct 19, "better for branding").
@@ -169,7 +170,17 @@ def build():
         x0 = 694 + 160 * k
         for p, q in SG.free(x0, x0 + 30, 33.0, 43.0):
             n += SG.put(p, q, 33.0, 43.0, .4, "louvre") + SG.put(p, q, 32.6, 33.0, .5, "hall_steel")
+    # the steam-turbine bay's gallery door (the GT bays have theirs at x 569 / 729 / 889): 14 x 16 ft, like them,
+    # east of GSU-ST and clear of the deck stair inside, with its apron and wall light
+    box(1078.0, 1092.0, 369.5, 371.5, 0, 16, "door")
+    box(1077.0, 1093.0, 340.0, 366.0, 0, .3, "road")
+    box(1084.2, 1085.8, 369.1, 369.8, 19.0, 20.4, "lamp")
+    n += 3
     fuel.D = False
+    # door ID signs over the four gallery doors, above the conduit run and the wall lights (EL 20.6-23)
+    import showcase
+    for xc, t in ((576.0, "GT 1"), (736.0, "GT 2"), (896.0, "GT 3"), (1085.0, "STEAM TURBINE")):
+        showcase.decal((xc, 369.45, 21.8), (0, -1, 0), 11.0, 2.4, [(t, .62, True, "#ffffff")], bg="#1d1f21")
     n += simpull_delivery(lay, area)
     return n
 
