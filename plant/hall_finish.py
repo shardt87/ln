@@ -57,6 +57,7 @@ def build():
             n += 1
     fuel.D = False
     n += accents()
+    n += crane_detail()
     n += end_wall()
     n += south_cladding()
     return n
@@ -86,6 +87,26 @@ def south_cladding():
     box(481.0, 1098.8, 404.05, 404.25, 64.0, 65.6, "hero_accent")
     fuel.D = False
     return n + 1
+
+
+def crane_detail():
+    """The bridge crane's box girders read as fabricated steel: web stiffeners every 6 ft down both faces of each
+    girder and a black / yellow striped bumper on each end truck, all inside the crane's drawn envelope (the hook and
+    its height are untouched: the sheet-09 checks use them)."""
+    on(find("Bridge crane"))
+    fuel.D = True
+    n = 0
+    for (g0, g1) in ((505.0, 511.0), (525.0, 531.0)):
+        for y in range(413, 548, 6):
+            for x in (g0 - .12, g1):
+                box(x, x + .12, y - .2, y + .2, 86.3, 95.7, "crane")
+                n += 1
+    for y0 in (410.0, 549.88):
+        for k in range(6):
+            box(503.5 + k * 5, 506.0 + k * 5, y0, y0 + .12, 84.3, 85.8, "hero_rail" if k % 2 else "crane")
+            n += 1
+    fuel.D = False
+    return n
 
 
 def accents():
