@@ -2258,6 +2258,8 @@ import terminate as _term
 N_TERM = _term.build(items, parts)   # quality sweep: every open pipe end terminated (drop to UG, valve, blind flange)
 print('pipe-end terminations', N_TERM)
 print('supports added under floating parts', _term.support_floating(items, parts))
+import hall_exterior as _hx                        # after everything: its strips are cut round all that stands at the walls
+print('turbine hall exterior finish', _hx.build())
 
 
 # "conditional" was a drawing flag colour (yellow); the items keep basis="conditional" in their data, but are drawn

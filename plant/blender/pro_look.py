@@ -1211,6 +1211,8 @@ EPIC = [
          eye=(585, 278, 240), target=(828, 488, 22), lens=32, show="all", res=(1920, 1440), lamps=4000, sun=(45, 200),
          hide=("Turbine hall south cladding", "Turbine hall exterior electrical", "FH-1", "FH-2", "FH-3",
                "GT1 inlet duct", "GT2 inlet duct", "GT3 inlet duct"), hide_layers=("HALL_ROOF",)),
+    dict(k="HX2", n="Turbine hall from the south-west: the west-end sign, GT 1-3 on the filter houses, the copper band and pilasters",
+         eye=(300, 262, 132), target=(600, 476, 58), lens=28, show="all", res=(1920, 1440), sun=(30, 215), plumes=False),
     dict(k="HALL8", n="Turbine hall cutaway from the south, higher: the four machine trains side by side",
          eye=(760, 300, 250), target=(845, 485, 20), lens=24, show="all", res=(1920, 1440), lamps=4000, sun=(45, 200),
          hide=("Turbine hall south cladding", "Turbine hall exterior electrical", "FH-1", "FH-2", "FH-3",

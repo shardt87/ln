@@ -171,6 +171,7 @@ results["sheet09"] = dict(clearances=srows, hook=hrows9,
 TOUCH = [
     (r"removable plenum spool", r"inlet duct \(drop"),        # spool bolts to the duct
     (r"^Turbine hall south cladding", r"^Common turbine hall"),   # the hall's own wall panels on its columns / girder
+    (r"^Turbine hall exterior finish|^Turbine hall south cladding", r"^Common turbine hall|^Turbine hall south cladding"),   # exterior finish on the wall panels
     (r"removable plenum spool", r"^GT\d: H-class"),           # 'touches the GT lift column by design' (sheet 09)
     (r"^GCB-", r"UAT-\d tap"), (r"exhaust duct to HRSG", r"inlet transition"),
     (r"outlet breeching", r"stack$"), (r"outlet breeching", r"^HRSG \d \+ SCR"),
