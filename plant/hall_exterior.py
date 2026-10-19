@@ -2,9 +2,7 @@
 - west gable, the face toward the laydown bay and the road: the one exterior sign, 100 x 50 ft over the door, the same printed graphic as inside
   the east end wall ("3x1 CCGT", copper rule, WIRE & CABLE PARTNER, Southwire logo); the generic build keeps plain
   "3x1 CCGT";
-- unit numbers as real plants paint them: "GT 1 / GT 2 / GT 3" on the west side of each inlet filter house (the
-  south hall wall is behind the filter houses and ducts, their south faces are covered by weather hoods), "ST" on the
-  south wall in the steam-turbine bay;
+- no unit numbers (tried "GT 1-3" on the filter houses and "ST" on the wall, Oct 19: read as confusing, removed);
 - the inside copper band carried outside at the same EL 64 round all four walls, black pilasters on the column lines
   (44 ft) and at the corners, a clerestory window strip under the eaves of both long walls, a black fascia along the
   gallery roof edge, intake louvres on the gallery wall at each GT bay, a black surround and two wall lights at the
@@ -112,7 +110,7 @@ def build():
                  [478, 1102, 402, 562], [0, 99], area=area,
                  info="Southwire copper band at EL 64, black pilasters on the column lines, clerestory glazing, "
                       "west-end sign and door surround. Typical, not engineered.")
-    b = new_item(lay, "Turbine hall south cladding exterior: band, pilasters, clerestory, louvres, ST lettering",
+    b = new_item(lay, "Turbine hall south cladding exterior: band, pilasters, clerestory, louvres",
                  [478, 1102, 368, 404], [0, 99], area=area,
                  info="South-wall copper band, pilasters, clerestory, gallery fascia and intake louvres; lifts off "
                       "with the south cladding in the cutaway views. Typical, not engineered.")
@@ -165,10 +163,4 @@ def build():
         for p, q in SG.free(x0, x0 + 30, 33.0, 43.0):
             n += SG.put(p, q, 33.0, 43.0, .4, "louvre") + SG.put(p, q, 32.6, 33.0, .5, "hall_steel")
     fuel.D = False
-    showcase.decal((1032.0, 402.9, 77.0), (0, -1, 0), 36, 18, [("ST", .9, True, "#1d1f21")], bg=None)
-    # unit numbers on the west side of each inlet filter house (filter body EL 104-135, y 367-403)
-    for k in range(3):
-        on(find(f"FH-{k + 1}: GT inlet filter house"))
-        showcase.decal((588.0 + 160 * k - .06, 385.0, 120.5), (-1, 0, 0), 32, 20, [(f"GT {k + 1}", .9, True, "#1d1f21")],
-                       bg=None)
     return n

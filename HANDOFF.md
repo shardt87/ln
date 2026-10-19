@@ -49,8 +49,8 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
   - south wall + roof split into "Turbine hall south cladding and roof (lifted off in the cutaway views)" for cutaways.
   - exterior (Oct 19, user: "the elevations look too plain"; `hall_exterior.py`, run last in `build_model.py`): brand
     once, design the rest. One exterior sign, 100 x 50 ft over the west equipment door (same `hall_wall_sign.png`;
-    generic build plain "3x1 CCGT"); unit numbers GT 1-3 on the west sides of the inlet filter houses (their south
-    faces are weather hoods, the hall's south wall is behind them) and ST on the south wall; the EL 64 copper band
+    generic build plain "3x1 CCGT"); no unit numbers (GT 1-3 on the filter houses and ST on the wall were tried and
+    removed the same day: the user found "GT 1" on the air inlet confusing); the EL 64 copper band
     outside on all walls (stops at the sign's edges); black pilasters on the 44 ft column lines and corners;
     clerestory strip under both eaves; black gallery fascia; intake louvres per GT bay; west door surround + lights.
     Every strip is cut back round anything standing at the wall, so verify stays at 0 clashes. South pieces are a
@@ -64,7 +64,7 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
 
 - **Viewer: published.** The branded viewer (`plant/viewer/index_southwire.html`) is live at
   https://claude.ai/artifact/QtsCN1A1zmrgNTyMrqJbTL: version 3 (Oct 19) carries the UTF-8 / mobile-viewport fix
-  (commit 41836bb), the solid wall sign and the hall exterior branding. To update: rebuild with `build_viewer.py --out viewer/index_southwire.html`
+  (commit 41836bb), the solid wall sign and the hall exterior branding (version 4: without unit numbers). To update: rebuild with `build_viewer.py --out viewer/index_southwire.html`
   and publish that file to the same url. The older artifact https://claude.ai/artifact/9bfQJUnJ6GCH35zmjBq7cP
   (generic viewer) was not updated and is superseded.
 - **HALL7 / slide 8 with the solid sign:** the HALL7 128-sample re-render was running at the Oct 19 hand-off
