@@ -105,6 +105,8 @@ def make(c):
     tracked(d, (W - m - wn, H - band + int(24 * k)), note, nf, COPPER, 2 * k)
     img.save(out, quality=94)
     img.save(os.path.splitext(out)[0] + ".pdf", resolution=W / 8.5)
+    import sys as _s, os as _o; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.dirname(_o.path.abspath(__file__))), "tools"))
+    import stamp_credit; stamp_credit.stamp(os.path.splitext(out)[0] + ".pdf")                       # author credit on every page
     print("wrote", out)
 
 

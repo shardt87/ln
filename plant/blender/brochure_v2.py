@@ -283,6 +283,8 @@ def main():
                     "--no-pdf-header-footer", f"--print-to-pdf={pdf}", url(hp)], check=True,
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     print("wrote", pdf)
+    import sys as _s, os as _o; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.dirname(_o.path.abspath(__file__))), "tools"))
+    import stamp_credit; stamp_credit.stamp(pdf)                       # author credit on every page
 
 
 if __name__ == "__main__":

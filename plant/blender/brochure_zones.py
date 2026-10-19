@@ -367,6 +367,8 @@ def main():
         os.remove(pdf_i)
         os.remove(hp_i)
     out.save(pdf, garbage=3, deflate=True)
+    import sys as _s, os as _o; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.dirname(_o.path.abspath(__file__))), "tools"))
+    import stamp_credit; stamp_credit.stamp(pdf)                       # author credit on every page
     print("wrote", pdf)
 
 

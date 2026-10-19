@@ -642,6 +642,8 @@ def main():
         os.remove(hp_i)
     pdf = os.path.join(OUT, "SW_BuiltToPull_EPC.pdf")
     out.save(pdf, garbage=3, deflate=True)
+    import sys as _s, os as _o; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.dirname(_o.path.abspath(__file__))), "tools"))
+    import stamp_credit; stamp_credit.stamp(pdf)                       # author credit on every page
     for i, pg in enumerate(out):
         pg.get_pixmap(dpi=40).save(os.path.join(OUT, f"prev_{i + 1:02d}.png"))
     print("wrote", pdf, len(out), "sheets")

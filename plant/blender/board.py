@@ -238,6 +238,8 @@ def main():
     png = os.path.join(root, B["out"] + ".png")
     out.save(png, optimize=True)
     out.save(os.path.join(root, B["out"] + ".pdf"), resolution=300)
+    import sys as _s, os as _o; _s.path.insert(0, _o.path.join(_o.path.dirname(_o.path.dirname(_o.path.abspath(__file__))), "tools"))
+    import stamp_credit; stamp_credit.stamp(os.path.join(root, B["out"] + ".pdf"))                       # author credit on every page
     out.save(os.path.join(root, B["out"] + ".jpg"), quality=92, optimize=True, subsampling=0)
     print("wrote", png, ".pdf and .jpg")
 

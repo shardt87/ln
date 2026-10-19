@@ -31,11 +31,27 @@ def para(d, xy, text, font, fill, width, lead=1.4):
     return y
 
 
+import credit as _credit
+CREDIT = (_credit.NAME.upper(), _credit.EMAIL)         # on every page (the author's decision, Oct 19)
+
+
+def credit(d, y, x=None):
+    """Author credit after the Southwire line in the footer: name tracked as the line, email as written."""
+    x0 = (M + sum(d.textlength(ch, font=F(BOLD, 26)) + 3 for ch in "SOUTHWIRE  |  POWER GENERATION SOLUTIONS") + 40
+          if x is None else x)
+    nf = F(BOLD, 26)
+    tracked(d, (x0, y), "|  " + CREDIT[0], nf, DIM, 3)
+    xe = x0 + sum(d.textlength(ch, font=nf) + 3 for ch in "|  " + CREDIT[0]) + 22
+    d.text((xe, y - 1), CREDIT[1], font=F(REG, 26), fill=DIM)
+    return xe + d.textlength(CREDIT[1], font=F(REG, 26))
+
+
 def footer(d, n, note=None):
     y = H - FOOT
     d.rectangle([0, y, W, H], fill=BG)
     d.line([(M, y), (W - M, y)], fill=RULE, width=2)
     tracked(d, (M, y + 30), "SOUTHWIRE  |  POWER GENERATION SOLUTIONS", F(BOLD, 26), DIM, 3)
+    credit(d, y + 30)
     s = f"{n:02d}"
     ft = F(BOLD, 28)
     d.text((W - M - d.textlength(s, font=ft), y + 28), s, font=ft, fill=COPPER)
@@ -416,7 +432,9 @@ def main():
     for k, s in enumerate(slides, 2):
         s.save(os.path.join(OUT, f"slide_{k:02d}.png"))
         s.resize((W // 2, H // 2), Image.LANCZOS).save(os.path.join(OUT, f"slide_{k:02d}_preview.jpg"), quality=88)
-    pages = ([Image.open(COVER_PNG).convert("RGB").resize((W, H), Image.LANCZOS)] if os.path.exists(COVER_PNG) else []) + slides
+    # the cover carries the credit in its own block (deck_divider.py: name, role, email)
+    pages = [Image.open(COVER_PNG).convert("RGB").resize((W, H), Image.LANCZOS)] if os.path.exists(COVER_PNG) else []
+    pages += slides
     pdf = os.path.join(PLANT, "renders", "deck", "SK-3X1_Strategy_Update_October_2026.pdf")
     pages[0].save(pdf, save_all=True, append_images=pages[1:], resolution=144)
     print("wrote", pdf, len(pages), "slides")
