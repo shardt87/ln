@@ -1,5 +1,6 @@
 """Turbine hall exterior (user review: "the elevations look too plain", Oct 19). Brand once, design the rest:
-- west gable, the face toward the laydown bay and the road: "3x1 CCGT" in large black lettering over the door, the
+- west gable, the face toward the laydown bay and the road: the van livery below the band (copper chevrons
+  pointing at the door, a black field with the notched edge over the door and on round the gallery end), and "3x1 CCGT" in large black lettering over the door, the
   copper band running unbroken below it (the full Southwire graphic was tried here and taken off, Oct 19: it did not
   sit well on the facade; the SIMpull trailer at the door carries the Southwire call-out; the graphic stays inside on
   the east end wall);
@@ -152,6 +153,12 @@ def build():
         box(479.3, 480.0, y - .6, y + .6, 39.0, 40.0, "panel"); box(479.2, 479.3, y - .5, y + .5, 39.1, 39.6, "lamp")
     n += 7
     fuel.D = False
+    # the field-service van livery on the west gable below the band (blender/hall_sign.py: livery_west.png): copper
+    # chevrons north of the door pointing at it, a Southwire-black field with the van's notched edge over the door to
+    # the SW corner; the gallery's west end below carries the black on to the south corner
+    fuel.G["decals"].append(dict(c=[479.93, 480.0, 31.9], n=[-1, 0, 0], w=152.0, h=63.8, bg=None, lines=[], item=a["id"],
+                                 layer=a["layer"], brand=0, img="livery_west.png", print=1))
+    showcase.decal((479.93, 386.2, 28.2), (-1, 0, 0), 33.0, 56.4, [], bg="#18191b")
     # 3x1 CCGT on the west gable, above the band and over the door (y 429-521, EL 69-91), clear of the riser at y 527.5
     fuel.G["decals"].append(dict(c=[479.9, 475.0, 80.0], n=[-1, 0, 0], w=92.0, h=22.0, bg=None, lines=[], item=a["id"],
                                  layer=a["layer"], brand=0, img="hall_west_lettering.png", print=1))   # Barlow, as inside

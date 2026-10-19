@@ -6,7 +6,8 @@
   dark machined compressor casing (gt_cold), a darker combustor section (gt_comb) and the hot end, turbine casing
   and exhaust diffuser, under quilted silver insulation blankets (gt_blanket); flanges and rings stay bright steel;
 - yellow walkway / keep-clear lines on the deck round each machine train (deck_line, flat on the deck surface);
-- on the east end wall, the one you see down the GT row: "3x1 CCGT" in large lettering and a US flag (28 x 14.7 ft,
+- on the east end wall, the one you see down the GT row (Oct 19: on the van-livery black field, the sign in white,
+  copper chevrons between it and the flag): "3x1 CCGT" in large lettering and a US flag (28 x 14.7 ft,
   13 stripes, 50 stars), both above the steam-turbine exhaust penetration.
 No equipment geometry changes."""
 import fuel
@@ -133,11 +134,16 @@ def end_wall():
     xf = 1099.0
     # the plain lettering for the unbranded build; the branded build prints the full graphic (blender/hall_sign.py):
     # 3x1 CCGT, a copper rule, WIRE & CABLE PARTNER and the Southwire logo
-    showcase.decal((xf - .1, 446, 76), (-1, 0, 0), 58, 14, [("3x1 CCGT", .8, True, "#1e2833")], bg=None,
+    # the field-service van livery above the band (blender/hall_sign.py: livery_east_in.png): copper chevrons
+    # between the flag and the sign pointing at it, the black field behind the sign to the SE corner
+    fuel.G.setdefault("decals", []).append(dict(c=[xf - .05, 453.5, 81.85], n=[-1, 0, 0], w=99.0, h=32.3, bg=None,
+                                                lines=[], item=fuel.G["cur"]["id"], layer=fuel.G["cur"]["layer"],
+                                                brand=0, img="livery_east_in.png", print=1))
+    showcase.decal((xf - .1, 446, 76), (-1, 0, 0), 58, 14, [("3x1 CCGT", .8, True, "#f2f2f0")], bg=None,
                    generic_only=True)
     it = fuel.G["cur"]
     fuel.G.setdefault("decals", []).append(dict(c=[xf - .1, 446.0, 81.5], n=[-1, 0, 0], w=60.0, h=30.0, bg=None, lines=[],
-                                                item=it["id"], layer=it["layer"], brand=1, img="hall_wall_sign.png",
+                                                item=it["id"], layer=it["layer"], brand=1, img="hall_wall_sign_dark.png",
                                                 print=1))
     # flag: seen from the west, north (+y) is on the viewer's left, so the canton sits at the high-y, top corner
     w, h = 28.0, 28.0 / 1.9

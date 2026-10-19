@@ -310,6 +310,7 @@ def make_decals():
             ob["item"] = d["item"]
             ob.visible_shadow = False                          # printed ink casts no shadow
             coll(d["layer"]).objects.link(ob)
+            item_objs.setdefault(d["item"], []).append(ob)          # cutaway cameras hide decals with their item
             n += 1
             continue
         m = bpy.data.materials.new(f"decal {k}")
@@ -341,6 +342,7 @@ def make_decals():
         ob["item"] = d["item"]
         ob.visible_shadow = False
         coll(d["layer"]).objects.link(ob)
+        item_objs.setdefault(d["item"], []).append(ob)          # cutaway cameras hide decals with their item
         n += 1
     return n
 
