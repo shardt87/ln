@@ -7,7 +7,7 @@
 - the inside copper band carried outside at the same EL 64 round all four walls, black pilasters on the column lines
   (44 ft) and at the corners, a clerestory window strip under the eaves of both long walls, a black fascia round the
   gallery roof edge, a black coping round the main roof edge, intake louvres on the gallery wall at each GT bay, the ST bay's gallery door (the GT bays had theirs) and black
-  door ID signs GT 1 / GT 2 / GT 3 / STEAM TURBINE over the four gallery doors, a black surround and two wall lights at the
+  door ID signs GAS TURBINE 1 / 2 / 3 and STEAM TURBINE over the four gallery doors, a black surround and two wall lights at the
   west equipment door;
 - a Southwire SIMpull tractor-trailer where the generic flatbed stood (same size and heading, cab north): four 10.5 ft
   steel reels, black flanges each filled by the copper Southwire meatball, red skirts with the SIMpull SOLUTIONS livery, crew at the tail, two more reels staged by the door, one standing, one laid flat (user, Oct 19, "better for branding").
@@ -179,8 +179,8 @@ def build():
     fuel.D = False
     # door ID signs over the four gallery doors, above the conduit run and the wall lights (EL 20.6-23)
     import showcase
-    for xc, t in ((576.0, "GT 1"), (736.0, "GT 2"), (896.0, "GT 3"), (1085.0, "STEAM TURBINE")):
-        showcase.decal((xc, 369.45, 21.8), (0, -1, 0), 11.0, 2.4, [(t, .62, True, "#ffffff")], bg="#1d1f21")
+    for xc, t in ((576.0, "GAS TURBINE 1"), (736.0, "GAS TURBINE 2"), (896.0, "GAS TURBINE 3"), (1085.0, "STEAM TURBINE")):
+        showcase.decal((xc, 369.45, 21.8), (0, -1, 0), 13.0, 2.4, [(t, .56, True, "#ffffff")], bg="#1d1f21")
     n += simpull_delivery(lay, area)
     return n
 

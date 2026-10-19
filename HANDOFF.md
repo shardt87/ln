@@ -54,7 +54,7 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
     removed the same day: the user found "GT 1" on the air inlet confusing); the EL 64 copper band
     outside on all walls, unbroken; black pilasters on the 44 ft column lines and corners;
     clerestory strip under both eaves; a gallery door for the ST bay (x 1078-1092, apron, wall light;
-    the GT bays had theirs) and black door ID signs GT 1 / GT 2 / GT 3 / STEAM TURBINE over the four gallery doors
+    the GT bays had theirs) and black door ID signs GAS TURBINE 1 / 2 / 3 and STEAM TURBINE over the four gallery doors
     (cameras HX4 / HX5 preview them); black coping round the main roof edge; black gallery fascia (wraps both gallery ends); intake louvres per GT bay; west door surround + lights.
     A Southwire SIMpull tractor-trailer (`hall_exterior.simpull_delivery`) stands where the generic flatbed from
     realism.py was (same 62 ft size and heading, cab north): four 10.5 ft steel reels (an oversize load), flanges painted black
@@ -75,7 +75,7 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
 
 - **Viewer: published.** The branded viewer (`plant/viewer/index_southwire.html`) is live at
   https://claude.ai/artifact/QtsCN1A1zmrgNTyMrqJbTL: version 3 (Oct 19) carries the UTF-8 / mobile-viewport fix
-  (commit 41836bb), the solid wall sign and the hall exterior branding (version 7: without unit numbers, SIMpull tractor-trailer with black steel reels at the hall's west door, roof coping, corners closed, west wall lettering only, meatball flanges, two staged reels, four 10.5 ft reels on the trailer, ST gallery door and door signs; v14). To update: rebuild with `build_viewer.py --out viewer/index_southwire.html`
+  (commit 41836bb), the solid wall sign and the hall exterior branding (version 7: without unit numbers, SIMpull tractor-trailer with black steel reels at the hall's west door, roof coping, corners closed, west wall lettering only, meatball flanges, two staged reels, four 10.5 ft reels on the trailer, ST gallery door and door signs (spelled out); v15). To update: rebuild with `build_viewer.py --out viewer/index_southwire.html`
   and publish that file to the same url. The older artifact https://claude.ai/artifact/9bfQJUnJ6GCH35zmjBq7cP
   (generic viewer) was not updated and is superseded.
 - **HALL7 / slide 8 with the solid sign:** the HALL7 128-sample re-render was running at the Oct 19 hand-off
