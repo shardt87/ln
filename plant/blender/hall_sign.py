@@ -48,6 +48,13 @@ def main():
     img.alpha_composite(logo, (int(W / 2 - lw / 2), 820))
     img.save(OUT)
     print(OUT, img.size)
+    # the west gable outside carries the lettering alone, in the same face (92 x 22 ft, 50 px / ft)
+    w = Image.new("RGBA", (4600, 1100), (0, 0, 0, 0))
+    ImageDraw.Draw(w).text((2300, 550), "3x1 CCGT", font=ImageFont.truetype(os.path.join(HERE, "deck", "BarlowCondensed-ExtraBold.ttf"), 1000),
+                           fill=INK, anchor="mm")
+    p = os.path.join(os.path.dirname(OUT), "hall_west_lettering.png")
+    w.save(p)
+    print(p, w.size)
 
 
 if __name__ == "__main__":

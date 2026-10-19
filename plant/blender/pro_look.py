@@ -1211,7 +1211,7 @@ EPIC = [
          eye=(585, 278, 240), target=(828, 488, 22), lens=32, show="all", res=(1920, 1440), lamps=4000, sun=(45, 200),
          hide=("Turbine hall south cladding", "Turbine hall exterior electrical", "FH-1", "FH-2", "FH-3",
                "GT1 inlet duct", "GT2 inlet duct", "GT3 inlet duct"), hide_layers=("HALL_ROOF",)),
-    dict(k="HX2", n="Turbine hall from the south-west: the west-end sign, the copper band and pilasters, the SIMpull tractor-trailer at the door",
+    dict(k="HX2", n="Turbine hall from the south-west: 3x1 CCGT on the west end, the copper band and pilasters, the SIMpull tractor-trailer at the door",
          eye=(300, 262, 132), target=(600, 476, 58), lens=28, show="all", res=(1920, 1440), sun=(30, 215), plumes=False),
     dict(k="HX3", n="SIMpull tractor-trailer at the turbine hall west door: steel reels with the Southwire logo",
          eye=(402, 446, 24), target=(441, 486, 8), lens=35, show="all", res=(1920, 1440), sun=(30, 215), plumes=False),

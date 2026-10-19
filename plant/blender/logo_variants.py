@@ -1,5 +1,6 @@
 """Southwire logo variants for printed decals on the model (screens/): all white (on the orange steel reel flanges and
-the red trailer skirts) and solid colour (deep copper mark, black wordmark: on the white tractor cab)."""
+the red trailer skirts), solid colour (deep copper mark, black wordmark: on the white tractor cab) and the round
+mark alone, the "meatball", in solid copper, square (filling the black steel reel flanges)."""
 import os
 
 from PIL import Image
@@ -21,6 +22,21 @@ def main():
         p = os.path.join(OUT, name)
         im.save(p)
         print(p, im.size)
+    # the meatball: the mark left of the wordmark (x < 303), cropped square, solid copper, transparent elsewhere
+    m = src.crop((0, 0, 303, src.height))
+    bb = m.getbbox()
+    m = m.crop(bb)
+    S = max(m.size)
+    sq = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+    sq.paste(m, ((S - m.width) // 2, (S - m.height) // 2))
+    sq = sq.resize((1024, 1024), Image.LANCZOS)
+    px = sq.load()
+    for j in range(sq.height):
+        for i in range(sq.width):
+            px[i, j] = (184, 104, 52, 255) if px[i, j][3] >= 110 else (0, 0, 0, 0)
+    p = os.path.join(OUT, "sw_meatball.png")
+    sq.save(p)
+    print(p, sq.size)
 
 
 if __name__ == "__main__":

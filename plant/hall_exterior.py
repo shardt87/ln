@@ -1,14 +1,15 @@
 """Turbine hall exterior (user review: "the elevations look too plain", Oct 19). Brand once, design the rest:
-- west gable, the face toward the laydown bay and the road: the one exterior sign, 100 x 50 ft over the door, the same printed graphic as inside
-  the east end wall ("3x1 CCGT", copper rule, WIRE & CABLE PARTNER, Southwire logo); the generic build keeps plain
-  "3x1 CCGT";
+- west gable, the face toward the laydown bay and the road: "3x1 CCGT" in large black lettering over the door, the
+  copper band running unbroken below it (the full Southwire graphic was tried here and taken off, Oct 19: it did not
+  sit well on the facade; the SIMpull trailer at the door carries the Southwire call-out; the graphic stays inside on
+  the east end wall);
 - no unit numbers (tried "GT 1-3" on the filter houses and "ST" on the wall, Oct 19: read as confusing, removed);
 - the inside copper band carried outside at the same EL 64 round all four walls, black pilasters on the column lines
   (44 ft) and at the corners, a clerestory window strip under the eaves of both long walls, a black fascia round the
   gallery roof edge, a black coping round the main roof edge, intake louvres on the gallery wall at each GT bay, a black surround and two wall lights at the
   west equipment door;
 - a Southwire SIMpull tractor-trailer where the generic flatbed stood (same size and heading, cab north): five 9 ft
-  steel reels with black flanges and the Southwire logo, red skirts with the SIMpull SOLUTIONS livery, crew at the tail (user, Oct 19, "better for branding").
+  steel reels, black flanges each filled by the copper Southwire meatball, red skirts with the SIMpull SOLUTIONS livery, crew at the tail (user, Oct 19, "better for branding").
 Every strip is cut back wherever something of another item stands within a few inches of the wall (pipes, trays,
 risers, filter-house frames, inlet ducts), so nothing new touches the plant. The south pieces sit in their own
 "Turbine hall south cladding ..." item and lift off with the cladding in the cutaway views."""
@@ -109,10 +110,10 @@ def build():
     hall = find("Common turbine hall")
     clad = find("Turbine hall south cladding")
     lay, area = hall["layer"], hall.get("area", "A")
-    a = new_item(lay, "Turbine hall exterior finish: copper band, black pilasters, clerestory, west-end sign",
+    a = new_item(lay, "Turbine hall exterior finish: copper band, black pilasters, clerestory, west-end lettering",
                  [478, 1102, 402, 562], [0, 99], area=area,
                  info="Southwire copper band at EL 64, black pilasters on the column lines, clerestory glazing, "
-                      "west-end sign and door surround. Typical, not engineered.")
+                      "3x1 CCGT lettering on the west end and door surround. Typical, not engineered.")
     b = new_item(lay, "Turbine hall south cladding exterior: band, pilasters, clerestory, louvres",
                  [478, 1102, 368, 404], [0, 99], area=area,
                  info="South-wall copper band, pilasters, clerestory, gallery fascia and intake louvres; lifts off "
@@ -127,7 +128,7 @@ def build():
     fuel.D = True
     # copper band, proud of the pilasters so it reads continuous
     n += hstrip(N, 480, 1100, *ZB, .45, "hero_accent")
-    n += hstrip(W, 402.5, 424, *ZB, .45, "hero_accent") + hstrip(W, 526, 560.5, *ZB, .45, "hero_accent")   # stops at the sign; wraps both corners
+    n += hstrip(W, 402.5, 560.5, *ZB, .45, "hero_accent")                       # wraps both corners
     n += hstrip(E, 402.5, 560.5, *ZB, .45, "hero_accent")
     # pilasters: north wall on every column line, corners of both gables
     for x in COLS[1:-1]:
@@ -146,13 +147,9 @@ def build():
         box(479.3, 480.0, y - .6, y + .6, 39.0, 40.0, "panel"); box(479.2, 479.3, y - .5, y + .5, 39.1, 39.6, "lamp")
     n += 7
     fuel.D = False
-    # the one exterior sign, on the west gable above the band (branded print + the plain twin for the generic build)
-    # 100 x 50 ft over the door (y 425-525, EL 44-94), clear of the riser at y 527.5; the band stops at its edges
-    showcase.decal((479.9, 475.0, 72.0), (-1, 0, 0), 92, 22, [("3x1 CCGT", .8, True, "#1d1f21")], bg=None,
-                   generic_only=True)
-    fuel.G.setdefault("decals", []).append(dict(c=[479.9, 475.0, 69.0], n=[-1, 0, 0], w=100.0, h=50.0, bg=None,
-                                                lines=[], item=a["id"], layer=a["layer"], brand=1,
-                                                img="hall_wall_sign.png", print=1))
+    # 3x1 CCGT on the west gable, above the band and over the door (y 429-521, EL 69-91), clear of the riser at y 527.5
+    fuel.G["decals"].append(dict(c=[479.9, 475.0, 80.0], n=[-1, 0, 0], w=92.0, h=22.0, bg=None, lines=[], item=a["id"],
+                                 layer=a["layer"], brand=0, img="hall_west_lettering.png", print=1))   # Barlow, as inside
     # south: upper wall over the gallery roof and the gallery's outer wall
     on(b)
     fuel.D = True
@@ -178,7 +175,7 @@ def build():
 def simpull_delivery(lay, area):
     """A Southwire SIMpull tractor-trailer where the generic flatbed stood (x 436-444, y 459-522, cab to the north):
     a white tractor with a Southwire-red stripe and logos on the doors, a 52 ft flatbed with red skirts and the
-    SIMpull SOLUTIONS livery, five 9 ft steel reels with black flanges and the Southwire logo, chocked across the deck
+    SIMpull SOLUTIONS livery, five 9 ft steel reels with black flanges filled by the copper Southwire meatball, chocked across the deck
     (paralleled, colour-coded conductors), a crew at the tail."""
     import showcase
     import simpull
@@ -186,9 +183,9 @@ def simpull_delivery(lay, area):
     from fuel import rod
     decal = showcase.decal
 
-    def logo(c, n, w, img):
-        """The Southwire logo as a printed image decal (brand only; 4:1)."""
-        fuel.G["decals"].append(dict(c=[round(v, 2) for v in c], n=list(n), w=w, h=round(w / 4.03, 2), bg=None, lines=[],
+    def logo(c, n, w, img, aspect=4.03):
+        """The Southwire logo as a printed image decal (brand only; 4:1, the meatball 1:1)."""
+        fuel.G["decals"].append(dict(c=[round(v, 2) for v in c], n=list(n), w=w, h=round(w / aspect, 2), bg=None, lines=[],
                                      item=it["id"], layer=it["layer"], brand=1, img=img, print=1))
     xc, yt0, yt1 = 440.0, 459.0, 511.0                     # trailer deck (y 459-511), tractor y 511-522
     hw, zd = 4.25, 4.4                                     # half width, deck top
@@ -225,7 +222,7 @@ def simpull_delivery(lay, area):
         for s in (-1, 1):
             rod((xc + s * (hw - 1.2), yw, 1.7), (xc + s * (hw + .05), yw, 1.7), 1.7, "tyre", seg=16)
     n += 20
-    # five 9 ft steel reels, flanges painted black with the Southwire logo, axles across the trailer, on chocks
+    # five 9 ft steel reels, flanges painted black, each filled by the copper Southwire meatball, axles across the trailer, on chocks
     D, W = 9.0, 5.6
     R = D / 2
     for k in range(5):
@@ -233,7 +230,7 @@ def simpull_delivery(lay, area):
         zc = zd + .3 + R
         for s in (-1, 1):
             simpull.flange_disc((xc + s * (W / 2 - .3), y, zc), (s, 0, 0), R, .3, col="sp_black", spokes=12)
-            logo((xc + s * (W / 2 + .2), y, zc + .2), (s, 0, 0), 6.6, "sw_logo_white.png")
+            logo((xc + s * (W / 2 + .2), y, zc), (s, 0, 0), 2 * R * .97, "sw_meatball.png", 1.0)   # the meatball fills the flange
         simpull.bands(lambda o, xx=xc, yy=y, zz=zc: (xx + o, yy, zz), W, R * .82, simpull.FEEDER * 2, t=.35)
         rod((xc - W / 2 + .3, y, zc), (xc + W / 2 - .3, y, zc), R * .3, "steel", seg=20)
         for sy in (-1, 1):
