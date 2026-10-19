@@ -99,6 +99,17 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
 
 ## In progress / not yet done
 
+- **Zone 07 "Infrastructure & Construction: the plant's front door"** (plan approved Oct 19, incl. HVAC). Part 1 done
+  (viewer v27): `plant/front_door.py`. Admin/control building facade: copper band, coping, corner pilasters,
+  black entrance portal "SK-3X1 POWER CAMPUS / CONTROL & ADMINISTRATION", monument sign, three flagpoles 11 ft apart
+  (US flag on the taller middle pole, blue state flag west, black company flag with a copper stripe east). Roof: four
+  RTUs, each with a disconnect, conduit through the roof and an MC whip, plus a walkway. Condensing-unit pad on the
+  north side (four precision-cooling units for the DCS/server room). Cameras ADM2 (front) and ADM3 (roof).
+  `plant/tools/detail_clash.py` checks detail items (verify.py skips them). `attach.signs` now also checks walls
+  longer than 300 ft, which removes the stray posts it had added under the gallery door signs.
+  Next: part 2, main gate checkpoint (also fix the floating boxes at z 25, x 280-296, y 331); part 3, construction
+  compound and temporary power; part 4, deck slide 07.
+
 - **Viewer: published.** The branded viewer (`plant/viewer/index_southwire.html`) is live at
   https://claude.ai/artifact/QtsCN1A1zmrgNTyMrqJbTL: version 3 (Oct 19) carries the UTF-8 / mobile-viewport fix
   (commit 41836bb), the solid wall sign and the hall exterior branding (version 7: without unit numbers, SIMpull tractor-trailer with black steel reels at the hall's west door, roof coping, corners closed, west wall lettering only, meatball flanges, two staged reels, four 10.5 ft reels on the trailer, ST gallery door, door signs and painted GT1-ST1, rejuvenation van, stray CCS pickup removed, van livery on the end walls, flag centred in the white field, crane detail, annex black removed, chevrons by the riser and a plain black rectangle; v23). To update: rebuild with `build_viewer.py --out viewer/index_southwire.html`

@@ -109,8 +109,10 @@ def signs(parts, decals):
     """Printed panels with nothing behind or beside them get two posts to grade (a free-standing sign)."""
     B = [bb(p) for p in parts]
     grid = defaultdict(list)
+    big = []                                                       # long walls / slabs: checked directly, not gridded
     for k, b in enumerate(B):
         if b[3] - b[0] > 300 or b[4] - b[1] > 300:
+            big.append(k)
             continue
         for gx in range(int(b[0] // 10), int(b[3] // 10) + 1):
             for gy in range(int(b[1] // 10), int(b[4] // 10) + 1):
@@ -121,8 +123,9 @@ def signs(parts, decals):
         if c[2] < .5 or abs(nrm[2]) > .5:
             continue
         m = max(.6, w / 2)
-        hit = False
-        for gx in range(int((c[0] - m) // 10), int((c[0] + m) // 10) + 1):
+        hit = any(B[k][0] - m <= c[0] <= B[k][3] + m and B[k][1] - m <= c[1] <= B[k][4] + m and
+                  B[k][2] - .6 <= c[2] <= B[k][5] + .6 for k in big)
+        for gx in ([] if hit else range(int((c[0] - m) // 10), int((c[0] + m) // 10) + 1)):
             for gy in range(int((c[1] - m) // 10), int((c[1] + m) // 10) + 1):
                 for k in grid.get((gx, gy), ()):
                     b = B[k]

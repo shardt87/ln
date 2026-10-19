@@ -1355,6 +1355,10 @@ EPIC = [
     dict(k="E88", n="Control / admin building cutaway: control room, supervisor office, servers, lobby, offices",
          eye=(345, 290, 105), target=(232, 372, 0), lens=24, show="all", add_layers=("CR_INTERIOR",),
          hide_layers=("CR_ROOF",), sun=(50, 160)),
+    dict(k="ADM2", n="Control / admin building front: copper band, entrance portal, monument sign and flagpoles",
+         eye=(262, 262, 26), target=(196, 352, 10), lens=28, show="all", sun=(38, 215)),
+    dict(k="ADM3", n="Control / admin building roof: rooftop units, disconnects, MC whips, walkway; condensing-unit pad",
+         eye=(292, 300, 88), target=(214, 386, 14), lens=24, show="all", sun=(48, 200)),
     # SIMpull / Maxis equipment (simpull.py)
     dict(k="E89", n="Reel yard staging: SIMpull Reels on Cradles, 45K / 30K Reel Rollers, Flanges, Stack reels on JAX stands",
          eye=(316, 797, 17), target=(254, 840, 2.5), lens=24, show="all", sun=(34, 150)),

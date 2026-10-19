@@ -2260,6 +2260,8 @@ print('pipe-end terminations', N_TERM)
 print('supports added under floating parts', _term.support_floating(items, parts))
 import hall_exterior as _hx                        # after everything: its strips are cut round all that stands at the walls
 print('turbine hall exterior finish', _hx.build())
+import front_door as _fd                         # zone 07: the control / admin building outside and on the roof
+print('front door (zone 07)', _fd.build())
 
 
 # "conditional" was a drawing flag colour (yellow); the items keep basis="conditional" in their data, but are drawn

@@ -43,12 +43,12 @@ def _bb(p):
 class Face:
     """An exterior wall face: ax = 0 (x = v, runs along y) or 1 (y = v, runs along x); s = outward sign."""
 
-    def __init__(self, ax, v, s, skip):
+    def __init__(self, ax, v, s, skip, wallc=("hall", "roof", "hall_steel")):
         self.ax, self.v, self.s = ax, v, s
         lo, hi = (v, v + 1.0) if s > 0 else (v - 1.0, v)          # the slab a strip can occupy, plus margin
         self.obs = []
         for p in fuel.G["parts"]:
-            if p["item"] in skip[0] or (p["item"] in skip[1] and p["color"] in ("hall", "roof", "hall_steel")):
+            if p["item"] in skip[0] or (p["item"] in skip[1] and p["color"] in wallc):
                 continue
             b = _bb(p)
             if b and b[0][ax] < hi and b[1][ax] > lo:
