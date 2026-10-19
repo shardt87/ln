@@ -359,7 +359,7 @@ class Realism:
     def vehicles(self):
         self.new("SITE", "Vehicles: pickups, flatbeds, a forklift, a mobile crane",
                  (0, 2420, 0, 1920), (0, 95))
-        for (x, y, a) in ((1240, 285, 0), (1620, 290, math.pi), (1475, 1100, math.pi / 2),
+        for (x, y, a) in ((1240, 285, 0), (1620, 290, math.pi),                   # (1475, 1100) removed: read as stranded
                           (1700, 1662, 0), (385, 1300, -math.pi / 2), (2050, 1385, math.pi)):
             self.place_vehicle(x, y, a, "pickup", 10)
         # (the flatbed at the turbine hall west door became the SIMpull Truck, hall_exterior.py)
