@@ -23,7 +23,10 @@ Everything (plant, LNG satellite and marine terminal, BTM data centre):
     python plant/blender/export_model.py plant/model SK-3X1_everything_datacenter SK-3X1_coastal_A
 
 GLB and USDZ hold the plant and site (no trees or surrounding ground), Y-up,
-with each material's base colour, roughness and metalness.
+with each material's base colour, roughness and metalness, and the printed decals / screens as images.
+Before exporting, export_slim.py drops geometry nobody can see (hidden rod caps, buried faces) and merges the
+decal quads, and tools/glb_images.py recompresses the GLB's images, so each file stays under GitHub's 100 MiB
+limit (Oct 18: GLB 140-147 MB -> about 96-101 MB). The saved .blend is not trimmed.
 """
 import os
 import sys
@@ -32,7 +35,11 @@ import bpy
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+import export_slim  # noqa: E402
 import pro_look  # noqa: E402
+
+sys.path.insert(0, os.path.join(os.path.dirname(HERE), "tools"))
+import glb_images  # noqa: E402
 
 argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else sys.argv[1:]
 out = os.path.abspath(argv[0])
@@ -67,12 +74,27 @@ if sea is not None:
     ob = bpy.data.objects.new("sea (export)", me)
     scene.collection.objects.link(ob)
     extra.append(ob)
-for o in bpy.data.objects:
+
+
+def chosen(o):
     dc = any(c.name.startswith("OPT_DC") for c in o.users_collection)
-    o.select_set(o.type == "MESH" and (o.name not in skip or o in extra) and (with_dc or not dc))
+    return o.type == "MESH" and (o.name not in skip or o in extra) and (with_dc or not dc)
+
+
+print(export_slim.slim(bpy, [o for o in bpy.data.objects if chosen(o)]))
+for o in bpy.data.objects:
+    o.select_set(chosen(o))
 bpy.ops.export_scene.gltf(filepath=os.path.join(out, name + ".glb"), export_format="GLB",
                           use_selection=True, export_apply=True, export_yup=True, export_materials="EXPORT",
                           export_extras=True)
+glb_images.main(os.path.join(out, name + ".glb"), os.path.join(out, name + ".glb"))
+for im in bpy.data.images:                   # USDZ packs the decal images as files: palette PNGs, same names
+    if im.packed_file:
+        data = bytes(im.packed_file.data)
+        new = glb_images.slim(data, "image/png", jpeg=False)[0]
+        if len(new) < len(data):
+            im.pack(data=new, data_len=len(new))
 bpy.ops.wm.usd_export(filepath=os.path.join(out, name + ".usdz"), selected_objects_only=True,
-                      export_materials=True, generate_preview_surface=True, export_textures=False)
+                      export_materials=True, generate_preview_surface=True, export_textures=True,
+                      overwrite_textures=True)
 print("exported", sorted(os.listdir(out)))

@@ -1006,3 +1006,13 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
   copper band, and each stack has a 7 ft black crown at the top.
 - "Complete plant" view camera: same oblique angle as before, swung to face north (t 1250, 1500, 0; c 350, -1500, 1750) so the opening frame
   shows the whole campus with the LNG terminal, jetty and carrier at the top, on phone and desktop.
+
+### Slim 3D export: every GLB / USDZ back under GitHub's 100 MiB limit, decals kept (Oct 18)
+- Cause of the 140-147 MB GLBs: +56% geometry from the Oct 6-18 detail (2.65 M -> 4.12 M vertices) and 1,795 decal
+  quads exported as one mesh each (646 -> 2,522 meshes) with 232 images (14 MB). Most vertices are round rods,
+  whose two separate flat cap rings are half of each rod.
+- `blender/export_slim.py` (export only, the .blend is untouched): drops the caps of thin rods (< 3 in radius) and
+  of straight rod joints, drops faces buried under the ground, merges decal quads per item and image.
+  `tools/glb_images.py`: palette PNGs for the printed panels, JPEG for the CCTV screens, identical images once.
+- Result: GLB 94.8-101.1 MB, USDZ 88.9-93.4 MB (now with the decal textures); raw files committed again,
+  `model/current/` zips removed. glTF validator 0 errors; renders of old vs new match (<= 0.02% pixels differ).

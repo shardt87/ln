@@ -22,5 +22,8 @@ The OBJ group names carry the full name.
 Conceptual illustration. Not engineered. Not for construction.
 Stephan Hardt | Power Generation Solutions
 
-Oct 18, 2026: the GLB / USDZ in this folder are the Oct 5 exports. The current ones (with the Oct 17-18 work) are
-zipped in current/ (raw files exceed GitHub's 100 MB limit); the .blend files here are current.
+Oct 18, 2026: the GLB / USDZ here are current (the Oct 17-18 work: slate HRSGs, black-copper hall, ST detail,
+interior electrical, wall sign and flag) and carry every printed decal and screen as an image (USDZ included).
+Each file is under GitHub's 100 MiB limit (GLB 94.8-101.1 MB, USDZ 88.9-93.4 MB): the export drops the end caps of
+thin rods (cable, conduit, rail: they sit inside the next segment or a gland) and of straight rod joints, and faces
+buried under the ground, and merges the decal quads; renders of old and new files match (blender/export_slim.py). The .blend files are complete and untrimmed.
