@@ -79,6 +79,8 @@ class Detail3:
             self.box(it, x1, x1 + e, y0, y1, 0, 2.6, "concrete")
             faces = ((x0, x1, y0, "x", -1), (x0, x1, y1, "x", 1), (y0, y1, x0, "y", -1), (y0, y1, x1, "y", 1))
 
+            gap = None                                                     # (x0, x1) kept clear on the south face
+
             def band(zb, zt, w, pitch, c, faces=faces):
                 for (a0, a1, fixed, axis, sgn) in faces:
                     L = a1 - a0
@@ -89,11 +91,14 @@ class Detail3:
                     for k in range(n):
                         s0 = a0 + pad + pitch * k
                         if axis == "x":
+                            if gap and sgn < 0 and s0 < gap[1] and s0 + w > gap[0]:
+                                continue                                   # no window over the entrance
                             self.box(it, s0, s0 + w, fixed, fixed + sgn * .14, zb, zt, c)
                         else:
                             self.box(it, fixed, fixed + sgn * .14, s0, s0 + w, zb, zt, c)
 
             if kind == "office":
+                gap = ((x0 + x1) / 2 - 6, (x0 + x1) / 2 + 6)
                 rows = [z for z in (h * .5 - 2,) if z > 4] if h < 22 else [6.5, 6.5 + 12]
                 for zb in rows:
                     zt = zb + 4 if h >= 12 else zb + 3

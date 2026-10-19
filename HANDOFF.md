@@ -60,6 +60,10 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
     sheet-09 checks) got web stiffeners down both girders and striped end-truck bumpers (hall_finish.crane_detail).
   - camera HALL10 (Oct 19): angle shot inside the hall from the GT1 / GT2 aisle at EL 50, GT2 in front, GT3 and the
     ST stepping back, the flag, chevrons and white-on-black Southwire sign on the east end wall at the back.
+  - control / admin building windows (Oct 19, user: "double window inside the admin room?"): the interior panes,
+    sills and blinds (control_room.py) now take the exterior windows' height (EL 7.25-11.25, read from detail3.py's
+    band) instead of a fixed EL 8-12, so each reads as one opening; detail3.py no longer puts band windows over the
+    glazed entrance. Camera ADM1 looks at the south windows from the open office.
   - cable rejuvenation (Oct 19, user asked for a Southwire Rejuvenation Services van; kept away from the hall door
     so it does not crowd the SIMpull scene): `maintenance.rejuvenation()` opens the collector bank's west manhole
     (site 1690, 960, MH-C, next to the existing MH-A / MH-B cable-pull job) and parks a field-service van south of it,

@@ -19,7 +19,7 @@ Typical arrangement, not engineered. Screen images come from plant/screens (make
 import math
 
 import fuel
-from fuel import box, rod
+from fuel import box, rod, find
 
 L_IN, L_ROOF = "CR_INTERIOR", "CR_ROOF"
 X0, X1, Y0, Y1 = 83.0, 320.0, 345.0, 396.0      # drawn footprint
@@ -284,7 +284,12 @@ def build():
     for (a0, a1, nm) in ((258, 275.7, "SHIFT SUPERVISOR"), (240, 258, "OPERATIONS MEETING"), (220, 240, "DCS ENGINEERING"), (166, 192, "CONFERENCE"),
                          (144, 166, "BREAK ROOM"), (84, 144, "OFFICES")):
         sign(((a0 + a1) / 2, COR[0] + .07, 7.9), (0, 1, 0), 3.2, .5, [(nm, .55, 1, "#ffffff")], bg="#2c3a46")
-    # interior faces of the exterior windows: glass with a sill, roller blinds half down in the MCR
+    # interior faces of the exterior windows: glass with a sill, roller blinds half down in the MCR, at the exterior
+    # windows' own height (detail3.py) so each reads as one opening, not two panes out of line
+    bid = find("Control / admin building (main")["id"]
+    ext = [p for p in fuel.G["parts"] if p["item"] == bid and p["kind"] == "box" and p["color"] == "window"
+           and p["max"][2] - p["min"][2] < 6]
+    WZ0, WZ1 = (ext[0]["min"][2], ext[0]["max"][2]) if ext else (8.0, 12.0)
     for (a0, a1, fixed, axis, sgn) in ((X0, X1, Y0, "x", -1), (X0, X1, Y1, "x", 1), (Y0, Y1, X0, "y", -1), (Y0, Y1, X1, "y", 1)):
         Lw = a1 - a0
         nw = int((Lw - 8) // 11)
@@ -295,15 +300,15 @@ def build():
             if axis == "x":
                 if abs(s0 + 3 - xm) < 9 and sgn < 0:
                     continue
-                box(s0, s0 + 6, inner - sgn * .04, inner, 8, 12, "window")
-                box(s0 - .2, s0 + 6.2, inner - sgn * .35, inner, 7.8, 8, "wall_in")
+                box(s0, s0 + 6, inner - sgn * .04, inner, WZ0, WZ1, "window")
+                box(s0 - .2, s0 + 6.2, inner - sgn * .35, inner, WZ0 - .2, WZ0, "wall_in")
                 if s0 > MCR_X:
-                    box(s0, s0 + 6, inner - sgn * .1, inner - sgn * .06, 10.2, 12, "blind")
+                    box(s0, s0 + 6, inner - sgn * .1, inner - sgn * .06, WZ1 - 1.8, WZ1, "blind")
             else:
                 if sgn > 0:
                     continue                                                      # east wall: video wall side
-                box(inner - sgn * .04, inner, s0, s0 + 6, 8, 12, "window")
-                box(inner - sgn * .35, inner, s0 - .2, s0 + 6.2, 7.8, 8, "wall_in")
+                box(inner - sgn * .04, inner, s0, s0 + 6, WZ0, WZ1, "window")
+                box(inner - sgn * .35, inner, s0 - .2, s0 + 6.2, WZ0 - .2, WZ0, "wall_in")
     # ceiling lights everywhere (2 x 4 troffers), denser in the offices
     for x in range(90, int(MCR_X) - 2, 9):
         for y in (352, 362, 372, 381, 390):
