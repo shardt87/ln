@@ -147,7 +147,8 @@ def end_wall():
                                                 print=1))
     # flag: seen from the west, north (+y) is on the viewer's left, so the canton sits at the high-y, top corner
     w, h = 28.0, 28.0 / 1.9
-    y0, y1, z0 = 503.0, 531.0, 69.0                    # above the copper band (EL 64-65.6)
+    y0, y1, z0 = 515.0, 543.0, 74.45                   # centred in the white field: chevrons (y 502) to the NE corner
+                                                       # (y 556), band top (EL 65.6) to the roof (EL 98)
     st = h / 13
     n = 0
     for i in range(13):
