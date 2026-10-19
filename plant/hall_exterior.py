@@ -9,10 +9,12 @@
   gallery roof edge, a black coping round the main roof edge, intake louvres on the gallery wall at each GT bay, a black surround and two wall lights at the
   west equipment door;
 - a Southwire SIMpull tractor-trailer where the generic flatbed stood (same size and heading, cab north): five 9 ft
-  steel reels, black flanges each filled by the copper Southwire meatball, red skirts with the SIMpull SOLUTIONS livery, crew at the tail (user, Oct 19, "better for branding").
+  steel reels, black flanges each filled by the copper Southwire meatball, red skirts with the SIMpull SOLUTIONS livery, crew at the tail, two more reels staged by the door, one standing, one laid flat (user, Oct 19, "better for branding").
 Every strip is cut back wherever something of another item stands within a few inches of the wall (pipes, trays,
 risers, filter-house frames, inlet ducts), so nothing new touches the plant. The south pieces sit in their own
 "Turbine hall south cladding ..." item and lift off with the cladding in the cutaway views."""
+import math
+
 import fuel
 from fuel import box, find, new_item, on
 
@@ -246,4 +248,35 @@ def simpull_delivery(lay, area):
     mt.person(xc - 2.5, yt0 - 3.0, 0, -1.57, vest="hivis_o")              # crew at the tail, toward the door
     mt.person(xc + 3.0, yt0 - 2.2, 0, -1.2)
     mt.person(xc + 6.5, yt1 + 4.0, 0, 0.0)                                 # driver beside the cab
-    return n
+    # two reels already off the trailer, staged on the apron south of the door: one standing on chocks, flange to
+    # the road, one laid flat with the meatball up (user, Oct 19)
+    it = new_item(lay, "Cable reels staged at the turbine hall west door", [457, 475, 408, 436], [0, 10], area=area,
+                  register=False, sheet="typical (cable installation)",
+                  info="Two Southwire steel reels off the SIMpull trailer: one standing on chocks, one laid flat. "
+                       "Typical, not engineered.")
+    on(it)
+    fuel.D = True
+    xs, ys, zc = 465.0, 428.5, R + .3                     # standing: axle along x, on chocks on the apron
+    for s in (-1, 1):
+        simpull.flange_disc((xs + s * (W / 2 - .3), ys, zc), (s, 0, 0), R, .3, col="sp_black", spokes=12)
+        logo((xs + s * (W / 2 + .2), ys, zc), (s, 0, 0), 2 * R * .97, "sw_meatball.png", 1.0)
+    simpull.bands(lambda o: (xs + o, ys, zc), W, R * .82, simpull.FEEDER * 2, t=.35)
+    rod((xs - W / 2 + .3, ys, zc), (xs + W / 2 - .3, ys, zc), R * .3, "steel", seg=20)
+    for sy in (-1, 1):
+        box(xs - W / 2, xs + W / 2, ys + sy * R * .62 - .4, ys + sy * R * .62 + .4, 0, .6, "sp_yellow")
+    xl, yl = 465.5, 415.5                                  # laid flat: axle vertical, bottom flange on timber dunnage
+    for dy in (-2.2, 2.2):
+        box(xl - R * .9, xl + R * .9, yl + dy - .35, yl + dy + .35, 0, .5, "timber")
+    z0 = .5
+    for zb in (z0, z0 + W - .3):
+        rod((xl, yl, zb), (xl, yl, zb + .3), R, "sp_black", seg=40)                             # flanges
+    for k in range(12):                                                                          # top-flange ribs
+        t_ = 2 * math.pi * k / 12
+        rod((xl + R * .32 * math.cos(t_), yl + R * .32 * math.sin(t_), z0 + W),
+            (xl + R * .93 * math.cos(t_), yl + R * .93 * math.sin(t_), z0 + W), .07, "sp_black", seg=6)
+    simpull.bands(lambda o: (xl, yl, z0 + W / 2 + o), W, R * .82, simpull.FEEDER * 2, t=.35)
+    fuel.G["decals"].append(dict(c=[xl, yl, round(z0 + W + .12, 2)], n=[0, 0, 1], up=[-1, 0, 0], w=2 * R * .97,
+                                 h=2 * R * .97, bg=None, lines=[], item=it["id"], layer=it["layer"], brand=1,
+                                 img="sw_meatball.png", print=1))
+    fuel.D = False
+    return n + 12

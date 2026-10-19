@@ -57,7 +57,8 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
     A Southwire SIMpull tractor-trailer (`hall_exterior.simpull_delivery`) stands where the generic flatbed from
     realism.py was (same 62 ft size and heading, cab north): five 9 ft steel reels, flanges painted black
     (orange tried first) each filled by the copper Southwire meatball (`screens/sw_meatball.png`), red skirts with the logo and SIMpull SOLUTIONS, the solid-colour logo
-    on the cab doors (`blender/logo_variants.py` -> `screens/sw_logo_white.png`, `sw_logo_solid.png`), crew at the tail;
+    on the cab doors (`blender/logo_variants.py` -> `screens/sw_logo_white.png`, `sw_logo_solid.png`), crew at the tail; two
+    more reels staged on the apron south of the door, one standing on chocks, one laid flat on dunnage, meatball up;
     camera HX3 is the close-up (user: "better for branding", then "bigger, more reels, same side").
     Every strip is cut back round anything of another item standing at the wall (bands fitted tight, 0.05 ft; the hall's own columns and panels do not cut them), so verify stays at 0 clashes. South pieces are a
     separate "Turbine hall south cladding exterior ..." item (lifts off with the cladding). Camera HX2 = the
@@ -70,7 +71,7 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
 
 - **Viewer: published.** The branded viewer (`plant/viewer/index_southwire.html`) is live at
   https://claude.ai/artifact/QtsCN1A1zmrgNTyMrqJbTL: version 3 (Oct 19) carries the UTF-8 / mobile-viewport fix
-  (commit 41836bb), the solid wall sign and the hall exterior branding (version 7: without unit numbers, SIMpull tractor-trailer with black steel reels at the hall's west door, roof coping, corners closed, west wall lettering only, meatball flanges; v11). To update: rebuild with `build_viewer.py --out viewer/index_southwire.html`
+  (commit 41836bb), the solid wall sign and the hall exterior branding (version 7: without unit numbers, SIMpull tractor-trailer with black steel reels at the hall's west door, roof coping, corners closed, west wall lettering only, meatball flanges, two staged reels; v12). To update: rebuild with `build_viewer.py --out viewer/index_southwire.html`
   and publish that file to the same url. The older artifact https://claude.ai/artifact/9bfQJUnJ6GCH35zmjBq7cP
   (generic viewer) was not updated and is superseded.
 - **HALL7 / slide 8 with the solid sign:** the HALL7 128-sample re-render was running at the Oct 19 hand-off
