@@ -6,7 +6,9 @@
 - the inside copper band carried outside at the same EL 64 round all four walls, black pilasters on the column lines
   (44 ft) and at the corners, a clerestory window strip under the eaves of both long walls, a black fascia along the
   gallery roof edge, intake louvres on the gallery wall at each GT bay, a black surround and two wall lights at the
-  west equipment door.
+  west equipment door;
+- a Southwire SIMpull Truck backed up to the west door, tail lift toward the hall, two SIMpull Reels on board and a
+  crew at the tail lift (replaces the generic flatbed there: user, Oct 19, "better for branding").
 Every strip is cut back wherever something of another item stands within a few inches of the wall (pipes, trays,
 risers, filter-house frames, inlet ducts), so nothing new touches the plant. The south pieces sit in their own
 "Turbine hall south cladding ..." item and lift off with the cladding in the cutaway views."""
@@ -163,4 +165,35 @@ def build():
         for p, q in SG.free(x0, x0 + 30, 33.0, 43.0):
             n += SG.put(p, q, 33.0, 43.0, .4, "louvre") + SG.put(p, q, 32.6, 33.0, .5, "hall_steel")
     fuel.D = False
+    n += simpull_delivery(lay, area)
     return n
+
+
+def simpull_delivery(lay, area):
+    """The SIMpull Truck (showcase.simpull_truck, cab east) built at the west door and mirrored in x, so its cab is
+    to the west and the tail lift faces the door (y 440-480)."""
+    import showcase
+    import maintenance as mt
+    x, y = 451.0, 460.0
+    it = new_item(lay, "Cable delivery: SIMpull Truck at the turbine hall west door", [428, 472, 454, 466], [0, 12],
+                  area=area, register=False, sheet="typical (cable installation)",
+                  info="Southwire SIMpull Truck delivering SIMpull Reels to the turbine hall through the west "
+                       "equipment door. Typical, not engineered.")
+    on(it)
+    P, D = fuel.G["parts"], fuel.G["decals"]
+    p0, d0 = len(P), len(D)
+    showcase.simpull_truck(x, y)
+    for p in P[p0:]:                                       # mirror x about the truck centre
+        if p["kind"] in ("box", "prism"):
+            p["min"][0], p["max"][0] = 2 * x - p["max"][0], 2 * x - p["min"][0]
+        if p["kind"] == "rod":
+            p["a"][0], p["b"][0] = 2 * x - p["a"][0], 2 * x - p["b"][0]
+        if "v" in p:
+            for v in p["v"]:
+                v[0] = 2 * x - v[0]
+    for d in D[d0:]:
+        d["c"][0] = round(2 * x - d["c"][0], 2)
+        d["n"][0] = -d["n"][0]
+    mt.person(x + 20.5, y - 5.2, 0, 3.14, vest="hivis_o")            # at the tail-lift controls
+    mt.person(x + 22.0, y + 5.4, 0, 2.6)
+    return len(P) - p0

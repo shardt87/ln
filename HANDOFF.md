@@ -53,6 +53,8 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
     removed the same day: the user found "GT 1" on the air inlet confusing); the EL 64 copper band
     outside on all walls (stops at the sign's edges); black pilasters on the 44 ft column lines and corners;
     clerestory strip under both eaves; black gallery fascia; intake louvres per GT bay; west door surround + lights.
+    A Southwire SIMpull Truck (showcase.simpull_truck, mirrored: cab west, tail lift to the door) is backed up to the
+    west door with two crew, replacing the generic flatbed from realism.py (user: "better for branding").
     Every strip is cut back round anything standing at the wall, so verify stays at 0 clashes. South pieces are a
     separate "Turbine hall south cladding exterior ..." item (lifts off with the cladding). Camera HX2 = the
     south-west exterior view (renders/cover/HX2_exterior.jpg).
@@ -64,7 +66,7 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
 
 - **Viewer: published.** The branded viewer (`plant/viewer/index_southwire.html`) is live at
   https://claude.ai/artifact/QtsCN1A1zmrgNTyMrqJbTL: version 3 (Oct 19) carries the UTF-8 / mobile-viewport fix
-  (commit 41836bb), the solid wall sign and the hall exterior branding (version 4: without unit numbers). To update: rebuild with `build_viewer.py --out viewer/index_southwire.html`
+  (commit 41836bb), the solid wall sign and the hall exterior branding (version 5: without unit numbers, SIMpull Truck at the hall's west door). To update: rebuild with `build_viewer.py --out viewer/index_southwire.html`
   and publish that file to the same url. The older artifact https://claude.ai/artifact/9bfQJUnJ6GCH35zmjBq7cP
   (generic viewer) was not updated and is superseded.
 - **HALL7 / slide 8 with the solid sign:** the HALL7 128-sample re-render was running at the Oct 19 hand-off

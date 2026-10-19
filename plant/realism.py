@@ -7,8 +7,7 @@
    HRSG drain headers to the blowdown tanks; instrument-air drops at the HRSG and the gas yard.
 3. Signage: equipment ID and hazard signs on buildings, e-houses and transformers.
 4. Scale: people in hard hats and hi-vis at work positions (grade, the turbine deck, HRSG
-   platforms, the CEMS platform, the gas yard), vehicles (pickups, a flatbed at the laydown
-   bay, a forklift, a mobile crane), and scaffolding on HRSG 2.
+   platforms, the CEMS platform, the gas yard), vehicles (pickups, flatbeds, a forklift, a mobile crane), and scaffolding on HRSG 2.
 5. Tube harps: HRSG 3's coil sections (superheater / reheater, evaporators, economizers, SCR
    and CO catalyst) with their upper and lower headers, for the cutaway camera.
 Every placement is tested against the geometry already in the model and skipped if it would
@@ -358,12 +357,12 @@ class Realism:
         return True
 
     def vehicles(self):
-        self.new("SITE", "Vehicles: pickups, a flatbed at the laydown bay, a forklift, a mobile crane",
+        self.new("SITE", "Vehicles: pickups, flatbeds, a forklift, a mobile crane",
                  (0, 2420, 0, 1920), (0, 95))
         for (x, y, a) in ((1240, 285, 0), (1620, 290, math.pi), (1475, 1100, math.pi / 2),
                           (1700, 1662, 0), (385, 1300, -math.pi / 2), (2050, 1385, math.pi)):
             self.place_vehicle(x, y, a, "pickup", 10)
-        self.place_vehicle(440, 485, math.pi / 2, "flatbed", 6)
+        # (the flatbed at the turbine hall west door became the SIMpull Truck, hall_exterior.py)
         self.place_vehicle(248, 278, 0, "pickup", 8)                  # inbound at the barrier
         self.place_vehicle(118, 535, math.pi / 2, "flatbed", 6)       # delivery at the warehouse
         self.place_vehicle(1660, 509, 0, "pickup", 8)                 # BESS technicians in the aisle
