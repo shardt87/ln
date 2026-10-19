@@ -50,7 +50,7 @@ rep = json.load(open(os.path.join(ROOT, "verify_report.json")))
 s = rep["summary"]
 open(os.path.join(out, "renders.html"), "w").write(f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SK-3X1 Renders</title>
+<title>SW-3X1 Renders</title>
 <style>
 body{{margin:0;background:#eef0ee;color:#1f2b33;font:14px/1.45 Arial,sans-serif}}
 main{{max-width:1500px;margin:0 auto;padding:16px}}
@@ -61,7 +61,7 @@ figure{{margin:0;background:#f8f9f7;border:1px solid #cfd5d4}} img{{width:100%;d
 figcaption{{padding:6px 10px;font-size:12.5px;text-transform:uppercase;letter-spacing:.5px}}
 a{{color:#b0662b}}
 </style></head><body><main>
-<h1>SK-3X1 Rev 14: Blender renders</h1>
+<h1>SW-3X1 Rev 14: Blender renders</h1>
 <p>Sheet-11 views rendered with Cycles. Model: {s['items']} items, {s['parts']} parts, verified against the drawing
 ({'PASS' if s['ok'] else 'FAIL'}). <a href="./">3D viewer</a> · <a href="bay.html">GT1 bay close-up</a></p>
 <h2>Presentation renders</h2>

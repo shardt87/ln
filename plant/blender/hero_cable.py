@@ -4,8 +4,8 @@ The cable pixels come from a second render of the same camera with the cables in
 effect follows the real cable geometry and hides wherever the plant does. On those pixels: a burnished-copper tint that
 keeps the render's light and shade, a white-gold core, a tight and a wide copper bloom, and a few current pulses.
 
-    SK_CABLE_MASK=1 python blender/SK-3X1_Rev14_blender_build.py --views HX1 ... --out MASKDIR
-    python blender/SK-3X1_Rev14_blender_build.py --views HX1 ... --out PHOTODIR
+    SK_CABLE_MASK=1 python blender/SW-3X1_Rev14_blender_build.py --views HX1 ... --out MASKDIR
+    python blender/SW-3X1_Rev14_blender_build.py --views HX1 ... --out PHOTODIR
     python blender/hero_cable.py PHOTO.png MASK.png OUT.jpg [SEED]
 """
 import random

@@ -3,7 +3,7 @@
 copper tag box, item list on hairline rules, render photo on the right behind a dark diagonal, watermark, footer.
 Geometry and colours measured from the deck (section 01 divider).
 
-    python blender/deck_divider.py            # writes renders/deck/SK-3X1_divider_ccs.png / .pdf
+    python blender/deck_divider.py            # writes renders/deck/SW-3X1_divider_ccs.png / .pdf
 """
 import os
 
@@ -24,24 +24,24 @@ SLIDES = {
                        "MV-105 TO 16 MW FANS AND CO2 COMPRESSORS",
                        "ARMOR-X MC-HL AND TYPE TC-ER ON THE RACKS",
                        "INSTRUMENTATION AND GROUNDING"],
-                out="SK-3X1_divider_ccs"),
+                out="SW-3X1_divider_ccs"),
     "gas": dict(photo=os.path.join(PLANT, "renders", "epic", "E71_pro.png"), number="02",
                 title=("GAS POWER", "GENERATION", "SOLUTIONS"), tag=None,
                 items=["THE PLANT MODEL AND CABLE SYSTEMS", "CABLE LINEUP AND DETAIL", "MODULAR GAS POWER",
                        "STANDARDS AND SERVICES"],
-                out="SK-3X1_divider_gas_power"),
+                out="SW-3X1_divider_gas_power"),
     "gas_site": dict(photo=os.path.join(PLANT, "renders", "cover", "K11_pro.png"), number="02",
                      title=("GAS POWER", "GENERATION", "SOLUTIONS"), tag=None,
                      items=["THE PLANT MODEL AND CABLE SYSTEMS", "CABLE LINEUP AND DETAIL", "MODULAR GAS POWER",
                             "STANDARDS AND SERVICES"],
-                     out="SK-3X1_divider_gas_power_site"),
+                     out="SW-3X1_divider_gas_power_site"),
     "hall": dict(photo=os.path.join(PLANT, "renders", "epic", "E70_pro.png"), number="07",
                  title=("TURBINE", "HALL"), tag="PRODUCT APPLICATION · GT / ST",
                  items=["MV-105 15 KV FEEDERS TO THE GT AUXILIARIES",
                         "ARMOR-X MC-HL AT THE TURBINE ENCLOSURES",
                         "TYPE TC-ER POWER AND CONTROL IN THE TRAYS",
                         "INSTRUMENTATION AND THERMOCOUPLE CABLE"],
-                 out="SK-3X1_divider_turbine_hall"),
+                 out="SW-3X1_divider_turbine_hall"),
 }
 
 
@@ -140,15 +140,15 @@ def make(c):
 TITLE = dict(photo=os.path.join(PLANT, "renders", "cover", "K11_pro.png"),
              kicker=None, title=("POWER", "GENERATION", "SOLUTIONS"),
              sub="GAS POWER CAMPUS", claim="ACCELERATING TIME TO POWER™", date="OCTOBER 6, 2026",
-             out="SK-3X1_title_cover")
+             out="SW-3X1_title_cover")
 
 # photo: Blender camera HX1, photoreal power block (slate HRSGs, stacks with copper bands, CCS) with the cable trays in
 # the foreground energised in copper by hero_cable.py from a rendered cable mask. Earlier covers, by COVER_PHOTO:
 # xray_copper_energy.jpg (viewer cable X-ray in copper + electrify.py), xray_campus.jpg (X-ray colours by type).
 STRATEGY_OCT = dict(photo=os.path.join(PLANT, "renders", "cover", os.environ.get("COVER_PHOTO", "HX1_hero_cable.jpg")),
-                    kicker="SK-3X1 POWER CAMPUS", title=("STRATEGY", "MONTHLY", "UPDATE"),
+                    kicker="SW-3X1 POWER CAMPUS", title=("STRATEGY", "MONTHLY", "UPDATE"),
                     sub=None, claim="EVERY MEGAWATT\nTRAVELS THROUGH A CABLE", date="OCTOBER 2026",
-                    out="SK-3X1_cover_strategy_update_October")
+                    out="SW-3X1_cover_strategy_update_October")
 
 
 def make_title(c=TITLE):

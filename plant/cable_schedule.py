@@ -1,6 +1,6 @@
-"""Cable schedule and cable BOM for the SK-3X1 campus, derived from the 3D model (conceptual, not engineered).
+"""Cable schedule and cable BOM for the SW-3X1 campus, derived from the 3D model (conceptual, not engineered).
 
-1. Load list: every powered item of the model (sk3x1_model.json, data-centre option excluded) is matched to an
+1. Load list: every powered item of the model (sw3x1_model.json, data-centre option excluded) is matched to an
    equipment class that gives its power circuits (voltage, typical rating, number of circuits, source bus) and its
    control / instrumentation / fire-alarm / fibre / thermocouple cables. Ratings are typical for the class unless
    the drawing names one (e.g. "BF-A: booster fan (~16 MW)").
@@ -12,7 +12,7 @@
 4. Products: typical Southwire product families for each application (ARMOR-X MC-HL in Class I Div 2 and turbine
    areas, MV-105 elsewhere, Type TC-ER, PLTC / ITC, FPLR, Type SHD-GC / W on the portable pad, HV XLPE at 230 kV).
 
-    python3 cable_schedule.py        -> brochure/SK-3X1_Cable_Schedule_and_BOM.xlsx
+    python3 cable_schedule.py        -> brochure/SW-3X1_Cable_Schedule_and_BOM.xlsx
 """
 import heapq
 import json
@@ -22,7 +22,7 @@ import re
 from collections import defaultdict
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-M = json.load(open(os.path.join(HERE, "sk3x1_model.json")))
+M = json.load(open(os.path.join(HERE, "sw3x1_model.json")))
 ITEMS = [it for it in M["items"] if it.get("area") != "L" and not it["layer"].startswith("OPT_DC")]
 BY_TAG = {it["tag"]: it for it in ITEMS if it.get("tag")}
 AREA = M["areas"]
@@ -922,8 +922,8 @@ def write():
     ws = wb.active
     ws.title = "Read Me"
     lines = [
-        ("SK-3X1 Rev 14 gas power campus: cable schedule and cable bill of materials", True),
-        ("Conceptual, derived from the SK-3X1 3D model. Not engineered, not for construction or procurement.", False),
+        ("SW-3X1 Rev 14 gas power campus: cable schedule and cable bill of materials", True),
+        ("Conceptual, derived from the SW-3X1 3D model. Not engineered, not for construction or procurement.", False),
         ("", False),
         ("How it was built", True),
         ("1. Every powered item of the model (BTM data-centre option excluded) is matched to an equipment class that gives "
@@ -1162,7 +1162,7 @@ def write():
     from openpyxl.workbook.properties import CalcProperties
     wb.calculation = CalcProperties(fullCalcOnLoad=True)
     export_xray()
-    out = os.path.join(HERE, "brochure", "SK-3X1_Cable_Schedule_and_BOM.xlsx")
+    out = os.path.join(HERE, "brochure", "SW-3X1_Cable_Schedule_and_BOM.xlsx")
     wb.save(out)
     return out, last - 1, len(keys)
 

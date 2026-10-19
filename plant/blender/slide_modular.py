@@ -70,11 +70,11 @@ def main(src):
             d.text((1521 * S, (y + 86 + i * 31) * S), line, font=f("DejaVuSans.ttf", 19.5), fill=GREY)
         y += 245
     d.line([(73 * S, 1015 * S), (1921 * S, 1015 * S)], fill=RULE, width=S)
-    d.text((73 * S, 1036 * S), "Rendered from the SK-3X1 3D model (modular yard, north block). Surrounding plant omitted "
+    d.text((73 * S, 1036 * S), "Rendered from the SW-3X1 3D model (modular yard, north block). Surrounding plant omitted "
            "for clarity. Conceptual illustration: not engineered.", font=f("DejaVuSans.ttf", 17), fill=GREY)
     d.text((73 * S, 1069 * S), "© 2026 Southwire Company, LLC. All rights reserved.", font=f("DejaVuSans.ttf", 15),
            fill=GREY)
-    out = os.path.join(PLANT, "renders", "deck", "SK-3X1_modular_power")
+    out = os.path.join(PLANT, "renders", "deck", "SW-3X1_modular_power")
     os.makedirs(os.path.dirname(out), exist_ok=True)
     img.save(out + ".png")
     img.save(out + ".pdf", resolution=144 * S / 2)

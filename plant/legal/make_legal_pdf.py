@@ -40,10 +40,10 @@ def bullets(items, style="body"):
 
 def memo():
     f = []
-    f += [Paragraph("Claude (Anthropic) terms: ownership of the SK-3X1 3D model and materials", S["title"]),
+    f += [Paragraph("Claude (Anthropic) terms: ownership of the SW-3X1 3D model and materials", S["title"]),
           Paragraph(f"Prepared for Southwire Legal · Stephan Hardt, Power Generation Solutions · {RETRIEVED}", S["sub"])]
     f += [Paragraph("Purpose", S["h1"]), Paragraph(
-        "I used Anthropic's AI tool Claude (with Claude Code) to build the SK-3X1 3D gas power campus model, the web "
+        "I used Anthropic's AI tool Claude (with Claude Code) to build the SW-3X1 3D gas power campus model, the web "
         "viewer, renders, the guided tour and slides for the November 11, 2026 internal training. This packet gives the "
         "terms that apply, the ownership clauses, what was created and what it contains, and the questions for your "
         "review. The full current text of each Anthropic document follows as Appendices A to D.", S["body"])]
@@ -89,7 +89,7 @@ def memo():
         "<b>Open-source components:</b> three.js (MIT licence) in the viewer; Blender (GPL; rendered images are the user's "
         "own) for renders; Barlow and DejaVu fonts (open font licences); Playwright and ffmpeg for recording.",
         "<b>Company and third-party content I supplied as input:</b> Southwire product names and logo (Southwire "
-        "trademarks); extracts from the Wesco channel-partner deck; the SK-3X1 concept drawing set the model is based on."])]
+        "trademarks); extracts from the Wesco channel-partner deck; the SW-3X1 concept drawing set the model is based on."])]
     f += [Paragraph("Questions for Legal", S["h1"]), ListFlowable([ListItem(Paragraph(q, S["body"]), leftIndent=14) for q in [
         "Are the Consumer Terms acceptable for internal training use and for customer-facing marketing of this material?",
         "Should future work move to a Southwire Claude Team or Enterprise plan under the Commercial Terms (company "
@@ -137,7 +137,7 @@ def footer(c, d):
     c.saveState()
     c.setFont("DV", 7.5)
     c.setFillColor(GREY)
-    c.drawString(0.75 * inch, 0.5 * inch, "Claude (Anthropic) terms – SK-3X1 materials · for Southwire Legal review")
+    c.drawString(0.75 * inch, 0.5 * inch, "Claude (Anthropic) terms – SW-3X1 materials · for Southwire Legal review")
     c.drawRightString(letter[0] - 0.75 * inch, 0.5 * inch, f"Page {d.page}")
     c.restoreState()
 
@@ -145,8 +145,8 @@ def footer(c, d):
 story = memo()
 for L, T, slug in DOCS:
     story += [PageBreak()] + appendix(L, T, slug)
-doc = SimpleDocTemplate(OUT := "/home/user/ln/plant/legal/Claude_Terms_SK-3X1_for_Legal_Review.pdf", pagesize=letter,
+doc = SimpleDocTemplate(OUT := "/home/user/ln/plant/legal/Claude_Terms_SW-3X1_for_Legal_Review.pdf", pagesize=letter,
                         leftMargin=.75 * inch, rightMargin=.75 * inch, topMargin=.7 * inch, bottomMargin=.75 * inch,
-                        title="Claude (Anthropic) terms – SK-3X1 materials", author="Stephan Hardt")
+                        title="Claude (Anthropic) terms – SW-3X1 materials", author="Stephan Hardt")
 doc.build(story, onFirstPage=footer, onLaterPages=footer)
 print(OUT)

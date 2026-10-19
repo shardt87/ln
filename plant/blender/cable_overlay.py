@@ -90,7 +90,7 @@ def occluded(eye, P, B):
 
 
 def overlay(src, out, key="SC1"):
-    model = json.load(open(os.path.join(PLANT, "sk3x1_model.json")))
+    model = json.load(open(os.path.join(PLANT, "sw3x1_model.json")))
     im = Image.open(src).convert("RGB")
     W, H = im.size
     eye, tgt, lens = camera(key)

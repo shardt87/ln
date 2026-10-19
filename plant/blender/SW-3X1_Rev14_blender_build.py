@@ -1,15 +1,15 @@
-"""SK-3X1 Rev 14 Blender build: scene, cameras and renders.
+"""SW-3X1 Rev 14 Blender build: scene, cameras and renders.
 
-The script named on sheet SK-3X1-11. It builds the plant from
-plant/sk3x1_model.json into collections named as on that sheet, sets up the
+The script named on sheet SW-3X1-11. It builds the plant from
+plant/sw3x1_model.json into collections named as on that sheet, sets up the
 orthographic 1920 x 1080 cameras fitted to each view with a 3% margin, and
 renders them in the sheet-11 style (white world, neutral grey equipment,
 copper only on cables / trays / bus, dark Freestyle outlines).
 
 Runs in Blender or as the `bpy` Python module:
 
-    blender -b -P plant/blender/SK-3X1_Rev14_blender_build.py -- --views A,B
-    python  plant/blender/SK-3X1_Rev14_blender_build.py --views A,B
+    blender -b -P plant/blender/SW-3X1_Rev14_blender_build.py -- --views A,B
+    python  plant/blender/SW-3X1_Rev14_blender_build.py --views A,B
 
 Options (after `--` in Blender):
     --views A,B,...   views to render (default: all but ALL)
@@ -51,11 +51,11 @@ ap.add_argument("--out", default=os.path.join(PLANT, "renders", "blender"))
 ap.add_argument("--blend", default="")
 ap.add_argument("--no-render", action="store_true")
 ap.add_argument("--set", default="", help="camera set for --style pro: '' (plates P1-P11) or 'epic' (E1-E8)")
-ap.add_argument("--overlay", default="", help="coastal variant overlay (plant/coastal/sk3x1_coastal_A.json or _B)")
+ap.add_argument("--overlay", default="", help="coastal variant overlay (plant/coastal/sw3x1_coastal_A.json or _B)")
 ap.add_argument("--generic", action="store_true", help="leave the cable supplier's wordmarks and livery off")
 args = ap.parse_args(argv)
 
-model = json.load(open(os.path.join(PLANT, "sk3x1_model.json")))
+model = json.load(open(os.path.join(PLANT, "sw3x1_model.json")))
 coastal = None
 if args.overlay:
     ov = json.load(open(args.overlay))
@@ -481,14 +481,14 @@ if args.style == "drawing":
     ls.select_by_visibility = True
     ls.select_silhouette = ls.select_border = ls.select_crease = True
     if ls.linestyle is None:
-        ls.linestyle = bpy.data.linestyles.new("sk3x1 outline")
+        ls.linestyle = bpy.data.linestyles.new("sw3x1 outline")
     ls.linestyle.color = (0, 0, 0)
     ls.linestyle.alpha = 1
     # below ~1 px Freestyle strokes disappear; 1.6 px at full size
     ls.linestyle.thickness = max(1.2, 1.8 * args.scale / 100)
 
 # ---------------------------------------------------------------------------
-# Cameras (SK-3X1-11: orthographic, 1920 x 1080, sensor fit horizontal, 3% margin)
+# Cameras (SW-3X1-11: orthographic, 1920 x 1080, sensor fit horizontal, 3% margin)
 # ---------------------------------------------------------------------------
 def fit_points(v):
     fit, pts = v["fit"], []

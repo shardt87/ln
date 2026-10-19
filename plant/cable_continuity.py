@@ -1,7 +1,7 @@
 """Cable continuity check: every cable rod end must touch another part (or grade). Prints the loose ends by item."""
 import json,sys
 from collections import Counter,defaultdict
-G=json.load(open('/home/user/ln/plant/sk3x1_model.json'));I={i['id']:i for i in G['items']}
+G=json.load(open('/home/user/ln/plant/sw3x1_model.json'));I={i['id']:i for i in G['items']}
 def bb(p):
     if p['kind'] in('box','prism'):return p['min']+p['max']
     if p['kind']=='rod':

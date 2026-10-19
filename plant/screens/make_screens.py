@@ -2,7 +2,7 @@
 
 High-performance HMI style (ISA-101): neutral grey background, grey equipment, dark values, colour kept for
 alarms and state (US utility convention: red = closed / running, green = open / stopped). The numbers are a
-plausible full-load operating point of the SK-3X1 3x1 plant, illustrative only.
+plausible full-load operating point of the SW-3X1 3x1 plant, illustrative only.
 
 Screens (1600 x 900 base, drawn at scale S): overview, sld, gt1, hrsg1, trend, alarm, acc, grid, cctv. The video
 wall shows four of them across 2 x 2 cubes; those are also written as quarter crops (<name>_q<r><c>.png).
@@ -90,7 +90,7 @@ class C:
 
     def header(self, title, nav):
         self.rect(0, 0, 1600, 44, fill="#3b4247")
-        self.text(16, 8, "SK-3X1 CCPP", 22, "b", "#e8ecee")
+        self.text(16, 8, "SW-3X1 CCPP", 22, "b", "#e8ecee")
         self.text(160, 12, title, 18, "r", "#e8ecee")
         x = 620
         for n in (nav or ["OVERVIEW", "ELECTRICAL", "GT1", "GT2", "GT3", "HRSG", "ST", "ACC", "BOP", "TRENDS", "ALARMS"]):

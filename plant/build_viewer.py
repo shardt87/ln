@@ -2,7 +2,7 @@
 """Inject the model, palette and verification report into
 viewer/template.html -> viewer/index.html.
 
-The coastal variant A (sheet SK-3X1-15: onshore LNG import terminal, jetty,
+The coastal variant A (sheet SW-3X1-15: onshore LNG import terminal, jetty,
 berth and carrier) is merged in as its own layer group with a sea layer and a
 'Coastal: LNG terminal' view; it is off in the other views."""
 import json
@@ -11,7 +11,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 tpl = open(os.path.join(HERE, "viewer", "template.html")).read()
 import sys
 GENERIC = "--generic" in sys.argv     # unbranded build: supplier wordmarks and livery left off
-model = json.load(open(os.path.join(HERE, "sk3x1_model.json")))
+model = json.load(open(os.path.join(HERE, "sw3x1_model.json")))
 if not GENERIC:
     model["decals"] = [d for d in model.get("decals", []) if not d.get("nobrand")]
 if GENERIC:
@@ -27,7 +27,7 @@ COASTAL = "--no-coastal" not in sys.argv   # the sheet-15 marine LNG import term
 ov = {"items": []}
 full = next(v for v in model["views"] if v["k"] == "ALL")
 if COASTAL:
-    ov = json.load(open(os.path.join(HERE, "coastal", "sk3x1_coastal_A.json")))
+    ov = json.load(open(os.path.join(HERE, "coastal", "sw3x1_coastal_A.json")))
     meta = ov["coastal"]
     model["layers"].update(ov["layers"])
     model["layers"]["COASTAL_SEA"] = dict(label="A Sea and shoreline", group="Coastal (sheet 15)")

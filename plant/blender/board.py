@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Presentation board for the SK-3X1 pro renders ("Measured Light").
+"""Presentation board for the SW-3X1 pro renders ("Measured Light").
 
 One sheet, 4800 x 3200 px (plus a PDF at 300 dpi, 16 x 10.67 in):
 - P1 as the dominant plate, P2 / P3 stacked beside it, P4-P6 in a row;
@@ -42,13 +42,13 @@ HERO = {h["k"]: h for n in ("HEROES", "COASTAL_A", "COASTAL_B") for h in _env[n]
 # one board per scene: plates (dominant, two stacked, a row of three), key plan window and apparatus
 BOARDS = {
     "inland": dict(main="P1", right=("P2", "P3"), row=("P4", "P5", "P6"), cones=("P1", "P2", "P3", "P4", "P5", "P6"),
-                   window=(-420, 2540, -520, 2140), overlay=None, sun=(24, 258), out="SK-3X1_presentation_board",
-                   subtitle="SK-3X1  ·  REVISION 14  ·  PRESENTATION PLATES", sheet="SHEET 01 / 01",
+                   window=(-420, 2540, -520, 2140), overlay=None, sun=(24, 258), out="SW-3X1_presentation_board",
+                   subtitle="SW-3X1  ·  REVISION 14  ·  PRESENTATION PLATES", sheet="SHEET 01 / 01",
                    names={"P2": "Transformer bays from the access road"}),
     "coastal": dict(main="C1", right=("C2", "C3"), row=("C5", "F1", "F3"), cones=("C1", "C2", "C3", "C5"),
-                    window=(-600, 3100, -300, 5500), overlay="sk3x1_coastal_A.json", sun=(28, 140), bar=500,
-                    out="SK-3X1-15_coastal_board",
-                    subtitle="SK-3X1-15  ·  REVISION 14  ·  LNG MARINE TERMINAL, COASTAL VARIANT", sheet="SHEET 15 / 16",
+                    window=(-600, 3100, -300, 5500), overlay="sw3x1_coastal_A.json", sun=(28, 140), bar=500,
+                    out="SW-3X1-15_coastal_board",
+                    subtitle="SW-3X1-15  ·  REVISION 14  ·  LNG MARINE TERMINAL, COASTAL VARIANT", sheet="SHEET 15 / 16",
                     names={"C2": "LNG carrier at the berth", "F1": "Variant B: FSRU and carrier, ship to ship",
                            "F3": "Variant B: FSRU 6.4 km offshore"}),
 }
@@ -80,7 +80,7 @@ def caption(d, x, y, key, title, width):
 
 
 def key_plan(d, box, B):
-    model = json.load(open(os.path.join(PLANT, "sk3x1_model.json")))
+    model = json.load(open(os.path.join(PLANT, "sw3x1_model.json")))
     coastal = None
     if B["overlay"]:
         ov = json.load(open(os.path.join(PLANT, "coastal", B["overlay"])))

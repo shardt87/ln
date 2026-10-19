@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify sk3x1_model.json against the SK-3X1 Rev 14 drawing set.
+"""Verify sw3x1_model.json against the SW-3X1 Rev 14 drawing set.
 
 Checks
   1. Footprints: every shape on sheet 01 (and every cabinet / room on the
@@ -22,8 +22,8 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TOL = 0.6
-model = json.load(open(os.path.join(HERE, "sk3x1_model.json")))
-ref = json.load(open(os.path.join(HERE, "reference", "sk3x1_rev14_reference.json")))
+model = json.load(open(os.path.join(HERE, "sw3x1_model.json")))
+ref = json.load(open(os.path.join(HERE, "reference", "sw3x1_rev14_reference.json")))
 items = {it["id"]: it for it in model["items"]}
 
 
@@ -74,11 +74,11 @@ for r in ref["sheet01_rects"]:
     if r["fill"] in ZONE_FILLS:
         continue
     m = plan_match(r["x"][0], r["x"][1], r["y"][0], r["y"][1])
-    rows.append(dict(sheet="SK-3X1-01", x=r["x"], y=r["y"], fill=r["fill"], match=m,
+    rows.append(dict(sheet="SW-3X1-01", x=r["x"], y=r["y"], fill=r["fill"], match=m,
                      name=items[m]["name"] if m else None))
 for r in ref["sheet05_rects"]:
     m = plan_match(r["x"][0], r["x"][1], r["y"][0], r["y"][1])
-    rows.append(dict(sheet="SK-3X1-05", x=r["x"], y=r["y"], fill=r["fill"], match=m,
+    rows.append(dict(sheet="SW-3X1-05", x=r["x"], y=r["y"], fill=r["fill"], match=m,
                      name=items[m]["name"] if m else None))
 miss = [r for r in rows if not r["match"]]
 results["footprints"] = dict(checked=len(rows), matched=len(rows) - len(miss), missing=miss,

@@ -267,7 +267,7 @@ One zone per cycle. Each cycle:
 - E67 re-shot at the user's chosen viewer angle: just above the MV tray, looking north-east across the legends to HRSG-2 and its stack; hall cladding see-through in this render (camera option hall_alpha), high-bay lights on.
 - Cover shot E68 (portrait 1545 x 2000): from the LV tray on the CCS rack (y 1133, EL 28) looking up at Absorber B with A beyond and the BF-B flue duct; legends (ARMOR-X MC-HL, Type TC-ER) printed on the rack-tray cables x 726-856; per-camera near clip (clip) for close shots.
 - ARMOR-X MC-HL (cable_mc) drawn as it is: black PVC jacket (not bare metal) with the corrugated welded aluminium armor showing as fine ribs (CCS rack stretch x 708-800); cover re-rendered.
-- Deck-style CCS section divider (blender/deck_divider.py): 16:9 slide matching the user's Southwire x Anixter/Wesco PowerGen deck (Barlow Condensed, charcoal / copper, logo, section number 14 = CCS zone in the deck's plant model, tag box, item rules, watermark, footer), photo E69 (1170 x 1080) under the dark diagonal. Output renders/deck/SK-3X1_divider_ccs.png / .pdf.
+- Deck-style CCS section divider (blender/deck_divider.py): 16:9 slide matching the user's Southwire x Anixter/Wesco PowerGen deck (Barlow Condensed, charcoal / copper, logo, section number 14 = CCS zone in the deck's plant model, tag box, item rules, watermark, footer), photo E69 (1170 x 1080) under the dark diagonal. Output renders/deck/SW-3X1_divider_ccs.png / .pdf.
 - 02 Gas Power divider re-shot with cable leading the frame (E71): legends and ARMOR-X ribs on the outdoor R1 -> hall MV tray (x 560, y 560-640, EL 48), looking north down the cables to HRSG 1 and its stack.
 
 ### Render quality pass
@@ -339,7 +339,7 @@ One zone per cycle. Each cycle:
 
 ### Switchgear rooms at LOD 3: R1 and the R4 VFD e-house (`swgr_rooms.py`)
 User review: the switchgear rooms were plain boxes. The lineups keep their drawn footprints and heights
-(SK-3X1-05, -03, -11 view B2); the room around them is now fitted out as a real electrical room.
+(SW-3X1-05, -03, -11 view B2); the room around them is now fitted out as a real electrical room.
 - **15 kV / 5 kV metal-clad (SWGR-13.8-1/2/3, SWGR-4.16-A/B):** 36 in two-high cubicles: breaker door with viewing
   window, racking port and handle; relay door with a numerical protection relay (LCD, target LEDs, keys), power
   meter, open / closed / charged lamps and control switch; mimic bus with drops; cubicle nameplates; base channel;
@@ -362,7 +362,7 @@ User review: the switchgear rooms were plain boxes. The lineups keep their drawn
   audit CLEAN, coastal PASS. Viewer v96 (views B and B2 show the rooms).
 
 ### Control / admin building: main control room and offices (`control_room.py`, `screens/make_screens.py`)
-User request: a real control room with SCADA and screens. The building keeps its SK-3X1-12 footprint and height;
+User request: a real control room with SCADA and screens. The building keeps its SW-3X1-12 footprint and height;
 the solid box is now walls, a roof slab and a suspended ceiling (layer `CR_ROOF`), with the rooms on `CR_INTERIOR`
 (off in the plant views like the R1 / R4 interiors; view **B3 Control room** and camera E88 lift the roof).
 - **Main control room** (east end, 43 x 49 ft): a 16-cube video wall (8 x 2, ~70 in cubes) shows the plant overview,
@@ -990,8 +990,8 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
 
 ### Turbine-island layouts: slide instead of a model variant (user decision)
 - The alternative-layout viewer option (GTs outdoors in enclosures, ST building) was reverted at the user's request.
-- Instead: a deck slide `renders/deck/SK-3X1_turbine_island_layouts.png` (`blender/slide_turbine_island.py`):
-  common hall (SK-3X1) / GTs outdoors with an ST building / everything outdoors, each with an elevation sketch,
+- Instead: a deck slide `renders/deck/SW-3X1_turbine_island_layouts.png` (`blender/slide_turbine_island.py`):
+  common hall (SW-3X1) / GTs outdoors with an ST building / everything outdoors, each with an elevation sketch,
   where, why, trade-off and what it asks of cable, plus the key difference.
 - The "Common turbine hall" item info (click in the viewer) now carries a short layout note on the outdoor option.
 

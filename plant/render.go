@@ -1,4 +1,4 @@
-// Command render draws the SK-3X1 3x1 combined-cycle plant model as vector
+// Command render draws the SW-3X1 3x1 combined-cycle plant model as vector
 // line art with ln.
 //
 // Usage (from the repository root):
@@ -7,8 +7,8 @@
 //	go run ./plant -view B         # one view (keys from the model's view list)
 //	go run ./plant -list           # list the views
 //
-// Views and their layer lists come from sk3x1_model.json, which follows the
-// camera plan on sheet SK-3X1-11 (e.g. view B hides R1_ROOF and R1_WALL_E).
+// Views and their layer lists come from sw3x1_model.json, which follows the
+// camera plan on sheet SW-3X1-11 (e.g. view B hides R1_ROOF and R1_WALL_E).
 // Output is written as SVG and PNG to plant/renders/.
 package main
 
@@ -224,13 +224,13 @@ func frustum(a, b ln.Vector, r1, r2 float64) ln.Shape {
 }
 
 func main() {
-	dir := flag.String("dir", "plant", "directory holding sk3x1_model.json")
+	dir := flag.String("dir", "plant", "directory holding sw3x1_model.json")
 	only := flag.String("view", "", "render one view by key (see -list)")
 	list := flag.Bool("list", false, "list the views and exit")
 	size := flag.Float64("size", 2400, "output width in pixels (height is 2/3)")
 	flag.Parse()
 
-	data, err := os.ReadFile(filepath.Join(*dir, "sk3x1_model.json"))
+	data, err := os.ReadFile(filepath.Join(*dir, "sw3x1_model.json"))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "read model:", err)
 		os.Exit(1)
@@ -266,7 +266,7 @@ func main() {
 		}
 		scene := build(&m, v, eye, clip)
 		paths := scene.Render(eye, center, ln.Vector{Z: 1}, width, height, fovy, 1, 20000, 0.25)
-		name := "sk3x1_view_" + strings.ToLower(v.K)
+		name := "sw3x1_view_" + strings.ToLower(v.K)
 		base := filepath.Join(out, name)
 		if err := paths.WriteToSVG(base+".svg", width, height); err != nil {
 			fmt.Fprintln(os.Stderr, err)

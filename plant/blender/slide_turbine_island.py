@@ -1,8 +1,8 @@
 """Deck slide: three ways to house the turbine island (common hall / GTs outdoors with an ST building / all outdoors),
 with simple elevation sketches and the key differences, including what each asks of cable.
 
-    python3 plant/blender/slide_turbine_island.py      # -> plant/renders/deck/SK-3X1_turbine_island_layouts.png
-Typical practice, not engineered; SK-3X1 follows the drawing set (common hall).
+    python3 plant/blender/slide_turbine_island.py      # -> plant/renders/deck/SW-3X1_turbine_island_layouts.png
+Typical practice, not engineered; SW-3X1 follows the drawing set (common hall).
 """
 import os
 
@@ -97,7 +97,7 @@ def sketch(d, kind, X, Y, Wd=560, Hd=300):
 
 
 COLS = [
-    ("1  COMMON TURBINE HALL", "SK-3X1 (this campus)",
+    ("1  COMMON TURBINE HALL", "SW-3X1 (this campus)",
      [("Where", "Cold climates; noise-sensitive or urban sites; Europe, Japan, northern US and Canada"),
       ("Why", "One bridge crane serves every unit; outages in any weather; noise contained; shared laydown"),
       ("Trade-off", "Largest building, highest cost, longer build; gas indoors needs ventilation, detection, fire separation"),
@@ -167,4 +167,4 @@ def build(out):
 
 
 if __name__ == "__main__":
-    print(build(os.path.join(PLANT, "renders", "deck", "SK-3X1_turbine_island_layouts.png")))
+    print(build(os.path.join(PLANT, "renders", "deck", "SW-3X1_turbine_island_layouts.png")))

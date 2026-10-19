@@ -9,7 +9,7 @@ import sys
 from collections import defaultdict
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-G = json.load(open(os.path.join(HERE, "sk3x1_model.json")))
+G = json.load(open(os.path.join(HERE, "sw3x1_model.json")))
 I = {i["id"]: i for i in G["items"]}
 
 

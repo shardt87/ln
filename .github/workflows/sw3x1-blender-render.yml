@@ -1,13 +1,13 @@
-# Verify the SK-3X1 plant model against the drawing, then render the
-# SK-3X1-11 camera views in Blender (Cycles + Freestyle) and publish them
+# Verify the SW-3X1 plant model against the drawing, then render the
+# SW-3X1-11 camera views in Blender (Cycles + Freestyle) and publish them
 # as build artifacts together with the .blend and OBJ files.
-name: SK-3X1 Blender renders
+name: SW-3X1 Blender renders
 
 on:
   push:
     paths:
       - "plant/**"
-      - ".github/workflows/sk3x1-blender-render.yml"
+      - ".github/workflows/sw3x1-blender-render.yml"
   pull_request:
     paths:
       - "plant/**"
@@ -27,7 +27,7 @@ on:
         default: "100"
 
 concurrency:
-  group: sk3x1-render-${{ github.ref }}
+  group: sw3x1-render-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -42,7 +42,7 @@ jobs:
       - name: Rebuild model and check it is committed
         run: |
           python3 plant/build_model.py
-          git diff --exit-code -- plant/sk3x1_model.json || (echo "::error::sk3x1_model.json is stale; run plant/build_model.py" && exit 1)
+          git diff --exit-code -- plant/sw3x1_model.json || (echo "::error::sw3x1_model.json is stale; run plant/build_model.py" && exit 1)
       - name: Verify (footprints, heights, sheet-09 screen, clashes, bounds)
         run: python3 plant/verify.py
       - name: Site audit (route ends, unconnected units, floating items, leftovers, tags)
@@ -123,9 +123,9 @@ jobs:
           OVERLAY: ${{ matrix.overlay }}
           SET: ${{ matrix.set }}
         run: |
-          python plant/blender/SK-3X1_Rev14_blender_build.py \
+          python plant/blender/SW-3X1_Rev14_blender_build.py \
             --views "$VIEWS" --style ${{ matrix.style }} --samples "$SAMPLES" --scale "$SCALE" \
-            ${OVERLAY:+--overlay plant/coastal/sk3x1_coastal_$OVERLAY.json} ${SET:+--set $SET} \
+            ${OVERLAY:+--overlay plant/coastal/sw3x1_coastal_$OVERLAY.json} ${SET:+--set $SET} \
             --out out 2>&1 | grep -E "^(scene built|rendered)|Error|Traceback"
           python plant/blender/annotate.py out
       - uses: actions/upload-artifact@v4
@@ -162,13 +162,13 @@ jobs:
           python plant/blender/board.py renders coastal
       - name: Save the Blender scene (all collections, all cameras)
         run: |
-          python plant/blender/SK-3X1_Rev14_blender_build.py --no-render --views A,B,B2,C,H,O1,O2,O3,O4,O5,ALL \
-            --out renders/scene --blend renders/SK-3X1_Rev14.blend 2>&1 | grep -E "scene built|saved"
+          python plant/blender/SW-3X1_Rev14_blender_build.py --no-render --views A,B,B2,C,H,O1,O2,O3,O4,O5,ALL \
+            --out renders/scene --blend renders/SW-3X1_Rev14.blend 2>&1 | grep -E "scene built|saved"
           python plant/export_obj.py
-          cp plant/sk3x1_model.obj plant/sk3x1_model.mtl renders/
+          cp plant/sw3x1_model.obj plant/sw3x1_model.mtl renders/
       - name: Job summary
         run: python plant/blender/summary.py renders >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         with:
-          name: sk3x1-renders
+          name: sw3x1-renders
           path: renders/*

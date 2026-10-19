@@ -1,4 +1,4 @@
-"""'Hero shots' slide (16:9, PNG + PDF): seven renders of the SK-3X1 model in the deck style of slide_modular.py.
+"""'Hero shots' slide (16:9, PNG + PDF): seven renders of the SW-3X1 model in the deck style of slide_modular.py.
 The campus aerial is the large tile; the others are cinematic shots of the power block and its cable,
 with the HRSGs and stacks in view, and the main control room.
 
@@ -17,7 +17,7 @@ W, H = 2000 * S, 1125 * S
 NAVY, GREY, COPPER, BG, RULE = (31, 45, 61), (98, 104, 110), (166, 84, 40), (247, 247, 245), (214, 214, 210)
 # (camera, caption, focus x, focus y): focus is the crop centre as a fraction of the render
 TILES = [
-    ("E123", "The SK-3X1 campus: 3x1 combined cycle, carbon capture, modular yard and the BTM campus", .5, .5),
+    ("E123", "The SW-3X1 campus: 3x1 combined cycle, carbon capture, modular yard and the BTM campus", .5, .5),
     ("E2", "Long lens from the west road: carbon capture and the HRSG stacks", .5, .5),
     ("E1", "The three HRSG stacks from beside the absorbers", .5, .45),
     ("E71", "ARMOR-X and MV-105 in the R1 tray, HRSG 1 ahead", .5, .62),
@@ -54,7 +54,7 @@ def tile(img, src, box, fx, fy, caption):
 def main(rdir, stem):
     img = Image.new("RGB", (W, H), BG)
     d = ImageDraw.Draw(img)
-    d.text((73 * S, 34 * S), "SK-3X1 IN 3D", font=f("DejaVuSans-Bold.ttf", 40), fill=NAVY)
+    d.text((73 * S, 34 * S), "SW-3X1 IN 3D", font=f("DejaVuSans-Bold.ttf", 40), fill=NAVY)
     d.text((74 * S, 92 * S), "The campus from above, the cable that connects the power block, and the control room that runs it.",
            font=f("DejaVuSans.ttf", 20), fill=GREY)
     gx0, gy0, gx1, gy1, g = 37 * S, 140 * S, 1963 * S, 1015 * S, 10 * S
@@ -75,7 +75,7 @@ def main(rdir, stem):
     for (k, cap, fx, fy), box in zip(TILES, boxes):
         tile(img, os.path.join(rdir, f"{k}_pro_clean.jpg"), box, fx, fy, cap)
     d.line([(73 * S, 1038 * S), (1927 * S, 1038 * S)], fill=RULE, width=S)
-    d.text((73 * S, 1052 * S), "Rendered from the SK-3X1 3D model (Rev 14). Conceptual illustration: not engineered.",
+    d.text((73 * S, 1052 * S), "Rendered from the SW-3X1 3D model (Rev 14). Conceptual illustration: not engineered.",
            font=f("DejaVuSans.ttf", 17), fill=GREY)
     d.text((73 * S, 1084 * S), "© 2026 Southwire Company, LLC. All rights reserved.", font=f("DejaVuSans.ttf", 15),
            fill=GREY)
@@ -85,4 +85,4 @@ def main(rdir, stem):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else os.path.join(PLANT, "renders", "deck", "SK-3X1_hero_shots"))
+    main(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else os.path.join(PLANT, "renders", "deck", "SW-3X1_hero_shots"))

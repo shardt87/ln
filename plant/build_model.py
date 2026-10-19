@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Build the SK-3X1 Rev 14 3D coordinate model.
+"""Build the SW-3X1 Rev 14 3D coordinate model.
 
-Source: "SK-3X1 Drawing Set Rev 14" (3x1 combined-cycle plant, 16 sheets).
+Source: "SW-3X1 Drawing Set Rev 14" (3x1 combined-cycle plant, 16 sheets).
 Plan coordinates (X east, Y north, feet, origin at the SW corner of the
 2,420 x 1,920 ft compound) come from the vector geometry of sheets
-SK-3X1-01 (base site), -02 (optional systems) and -05 (R1 floor plan).
-Elevations come from SK-3X1-09 (hall section), -12 (dimension review) and
+SW-3X1-01 (base site), -02 (optional systems) and -05 (R1 floor plan).
+Elevations come from SW-3X1-09 (hall section), -12 (dimension review) and
 -13 (height comparison). Anything without a published value uses a typical
 value and is tagged basis="typical".
 
@@ -15,11 +15,11 @@ The model has two levels:
   parts  - the carved geometry of each item (boxes, rods / cones, A-frame
            prisms and 8-vertex lofts), each pointing at its item.
 
-Layers follow the Blender collections on SK-3X1-11, so the view
+Layers follow the Blender collections on SW-3X1-11, so the view
 definitions on that sheet (e.g. view B hides R1_ROOF and R1_WALL_E) map
 one-to-one.
 
-Output: sk3x1_model.json, consumed by render.go (ln line art),
+Output: sw3x1_model.json, consumed by render.go (ln line art),
 viewer/index.html (Three.js), export_obj.py and verify.py.
 
 Conceptual illustration. Not engineered. Not for construction.
@@ -38,7 +38,7 @@ _cur = None
 # Builder primitives
 # ---------------------------------------------------------------------------
 def item(layer, name, fp, z, *, tag="", area="", info="", basis="drawing",
-         sheet="SK-3X1-01", shape="rect", register=True):
+         sheet="SW-3X1-01", shape="rect", register=True):
     """Start an equipment item. fp = (x0, x1, y0, y1) drawn footprint (for a
     circle: the bounding square), z = (z0, z1) envelope. Parts added after
     this call belong to it."""
@@ -249,7 +249,7 @@ def column_grid(xs, ys, z1, s=1.5, c="steel"):
 
 
 # ---------------------------------------------------------------------------
-# SITE (SK-3X1-01)
+# SITE (SW-3X1-01)
 # ---------------------------------------------------------------------------
 L = "SITE"
 item(L, "Compound (2,420 x 1,920 ft, 107 acres)", (0, 2420, 0, 1920), (0, 0), register=False,
@@ -265,7 +265,7 @@ for (x0, x1, y0, y1, n) in [
         (1490, 2400, 1650, 1675, "30 ft fuel road (LNG trucks)"),
         (1950, 1975, 1400, 1650, "Fuel-yard link road"), (484, 508, 560, 830, "24 ft lane")]:
     pad(L, n, x0, x1, y0, y1, "road", z1=0.25 + 0.012 * len(items))   # staggered: no coplanar crossings
-pad(L, "Removal apron", 400, 480, 410, 560, "road", z1=0.25, sheet="SK-3X1-10",
+pad(L, "Removal apron", 400, 480, 410, 560, "road", z1=0.25, sheet="SW-3X1-10",
     info="GT, generator and ST leave the laydown bay through the west door onto a trailer.")
 item(L, "Perimeter fence (8 ft)", (0, 2420, 0, 1920), (0, 8), basis="typical", register=False)
 for (x0, x1, y0, y1) in [(0, 2420, 0, 0.5), (0, 1465, 1919.5, 1920), (1505, 2420, 1919.5, 1920), (0, 0.5, 0, 270),
@@ -275,19 +275,19 @@ for (x0, x1, y0, y1) in [(0, 2420, 0, 0.5), (0, 1465, 1919.5, 1920), (1505, 2420
 # gate posts, and the two swing leaves parked open against the fence inside
 B(1464, 1465.5, 1918.5, 1920, 0, 10, "steel"); B(1504.5, 1506, 1918.5, 1920, 0, 10, "steel")
 B(1446, 1464, 1918.6, 1919, 0, 8, "fence"); B(1506, 1524, 1918.6, 1919, 0, 8, "fence")
-solid(L, "Gatehouse", 277, 300, 305, 325, 0, 12, "building", area="F", sheet="SK-3X1-12",
+solid(L, "Gatehouse", 277, 300, 305, 325, 0, 12, "building", area="F", sheet="SW-3X1-12",
       info="Keadby 3 DCO: gatehouse 6 x 7 x 4 m.")
 B(0, 1.5, 270, 272, 0, 10, "steel"); B(0, 1.5, 298, 300, 0, 10, "steel")
 
 # ---------------------------------------------------------------------------
-# A POWER BLOCK (SK-3X1-01, -03, -09, -10, -12, -13)
+# A POWER BLOCK (SW-3X1-01, -03, -09, -10, -12, -13)
 # ---------------------------------------------------------------------------
 L = "BASE_POWER_BLOCK"
 GX = [630, 790, 950]                    # GT centrelines
 
 # Turbine hall shell: walls in BASE_POWER_BLOCK, roof in HALL_ROOF
 item(L, "Common turbine hall", (480, 1100, 370, 560), (0, 101), tag="HALL", area="A",
-     sheet="SK-3X1-09",
+     sheet="SW-3X1-09",
      info="Main bay y 404-560 with roof EL 98-101 (raised 6 ft in Rev 09 so the ST lift "
      "clears). Bridge-crane runway y 404-556, bridge travel EL 84-96, hook max EL 82. "
      "South inlet gallery y 370-404, roof EL 60, holds GCBs and IPB outside crane coverage. "
@@ -316,17 +316,17 @@ for x in range(482, 1101, 44):
 for y in (404, 556):
     B(482, 1098, y - 1.5, y + 1.5, 82, 84, "steel")
 item(L, "Bridge crane (parked over laydown bay)", (486, 540, 404, 556), (84, 96), tag="CRANE",
-     area="A", sheet="SK-3X1-09", basis="typical",
+     area="A", sheet="SW-3X1-09", basis="typical",
      info="Covers all bays plus the laydown bay; hook max EL 82. Capacity is vendor data "
-     "(unresolved requirement on SK-3X1-09).")
+     "(unresolved requirement on SW-3X1-09).")
 B(505, 511, 404, 556, 86, 96, "crane"); B(525, 531, 404, 556, 86, 96, "crane")
 B(503, 533, 404, 410, 84, 96, "crane"); B(503, 533, 550, 556, 84, 96, "crane")
 B(510, 526, 476, 486, 88, 95, "crane")  # trolley
 R((518, 481, 88), (518, 481, 82.5), 0.4, "steel"); B(515, 521, 478, 484, 81, 82.5, "crane")
 
-item(L, "Laydown bay (floor)", (480, 560, 370, 560), (0, 0.3), area="A", sheet="SK-3X1-10", register=False)
+item(L, "Laydown bay (floor)", (480, 560, 370, 560), (0, 0.3), area="A", sheet="SW-3X1-10", register=False)
 B(481, 560, 371, 559, 0, 0.3, "pad")
-item(L, "Turbine deck EL 20", (560, 1100, 404, 556), (0, 20), area="A", sheet="SK-3X1-12",
+item(L, "Turbine deck EL 20", (560, 1100, 404, 556), (0, 20), area="A", sheet="SW-3X1-12",
      info="GTs, generators, ST and their skids sit on the EL 20 deck (Rev 10 correction).")
 B(560, 1099, 404, 556, 0, 20, "concrete")
 
@@ -334,7 +334,7 @@ for i, gx in enumerate(GX, start=1):
     dx = gx - 630
     # --- gas turbine: plenum (south, cold end) -> compressor -> combustors -> turbine -> diffuser
     item(L, f"GT{i}: H-class gas turbine (60 Hz)", (617 + dx, 643 + dx, 455, 540), (20, 38),
-         tag=f"GT{i}", area="A", basis="vendor", sheet="SK-3X1-12",
+         tag=f"GT{i}", area="A", basis="vendor", sheet="SW-3X1-12",
          info="Siemens SGT6-8000H class engine about 34 x 14 x 14 ft; 26 x 85 ft including the "
          "inlet plenum and exhaust diffuser. Top EL 38, lifted height 18 ft. Cold-end drive: "
          "inlet plenum and generator at the south end, exhaust north into the HRSG.")
@@ -352,7 +352,7 @@ for i, gx in enumerate(GX, start=1):
             R((cxk, 495, czk), (cxk, 505, czk), 1.1, "steel", seg=10)
     # --- generator (south), exhaust duct through the north wall
     item(L, f"GTG-{i}: GT generator", (622 + dx, 638 + dx, 410, 455), (20, 36), tag=f"GTG-{i}",
-         area="A", basis="typical", sheet="SK-3X1-04",
+         area="A", basis="typical", sheet="SW-3X1-04",
          info="21 kV (assumed); typical H2-cooled 350-450 MVA; 16 x 45 ft. Lifted height 16 ft.")
     B(622 + dx, 638 + dx, 410, 455, 20, 21.5, "steel")
     R((gx, 414, 28.5), (gx, 452, 28.5), 7.0, "machine", seg=28)
@@ -363,20 +363,20 @@ for i, gx in enumerate(GX, start=1):
     B(620 + dx, 640 + dx, 540, 556, 21, 38, "duct")
     # --- GT skids on the deck
     solid(L, f"GT{i} aux: lube oil, hydraulics, enclosure fans", 661 + dx, 675 + dx, 470, 505, 20, 30,
-          "equip", tag=f"GT{i} aux", area="A", sheet="SK-3X1-03",
+          "equip", tag=f"GT{i} aux", area="A", sheet="SW-3X1-03",
           info=f"MCC-GT{i} in R1 (route LV-GTAUX-{i}).")
     solid(L, f"FS-GT{i}: CO2 fire-suppression skid", 662 + dx, 674 + dx, 510, 534, 20, 28, "red",
-          tag=f"FS-GT{i}", area="A", sheet="SK-3X1-03",
+          tag=f"FS-GT{i}", area="A", sheet="SW-3X1-03",
           info="Detection, release and interlocks; 480 V + 24 V DC; hall control tray.")
     solid(L, f"WASH-GT{i}: compressor water-wash skid", 584 + dx, 596 + dx, 475, 495, 20, 27,
-          "equip", tag=f"WASH-GT{i}", area="A", sheet="SK-3X1-03")
+          "equip", tag=f"WASH-GT{i}", area="A", sheet="SW-3X1-03")
     solid(L, f"GT{i} removable plenum spool", 643 + dx, 658 + dx, 440, 466, 23, 37, "duct",
-          tag=f"SPOOL-{i}", area="A", sheet="SK-3X1-10",
+          tag=f"SPOOL-{i}", area="A", sheet="SW-3X1-10",
           info="Removed before any GT lift; touches the GT lift column by design.")
 
     # --- HRSG: casing, drums, stair, inlet transition, outlet breeching
     item(L, f"HRSG {i} + SCR (3P reheat, horizontal)", (595 + dx, 665 + dx, 600, 760), (0, 100),
-         tag=f"HRSG-{i}", area="A", sheet="SK-3X1-13",
+         tag=f"HRSG-{i}", area="A", sheet="SW-3X1-13",
          info="70 x 160 ft envelope, top EL 100 (501G HRSG ~70 ft; largest casing 85 ft): a 130 ft casing "
          "behind a long inlet diffuser, the stack tight at the outlet. Three-pressure reheat with SCR. HP, IP "
          "and LP drums on the roof steel.")
@@ -403,7 +403,7 @@ for i, gx in enumerate(GX, start=1):
     for sx in (612, 648):                                     # safety-valve silencers
         R((sx + dx, 715, 89.2), (sx + dx, 715, 100), 1.0, "steel", seg=10)
     item(L, f"HRSG {i} inlet transition duct", (595 + dx, 665 + dx, 560, 629), (2, 96), area="A",
-         sheet="SK-3X1-01", info="Expands the GT exhaust into the HRSG face (SK-3X1-09 'exhaust transition').")
+         sheet="SW-3X1-01", info="Expands the GT exhaust into the HRSG face (SW-3X1-09 'exhaust transition').")
     # inlet diffuser: a long transition from the GT exhaust to the casing face (about 70 ft on H-class units)
     loft_y(560, (620 + dx, 640 + dx, 21, 38), 629, (598 + dx, 662 + dx, 3, 84), "hrsg")
     item(L, f"HRSG {i} outlet breeching", (597 + dx, 663 + dx, 759, 786), (2, 85), area="A",
@@ -415,7 +415,7 @@ for i, gx in enumerate(GX, start=1):
     loft_y(779, (621 + dx, 639 + dx, 18, 80), 786, (621 + dx, 639 + dx, 18, 80), "hrsg")
     # --- stack with CEMS platform
     item(L, f"HRSG {i} stack", (619 + dx, 641 + dx, 779, 801), (0, 180), tag=f"STK-{i}", area="A",
-         sheet="SK-3X1-13", shape="circle",
+         sheet="SW-3X1-13", shape="circle",
          info="22 ft dia x 180 ft (US H-class filings: OCEC 149, Otay Mesa 160, Cosumnes 165, "
          "Smarr 180). CEMS sampling platform at about EL 100.")
     V(gx, 790, 11, 0, 178, "stack", seg=36)
@@ -423,10 +423,10 @@ for i, gx in enumerate(GX, start=1):
     for zp in (100, 168):
         V(gx, 790, 14.5, zp, zp + 1.2, "grating", seg=36)
     solid(L, f"CEMS shelter, HRSG {i}", 648 + dx, 664 + dx, 806, 820, 0, 12, "ehouse", tag=f"CEMS-{i}",
-          area="A", sheet="SK-3X1-03")
+          area="A", sheet="SW-3X1-03")
     # --- pumps and blowers at the HRSG
     item(L, f"BFP-{i}A/B: boiler feed pumps (13.8 kV DOL)", (675 + dx, 708 + dx, 615, 660), (0, 10),
-         tag=f"BFP-{i}", area="A", sheet="SK-3X1-03",
+         tag=f"BFP-{i}", area="A", sheet="SW-3X1-03",
          info=f"Two pumps, 13.8 kV, MV breaker DOL, from R1 SWGR-13.8-{i} via route MV-BFP-{i} "
          "(grade -> +36 at R1 wall, rack tier +36, drop to +10 at HRSG steel).")
     B(675 + dx, 708 + dx, 615, 660, 0, 1, "concrete")
@@ -435,7 +435,7 @@ for i, gx in enumerate(GX, start=1):
         R((680 + dx, yy, 6), (692 + dx, yy, 6), 3.2, "motor", seg=18)    # motor
         R((693 + dx, yy, 6), (703 + dx, yy, 6), 2.4, "pump", seg=16)     # barrel pump
     item(L, f"SCRB-{i}A/B: SCR dilution-air blowers", (675 + dx, 700 + dx, 705, 725), (0, 8),
-         tag=f"SCRB-{i}", area="A", sheet="SK-3X1-03",
+         tag=f"SCRB-{i}", area="A", sheet="SW-3X1-03",
          info=f"480 V, MCC starters in R2{'ABC'[i-1]} (LV-SCR-{i}).")
     B(675 + dx, 700 + dx, 705, 725, 0, 1, "concrete")
     for yy in (710, 720):
@@ -444,7 +444,7 @@ for i, gx in enumerate(GX, start=1):
 
 # Steam turbine train
 item(L, "ST: steam turbine (HP/IP + LP), ACC plant", (1020, 1080, 460, 552), (20, 46), tag="ST",
-     area="A", basis="typical", sheet="SK-3X1-12",
+     area="A", basis="typical", sheet="SW-3X1-12",
      info="Top EL 46; lifted as casing halves / rotors (14 ft), not assembled. LP hoods govern "
      "width. Side exhaust east to the ACC through the 26 ft ST exhaust duct.")
 B(1020, 1080, 460, 552, 20, 21.5, "steel")
@@ -452,19 +452,19 @@ R((1050, 552, 32), (1050, 518, 32), 7.0, "machine", r2=10.5, seg=28)
 B(1024, 1076, 462, 516, 21.5, 40, "machine")
 P(1024, 1076, 462, 516, 40, 46, "machine", ridge="y")
 item(L, "STG: steam-turbine generator", (1041, 1059, 410, 460), (20, 38), tag="STG", area="A",
-     basis="typical", sheet="SK-3X1-04", info="21 kV (assumed), 550-650 MVA typical.")
+     basis="typical", sheet="SW-3X1-04", info="21 kV (assumed), 550-650 MVA typical.")
 B(1041, 1059, 410, 460, 20, 21.5, "steel")
 R((1050, 414, 29.5), (1050, 458, 29.5), 8.2, "machine", seg=28)
 B(1042, 1058, 428, 444, 21.5, 38, "machine")
 solid(L, "ST aux: lube oil, turning gear, EHC", 1082, 1098, 470, 505, 20, 30, "equip", tag="ST aux",
-      area="A", sheet="SK-3X1-03", info="480 V MCC in R3 (LV-ST).")
+      area="A", sheet="SW-3X1-03", info="480 V MCC in R3 (LV-ST).")
 item(L, "ST exhaust duct (26 ft)", (1080, 1130, 487, 513), (31, 57), tag="ST exhaust", area="A",
-     sheet="SK-3X1-12", info="ST exhaust duct set to 26 ft diameter (Rev 10); side exhaust from the LP "
+     sheet="SW-3X1-12", info="ST exhaust duct set to 26 ft diameter (Rev 10); side exhaust from the LP "
      "casing east through the hall wall, above the ST aux skid.")
 B(1076, 1080, 489, 511, 31, 46, "duct")
 R((1080, 500, 44), (1130, 500, 44), 13, "duct", seg=32)
 item(L, "ACC main steam duct, manifold and street risers", (1130, 1450, 359, 513), (31, 125), area="B",
-     sheet="SK-3X1-13", basis="typical",
+     sheet="SW-3X1-13", basis="typical",
      info="Main duct continues under the fan deck (clear of the 40 ft column grid), turns south to a "
      "manifold along the ACC south edge, and rises at each street end into the street header, so "
      "no duct passes through the fans. Hunterstown main duct 23 ft; arrangement typical.")
@@ -475,13 +475,13 @@ for yy in (420, 460):
     B(1146, 1154, yy - 3, yy + 3, 0, 31, "steel")
 
 # ---------------------------------------------------------------------------
-# Filter houses and inlet ducts (SK-3X1-09, -10)
+# Filter houses and inlet ducts (SW-3X1-09, -10)
 # ---------------------------------------------------------------------------
 L = "BASE_INLET_AIR"
 for i, gx in enumerate(GX, start=1):
     dx = gx - 630
     item(L, f"FH-{i}: GT inlet filter house on its own frame", (588 + dx, 672 + dx, 366, 403),
-         (0, 135), tag=f"FH-{i}", area="A", sheet="SK-3X1-09",
+         (0, 135), tag=f"FH-{i}", area="A", sheet="SW-3X1-09",
          info="Casing EL 100-135 on six columns: three outside the gallery wall and three on the "
          "runway column line, so nothing cantilevers over the main roof. Filter elements "
          "change from the south platform at EL 108 via the stair tower; a hoist beam lowers "
@@ -498,21 +498,21 @@ for i, gx in enumerate(GX, start=1):
     B(588 + dx, 672 + dx, 356, 366, 107, 108, "grating")      # platform EL 108
     B(588 + dx, 672 + dx, 356, 356.4, 108, 111.5, "steel")    # handrail
     B(600 + dx, 700 + dx, 352.5, 354, 114, 115.5, "steel")    # hoist beam (to landing, east)
-    item(L, f"FH-{i} stair tower", (678 + dx, 688 + dx, 352, 368), (0, 111), area="A", sheet="SK-3X1-10",
+    item(L, f"FH-{i} stair tower", (678 + dx, 688 + dx, 352, 368), (0, 111), area="A", sheet="SW-3X1-10",
          info="Stair to the filter platform at EL 108 (sheet 10).")
     B(678 + dx, 688 + dx, 352, 368, 0, 111, "stair")
     B(672 + dx, 678 + dx, 356, 362, 107, 108, "grating")
     item(L, f"FH-{i} hoist landing + truck access", (692 + dx, 707 + dx, 300, 366), (0, 0.5), area="A",
-         sheet="SK-3X1-10", info="Filter elements lowered by the hoist beam to this landing; truck access "
+         sheet="SW-3X1-10", info="Filter elements lowered by the hoist beam to this landing; truck access "
          "from the access road.")
     B(692 + dx, 707 + dx, 338, 366, 0, 0.5, "amber")
     B(692 + dx, 707 + dx, 300, 338, 0, 0.3, "road")
     item(L, f"Gallery door apron, bay {i}", (568 + dx, 584 + dx, 300, 366), (0, 0.3), area="A",
-         sheet="SK-3X1-10", info="Forklift / mobile-crane apron from the access road to the gallery door; "
+         sheet="SW-3X1-10", info="Forklift / mobile-crane apron from the access road to the gallery door; "
          "GCB and IPB sections leave on the gallery monorail.")
     B(568 + dx, 584 + dx, 300, 366, 0, 0.3, "road")
     item(L, f"GT{i} inlet duct (drop + horizontal EL 23-37)", (658 + dx, 694 + dx, 372, 466), (23, 104),
-         area="A", sheet="SK-3X1-09", tag=f"INL-{i}",
+         area="A", sheet="SW-3X1-09", tag=f"INL-{i}",
          info="Drop from the filter house through the gallery roof, then horizontal north at "
          "EL 23-37, 28-64 ft east of the GT centreline, into the plenum spool. It keeps 6 ft "
          "under the GT travel band and 4 ft under the generator band.")
@@ -522,11 +522,11 @@ for i, gx in enumerate(GX, start=1):
     B(658 + dx, 694 + dx, 372, 466, 23, 37, "filter")
 
 # ---------------------------------------------------------------------------
-# B ACC: 80 cells = 8 streets x 10 cells of 40 ft (SK-3X1-01, -03, -05, -13)
+# B ACC: 80 cells = 8 streets x 10 cells of 40 ft (SW-3X1-01, -03, -05, -13)
 # ---------------------------------------------------------------------------
 L = "BASE_POWER_BLOCK"
 item(L, "Air-cooled condenser, 80 cells (steam-cycle heat rejection)", (1130, 1450, 380, 780), (0, 125),
-     tag="ACC", area="B", sheet="SK-3X1-13",
+     tag="ACC", area="B", sheet="SW-3X1-13",
      info="8 streets x 10 cells of 40 ft. Fan deck EL 90, top of steel 125 ft (Hunterstown ~120; "
      "Sewaren, Bridgeport ~125). Fans ACC-F01..F80, 480 V VFDs in R4, fan-bridge tray at EL +90; "
      "VFD-ACC route ~633 ft to the farthest fan (verify drive-cable limits).")
@@ -560,43 +560,43 @@ for i in range(8):
 B(1450, 1459.5, 380, 396, 0, 92, "stair"); B(1450, 1459.5, 764, 780, 0, 92, "stair")   # clear of the east spine road (x 1460)
 
 # ---------------------------------------------------------------------------
-# ELECTRICAL (SK-3X1-03, -04, -05)
+# ELECTRICAL (SW-3X1-03, -04, -05)
 # ---------------------------------------------------------------------------
 L = "BASE_ELECTRICAL"
 for i, gx in enumerate(GX, start=1):
     dx = gx - 630
     xfmr(L, f"GSU-{i}: 21/230 kV generator step-up transformer", 610 + dx, 650 + dx, 325, 365, 24,
-         bushing=14, fins="x", hv="s", lv_dx=7, tag=f"GSU-{i}", area="A", sheet="SK-3X1-04",
+         bushing=14, fins="x", hv="s", lv_dx=7, tag=f"GSU-{i}", area="A", sheet="SW-3X1-04",
          info="21/230 kV (assumed), 350-450 MVA typical; bushings add 12-15 ft. HV connects by "
          f"230 kV overhead to diameter D{i}; the unit pulls to the access road for replacement.")
     xfmr(L, f"UAT-{i}: 21/13.8 kV unit auxiliary transformer", 658 + dx, 676 + dx, 330, 352, 16,
-         bushing=0, fins="x", tag=f"UAT-{i}", area="A", sheet="SK-3X1-04",
+         bushing=0, fins="x", tag=f"UAT-{i}", area="A", sheet="SW-3X1-04",
          info="Tapped between GCB and GSU (GSU side of the GCB), so the grid back-feeds 13.8 kV "
          f"bus {i} while GCB-{i} is open for LCI start-up. 40-60 MVA typical.")
     solid(L, f"GCB-{i}: generator circuit breaker", 625 + dx, 635 + dx, 378, 392, 14, 26, "xfmr",
-          tag=f"GCB-{i}", area="A", sheet="SK-3X1-10",
+          tag=f"GCB-{i}", area="A", sheet="SW-3X1-10",
           info="On the IPB in the south gallery, outside bridge-crane coverage; gallery monorail "
           "west to a door clear of the filter-house columns.")
     B(625 + dx, 635 + dx, 378, 392, 0, 14, "steel")
     solid(L, f"GSU-{i} firewall", 602 + dx, 604 + dx, 318, 368, 0, 30, "concrete", basis="typical",
           area="A", register=False)
     ehouse(L, f"R2{'ABC'[i-1]}: unit / HRSG electrical e-house (32 x 40 ft)", 552 + dx, 584 + dx,
-           612, 652, 14, tag=f"R2{'ABC'[i-1]}", area="A", sheet="SK-3X1-03",
+           612, 652, 14, tag=f"R2{'ABC'[i-1]}", area="A", sheet="SW-3X1-03",
            info=f"Supply SWGR-13.8-{i}. 480 V switchgear, MCC and DCS remote I/O for SCR blowers, "
            "ammonia injection, HRSG valves and drains.")
     xfmr(L, f"T-R2{'ABC'[i-1]}: 13.8/0.48 kV", 555 + dx, 567 + dx, 664, 676, 10, bushing=0,
-         area="A", sheet="SK-3X1-04")
+         area="A", sheet="SW-3X1-04")
 xfmr(L, "GSU-ST: 21/230 kV (one ST GSU, baseline)", 1030, 1072, 320, 370, 24, bushing=14, fins="x", hv="s",
-     tag="GSU-ST", area="A", sheet="SK-3X1-04",
+     tag="GSU-ST", area="A", sheet="SW-3X1-04",
      info="One ST GSU shown; 2 x 50% is a real option (Okeechobee). No UAT on the ST unit; ST "
      "auxiliaries are fed from the 13.8 kV buses.")
 solid(L, "GSU-ST firewall", 1009, 1011, 318, 368, 0, 30, "concrete", basis="typical", area="A", register=False)
-solid(L, "GCB-ST", 1046, 1056, 378, 392, 14, 26, "xfmr", tag="GCB-ST", area="A", sheet="SK-3X1-04")
+solid(L, "GCB-ST", 1046, 1056, 378, 392, 14, 26, "xfmr", tag="GCB-ST", area="A", sheet="SW-3X1-04")
 B(1046, 1056, 378, 392, 0, 14, "steel")
 
 # R1 main electrical building: shell split into sheet-11 collections
 item(L, "R1: main electrical building (64 x 180 ft)", (410, 474, 600, 780), (0, 24), tag="R1", area="A",
-     sheet="SK-3X1-05",
+     sheet="SW-3X1-05",
      info="Conventional building 64 x 180 ft (11,520 sq ft), 24 ft high (Wrexham 16 ft, Progress "
      "Power 37 ft). Holds SWGR-13.8-1/2/3, SWGR-4.16-A/B, LC-480-A/B, EMCC, MCC-GT1..3, "
      "MCC-C1/C2, protection & control, DCS, three LCI static starters with dry-type input "
@@ -614,15 +614,15 @@ for (x0, x1, y0, y1, h) in [(409.2, 410.8, 628, 632, 8), (409.2, 410.8, 748.5, 7
     _part(kind="box", min=[x0, y0, 0.6], max=[x1, y1, h], color="door",
           layer="R1_WALL_E" if x0 > 470 else "BASE_ELECTRICAL")
 xfmr(L, "T4-A: 13.8/4.16 kV station transformer", 410, 430, 786, 802, 14, bushing=0, fins="y",
-     tag="T4-A", area="A", sheet="SK-3X1-04")
+     tag="T4-A", area="A", sheet="SW-3X1-04")
 xfmr(L, "T4-B: 13.8/4.16 kV station transformer", 410, 430, 808, 824, 14, bushing=0, fins="y",
-     tag="T4-B", area="A", sheet="SK-3X1-04")
+     tag="T4-B", area="A", sheet="SW-3X1-04")
 xfmr(L, "LCT-A: 13.8/0.48 kV load-centre transformer", 436, 448, 786, 798, 10, tag="LCT-A", area="A",
-     sheet="SK-3X1-04")
+     sheet="SW-3X1-04")
 xfmr(L, "LCT-B: 13.8/0.48 kV load-centre transformer", 436, 448, 808, 820, 10, tag="LCT-B", area="A",
-     sheet="SK-3X1-04")
+     sheet="SW-3X1-04")
 
-# R1 interior (SK-3X1-05), collection R1_INTERIOR
+# R1 interior (SW-3X1-05), collection R1_INTERIOR
 L = "R1_INTERIOR"
 R1_ROOMS = [
     ("Cable entry / spreading area (DB-S, DB-W entries)", 410, 440, 600, 626),
@@ -631,7 +631,7 @@ R1_ROOMS = [
     ("DC / UPS room: CHG-1/2, DC-1/2, UPS-A/B, UPS panels", 442, 474, 752, 780),
 ]
 for (n, x0, x1, y0, y1) in R1_ROOMS:
-    item(L, "R1 " + n, (x0, x1, y0, y1), (0, 23), area="A", sheet="SK-3X1-05")
+    item(L, "R1 " + n, (x0, x1, y0, y1), (0, 23), area="A", sheet="SW-3X1-05")
     # partitions on the sides that are not exterior walls (full height to the roof)
     if y0 > 600:
         B(x0, x1, y0, y0 + 0.5, 0.6, 23, "partition")
@@ -641,13 +641,13 @@ for (n, x0, x1, y0, y1) in R1_ROOMS:
         B(x0, x0 + 0.5, y0, y1, 0.6, 23, "partition")
     if x1 < 474:
         B(x1 - 0.5, x1, y0, y1, 0.6, 23, "partition")
-item(L, "R1 AHUs", (447, 471, 604, 622), (0.6, 10), area="A", sheet="SK-3X1-05", basis="typical")
+item(L, "R1 AHUs", (447, 471, 604, 622), (0.6, 10), area="A", sheet="SW-3X1-05", basis="typical")
 B(447, 459, 604, 622, 0.6, 10, "machine"); B(462, 471, 604, 622, 0.6, 9, "machine")
 item(L, "R1 battery racks BAT-1 / BAT-2", (413, 435, 756, 776), (0.6, 5.6), area="A", basis="typical",
-     sheet="SK-3X1-05", info="Battery rack (each) 20 x 3 ft, illustrative.")
+     sheet="SW-3X1-05", info="Battery rack (each) 20 x 3 ft, illustrative.")
 for yy in (757, 763, 769):
     B(414, 434, yy, yy + 3, 0.6, 5.6, "battery")
-item(L, "R1 DC / UPS equipment", (446, 470, 756, 776), (0.6, 7.6), area="A", basis="typical", sheet="SK-3X1-05")
+item(L, "R1 DC / UPS equipment", (446, 470, 756, 776), (0.6, 7.6), area="A", basis="typical", sheet="SW-3X1-05")
 for yy in (757, 766):
     B(446, 470, yy, yy + 3, 0.6, 7.6, "cabinet")
 B(426, 426.5, 636, 748, 0.6, 12, "partition")                   # LCI room wall (sheet 05)
@@ -675,8 +675,8 @@ CAB = [  # (name, x0, x1, y0, y1, height, colour) from sheet 05; heights typical
 ]
 for (n, x0, x1, y0, y1, h, c) in CAB:
     tag = n.split(" ")[0] if n.split(" ")[0].isupper() or "-" in n.split(" ")[0] else ""
-    item(L, "R1 " + n, (x0, x1, y0, y1), (0.6, 0.6 + h), tag=tag, area="A", sheet="SK-3X1-05",
-         basis="drawing", info="Plan from SK-3X1-05; cabinet height typical.")
+    item(L, "R1 " + n, (x0, x1, y0, y1), (0.6, 0.6 + h), tag=tag, area="A", sheet="SW-3X1-05",
+         basis="drawing", info="Plan from SW-3X1-05; cabinet height typical.")
     B(x0, x1, y0, y1, 0.6, 0.6 + h, c)
     # section seams on long lineups
     L_len = y1 - y0
@@ -686,25 +686,25 @@ for (n, x0, x1, y0, y1, h, c) in CAB:
             yy = y0 + L_len * k / n_sec
             B(x1, x1 + 0.08, yy - 0.05, yy + 0.05, 0.9, 0.6 + h - 0.4, "steel")
 item(L, "R1 cable basement below MV rows (hatched on sheet 05)", (444, 471, 634, 747), (-8, 0), area="A",
-     sheet="SK-3X1-05", basis="typical", info="Depth illustrative.")
+     sheet="SW-3X1-05", basis="typical", info="Depth illustrative.")
 B(444, 471, 634, 747, -8, 0, "basement")
-item(L, "R1 overhead LV / control trays", (426, 472, 636, 747), (14, 15), area="A", sheet="SK-3X1-05")
+item(L, "R1 overhead LV / control trays", (426, 472, 636, 747), (14, 15), area="A", sheet="SW-3X1-05")
 for xx in (438, 456, 468):
     B(xx - 1, xx + 1, 636, 747, 14, 14.4, "pipe")            # galvanised ladder tray with its cables
     B(xx - .8, xx + .8, 636, 747, 14.4, 14.6, "cable_tc")
 B(426, 472, 719, 721, 14.6, 15.0, "pipe")
 B(426, 472, 719.2, 720.8, 15.0, 15.2, "cable_tc")
 item(L, "R1 east-wall tray exits to hall (LCI, GT aux, DC) and tray riser to rack", (470, 478, 638, 748),
-     (0, 36), area="A", sheet="SK-3X1-05")
+     (0, 36), area="A", sheet="SW-3X1-05")
 for yy in (640, 650, 660):
     B(472.6, 474, yy - 1.5, yy + 1.5, 18, 20, "pipe")               # wall sleeve (galvanised)
 # (the riser up the east wall to the rack trays is built by trays.py as a ladder riser with a wall entry)
 B(470, 474, 744, 748, 0.6, 1.2, "concrete")
 
-# R4 ACC VFD e-house, shell + typical interior (SK-3X1-03, -11 view B2)
+# R4 ACC VFD e-house, shell + typical interior (SW-3X1-03, -11 view B2)
 L = "BASE_ELECTRICAL"
 item(L, "R4: ACC electrical (VFD) e-house (60 x 120 ft)", (1135, 1255, 308, 368), (0, 16), tag="R4",
-     area="B", sheet="SK-3X1-03",
+     area="B", sheet="SW-3X1-03",
      info="Supply SWGR-13.8-1/2/2/3 through four outdoor 13.8/0.48 kV transformers. 480 V "
      "switchgear, 92 VFDs (80 ACC fans, 12 aux cooler fans), MCC for the vacuum pumps. "
      "Cable exit toward the ACC column riser.")
@@ -716,30 +716,30 @@ _part(kind="box", min=[1135, 308, 15.4], max=[1255, 368, 16], color="roof", laye
 L = "R4_INTERIOR"
 for k, yy in enumerate((314, 326, 344, 356)):
     item(L, f"R4 VFD lineup {k+1} (23 drives, fed from T-R4-{k+1})", (1146, 1246, yy, yy + 3), (2.5, 10),
-         tag=f"VFD-L{k+1}", area="B", basis="typical", sheet="SK-3X1-03",
-         info="92 VFDs total per SK-3X1-03; lineup arrangement typical (sheet 11 view B2).")
+         tag=f"VFD-L{k+1}", area="B", basis="typical", sheet="SW-3X1-03",
+         info="92 VFDs total per SW-3X1-03; lineup arrangement typical (sheet 11 view B2).")
     B(1146, 1246, yy, yy + 3, 2.5, 10, "cabinet")
     for s in range(1, 23):
         xx = 1146 + 100 * s / 23
         B(xx - 0.05, xx + 0.05, yy - 0.08, yy, 3, 9.6, "steel")
 item(L, "R4 480 V switchgear + vacuum-pump MCC", (1138, 1143, 314, 360), (2.5, 10), area="B",
-     basis="typical", sheet="SK-3X1-03")
+     basis="typical", sheet="SW-3X1-03")
 B(1138, 1143, 314, 360, 2.5, 10, "swgr")
 item(L, "R4 cable exit to the ACC column riser", (1250, 1254, 330, 346), (2.5, 14), area="B",
-     sheet="SK-3X1-11")
+     sheet="SW-3X1-11")
 B(1250, 1254, 330, 346, 12, 14, "copper")
 L = "BASE_ELECTRICAL"
 for k, (x0, y0) in enumerate([(1266, 310), (1292, 310), (1266, 340), (1292, 340)], 1):
-    xfmr(L, f"T-R4-{k}: 13.8/0.48 kV", x0, x0 + 12, y0, y0 + 14, 10, fins="y", area="B", sheet="SK-3X1-04")
+    xfmr(L, f"T-R4-{k}: 13.8/0.48 kV", x0, x0 + 12, y0, y0 + 14, 10, fins="y", area="B", sheet="SW-3X1-04")
 pad(L, "Spare e-house pad (reserve, as drawn)", 1320, 1445, 308, 368, "pad", z1=0.6, area="B")
 ehouse(L, "R3: ST auxiliary electrical e-house (40 x 65 ft)", 1035, 1100, 572, 612, 14, tag="R3", area="A",
-       sheet="SK-3X1-03",
+       sheet="SW-3X1-03",
        info="Supply SWGR-13.8-2. 480 V switchgear and MCC for ST lube oil, turning gear, EHC and "
        "air compressors.")
-xfmr(L, "T-R3: 13.8/0.48 kV", 1053, 1065, 626, 638, 10, area="A", sheet="SK-3X1-04")
+xfmr(L, "T-R3: 13.8/0.48 kV", 1053, 1065, 626, 638, 10, area="A", sheet="SW-3X1-04")
 for k, (x0, x1) in enumerate([(412, 462), (468, 518)], 1):
     item(L, f"EDG-{k}: 3 MW emergency diesel generator (480 V)", (x0, x1, 338, 350), (0, 22),
-         tag=f"EDG-{k}", area="F", basis="vendor", sheet="SK-3X1-12",
+         tag=f"EDG-{k}", area="F", basis="vendor", sheet="SW-3X1-12",
          info="Cat 3516C sound-attenuated enclosure 546 x 105 x 167-197 in. Emergency supply "
          "only; ATS / interlocked incomers to LC-480-A/B.")
     B(x0, x1, 338, 350, 0, 1.2, "concrete")
@@ -752,29 +752,29 @@ for (tg, n, x0, x1, y0, y1, h, a) in [
         ("HTP-4", "heat-trace panel (gas)", 1600, 1606, 1444, 1447, 7, "D"),
         ("CPR-1", "cathodic-protection rectifier", 1541, 1545, 1478, 1481, 6, "D"),
         ("CPR-2", "cathodic-protection rectifier", 655, 659, 1578, 1582, 6, "E")]:
-    solid(L, f"{tg}: {n}", x0, x1, y0, y1, 0, h, "panel", tag=tg, area=a, sheet="SK-3X1-03")
+    solid(L, f"{tg}: {n}", x0, x1, y0, y1, 0, h, "panel", tag=tg, area=a, sheet="SW-3X1-03")
 
 # ---------------------------------------------------------------------------
 # BOP utilities around the hall and ACC; pipe racks
 # ---------------------------------------------------------------------------
 L = "BASE_UTILITIES"
 building(L, "Air compressors AC-A/B/C", 1030, 1100, 700, 745, 14, tag="AC-A/B/C", area="A",
-         sheet="SK-3X1-03", info="480 V MCC soft starters in R3 (LV-AIRC).")
-building(L, "Chemical feed", 1030, 1100, 760, 781, 12, tag="Chem feed", area="A", sheet="SK-3X1-01")
-building(L, "SWAS: steam and water analysis", 1030, 1100, 784, 805, 12, tag="SWAS", area="A", sheet="SK-3X1-01")
+         sheet="SW-3X1-03", info="480 V MCC soft starters in R3 (LV-AIRC).")
+building(L, "Chemical feed", 1030, 1100, 760, 781, 12, tag="Chem feed", area="A", sheet="SW-3X1-01")
+building(L, "SWAS: steam and water analysis", 1030, 1100, 784, 805, 12, tag="SWAS", area="A", sheet="SW-3X1-01")
 for (tg, n, x0, x1, y0, y1, cnt, info) in [
         ("CP-A/B/C", "condensate pumps (4.16 kV)", 1182, 1218, 809, 827, 3,
          "North of the ACC; 4.16 kV MV contactor, SWGR-4.16-A/B (MV-CP)."),
         ("VAC-A/B", "ACC air-removal vacuum pumps", 1235, 1265, 797, 817, 2, "480 V MCC starter in R4 (LV-VAC)."),
         ("CCW-A/B", "closed cooling water pumps", 1283, 1313, 807, 827, 2, "4.16 kV MV contactor (MV-CCW).")]:
-    item(L, f"{tg}: {n}", (x0, x1, y0, y1), (0, 8), tag=tg, area="B", sheet="SK-3X1-03", info=info)
+    item(L, f"{tg}: {n}", (x0, x1, y0, y1), (0, 8), tag=tg, area="B", sheet="SW-3X1-03", info=info)
     B(x0, x1, y0, y1, 0, 1, "concrete")
     for k in range(cnt):
         xx = x0 + (x1 - x0) * (k + 0.5) / cnt
         R((xx, y0 + 2, 5), (xx, y0 + 8, 5), 2.2, "motor", seg=14)
         R((xx, y0 + 8.5, 5), (xx, y1 - 2, 5), 2.6, "pump", seg=14)
 item(L, "Aux dry coolers AUXC-F01..12 (closed cooling water)", (1326, 1446, 792, 828), (0, 18), tag="AUXC",
-     area="B", sheet="SK-3X1-03", info="12 fans with 480 V VFDs in R4; heat rejection for the closed "
+     area="B", sheet="SW-3X1-03", info="12 fans with 480 V VFDs in R4; heat rejection for the closed "
      "cooling-water loop.")
 column_grid((1328, 1386, 1444), (794, 826), 10, s=1)
 B(1326, 1446, 792, 828, 10, 15, "bundle")
@@ -784,7 +784,7 @@ for k in range(6):
 tank(L, "Condensate storage tank", 1155, 812, 14, 30, area="B")
 for (x0, x1, y0, y1, n) in [(460, 1300, 826, 850, "Main E-W pipe and cable rack (24 ft)"),
                             (1108, 1128, 570, 850, "N-S pipe rack along the ACC")]:
-    item(L, n, (x0, x1, y0, y1), (0, 42), area="A", sheet="SK-3X1-12",
+    item(L, n, (x0, x1, y0, y1), (0, 42), area="A", sheet="SW-3X1-12",
          info="Widened from 16 to 24 ft in Rev 10. Process tiers EL 24/30, MV tray tier EL +36, "
          "control tray EL +42.")
     if x1 - x0 > y1 - y0:
@@ -803,10 +803,10 @@ for (x0, x1, y0, y1, n) in [(460, 1300, 826, 850, "Main E-W pipe and cable rack 
             B(x0, x0 + 1, y0, y1, z - 0.8, z, "steel"); B(x1 - 1, x1, y0, y1, z - 0.8, z, "steel")
 
 # ---------------------------------------------------------------------------
-# C GRID INTERFACE: 230 kV breaker-and-a-half (SK-3X1-01, -04, -13)
+# C GRID INTERFACE: 230 kV breaker-and-a-half (SW-3X1-01, -04, -13)
 # ---------------------------------------------------------------------------
 L = "BASE_SWITCHYARD"
-pad(L, "230 kV switchyard (gravel)", 400, 1940, 50, 250, "gravel", z1=0.4, area="C", sheet="SK-3X1-04",
+pad(L, "230 kV switchyard (gravel)", 400, 1940, 50, 250, "gravel", z1=0.4, area="C", sheet="SW-3X1-04",
     register=True,
     info="Breaker-and-a-half: 5 diameters x 3 breakers = 15 positions, 9 installed in the base plant. D1 "
     "GTG-1 + Line 1, D2 GTG-2 + Line 2, D3 STG + GTG-3; D4 (BESS / modular) and D5 (CCS) are shown built "
@@ -815,13 +815,13 @@ pad(L, "230 kV switchyard (gravel)", 400, 1940, 50, 250, "gravel", z1=0.4, area=
 PH = (-7, 0, 7)                        # phase spacing, ft
 for yb, n in [(237, "230 kV bus 1"), (65, "230 kV bus 2")]:
     item(L, n + " (strain bus, 3 phases)", (530, 1925, yb - 8, yb + 8), (0, 47), tag=n.split()[-2] + n[-1],
-         area="C", sheet="SK-3X1-04")
+         area="C", sheet="SW-3X1-04")
     for ph in PH:
         R((530, yb + ph, 40), (1925, yb + ph, 40), 0.35, "conductor", seg=6)
 for x in (530, 1300, 1925):
     for yb in (62, 242):
         item(L, "230 kV dead-end structure (47 ft)", (x - 2, x + 2, yb - 12, yb + 12), (0, 47), area="C",
-             sheet="SK-3X1-13", info="230 kV dead-ends 47 ft (CPUC Jefferson-Martin); 132 kV yards 33-37 ft.",
+             sheet="SW-3X1-13", info="230 kV dead-ends 47 ft (CPUC Jefferson-Martin); 132 kV yards 33-37 ft.",
              register=False)
         for yy in (yb - 11, yb + 11):
             R((x, yy, 0), (x, yy, 47), 1.1, "steel", r2=0.7, seg=8)
@@ -839,7 +839,7 @@ def diameter(d, x, installed=True, lines=(), buildout=None):
         item(L, f"{d} 230 kV breaker {k}" + ("" if installed else " (position, not installed)")
              + (" (build-out)" if buildout else ""),
              (x - 8, x + 8, y - 8, y + 8), (0, 28 if installed else 1), tag=f"{d}-CB{k}", area="C",
-             sheet="SK-3X1-04", info=("Dead-tank SF6 breaker (typical)." if installed else
+             sheet="SW-3X1-04", info=("Dead-tank SF6 breaker (typical)." if installed else
              "Future position; breakers not installed.") + (f" Build-out of the future diameter: {buildout}."
                                                              if buildout else ""))
         B(x - 8, x + 8, y - 8, y + 8, 0, 1, "concrete")
@@ -854,7 +854,7 @@ def diameter(d, x, installed=True, lines=(), buildout=None):
         return
     item(L, f"{d} disconnect switches, supports and conductors" + (" (build-out)" if buildout else ""),
          (x - 10, x + 10, 65, 237), (0, 40),
-         area="C", sheet="SK-3X1-04", register=False)
+         area="C", sheet="SW-3X1-04", register=False)
     for y in (90, 130, 170, 210):                                    # switch / support stands
         B(x - 9, x + 9, y - 0.8, y + 0.8, 14, 15.5, "steel")
         for xs in (x - 9, x + 9):
@@ -877,7 +877,7 @@ diameter("D4", 1720, buildout="T-MOD-1/2 modular yard (lower) + BESS MPT (upper)
 diameter("D5", 1860, buildout="CCS 230 kV cable, 2 circuits")
 L = "SWYD_FUTURE"
 pad(L, "230 kV switchyard extension for D6 (gravel)", 1940, 2060, 50, 250, "gravel", z1=0.4, area="C",
-    basis="typical", info="Bus extension and the D6 diameter for the green-hydrogen import (SK-3X1-14).")
+    basis="typical", info="Bus extension and the D6 diameter for the green-hydrogen import (SW-3X1-14).")
 for yb, n in [(237, "230 kV bus 1"), (65, "230 kV bus 2")]:
     item(L, n + " extension to D6 (build-out)", (1925, 2045, yb - 8, yb + 8), (0, 47), area="C",
          basis="typical", register=False)
@@ -895,14 +895,14 @@ diameter("D6", 2010, buildout="green-H2 import cable (T-H2) + spare")
 L = "BASE_SWITCHYARD"
 for x, n in [(670, "Line 1"), (870, "Line 2")]:
     item(L, f"{n} 230 kV terminal tower", (x - 8, x + 8, 10, 26), (0, 90), tag=n.replace(" ", "-"),
-         area="C", basis="typical", sheet="SK-3X1-01", info="Line exits south to the grid.")
+         area="C", basis="typical", sheet="SW-3X1-01", info="Line exits south to the grid.")
     for sx in (-6, 6):
         for sy in (-6, 6):
             R((x + sx, 18 + sy, 0), (x + sx * 0.3, 18 + sy * 0.3, 80), 0.6, "steel", seg=6)
     B(x - 14, x + 14, 17, 19, 68, 70, "steel"); B(x - 10, x + 10, 17, 19, 80, 81.5, "steel")
     R((x, 18, 81.5), (x, 18, 90), 0.4, "steel", seg=6)
 ehouse(L, "RH: switchyard relay / control house (52 x 70 ft)", 420, 490, 180, 232, 14, tag="RH", area="C",
-       sheet="SK-3X1-03",
+       sheet="SW-3X1-03",
        info="Protection, SCADA and communications for the 230 kV yard; 125 V DC and fibre to R1 via DB-S.")
 L = "HV_CORRIDOR"
 # footprints as drawn; the slabs are trimmed where the strips overlap (overlapping flat pads render black)
@@ -911,7 +911,7 @@ for (x0, x1, y0, y1), (sx0, sx1, sy0, sy1) in [
         ((2070, 2120, 780, 860), (2070, 2120, 830, 860)), ((1490, 1715, 237, 287), (1490, 1715, 237, 287)),
         ((1665, 1715, 225, 287), (1665, 1715, 225, 237))]:
     z1 = 0.2 + 0.008 * (len(items) % 30)
-    item(L, "Reserved 230 kV corridor COR-HMOD", (x0, x1, y0, y1), (0, z1), register=False, sheet="SK-3X1-01",
+    item(L, "Reserved 230 kV corridor COR-HMOD", (x0, x1, y0, y1), (0, z1), register=False, sheet="SW-3X1-01",
          area="I")
     B(sx0, sx1, sy0, sy1, 0, z1, "corridor")
 
@@ -923,11 +923,11 @@ pad(L, "Parking", 40, 320, 60, 240, "road", z1=0.2, area="F")
 for k in range(7):
     B(60 + 36 * k, 61 + 36 * k, 80, 220, 0.2, 0.3, "fence")
 building(L, "Control / admin building (main control room)", 83, 320, 345, 396, 20, tag="CR", area="F",
-         sheet="SK-3X1-12",
+         sheet="SW-3X1-12",
          info="51 x 237 x 20 ft (Smarr EA, 7HA.03, 2025). Operator consoles only; DCS cabinets are "
          "distributed in R1, R2A-C, R3 and R4.")
-building(L, "Warehouse", 133, 320, 470, 561, 35, area="F", sheet="SK-3X1-12", info="91 x 187 x 35 ft (Smarr EA).")
-building(L, "Maintenance building / workshop", 198, 320, 600, 641, 20, area="F", sheet="SK-3X1-12",
+building(L, "Warehouse", 133, 320, 470, 561, 35, area="F", sheet="SW-3X1-12", info="91 x 187 x 35 ft (Smarr EA).")
+building(L, "Maintenance building / workshop", 198, 320, 600, 641, 20, area="F", sheet="SW-3X1-12",
          info="41 x 122 x 20 ft (Smarr EA).")
 item(L, "Comms tower (lattice)", (250, 275, 445, 465), (0, 120), tag="COMMS", area="F", basis="typical")
 for sx in (-5, 5):
@@ -947,16 +947,16 @@ B(56, 304, 1446, 1624, -8.6, -8, "turf")
 B(50, 310, 1440, 1630, -5.4, -5, "water")
 L = "BASE_UTILITIES"
 building(L, "Water treatment building (incl. R-WT electrical room)", 440, 600, 1445, 1530, 30, tag="R-WT", area="E",
-         sheet="SK-3X1-12",
+         sheet="SW-3X1-12",
          info="R-WT: 480 V MCC for water treatment, wastewater and the fire-pump jockey pump; supply "
          "SWGR-13.8-2 via DB-W. Height 30 ft (Wrexham 33 ft).")
 building(L, "Wastewater treatment", 620, 745, 1445, 1530, 25, area="E")
-tank(L, "Raw water tank", 465, 1590, 20, 48, area="E", sheet="SK-3X1-12", info="40 dia x 48 ft class (Smarr EA).")
-tank(L, "Fire / service water tank", 530, 1590, 26, 40, area="E", sheet="SK-3X1-12",
+tank(L, "Raw water tank", 465, 1590, 20, 48, area="E", sheet="SW-3X1-12", info="40 dia x 48 ft class (Smarr EA).")
+tank(L, "Fire / service water tank", 530, 1590, 26, 40, area="E", sheet="SW-3X1-12",
      info="52 dia x 40 ft (Smarr service water).")
-tank(L, "Demineralised water tank", 600, 1590, 20, 48, area="E", sheet="SK-3X1-12", info="40 dia x 48 ft (Smarr demin).")
+tank(L, "Demineralised water tank", 600, 1590, 20, 48, area="E", sheet="SW-3X1-12", info="40 dia x 48 ft (Smarr demin).")
 building(L, "Fire pump house", 700, 740, 1575, 1605, 16, area="E", basis="typical")
-item(L, "Ammonia storage (aqueous, SCR reagent)", (800, 873, 1450, 1492), (0, 20), area="E", sheet="SK-3X1-12",
+item(L, "Ammonia storage (aqueous, SCR reagent)", (800, 873, 1450, 1492), (0, 20), area="E", sheet="SW-3X1-12",
      info="73 x 42 ft (Smarr EA). Bunded; tank shown horizontal.")
 B(800, 873, 1450, 1492, 0, 4, "concrete")
 R((808, 1471, 12), (865, 1471, 12), 8, "tank", seg=24)
@@ -968,21 +968,21 @@ V(985, 1530, 3, 30, 70, "stack")
 item(L, "H2 / CO2 storage (generator gas)", (1080, 1125, 1450, 1510), (0, 10), area="E", basis="typical")
 for k in range(4):
     R((1084 + 10 * k, 1453, 4), (1084 + 10 * k, 1507, 4), 3.2, "tank", seg=16)
-item(L, "Oil-water separator", (1200, 1226, 1450, 1458), (0, 8), area="E", sheet="SK-3X1-12",
+item(L, "Oil-water separator", (1200, 1226, 1450, 1458), (0, 8), area="E", sheet="SW-3X1-12",
      info="26 x 8 ft (Smarr EA).")
 R((1201, 1454, 4), (1225, 1454, 4), 4, "tank", seg=16)
 
 # D FUEL GAS
-pad(L, "Plant gas yard (pad)", 1560, 1940, 1430, 1640, "gravel", z1=0.4, area="D", sheet="SK-3X1-12",
+pad(L, "Plant gas yard (pad)", 1560, 1940, 1430, 1640, "gravel", z1=0.4, area="D", sheet="SW-3X1-12",
     register=True, info="Pad with filter-separators, heater, metering and regulation skids; skids 16 ft "
     "max (Wrexham, Progress Power).")
-item(L, "Gas yard filter-separators", (1640, 1680, 1470, 1490), (0, 12), area="D", sheet="SK-3X1-12")
+item(L, "Gas yard filter-separators", (1640, 1680, 1470, 1490), (0, 12), area="D", sheet="SW-3X1-12")
 for yy in (1475, 1485):
     R((1643, yy, 6), (1677, yy, 6), 3.5, "tank", seg=16)
-item(L, "Fuel-gas performance heater", (1700, 1740, 1470, 1490), (0, 14), area="D", sheet="SK-3X1-12")
+item(L, "Fuel-gas performance heater", (1700, 1740, 1470, 1490), (0, 14), area="D", sheet="SW-3X1-12")
 R((1703, 1480, 7), (1737, 1480, 7), 6, "tank", seg=18)
-solid(L, "Gas metering skid", 1640, 1690, 1520, 1540, 0, 10, "equip", area="D", sheet="SK-3X1-12")
-solid(L, "Gas pressure regulation skid", 1710, 1750, 1520, 1540, 0, 12, "equip", area="D", sheet="SK-3X1-12")
+solid(L, "Gas metering skid", 1640, 1690, 1520, 1540, 0, 10, "equip", area="D", sheet="SW-3X1-12")
+solid(L, "Gas pressure regulation skid", 1710, 1750, 1520, 1540, 0, 12, "equip", area="D", sheet="SW-3X1-12")
 solid(L, "Gas yard local control enclosure", 1565, 1585, 1440, 1452, 0, 10, "ehouse", area="D",
       info="Local enclosure, not an e-house.")
 solid(L, "CONDITIONAL: fuel-gas compressors", 1800, 1930, 1560, 1630, 0, 20, "conditional", area="D",
@@ -992,46 +992,46 @@ pad(L, "CONDITIONAL: backup fuel oil (ULSD) unloading and forwarding area", 1330
 tank(L, "CONDITIONAL: ULSD backup fuel-oil tank", 1410, 1580, 45, 40, "conditional", area="D",
      basis="conditional", info="Unloading, tank and forwarding pumps; design-dependent.")
 
-# Pipeline M&R (by pipeline operator) - SK-3X1-14 key 1-9
+# Pipeline M&R (by pipeline operator) - SW-3X1-14 key 1-9
 L = "BASE_UTILITIES"
 pad(L, "Pipeline M&R station (by pipeline operator)", 1560, 1800, 1690, 1900, "gravel", z1=0.4, area="K",
-    sheet="SK-3X1-14", register=True,
+    sheet="SW-3X1-14", register=True,
     info="Built by the pipeline operator under a separate contract (Smarr shows it as its own "
     "gas supplier yard).")
-item(L, "M&R 1: pig receiver, lateral terminus", (1600, 1612, 1850, 1895), (0, 6), area="K", sheet="SK-3X1-14")
+item(L, "M&R 1: pig receiver, lateral terminus", (1600, 1612, 1850, 1895), (0, 6), area="K", sheet="SW-3X1-14")
 R((1606, 1852, 3.5), (1606, 1893, 3.5), 2.2, "tank", seg=14)
-solid(L, "M&R 2: insulating joint + ESD valve", 1602, 1610, 1830, 1838, 0, 5, "amber", area="K", sheet="SK-3X1-14")
-item(L, "M&R 3: horizontal filter-separator", (1630, 1665, 1845, 1857), (0, 12), area="K", sheet="SK-3X1-14",
+solid(L, "M&R 2: insulating joint + ESD valve", 1602, 1610, 1830, 1838, 0, 5, "amber", area="K", sheet="SW-3X1-14")
+item(L, "M&R 3: horizontal filter-separator", (1630, 1665, 1845, 1857), (0, 12), area="K", sheet="SW-3X1-14",
      info="Iron Bank (FERC).")
 R((1632, 1851, 6), (1663, 1851, 6), 5, "tank", seg=16)
 for k, y in enumerate([1820, 1838, 1856], 1):
     item(L, f"M&R 4: line heater {k} (water bath)", (1690, 1720, y, y + 10), (0, 10), area="K",
-         sheet="SK-3X1-14", info="Cove Point: 3 heaters.")
+         sheet="SW-3X1-14", info="Cove Point: 3 heaters.")
     R((1691, y + 5, 5), (1719, y + 5, 5), 4.6, "tank", seg=16)
 solid(L, "M&R 5: ultrasonic meters, 2 runs (custody transfer)", 1620, 1670, 1770, 1786, 0, 6, "equip",
-      area="K", sheet="SK-3X1-14")
-building(L, "M&R 6: regulation / flow control building", 1700, 1730, 1760, 1790, 16, area="K", sheet="SK-3X1-14",
+      area="K", sheet="SW-3X1-14")
+building(L, "M&R 6: regulation / flow control building", 1700, 1730, 1760, 1790, 16, area="K", sheet="SW-3X1-14",
          parapet=False, info="Cove Point: 30 x 30 ft.")
 building(L, "M&R 7: gas quality + measurement building", 1620, 1636, 1730, 1738, 10, area="K",
-         sheet="SK-3X1-14", parapet=False, info="Cove Point: 8 x 16 ft.")
-tank(L, "M&R 8: condensate tank", 1751, 1861, 6, 10, area="K", sheet="SK-3X1-14")
+         sheet="SW-3X1-14", parapet=False, info="Cove Point: 8 x 16 ft.")
+tank(L, "M&R 8: condensate tank", 1751, 1861, 6, 10, area="K", sheet="SW-3X1-14")
 solid(L, "M&R 9: service panel + UPS, SCADA RTU, CP", 1740, 1756, 1728, 1740, 0, 8, "panel", area="K",
-      sheet="SK-3X1-14")
-solid(L, "M&R CP test station (as drawn)", 1765, 1769, 1730, 1734, 0, 4, "panel", area="K", sheet="SK-3X1-01")
+      sheet="SW-3X1-14")
+solid(L, "M&R CP test station (as drawn)", 1765, 1769, 1730, 1734, 0, 4, "panel", area="K", sheet="SW-3X1-01")
 solid(L, "M&R SCADA antenna mast base (as drawn)", 1775, 1779, 1745, 1748, 0, 4, "panel", area="K",
-      sheet="SK-3X1-01")
+      sheet="SW-3X1-01")
 
 # ---------------------------------------------------------------------------
-# G CARBON CAPTURE (SK-3X1-06), optional
+# G CARBON CAPTURE (SW-3X1-06), optional
 # ---------------------------------------------------------------------------
 L = "OPT_CCS"
 for i, dx in enumerate([0, 160, 320]):
     t = "ABC"[i]
     gx = 630 + dx
     solid(L, f"DMP-{t}: diverter / bypass damper", 613 + dx, 643 + dx, 808, 826, 40, 62, "duct",
-          tag=f"DMP-{t}", area="G", sheet="SK-3X1-06")
+          tag=f"DMP-{t}", area="G", sheet="SW-3X1-06")
     item(L, f"Flue-gas duct, HRSG {i+1} to DCC-{t}", (621 + dx, 639 + dx, 826, 985), (40, 62), area="G",
-         sheet="SK-3X1-02", register=False)
+         sheet="SW-3X1-02", register=False)
     B(621 + dx, 639 + dx, 826, 985, 44, 62, "duct")
     for yy in (870, 930):
         B(624 + dx, 636 + dx, yy - 1, yy + 1, 0, 44, "steel")
@@ -1040,7 +1040,7 @@ for i, dx in enumerate([0, 160, 320]):
     # 62 ft absorber, as on large-scale capture plants). Counter-current: gas in low from the booster fan, out at the top.
     cx = 584 + dx
     item(L, f"DCC-{t}: direct-contact cooler (quench)", (cx - 30, cx + 30, 992, 1052), (0, 90),
-         tag=f"DCC-{t}", area="G", basis="typical", sheet="SK-3X1-13",
+         tag=f"DCC-{t}", area="G", basis="typical", sheet="SW-3X1-13",
          info="60 ft dia x 90 ft (height per sheet 13). Sized for ~790 kg/s of H-class flue gas (~730 m3/s saturated "
               "at ~40 C) at ~3 m/s superficial velocity. Counter-current: flue gas in low from the booster fan, "
               "quench water sprayed from the top, cooled gas out of the top nozzle to the absorber.")
@@ -1050,9 +1050,9 @@ for i, dx in enumerate([0, 160, 320]):
     R((cx, 1022, 86), (cx, 1022, 90), 10, "duct", seg=32)                           # 20 ft outlet nozzle
     B(605 + dx, 615 + dx, 1004, 1018, 4, 22, "duct")                                 # gas inlet from the fan
     solid(L, f"DCC-{t} pumps + water filter", 568 + dx, 608 + dx, 1066, 1090, 0, 8, "pump", area="G",
-          sheet="SK-3X1-06")
+          sheet="SW-3X1-06")
     item(L, f"BF-{t}: booster fan (~16 MW)", (615 + dx, 655 + dx, 985, 1035), (0, 30), tag=f"BF-{t}", area="G",
-         sheet="SK-3X1-06", info="NZT: 16.4 MWe per H-class train; VFD from the CCS MV building.")
+         sheet="SW-3X1-06", info="NZT: 16.4 MWe per H-class train; VFD from the CCS MV building.")
     B(615 + dx, 655 + dx, 985, 1035, 0, 2, "concrete")
     R((635 + dx, 990, 16), (635 + dx, 1012, 16), 13, "motor", seg=28)
     B(621 + dx, 639 + dx, 985, 1003, 30, 62, "duct")                                 # HRSG flue gas down into the fan
@@ -1069,9 +1069,9 @@ for i, dx in enumerate([0, 160, 320]):
     B(625 + dx, 645 + dx, 1012, 1189, 34, 50, "duct")
     R((635 + dx, 1014, 12), (635 + dx, 1033, 12), 7, "motor", seg=20)
     solid(L, f"Rich/lean pumps, cross exchanger, lean cooler {t}", 660 + dx, 705 + dx, 1040, 1100, 0, 15,
-          "equip", area="G", sheet="SK-3X1-06")
+          "equip", area="G", sheet="SW-3X1-06")
     item(L, f"Absorber {t} (62 ft dia x 262 ft, stack to 313 ft)", (599 + dx, 661 + dx, 1189, 1251), (0, 313),
-         tag=f"ABS-{t}", area="G", sheet="SK-3X1-13", shape="circle",
+         tag=f"ABS-{t}", area="G", sheet="SW-3X1-13", shape="circle",
          info="Keadby 3 DCO: twin absorbers 19.0 m dia x 80 m AGL (62 x 262 ft); stack to 95.5 m "
          "(313 ft). Water wash, wash pumps and cooler at the top section.")
     V(gx, 1220, 31, 0, 262, "ccs", seg=48)
@@ -1079,11 +1079,11 @@ for i, dx in enumerate([0, 160, 320]):
     V(gx, 1220, 9, 268, 313, "stack", seg=24)
     for zp in (60, 130, 200, 250):
         V(gx, 1220, 34, zp, zp + 1.2, "grating", seg=48)
-    solid(L, f"Water-wash pumps {t}", 675 + dx, 705 + dx, 1150, 1195, 0, 8, "pump", area="G", sheet="SK-3X1-06")
+    solid(L, f"Water-wash pumps {t}", 675 + dx, 705 + dx, 1150, 1195, 0, 8, "pump", area="G", sheet="SW-3X1-06")
 for i, cx in enumerate([1070, 1120, 1170]):
     t = "ABC"[i]
     item(L, f"STR-{t}: stripper / regenerator (45 ft dia x 207 ft)", (cx - 22.5, cx + 22.5, 1165, 1210),
-         (0, 207), tag=f"STR-{t}", area="G", sheet="SK-3X1-13", shape="circle",
+         (0, 207), tag=f"STR-{t}", area="G", sheet="SW-3X1-13", shape="circle",
          info="Keadby 3 DCO: CO2 stripper 15.0 m dia x 63 m AGL (49 x 207 ft). Reboiler, overhead "
          "condenser and reflux drum per train.")
     V(cx, 1187.5, 22.5, 0, 200, "ccs", seg=40)
@@ -1093,28 +1093,28 @@ for i, cx in enumerate([1070, 1120, 1170]):
         if i < 2:                                                          # walkway to the next stripper
             B(cx + 22, cx + 28, 1193, 1197, zp + .7, zp + 1, "grating")
     solid(L, f"RB-{t}: reboiler (LP steam from ST extraction)", cx - 20, cx + 20, 1105, 1150, 0, 30, "equip",
-          area="G", sheet="SK-3X1-06")
-solid(L, "Reclaimer (thermal, intermittent)", 1210, 1260, 1105, 1150, 0, 25, "equip", area="G", sheet="SK-3X1-06")
-item(L, "Solvent + NaOH storage", (1210, 1300, 1165, 1225), (0, 32), area="G", sheet="SK-3X1-06")
+          area="G", sheet="SW-3X1-06")
+solid(L, "Reclaimer (thermal, intermittent)", 1210, 1260, 1105, 1150, 0, 25, "equip", area="G", sheet="SW-3X1-06")
+item(L, "Solvent + NaOH storage", (1210, 1300, 1165, 1225), (0, 32), area="G", sheet="SW-3X1-06")
 B(1210, 1300, 1165, 1225, 0, 3, "concrete")
 for (cx, cy, r) in ((1228, 1185, 14), (1270, 1185, 14), (1228, 1210, 10), (1285, 1212, 10)):
     V(cx, cy, min(r, 11), 3, 30, "tank", seg=24)
-solid(L, "Activated-carbon filter", 1210, 1300, 1235, 1265, 0, 15, "equip", area="G", sheet="SK-3X1-06")
-building(L, "CO2 compression 3 x ~19 MW + dehydration", 1310, 1435, 1230, 1345, 35, area="G", sheet="SK-3X1-06",
+solid(L, "Activated-carbon filter", 1210, 1300, 1235, 1265, 0, 15, "equip", area="G", sheet="SW-3X1-06")
+building(L, "CO2 compression 3 x ~19 MW + dehydration", 1310, 1435, 1230, 1345, 35, area="G", sheet="SW-3X1-06",
          info="Three intercooled LP compressors; NZT 19.1 MWe per train.")
 solid(L, "CONDITIONAL: HP export compressor + metering", 1360, 1435, 1160, 1220, 0, 20, "conditional",
       area="G", basis="conditional")
-ehouse(L, "CCS MV switchgear building (VFDs)", 1060, 1200, 985, 1050, 24, area="G", sheet="SK-3X1-06",
+ehouse(L, "CCS MV switchgear building (VFDs)", 1060, 1200, 985, 1050, 24, area="G", sheet="SW-3X1-06",
        info="Three trains about 150 MWe (NZT 50.1 MWe per train).")
 xfmr(L, "CCS T-1: 230/13.8 kV", 1210, 1250, 985, 1030, 22, bushing=13, fins="x", tag="CCS T-1", area="G",
-     sheet="SK-3X1-06", info="Fed from the future D5 diameter by 230 kV underground cable (2 circuits).")
+     sheet="SW-3X1-06", info="Fed from the future D5 diameter by 230 kV underground cable (2 circuits).")
 xfmr(L, "CCS T-2: 230/13.8 kV", 1260, 1300, 985, 1030, 22, bushing=13, fins="x", tag="CCS T-2", area="G",
-     sheet="SK-3X1-06")
+     sheet="SW-3X1-06")
 solid(L, "CCS instrument air", 1310, 1350, 985, 1030, 0, 12, "equip", area="G")
 ehouse(L, "CCS F&G / control", 1360, 1435, 985, 1030, 16, area="G")
 L = "OPT_CCSU"
 item(L, "CCS cooling tower (~30 cells): CCS process cooling only", (440, 1190, 1740, 1860), (0, 50),
-     tag="CCS-CT", area="G", sheet="SK-3X1-06",
+     tag="CCS-CT", area="G", sheet="SW-3X1-06",
      info="Not the ACC. About 30 cells (NZT 360-390 MWth per train); cell end walls up to 50 ft.")
 B(440, 1190, 1740, 1860, 0, 3, "water")
 B(440, 1190, 1740, 1860, 3, 40, "tower")
@@ -1129,42 +1129,42 @@ ehouse(L, "CT MCC / VFD e-house", 1200, 1290, 1830, 1885, 16, area="G")
 building(L, "CCS wastewater (DCC + tower blowdown)", 1300, 1430, 1720, 1800, 25, area="G")
 
 # ---------------------------------------------------------------------------
-# H BESS (SK-3X1-07)
+# H BESS (SW-3X1-07)
 # ---------------------------------------------------------------------------
 L = "OPT_BESS"
 for y in (467, 525, 583, 641, 699):
     for x in range(1565, 1866, 60):
         item(L, "BESS container (ISO 40 ft high cube)", (x, x + 40, y, y + 8), (0, 10.5), area="H", basis="vendor",
-             sheet="SK-3X1-12", info="BMS, HVAC and fire suppression. ISO 668: 40 x 8 x 9.5 ft.", register=False)
+             sheet="SW-3X1-12", info="BMS, HVAC and fire suppression. ISO 668: 40 x 8 x 9.5 ft.", register=False)
         B(x, x + 40, y, y + 8, 0, 1, "concrete"); B(x + 0.2, x + 39.8, y, y + 8, 1, 10.5, "bess")
         B(x + 39.8, x + 40.6, y + 1.5, y + 6.5, 3, 8, "machine")
     for x in (1590, 1710, 1830):
         xfmr(L, "BESS PCS / MV skid", x, x + 20, y + 19, y + 27, 9, fins="y", area="H", register=False)
 item(L, "BESS blocks: 30 containers + 15 PCS / MV skids", (1565, 1905, 467, 726), (0, 10.5), tag="BESS", area="H",
-     sheet="SK-3X1-07", info="Counts, sizes and ratings are assumptions (sheet 02).")
+     sheet="SW-3X1-07", info="Counts, sizes and ratings are assumptions (sheet 02).")
 xfmr(L, "BESS main power transformer 34.5/230 kV (to D4 upper)", 1725, 1765, 352, 387, 24, bushing=13,
-     tag="BESS MPT", area="H", sheet="SK-3X1-07")
-ehouse(L, "34.5 kV collector e-house (arc-resistant)", 1800, 1850, 360, 376, 14, area="H", sheet="SK-3X1-07")
-xfmr(L, "BESS auxiliary transformer", 1885, 1905, 360, 372, 8, area="H", sheet="SK-3X1-07")
-ehouse(L, "BESS EMS / SCADA and revenue metering", 1885, 1905, 410, 422, 10, area="H", sheet="SK-3X1-07")
+     tag="BESS MPT", area="H", sheet="SW-3X1-07")
+ehouse(L, "34.5 kV collector e-house (arc-resistant)", 1800, 1850, 360, 376, 14, area="H", sheet="SW-3X1-07")
+xfmr(L, "BESS auxiliary transformer", 1885, 1905, 360, 372, 8, area="H", sheet="SW-3X1-07")
+ehouse(L, "BESS EMS / SCADA and revenue metering", 1885, 1905, 410, 422, 10, area="H", sheet="SW-3X1-07")
 solid(L, "CONDITIONAL: grounding transformer", 1565, 1575, 415, 425, 0, 8, "conditional", area="H",
       basis="conditional")
 
 # ---------------------------------------------------------------------------
-# I MODULAR GENERATION + BLACK START, PORTABLE PAD (SK-3X1-07, -08)
+# I MODULAR GENERATION + BLACK START, PORTABLE PAD (SW-3X1-07, -08)
 # ---------------------------------------------------------------------------
 L = "OPT_MOD"
-item(L, "RICE engine hall (8 engines)", (1570, 1810, 1040, 1130), (0, 40), tag="RICE", area="I", sheet="SK-3X1-07",
+item(L, "RICE engine hall (8 engines)", (1570, 1810, 1040, 1130), (0, 40), tag="RICE", area="I", sheet="SW-3X1-07",
      info="Hall for 8 medium-speed 18-cylinder engine-generators (18V50 class, approx.).")
 B(1570, 1810, 1040, 1130, 0, 34, "hall"); P(1570, 1810, 1040, 1130, 34, 40, "roof", ridge="x")
 for k in range(8):
     x = 1581 + 28 * k
     item(L, f"RICE engine-generator {k+1}", (x, x + 19, 1055, 1115), (0, 20), tag=f"RICE-{k+1}", area="I",
-         basis="typical", sheet="SK-3X1-12", register=False)
+         basis="typical", sheet="SW-3X1-12", register=False)
     B(x, x + 19, 1055, 1115, 0, 3, "concrete"); B(x + 2, x + 17, 1060, 1095, 3, 20, "machine")
     R((x + 9.5, 1096, 11), (x + 9.5, 1112, 11), 7, "machine", seg=20)
     item(L, f"RICE {k+1} SCR + oxidation catalyst and stack", (x - 1, x + 21, 1000, 1040), (0, 90),
-         area="I", sheet="SK-3X1-13", register=False, info="Stacks 90 ft (Weston ~65 ft; Humboldt Bay 100 ft).")
+         area="I", sheet="SW-3X1-13", register=False, info="Stacks 90 ft (Weston ~65 ft; Humboldt Bay 100 ft).")
     B(x - 1, x + 21, 1000, 1030, 0, 25, "equip")
     V(x + 10, 1037, 3, 0, 90, "stack", seg=14)
     item(L, f"RICE {k+1} radiators (5)", (x - 1, x + 21, 1140, 1216), (0, 14), area="I", register=False)
@@ -1172,77 +1172,77 @@ for k in range(8):
         column_grid((x, x + 20), (1141 + 16 * r_, 1151 + 16 * r_), 4, s=0.5)
         B(x - 1, x + 21, 1140 + 16 * r_, 1152 + 16 * r_, 4, 7, "bundle")
         V(x + 10, 1146 + 16 * r_, 5, 7, 9, "fan", seg=14)
-building(L, "Lube oil / starting air / oily water building", 1570, 1690, 1235, 1290, 20, area="I", sheet="SK-3X1-07")
+building(L, "Lube oil / starting air / oily water building", 1570, 1690, 1235, 1290, 20, area="I", sheet="SW-3X1-07")
 solid(L, "Gas conditioning skid", 1700, 1760, 1250, 1280, 0, 10, "equip", area="I")
 tank(L, "Reagent storage", 1810, 1260, 12, 15, area="I")
-ehouse(L, "PCM: power control module", 1820, 1860, 1140, 1220, 14, area="I", sheet="SK-3X1-07")
+ehouse(L, "PCM: power control module", 1820, 1860, 1140, 1220, 14, area="I", sheet="SW-3X1-07")
 solid(L, "RICE CEMS", 1830, 1846, 1005, 1015, 0, 10, "ehouse", area="I")
 for k, x in enumerate([1910, 2110], 1):
     item(L, f"SC-{k}: aeroderivative simple-cycle unit (LM6000 class)", (x, x + 90, 1190, 1220), (0, 35),
-         tag=f"SC-{k}", area="I", sheet="SK-3X1-07",
+         tag=f"SC-{k}", area="I", sheet="SW-3X1-07",
          info="Package with filter house; SCR and CO catalyst with an 80 ft stack (Mira Loma permit), "
          "CEMS, PCM with 15 kV GCB, lube-oil fin-fan cooler, CO2 fire suppression.")
     B(x, x + 70, 1192, 1218, 0, 22, "machine")
     B(x + 70, x + 90, 1190, 1220, 0, 32, "filter")
     B(x - 20, x, 1196, 1214, 8, 26, "duct")
     solid(L, f"SC-{k} SCR / CO catalyst", x + 90, x + 130, 1190, 1220, 0, 35, "equip", area="I", register=False)
-    item(L, f"SC-{k} stack (80 ft)", (x + 135.5, x + 148.5, 1198, 1211), (0, 80), area="I", sheet="SK-3X1-13",
+    item(L, f"SC-{k} stack (80 ft)", (x + 135.5, x + 148.5, 1198, 1211), (0, 80), area="I", sheet="SW-3X1-13",
          shape="circle", register=False)
     V(x + 142, 1204.5, 6.5, 0, 80, "stack", seg=20)
     ehouse(L, f"SC-{k} PCM + 15 kV GCB", x, x + 40, 1245, 1259, 12, area="I", register=False)
     solid(L, f"SC-{k} lube-oil fin-fan cooler", x + 50, x + 70, 1245, 1259, 0, 10, "bundle", area="I", register=False)
     solid(L, f"CONDITIONAL: SC-{k} inlet chiller / evaporative cooler", x, x + 60, 1135, 1170, 0, 14,
           "conditional", area="I", basis="conditional")
-building(L, "Fuel-gas compressors 3 x 100% electric", 2290, 2370, 1180, 1240, 20, area="I", sheet="SK-3X1-07")
+building(L, "Fuel-gas compressors 3 x 100% electric", 2290, 2370, 1180, 1240, 20, area="I", sheet="SW-3X1-07")
 tank(L, "Demin tank + trailer pad", 2310, 1280, 20, 30, area="I")
 solid(L, "Water-injection skid", 2255, 2275, 1280, 1290, 0, 8, "equip", area="I")
 solid(L, "Aqueous ammonia (SC units)", 2240, 2280, 1318, 1330, 0, 10, "tank", area="I")
 for yy in (870, 888):
     item(L, "Black-start genset (proposed; requires study)", (1570, 1616, yy, yy + 10), (0, 16), area="I",
-         sheet="SK-3X1-07",
+         sheet="SW-3X1-07",
          info="Black start is proposed only: needs starting-load, transformer-energisation, "
-         "protection and operating-sequence studies (SK-3X1-07).")
+         "protection and operating-sequence studies (SW-3X1-07).")
     B(1570, 1616, yy, yy + 10, 0, 13, "machine"); R((1610, yy + 5, 13), (1610, yy + 5, 16), 0.8, "steel")
-ehouse(L, "BS black-start switchgear", 1625, 1645, 875, 893, 12, area="I", sheet="SK-3X1-07")
+ehouse(L, "BS black-start switchgear", 1625, 1645, 875, 893, 12, area="I", sheet="SW-3X1-07")
 solid(L, "CONDITIONAL: BESS black-start alternative", 1655, 1700, 868, 900, 0, 9.5, "conditional", area="I",
       basis="conditional")
 ehouse(L, "MOD-EH: 13.8 kV modular collector e-house", 1915, 1995, 880, 900, 16, tag="MOD-EH", area="I",
-       sheet="SK-3X1-08")
-xfmr(L, "T-MOD-1: 13.8/230 kV", 2045, 2085, 870, 905, 24, bushing=13, tag="T-MOD-1", area="I", sheet="SK-3X1-08")
-xfmr(L, "T-MOD-2: 13.8/230 kV", 2105, 2145, 870, 905, 24, bushing=13, tag="T-MOD-2", area="I", sheet="SK-3X1-08")
+       sheet="SW-3X1-08")
+xfmr(L, "T-MOD-1: 13.8/230 kV", 2045, 2085, 870, 905, 24, bushing=13, tag="T-MOD-1", area="I", sheet="SW-3X1-08")
+xfmr(L, "T-MOD-2: 13.8/230 kV", 2105, 2145, 870, 905, 24, bushing=13, tag="T-MOD-2", area="I", sheet="SW-3X1-08")
 for k in range(4):
     x = 1995 + 14 * k
     solid(L, f"FC-{k+1}: SOFC module (Bloom ES5 class, 200-300 kW)", x, x + 9, 1070, 1096, 0, 7, "bess",
-          area="I", basis="vendor", sheet="SK-3X1-12", info="26 ft 5 in x 8 ft 7 in x 6 ft 9 in.")
+          area="I", basis="vendor", sheet="SW-3X1-12", info="26 ft 5 in x 8 ft 7 in x 6 ft 9 in.")
 solid(L, "Fuel-cell inverter / AC cabinet / desulfurizer", 2060, 2102, 1072, 1096, 0, 8, "ehouse", area="I")
 for k in range(3):
     x = 2260 + 14 * k
     solid(L, f"MT-{k+1}: microturbine 1 MW (Capstone C1000 class)", x, x + 8, 1068, 1096, 0, 9.5, "machine",
-          area="I", basis="vendor", sheet="SK-3X1-12", info="2438 x 8534 x 2896 mm.")
-ehouse(L, "MOD-LV 480 V board + 480 V : 13.8 kV step-up", 2215, 2267, 970, 982, 10, area="I", sheet="SK-3X1-08")
+          area="I", basis="vendor", sheet="SW-3X1-12", info="2438 x 8534 x 2896 mm.")
+ehouse(L, "MOD-LV 480 V board + 480 V : 13.8 kV step-up", 2215, 2267, 970, 982, 10, area="I", sheet="SW-3X1-08")
 L = "OPT_TMP"
 pad(L, "Portable pad lane", 2130, 2370, 620, 640, "road", z1=0.3, area="I")
 pad(L, "Portable pad lane", 2346, 2370, 305, 620, "road", z1=0.3, area="I")
-solid(L, "Drive-over cable ramp (C-L01 crossing)", 2238, 2252, 617, 643, 0, 1, "amber", area="I", sheet="SK-3X1-08")
+solid(L, "Drive-over cable ramp (C-L01 crossing)", 2238, 2252, 617, 643, 0, 1, "amber", area="I", sheet="SW-3X1-08")
 for k, y in ((1, 642), (2, 607)):
     solid(L, f"CONT-{k}: containerized genset 13.8 kV (40 ft)", 2000, 2040, y, y + 8, 0, 9.5, "machine",
-          tag=f"CONT-{k}", area="I", sheet="SK-3X1-08")
+          tag=f"CONT-{k}", area="I", sheet="SW-3X1-08")
     ehouse(L, f"GSP-{k}: generator breaker / protection", 2042, 2050, y - 2, y + 10, 8, tag=f"GSP-{k}", area="I",
-           sheet="SK-3X1-08")
-item(L, "MOB-1: trailer genset", (2160, 2213, 695, 704), (0, 13.5), tag="MOB-1", area="I", sheet="SK-3X1-08")
+           sheet="SW-3X1-08")
+item(L, "MOB-1: trailer genset", (2160, 2213, 695, 704), (0, 13.5), tag="MOB-1", area="I", sheet="SW-3X1-08")
 B(2160, 2213, 695, 704, 3, 13.5, "machine")
 for xx in (2165, 2200, 2206):
     R((xx, 695.5, 1.8), (xx, 703.5, 1.8), 1.8, "conductor", seg=12)
-ehouse(L, "PIC: portable input cabinet", 2255, 2263, 572, 578, 7, tag="PIC", area="I", sheet="SK-3X1-08")
+ehouse(L, "PIC: portable input cabinet", 2255, 2263, 572, 578, 7, tag="PIC", area="I", sheet="SW-3X1-08")
 solid(L, "LB: commissioning load bank (trailer)", 2295, 2325, 560, 568, 0, 12, "equip", tag="LB", area="I",
-      sheet="SK-3X1-08")
+      sheet="SW-3X1-08")
 solid(L, "GEN-E: enclosed industrial gas genset 2 MW", 2000, 2046, 460, 470, 0, 15, "machine", tag="GEN-E",
-      area="I", basis="vendor", sheet="SK-3X1-08")
+      area="I", basis="vendor", sheet="SW-3X1-08")
 solid(L, "GEN-O: open engine-generator skid", 2010, 2036, 420, 428, 0, 8, "machine", tag="GEN-O", area="I",
-      sheet="SK-3X1-08")
-ehouse(L, "PAD-LV 480 V paralleling switchboard", 2160, 2190, 430, 440, 9, tag="PAD-LV", area="I", sheet="SK-3X1-08")
-xfmr(L, "PAD-TX 480 V : 13.8 kV", 2215, 2227, 429, 441, 10, tag="PAD-TX", area="I", sheet="SK-3X1-08")
-ehouse(L, "PAD-EH 13.8 kV switchgear e-house", 2160, 2200, 470, 484, 14, tag="PAD-EH", area="I", sheet="SK-3X1-08")
+      sheet="SW-3X1-08")
+ehouse(L, "PAD-LV 480 V paralleling switchboard", 2160, 2190, 430, 440, 9, tag="PAD-LV", area="I", sheet="SW-3X1-08")
+xfmr(L, "PAD-TX 480 V : 13.8 kV", 2215, 2227, 429, 441, 10, tag="PAD-TX", area="I", sheet="SW-3X1-08")
+ehouse(L, "PAD-EH 13.8 kV switchgear e-house", 2160, 2200, 470, 484, 14, tag="PAD-EH", area="I", sheet="SW-3X1-08")
 solid(L, "Portable pad gas-conditioning skid", 2310, 2340, 430, 440, 0, 8, "equip", area="I")
 
 # ---------------------------------------------------------------------------
@@ -1304,76 +1304,76 @@ for k in range(3):
           tag=f"MT-{k + 4}", **DC)
 
 # ---------------------------------------------------------------------------
-# J GT INLET CHILLING (SK-3X1-02), optional
+# J GT INLET CHILLING (SW-3X1-02), optional
 # ---------------------------------------------------------------------------
 L = "OPT_IC"
 item(L, "Inlet-chilling tower (12 cells): chiller heat rejection", (60, 300, 1240, 1320), (0, 50), area="J",
-     basis="typical", sheet="SK-3X1-02")
+     basis="typical", sheet="SW-3X1-02")
 B(60, 300, 1240, 1320, 0, 3, "water"); B(60, 300, 1240, 1320, 3, 40, "tower"); B(60, 300, 1240, 1320, 40, 42, "grating")
 for c in range(6):
     for r_ in range(2):
         V(80 + 40 * c, 1260 + 40 * r_, 15, 42, 50, "tower", r2=16, seg=20)
-building(L, "Chillers x6 (water-cooled)", 60, 240, 1040, 1170, 25, area="J", sheet="SK-3X1-02")
+building(L, "Chillers x6 (water-cooled)", 60, 240, 1040, 1170, 25, area="J", sheet="SW-3X1-02")
 solid(L, "CW pumps (inlet chilling)", 250, 305, 1100, 1170, 0, 10, "pump", area="J")
 ehouse(L, "Inlet-chilling e-house / transformer", 250, 305, 1040, 1085, 14, area="J")
 solid(L, "CHW pumps", 60, 150, 1190, 1225, 0, 10, "pump", area="J")
 tank(L, "CONDITIONAL: TES chilled-water tank", 200, 1205, 24, 40, "conditional", area="J", basis="conditional")
 
 # ---------------------------------------------------------------------------
-# K LNG SATELLITE and 25 MW GREEN HYDROGEN (SK-3X1-14), adjacent market
+# K LNG SATELLITE and 25 MW GREEN HYDROGEN (SW-3X1-14), adjacent market
 # ---------------------------------------------------------------------------
 L = "OPT_LNG"
 item(L, "LNG 12: spill impoundment (NFPA 59A, to verify)", (2115, 2298, 1732, 1836), (0, 4), area="K",
-     sheet="SK-3X1-14")
+     sheet="SW-3X1-14")
 for bx in [(2115, 2298, 1732, 1733), (2115, 2298, 1835, 1836), (2115, 2116, 1732, 1836), (2297, 2298, 1732, 1836)]:
     B(*bx, 0, 4, "concrete")
 B(2116, 2297, 1733, 1835, 0, 0.3, "concrete")
 for k in range(8):
     x = 2130 + 20 * k
     item(L, f"LNG 11: tank {k+1}, Chart HS 50000 (51,780 gal)", (x, x + 12.5, 1745, 1822.6), (0, 17.5),
-         tag=f"LNG-T{k+1}", area="K", basis="vendor", sheet="SK-3X1-14",
+         tag=f"LNG-T{k+1}", area="K", basis="vendor", sheet="SW-3X1-14",
          info="150 in dia x 931 in long. Eight tanks hold 414,000 gal, roughly 9 h of one GT or 3 h of the plant.")
     R((x + 6.25, 1747, 11), (x + 6.25, 1820.6, 11), 6.25, "tank", seg=20)
     for yy in (1760, 1805):
         B(x + 1, x + 11.5, yy - 1.5, yy + 1.5, 0.3, 7, "concrete")
 pad(L, "LNG 10: truck unloading bay 1", 1840, 1912, 1690, 1712, "road", z1=0.3, area="K")
 pad(L, "LNG 10: truck unloading bay 2", 1925, 1997, 1690, 1712, "road", z1=0.3, area="K")
-solid(L, "LNG 10: unloading skid", 1885, 1925, 1716, 1728, 0, 8, "equip", area="K", sheet="SK-3X1-14")
-item(L, "LNG 14: vaporizers + glycol heater", (1880, 1990, 1760, 1820), (0, 30), area="K", sheet="SK-3X1-14")
+solid(L, "LNG 10: unloading skid", 1885, 1925, 1716, 1728, 0, 8, "equip", area="K", sheet="SW-3X1-14")
+item(L, "LNG 14: vaporizers + glycol heater", (1880, 1990, 1760, 1820), (0, 30), area="K", sheet="SW-3X1-14")
 B(1880, 1990, 1760, 1820, 0, 1, "concrete")
 for k in range(4):
     B(1886 + 26 * k, 1904 + 26 * k, 1766, 1790, 1, 30, "bundle")
 B(1886, 1984, 1798, 1816, 1, 12, "equip")
-solid(L, "LNG 13: send-out pumps 2 x 100%", 2030, 2070, 1765, 1795, 0, 8, "pump", area="K", sheet="SK-3X1-14")
-solid(L, "LNG 15: boil-off gas compressor", 2030, 2075, 1815, 1845, 0, 12, "motor", area="K", sheet="SK-3X1-14")
+solid(L, "LNG 13: send-out pumps 2 x 100%", 2030, 2070, 1765, 1795, 0, 8, "pump", area="K", sheet="SW-3X1-14")
+solid(L, "LNG 15: boil-off gas compressor", 2030, 2075, 1815, 1845, 0, 12, "motor", area="K", sheet="SW-3X1-14")
 solid(L, "LNG 16: send-out metering + pressure control", 1880, 1930, 1840, 1880, 0, 10, "equip", area="K",
-      sheet="SK-3X1-14")
+      sheet="SW-3X1-14")
 solid(L, "LNG impoundment sump pump", 1830, 1860, 1760, 1780, 0, 6, "pump", area="K")
-ehouse(L, "LNG 17: LNG e-house (13.8 kV / 480 V)", 1950, 1990, 1850, 1864, 14, area="K", sheet="SK-3X1-14",
+ehouse(L, "LNG 17: LNG e-house (13.8 kV / 480 V)", 1950, 1990, 1850, 1864, 14, area="K", sheet="SW-3X1-14",
        info="15 kV from R1, about 2,690 ft (1,760 shared DB-N + 931 new).")
 item(L, "LNG 18: vent stack", (2092, 2098, 1860, 1866), (0, 60), area="K", basis="typical", shape="circle")
 V(2095, 1863, 1.5, 0, 60, "stack")
 L = "OPT_H2"
 item(L, "H2 22: electrolyzer building (5 x HyLYZER-1000 + 5 rectifiers)", (2010, 2170, 1440, 1520), (0, 30),
-     tag="H2-EL", area="K", sheet="SK-3X1-14",
+     tag="H2-EL", area="K", sheet="SW-3X1-14",
      info="25 MW PEM electrolysis, 10.8 t/day, sized like FPL Cavendish at Okeechobee. Hydrogen is "
      "GT fuel made from renewable or surplus power imported through D6, never from the plant's "
-     "own output (SK-3X1-16). Group B hazardous area.")
+     "own output (SW-3X1-16). Group B hazardous area.")
 B(2010, 2170, 1440, 1520, 0, 26, "hall"); P(2010, 2170, 1440, 1520, 26, 30, "roof", ridge="x")
 for k in range(5):
     x = 2020 + 20 * k
     solid(L, f"PEM electrolyzer {k+1} (HyLYZER-1000)", x, x + 7.5, 1450, 1477.7, 0, 10, "bess", area="K",
-          basis="vendor", sheet="SK-3X1-12", register=False, info="Cummins bulletin: 8.4 x 2.3 m.")
+          basis="vendor", sheet="SW-3X1-12", register=False, info="Cummins bulletin: 8.4 x 2.3 m.")
     solid(L, f"Rectifier {k+1} (7 MVA)", x, x + 8.2, 1490, 1504.8, 0, 8, "cabinet", area="K", basis="vendor",
           register=False, info="Cummins bulletin: 4.5 x 2.5 m, 7 MVA.")
     xfmr(L, f"H2 21: rectifier transformer {k+1} (7 MVA)", x + 2 * k, x + 2 * k + 12, 1530, 1542, 10, area="K",
-         sheet="SK-3X1-14")
+         sheet="SW-3X1-14")
 solid(L, "H2 24: water purification (RO / EDI)", 2125, 2160, 1455, 1480, 0, 12, "equip", area="K",
       info="9 L per kg H2 (Cummins).")
-ehouse(L, "H2 20: 13.8 kV e-house", 2240, 2300, 1440, 1456, 14, area="K", sheet="SK-3X1-14")
+ehouse(L, "H2 20: 13.8 kV e-house", 2240, 2300, 1440, 1456, 14, area="K", sheet="SW-3X1-14")
 xfmr(L, "H2 19: T-H2 230/13.8 kV (about 40 MVA)", 2330, 2370, 1440, 1480, 24, bushing=13, tag="T-H2", area="K",
-     sheet="SK-3X1-14", info="230 kV cable from D6, 1,720 ft route along the east fence.")
-item(L, "H2 23: dry coolers", (2185, 2225, 1440, 1560), (0, 16), area="K", sheet="SK-3X1-14",
+     sheet="SW-3X1-14", info="230 kV cable from D6, 1,720 ft route along the east fence.")
+item(L, "H2 23: dry coolers", (2185, 2225, 1440, 1560), (0, 16), area="K", sheet="SW-3X1-14",
      info="5 x 2,500 L/min (Cummins).")
 column_grid((2186, 2224), range(1442, 1561, 39), 8, s=0.6)
 B(2185, 2225, 1440, 1560, 8, 12, "bundle")
@@ -1385,19 +1385,19 @@ for k in range(2):
     V(2248 + 14 * k, 1510, 5, 0, 14, "tank")
 for k, y in ((1, 1500), (2, 1515)):
     solid(L, f"H2 26: H2 compressor {k} (40 ft ISO)", 2290, 2330, y, y + 8, 0, 9.5, "machine", area="K",
-          sheet="SK-3X1-14")
+          sheet="SW-3X1-14")
 for (x, y) in [(2250, 1560), (2250, 1580), (2300, 1560), (2300, 1580)]:
     item(L, "H2 27: storage tube bank (~40 ft tubes)", (x, x + 40, y, y + 10), (0, 10), area="K", register=False)
     for k in range(3):
         R((x + 1, y + 1.7 + 3.3 * k, 2.5), (x + 39, y + 1.7 + 3.3 * k, 2.5), 1.5, "tank", seg=12)
         R((x + 1, y + 1.7 + 3.3 * k, 6), (x + 39, y + 1.7 + 3.3 * k, 6), 1.5, "tank", seg=12)
-item(L, "H2 storage tube banks x4", (2250, 2340, 1560, 1590), (0, 8), tag="H2-ST", area="K", sheet="SK-3X1-14",
+item(L, "H2 storage tube banks x4", (2250, 2340, 1560, 1590), (0, 8), tag="H2-ST", area="K", sheet="SW-3X1-14",
      info="Buffer hours between solar production and turbine operation; seasonal storage needs "
-     "geology such as salt caverns (SK-3X1-16).")
+     "geology such as salt caverns (SW-3X1-16).")
 item(L, "H2 29: vent stack", (2378, 2382, 1595, 1599), (0, 40), area="K", basis="typical", shape="circle")
 V(2380, 1597, 1.2, 0, 40, "stack")
 solid(L, "H2 30: H2 / gas blending skid (plant gas yard)", 1800, 1840, 1470, 1500, 0, 10, "equip", area="K",
-      sheet="SK-3X1-14", info="Blends into the GT-1 fuel branch (5% by volume pilot, as FPL tested one of three units).")
+      sheet="SW-3X1-14", info="Blends into the GT-1 fuel branch (5% by volume pilot, as FPL tested one of three units).")
 
 # ---------------------------------------------------------------------------
 # L BTM DATA CENTRE (design option beyond Rev 14): ~150 MW campus outside the east fence, beside
@@ -1558,7 +1558,7 @@ def opt_layer(pl, rtype):
 def clip_out(pl, box):
     """Split a polyline at an axis-aligned rectangle, keeping the parts outside.
     Trays leave R1 through the cable basement and rise at the east wall
-    (SK-3X1-05), so their drawn centrelines inside R1 are not tray."""
+    (SW-3X1-05), so their drawn centrelines inside R1 are not tray."""
     x0, x1, y0, y1 = box
     inside = lambda p: x0 < p[0] < x1 and y0 < p[1] < y1
     out, cur = [], []
@@ -1589,7 +1589,7 @@ def clip_out(pl, box):
 
 R1_BOX = (410, 476, 600, 780)
 routes = []
-for fname, src, optional in [("routes_base.json", "SK-3X1-01", False), ("routes_optional.json", "SK-3X1-02", True)]:
+for fname, src, optional in [("routes_base.json", "SW-3X1-01", False), ("routes_optional.json", "SW-3X1-02", True)]:
     data = json.load(open(os.path.join(HERE, fname)))
     for rtype, polys in data.items():
         if rtype == "flue_duct":
@@ -1615,10 +1615,10 @@ for fname, src, optional in [("routes_base.json", "SK-3X1-01", False), ("routes_
 for r in routes:
     if r["type"] == "chw" and r["points"][-1][0] in (910.0, 916.0):
         r["z"] = 10
-# H-MOD 230 kV overhead tie in the reserved corridor COR-HMOD (SK-3X1-08)
+# H-MOD 230 kV overhead tie in the reserved corridor COR-HMOD (SW-3X1-08)
 HMOD = [[2095, 870], [2095, 805], [1515, 805], [1515, 262], [1690, 262], [1690, 237], [1720, 130]]
 routes.append(dict(type="hmod", layer="HV_CORRIDOR", label=ROUTE_STYLE["hmod"][4], z=45, w=0.8, h=0.8,
-                   color="conductor", points=HMOD, sheet="SK-3X1-08"))
+                   color="conductor", points=HMOD, sheet="SW-3X1-08"))
 # ---------------------------------------------------------------------------
 # Connections the drawing leaves open (site audit, plant/audit.py): typical routing
 # ---------------------------------------------------------------------------
@@ -1735,7 +1735,7 @@ for x in (612, 772, 932):
     add_route("duct_bank", [(x, 330), (x, 312)], "ROUTES_BASE", sheet=HC)
 add_route("duct_bank", [(1034, 324), (1034, 312), (987, 312)], "ROUTES_BASE", sheet=HC)
 item("HV_CORRIDOR", "H-MOD 230 kV monopoles in COR-HMOD", (1505, 2105, 255, 815), (0, 50), area="I",
-     basis="typical", sheet="SK-3X1-08", info="Overhead tie from T-MOD-1/2 to the D4 lower position (future).")
+     basis="typical", sheet="SW-3X1-08", info="Overhead tie from T-MOD-1/2 to the D4 lower position (future).")
 for (x, y) in [(2095, 815), (1950, 805), (1800, 805), (1650, 805), (1515, 805), (1515, 650), (1515, 500),
                (1515, 350), (1515, 262), (1690, 262)]:
     R((x, y, 0), (x, y, 50), 1.2, "steel", r2=0.8, seg=10)
@@ -1748,7 +1748,7 @@ LAYERS = {
     "BASE_INLET_AIR": ("Filter houses and inlet ducts", "Base plant"),
     "BASE_ELECTRICAL": ("Electrical: GSUs, UATs, GCBs, e-houses, EDGs", "Base plant"),
     "R1_ROOF": ("R1 roof", "Base plant"), "R1_WALL_E": ("R1 east wall", "Base plant"),
-    "R1_INTERIOR": ("R1 interior (SK-3X1-05)", "Base plant"),
+    "R1_INTERIOR": ("R1 interior (SW-3X1-05)", "Base plant"),
     "R4_ROOF": ("R4 roof", "Base plant"), "R4_WALL_E": ("R4 east wall", "Base plant"),
     "R4_INTERIOR": ("R4 VFD interior", "Base plant"),
     "CR_ROOF": ("Control / admin building roof and ceiling", "Base plant"),
@@ -1787,7 +1787,7 @@ LAYERS = {
 AREAS = {"A": "Power block", "B": "ACC", "C": "Grid interface", "D": "Fuel gas", "E": "Water / utilities",
          "F": "Controls / service", "G": "Carbon capture", "H": "BESS", "I": "Modular / portable power",
          "J": "GT inlet chilling", "K": "Fuel supply (adjacent market)", "L": "BTM data centre (design option)"}
-# Views from SK-3X1-11 (collections to show), plus two convenience views.
+# Views from SW-3X1-11 (collections to show), plus two convenience views.
 BASE_SHOW = ["SITE", "BASE_POWER_BLOCK", "HALL_ROOF", "BASE_INLET_AIR", "BASE_ELECTRICAL", "R1_ROOF", "R1_WALL_E",
              "R4_ROOF", "R4_WALL_E", "BASE_SWITCHYARD", "BASE_UTILITIES", "BASE_SERVICES", "ROUTES_BASE",
              "PROCESS_PIPING"]
@@ -1865,7 +1865,7 @@ for _v in VIEWS:                              # the control-building roof travel
         _v["show"].append("H2_ROOF")
 
 
-# Fit sets for the orthographic cameras (SK-3X1-11: "its fit set is projected
+# Fit sets for the orthographic cameras (SW-3X1-11: "its fit set is projected
 # along the view direction; ortho scale and target are solved so the fit set
 # fills the frame with a 3% margin"). Either layers or a plan/elevation box.
 FIT = {
@@ -2343,18 +2343,18 @@ def validate():
 
 
 model = dict(
-    title="SK-3X1 Rev 14 - 3x1 combined-cycle plant, 3D coordinate model",
+    title="SW-3X1 Rev 14 - 3x1 combined-cycle plant, 3D coordinate model",
     units="feet", axes="X east, Y north, Z up; origin SW corner of compound",
     compound=[2420, 1920],
     disclaimer="Conceptual illustration. Not engineered. Not for construction.",
-    source="SK-3X1 Drawing Set Rev 14 (Sept 26, 2026), Stephan Hardt | Power Generation Solutions",
+    source="SW-3X1 Drawing Set Rev 14 (Sept 26, 2026), Stephan Hardt | Power Generation Solutions",
     layers={k: dict(label=v[0], group=v[1]) for k, v in LAYERS.items()},
     areas=AREAS, views=VIEWS, items=items, parts=parts, routes=routes, decals=_fuel.G.get("decals", []),
     underground_audit={k: v for k, v in N_UG['audit'].items()})
 
 if __name__ == "__main__":
     validate()
-    out = os.path.join(HERE, "sk3x1_model.json")
+    out = os.path.join(HERE, "sw3x1_model.json")
     def _r(o):  # 0.01 ft is far below any drawn tolerance; keeps the file small
         if isinstance(o, float):
             return round(o, 2)

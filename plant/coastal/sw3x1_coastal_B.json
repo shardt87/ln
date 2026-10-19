@@ -1,6 +1,6 @@
 {
-"title": "SK-3X1 Rev 14 - 3x1 combined-cycle plant, 3D coordinate model | coastal variant B (SK-3X1-15)",
-"base": "sk3x1_model.json",
+"title": "SW-3X1 Rev 14 - 3x1 combined-cycle plant, 3D coordinate model | coastal variant B (SW-3X1-15)",
+"base": "sw3x1_model.json",
 "disclaimer": "Conceptual illustration. Not engineered. Not for construction.",
 "coastal": {
 "variant": "B",
@@ -50,7 +50,7 @@
 "shape": "rect",
 "info": "",
 "basis": "typical",
-"sheet": "SK-3X1-15",
+"sheet": "SW-3X1-15",
 "register": true,
 "key": "12",
 "wiring": [
@@ -81,7 +81,7 @@
 "shape": "rect",
 "info": "",
 "basis": "typical",
-"sheet": "SK-3X1-15",
+"sheet": "SW-3X1-15",
 "register": false,
 "key": "",
 "frame": "sheet15+rot90"
@@ -105,7 +105,7 @@
 "shape": "circle",
 "info": "",
 "basis": "typical",
-"sheet": "SK-3X1-15",
+"sheet": "SW-3X1-15",
 "register": true,
 "key": "14",
 "frame": "sheet15+rot90"
@@ -129,7 +129,7 @@
 "shape": "hull",
 "info": "",
 "basis": "illustrative (sheet 15 outline)",
-"sheet": "SK-3X1-15",
+"sheet": "SW-3X1-15",
 "register": true,
 "key": "15",
 "frame": "sheet15+rot90"
@@ -153,7 +153,7 @@
 "shape": "hull",
 "info": "",
 "basis": "illustrative (sheet 15 outline)",
-"sheet": "SK-3X1-15",
+"sheet": "SW-3X1-15",
 "register": true,
 "key": "16",
 "frame": "sheet15+rot90"
@@ -177,7 +177,7 @@
 "shape": "rect",
 "info": "",
 "basis": "typical",
-"sheet": "SK-3X1-15",
+"sheet": "SW-3X1-15",
 "register": false,
 "key": "",
 "frame": "sheet15+rot90"
@@ -201,7 +201,7 @@
 "shape": "rect",
 "info": "",
 "basis": "typical",
-"sheet": "SK-3X1-15",
+"sheet": "SW-3X1-15",
 "register": false,
 "key": "",
 "frame": "sheet15+rot90"
@@ -225,7 +225,7 @@
 "shape": "rect",
 "info": "",
 "basis": "typical",
-"sheet": "SK-3X1-15",
+"sheet": "SW-3X1-15",
 "register": false,
 "key": "",
 "frame": "site"

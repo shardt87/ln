@@ -1,4 +1,4 @@
-"""Modular power yard at LOD 3 (SK-3X1-07 / -08 and the OPT_MODX design change): the
+"""Modular power yard at LOD 3 (SW-3X1-07 / -08 and the OPT_MODX design change): the
 smaller generating units, their switchgear and the skids around them.
 
 Every item keeps its drawn footprint; the single boxes become typical equipment:

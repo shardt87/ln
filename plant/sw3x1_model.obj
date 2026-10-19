@@ -1,7 +1,7 @@
-# SK-3X1 Rev 14 - 3x1 combined-cycle plant, 3D coordinate model
+# SW-3X1 Rev 14 - 3x1 combined-cycle plant, 3D coordinate model
 # units: feet; Y up
 # Conceptual illustration. Not engineered. Not for construction.
-mtllib sk3x1_model.mtl
+mtllib sw3x1_model.mtl
 v 0.00 0.00 -270.00
 v 2400.00 0.00 -270.00
 v 0.00 0.00 -300.00

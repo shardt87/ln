@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Coastal variant of the SK-3X1 plant (sheet SK-3X1-15): the verified inland plant
+"""Coastal variant of the SW-3X1 plant (sheet SW-3X1-15): the verified inland plant
 model plus an LNG import terminal on the shore.
 
     A  onshore import terminal beside the plant (EcoElectrica / AES Andres class):
@@ -10,12 +10,12 @@ model plus an LNG import terminal on the shore.
        and subsea pipeline, submerged soft-yoke mooring tower, FSRU and an LNG carrier
        alongside for ship-to-ship transfer.
 
-Footprints come from plant/reference/sk3x1_rev14_sheet15.json (extract_sheet15.py).
+Footprints come from plant/reference/sw3x1_rev14_sheet15.json (extract_sheet15.py).
 Sheet 15 draws the FSRU closer than it is ("distance NOT to scale"); the model puts it
 at the stated pipeline length, about 21,000 ft (6.4 km) from the landfall station.
 Heights, pile spacing, vessel superstructure and every item marked "typical" are
 assumptions. The inland plant model is not changed; the variant is written to
-plant/coastal/sk3x1_coastal_A.json and sk3x1_coastal_B.json.
+plant/coastal/sw3x1_coastal_A.json and sw3x1_coastal_B.json.
 
     python3 plant/coastal/build_coastal.py
 """
@@ -27,8 +27,8 @@ import coastal_detail
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PLANT = os.path.dirname(HERE)
-REF = json.load(open(os.path.join(PLANT, "reference", "sk3x1_rev14_sheet15.json")))
-BASE = json.load(open(os.path.join(PLANT, "sk3x1_model.json")))
+REF = json.load(open(os.path.join(PLANT, "reference", "sw3x1_rev14_sheet15.json")))
+BASE = json.load(open(os.path.join(PLANT, "sw3x1_model.json")))
 
 # Site placement: sheet 15 draws the terminal east of the plant with the sea further east. The model
 # places it NORTH of the plant (shoreline north, jetty running north): every sheet-15 shape is built in
@@ -53,7 +53,7 @@ class Scene:
         iid = f"coastal{self.variant.lower()}-{len(self.items):04d}"
         self.items.append(dict(id=iid, layer=layer, name=name, tag=tag, area="COAST", fp=[round(v, 2) for v in fp],
                                z=[round(v, 2) for v in z], shape=shape, info=info, basis=basis,
-                               sheet="SK-3X1-15", register=bool(key), key=key))
+                               sheet="SW-3X1-15", register=bool(key), key=key))
         self.cur = (iid, layer)
         return iid
 
@@ -688,7 +688,7 @@ def links_B(S, K):
 
 
 def write(S, meta):
-    """An overlay on sk3x1_model.json: the Blender build merges it with --overlay."""
+    """An overlay on sw3x1_model.json: the Blender build merges it with --overlay."""
     to_site(S)
     n_sheet = len(S.items)
     (links_A if S.variant == "A" else links_B)(S, S.K)
@@ -702,9 +702,9 @@ def write(S, meta):
         meta["terminal"] = [ROT_C - y1, ROT_C - y0, x0 - ROT_D, x1 - ROT_D]
     if "yoke" in meta:
         meta["yoke"] = [round(v) for v in T(*meta["yoke"])]
-    m = dict(title=BASE["title"] + f" | coastal variant {S.variant} (SK-3X1-15)", base="sk3x1_model.json",
+    m = dict(title=BASE["title"] + f" | coastal variant {S.variant} (SW-3X1-15)", base="sw3x1_model.json",
              disclaimer=BASE["disclaimer"], coastal=meta, layers=S.layers, items=S.items, parts=S.parts)
-    path = os.path.join(HERE, f"sk3x1_coastal_{S.variant}.json")
+    path = os.path.join(HERE, f"sw3x1_coastal_{S.variant}.json")
     json.dump(m, open(path, "w"), indent=0)
     keyed = sum(1 for it in S.items if it["key"])
     print(f"wrote {os.path.relpath(path, PLANT)}: +{len(S.items)} items ({keyed} keyed to sheet 15), "

@@ -1,11 +1,11 @@
-# Handoff: SK-3X1 power campus model, renders and the October strategy deck
+# Handoff: SW-3X1 power campus model, renders and the October strategy deck
 
 Branch: `claude/3d-plant-model-generation-a3ad3u` (Oct 19: `claude/3d-plant-model-generation-a3ad3u-hdozc9`, the slim export + viewer UTF-8 fix, merged into it; continue on `-a3ad3u`). Everything lives under `plant/`. The detailed pipeline guide is
 `plant/HANDOFF.md` (read it too); this file covers the whole project briefly and the Oct 17-18, 2026 session in full.
 
 ## Goal
 
-A realistic 3D model of **SK-3X1 Rev 14**, a 3x1 H-class combined-cycle gas power campus (CCS, BESS, modular power
+A realistic 3D model of **SW-3X1 Rev 14**, a 3x1 H-class combined-cycle gas power campus (CCS, BESS, modular power
 yard, LNG terminal, hydrogen, a behind-the-meter data centre), with every cable routed, used to show what Southwire
 wire and cable does in a power plant. It feeds an interactive viewer, Blender photoreal renders and slide decks.
 Owner: Stephan Hardt, Southwire Power Generation Solutions. Near-term use: the **Strategy Monthly Update, October**
@@ -15,7 +15,7 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
 
 - Model build, checks and viewer pipeline (see `plant/HANDOFF.md`): `verify.py` PASS, `audit.py` CLEAN at the last
   commit.
-- **Strategy deck, 14 slides**: `plant/renders/deck/SK-3X1_Strategy_Update_October_2026.pdf`
+- **Strategy deck, 14 slides**: `plant/renders/deck/SW-3X1_Strategy_Update_October_2026.pdf`
   (built by `plant/blender/deck_brochure.py`; cover by `plant/blender/deck_divider.py strategy`).
   1. Cover: photoreal power block with the cable trays energised in copper (`renders/cover/HX1_hero_cable.jpg`).
   2. One campus. Every cable. (K5 aerial)
@@ -99,9 +99,14 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
 
 ## In progress / not yet done
 
+- **Plant renamed SK-3X1 -> SW-3X1** (owner, Oct 19): all text, file names (SW-3X1_*, sw3x1_*), signage decals, viewer
+  (v28), control-room screens, strategy deck and its cover rebuilt. Kept: the owner's source drawing file name
+  `SK-3X1_Drawing_Set_Rev14.pdf`. Still showing the old name until regenerated: earlier finished renders with burned-in
+  captions, the other brochures/boards (EPC, zones, board, v2), GLB/USDZ/.blend internals, tour videos.
+
 - **Zone 07 "Infrastructure & Construction: the plant's front door"** (plan approved Oct 19, incl. HVAC). Part 1 done
   (viewer v27): `plant/front_door.py`. Admin/control building facade: copper band, coping, corner pilasters,
-  black entrance portal "SK-3X1 POWER CAMPUS / CONTROL & ADMINISTRATION", monument sign, three flagpoles 11 ft apart
+  black entrance portal "SW-3X1 POWER CAMPUS / CONTROL & ADMINISTRATION", monument sign, three flagpoles 11 ft apart
   (US flag on the taller middle pole, blue state flag west, black company flag with a copper stripe east). Roof: four
   RTUs, each with a disconnect, conduit through the roof and an MC whip, plus a walkway. Condensing-unit pad on the
   north side (four precision-cooling units for the DCS/server room). Cameras ADM2 (front) and ADM3 (roof).
@@ -136,15 +141,15 @@ All under `plant/`. Units: the model JSON and OBJ are in feet; GLB / USDZ / .ble
 
 | File | Format | Size | Built | Used by |
 |---|---|---|---|---|
-| `sk3x1_model.json` | master model (items, parts, routes, decals) | 22.8 MB | Oct 18 | everything: viewer build, Blender, exports, checks, cable schedule |
-| `sk3x1_model.obj` + `sk3x1_model.mtl` | Wavefront OBJ, colour-only materials (no textures), Y-up, feet | 87.1 MB + 9 KB | Oct 18 | SketchUp / Rhino / Revit / 3ds Max hand-off |
-| `model/sk3x1_model.obj` + `.mtl` | same files, beside the other exports | 87.1 MB + 9 KB | Oct 18 | model download folder |
-| `model/SK-3X1_plant.blend` | Blender 4.2, images packed, every camera | 47.5 MB | Oct 18 | renders, re-export source |
-| `model/SK-3X1_coastal_A.blend` | Blender 4.2 (plant + LNG terminal, jetty, carrier) | 47.7 MB | Oct 18 | renders, re-export source |
-| `model/SK-3X1_plant_datacenter.blend` | Blender 4.2 (plant + BTM data centre) | 47.5 MB | Oct 18 | re-export source |
-| `model/SK-3X1_everything_datacenter.blend` | Blender 4.2 (everything) | 47.7 MB | Oct 18 | re-export source |
-| `model/SK-3X1_*.glb` (4) | GLB, glTF 2.0 binary, self-contained, every decal / screen embedded (227 images) | 94.8-101.1 MB (90.4-96.5 MiB) | Oct 18 (slim export) | PowerPoint 3D, web, Windows 3D Viewer |
-| `model/SK-3X1_*.usdz` (4) | USDZ with the decal textures | 88.9-93.4 MB | Oct 18 (slim export) | iPhone / iPad AR Quick Look |
+| `sw3x1_model.json` | master model (items, parts, routes, decals) | 22.8 MB | Oct 18 | everything: viewer build, Blender, exports, checks, cable schedule |
+| `sw3x1_model.obj` + `sw3x1_model.mtl` | Wavefront OBJ, colour-only materials (no textures), Y-up, feet | 87.1 MB + 9 KB | Oct 18 | SketchUp / Rhino / Revit / 3ds Max hand-off |
+| `model/sw3x1_model.obj` + `.mtl` | same files, beside the other exports | 87.1 MB + 9 KB | Oct 18 | model download folder |
+| `model/SW-3X1_plant.blend` | Blender 4.2, images packed, every camera | 47.5 MB | Oct 18 | renders, re-export source |
+| `model/SW-3X1_coastal_A.blend` | Blender 4.2 (plant + LNG terminal, jetty, carrier) | 47.7 MB | Oct 18 | renders, re-export source |
+| `model/SW-3X1_plant_datacenter.blend` | Blender 4.2 (plant + BTM data centre) | 47.5 MB | Oct 18 | re-export source |
+| `model/SW-3X1_everything_datacenter.blend` | Blender 4.2 (everything) | 47.7 MB | Oct 18 | re-export source |
+| `model/SW-3X1_*.glb` (4) | GLB, glTF 2.0 binary, self-contained, every decal / screen embedded (227 images) | 94.8-101.1 MB (90.4-96.5 MiB) | Oct 18 (slim export) | PowerPoint 3D, web, Windows 3D Viewer |
+| `model/SW-3X1_*.usdz` (4) | USDZ with the decal textures | 88.9-93.4 MB | Oct 18 (slim export) | iPhone / iPad AR Quick Look |
 | `viewer/index.html`, `viewer/index_southwire.html` | single-file three.js viewer, model inlined (gzip) | 2.7 / 2.8 MB | Oct 19 | the interactive viewer and the tour (branded one published, QtsCN1A1zmrgNTyMrqJbTL) |
 | `renders/epic/*_pro.png` (19 committed), `renders/cover/*.png`, `*.jpg` | Blender renders | ~70 MB + | Oct 2-18 | deck slides and cover |
 | `screens/*.png`, `screens/hall_wall_sign.png` | images placed on the model (control-room screens, hall sign) | 2 MB | Oct 19 (solid sign) | viewer + Blender decals |
@@ -192,8 +197,8 @@ cd plant
 python3 build_model.py && python3 verify.py && python3 audit.py          # model + checks (PASS / CLEAN)
 python3 build_viewer.py --generic && python3 build_viewer.py --out viewer/index_southwire.html
 # Blender (Python 3.11 venv with pip install bpy==4.2.0 pillow numpy):
-python blender/SK-3X1_Rev14_blender_build.py --views HALL7 --style pro --set epic --samples 128 --scale 100 --out OUT
-SK_CABLE_MASK=power python blender/SK-3X1_Rev14_blender_build.py --views HALL7 --style pro --set epic --samples 8 --scale 100 --out MASK
+python blender/SW-3X1_Rev14_blender_build.py --views HALL7 --style pro --set epic --samples 128 --scale 100 --out OUT
+SK_CABLE_MASK=power python blender/SW-3X1_Rev14_blender_build.py --views HALL7 --style pro --set epic --samples 8 --scale 100 --out MASK
 python blender/hero_cable.py OUT/HALL7_pro.png MASK/HALL7_pro.png renders/cover/HALL7_hero_cable.jpg
 python blender/deck_divider.py strategy      # cover (COVER_PHOTO env picks the picture, default HX1_hero_cable.jpg)
 python blender/deck_brochure.py              # slides 2-14 + the full PDF

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Checks for the coastal variant overlays (sheet SK-3X1-15).
+"""Checks for the coastal variant overlays (sheet SW-3X1-15).
 
 - footprints: every numbered key item matches its sheet 15 shape within 0.6 ft
   (the FSRU group is shifted to the stated ~21,000 ft pipeline length);
@@ -22,7 +22,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PLANT = os.path.dirname(HERE)
-REF = json.load(open(os.path.join(PLANT, "reference", "sk3x1_rev14_sheet15.json")))
+REF = json.load(open(os.path.join(PLANT, "reference", "sw3x1_rev14_sheet15.json")))
 TOL = 0.6
 GROUND = ("plot", "roads", "link road", "right of way", "landfall (shore", "cable trench")
 # item pairs that touch by design (a pipe entering the equipment it serves, lines to bollards)
@@ -80,7 +80,7 @@ def to_sheet(ov):
 
 
 def site_checks(ov, out):
-    base = json.load(open(os.path.join(PLANT, "sk3x1_model.json")))
+    base = json.load(open(os.path.join(PLANT, "sw3x1_model.json")))
     meta = ov["coastal"]
     shore = meta["shoreline_y"]
     links = [it for it in ov["items"] if it.get("frame") == "site"]
@@ -132,7 +132,7 @@ def site_checks(ov, out):
 
 
 def check(variant):
-    raw = json.load(open(os.path.join(HERE, f"sk3x1_coastal_{variant}.json")))
+    raw = json.load(open(os.path.join(HERE, f"sw3x1_coastal_{variant}.json")))
     fails, lines = 0, []
 
     def out(ok, msg):

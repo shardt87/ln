@@ -1,4 +1,4 @@
-"""Switchgear rooms at LOD 3: R1 (SK-3X1-05) and the R4 ACC VFD e-house (SK-3X1-03, -11 view B2).
+"""Switchgear rooms at LOD 3: R1 (SW-3X1-05) and the R4 ACC VFD e-house (SW-3X1-03, -11 view B2).
 
 The lineups keep their drawn footprints and heights; the plain cabinet boxes get the fronts a
 switchgear room actually shows:
@@ -432,7 +432,7 @@ def build():
     # room dressing
     room = fuel.new_item("R1_INTERIOR", "R1 switchgear room finishes: epoxy floor, aisle lines, mats, lighting, HVAC, "
                          "ground bus, extinguishers, exit signs", (411, 473, 626, 752), (0.6, 22), area="A",
-                         sheet="SK-3X1-05", basis="typical", register=False,
+                         sheet="SW-3X1-05", basis="typical", register=False,
                          info="Interior finishes and fittings, typical for an electrical building: sealed epoxy floor, "
                          "yellow egress lines, Class 2 dielectric mats in front of every lineup, LED high-bays, ducted "
                          "HVAC (positive pressure), 1/4 x 2 in copper ground bus, extinguishers, exit signs.")
@@ -490,7 +490,7 @@ def build():
     arc_label(F, 1.3, Z4 + 6.6, "480 V", 22.0)
     mat(F, Z4)
     room4 = fuel.new_item("R4_INTERIOR", "R4 VFD room finishes: floor, mats, lighting, HVAC, ground bus, extinguishers",
-                          (1136, 1254, 309, 367), (2.5, 15.4), area="B", sheet="SK-3X1-03", basis="typical",
+                          (1136, 1254, 309, 367), (2.5, 15.4), area="B", sheet="SW-3X1-03", basis="typical",
                           register=False, info="Typical e-house fit-out: floor coating, dielectric mats, LED fixtures, "
                           "wall-mounted HVAC (four units, N+1) with supply grilles, ground bus, extinguishers.")
     fuel.on(room4)

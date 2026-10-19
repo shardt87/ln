@@ -1,7 +1,7 @@
 """Fuel systems at LOD 3: plant gas yard, pipeline M&R train, GT gas fuel modules, the
 conditional ULSD backup-fuel area and the modular-yard gas skids.
 
-Drawn footprints and envelopes (SK-3X1-01 / -07 / -12 / -14) are kept; what goes inside
+Drawn footprints and envelopes (SW-3X1-01 / -07 / -12 / -14) are kept; what goes inside
 them is typical, not engineered: vessels on saddles with heads, nozzles, relief valves and
 sump boots; metering and regulation runs with block, slam-shut, monitor and control valves;
 interconnecting piping on concrete sleepers in process order. Piping between equipment is
@@ -185,7 +185,7 @@ def skid_runs(x0, x1, y0, y1, ys, z, r, trim, c=GAS, base="steel"):
 
 # ---------------------------------------------------------------------------------------
 def gas_yard():
-    """Plant gas yard (SK-3X1-12): inlet ESD -> (conditional compressors) -> metering ->
+    """Plant gas yard (SW-3X1-12): inlet ESD -> (conditional compressors) -> metering ->
     pressure regulation -> performance heater -> final filter-separators -> GT header."""
     global D
     L = "BASE_UTILITIES"
@@ -322,7 +322,7 @@ def gas_yard():
 
 
 def mr_station():
-    """Pipeline M&R (SK-3X1-14 keys 1-9): pig receiver -> ESD -> filter-separator -> line
+    """Pipeline M&R (SW-3X1-14 keys 1-9): pig receiver -> ESD -> filter-separator -> line
     heaters -> custody meters -> regulation building -> plant gas yard."""
     global D
     pr = find("M&R 1: pig receiver")

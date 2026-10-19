@@ -1,6 +1,6 @@
-# SK-3X1 3x1 combined-cycle plant: 3D model
+# SW-3X1 3x1 combined-cycle plant: 3D model
 
-A 3D coordinate model of the plant in **SK-3X1 Drawing Set Rev 14**: three H-class GTs, three HRSGs, one ST, an 80-cell ACC and a 230 kV breaker-and-a-half switchyard. It also includes the optional and adjacent-market systems: carbon capture, BESS, modular and portable power, GT inlet chilling, an LNG satellite and 25 MW of green hydrogen. The model is checked back against the drawing by `verify.py`.
+A 3D coordinate model of the plant in **SW-3X1 Drawing Set Rev 14**: three H-class GTs, three HRSGs, one ST, an 80-cell ACC and a 230 kV breaker-and-a-half switchyard. It also includes the optional and adjacent-market systems: carbon capture, BESS, modular and portable power, GT inlet chilling, an LNG satellite and 25 MW of green hydrogen. The model is checked back against the drawing by `verify.py`.
 
 > Conceptual illustration. Not engineered. Not for construction.
 
@@ -26,7 +26,7 @@ The checks corrected the model in several places:
 
 | File | What it is |
 |---|---|
-| `build_model.py` | Model source: 338 register items built from about 3,000 primary parts (boxes, cylinders/cones, A-frames, lofts). Writes `sk3x1_model.json`. |
+| `build_model.py` | Model source: 338 register items built from about 3,000 primary parts (boxes, cylinders/cones, A-frames, lofts). Writes `sw3x1_model.json`. |
 | `detail.py` | Detail pass (about 9,100 parts). See "Detail layer" below. |
 | `modular.py` | RICE engine hall and simple-cycle units at LOD 3. See "Modular power yard" below. |
 | `yard.py` | Gensets, trailers, fuel cells, microturbines and skids in the modular yard at LOD 3. |
@@ -51,7 +51,7 @@ The checks corrected the model in several places:
 | `utilities.py` | Tank-farm water and aux-steam routes; fire pump house, ammonia, aux boiler, air compressor, OWS detail (cycle 4). |
 | `fuel.py` | Fuel systems at LOD 3 (gas yard, M&R train, GT gas fuel modules, ULSD area), pipe supports and road-crossing sleeves. See "Fuel systems" below. |
 | `routes_base.json`, `routes_optional.json` | Tray, bus, duct-bank, 230 kV and process-pipe centrelines from the vector geometry of sheets 01 and 02. |
-| `extract_reference.py` | Pulls reference geometry from the drawing PDF into `reference/sk3x1_rev14_reference.json` (committed, so the PDF is not needed to verify). |
+| `extract_reference.py` | Pulls reference geometry from the drawing PDF into `reference/sw3x1_rev14_reference.json` (committed, so the PDF is not needed to verify). |
 | `verify.py` | Runs the checks above and writes `verify_report.json`. Exits 1 on failure. |
 | `palette.json` | Colour for each material key, shared by the viewer and the OBJ export. |
 | `viewer/index.html` | Interactive Three.js viewer: physically based materials with procedural textures (ribbed cladding, concrete, gravel, asphalt, grass, grating, fin stripes), a sky with fog, camera-following shadows and a Detail toggle. It also has the sheet 11 views, layer toggles, a section cut by elevation, a live X / Y / EL readout, an inspector, the equipment register, a verification report, electrical rooms and the motor schedule. |
@@ -132,8 +132,8 @@ Like the first detail layer, these parts carry `d: 1`, are typical rather than f
 
 | Area | What is modelled |
 |---|---|
-| Pipeline M&R (SK-3X1-14, keys 1-9) | **Pig receiver:** barrel, quick-opening closure and davit, reducer, saddles, pig signaller.<br>**ESD valve:** with its insulating joint.<br>**Horizontal filter-separator:** sump boot, relief valve, nozzles.<br>**Three water-bath line heaters:** burner ends, exhaust stacks, expansion tanks, burner panels.<br>**Two ultrasonic custody meter runs:** under a sunshade.<br>**Interconnecting piping on sleepers:** inlet and outlet heater manifolds, a liquids line to the condensate tank, a sample line to the gas quality building. |
-| Plant gas yard (SK-3X1-12) | **New inlet station:** ESD valve, block valve and insulating joint.<br>**Conditional compressor tie-ins:** suction, discharge and bypass valve.<br>**Check-metering skid:** 2 x 100% ultrasonic runs, flow conditioners, block valves, flow computer, sunshade.<br>**Regulation skid:** slam-shut, monitor and active control valves on 2 runs, plus a relief vent.<br>**Shell-and-tube performance heater:** heated by IP feedwater (new insulated supply and return from HRSG 3, on T-posts).<br>**Two 100% final filter-separators.**<br>**Outlet to the GTs:** motor-operated valve and an ESD valve.<br>**Maintenance vent stack:** with its vent header.<br>**Tie-ins:** for the LNG, H2, simple-cycle and temporary-power options. |
+| Pipeline M&R (SW-3X1-14, keys 1-9) | **Pig receiver:** barrel, quick-opening closure and davit, reducer, saddles, pig signaller.<br>**ESD valve:** with its insulating joint.<br>**Horizontal filter-separator:** sump boot, relief valve, nozzles.<br>**Three water-bath line heaters:** burner ends, exhaust stacks, expansion tanks, burner panels.<br>**Two ultrasonic custody meter runs:** under a sunshade.<br>**Interconnecting piping on sleepers:** inlet and outlet heater manifolds, a liquids line to the condensate tank, a sample line to the gas quality building. |
+| Plant gas yard (SW-3X1-12) | **New inlet station:** ESD valve, block valve and insulating joint.<br>**Conditional compressor tie-ins:** suction, discharge and bypass valve.<br>**Check-metering skid:** 2 x 100% ultrasonic runs, flow conditioners, block valves, flow computer, sunshade.<br>**Regulation skid:** slam-shut, monitor and active control valves on 2 runs, plus a relief vent.<br>**Shell-and-tube performance heater:** heated by IP feedwater (new insulated supply and return from HRSG 3, on T-posts).<br>**Two 100% final filter-separators.**<br>**Outlet to the GTs:** motor-operated valve and an ESD valve.<br>**Maintenance vent stack:** with its vent header.<br>**Tie-ins:** for the LNG, H2, simple-cycle and temporary-power options. |
 | Conditional fuel-gas compressors | Three motor-driven packages with cylinders, suction scrubbers, relief vents and fin-fan aftercoolers. |
 | GTs | **GFM-1..3:** gas fuel modules (stop/control valves, final strainer) on the turbine deck. The fuel-gas branches now rise at the hall's north wall to these modules instead of stopping under the deck. |
 | Backup fuel (ULSD, conditional) | **Containment dike:** with step-overs.<br>**Truck unloading station:** canopy, curb, tanker and unloading arm.<br>**Pump skid:** unloading and forwarding pumps, duplex strainers.<br>**Fuel-oil route:** a new route type, one tier above the gas, to each GFM. |
@@ -520,13 +520,13 @@ The model is improved zone by zone, one cycle per zone (`DETAIL_CYCLES.md` has t
 
 ## GitHub Pages
 
-`.github/workflows/sk3x1-pages.yml` rebuilds and verifies the model, then assembles the site with `plant/site/build_site.py`. The site has the viewer as `index.html`, the GT1 bay close-up as `bay.html`, and a render gallery as `renders.html`.
+`.github/workflows/sw3x1-pages.yml` rebuilds and verifies the model, then assembles the site with `plant/site/build_site.py`. The site has the viewer as `index.html`, the GT1 bay close-up as `bay.html`, and a render gallery as `renders.html`.
 
-The workflow always uploads the site as the **sk3x1-site** artifact. It also deploys to GitHub Pages once the repository owner has turned Pages on (Settings → Pages → Build and deployment → Source: GitHub Actions). A workflow token cannot turn Pages on by itself.
+The workflow always uploads the site as the **sw3x1-site** artifact. It also deploys to GitHub Pages once the repository owner has turned Pages on (Settings → Pages → Build and deployment → Source: GitHub Actions). A workflow token cannot turn Pages on by itself.
 
 ## Blender renders (local or GitHub Actions)
 
-`blender/SK-3X1_Rev14_blender_build.py` is the build script named on sheet SK-3X1-11. It:
+`blender/SW-3X1_Rev14_blender_build.py` is the build script named on sheet SW-3X1-11. It:
 
 - builds the model into Blender collections named as on that sheet;
 - fits the orthographic 1920 x 1080 cameras to each view with the 3% margin;
@@ -541,19 +541,19 @@ There are two styles:
 
 ```sh
 pip install -r plant/blender/requirements.txt          # bpy 4.2 (Blender as a Python module) + Pillow
-python plant/blender/SK-3X1_Rev14_blender_build.py --views A,B --style drawing --samples 64
+python plant/blender/SW-3X1_Rev14_blender_build.py --views A,B --style drawing --samples 64
 python plant/blender/annotate.py plant/renders/blender
 # or inside a Blender install:
-blender -b -P plant/blender/SK-3X1_Rev14_blender_build.py -- --views A --style photo --blend sk3x1.blend
+blender -b -P plant/blender/SW-3X1_Rev14_blender_build.py -- --views A --style photo --blend sw3x1.blend
 ```
 
-The GitHub workflow `.github/workflows/sk3x1-blender-render.yml` runs in three stages:
+The GitHub workflow `.github/workflows/sw3x1-blender-render.yml` runs in three stages:
 
 1. It runs `verify.py` and fails if the model JSON is stale.
 2. It renders all views in five parallel jobs.
-3. It publishes an **sk3x1-renders** artifact. That artifact holds the annotated PNGs, contact sheets, `SK-3X1_Rev14.blend` and the OBJ, and each run has a job summary.
+3. It publishes an **sw3x1-renders** artifact. That artifact holds the annotated PNGs, contact sheets, `SW-3X1_Rev14.blend` and the OBJ, and each run has a job summary.
 
-It runs on every push that touches `plant/`, and you can also run it by hand. The manual run (Actions → SK-3X1 Blender renders → Run workflow) lets you choose the views, samples and resolution.
+It runs on every push that touches `plant/`, and you can also run it by hand. The manual run (Actions → SW-3X1 Blender renders → Run workflow) lets you choose the views, samples and resolution.
 
 Sheet 11 lists ten views, and the render loop was adjusted over several review passes:
 
@@ -612,7 +612,7 @@ Output goes to `renders/epic/`.
 `blender/finish_pro.py` adds a smooth vignette, fine grain and the burned-in credit caption. `blender/board.py` composes the presentation board: one sheet, 4800 x 3200 px plus a PDF, with a hairline key plan drawn from the verified model, the view cone of every plate, a sun-angle diagram, scale and north. The board follows the design philosophy in `renders/pro/design-philosophy.md` ("Measured Light"). Fonts are in `blender/fonts` (SIL Open Font License).
 
 ```sh
-python plant/blender/SK-3X1_Rev14_blender_build.py --style pro --samples 128 --out plant/renders/pro
+python plant/blender/SW-3X1_Rev14_blender_build.py --style pro --samples 128 --out plant/renders/pro
 python plant/blender/finish_pro.py plant/renders/pro
 python plant/blender/board.py plant/renders/pro
 ```
@@ -635,8 +635,8 @@ Placement (after review): TM-1 and TM-2 stand on the open ground north of the po
 A ~150 MW data-centre campus outside the east fence, beside the modular yard, supplied behind the meter (`datacenter.py`, layers `OPT_DC` / `OPT_DC_ROUTES`). It is a design option beyond Rev 14, typical and not engineered, and it is an **add-on**: the plant views, renders and exports show the plant alone, and the campus appears only when it is added:
 - **Viewer:** "Complete plant" and every other view leave it off; the view **"Add-on: plant + BTM data centre"** (O6) turns it on, or tick its layers.
 - **Blender:** the plant cameras leave it out; the cameras E47 and E48 (`show="dc"`) include it.
-- **Everything:** the viewer view "Everything: plant + all LNG + BTM data centre", the camera C8 (`show="everything"`) and the export `SK-3X1_everything_datacenter` show the plant with the LNG satellite, the coastal LNG terminal and the data centre together.
-- **Exports:** `SK-3X1_plant` and `SK-3X1_coastal_A` are plant only; `SK-3X1_plant_datacenter.glb / .usdz / .blend` is the plant plus the campus (`export_model.py plant/model SK-3X1_plant_datacenter SK-3X1_plant`).
+- **Everything:** the viewer view "Everything: plant + all LNG + BTM data centre", the camera C8 (`show="everything"`) and the export `SW-3X1_everything_datacenter` show the plant with the LNG satellite, the coastal LNG terminal and the data centre together.
+- **Exports:** `SW-3X1_plant` and `SW-3X1_coastal_A` are plant only; `SW-3X1_plant_datacenter.glb / .usdz / .blend` is the plant plus the campus (`export_model.py plant/model SW-3X1_plant_datacenter SW-3X1_plant`).
 
 | Part | What is modelled |
 |---|---|
@@ -664,7 +664,7 @@ A ~150 MW data-centre campus outside the east fence, beside the modular yard, su
 
 ## Coastal variant: LNG marine terminal (sheet 15)
 
-Sheet SK-3X1-15 shows where a coastal plant gets its gas when there is no pipeline. The inland model stays as it is (its trucked LNG satellite from sheet 14 is unchanged). The coastal variant is a separate scene, built as an overlay on the same verified plant and rendered on its own:
+Sheet SW-3X1-15 shows where a coastal plant gets its gas when there is no pipeline. The inland model stays as it is (its trucked LNG satellite from sheet 14 is unchanged). The coastal variant is a separate scene, built as an overlay on the same verified plant and rendered on its own:
 
 | Variant | What is modelled |
 |---|---|
@@ -677,8 +677,8 @@ Sheet SK-3X1-15 shows where a coastal plant gets its gas when there is no pipeli
 - **Terminal power:** the buried 230 kV cable from the east end of the switchyard runs outside the east fence and north to the terminal substation.
 - **Variant B:** the landfall valve station sits north of the plant, the buried pipeline runs to the same M&R end, and the FSRU and carrier lie about 21,000 ft (6.4 km) offshore to the north.
 
-- `coastal/extract_sheet15.py` reads sheet 15 (both panels draw the compound to scale, 7.61 ft per point). It matches every numbered key item to its drawn shape and writes `reference/sk3x1_rev14_sheet15.json`, which is committed.
-- `coastal/build_coastal.py` writes the overlays `coastal/sk3x1_coastal_A.json` and `_B.json`. Sheet 15 draws the FSRU closer than it is ("distance NOT to scale"), so the model places it at the stated ~21,000 ft (6.4 km) pipeline length.
+- `coastal/extract_sheet15.py` reads sheet 15 (both panels draw the compound to scale, 7.61 ft per point). It matches every numbered key item to its drawn shape and writes `reference/sw3x1_rev14_sheet15.json`, which is committed.
+- `coastal/build_coastal.py` writes the overlays `coastal/sw3x1_coastal_A.json` and `_B.json`. Sheet 15 draws the FSRU closer than it is ("distance NOT to scale"), so the model places it at the stated ~21,000 ft (6.4 km) pipeline length.
 - `coastal/verify_coastal.py` checks the overlays. It currently passes:
   - all 15 keyed footprints are within 0.6 ft of sheet 15;
   - no clashes;
@@ -696,8 +696,8 @@ Sheet SK-3X1-15 shows where a coastal plant gets its gas when there is no pipeli
 
 ```sh
 python plant/coastal/build_coastal.py && python plant/coastal/verify_coastal.py
-python plant/blender/SK-3X1_Rev14_blender_build.py --style pro --overlay plant/coastal/sk3x1_coastal_A.json --samples 128 --out plant/renders/coastal
-python plant/blender/SK-3X1_Rev14_blender_build.py --style pro --overlay plant/coastal/sk3x1_coastal_B.json --samples 128 --out plant/renders/coastal
+python plant/blender/SW-3X1_Rev14_blender_build.py --style pro --overlay plant/coastal/sw3x1_coastal_A.json --samples 128 --out plant/renders/coastal
+python plant/blender/SW-3X1_Rev14_blender_build.py --style pro --overlay plant/coastal/sw3x1_coastal_B.json --samples 128 --out plant/renders/coastal
 python plant/blender/finish_pro.py plant/renders/coastal && python plant/blender/board.py plant/renders/coastal coastal
 ```
 
@@ -713,7 +713,7 @@ X east, Y north, Z up, in feet. The origin is the SW corner of the 2,420 x 1,920
 
 ## Layers
 
-Layers follow the collections on sheet SK-3X1-11, so its view definitions map directly. For example, view B hides `R1_ROOF` and `R1_WALL_E` to show `R1_INTERIOR`.
+Layers follow the collections on sheet SW-3X1-11, so its view definitions map directly. For example, view B hides `R1_ROOF` and `R1_WALL_E` to show `R1_INTERIOR`.
 
 Other collections include `BASE_POWER_BLOCK`, `HALL_ROOF`, `BASE_INLET_AIR`, `BASE_ELECTRICAL`, `R4_INTERIOR`, `BASE_SWITCHYARD`, `SWYD_FUTURE` and `HV_CORRIDOR`. Each optional system has its own layer and route layer: `OPT_CCS`, `OPT_CCSU`, `OPT_BESS`, `OPT_MOD`, `OPT_TMP`, `OPT_IC`, `OPT_LNG` and `OPT_H2`, plus the matching `*_ROUTES` layers.
 

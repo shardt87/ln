@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Burn equipment labels and the credit block into Blender renders.
 
-SK-3X1-11 style: "labels beside equipment; credit burned into every image".
+SW-3X1-11 style: "labels beside equipment; credit burned into every image".
 Reads <view>_<style>.png and <view>_<style>.labels.json written by
-SK-3X1_Rev14_blender_build.py and writes <view>_<style>_annotated.png.
+SW-3X1_Rev14_blender_build.py and writes <view>_<style>_annotated.png.
 
     python3 plant/blender/annotate.py plant/renders/blender
 
@@ -79,7 +79,7 @@ def annotate(png, meta):
     d.text((int(22 * k), H - bar_h + int(8 * k)), f"3x1 combined-cycle plant  |  View {v['k']}: {v['name'].split(' ', 1)[1] if v['name'].split(' ', 1)[0] == v['k'] else v['name']}",
            font=f_title, fill=INK)
     d.text((int(22 * k), H - bar_h + int(33 * k)),
-           f"SK-3X1-3D / REV 14  ·  orthographic, fit {v['ortho_ft']:,} ft, margins L/R {v['margin_lr']}% "
+           f"SW-3X1-3D / REV 14  ·  orthographic, fit {v['ortho_ft']:,} ft, margins L/R {v['margin_lr']}% "
            f"T/B {v['margin_tb']}%  ·  Blender Cycles, {v['samples']} samples, {v['style']} style",
            font=f_small, fill=(85, 99, 108))
     right1 = "Stephan Hardt | Power Generation Solutions"

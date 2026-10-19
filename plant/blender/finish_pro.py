@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Finish the --style pro renders: smooth vignette, fine grain and a
-restrained caption with the credit (SK-3X1-11: "credit burned into every
+restrained caption with the credit (SW-3X1-11: "credit burned into every
 image"). Writes <view>_pro_final.jpg (captioned) and <view>_pro_clean.jpg (for the
 presentation board, which carries its own captions) next to each <view>_pro.png.
 
@@ -83,7 +83,7 @@ def finish(png, meta):
     d.line([(x + 12 * k, base - int(29 * k)), (x + 34 * k, base - int(29 * k))], fill=copper, width=max(1, int(1.2 * k)))
     tracked(d, (x + 44 * k, base - int(40 * k)), v["name"].upper(), title, ink, 2.6 * k)
     sun = f"SUN {v['sun'][0]}° ALT / {v['sun'][1]}° AZ" if v.get("sun") else SUN
-    tracked(d, (m, base - int(10 * k)), f"{v.get('sheet', 'SK-3X1')} · REV 14 · {v['lens']} MM · {sun} · "
+    tracked(d, (m, base - int(10 * k)), f"{v.get('sheet', 'SW-3X1')} · REV 14 · {v['lens']} MM · {sun} · "
             f"CYCLES {v['samples']} SPP", mono, soft, 1.2 * k)
     # right: credit and status
     r1 = "STEPHAN HARDT  |  POWER GENERATION SOLUTIONS"

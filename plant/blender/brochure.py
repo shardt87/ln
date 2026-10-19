@@ -1,7 +1,7 @@
 """Wire & cable brochure for the gas power campus: 12 letter-portrait pages (PNG each + one PDF), in the
 branding of the PowerGen deck (dark panel with a diagonal edge, Barlow Condensed, copper accents, logo).
 
-Every picture is a render of the SK-3X1 model (renders/epic, renders/cover); the locator maps and the
+Every picture is a render of the SW-3X1 model (renders/epic, renders/cover); the locator maps and the
 "by the numbers" figures are drawn / measured from the model JSON. Product lines follow the legends printed on
 the cables in the model and the customer's ARMOR-X list; they are typical and must be confirmed against
 current Southwire specifications before release.
@@ -24,7 +24,7 @@ M = 170                                               # outer margin
 BG, PANEL, COPPER, COPPER_D, WHITE, GREY, DIM, RULE = (
     (14, 16, 18), (20, 22, 25), (227, 154, 95), (180, 88, 31), (245, 243, 239), (201, 205, 210), (138, 143, 149),
     (58, 63, 69))
-MODEL = json.load(open(os.path.join(PLANT, "sk3x1_model.json")))
+MODEL = json.load(open(os.path.join(PLANT, "sw3x1_model.json")))
 
 
 def F(name, px):
@@ -412,7 +412,7 @@ def overview_right(page):
     mp = plan_map((mw, int(mw * .62)), sum((z["areas"] for z in ZONES[:5]), ()), cent, soft=True)
     img.paste(mp, (M, 520), mp)
     y = 520 + int(mw * .62) + 30
-    tracked(d, (M, y), "SK-3X1 CAMPUS PLAN, DRAWN FROM THE 3D MODEL  ·  NORTH UP", F(BOLD, 30), DIM, 3)
+    tracked(d, (M, y), "SW-3X1 CAMPUS PLAN, DRAWN FROM THE 3D MODEL  ·  NORTH UP", F(BOLD, 30), DIM, 3)
     leg = [(z["n"], z["kicker"].split("  ·  ")[0]) for z in ZONES[:5]]
     y += 80
     for k, (n, t) in enumerate(leg):
@@ -517,7 +517,7 @@ def back(page):
     d.text((cx, y + 70), "Power Generation Solutions", font=F(REG, 40), fill=GREY)
     d.text((cx, y + 126), "stephan.hardt@southwire.com", font=F(REG, 40), fill=COPPER)
     y += 300
-    para(d, (M, y), "Renders are conceptual illustrations from the SK-3X1 3D model: not engineered, not for "
+    para(d, (M, y), "Renders are conceptual illustrations from the SW-3X1 3D model: not engineered, not for "
          "construction. Product constructions shown on cable jackets and in this index are typical; confirm "
          "ratings, sizes and listings against current Southwire specifications before use. ARMOR-X and SIMpull "
          "are registered trademarks of Southwire Company, LLC.", F(REG, 30), DIM, W - 2 * M, 1.45)

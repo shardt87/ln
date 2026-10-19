@@ -1,6 +1,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SK-3X1 Plant Model</title>
+<title>SW-3X1 Plant Model</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&display=swap">
@@ -139,9 +139,9 @@ footer{color:var(--ink2);font-size:12px;border-top:1px solid var(--rule);padding
   <div>
     <h1>3x1 Combined-Cycle Plant <span>/ 3D model</span></h1>
     <p class="byline">Created by Stephan Hardt · Power Generation Solutions · <a href="mailto:stephan.hardt@southwire.com" style="color:inherit">stephan.hardt@southwire.com</a></p>
-    <p class="sub">Coordinate model rebuilt from drawing set SK-3X1 Rev 14 and checked back against it: footprints against sheets 01 and 05, heights against sheet 13, crane clearances against sheet 09, plus a full clash check.</p>
+    <p class="sub">Coordinate model rebuilt from drawing set SW-3X1 Rev 14 and checked back against it: footprints against sheets 01 and 05, heights against sheet 13, crane clearances against sheet 09, plus a full clash check.</p>
   </div>
-  <div class="docno"><b>SK-3X1-3D / REV 14</b><br>X east, Y north, Z up, feet<br>Compound 2,420 x 1,920 ft</div>
+  <div class="docno"><b>SW-3X1-3D / REV 14</b><br>X east, Y north, Z up, feet<br>Compound 2,420 x 1,920 ft</div>
 </header>
 
 <div class="stats" id="stats"></div>
@@ -149,7 +149,7 @@ footer{color:var(--ink2);font-size:12px;border-top:1px solid var(--rule);padding
 <div class="grid">
   <aside class="side" aria-label="Views and layers">
     <div>
-      <p class="lbl">Views (SK-3X1-11)</p>
+      <p class="lbl">Views (SW-3X1-11)</p>
       <div class="views" id="views"></div>
     </div>
     <div>
@@ -227,10 +227,10 @@ footer{color:var(--ink2);font-size:12px;border-top:1px solid var(--rule);padding
 
   <div class="panel" id="p-ele" role="tabpanel" hidden>
     <div class="cols" id="rooms"></div>
-    <h3 class="sec">Preliminary motor / load schedule (SK-3X1-03)</h3>
+    <h3 class="sec">Preliminary motor / load schedule (SW-3X1-03)</h3>
     <div class="tw" style="max-height:none"><table><thead><tr><th>ID</th><th>Driven equipment</th><th>Qty</th><th>Voltage</th><th>Starter / drive</th><th>Fed from</th><th>Route</th></tr></thead><tbody id="motors"></tbody></table></div>
     <div class="cols" style="margin-top:16px">
-      <div class="card"><h3>Start-up path, GT-1 (SK-3X1-04)</h3><p>The 230 kV bus back-feeds GSU-1 through D1. The UAT-1 tap sits on the GSU side of GCB-1, so with GCB-1 open the grid energises UAT-1 and 13.8 kV bus 1 in R1. Bus 1 feeds the LCI-1 input transformer, and LCI-1 drives GTG-1 as a motor on the generator side of GCB-1. GCB-1 closes at synchronisation.</p></div>
+      <div class="card"><h3>Start-up path, GT-1 (SW-3X1-04)</h3><p>The 230 kV bus back-feeds GSU-1 through D1. The UAT-1 tap sits on the GSU side of GCB-1, so with GCB-1 open the grid energises UAT-1 and 13.8 kV bus 1 in R1. Bus 1 feeds the LCI-1 input transformer, and LCI-1 drives GTG-1 as a motor on the generator side of GCB-1. GCB-1 closes at synchronisation.</p></div>
       <div class="card"><h3>Assumed ratings</h3><p>Generators 21 kV. GSUs 21/230 kV, one per generator. UATs 21/13.8 kV. T4-A/B 13.8/4.16 kV. LCT-A/B, T-R2A-C, T-R3, T-R4-1..4 and T-WT 13.8/0.48 kV. MVA, impedance and fault levels are not calculated.</p></div>
       <div class="card"><h3>Switchyard</h3><p>Breaker-and-a-half, 5 diameters x 3 breakers: 15 positions, 9 installed. D1 GTG-1 + Line 1, D2 GTG-2 + Line 2, D3 STG + GTG-3. D4 (BESS / modular yard) and D5 (CCS) are future; D6 (green H2 import) is an adjacent-market extension.</p></div>
     </div>
@@ -253,7 +253,7 @@ footer{color:var(--ink2);font-size:12px;border-top:1px solid var(--rule);padding
   </div>
 </section>
 
-<footer><span>Source: SK-3X1 Drawing Set Rev 14, Sept 26 2026 · Stephan Hardt | Power Generation Solutions</span><span id="foot"></span></footer>
+<footer><span>Source: SW-3X1 Drawing Set Rev 14, Sept 26 2026 · Stephan Hardt | Power Generation Solutions</span><span id="foot"></span></footer>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
@@ -731,11 +731,11 @@ document.getElementById('hbars').innerHTML = R.heights.rows.map(r=>`<div class="
  `<div class="axis"><span></span><div><span>0</span><span>80</span><span>160</span><span>240</span><span>320 ft</span></div><span></span></div>`;
 
 // ---------- optional ----------
-const OPTS=[['G','Carbon capture (SK-3X1-06)','O3','Three post-combustion amine trains, one per HRSG: diverter damper, ~16 MW booster fan, DCC, a 62 ft x 262 ft absorber with its stack to 313 ft, and a 207 ft stripper with reboiler. Shared reclaimer, solvent storage and 3 x ~19 MW CO2 compression. About 150 MWe from a future D5 diameter by 230 kV cable; LP steam from ST extraction; a ~30-cell cooling tower to the north.'],
- ['H','BESS (SK-3X1-07)','O2','30 ISO 40 ft containers and 15 PCS / MV skids, a 34.5 kV collector e-house, a main power transformer to the D4 upper position, auxiliary transformers, EMS / SCADA and a conditional grounding transformer.'],
- ['I','Modular and portable power (SK-3X1-07, -08)','O1','An 8-engine RICE hall with 40 radiators and 90 ft stacks, two aeroderivative simple-cycle units, four SOFC modules, three microturbines and proposed black-start gensets. A portable pad with containerized, trailer, enclosed and open gensets and a load bank. The 230 kV H-MOD tie runs in the reserved corridor COR-HMOD to D4 lower.'],
+const OPTS=[['G','Carbon capture (SW-3X1-06)','O3','Three post-combustion amine trains, one per HRSG: diverter damper, ~16 MW booster fan, DCC, a 62 ft x 262 ft absorber with its stack to 313 ft, and a 207 ft stripper with reboiler. Shared reclaimer, solvent storage and 3 x ~19 MW CO2 compression. About 150 MWe from a future D5 diameter by 230 kV cable; LP steam from ST extraction; a ~30-cell cooling tower to the north.'],
+ ['H','BESS (SW-3X1-07)','O2','30 ISO 40 ft containers and 15 PCS / MV skids, a 34.5 kV collector e-house, a main power transformer to the D4 upper position, auxiliary transformers, EMS / SCADA and a conditional grounding transformer.'],
+ ['I','Modular and portable power (SW-3X1-07, -08)','O1','An 8-engine RICE hall with 40 radiators and 90 ft stacks, two aeroderivative simple-cycle units, four SOFC modules, three microturbines and proposed black-start gensets. A portable pad with containerized, trailer, enclosed and open gensets and a load bank. The 230 kV H-MOD tie runs in the reserved corridor COR-HMOD to D4 lower.'],
  ['J','GT inlet chilling','O4','Six water-cooled chillers, pumps and a 12-cell tower (one option), plus a conditional TES tank. Air-cooled chillers or evaporative cooling are lower-water alternatives for an ACC plant.'],
- ['K','Fuel supply: adjacent market (SK-3X1-14)','O5','Pipeline M&R by the pipeline operator; an LNG satellite with 8 Chart HS 50000 tanks (414,000 gal, about 9 h of one GT); 25 MW green hydrogen (5 x HyLYZER-1000, 10.8 t/day) blended into GT-1 fuel at about 5% by volume, powered by renewable import through a future D6 diameter.']];
+ ['K','Fuel supply: adjacent market (SW-3X1-14)','O5','Pipeline M&R by the pipeline operator; an LNG satellite with 8 Chart HS 50000 tanks (414,000 gal, about 9 h of one GT); 25 MW green hydrogen (5 x HyLYZER-1000, 10.8 t/day) blended into GT-1 fuel at about 5% by volume, powered by renewable import through a future D6 diameter.']];
 document.getElementById('opts').innerHTML=OPTS.map(([k,n,v,d])=>`<div class="card"><h3><span class="tagbox">${k}</span>${n}</h3><p>${d}</p><button data-v="${v}">Show in 3D (view ${v})</button></div>`).join('');
 document.getElementById('opts').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; goView(MODEL.views.find(v=>v.k===b.dataset.v)); stage.scrollIntoView({behavior:'smooth',block:'center'}); });
 
@@ -743,8 +743,8 @@ document.getElementById('opts').addEventListener('click',e=>{ const b=e.target.c
 const tabs=document.getElementById('tabs');
 tabs.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return;
   [...tabs.children].forEach(x=>{ const on=x===b; x.setAttribute('aria-selected',on); document.getElementById('p-'+x.dataset.t).hidden=!on; });
-  try{ localStorage.setItem('sk3x1-tab',b.dataset.t); }catch(_){} });
-try{ const t=localStorage.getItem('sk3x1-tab'); if(t) tabs.querySelector(`[data-t="${t}"]`)?.click(); }catch(_){}
+  try{ localStorage.setItem('sw3x1-tab',b.dataset.t); }catch(_){} });
+try{ const t=localStorage.getItem('sw3x1-tab'); if(t) tabs.querySelector(`[data-t="${t}"]`)?.click(); }catch(_){}
 
 // ---------- theme ----------
 function skyTex(top, mid, bottom){ const c=document.createElement('canvas'); c.width=4; c.height=256; const g=c.getContext('2d');
@@ -814,7 +814,7 @@ function xrayPanel(){
      <span class="muted">${(st.n[k]||0).toLocaleString('en-US')}</span>`).join('')}</div>
    <div id="xres" style="margin-top:8px"></div>
    <p class="muted" style="margin-top:8px">Field cables from devices to their local junction boxes are counted, not drawn (they stay on the equipment).
-   Conceptual, from the model; see SK-3X1_Cable_Schedule_and_BOM.xlsx.</p>`;
+   Conceptual, from the model; see SW-3X1_Cable_Schedule_and_BOM.xlsx.</p>`;
   document.getElementById('xcls').onchange=e=>{ const k=e.target.dataset.c; if(e.target.checked) XR.cls.add(k); else XR.cls.delete(k); xraySync(); };
   const q=document.getElementById('xq'); q.oninput=()=>{ const s=q.value.trim().toLowerCase(); if(s.length<2){ document.getElementById('xres').innerHTML=''; xrayHighlight(null); return; }
     const hits=[]; CAB.cables.forEach((c,i)=>{ if(c[0].toLowerCase().includes(s)||String(c[7]).toLowerCase().includes(s)||String(c[8]).toLowerCase().includes(s)) hits.push(i); });

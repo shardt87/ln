@@ -6,7 +6,7 @@ to the 230 kV grid, then the auxiliary system that keeps the plant running, then
 areas and the adjacent markets. Every stop answers three questions: **what is this equipment, which electrical
 system is it part of, and which cable does it use and why.**
 
-> Basis (say it on slide 2): SK-3X1 is a *typical* 3x1 H-class combined-cycle campus built from a 15-sheet
+> Basis (say it on slide 2): SW-3X1 is a *typical* 3x1 H-class combined-cycle campus built from a 15-sheet
 > concept drawing set (Rev 14). Equipment, ratings and cable selections are typical for the class, not
 > engineered for a project. Cable quantities come from the model's cable schedule (5,695 runs), routed along
 > the modelled trays and duct banks.
@@ -42,7 +42,7 @@ material. Slide numbers are the Wesco deck's.
 | Market | 5 load growth, 6 OEM backlogs, 8 the ~$1.2B cable opportunity | Merge 3 and 7 into 8; one slide of "where the build is" (10) only if time allows | none |
 | How the plant is bought | 15 (the owner's engineer writes the spec: why R&D and specs matter) | none | none |
 | The engineering problem | 18 "Every megawatt travels through a cable" | none | none |
-| The campus | 20 seven cable systems | Replace 19 (old model) with the new 16-zone slide on SK-3X1; replace 21's image with the Cable X-ray view | Hero-shots slide; simplified one-line |
+| The campus | 20 seven cable systems | Replace 19 (old model) with the new 16-zone slide on SW-3X1; replace 21's image with the Cable X-ray view | Hero-shots slide; simplified one-line |
 | The tour | none | Dividers re-shot on the new model (CCS, turbine hall, gas power dividers already built) | 8 stop slides, each with its tour clip |
 | Cable lineup | 22 one supplier / every circuit, 23 cable in detail, 24 North American specs, 25 modular | none | none |
 | Close | 35 end card, 36 sources (trimmed to what is shown) | none | **What the plant asks of cable** (heat, cycling, VFD noise, hazardous areas, DC, prefab): the R&D hook for the SVP |
@@ -143,7 +143,7 @@ source lines on each slide and re-check anything that moved before Nov 11.
    window, not the whole screen.
 2. Orbit the campus once, then "Cable X-ray" to show every tray route at once.
 3. Take questions as "show me": click a piece of equipment to show its tag and description.
-4. Layout question ("why one big turbine hall?"): the slide `renders/deck/SK-3X1_turbine_island_layouts.png`
+4. Layout question ("why one big turbine hall?"): the slide `renders/deck/SW-3X1_turbine_island_layouts.png`
    (common hall / GTs outdoors with an ST building / everything outdoors); the hall's info panel in the viewer
    carries the same note.
 5. If the share stutters: switch back to the MP4, no apology needed.

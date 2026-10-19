@@ -1,4 +1,4 @@
-"""Detail pass (LOD 2) for the SK-3X1 model.
+"""Detail pass (LOD 2) for the SW-3X1 model.
 
 Adds the fine engineering detail that makes the plant read as a plant:
 open stair towers with landings and handrails, guarded platforms, caged

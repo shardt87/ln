@@ -4,23 +4,23 @@ and a .blend with every camera (P1-P11 plates, E1-E8 epic set).
 
 Build the pro scene first, then export:
 
-    python plant/blender/SK-3X1_Rev14_blender_build.py --style pro --no-render \
-        --out /tmp/cams --blend plant/model/SK-3X1_plant.blend
+    python plant/blender/SW-3X1_Rev14_blender_build.py --style pro --no-render \
+        --out /tmp/cams --blend plant/model/SW-3X1_plant.blend
     python plant/blender/export_model.py plant/model
 
 Coastal variant A (onshore LNG terminal, jetty and carrier), with a trimmed sea plane:
 
-    python plant/blender/SK-3X1_Rev14_blender_build.py --style pro --no-render --out /tmp/cams \
-        --overlay plant/coastal/sk3x1_coastal_A.json --blend plant/model/SK-3X1_coastal_A.blend
-    python plant/blender/export_model.py plant/model SK-3X1_coastal_A
+    python plant/blender/SW-3X1_Rev14_blender_build.py --style pro --no-render --out /tmp/cams \
+        --overlay plant/coastal/sw3x1_coastal_A.json --blend plant/model/SW-3X1_coastal_A.blend
+    python plant/blender/export_model.py plant/model SW-3X1_coastal_A
 
 Plant plus the BTM data centre (design option, an add-on to the plant; the plant and coastal exports leave it out):
 
-    python plant/blender/export_model.py plant/model SK-3X1_plant_datacenter SK-3X1_plant
+    python plant/blender/export_model.py plant/model SW-3X1_plant_datacenter SW-3X1_plant
 
 Everything (plant, LNG satellite and marine terminal, BTM data centre):
 
-    python plant/blender/export_model.py plant/model SK-3X1_everything_datacenter SK-3X1_coastal_A
+    python plant/blender/export_model.py plant/model SW-3X1_everything_datacenter SW-3X1_coastal_A
 
 GLB and USDZ hold the plant and site (no trees or surrounding ground), Y-up,
 with each material's base colour, roughness and metalness, and the printed decals / screens as images.
@@ -43,7 +43,7 @@ import glb_images  # noqa: E402
 
 argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else sys.argv[1:]
 out = os.path.abspath(argv[0])
-name = argv[1] if len(argv) > 1 else "SK-3X1_plant"
+name = argv[1] if len(argv) > 1 else "SW-3X1_plant"
 src = argv[2] if len(argv) > 2 else name
 with_dc = "datacenter" in name               # the BTM data centre is an add-on: only its own export carries it
 blend = os.path.join(out, name + ".blend")

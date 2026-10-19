@@ -1,12 +1,12 @@
-# Publish the SK-3X1 3D viewer, the GT1 bay scene and the render gallery on
+# Publish the SW-3X1 3D viewer, the GT1 bay scene and the render gallery on
 # GitHub Pages. The model is rebuilt and verified against the drawing first.
-name: SK-3X1 viewer on GitHub Pages
+name: SW-3X1 viewer on GitHub Pages
 
 on:
   push:
     paths:
       - "plant/**"
-      - ".github/workflows/sk3x1-pages.yml"
+      - ".github/workflows/sw3x1-pages.yml"
   workflow_dispatch:
 
 permissions:
@@ -15,7 +15,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: sk3x1-pages
+  group: sw3x1-pages
   cancel-in-progress: true
 
 jobs:
@@ -37,11 +37,11 @@ jobs:
       - name: Upload the site as a download (always)
         uses: actions/upload-artifact@v4
         with:
-          name: sk3x1-site
+          name: sw3x1-site
           path: site
       # Pages must be switched on once by the repo owner:
       # Settings -> Pages -> Build and deployment -> Source: GitHub Actions.
-      # Until then the site is still available as the sk3x1-site download.
+      # Until then the site is still available as the sw3x1-site download.
       - id: pages
         uses: actions/configure-pages@v5
         continue-on-error: true
@@ -55,8 +55,8 @@ jobs:
             echo "Pages is enabled; deploying." >> "$GITHUB_STEP_SUMMARY"
           else
             echo "GitHub Pages is not enabled for this repository, so the site was not deployed." >> "$GITHUB_STEP_SUMMARY"
-            echo "Enable it once in Settings -> Pages -> Source: GitHub Actions. The assembled site is in the **sk3x1-site** artifact." >> "$GITHUB_STEP_SUMMARY"
-            echo "::warning::GitHub Pages is not enabled; site uploaded as the sk3x1-site artifact instead"
+            echo "Enable it once in Settings -> Pages -> Source: GitHub Actions. The assembled site is in the **sw3x1-site** artifact." >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning::GitHub Pages is not enabled; site uploaded as the sw3x1-site artifact instead"
           fi
     outputs:
       pages: ${{ steps.pages.outcome }}

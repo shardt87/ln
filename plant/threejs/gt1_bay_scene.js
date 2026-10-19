@@ -1,4 +1,4 @@
-// SK-3X1 Rev 14 - GT train 1 bay: GT1 + generator, HRSG 1 + stack, FH-1, GSU-1 / UAT-1 bay, R2A, BFP/SCR blowers.
+// SW-3X1 Rev 14 - GT train 1 bay: GT1 + generator, HRSG 1 + stack, FH-1, GSU-1 / UAT-1 bay, R2A, BFP/SCR blowers.
 // Coordinates in feet from the verified model (X east, Y north, Z up).
 // D: the bay data (plant/threejs/gt1_bay.json), provided by the caller
 

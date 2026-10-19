@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Extract reference geometry from the SK-3X1 Rev 14 drawing PDF.
+"""Extract reference geometry from the SW-3X1 Rev 14 drawing PDF.
 
-Writes reference/sk3x1_rev14_reference.json, which verify.py checks the
+Writes reference/sw3x1_rev14_reference.json, which verify.py checks the
 model against. Needs PyMuPDF (pip install pymupdf) and the drawing set:
 
     python3 plant/extract_reference.py path/to/SK-3X1_Drawing_Set_Rev14.pdf
@@ -65,7 +65,7 @@ def main():
     doc = pymupdf.open(pdf)
     ref = dict(source=os.path.basename(pdf), sheet01_rects=sheet01(doc[0]),
                sheet05_rects=sheet05(doc[4]))
-    out = os.path.join(HERE, "reference", "sk3x1_rev14_reference.json")
+    out = os.path.join(HERE, "reference", "sw3x1_rev14_reference.json")
     os.makedirs(os.path.dirname(out), exist_ok=True)
     json.dump(ref, open(out, "w"), indent=0)
     print(f"wrote {out}: {len(ref['sheet01_rects'])} sheet-01 shapes, "

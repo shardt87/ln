@@ -1,4 +1,4 @@
-"""Slide 19 replacement: the SK-3X1 campus as '16 zones' in the Anixter/Wesco deck style.
+"""Slide 19 replacement: the SW-3X1 campus as '16 zones' in the Anixter/Wesco deck style.
 
 Takes the clean P19 render and its labels.json (marker anchors projected by Blender), darkens and desaturates the land
 outside the compound, draws numbered orange markers on short leaders, and lays out the slide (1920 x 1080): kicker,
@@ -91,7 +91,7 @@ def main(src, out):
         sd.text((1340, y), f"{n:02d}", font=f1, fill=ORANGE)
         sd.text((1384, y + 3), t, font=f2, fill=(232, 232, 228))
     sd.text((128, 985), "PLANT · EQUIPMENT · CABLE · DELIVERY", font=font("BarlowCondensed-Bold.ttf", 30), fill=ORANGE)
-    sd.text((128, 1030), "SK-3X1 3x1 combined cycle campus · rendered from the plant model · conceptual, not engineered",
+    sd.text((128, 1030), "SW-3X1 3x1 combined cycle campus · rendered from the plant model · conceptual, not engineered",
             font=font("Barlow-Regular.ttf", 21), fill=(150, 150, 146))
     S.save(os.path.join(out, "slide19_zones.png"))
     print("wrote", out)

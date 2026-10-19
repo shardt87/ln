@@ -1,4 +1,4 @@
-"""Control / admin building fitted out inside (SK-3X1-12 footprint 51 x 237 x 20 ft, unchanged).
+"""Control / admin building fitted out inside (SW-3X1-12 footprint 51 x 237 x 20 ft, unchanged).
 
 The solid building box becomes walls, a roof slab and a suspended ceiling (roof, ceiling and rooftop units on
 layer CR_ROOF, so a cutaway can lift them) with the rooms on CR_INTERIOR:
@@ -247,7 +247,7 @@ def build():
 
     # 2. rooms
     room = fuel.new_item(L_IN, "Control / admin building interior: rooms, finishes, ceiling and lighting",
-                         (IX0, IX1, IY0, IY1), (0, CEIL), area="F", sheet="SK-3X1-12", register=False,
+                         (IX0, IX1, IY0, IY1), (0, CEIL), area="F", sheet="SW-3X1-12", register=False,
                          info="Typical fit-out: main control room, shift-supervisor office, DCS engineering / server "
                          "room, lobby and reception, conference, break room, open office, lockers, restrooms, permit "
                          "office. Suspended ceiling at 12.5 ft.")
@@ -318,7 +318,7 @@ def build():
 
     # 3. main control room
     mcr = fuel.new_item(L_IN, "Main control room: video wall, operator console, supervisor desk", (MCR_X, IX1, IY0, IY1),
-                        (0, CEIL), tag="MCR", area="F", sheet="SK-3X1-12", register=False,
+                        (0, CEIL), tag="MCR", area="F", sheet="SW-3X1-12", register=False,
                         info="Six-position operator console (2 x 3 monitors each) facing a 16-cube video wall; "
                         "shift-supervisor desk on a raised platform; hard-wired GT / ST trip and plant ESD under "
                         "guards. DCS / SCADA graphics, CCTV, dispatch and alarm summary on the wall.")
@@ -424,7 +424,7 @@ def build():
 
     # 4. shift supervisor office (glass wall into the MCR)
     sup = fuel.new_item(L_IN, "Shift supervisor office and operations meeting room", (240.2, MCR_X - .3, IY0, COR[0] - .3),
-                        (0, CEIL), area="F", sheet="SK-3X1-12", register=False)
+                        (0, CEIL), area="F", sheet="SW-3X1-12", register=False)
     fuel.on(sup)
     fuel.D = True
     box(261, 271, IY0 + 3, IY0 + 6, 2.4, 2.5, "wood")
@@ -444,7 +444,7 @@ def build():
     screen((240.42, 362, 5.4), (1, 0, 0), 7.6, 4.2, "grid.png", emit=1.2)
     # 5. DCS engineering / server room
     srv = fuel.new_item(L_IN, "DCS engineering / server room: DCS servers, historian, network, engineering workstations",
-                        (220.2, 239.8, IY0, COR[0] - .3), (0, CEIL), area="F", sheet="SK-3X1-12", register=False)
+                        (220.2, 239.8, IY0, COR[0] - .3), (0, CEIL), area="F", sheet="SW-3X1-12", register=False)
     fuel.on(srv)
     fuel.D = True
     for yr in (352.0, 360.0):
@@ -462,7 +462,7 @@ def build():
     person_seated(228, 369.0, math.pi / 2, shirt="shirt_w")
     # 6. lobby / reception
     lob = fuel.new_item(L_IN, "Lobby and reception: reception desk, safety board, visitor seating", (192.2, 219.8, IY0, COR[0] - .3),
-                        (0, CEIL), area="F", sheet="SK-3X1-12", register=False)
+                        (0, CEIL), area="F", sheet="SW-3X1-12", register=False)
     fuel.on(lob)
     fuel.D = True
     box(196, 207, 362, 365, 0, 3.6, "wood")
@@ -470,7 +470,7 @@ def build():
     box(198, 205, 365.5, 366, 0, 2.5, "wood")
     box(200.6, 202.4, 366.6, 366.7, 3.0, 4.05, "monitor")
     chair(201.5, 368.5, -math.pi / 2)
-    sign((206, COR[0] - .37, 7.2), (0, -1, 0), 9.0, 2.4, [("SK-3X1  COMBINED CYCLE POWER PLANT", .17, 1, "#ffffff"),
+    sign((206, COR[0] - .37, 7.2), (0, -1, 0), 9.0, 2.4, [("SW-3X1  COMBINED CYCLE POWER PLANT", .17, 1, "#ffffff"),
                                                           ("3 x 1  ·  H-CLASS  ·  1,700 MW", .12, 0, "#c9d3da")], bg="#1f2a33")
     sign((193.4, COR[0] - .37, 5.2), (0, -1, 0), 4.6, 3.2, [("SAFETY FIRST", .14, 1, "#ffffff", 0, "#2f9a4a"),
                                                             ("DAYS WITHOUT A", .09, 0, "#222222"), ("LOST-TIME INJURY", .09, 0, "#222222"),
@@ -481,7 +481,7 @@ def build():
     plant_pot(218.5, IY0 + 2.5)
     # 7. conference room
     cnf = fuel.new_item(L_IN, "Conference room: table for 12, wall display", (166.2, 191.8, IY0, COR[0] - .3), (0, CEIL),
-                        area="F", sheet="SK-3X1-12", register=False)
+                        area="F", sheet="SW-3X1-12", register=False)
     fuel.on(cnf)
     fuel.D = True
     box(170, 188, 359, 364, 2.35, 2.5, "wood")
@@ -495,7 +495,7 @@ def build():
     screen((166.67, 361.5, 5.5), (1, 0, 0), 7.8, 4.4, "overview.png", emit=1.2)
     # 8. break room
     brk = fuel.new_item(L_IN, "Break room: kitchenette, fridge, tables", (144.2, 165.8, IY0, COR[0] - .3), (0, CEIL), area="F",
-                        sheet="SK-3X1-12", register=False)
+                        sheet="SW-3X1-12", register=False)
     fuel.on(brk)
     fuel.D = True
     box(146, 164, IY0 + .2, IY0 + 2.3, 0, 3.0, "wood")
@@ -510,7 +510,7 @@ def build():
             plain_chair(x + 2.8 * math.cos(t), y + 2.8 * math.sin(t), t + math.pi, "fabric")
     # 9. open office
     off = fuel.new_item(L_IN, "Open office: engineering, maintenance planning, chemistry, admin desks", (IX0, 143.8, IY0, COR[0] - .3),
-                        (0, CEIL), area="F", sheet="SK-3X1-12", register=False)
+                        (0, CEIL), area="F", sheet="SW-3X1-12", register=False)
     fuel.on(off)
     fuel.D = True
     imgs = [["trend.png", "alarm.png"], ["hrsg1.png", "trend.png"], ["sld.png", "grid.png"], ["acc.png", "gt1.png"]]
@@ -522,7 +522,7 @@ def build():
         person_seated(x, 350.7, math.pi / 2, shirt=("shirt_w", "shirt", "shirt_w")[k], typing=True)
     # 10. lockers
     lck = fuel.new_item(L_IN, "Locker rooms and restrooms", (IX0, 143.8, COR[1] + .3, IY1), (0, CEIL), area="F",
-                        sheet="SK-3X1-12", register=False)
+                        sheet="SW-3X1-12", register=False)
     fuel.on(lck)
     fuel.D = True
     for x0_ in (86, 106):

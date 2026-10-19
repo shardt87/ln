@@ -25,7 +25,7 @@ def bb(p):
 
 
 def main(prefixes, allow=()):
-    M = json.load(open(os.path.join(ROOT, "sk3x1_model.json")))
+    M = json.load(open(os.path.join(ROOT, "sw3x1_model.json")))
     items = {i["id"]: i["name"] for i in M["items"]}
     mine = {i for i, n in items.items() if n.startswith(tuple(prefixes))}
     A = [(p, bb(p)) for p in M["parts"] if p["item"] in mine]

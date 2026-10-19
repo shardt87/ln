@@ -1,6 +1,6 @@
 {
-  "name": "sk3x1-tour-kit",
+  "name": "sw3x1-tour-kit",
   "private": true,
-  "description": "Record the SK-3X1 guided tour as MP4 clips on a desktop with a graphics card",
+  "description": "Record the SW-3X1 guided tour as MP4 clips on a desktop with a graphics card",
   "dependencies": { "playwright": "1.56.1" }
 }

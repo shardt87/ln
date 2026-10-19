@@ -30,12 +30,12 @@ def tracked(d, xy, text, font, fill, track):
 
 
 def zone_items():
-    areas = json.load(open(os.path.join(PLANT, "sk3x1_model.json")))["areas"]
+    areas = json.load(open(os.path.join(PLANT, "sw3x1_model.json")))["areas"]
     return [(a, n.upper()) for a, n in areas.items() if a != "L"]      # plant zones; the data-centre option left out
 
 
 COVERS = {
-    "ccs": dict(src="E68_pro_clean.jpg", out="SK-3X1_ccs_cable_cover.jpg", kicker="PRODUCT APPLICATION  ·  ZONE G",
+    "ccs": dict(src="E68_pro_clean.jpg", out="SW-3X1_ccs_cable_cover.jpg", kicker="PRODUCT APPLICATION  ·  ZONE G",
                 title=("CARBON", "CAPTURE"),
                 tagline=("Absorbers, strippers, 16 MW fans:", "all of it runs on cable."),
                 items=[("230 kV", "XLPE TO T-1 / T-2"),
@@ -44,7 +44,7 @@ COVERS = {
                        ("600 V", "TYPE TC-ER POWER AND CONTROL"),
                        ("PLTC", "ABSORBER INSTRUMENTATION"),
                        ("4/0", "BARE COPPER GROUNDING")], key_w=112, item_px=21, title_px=118, title_track=8),
-    "zones": dict(src="E68_pro_clean.jpg", out="SK-3X1_plant_zones_cover.jpg", kicker="SK-3X1  ·  REV 14  ·  3x1 COMBINED CYCLE",
+    "zones": dict(src="E68_pro_clean.jpg", out="SW-3X1_plant_zones_cover.jpg", kicker="SW-3X1  ·  REV 14  ·  3x1 COMBINED CYCLE",
                   title=("PLANT", "ZONES"),
                   tagline=("From the grid to the absorber stack,", "and the cable that connects it all."),
                   items=None, key_w=40),

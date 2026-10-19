@@ -2,7 +2,7 @@
 building, outside and on the roof. The same design family as the turbine hall, no Southwire logo here:
 - facade: a copper band round all four walls above the window band, black coping on the parapet, black corner
   pilasters; at the glazed entrance a black portal (piers either side of the canopy, a lintel above it) lettered
-  SK-3X1 POWER CAMPUS / CONTROL & ADMINISTRATION; a monument sign at the entrance walk and three flagpoles (the US
+  SW-3X1 POWER CAMPUS / CONTROL & ADMINISTRATION; a monument sign at the entrance walk and three flagpoles (the US
   flag in the middle);
 - rooftop HVAC: two more packaged units (over the lobby and over the control room, the 24/7 load) beside the two the
   rooftop pass placed, and every unit wired as an electrician would: a fused disconnect on a strut stand beside the
@@ -59,7 +59,7 @@ def facade():
     n += 3
     fuel.D = False
     showcase.decal((XM, y0 - .03, 14.15), (0, -1, 0), 22.0, 5.6,
-                   [("SK-3X1 POWER CAMPUS", .42, 1, "#f2f2f0"), ("CONTROL & ADMINISTRATION", .2, 1, "#c4744a")], bg=None)
+                   [("SW-3X1 POWER CAMPUS", .42, 1, "#f2f2f0"), ("CONTROL & ADMINISTRATION", .2, 1, "#c4744a")], bg=None)
     # monument sign at the entrance walk (west of the walk), black with a copper cap
     mx, my = XM - 28.0, 318.0
     fuel.D = True
@@ -69,7 +69,7 @@ def facade():
     n += 3
     fuel.D = False
     showcase.decal((mx, my - .83, 3.3), (0, -1, 0), 18.5, 3.8,
-                   [("SK-3X1 POWER CAMPUS", .4, 1, "#f2f2f0"), ("3x1 COMBINED CYCLE  ·  CONTROL & ADMINISTRATION", .18, 1,
+                   [("SW-3X1 POWER CAMPUS", .4, 1, "#f2f2f0"), ("3x1 COMBINED CYCLE  ·  CONTROL & ADMINISTRATION", .18, 1,
                                                                  "#c4744a")], bg=None)
     # three flagpoles east of the walk, 11 ft apart so the flags fly clear of each other: the US flag on the taller
     # middle pole, the state flag (blue) to the west and a company flag (black with a copper stripe) to the east

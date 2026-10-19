@@ -9,7 +9,7 @@ design system of the Path of Power brochures (brochure_zones.py: fonts, colours,
         modular power spread by technology, LNG / H2) | 23 Operate & support | 24 back cover
 
 Numbers come from the model and its cable schedule (brochure/zone_numbers.json from brochure/cables_xray.json: routed
-home-run cable by zone; plant totals from SK-3X1_Cable_Schedule_and_BOM.xlsx). Southwire product facts are as printed in
+home-run cable by zone; plant totals from SW-3X1_Cable_Schedule_and_BOM.xlsx). Southwire product facts are as printed in
 the SIMpull Solutions brochure; prefabricated cable systems are generic. Images: renders/epic/*_pro_clean.jpg.
 
     python blender/brochure_epc.py          # -> renders/brochure_epc/SW_BuiltToPull_EPC.pdf + page previews
@@ -238,7 +238,7 @@ def opening():
   <div class="abs" style="left:{half + 56}px;top:{SH * .62 + 40:.0f}px;width:{half - 112}px">
     <div class="kicker">From reel to energised</div>
     <div style="margin-top:20px;display:grid;grid-template-columns:repeat(4,1fr);row-gap:22px;column-gap:16px">{steps}</div></div>
-  <div class="abs cap" style="left:{half + 56}px;top:{SH * .62 - 30:.0f}px;color:{WHITE}">SK-3X1 campus at golden hour: three H-class
+  <div class="abs cap" style="left:{half + 56}px;top:{SH * .62 - 30:.0f}px;color:{WHITE}">SW-3X1 campus at golden hour: three H-class
     GTs, HRSGs and ST, ACC, 230 kV switchyard, carbon capture, BESS and modular power.</div>
   {foot("2 &ndash; 3", SW, 56)}
 </section>"""
@@ -257,11 +257,11 @@ def plan():
   <div class="abs kicker" style="left:122px;top:66px">02 &mdash; Plan</div>
   <div class="abs h2" style="left:122px;top:88px;font-size:46px">See every cable<br><em>before you pull it.</em></div>
   <div class="abs" style="left:56px;bottom:112px;width:900px">{xray_legend()}</div>
-  <div class="abs cap" style="left:56px;bottom:70px;width:900px">Cable X-ray of the SK-3X1 model: 908 routed paths carrying
+  <div class="abs cap" style="left:56px;bottom:70px;width:900px">Cable X-ray of the SW-3X1 model: 908 routed paths carrying
     the home-run cables of the schedule, coloured by voltage class and weighted by cable count. Device tails to local junction
     boxes are counted, not drawn.</div>
   <div class="abs" style="left:{SW - 56 - 440}px;top:150px;width:440px">
-    <div class="lede">Pull planning starts long before the first reel ships. On SK-3X1 every circuit is in the model with its
+    <div class="lede">Pull planning starts long before the first reel ships. On SW-3X1 every circuit is in the model with its
       route, length, size and voltage-drop check, so reels can be cut to the pull and the pull sequence planned.</div>
     <div style="margin-top:18px">
       <div class="li"><b>Configurator Plus web app</b>plan, manage and order feeder reels from any device</div>
@@ -320,7 +320,7 @@ def deliver():
     return chapter_single(
         "03", "deliver", "Deliver", "The right reel,<br><em>at the right pull.</em>",
         "Reels arrive cut to the length of the pull, paralleled and colour-coded, labelled for the location they feed, and on "
-        "payoffs that roll straight to the conduit. On SK-3X1 the SIMpull Truck brings the 13.8 kV collector replacement reels "
+        "payoffs that roll straight to the conduit. On SW-3X1 the SIMpull Truck brings the 13.8 kV collector replacement reels "
         "to the modular-yard pull.",
         [("Simple Distribution", "five fully stocked customer service centers across the US"),
          ("Simple Delivery", "colour, paralleled, cut-to-length reels with SIMpull Heads, delivered on SIMpull payoffs on the SIMpull Truck"),
@@ -335,7 +335,7 @@ def deliver():
 def stage():
     return chapter_single(
         "04", "stage", "Stage", "One person.<br><em>No jacks.</em>",
-        "Set-up used to mean reel jacks, axles, pallet jacks and a crew. Staged on SK-3X1's reel yard: SIMpull Reels on Cradles, "
+        "Set-up used to mean reel jacks, axles, pallet jacks and a crew. Staged on SW-3X1's reel yard: SIMpull Reels on Cradles, "
         "45K and 30K Reel Rollers carrying the MV steel reels, SIMpull Flanges on wooden reels and Stack reels on JAX stands, "
         "with the temporary power and lighting to run the yard.",
         [("SIMpull Reel", "61 x 32 in, up to 6,000 lb, moved by one person, fits through 36 in doors"),
@@ -345,7 +345,7 @@ def stage():
          ("Maxis JAX / PRO-JAX", "reel stands that lift reels safely; PRO-JAX to 10,000 lb"),
          ("Temporary power & lighting", "generator to cam-lock cords, 480 V carts, distribution boxes, work lights")],
         img(B5), "The RR-SW45 Reel Roller: a 35 kV MV-105 steel reel on driven rollers, pendant in reach, operator out of the bite.",
-        epic("E89"), "Reel yard staging on the SK-3X1 laydown pad.", "7", hero_h=620, pos="72%")
+        epic("E89"), "Reel yard staging on the SW-3X1 laydown pad.", "7", hero_h=620, pos="72%")
 
 
 def prefab():
@@ -401,7 +401,7 @@ def pull():
     extra = f"""<div class="abs" style="left:48px;top:{SH - 250}px;width:{CW - 96}px;display:grid;grid-template-columns:1.35fr 1fr;column-gap:14px">{trad}{simp}</div>"""
     return chapter_single(
         "06", "pull", "Pull", "No lube. Factory heads.<br><em>Fewer hands.</em>",
-        "On SK-3X1 the welding-shop feeder goes in as five paralleled SIMpull THHN conductors off one SIMpull Reel, factory "
+        "On SW-3X1 the welding-shop feeder goes in as five paralleled SIMpull THHN conductors off one SIMpull Reel, factory "
         "SIMpull Heads straight into the wireway, a tension monitor and a Triggers switch on the pull.",
         [("SIMpull THHN, NoLube", "installs without pulling lubricant into conduit; installation performance guaranteed"),
          ("SIMpull Head grips", "factory-installed, low-profile, staggered; about 3 ft of cable per phase not wasted"),
@@ -452,7 +452,7 @@ def zone_page(n, of, name, sub, keys, hero, hero_cap, inset, inset_cap, diff, so
   <div class="abs kicker" style="left:48px;top:{hh + 262}px">The installation solution</div>
   <div class="abs" style="left:48px;top:{hh + 284}px;width:{CW - 96}px;column-count:2;column-gap:28px">{lis}</div>
   <div class="abs" style="left:48px;width:{CW - 96}px;bottom:30px;display:flex;justify-content:space-between;align-items:center;
-       border-top:1px solid #3a3f45;padding-top:10px"><span>{dots}</span><span class="small">ROUTED HOME-RUN CABLE FROM THE SK-3X1
+       border-top:1px solid #3a3f45;padding-top:10px"><span>{dots}</span><span class="small">ROUTED HOME-RUN CABLE FROM THE SW-3X1
        MODEL &middot; {page}</span></div>
 </section>"""
 
@@ -598,7 +598,7 @@ def back():
   <div class="abs" style="left:48px;top:{SH - 170}px;font:800 22px/1.3 BC;color:{WHITE};letter-spacing:.04em">SOUTHWIRE.COM &nbsp;|&nbsp; (855) 798-6657</div>
   <div class="abs" style="left:48px;top:{SH - 120}px;border:2px solid {WHITE};padding:8px 12px;font:800 15px/1.15 BC;color:{WHITE};
        letter-spacing:.06em">BUILT FOR DURABILITY.<br>BUILT FOR RELIABILITY.<br>BUILT FOR WORK.</div>
-  <div class="abs small" style="right:48px;bottom:30px;width:320px;text-align:right">Images and quantities from the SK-3X1 conceptual
+  <div class="abs small" style="right:48px;bottom:30px;width:320px;text-align:right">Images and quantities from the SW-3X1 conceptual
     3D model: illustration, not engineered, not for construction. Product data as published by Southwire; confirm against
     current specifications.</div>
 </section>"""

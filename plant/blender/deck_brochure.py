@@ -1,6 +1,6 @@
 """The wire & cable brochure as 16:9 deck slides, to follow the Strategy Monthly Update cover (deck_divider.py
 strategy): same copy, products and model-measured numbers as brochure.py, laid out landscape in the cover's look
-(charcoal field, diagonal photo edge, Barlow Condensed, copper). Pictures are the current renders of the SK-3X1
+(charcoal field, diagonal photo edge, Barlow Condensed, copper). Pictures are the current renders of the SW-3X1
 model (renders/epic, renders/cover).
 
     python blender/deck_brochure.py        # -> renders/deck/brochure_slides/slide_02..14.png + one PDF with the cover
@@ -15,7 +15,7 @@ from brochure import BG, PANEL, COPPER, COPPER_D, WHITE, GREY, DIM, RULE, BOLD, 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PLANT = os.path.dirname(HERE)
 OUT = os.path.join(PLANT, "renders", "deck", "brochure_slides")
-COVER_PNG = os.path.join(PLANT, "renders", "deck", "SK-3X1_cover_strategy_update_October.png")
+COVER_PNG = os.path.join(PLANT, "renders", "deck", "SW-3X1_cover_strategy_update_October.png")
 W, H = 2880, 1620                                      # 1440 x 810 pt at 2x, as the cover
 M = 120
 FOOT = 96                                              # footer band height
@@ -126,7 +126,7 @@ def overview(n):
     img = Image.new("RGB", (W, H), BG)
     photo_right(img, "K5_pro.png", 1420, 1180, (.5, .5))
     d = ImageDraw.Draw(img)
-    tracked(d, (M, 130), "SK-3X1 POWER CAMPUS", F(BOLD, 30), COPPER, 4)
+    tracked(d, (M, 130), "SW-3X1 POWER CAMPUS", F(BOLD, 30), COPPER, 4)
     d.rectangle([M, 190, M + 96, 199], fill=COPPER)
     big = F(XBOLD, 128)
     d.text((M, 222), "ONE CAMPUS.", font=big, fill=WHITE)
@@ -197,7 +197,7 @@ def bookend(n):
     g.putdata([int(255 * (1 - k / fw) ** 1.3) for k in range(fw)])
     img.paste(Image.new("RGB", (fw, H - FOOT), BG), (W - pw, 0), g.resize((fw, H - FOOT)))
     d = ImageDraw.Draw(img)
-    tracked(d, (M, 380), "SK-3X1 POWER CAMPUS", F(BOLD, 30), COPPER, 4)
+    tracked(d, (M, 380), "SW-3X1 POWER CAMPUS", F(BOLD, 30), COPPER, 4)
     d.rectangle([M, 440, M + 96, 449], fill=COPPER)
     big = F(XBOLD, 140)
     d.text((M, 470), "EVERY MEGAWATT", font=big, fill=WHITE)
@@ -416,7 +416,7 @@ def index(n):
     d.text((M + 640, y - 4), "Stephan Hardt", font=F(XBOLD, 44), fill=WHITE)
     d.text((M + 640, y + 54), "Power Generation Solutions", font=F(REG, 28), fill=GREY)
     d.text((M + 640, y + 94), "stephan.hardt@southwire.com", font=F(REG, 28), fill=COPPER)
-    para(d, (M, H - FOOT - 112), "Renders are conceptual illustrations from the SK-3X1 3D model: not engineered, "
+    para(d, (M, H - FOOT - 112), "Renders are conceptual illustrations from the SW-3X1 3D model: not engineered, "
          "not for construction. Product constructions are typical; confirm ratings, sizes and listings against "
          "current Southwire specifications. ARMOR-X and SIMpull are registered trademarks of Southwire Company, LLC.",
          F(REG, 20), DIM, 1540, 1.4)
@@ -435,7 +435,7 @@ def main():
     # the cover carries the credit in its own block (deck_divider.py: name, role, email)
     pages = [Image.open(COVER_PNG).convert("RGB").resize((W, H), Image.LANCZOS)] if os.path.exists(COVER_PNG) else []
     pages += slides
-    pdf = os.path.join(PLANT, "renders", "deck", "SK-3X1_Strategy_Update_October_2026.pdf")
+    pdf = os.path.join(PLANT, "renders", "deck", "SW-3X1_Strategy_Update_October_2026.pdf")
     pages[0].save(pdf, save_all=True, append_images=pages[1:], resolution=144)
     print("wrote", pdf, len(pages), "slides")
 

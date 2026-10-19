@@ -1,4 +1,4 @@
-"""Plant-wide quality / realism sweep on sk3x1_model.json (geometry-level, complements verify / audit):
+"""Plant-wide quality / realism sweep on sw3x1_model.json (geometry-level, complements verify / audit):
 - floating parts: parts above grade that touch nothing else (lights, boxes, pipes hanging in the air);
 - open pipe ends: pipe-like rods whose end meets no other part and is not at grade;
 - obstructions in roads: anything at grade inside a road footprint (bar people, vehicles, road dressing);
@@ -8,7 +8,7 @@ import json, math, os, re, sys
 from collections import defaultdict
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-M = json.load(open(os.path.join(HERE, "sk3x1_model.json")))
+M = json.load(open(os.path.join(HERE, "sw3x1_model.json")))
 items = {it["id"]: it for it in M["items"]}
 PIPE = {"pipe", "waterline", "fuelgas", "fueloil", "steam", "lngpipe", "cw", "chw", "hydrogen", "amber", "pvc_blue",
         "pvc_green", "hdpe", "ductile", "rcp"}

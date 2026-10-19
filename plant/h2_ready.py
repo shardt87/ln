@@ -357,7 +357,7 @@ def build(routes):
 
     # future T-H2 foundation where the 230 kV cable from D6 comes up (drawn T-H2 position, sheet 14)
     ft = fuel.new_item(L, "H2F: future T-H2 foundation (230 / 13.8 kV, Phase 2) with the 230 kV cable stub-up",
-                       (2327, 2373, 1437, 1483), (-2.5, 7), tag="H2F", area="K", sheet="SK-3X1-14", register=False,
+                       (2327, 2373, 1437, 1483), (-2.5, 7), tag="H2F", area="K", sheet="SW-3X1-14", register=False,
                        info="Foundation, oil-containment curb and capped 230 kV cable stub-ups for the electrolysis "
                             "transformer; the cable from D6 is pulled and terminated in Phase 2.")
     on(ft)

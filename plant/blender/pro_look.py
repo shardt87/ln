@@ -1,4 +1,4 @@
-"""Professional presentation look for the SK-3X1 Blender build (--style pro).
+"""Professional presentation look for the SW-3X1 Blender build (--style pro).
 
 - Materials: procedural PBR per surface type. They include ribbed metal
   cladding (wave-texture bump), board-marked concrete, galvanised steel
@@ -1090,7 +1090,7 @@ def hero_camera(scene, h):
     scene.collection.objects.link(ob)
     return ob
 
-# Coastal variant (sheet SK-3X1-15). Morning sun from the south-east so the sea-side
+# Coastal variant (sheet SW-3X1-15). Morning sun from the south-east so the sea-side
 # views are front lit. A: onshore import terminal and jetty; B: FSRU ~21,000 ft offshore.
 COASTAL_A = [
     dict(k="C1", n="Onshore LNG import terminal beside the plant", eye=(4750, -1150, 1050),
@@ -1457,7 +1457,7 @@ EPIC = [
          eye=(2282, 830, 26), target=(2232, 760, 2), lens=24, show="all", sun=(30, 235)),
     dict(k="E121", n="Turbine hall roof: MC risers over the eave and up the roof to the exhauster trays",
          eye=(1125, 410, 112), target=(1098, 465, 99), lens=26, show="all", sun=(34, 230)),
-    dict(k="E123", n="The SK-3X1 campus from the south-west: power block, carbon capture, modular yard and the BTM campus",
+    dict(k="E123", n="The SW-3X1 campus from the south-west: power block, carbon capture, modular yard and the BTM campus",
          eye=(-420, -820, 760), target=(1250, 880, 0), lens=34, show="dc", plumes=True, look=LOOK_GOLDEN),
     dict(k="E124", n="Along the main E-W pipe and cable rack, the HRSG stacks alongside",
          eye=(500, 846, 52), target=(860, 800, 70), lens=22, show="all", plumes=True, sun=(30, 230)),
@@ -1466,7 +1466,7 @@ EPIC = [
     dict(k="P110", n="Gas yard at eye level: conduit rack and ARMOR-X MC-HL on Unistrut between the equipment rows",
          eye=(1646, 1499.0, 5.4), target=(1690, 1511.0, 7.4), lens=35, show="base", sun=(14, 250),
          look=LOOK_GOLDEN, dof=(26, 4.0), hide=("People (scale figures", "Gas yard: operators")),
-    dict(k="P19", n="SK-3X1 campus: 16 zones (deck overview)", eye=(-800, -1500, 1100), target=(1210, 960, 0), lens=36,
+    dict(k="P19", n="SW-3X1 campus: 16 zones (deck overview)", eye=(-800, -1500, 1100), target=(1210, 960, 0), lens=36,
          show="all", res=(2400, 1350), sun=(42, 200), hide_layers=("OPT_LNG", "OPT_LNG_ROUTES", "OPT_H2", "OPT_H2_ROUTES",
          "OPT_H2P", "OPT_H2P_ROUTES", "H2_ROOF", "OPT_UNDERGROUND"), deck_markers=True,
          callouts=[(1000, 150, 22, "01", "Switchyard, GSU & grid tie", "#e07a2e"), (1735, 600, 14, "02", "BESS yard", "#e07a2e"),
@@ -1558,15 +1558,15 @@ EPIC = [
 def hero_set(coastal=None, name=""):
     """Cameras, sun (elevation, azimuth) and sheet reference for the scene being rendered."""
     if name == "epic":
-        return dict(heroes=EPIC, sun=(11, 250), sheet="SK-3X1")
+        return dict(heroes=EPIC, sun=(11, 250), sheet="SW-3X1")
     if not coastal:
-        return dict(heroes=HEROES, sun=(24, 258), sheet="SK-3X1")
+        return dict(heroes=HEROES, sun=(24, 258), sheet="SW-3X1")
     heroes = COASTAL_A if coastal["variant"] == "A" else COASTAL_B
     t = coastal.get("transform")
     if t:                                   # cameras are framed on sheet 15; rotate them onto the site
         f = lambda p: (t["c"] - p[1], p[0] - t["d"], p[2])
         heroes = [h if h.get("site") else dict(h, eye=f(h["eye"]), target=f(h["target"])) for h in heroes]
-    return dict(heroes=heroes, sun=(28, 140), sheet="SK-3X1-15")
+    return dict(heroes=heroes, sun=(28, 140), sheet="SW-3X1-15")
 
 
 # ------------------------------------------------------------------------------------------------- backdrop

@@ -11,7 +11,7 @@ import os
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-m = json.load(open(os.path.join(HERE, "..", "sk3x1_model.json")))
+m = json.load(open(os.path.join(HERE, "..", "sw3x1_model.json")))
 pal = json.load(open(os.path.join(HERE, "..", "palette.json")))
 box = tuple(map(float, sys.argv[1:5])) if len(sys.argv) >= 5 else (548, 712, 296, 828)
 cols = sorted(pal)

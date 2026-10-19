@@ -195,7 +195,7 @@ def opening(lab):
     <div><div class="h1" style="font-size:46px">417</div><div class="stat">pieces of equipment, each with its own cable</div></div>
   </div>
   {wayfinding(0)}
-  <div class="abs small" style="right:60px;bottom:70px;text-align:right;color:#aab0b6">SK-3X1 campus, rendered from the 3D model.
+  <div class="abs small" style="right:60px;bottom:70px;text-align:right;color:#aab0b6">SW-3X1 campus, rendered from the 3D model.
     Route lengths measured along modelled routes, not cable footage.</div>
 </section>"""
 

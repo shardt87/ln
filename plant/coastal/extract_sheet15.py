@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Reference geometry for the coastal variant from sheet SK-3X1-15 (needs PyMuPDF and the PDF).
+"""Reference geometry for the coastal variant from sheet SW-3X1-15 (needs PyMuPDF and the PDF).
 
 Both panels draw the 2,420 x 1,920 ft compound to scale, so the compound frame gives
 the transform to model feet (X east, Y north, origin at the SW compound corner).
 Every numbered key item is matched to the filled shape its label sits on (or nearest to).
-Writes plant/reference/sk3x1_rev14_sheet15.json, which build_coastal.py and
+Writes plant/reference/sw3x1_rev14_sheet15.json, which build_coastal.py and
 verify_coastal.py read, so neither needs the PDF.
 
     python3 plant/coastal/extract_sheet15.py SK-3X1_Drawing_Set_Rev14.pdf
@@ -16,7 +16,7 @@ import sys
 import fitz
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(os.path.dirname(HERE), "reference", "sk3x1_rev14_sheet15.json")
+OUT = os.path.join(os.path.dirname(HERE), "reference", "sw3x1_rev14_sheet15.json")
 
 # panel windows in PDF points (A: onshore terminal, B: FSRU) and the compound frame inside each
 PANELS = {"A": dict(win=(24, 102, 810, 392), frame=(32.4, 118.7, 350.4, 371.0)),
@@ -28,7 +28,7 @@ def main(pdf):
     page = fitz.open(pdf)[14]
     drawings = page.get_drawings()
     words = page.get_text("words")
-    out = dict(source=os.path.basename(pdf), sheet="SK-3X1-15", panels={})
+    out = dict(source=os.path.basename(pdf), sheet="SW-3X1-15", panels={})
     for name, P in PANELS.items():
         wx0, wy0, wx1, wy1 = P["win"]
         fx0, fy0, fx1, fy1 = P["frame"]

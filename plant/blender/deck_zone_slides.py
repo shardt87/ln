@@ -1,4 +1,4 @@
-"""Zone close-up slides for the Anixter/Wesco deck: one SK-3X1 render per zone of the slide-19 map, full bleed, with the
+"""Zone close-up slides for the Anixter/Wesco deck: one SW-3X1 render per zone of the slide-19 map, full bleed, with the
 zone's orange number disc (same as the map marker), the zone name and a one-line caption, in the deck's type.
 
   python3 blender/deck_zone_slides.py      ->  renders/deck/zones/zone_XX.png + zones_contact.jpg
@@ -71,7 +71,7 @@ def slide(z, name, key, cap):
     d.text((cx + R + 30, cy - 50), f"ZONE {z:02d}", font=font("BarlowCondensed-Bold.ttf", 30), fill=ORANGE)
     d.text((cx + R + 28, cy - 18), name.upper(), font=font("BarlowCondensed-ExtraBold.ttf", 66), fill=(245, 245, 242))
     d.text((128, 900), cap, font=font("Barlow-Regular.ttf", 30), fill=(228, 228, 224))
-    d.text((128, 1020), "SK-3X1 PLANT MODEL · RENDERED ILLUSTRATION", font=font("BarlowCondensed-Bold.ttf", 24),
+    d.text((128, 1020), "SW-3X1 PLANT MODEL · RENDERED ILLUSTRATION", font=font("BarlowCondensed-Bold.ttf", 24),
            fill=(200, 200, 196))
     d.text((60, 44), "THE PLANT IS THE MODEL", font=font("BarlowCondensed-Bold.ttf", 26), fill=ORANGE)
     return S

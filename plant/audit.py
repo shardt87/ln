@@ -19,7 +19,7 @@ import sys
 from collections import Counter, defaultdict
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-M = json.load(open(os.path.join(HERE, "sk3x1_model.json")))
+M = json.load(open(os.path.join(HERE, "sw3x1_model.json")))
 items = {it["id"]: it for it in M["items"]}
 TOL = 15.0             # ft: a route end may stop this far short of the equipment it serves
 UNIT = re.compile(r"^(GT\d|ST$|GSU|UAT|SC-\d|RICE-\d+|TM-\d|CONT-\d+|FC-\d+|MT-\d+|T-|GEN-|MOD-EH|PAD-|BESS|LCI|"

@@ -5,7 +5,7 @@ to PDF by headless Chromium, in the 'Path of Power' style of brochure_v2.py.
   a one-line description and the model location (ft) where each runs.
 - Pins on the hero renders are projected from those locations with the same pinhole camera Blender uses
   (eye, target, lens, 36 mm sensor), so each number sits on the equipment it names.
-- The campus map is drawn in SVG from the item footprints of sk3x1_model.json, zones tinted by model area.
+- The campus map is drawn in SVG from the item footprints of sw3x1_model.json, zones tinted by model area.
 
     python blender/brochure_zones.py        # -> renders/brochure_v2/SW_PathOfPower_zones.pdf + previews
 """
@@ -26,7 +26,7 @@ PX = 96
 SW, SH, CW = 17 * PX, 11 * PX, int(8.5 * PX)
 COPPER, COPPER_L, INK, WHITE, GREY = "#e39a5f", "#f2b98a", "#0e1012", "#f5f3ef", "#b9bec4"
 HALO = 'stroke="#0e1012" stroke-width="3" stroke-opacity=".75" paint-order="stroke" stroke-linejoin="round"'
-MODEL = json.load(open(os.path.join(PLANT, "sk3x1_model.json")))
+MODEL = json.load(open(os.path.join(PLANT, "sw3x1_model.json")))
 ZONES = json.load(open(os.path.join(PLANT, "brochure", "zones.json")))["zones"]
 
 
@@ -173,11 +173,11 @@ def zones_spread():
   <div class="abs h1" style="left:60px;top:92px;font-size:66px">Seven zones.<br><em>One cable partner.</em></div>
   <div class="abs body" style="left:64px;top:236px;width:470px;color:{WHITE}">From the 230 kV switchyard to the
     portable power pad, each part of the campus asks something different of its cable. Here are the seven zones of
-    the SK-3X1 campus and the five products that carry each one.</div>
+    the SW-3X1 campus and the five products that carry each one.</div>
   <div class="abs" style="left:64px;top:336px;width:500px;column-count:2;column-gap:26px">{''.join(rows)}</div>
   <div class="abs" style="left:{SW - 64 - mw}px;top:120px">{plan_svg(mw, mh)}</div>
   <div class="abs small" style="left:{SW - 64 - mw}px;top:{120 + mh + 10}px;width:{mw}px">Campus plan drawn from
-    the SK-3X1 3D model: every footprint at true position, zones tinted by model area. Data-centre campus and the
+    the SW-3X1 3D model: every footprint at true position, zones tinted by model area. Data-centre campus and the
     marine terminal not shown. Products are typical for each application; confirm against current Southwire
     specifications.</div>
   <div class="abs" style="left:64px;right:64px;bottom:40px;border-top:1px solid #3a3f45;padding-top:10px;display:flex;

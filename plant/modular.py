@@ -1,4 +1,4 @@
-"""Modular power yard at LOD 3 (SK-3X1-07): the RICE engine hall with its 8 engine-generators,
+"""Modular power yard at LOD 3 (SW-3X1-07): the RICE engine hall with its 8 engine-generators,
 exhaust trains and radiators, and the two aeroderivative simple-cycle units.
 
 Drawn footprints, envelopes and sheet-13 heights are kept (RICE stacks 90 ft, aero stacks 80 ft);

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Export sk3x1_model.json to Wavefront OBJ + MTL for Blender, SketchUp,
+"""Export sw3x1_model.json to Wavefront OBJ + MTL for Blender, SketchUp,
 Rhino and similar tools. One OBJ group per equipment item, one material per
-colour key; the layer (SK-3X1-11 collection) is kept in each group name.
+colour key; the layer (SW-3X1-11 collection) is kept in each group name.
 
     python3 plant/export_obj.py            # Y-up (Blender / glTF convention)
     python3 plant/export_obj.py --zup      # native X east, Y north, Z up
@@ -18,7 +18,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ZUP = "--zup" in sys.argv
 BASE_ONLY = "--base" in sys.argv
 PALETTE = json.load(open(os.path.join(HERE, "palette.json")))
-model = json.load(open(os.path.join(HERE, "sk3x1_model.json")))
+model = json.load(open(os.path.join(HERE, "sw3x1_model.json")))
 items = {it["id"]: it for it in model["items"]}
 verts, groups = [], {}
 
@@ -107,7 +107,7 @@ for n, r in enumerate(model["routes"]):
             continue
         box(f, (min(ax, bx) - hw, min(ay, by) - hw, z - h / 2), (max(ax, bx) + hw, max(ay, by) + hw, z + h / 2))
 
-name = "sk3x1_model" + ("_base" if BASE_ONLY else "") + ("_zup" if ZUP else "")
+name = "sw3x1_model" + ("_base" if BASE_ONLY else "") + ("_zup" if ZUP else "")
 used = sorted({c for (_, c) in groups})
 with open(os.path.join(HERE, name + ".mtl"), "w") as fh:
     for c in used:

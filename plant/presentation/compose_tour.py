@@ -1,8 +1,8 @@
 """Composite the tour captions onto the recorded frames and encode the clips (H.264 MP4, PowerPoint-ready).
 
     python3 compose_tour.py FRAMES_DIR OUT_DIR
-FRAMES_DIR holds stop_NN/ folders from record_tour.js. Writes OUT_DIR/SK-3X1_tour_NN.mp4 per stop and
-OUT_DIR/SK-3X1_tour_full.mp4. Captions follow the deck style (Barlow Condensed, charcoal card, copper rule):
+FRAMES_DIR holds stop_NN/ folders from record_tour.js. Writes OUT_DIR/SW-3X1_tour_NN.mp4 per stop and
+OUT_DIR/SW-3X1_tour_full.mp4. Captions follow the deck style (Barlow Condensed, charcoal card, copper rule):
 hidden in flight, faded in after arrival."""
 import json
 import os
@@ -110,7 +110,7 @@ def main(src, out):
         fd = os.path.join(src, "stop_%02d" % i)
         if not os.path.exists(os.path.join(fd, "meta.json")):
             continue
-        o = os.path.join(out, "SK-3X1_tour_%02d.mp4" % (i + 1))
+        o = os.path.join(out, "SW-3X1_tour_%02d.mp4" % (i + 1))
         if not os.path.exists(o):                    # clips already encoded are kept (incremental runs)
             encode(fd, o, i, n)
         done.append(o)
@@ -118,9 +118,9 @@ def main(src, out):
         lst = os.path.join(out, "concat.txt")
         open(lst, "w").write("".join(f"file '{os.path.abspath(p)}'\n" for p in done))
         subprocess.run([imageio_ffmpeg.get_ffmpeg_exe(), "-y", "-loglevel", "error", "-f", "concat", "-safe", "0",
-                        "-i", lst, "-c", "copy", "-movflags", "+faststart", os.path.join(out, "SK-3X1_tour_full.mp4")], check=True)
+                        "-i", lst, "-c", "copy", "-movflags", "+faststart", os.path.join(out, "SW-3X1_tour_full.mp4")], check=True)
         os.remove(lst)
-        print("wrote", os.path.join(out, "SK-3X1_tour_full.mp4"))
+        print("wrote", os.path.join(out, "SW-3X1_tour_full.mp4"))
 
 
 if __name__ == "__main__":
