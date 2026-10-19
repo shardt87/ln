@@ -208,12 +208,13 @@ Hall cameras in `blender/pro_look.py` EPIC: HX1 (cover), HALL2-HALL8, ST1, E1, K
 4. ST close-up polish (flush thermocouple leads) if ST1 goes in the deck.
 5. Training prep from `plant/HANDOFF.md`: fundamentals slides, SME review, two Teams dry runs.
 
-- Author credit (Oct 19, the author's decision): Stephan Hardt · stephan.hardt@southwire.com on every page.
-  One source, `plant/blender/credit.py`. Built in: the strategy deck footer (every slide; the cover's own credit block
-  already has it), the cable brochure footer and cover strip, render captions (finish_pro, annotate), the viewer
-  (header byline, stamp, footer). Everything else (EPC brochure, Path of Power PDFs, boards, cover sheets) is
-  stamped after its PDF is written by `plant/tools/stamp_credit.py` (small line centred on the bottom edge, on a
-  dark backing; marked in the PDF keywords so it never stamps twice); the generators call it automatically.
+- Author credit (Oct 19, the author's decision): the work email alone, stephan.hardt@southwire.com (it spells out
+  the name), on every page except the first: the cover carries the full contact block. One source,
+  `plant/blender/credit.py`. Built in: the strategy deck footer (slides 2-14), the cable brochure footer (pages 2-12),
+  the viewer header byline. The other multi-page PDFs (EPC brochure, Path of Power) are stamped after they are
+  written by `plant/tools/stamp_credit.py` (small line centred on the bottom edge, dark backing, pages 2+, marked
+  in the PDF keywords so it never stamps twice); the generators call it. Single-page sheets (covers, board) carry
+  the name already and get no stamp. Pre-existing name credits (render captions, viewer stamp) unchanged.
 
 ## Only in the conversation (not in files until now)
 

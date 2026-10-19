@@ -86,8 +86,7 @@ def finish(png, meta):
     tracked(d, (m, base - int(10 * k)), f"{v.get('sheet', 'SK-3X1')} · REV 14 · {v['lens']} MM · {sun} · "
             f"CYCLES {v['samples']} SPP", mono, soft, 1.2 * k)
     # right: credit and status
-    import credit
-    r1 = f"{credit.NAME.upper()}  |  POWER GENERATION SOLUTIONS  |  {credit.EMAIL.upper()}"   # author credit
+    r1 = "STEPHAN HARDT  |  POWER GENERATION SOLUTIONS"
     r2 = "CONCEPTUAL ILLUSTRATION · NOT ENGINEERED · NOT FOR CONSTRUCTION"
     tracked(d, (W - m - width_tracked(d, r1, light, 2.2 * k), base - int(38 * k)), r1, light, ink, 2.2 * k)
     tracked(d, (W - m - width_tracked(d, r2, light, 1.8 * k), base - int(10 * k)), r2, light, copper, 1.8 * k)

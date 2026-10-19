@@ -96,11 +96,9 @@ def logo(img, xy, w):
 
 
 def credit_line(d, xy, font, fill):
-    """Author credit (blender/credit.py): name and work email."""
+    """Author credit (blender/credit.py): the work email (it spells out the name)."""
     import credit
-    tracked(d, xy, credit.NAME.upper(), F(BOLD, font.size), fill, 3)
-    x = xy[0] + sum(d.textlength(ch, font=F(BOLD, font.size)) + 3 for ch in credit.NAME.upper()) + 20
-    d.text((x, xy[1]), "·  " + credit.EMAIL, font=font, fill=fill)
+    d.text(xy, credit.EMAIL, font=font, fill=fill)
 
 
 def footer(d, page, note=None):
@@ -349,10 +347,6 @@ def cover():
     # bottom strip
     d.rectangle([0, H - 170, W, H], fill=BG)
     tracked(d, (M, H - 120), "SOUTHWIRE.COM  |  POWER GENERATION SOLUTIONS", F(BOLD, 40), GREY, 4)
-    import credit
-    cf = F(REG, 34)
-    cw = sum(d.textlength(ch, font=F(BOLD, 34)) + 3 for ch in credit.NAME.upper()) + 20 + d.textlength("·  " + credit.EMAIL, font=cf)
-    credit_line(d, (W - M - cw, H - 116), cf, GREY)
     return img
 
 

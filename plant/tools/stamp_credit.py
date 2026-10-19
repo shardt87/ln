@@ -1,4 +1,5 @@
-"""Stamp the author credit (blender/credit.py) on every page of a finished PDF: a small line centred on the bottom
+"""Stamp the author credit (blender/credit.py) on every page but the first (the cover carries the author's
+contact block) of a finished PDF: a small line centred on the bottom
 edge, below the documents' own footers, on a dark backing so it reads over full-bleed photos too. Vector text.
 A PDF is stamped once (marked in its keywords), so generators can call it after every rebuild.
 
@@ -21,8 +22,8 @@ def stamp(path):
     if MARK in kw:
         print("already stamped", path)
         return False
-    text = f"{credit.NAME}  ·  {credit.EMAIL}"
-    for page in doc:
+    text = credit.EMAIL                                         # it spells out the name
+    for page in list(doc)[1:]:                                  # not the cover: it carries the contact block
         r = page.rect
         fs = max(6.0, min(8.5, r.width / 110))                    # scale with the page, readable on letter and slides
         w = pymupdf.get_text_length(text, fontname="helv", fontsize=fs)

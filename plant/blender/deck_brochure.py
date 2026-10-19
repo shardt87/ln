@@ -36,12 +36,12 @@ CREDIT = (_credit.NAME.upper(), _credit.EMAIL)         # on every page (the auth
 
 
 def credit(d, y, x=None):
-    """Author credit after the Southwire line in the footer: name tracked as the line, email as written."""
+    """Author credit after the Southwire line in the footer: the email (it spells out the name)."""
     x0 = (M + sum(d.textlength(ch, font=F(BOLD, 26)) + 3 for ch in "SOUTHWIRE  |  POWER GENERATION SOLUTIONS") + 40
           if x is None else x)
     nf = F(BOLD, 26)
-    tracked(d, (x0, y), "|  " + CREDIT[0], nf, DIM, 3)
-    xe = x0 + sum(d.textlength(ch, font=nf) + 3 for ch in "|  " + CREDIT[0]) + 22
+    tracked(d, (x0, y), "|", nf, DIM, 3)                     # the email alone: it spells out the name
+    xe = x0 + d.textlength("|", font=nf) + 24
     d.text((xe, y - 1), CREDIT[1], font=F(REG, 26), fill=DIM)
     return xe + d.textlength(CREDIT[1], font=F(REG, 26))
 

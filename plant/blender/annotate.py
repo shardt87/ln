@@ -82,8 +82,7 @@ def annotate(png, meta):
            f"SK-3X1-3D / REV 14  ·  orthographic, fit {v['ortho_ft']:,} ft, margins L/R {v['margin_lr']}% "
            f"T/B {v['margin_tb']}%  ·  Blender Cycles, {v['samples']} samples, {v['style']} style",
            font=f_small, fill=(85, 99, 108))
-    import credit
-    right1 = f"{credit.NAME} | Power Generation Solutions | {credit.EMAIL}"
+    right1 = "Stephan Hardt | Power Generation Solutions"
     right2 = "Conceptual illustration. Not engineered. Not for construction."
     for i, (t, f, c) in enumerate(((right1, f_title, INK), (right2, f_small, COPPER))):
         tw = d.textbbox((0, 0), t, font=f)[2]
