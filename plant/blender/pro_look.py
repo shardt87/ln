@@ -141,6 +141,7 @@ COLOUR_SYSTEM = {
     "hall_steel": ("paint", "#26292d", .42, .25),            # Southwire black structural steel
     "gt_cold": ("paint", "#5d666c", .34, .55), "gt_comb": ("paint", "#454c51", .4, .5),
     "gt_blanket": ("paint", "#c2c4c1", .62, .15), "deck_line": ("paint", "#d9b21c", .5, 0),
+    "reel_orange": ("paint", "#d85a17", .4, .35),           # painted steel cable reels (SIMpull delivery)
     "flag_red": ("paint", "#b22234", .55, 0), "flag_white": ("paint", "#f1f0ea", .55, 0), "flag_blue": ("paint", "#3c3b6e", .55, 0),
     # carbon capture and the rest: quiet
     "ccs": ("clad", "#959b9e", .7, .1), "ccs_green": ("paint", "#a9bdb0", .6, 0), "tower": ("clad", "#b6bbbb", .6, 0),
@@ -1213,6 +1214,8 @@ EPIC = [
                "GT1 inlet duct", "GT2 inlet duct", "GT3 inlet duct"), hide_layers=("HALL_ROOF",)),
     dict(k="HX2", n="Turbine hall from the south-west: the west-end sign, the copper band and pilasters, the SIMpull tractor-trailer at the door",
          eye=(300, 262, 132), target=(600, 476, 58), lens=28, show="all", res=(1920, 1440), sun=(30, 215), plumes=False),
+    dict(k="HX3", n="SIMpull tractor-trailer at the turbine hall west door: steel reels with the Southwire logo",
+         eye=(402, 446, 24), target=(441, 486, 8), lens=35, show="all", res=(1920, 1440), sun=(30, 215), plumes=False),
     dict(k="HALL8", n="Turbine hall cutaway from the south, higher: the four machine trains side by side",
          eye=(760, 300, 250), target=(845, 485, 20), lens=24, show="all", res=(1920, 1440), lamps=4000, sun=(45, 200),
          hide=("Turbine hall south cladding", "Turbine hall exterior electrical", "FH-1", "FH-2", "FH-3",

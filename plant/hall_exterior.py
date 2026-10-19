@@ -7,8 +7,8 @@
   (44 ft) and at the corners, a clerestory window strip under the eaves of both long walls, a black fascia along the
   gallery roof edge, intake louvres on the gallery wall at each GT bay, a black surround and two wall lights at the
   west equipment door;
-- a Southwire SIMpull tractor-trailer where the generic flatbed stood (same size and heading, cab north): six 7.5 ft
-  SIMpull reels, red skirts with the SIMpull SOLUTIONS livery, crew at the tail (user, Oct 19, "better for branding").
+- a Southwire SIMpull tractor-trailer where the generic flatbed stood (same size and heading, cab north): five 9 ft
+  steel reels with orange flanges and the Southwire logo, red skirts with the SIMpull SOLUTIONS livery, crew at the tail (user, Oct 19, "better for branding").
 Every strip is cut back wherever something of another item stands within a few inches of the wall (pipes, trays,
 risers, filter-house frames, inlet ducts), so nothing new touches the plant. The south pieces sit in their own
 "Turbine hall south cladding ..." item and lift off with the cladding in the cutaway views."""
@@ -172,18 +172,23 @@ def build():
 def simpull_delivery(lay, area):
     """A Southwire SIMpull tractor-trailer where the generic flatbed stood (x 436-444, y 459-522, cab to the north):
     a white tractor with a Southwire-red stripe and logos on the doors, a 52 ft flatbed with red skirts and the
-    SIMpull SOLUTIONS livery, six 7.5 ft SIMpull reels chocked across the deck (paralleled, colour-coded
-    conductors), a crew at the tail."""
+    SIMpull SOLUTIONS livery, five 9 ft steel reels with orange flanges and the Southwire logo, chocked across the deck
+    (paralleled, colour-coded conductors), a crew at the tail."""
     import showcase
     import simpull
     import maintenance as mt
     from fuel import rod
     decal = showcase.decal
+
+    def logo(c, n, w, img):
+        """The Southwire logo as a printed image decal (brand only; 4:1)."""
+        fuel.G["decals"].append(dict(c=[round(v, 2) for v in c], n=list(n), w=w, h=round(w / 4.03, 2), bg=None, lines=[],
+                                     item=it["id"], layer=it["layer"], brand=1, img=img, print=1))
     xc, yt0, yt1 = 440.0, 459.0, 511.0                     # trailer deck (y 459-511), tractor y 511-522
     hw, zd = 4.25, 4.4                                     # half width, deck top
     it = new_item(lay, "Cable delivery: SIMpull tractor-trailer at the turbine hall west door",
-                  [434, 446, 452, 523], [0, 13], area=area, register=False, sheet="typical (cable installation)",
-                  info="Southwire SIMpull tractor-trailer delivering six SIMpull reels of paralleled feeder conductors "
+                  [434, 446, 452, 523], [0, 15], area=area, register=False, sheet="typical (cable installation)",
+                  info="Southwire SIMpull tractor-trailer delivering five steel reels of paralleled feeder conductors "
                        "to the turbine hall through the west equipment door. Typical, not engineered.")
     on(it)
     fuel.D = True
@@ -214,30 +219,27 @@ def simpull_delivery(lay, area):
         for s in (-1, 1):
             rod((xc + s * (hw - 1.2), yw, 1.7), (xc + s * (hw + .05), yw, 1.7), 1.7, "tyre", seg=16)
     n += 20
-    # six SIMpull reels, axles across the trailer, on chocks
-    D, W = 7.5, 5.0
+    # five 9 ft steel reels, flanges painted orange with the Southwire logo, axles across the trailer, on chocks
+    D, W = 9.0, 5.6
     R = D / 2
-    for k in range(6):
-        y = yt0 + 4.3 + k * 8.3
+    for k in range(5):
+        y = yt0 + 5.2 + k * 10.4
         zc = zd + .3 + R
         for s in (-1, 1):
-            rod((xc + s * (W / 2 - .35), y, zc), (xc + s * W / 2, y, zc), R, "sp_black", seg=40)  # flanges
-            decal((xc + s * (W / 2 + .03), y, zc), (s, 0, 0), 4.4, 2.6,
-                  [("SOUTHWIRE", .3, 1, "#d2232a", 1), ("SIMpull REEL", .22, 1, "#f2f2f2"),
-                   ("PARALLELED FEEDERS", .12, 0, "#c9c9c9")], bg=None, brand=True)
-        simpull.bands(lambda o, xx=xc, yy=y, zz=zc: (xx + o, yy, zz), W, R * .8, simpull.FEEDER * 2, t=.35)
-        rod((xc - W / 2 + .35, y, zc), (xc + W / 2 - .35, y, zc), R * .3, "sp_black", seg=20)
+            simpull.flange_disc((xc + s * (W / 2 - .3), y, zc), (s, 0, 0), R, .3, col="reel_orange", spokes=12)
+            logo((xc + s * (W / 2 + .2), y, zc + .2), (s, 0, 0), 6.6, "sw_logo_white.png")
+        simpull.bands(lambda o, xx=xc, yy=y, zz=zc: (xx + o, yy, zz), W, R * .82, simpull.FEEDER * 2, t=.35)
+        rod((xc - W / 2 + .3, y, zc), (xc + W / 2 - .3, y, zc), R * .3, "steel", seg=20)
         for sy in (-1, 1):
             box(xc - W / 2, xc + W / 2, y + sy * R * .62 - .4, y + sy * R * .62 + .4, zd, zd + .6, "sp_yellow")
         n += 6
     fuel.D = False
-    # livery: SIMpull SOLUTIONS on both skirts, Southwire on the cab doors
+    # livery: Southwire logo and SIMpull SOLUTIONS on both red skirts, the solid-colour logo on the cab doors
     for s in (-1, 1):
-        decal((xc + s * (hw + .17), (yt0 + yt1) / 2, zd - 1.3), (s, 0, 0), 34, 2.2,
-              [("SOUTHWIRE   SIMpull SOLUTIONS", .62, 1, "#ffffff", 1)], bg=None, brand=True)
-        decal((xc + s * 4.1, yt1 + 3.0, 7.0), (s, 0, 0), 4.6, 2.6,
-              [("SOUTHWIRE", .32, 1, "#d2232a", 1), ("SIMpull", .26, 1, "#1d1f21", 1),
-               ("SOLUTIONS", .16, 0, "#555a5f", 1)], bg=None, brand=True)
+        logo((xc + s * (hw + .17), yt0 + 9.0, zd - 1.3), (s, 0, 0), 8.0, "sw_logo_white.png")
+        decal((xc + s * (hw + .17), yt0 + 31.0, zd - 1.3), (s, 0, 0), 26, 2.0,
+              [("SIMpull SOLUTIONS", .62, 1, "#ffffff", 1)], bg=None, brand=True)
+        logo((xc + s * 4.1, yt1 + 3.8, 6.9), (s, 0, 0), 5.6, "sw_logo_solid.png")
     mt.person(xc - 2.5, yt0 - 3.0, 0, -1.57, vest="hivis_o")              # crew at the tail, toward the door
     mt.person(xc + 3.0, yt0 - 2.2, 0, -1.2)
     mt.person(xc + 6.5, yt1 + 4.0, 0, 0.0)                                 # driver beside the cab
