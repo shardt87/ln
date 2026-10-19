@@ -141,7 +141,6 @@ COLOUR_SYSTEM = {
     "hall_steel": ("paint", "#26292d", .42, .25),            # Southwire black structural steel
     "gt_cold": ("paint", "#5d666c", .34, .55), "gt_comb": ("paint", "#454c51", .4, .5),
     "gt_blanket": ("paint", "#c2c4c1", .62, .15), "deck_line": ("paint", "#d9b21c", .5, 0),
-    "reel_orange": ("paint", "#d85a17", .4, .35),           # painted steel cable reels (SIMpull delivery)
     "flag_red": ("paint", "#b22234", .55, 0), "flag_white": ("paint", "#f1f0ea", .55, 0), "flag_blue": ("paint", "#3c3b6e", .55, 0),
     # carbon capture and the rest: quiet
     "ccs": ("clad", "#959b9e", .7, .1), "ccs_green": ("paint", "#a9bdb0", .6, 0), "tower": ("clad", "#b6bbbb", .6, 0),

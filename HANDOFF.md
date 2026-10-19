@@ -54,8 +54,8 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
     outside on all walls (stops at the sign's edges); black pilasters on the 44 ft column lines and corners;
     clerestory strip under both eaves; black gallery fascia; intake louvres per GT bay; west door surround + lights.
     A Southwire SIMpull tractor-trailer (`hall_exterior.simpull_delivery`) stands where the generic flatbed from
-    realism.py was (same 62 ft size and heading, cab north): five 9 ft steel reels, flanges painted orange
-    (`reel_orange`) with the white Southwire logo, red skirts with the logo and SIMpull SOLUTIONS, the solid-colour logo
+    realism.py was (same 62 ft size and heading, cab north): five 9 ft steel reels, flanges painted black
+    (orange tried first, user preferred black) with the white Southwire logo, red skirts with the logo and SIMpull SOLUTIONS, the solid-colour logo
     on the cab doors (`blender/logo_variants.py` -> `screens/sw_logo_white.png`, `sw_logo_solid.png`), crew at the tail;
     camera HX3 is the close-up (user: "better for branding", then "bigger, more reels, same side").
     Every strip is cut back round anything standing at the wall, so verify stays at 0 clashes. South pieces are a
@@ -69,7 +69,7 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
 
 - **Viewer: published.** The branded viewer (`plant/viewer/index_southwire.html`) is live at
   https://claude.ai/artifact/QtsCN1A1zmrgNTyMrqJbTL: version 3 (Oct 19) carries the UTF-8 / mobile-viewport fix
-  (commit 41836bb), the solid wall sign and the hall exterior branding (version 7: without unit numbers, SIMpull tractor-trailer with orange steel reels at the hall's west door). To update: rebuild with `build_viewer.py --out viewer/index_southwire.html`
+  (commit 41836bb), the solid wall sign and the hall exterior branding (version 7: without unit numbers, SIMpull tractor-trailer with black steel reels at the hall's west door; v8). To update: rebuild with `build_viewer.py --out viewer/index_southwire.html`
   and publish that file to the same url. The older artifact https://claude.ai/artifact/9bfQJUnJ6GCH35zmjBq7cP
   (generic viewer) was not updated and is superseded.
 - **HALL7 / slide 8 with the solid sign:** the HALL7 128-sample re-render was running at the Oct 19 hand-off

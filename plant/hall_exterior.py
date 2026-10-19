@@ -8,7 +8,7 @@
   gallery roof edge, intake louvres on the gallery wall at each GT bay, a black surround and two wall lights at the
   west equipment door;
 - a Southwire SIMpull tractor-trailer where the generic flatbed stood (same size and heading, cab north): five 9 ft
-  steel reels with orange flanges and the Southwire logo, red skirts with the SIMpull SOLUTIONS livery, crew at the tail (user, Oct 19, "better for branding").
+  steel reels with black flanges and the Southwire logo, red skirts with the SIMpull SOLUTIONS livery, crew at the tail (user, Oct 19, "better for branding").
 Every strip is cut back wherever something of another item stands within a few inches of the wall (pipes, trays,
 risers, filter-house frames, inlet ducts), so nothing new touches the plant. The south pieces sit in their own
 "Turbine hall south cladding ..." item and lift off with the cladding in the cutaway views."""
@@ -172,7 +172,7 @@ def build():
 def simpull_delivery(lay, area):
     """A Southwire SIMpull tractor-trailer where the generic flatbed stood (x 436-444, y 459-522, cab to the north):
     a white tractor with a Southwire-red stripe and logos on the doors, a 52 ft flatbed with red skirts and the
-    SIMpull SOLUTIONS livery, five 9 ft steel reels with orange flanges and the Southwire logo, chocked across the deck
+    SIMpull SOLUTIONS livery, five 9 ft steel reels with black flanges and the Southwire logo, chocked across the deck
     (paralleled, colour-coded conductors), a crew at the tail."""
     import showcase
     import simpull
@@ -219,14 +219,14 @@ def simpull_delivery(lay, area):
         for s in (-1, 1):
             rod((xc + s * (hw - 1.2), yw, 1.7), (xc + s * (hw + .05), yw, 1.7), 1.7, "tyre", seg=16)
     n += 20
-    # five 9 ft steel reels, flanges painted orange with the Southwire logo, axles across the trailer, on chocks
+    # five 9 ft steel reels, flanges painted black with the Southwire logo, axles across the trailer, on chocks
     D, W = 9.0, 5.6
     R = D / 2
     for k in range(5):
         y = yt0 + 5.2 + k * 10.4
         zc = zd + .3 + R
         for s in (-1, 1):
-            simpull.flange_disc((xc + s * (W / 2 - .3), y, zc), (s, 0, 0), R, .3, col="reel_orange", spokes=12)
+            simpull.flange_disc((xc + s * (W / 2 - .3), y, zc), (s, 0, 0), R, .3, col="sp_black", spokes=12)
             logo((xc + s * (W / 2 + .2), y, zc + .2), (s, 0, 0), 6.6, "sw_logo_white.png")
         simpull.bands(lambda o, xx=xc, yy=y, zz=zc: (xx + o, yy, zz), W, R * .82, simpull.FEEDER * 2, t=.35)
         rod((xc - W / 2 + .3, y, zc), (xc + W / 2 - .3, y, zc), R * .3, "steel", seg=20)
