@@ -117,6 +117,40 @@ def tag(c, n, w, h, t1, t2=None):
     decal(c, n, w, h, lines, bg="#ffffff")
 
 
+def single_windows():
+    """One window per opening (owner, Oct 20: 'double window facing interior'): the interior glass panes go, and the
+    exterior wall is cut at every exterior window, so from inside you look through the opening (its reveal is the wall
+    thickness) to the one exterior pane. Sills stay."""
+    G = fuel.G
+    bld = next(it for it in G["items"] if it["name"].startswith("Control / admin building (main"))
+    wins = [p for p in G["parts"] if p["item"] == bld["id"] and p["kind"] == "box" and p["color"] == "window"]
+    walls = [p for p in G["parts"] if p["item"] == bld["id"] and p["kind"] == "box" and p["color"] == "building"
+             and min(p["max"][0] - p["min"][0], p["max"][1] - p["min"][1]) <= 1.0]
+    n = 0
+    for w in walls:
+        lo, hi = w["min"], w["max"]
+        ax = 0 if hi[0] - lo[0] > hi[1] - lo[1] else 1                                   # the wall runs along x or y
+        o = 1 - ax
+        holes = []
+        for g in wins:
+            gl, gh = g["min"], g["max"]
+            near = min(abs(gh[o] - lo[o]), abs(gl[o] - hi[o])) < .3                       # on this wall's face
+            if near and gl[ax] >= lo[ax] - .01 and gh[ax] <= hi[ax] + .01 and gh[2] > lo[2] and gl[2] < hi[2]:
+                holes.append((gl[ax], gh[ax], gl[2], gh[2]))
+        if not holes:
+            continue
+        G["parts"].remove(w)
+        for (a0, a1, z0, z1) in _rect_minus((lo[ax], hi[ax], lo[2], hi[2]), holes):
+            mn, mx = list(lo), list(hi)
+            mn[ax], mx[ax], mn[2], mx[2] = a0, a1, z0, z1
+            G["parts"].append(dict(w, min=mn, max=mx))
+            n += 1
+    before = len(G["parts"])
+    G["parts"][:] = [p for p in G["parts"] if not (p.get("layer") == L and p["kind"] == "box" and p["color"] == "window"
+                                                   and p["item"] != bld["id"])]
+    return n + before - len(G["parts"])
+
+
 # ------------------------------------------------------------------------------- strip the open office
 def clear_office():
     """Undo the finished open office: furniture and people out, carpet and ceiling tiles not yet in, its troffers
@@ -580,8 +614,9 @@ def build():
                     "Server room: overhead busway with plug-in tap boxes and cords; ladder rack and fibre trough",
                     "Grounding: TGB in the MDF bonded to the building steel and the service ground"]
     on(it)
+    n = single_windows()
     fuel.D = True
-    n = office_fitout()
+    n += office_fitout()
     on(it)
     fuel.D = True
     n += raise_mcr()

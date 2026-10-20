@@ -189,6 +189,8 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
   string lights and a work light. cable_schedule.py: products MC and CAT6; the building now has measured rows
   (service, feeders in EMT, MC lighting / receptacle / console circuits, Cat 6A, fibre, FA loop) instead of the
   floor-area allowance (5799 runs, 89 BOM lines). Camera AW4. Viewer v52.
+  Single windows (owner: "double window facing interior"): admin_wiring.single_windows() cuts the exterior walls at
+  every exterior window and drops the interior glass panes; sills stay. Viewer v53.
   RTUs, each with a disconnect, conduit through the roof and an MC whip, plus a walkway. Condensing-unit pad on the
   north side (four precision-cooling units for the DCS/server room). Cameras ADM2 (front) and ADM3 (roof).
   `plant/tools/detail_clash.py` checks detail items (verify.py skips them). `attach.signs` now also checks walls
