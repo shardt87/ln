@@ -198,5 +198,65 @@ def condensers():
     return n
 
 
+def blob(x, y, z0, z1, r, c, n=6, seg=16):
+    """A rounded (ellipsoid) mass from stacked frustums: crowns and shrubs."""
+    k = 0
+    for i in range(n):
+        t0, t1 = i / n, (i + 1) / n
+        r0 = max(r * math.sin(math.pi * t0), r * .12)
+        r1 = max(r * math.sin(math.pi * t1), r * .12)
+        rod((x, y, z0 + (z1 - z0) * t0), (x, y, z0 + (z1 - z0) * t1), r0, c, r2=r1, seg=seg)
+        k += 1
+    return k
+
+
+def tree(x, y, h=24.0):
+    """A deciduous street tree in the campus style: trunk and a full oval crown, as the trees round the site."""
+    rod((x, y, 0), (x, y, h * .4), .45, "timber", r2=.32, seg=10)
+    return 1 + blob(x, y, h * .3, h, h * .24, "foliage", n=8, seg=20)
+
+
+def shrub(x, y, r=1.1, h=2.4, c="foliage"):
+    return blob(x, y, 0, h, r, c, n=4, seg=12)
+
+
+def landscape():
+    """The office front landscaped (owner, Oct 20): the one place on site with lawn and planting, kept low and clear
+    of the process areas, fire access and the security sight lines.
+    - a lawn strip between the road and the parking row (y 301-321), either side of the entrance walk, west of the
+      gate drive; the monument sign and the flag plaza stand on it;
+    - street trees along the road on the west lawn only, clear of the flags and the gate;
+    - low shrubs round the flagpole bases and in front of the monument sign;
+    - a mulched bed of low shrubs along the building base, behind the parking bollards, gapped at the entrance portal
+      and the bike rack; nothing above window sill height."""
+    bld = find("Control / admin building (main")
+    it = new_item(bld["layer"], "Control / admin building: landscaping (lawn, street trees, shrubs)", [84, 272, 300, 346],
+                  [0, 26], area=bld.get("area"), register=False,
+                  info="Lawn, street trees and low shrubs at the office front, the public face of the site. Typical.")
+    on(it)
+    fuel.D = True
+    n = 0
+    for (x0, x1) in ((84.0, 195.5), (207.5, 249.0)):                                   # lawn, either side of the walk
+        box(x0, x1, 301.0, 321.0, 0, .06, "turf")
+        n += 1
+    for x in (96.0, 122.0, 148.0):                                                     # street trees, west lawn
+        n += tree(x, 306.5)
+    for fx in (XM + 20.0, XM + 31.0, XM + 42.0):                                       # flag plaza: shrub ring
+        for k in range(6):
+            a = k * math.pi / 3
+            n += shrub(fx + 2.8 * math.cos(a), 318.0 + 2.8 * math.sin(a), r=.8, h=1.8)
+    for k in range(7):                                                                 # in front of the monument sign
+        n += shrub(XM - 37.0 + k * 3.0, 314.0, r=.9, h=2.0)
+    for (x0, x1) in ((104.0, 187.0), (216.0, 318.0)):                                  # bed along the building base
+        box(x0, x1, 341.8, 344.8, 0, .12, "soil")
+        x = x0 + 2.0
+        while x < x1 - 1.5:
+            n += shrub(x, 343.3, r=1.0, h=2.6)
+            x += 4.0
+        n += 1
+    fuel.D = False
+    return n
+
+
 def build():
-    return dict(facade=facade(), hvac=hvac(), condensers=condensers())
+    return dict(facade=facade(), hvac=hvac(), condensers=condensers(), landscape=landscape())

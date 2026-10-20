@@ -159,6 +159,9 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
   black entrance portal "SW-3X1 POWER CAMPUS / CONTROL & ADMINISTRATION", monument sign, three flagpoles 11 ft apart
   (US flag on the taller middle pole, a black company flag with a copper stripe either side; the west one was
   blue until Oct 20). Roof: four
+  Landscaping (owner, Oct 20): front_door.landscape(): lawn strip y 301-321 either side of the entrance walk (west
+  of the gate drive), three street trees on the west lawn, shrub rings at the flagpoles, shrubs at the monument
+  sign, a mulched shrub bed along the building base (gapped at the portal and bike rack). Viewer v47.
   RTUs, each with a disconnect, conduit through the roof and an MC whip, plus a walkway. Condensing-unit pad on the
   north side (four precision-cooling units for the DCS/server room). Cameras ADM2 (front) and ADM3 (roof).
   `plant/tools/detail_clash.py` checks detail items (verify.py skips them). `attach.signs` now also checks walls
