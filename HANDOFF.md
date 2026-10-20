@@ -104,6 +104,7 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
   its corners, black coping above; the upper south wall's band (now behind the gallery roof) is dropped. Viewer v32.
   The gallery/hall joint on both end walls carries one black corner pilaster (y 402.7-405) from grade to the roof,
   the band crossing it; the gallery coping stops against it (owner: the intersection read rough). Viewer v33.
+  West gable "3x1 CCGT" lettering centred on the equipment door (y 460, was 475). Viewer v34.
 
 - **West gable chevron legs carried on above the band at their own angle** (owner, Oct 20: not a second chevron, not vertical): `livery_west_up.png` (blender/hall_sign.py), same
   width and slope as the upper legs below, EL 65.6-96.8, the first runs off the NE corner; camera HX7. Viewer v31.
