@@ -2,7 +2,7 @@
 building, outside and on the roof. The same design family as the turbine hall, no Southwire logo here:
 - facade: a copper band round all four walls above the window band, black coping on the parapet, black corner
   pilasters; at the glazed entrance a black portal (piers either side of the canopy, a lintel above it) lettered
-  SW-3X1 POWER CAMPUS / CONTROL & ADMINISTRATION; a monument sign at the entrance walk and three flagpoles (the US
+  SW-3X1 POWER CAMPUS / CONTROL & ADMINISTRATION (the monument sign moved to the main gate) and three flagpoles (the US
   flag in the middle);
 - rooftop HVAC: two more packaged units (over the lobby and over the control room, the 24/7 load) beside the two the
   rooftop pass placed, and every unit wired as an electrician would: a fused disconnect on a strut stand beside the
@@ -72,17 +72,8 @@ def facade():
     fuel.D = False
     showcase.decal((XM, y0 - .03, 14.15), (0, -1, 0), 22.0, 5.6,
                    [("SW-3X1 POWER CAMPUS", .42, 1, "#f2f2f0"), ("CONTROL & ADMINISTRATION", .2, 1, "#c4744a")], bg=None)
-    # monument sign at the entrance walk (west of the walk), black with a copper cap
-    mx, my = XM - 28.0, 318.0
-    fuel.D = True
-    box(mx - 11, mx + 11, my - 1.2, my + 1.2, 0, .6, "concrete")
-    box(mx - 10, mx + 10, my - .8, my + .8, .6, 5.6, "hero_rail")
-    box(mx - 10.2, mx + 10.2, my - 1.0, my + 1.0, 5.6, 6.0, "hero_accent")
-    n += 3
-    fuel.D = False
-    showcase.decal((mx, my - .83, 3.3), (0, -1, 0), 18.5, 3.8,
-                   [("SW-3X1 POWER CAMPUS", .4, 1, "#f2f2f0"), ("3x1 COMBINED CYCLE  ·  CONTROL & ADMINISTRATION", .18, 1,
-                                                                 "#c4744a")], bg=None)
+    # (the monument sign stood here, west of the walk; moved Oct 20 to the main gate as the campus welcome sign,
+    # services.gate)
     # three flagpoles east of the walk, 11 ft apart so the flags fly clear of each other: the US flag on the taller
     # middle pole, a company flag (black with a copper stripe) either side (owner, Oct 20: the blue one matched to it)
     fuel.D = True
@@ -224,9 +215,9 @@ def landscape():
     """The office front landscaped (owner, Oct 20): the one place on site with lawn and planting, kept low and clear
     of the process areas, fire access and the security sight lines.
     - a lawn strip between the road and the parking row (y 301-321), either side of the entrance walk, west of the
-      gate drive; the monument sign and the flag plaza stand on it;
+      gate drive; the flag plaza stands on it;
     - street trees along the road on the west lawn only, clear of the flags and the gate;
-    - low shrubs round the flagpole bases and in front of the monument sign;
+    - low shrubs round the flagpole bases;
     - a mulched bed of low shrubs along the building base, behind the parking bollards, gapped at the entrance portal
       and the bike rack; nothing above window sill height."""
     bld = find("Control / admin building (main")
@@ -245,8 +236,6 @@ def landscape():
         for k in range(6):
             a = k * math.pi / 3
             n += shrub(fx + 2.8 * math.cos(a), 318.0 + 2.8 * math.sin(a), r=.8, h=1.8)
-    for k in range(7):                                                                 # in front of the monument sign
-        n += shrub(XM - 37.0 + k * 3.0, 314.0, r=.9, h=2.0)
     for (x0, x1) in ((104.0, 187.0), (216.0, 318.0)):                                  # bed along the building base
         box(x0, x1, 341.8, 344.8, 0, .12, "soil")
         x = x0 + 2.0

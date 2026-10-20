@@ -162,6 +162,9 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
   Landscaping (owner, Oct 20): front_door.landscape(): lawn strip y 301-321 either side of the entrance walk (west
   of the gate drive), three street trees on the west lawn, shrub rings at the flagpoles, shrubs at the monument
   sign, a mulched shrub bed along the building base (gapped at the portal and bike rack). Viewer v47.
+  Monument sign moved from the office front to the main gate as the campus welcome sign (owner, Oct 20):
+  services.gate(), in place of the blank entrance board, x 19.5-44.5 y 306, facing the road, planted bed; WELCOME TO
+  SW-3X1 POWER CAMPUS + the campus systems + ALL VISITORS REPORT TO THE GATEHOUSE. Camera GATE1. Viewer v48.
   RTUs, each with a disconnect, conduit through the roof and an MC whip, plus a walkway. Condensing-unit pad on the
   north side (four precision-cooling units for the DCS/server room). Cameras ADM2 (front) and ADM3 (roof).
   `plant/tools/detail_clash.py` checks detail items (verify.py skips them). `attach.signs` now also checks walls

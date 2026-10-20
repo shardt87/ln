@@ -1455,6 +1455,8 @@ EPIC = [
          eye=(345, 380, 40), target=(262, 455, 62), lens=26, show="all", sun=(38, 215), plumes=False),
     dict(k="T5G2", n="5G sector platform close-up: panel antennas, massive-MIMO units, radio units, aviation light",
          eye=(288, 428, 110), target=(262.5, 455, 103), lens=32, show="all", sun=(38, 215), plumes=False),
+    dict(k="GATE1", n="Main gate: the SW-3X1 POWER CAMPUS welcome sign on its planted bed, barrier arms beyond",
+         eye=(52, 268, 9), target=(30, 306, 4.2), lens=30, show="all", sun=(38, 215), plumes=False),
     dict(k="E58", n="Cable reel yard: SIMpull Truck unloading SIMpull Reels on payoffs, reel rows",
          eye=(214, 702, 15), target=(160, 752, 6), lens=28, show="base"),
     dict(k="E108", n="Plant gas yard: inlet ESD, metering, regulation, performance heater, filter-separators, GT header",
