@@ -120,7 +120,8 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
   lighter version): `plant/campus_brand.py` (after front_door): RICE hall 1 ft copper band EL 22.5-23.5, its eave trim
   painted black as coping (+ end-wall strips), corner pilasters, RICE ENGINE HALL signs over both roll-ups; SC-1/2
   band + coping on the turbine enclosure (own nameplates kept); MOD-EH / MOD-LV / black-start switchgear band under
-  the eave and a dark name sign by the door. No chevrons, lettering or logos. Cameras CB1-CB3. Viewer v39.
+  the eave and a dark name sign by the door (e-house band and signs taken off again Oct 20: they stay plain). No
+  chevrons, lettering or logos. Cameras CB1-CB3. Viewer v39 (v45 e-houses plain).
 - **SC-2 turned end for end** (owner, Oct 20): the two simple-cycle units face each other, stacks paired in the
   middle (x 2045-2058 / 2110-2123), inlets at the outer ends (SC-2 inlet was 30 ft downwind of SC-1 stack).
   `plant/sc2_mirror.py` mirrors SC-2 about x 2184.25 right after the yard pass (before wiring / routes /

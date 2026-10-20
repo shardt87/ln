@@ -4,8 +4,7 @@ lettering, no logos here:
 - RICE engine hall: a 1 ft copper band (the hall's is 1.6 ft) at about two thirds of the wall, black coping on the
   roof edge, black corner pilasters, and a name sign over each end roll-up door;
 - SC-1 / SC-2: the same band and coping round the turbine enclosure (its own SC-n nameplate stays);
-- the modular e-houses (MOD-EH, MOD-LV, black-start switchgear): a copper band just under the roof and a name sign
-  beside the door.
+- the modular e-houses (MOD-EH, MOD-LV, black-start switchgear) stay plain (owner, Oct 20).
 Signs in the gallery-door style (Southwire black panel, white letters). Strips are cut round anything standing at
 the walls (hall_exterior.Face). Typical, not engineered."""
 import fuel
@@ -85,14 +84,5 @@ def build():
         n += building(f"SC-{k}: aeroderivative simple-cycle unit", f"SC-{k} turbine enclosure",
                       (e0, e1, 1193, 1217, 22), (17.6, 18.6), (21.2, 22.0), ("machine", "roof"),
                       corners=False)              # the enclosure already carries its SC-n nameplate
-    # e-houses: band under the roof eave, sign beside the door (south faces)
-    n += building("MOD-EH: 13.8 kV modular collector e-house", "MOD-EH", (1915.3, 1994.7, 880.3, 899.7, 15.4),
-                  (13.9, 14.7), None, ("ehouse", "roof"), corners=False,
-                  signs=[((1944.0, 880.0, 7.0), (0, -1, 0), 12.0, 1.8, "MOD-EH  13.8 kV")])
-    n += building("MOD-LV 480 V board", "MOD-LV", (2215.3, 2266.7, 970.3, 981.7, 9.4),
-                  (7.9, 8.7), None, ("ehouse", "roof"), corners=False,
-                  signs=[((2240.0, 970.0, 6.0), (0, -1, 0), 10.0, 1.8, "MOD-LV  480 V")])
-    n += building("BS black-start switchgear", "Black-start switchgear", (1625.3, 1644.7, 875.3, 892.7, 11.4),
-                  (9.9, 10.7), None, ("ehouse", "roof"), corners=False,
-                  signs=[((1638.5, 875.0, 6.5), (0, -1, 0), 9.0, 1.6, "BLACK-START SWGR")])
+    # (the e-houses had a band and name sign here; taken off Oct 20 at the owner's request, they stay plain equipment)
     return n
