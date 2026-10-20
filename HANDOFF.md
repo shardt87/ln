@@ -130,6 +130,11 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
   (drawn 2290-2370), ~45 ft clear of SC-2's inlet filter house; gas supply into its north face and the gas main to
   the portable pad moved to x 2415 (routes_optional.json fuel_gas 0/1); west-wall louvre dropped
   (sc2_mirror.late). Camera SC4. Viewer v41.
+- **Reserved SC-3 / SC-4 pad, pre-wired** (owner, Oct 20, instead of two more units): `plant/reserved_pad.py`, x
+  1886-2234, y 1264-1334, laid out as SC-1/2 (stacks inboard): curb with a yellow line, bollards, sign, two
+  foundations + stack pads, two PCM pads tied into the yard MV duct bank (two routes in build_model.py), capped
+  conduit stub-ups at the PCM pads and generator ends, handholes, capped gas risers. audit.py exempts "Reserved pad"
+  (SC-3/4 is otherwise a removed-option name). Cameras SC5, SC6. Viewer v42.
 
 - **West gable chevron legs carried on above the band at their own angle** (owner, Oct 20: not a second chevron, not vertical): `livery_west_up.png` (blender/hall_sign.py), same
   width and slope as the upper legs below, EL 65.6-96.8, the first runs off the NE corner; camera HX7. Viewer v31.

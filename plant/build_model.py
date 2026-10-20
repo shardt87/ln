@@ -1684,7 +1684,10 @@ for k in range(8):                                                              
     add_route("mvlv_cable", [(2014 + 14 * k, 350), (2014 + 14 * k, 345)], MX)
 # SC-1 / SC-2 fuel gas from the fuel-gas compressor building (not drawn on sheet 07)
 add_route("fuel_gas", [(2330, 1182), (1940, 1182), (1940, 1190)], "OPT_MOD_ROUTES")  # from the moved building
-add_route("fuel_gas", [(2228.5, 1182), (2228.5, 1190)], "OPT_MOD_ROUTES")  # SC-2 drop (mirrored package)
+add_route("fuel_gas", [(2228.5, 1182), (2228.5, 1190)], "OPT_MOD_ROUTES")
+# reserved SC-3 / SC-4 pad (reserved_pad.py): the PCM pads pre-wired into the yard MV duct bank
+add_route("mvlv_cable", [(1917, 1312), (1917, 1266), (1900, 1266), (1900, 1252)], "OPT_MOD_ROUTES", sheet="typical (reserved pad)")
+add_route("mvlv_cable", [(2187, 1312), (2187, 1305), (2266, 1305)], "OPT_MOD_ROUTES", sheet="typical (reserved pad)")  # SC-2 drop (mirrored package)
 # BESS main power transformer to the D4 upper position (230 kV cable to the take-off gantry)
 add_route("hv_cable", [(1756, 352), (1756, 170)], "OPT_BESS_ROUTES", sheet="typical (switchyard build-out)")
 # Turbine-hall cabling the drawing leaves to the vendor (typical): a control / instrument backbone
@@ -2263,6 +2266,8 @@ print('front door (zone 07)', _fd.build())
 import campus_brand as _cb                        # the facade language, lighter, on RICE, SC-1/2 and the e-houses
 print('campus finish', _cb.build())
 print('compressor building west louvre removed', _sc2.late())
+import reserved_pad as _rp                        # phase-2 pad for SC-3 / SC-4, pre-wired
+print('reserved pad', _rp.build())
 
 
 # "conditional" was a drawing flag colour (yellow); the items keep basis="conditional" in their data, but are drawn

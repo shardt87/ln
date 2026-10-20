@@ -95,6 +95,8 @@ def main():
             findings["floating item"].append(f"{it['layer']} {it['name'][:60]} lowest part at EL {z:.1f}")
     # 4. leftovers from removed options
     for it in M["items"]:
+        if it["name"].startswith("Reserved pad"):        # the SC-3 / SC-4 phase-2 pad names the removed units on purpose
+            continue
         if REMOVED.search(it["name"]) or REMOVED.search(it.get("tag", "")) or REMOVED.search(it.get("info", "")):
             findings["leftover from a removed option"].append(f"{it['layer']} {it['name'][:70]}")
     for r in routes:
@@ -103,7 +105,7 @@ def main():
     # 5. cable trays and IPB must not pass through structures or equipment (generated geometry);
     #    allowed: the IPB entering its GCB and generator terminals, trays through the R1 wall sleeves
     tray = next((i["id"] for i in M["items"] if i["name"].startswith("Cable trays")), None)
-    allowed = re.compile(r"^GCB-|^Cable pull: |^Cable dressing: |^GTG-\d|R1 east-wall tray exits|^Common turbine hall|^Turbine hall south cladding|^Turbine hall exterior finish|^Turbine deck|^Laydown|"
+    allowed = re.compile(r"^GCB-|^Cable pull: |^Cable dressing: |^GTG-\d|R1 east-wall tray exits|^Common turbine hall|^Turbine hall south cladding|^Turbine hall exterior finish|^Reserved pad|^Turbine deck|^Laydown|"
                          r"^230 kV switchyard|^Pipe supports|^Underground:")
 
     def pbox(p):
