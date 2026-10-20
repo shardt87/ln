@@ -99,6 +99,10 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
 
 ## In progress / not yet done
 
+- **South gallery raised to EL 66.4** (owner, Oct 20: it sat below the copper line): walls 0-64.4, roof 64.4-66.4
+  (`build_model.py`); the copper band (EL 64-65.6) now runs round the gallery's top and the end-wall bands wrap
+  its corners, black coping above; the upper south wall's band (now behind the gallery roof) is dropped. Viewer v32.
+
 - **West gable chevron legs carried on above the band at their own angle** (owner, Oct 20: not a second chevron, not vertical): `livery_west_up.png` (blender/hall_sign.py), same
   width and slope as the upper legs below, EL 65.6-96.8, the first runs off the NE corner; camera HX7. Viewer v31.
 - **Plant renamed SK-3X1 -> SW-3X1** (owner, Oct 19): all text, file names (SW-3X1_*, sw3x1_*), signage decals, viewer

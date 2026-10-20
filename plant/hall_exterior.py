@@ -135,13 +135,13 @@ def build():
     fuel.D = True
     # copper band, proud of the pilasters so it reads continuous
     n += hstrip(N, 480, 1100, *ZB, .45, "hero_accent")
-    n += hstrip(W, 402.5, 560.5, *ZB, .45, "hero_accent")                       # wraps both corners
-    n += hstrip(E, 402.5, 560.5, *ZB, .45, "hero_accent")
+    n += hstrip(W, 369.5, 560.5, *ZB, .45, "hero_accent")                       # wraps both corners, gallery end included
+    n += hstrip(E, 369.5, 560.5, *ZB, .45, "hero_accent")
     # pilasters: north wall on every column line, corners of both gables
     for x in COLS[1:-1]:
         n += pilaster(N, x, 0, 98)
     for f in (W, E):
-        n += pilaster(f, 559.15, 0, 98, w=2.3) + pilaster(f, 403.85, 60, 98, w=2.3)            # flush with the corners
+        n += pilaster(f, 559.15, 0, 98, w=2.3) + pilaster(f, 403.85, 66.4, 98, w=2.3)            # flush with the corners
     n += pilaster(N, 481.0, 0, 98) + pilaster(N, 1099.0, 0, 98)
     n += windows(N, 482, 1098)
     # black coping round the main roof edge, all four walls (the south one is in the cladding item below)
@@ -168,15 +168,17 @@ def build():
     # south: upper wall over the gallery roof and the gallery's outer wall
     on(b)
     fuel.D = True
-    n += hstrip(SU, 480, 1100, *ZB, .45, "hero_accent")
+    # the gallery rises to EL 66.4 (owner, Oct 20): the copper band runs round its top at the hall's EL 64, a black
+    # coping above it, and the upper wall starts over the gallery roof
+    n += hstrip(SG, 480, 1100, *ZB, .45, "hero_accent")
     for x in COLS[1:-1]:
-        n += pilaster(SU, x, 60, 98) + pilaster(SG, x, 0, 56.5)
-    n += pilaster(SU, 481.0, 60, 98) + pilaster(SU, 1099.0, 60, 98)
-    n += pilaster(SG, 481.0, 0, 56.5) + pilaster(SG, 1099.0, 0, 56.5)
-    n += pilaster(W, 370.85, 0, 56.5, w=2.3) + pilaster(E, 370.85, 0, 56.5, w=2.3)
+        n += pilaster(SU, x, 66.4, 98) + pilaster(SG, x, 0, ZB[0])
+    n += pilaster(SU, 481.0, 66.4, 98) + pilaster(SU, 1099.0, 66.4, 98)
+    n += pilaster(SG, 481.0, 0, ZB[0]) + pilaster(SG, 1099.0, 0, ZB[0])
+    n += pilaster(W, 370.85, 0, ZB[0], w=2.3) + pilaster(E, 370.85, 0, ZB[0], w=2.3)
     n += windows(SU, 482, 1098)
-    n += hstrip(SG, 480, 1100, 56.5, 58.0, .35, "hero_rail")                    # gallery roof fascia
-    n += hstrip(W, 369.6, 403, 56.5, 58.0, .35, "hero_rail") + hstrip(E, 369.6, 403, 56.5, 58.0, .35, "hero_rail")
+    n += hstrip(SG, 480, 1100, ZB[1], 66.6, .35, "hero_rail")                   # gallery roof coping
+    n += hstrip(W, 369.6, 403, ZB[1], 66.6, .35, "hero_rail") + hstrip(E, 369.6, 403, ZB[1], 66.6, .35, "hero_rail")
     n += hstrip(SU, 480, 1100, 96.8, 98.2, .5, "hero_rail")                     # main roof coping, south
     for k in range(3):                                                           # intake louvres, each GT bay
         x0 = 694 + 160 * k

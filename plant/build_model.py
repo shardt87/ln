@@ -290,7 +290,7 @@ item(L, "Common turbine hall", (480, 1100, 370, 560), (0, 101), tag="HALL", area
      sheet="SW-3X1-09",
      info="Main bay y 404-560 with roof EL 98-101 (raised 6 ft in Rev 09 so the ST lift "
      "clears). Bridge-crane runway y 404-556, bridge travel EL 84-96, hook max EL 82. "
-     "South inlet gallery y 370-404, roof EL 60, holds GCBs and IPB outside crane coverage. "
+     "South inlet gallery y 370-404, roof EL 66.4, holds GCBs and IPB outside crane coverage. "
      "Layout note: a common hall over all GTs and the ST is typical of cold or noise-sensitive sites and owners who "
      "maintain with their own crews (one crane for every unit, all-weather outages). Many plants in warm regions "
      "instead set each GT outdoors in its own OEM acoustic enclosure (no hall) and keep a building only for the ST "
@@ -300,15 +300,15 @@ t = 1.0
 B(480, 1100, 559, 560, 0, 98, "hall")            # north wall
 B(1099, 1100, 404, 556, 0, 98, "hall")           # east wall main bay
 B(480, 481, 404, 556, 0, 98, "hall")             # west wall main bay
-B(480, 1100, 370, 371, 0, 58, "hall")            # gallery south wall
-B(480, 481, 370, 404, 0, 58, "hall")             # gallery west wall
-B(1099, 1100, 370, 404, 0, 58, "hall")           # gallery east wall
+B(480, 1100, 370, 371, 0, 64.4, "hall")          # gallery south wall (raised Oct 20 so its top meets the EL 64 copper band)
+B(480, 481, 370, 404, 0, 64.4, "hall")           # gallery west wall
+B(1099, 1100, 370, 404, 0, 64.4, "hall")         # gallery east wall
 B(480, 1100, 403, 404, 60, 98, "hall")           # clerestory wall above gallery roof
 B(479.5, 481.5, 440, 480, 0, 36, "door")         # west door (laydown bay), sheet 10
 for i, gx in enumerate(GX):                      # gallery doors, one per bay (sheet 10)
     B(gx - 61, gx - 47, 369.5, 371.5, 0, 16, "door")
 _part(kind="prism", min=[480, 404, 98], max=[1100, 560, 101], ridge="x", color="roof", layer="HALL_ROOF")
-_part(kind="box", min=[480, 370, 58], max=[1100, 404, 60], color="roof", layer="HALL_ROOF")
+_part(kind="box", min=[480, 370, 64.4], max=[1100, 404, 66.4], color="roof", layer="HALL_ROOF")
 # runway columns and crane rails (sheet 09/10)
 for x in range(482, 1101, 44):
     for y in (404, 556):
