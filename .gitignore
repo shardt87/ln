@@ -32,3 +32,5 @@ plant/tools/xray_capture/xw_*.jpg
 !plant/renders/deck/**/*.png
 !plant/renders/cover/*.png
 plant/renders/cover/_decals/
+
+plant/renders/nextgen/_src/
