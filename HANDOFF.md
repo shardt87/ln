@@ -108,6 +108,9 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
 - **Admin building front cleaned** (owner, Oct 20: "random doors"): front_door.py drops the roll-up and louvre the
   generic detail3 pass put on the south face and moves its personnel door to the west end wall (y 350-353.5);
   camera ADM4 (south-west). Viewer v35.
+- **West gable white, chevrons in the band copper** (owner, Oct 20: the black field read fake): livery_west.png has no
+  black field; CHEV = #a65a30 (the band copper) in hall_sign.py, printed metallic (decal key `metal`, read by the
+  Blender build). The east interior keeps its black field behind the sign, chevrons recoloured. Viewer v36.
 
 - **West gable chevron legs carried on above the band at their own angle** (owner, Oct 20: not a second chevron, not vertical): `livery_west_up.png` (blender/hall_sign.py), same
   width and slope as the upper legs below, EL 65.6-96.8, the first runs off the NE corner; camera HX7. Viewer v31.

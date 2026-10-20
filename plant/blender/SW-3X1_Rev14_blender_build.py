@@ -333,6 +333,9 @@ def make_decals():
                     nt.links.remove(l)
         if d.get("print"):                                         # printed wall graphic: flat matte ink, no sheen
             b.inputs["Roughness"].default_value = 1.0
+        if d.get("metal"):                                         # metallic print (copper chevrons matching the band)
+            b.inputs["Metallic"].default_value = d["metal"]
+            b.inputs["Roughness"].default_value = .32
             b.inputs["Specular IOR Level"].default_value = 0.0
         if hasattr(m, "blend_method"):
             m.blend_method = "CLIP" if not d.get("bg") else "OPAQUE"

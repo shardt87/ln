@@ -154,14 +154,15 @@ def build():
         box(479.3, 480.0, y - .6, y + .6, 39.0, 40.0, "panel"); box(479.2, 479.3, y - .5, y + .5, 39.1, 39.6, "lamp")
     n += 7
     fuel.D = False
-    # the field-service van livery on the west gable below the band (blender/hall_sign.py: livery_west.png): copper
+    # the van livery chevrons on the west gable below the band (blender/hall_sign.py: livery_west.png; the black field
+    # was taken off Oct 20, the gable stays white): copper
     # chevrons north of the door pointing at it, a Southwire-black field with the van's notched edge over the door to
     # the SW corner (the gallery's west end stays plain cladding: the black there was tried and taken off)
     fuel.G["decals"].append(dict(c=[479.93, 480.0, 31.9], n=[-1, 0, 0], w=152.0, h=63.8, bg=None, lines=[], item=a["id"],
-                                 layer=a["layer"], brand=0, img="livery_west.png", print=1))
+                                 layer=a["layer"], brand=0, img="livery_west.png", print=1, metal=.7))
     # the chevrons upper legs carried on at their angle above the band, on the upper gable panel (EL 65.6-96.8, y 534-556; user, Oct 20)
     fuel.G["decals"].append(dict(c=[479.93, 545.0, 81.2], n=[-1, 0, 0], w=22.0, h=31.2, bg=None, lines=[], item=a["id"],
-                                 layer=a["layer"], brand=0, img="livery_west_up.png", print=1))
+                                 layer=a["layer"], brand=0, img="livery_west_up.png", print=1, metal=.7))
     # 3x1 CCGT on the west gable, above the band, centred on the door (y 414-506, EL 69-91; owner, Oct 20)
     fuel.G["decals"].append(dict(c=[479.9, 460.0, 80.0], n=[-1, 0, 0], w=92.0, h=22.0, bg=None, lines=[], item=a["id"],
                                  layer=a["layer"], brand=0, img="hall_west_lettering.png", print=1))   # Barlow, as inside

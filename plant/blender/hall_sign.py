@@ -12,7 +12,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(os.path.dirname(HERE), "screens", "hall_wall_sign.png")
 INK, COPPER = (17, 18, 20, 255), (166, 90, 44, 255)       # solid Southwire black, deep burnished copper
 WHITE = (244, 244, 241, 255)
-FIELD, CHEV = (24, 25, 27, 255), (196, 116, 70, 255)      # the van livery: Southwire black field, copper chevrons
+FIELD, CHEV = (24, 25, 27, 255), (166, 90, 48, 255)       # the van livery: Southwire black field, chevrons in the band's
+                                                          # copper (#a65a30; owner, Oct 20), printed with its metallic finish
 W, H = 3000, 1500                                        # 60 x 30 ft at 50 px / ft
 
 
@@ -81,7 +82,8 @@ def main():
     # west gable outside (u = 556 - y, z 0-63.8): the chevrons at the north end, between the corner and the riser
     # (y 527.5-532), pointing at the door; a plain black rectangle from just past the riser (y 526) over the door to
     # the SW corner (y 404)
-    livery(os.path.join(S, "livery_west.png"), 152.0, 63.8, [(3.0, 4.0), (10.0, 4.0)], 8.0, 30.0, notch=False)
+    # (Oct 20: the black field taken off, the owner found it read fake; the gable stays white cladding, chevrons only)
+    livery(os.path.join(S, "livery_west.png"), 152.0, 63.8, [(3.0, 4.0), (10.0, 4.0)], 8.0, 152.0, notch=False)
     # and above the band (z 65.6-96.8): each chevron's upper leg carried on at the same angle (8 ft of u per 31.9 ft of
     # rise), across the band gap and up to the coping, running off the NE corner (owner, Oct 20: one continuous stripe)
     up = Image.new("RGBA", (22 * 40, int(31.2 * 40)), (0, 0, 0, 0))
