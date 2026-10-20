@@ -277,7 +277,7 @@ def build():
     for xa in (108, 128, 148, 168, 188, 216, 236, 258):
         door(xa, xa + 3.5, COR[1] - .05, COR[1] + .35)
     names = {(84, 104): "MEN'S LOCKERS", (104, 124): "WOMEN'S LOCKERS", (124, 144): "RESTROOMS", (144, 164): "PERMIT / WORK CONTROL",
-             (164, 184): "PRINT / DOCUMENTS", (184, 212): "TRAINING", (212, 232): "TELECOM / UPS", (232, 254): "SHIFT KITCHEN",
+             (164, 184): "PRINT / DOCUMENTS", (184, 212): "TRAINING", (212, 232): "TELECOM / UPS", (232, 254): "ELECTRICAL",
              (254, 275.7): "OPERATOR RELIEF ROOM"}
     for (a0, a1), nm in names.items():
         sign(((a0 + a1) / 2 + 3, COR[1] - .07, 7.9), (0, -1, 0), 3.2, .5, [(nm, .55, 1, "#ffffff")], bg="#2c3a46")

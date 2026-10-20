@@ -173,6 +173,16 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
   pull box PB-G2 open with the cables and a cable ID placard, gatehouse windows on every face, exterior panel + AC
   disconnect with conduit, canopy lights and SECURITY sign, CCTV pole, gate operator + photo-eyes. Duct banks
   gatehouse -> islands in services.routes. verify below_ok gains "^Main gate checkpoint". Cameras GATE2, GATE3. v50.
+- **Admin / control building wiring, open office mid fit-out** (owner, Oct 20; audit found no physical wiring
+  inside, only a wiring list): `plant/admin_wiring.py` (last pass): ELECTRICAL room (north strip x 232-254, was the
+  shift kitchen; control_room.py sign renamed) with MDP 480 V, T-1 75 kVA, LP-1 / RP-1 / RP-2 / EP-1 and EMT risers,
+  service conduits from the north-wall duct bank (x 262); MDF / UPS room relay racks, ladder rack, UPS, battery, TGB;
+  corridor backbone above the ceiling (18 in basket tray Cat 6A, fibre innerduct, 3 EMT runs, FPLR on J-hooks),
+  MC + FA branches into every room, smoke detectors, horn/strobes, pull stations; MCR tray over the ceiling, drops
+  to the video wall, poke-through floor boxes with MC whip + Cat 6A + fibre at each console; server room ladder rack,
+  fibre trough, busway with tap boxes and cords; open office stripped to slab and open grid with Cat 6A drops, MC
+  home runs to wall boxes, troffers half hung / half boxed, MC reel stand, SIMpull wire cart, ladder, scissor lift,
+  3 electricians. Cameras AW1-AW3. Viewer v51.
   RTUs, each with a disconnect, conduit through the roof and an MC whip, plus a walkway. Condensing-unit pad on the
   north side (four precision-cooling units for the DCS/server room). Cameras ADM2 (front) and ADM3 (roof).
   `plant/tools/detail_clash.py` checks detail items (verify.py skips them). `attach.signs` now also checks walls
