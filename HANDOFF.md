@@ -116,6 +116,11 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
 - **FC-1..4, their inverter cabinet and MT-1..3 removed** (owner, Oct 20: the modular yard already has a set,
   FC-5..12 / MT-4..6): build_model.py, their cable and gas routes in routes_optional.json, the worker and pickup
   beside them (modular_lod3.py), cable_schedule.py (re-run), E80 callouts; camera MOD9 shows the cleared plot. v38.
+- **Campus finish on the other generation buildings** (owner, Oct 20: hero stays the combined cycle; the rest a
+  lighter version): `plant/campus_brand.py` (after front_door): RICE hall 1 ft copper band EL 22.5-23.5, its eave trim
+  painted black as coping (+ end-wall strips), corner pilasters, RICE ENGINE HALL signs over both roll-ups; SC-1/2
+  band + coping on the turbine enclosure (own nameplates kept); MOD-EH / MOD-LV / black-start switchgear band under
+  the eave and a dark name sign by the door. No chevrons, lettering or logos. Cameras CB1-CB3. Viewer v39.
 
 - **West gable chevron legs carried on above the band at their own angle** (owner, Oct 20: not a second chevron, not vertical): `livery_west_up.png` (blender/hall_sign.py), same
   width and slope as the upper legs below, EL 65.6-96.8, the first runs off the NE corner; camera HX7. Viewer v31.

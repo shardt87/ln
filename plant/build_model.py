@@ -2255,6 +2255,8 @@ import hall_exterior as _hx                        # after everything: its strip
 print('turbine hall exterior finish', _hx.build())
 import front_door as _fd                         # zone 07: the control / admin building outside and on the roof
 print('front door (zone 07)', _fd.build())
+import campus_brand as _cb                        # the facade language, lighter, on RICE, SC-1/2 and the e-houses
+print('campus finish', _cb.build())
 
 
 # "conditional" was a drawing flag colour (yellow); the items keep basis="conditional" in their data, but are drawn
