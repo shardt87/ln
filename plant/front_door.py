@@ -84,7 +84,7 @@ def facade():
                    [("SW-3X1 POWER CAMPUS", .4, 1, "#f2f2f0"), ("3x1 COMBINED CYCLE  ·  CONTROL & ADMINISTRATION", .18, 1,
                                                                  "#c4744a")], bg=None)
     # three flagpoles east of the walk, 11 ft apart so the flags fly clear of each other: the US flag on the taller
-    # middle pole, the state flag (blue) to the west and a company flag (black with a copper stripe) to the east
+    # middle pole, a company flag (black with a copper stripe) either side (owner, Oct 20: the blue one matched to it)
     fuel.D = True
     for k, fx in enumerate((XM + 20.0, XM + 31.0, XM + 42.0)):
         fy = 318.0
@@ -101,10 +101,7 @@ def facade():
                 box(fx + .25, fx + .25 + w, fy - .04, fy + .04, za, za + st, "flag_red" if i % 2 == 0 else "flag_white")
             box(fx + .25, fx + .25 + .4 * w, fy - .07, fy + .07, z1 - 7 * st, z1, "flag_blue")
             n += 14
-        elif k == 0:
-            box(fx + .25, fx + 6.25, fy - .04, fy + .04, z1 - 3.6, z1, "flag_blue")
-            n += 1
-        else:
+        else:                                                                          # company flags either side
             box(fx + .25, fx + 6.25, fy - .04, fy + .04, z1 - 3.6, z1, "hero_rail")
             box(fx + .25, fx + 6.25, fy - .07, fy + .07, z1 - 2.5, z1 - 2.0, "hero_accent")
             n += 2

@@ -157,7 +157,8 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
 - **Zone 07 "Infrastructure & Construction: the plant's front door"** (plan approved Oct 19, incl. HVAC). Part 1 done
   (viewer v27): `plant/front_door.py`. Admin/control building facade: copper band, coping, corner pilasters,
   black entrance portal "SW-3X1 POWER CAMPUS / CONTROL & ADMINISTRATION", monument sign, three flagpoles 11 ft apart
-  (US flag on the taller middle pole, blue state flag west, black company flag with a copper stripe east). Roof: four
+  (US flag on the taller middle pole, a black company flag with a copper stripe either side; the west one was
+  blue until Oct 20). Roof: four
   RTUs, each with a disconnect, conduit through the roof and an MC whip, plus a walkway. Condensing-unit pad on the
   north side (four precision-cooling units for the DCS/server room). Cameras ADM2 (front) and ADM3 (roof).
   `plant/tools/detail_clash.py` checks detail items (verify.py skips them). `attach.signs` now also checks walls
