@@ -140,6 +140,11 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
   at GEN TB / TCP / AUX SKID / SCR-CEMS landings, equipment footprints painted, PCM landing frame with the tails
   dropped in, PLUG & PLAY sign; SC-3 stays bare for contrast (its gen-end stubs kept, SC-4's replaced by the trays).
   Cameras SC7, SC8. Viewer v43.
+- **Comms tower modernised to a private 5G / LTE monopole** (owner, Oct 20; was a 4-leg lattice): build_model.py,
+  same footprint and 120 ft: tapered monopole, square sector platform EL 100 with 4G panels + 5G massive-MIMO units
+  on four faces and radio units behind, microwave backhaul dishes EL 86, cable ladder, aviation light, lightning rod,
+  fenced base compound with cabinets and ice bridge. Name still starts "Comms tower" (wiring / schedule regexes).
+  Cameras T5G1, T5G2. Viewer v44.
 
 - **West gable chevron legs carried on above the band at their own angle** (owner, Oct 20: not a second chevron, not vertical): `livery_west_up.png` (blender/hall_sign.py), same
   width and slope as the upper legs below, EL 65.6-96.8, the first runs off the NE corner; camera HX7. Viewer v31.

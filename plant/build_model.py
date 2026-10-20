@@ -929,12 +929,56 @@ building(L, "Control / admin building (main control room)", 83, 320, 345, 396, 2
 building(L, "Warehouse", 133, 320, 470, 561, 35, area="F", sheet="SW-3X1-12", info="91 x 187 x 35 ft (Smarr EA).")
 building(L, "Maintenance building / workshop", 198, 320, 600, 641, 20, area="F", sheet="SW-3X1-12",
          info="41 x 122 x 20 ft (Smarr EA).")
-item(L, "Comms tower (lattice)", (250, 275, 445, 465), (0, 120), tag="COMMS", area="F", basis="typical")
-for sx in (-5, 5):
-    for sy in (-5, 5):
-        R((262.5 + sx, 455 + sy, 0), (262.5 + sx * 0.2, 455 + sy * 0.2, 118), 0.4, "steel", seg=6)
-R((262.5, 455, 118), (262.5, 455, 120), 0.2, "steel", seg=4)
-V(262.5 + 1.5, 455, 1.2, 105, 108, "insulator")
+item(L, "Comms tower: private 5G / LTE monopole with microwave backhaul", (250, 275, 445, 465), (0, 120), tag="COMMS",
+     area="F", basis="typical",
+     info="Modernised plant network (owner, Oct 20, was a plain lattice mast): 120 ft tapered monopole; a square sector "
+          "platform at EL 100 with panel antennas and 5G massive-MIMO units on four faces, radio units behind; "
+          "microwave backhaul dishes at EL 86; hybrid fibre / power cables up a cable ladder; aviation light and "
+          "lightning rod; fenced base compound with the outdoor baseband / power cabinets and an ice bridge.")
+CX5, CY5 = 262.5, 455.0
+B(CX5 - 5, CX5 + 5, CY5 - 5, CY5 + 5, 0, 1.0, "concrete")                     # foundation cap
+R((CX5, CY5, 1.0), (CX5, CY5, 112), 1.5, "steel", r2=.75, seg=20)              # tapered monopole
+for z, r in ((1.0, 2.1), (38.0, 1.45), (75.0, 1.15)):                          # base plate and slip-joint flanges
+    R((CX5, CY5, z), (CX5, CY5, z + .4), r, "steel", seg=20)
+for dy in (-.25, .25):                                                         # cable ladder up the east face
+    R((CX5 + 1.75, CY5 + dy, 1.4), (CX5 + 1.05, CY5 + dy, 99.5), .05, "steel", seg=4)
+R((CX5 + 1.7, CY5, 1.4), (CX5 + 1.0, CY5, 99.5), .14, "cable_tc", seg=6)       # hybrid fibre / power trunk
+P5, ZP5 = 5.5, 100.0                                                           # sector platform, half width, EL
+for (a0, a1, b0, b1) in ((-P5, P5, -P5, -P5 + .3), (-P5, P5, P5 - .3, P5), (-P5, -P5 + .3, -P5, P5), (P5 - .3, P5, -P5, P5)):
+    B(CX5 + a0, CX5 + a1, CY5 + b0, CY5 + b1, ZP5, ZP5 + .4, "steel")          # platform frame
+    B(CX5 + a0, CX5 + a1, CY5 + b0, CY5 + b1, ZP5 + 3.2, ZP5 + 3.4, "steel")    # top rail / antenna pipe ring
+for (dx, dy) in ((-P5, 0), (P5, 0), (0, -P5), (0, P5)):                        # arms to the pole
+    R((CX5, CY5, ZP5 + .2), (CX5 + dx, CY5 + dy, ZP5 + .2), .18, "steel", seg=6)
+for (nx, ny) in ((1, 0), (-1, 0), (0, 1), (0, -1)):                            # four sectors
+    for k, (u, w, z0, z1, d, c) in enumerate(((-3.0, .9, 101.0, 107.5, .45, "hall"), (3.0, .9, 101.0, 107.5, .45, "hall"),
+                                              (0.0, 1.5, 101.8, 105.2, .6, "hall"))):     # 4G panels, 5G AAU
+        o = P5 + .3                                                            # outside the ring
+        if nx:
+            x0, x1 = (CX5 + o, CX5 + o + d) if nx > 0 else (CX5 - o - d, CX5 - o)
+            B(x0, x1, CY5 + u - w / 2, CY5 + u + w / 2, z0, z1, c)
+            xr = x0 - .65 if nx > 0 else x1 + .05
+            B(xr, xr + .6, CY5 + u - .4, CY5 + u + .4, z0 + .8, z0 + 2.4, "machine")   # radio unit behind
+        else:
+            y0, y1 = (CY5 + o, CY5 + o + d) if ny > 0 else (CY5 - o - d, CY5 - o)
+            B(CX5 + u - w / 2, CX5 + u + w / 2, y0, y1, z0, z1, c)
+            yr = y0 - .65 if ny > 0 else y1 + .05
+            B(CX5 + u - .4, CX5 + u + .4, yr, yr + .6, z0 + .8, z0 + 2.4, "machine")
+for (dx, dy) in ((1, 0), (0, -1)):                                             # microwave backhaul dishes, EL 86
+    a = (CX5 + dx * 1.3, CY5 + dy * 1.3, 86.0)
+    R(a, (a[0] + dx * .9, a[1] + dy * .9, 86.0), 1.4, "hall", r2=1.6, seg=24)
+    R((CX5, CY5, 85.2), (a[0], a[1], 85.2), .12, "steel", seg=6)
+R((CX5, CY5, 112), (CX5, CY5, 120), .07, "steel", seg=4)                       # lightning rod
+R((CX5, CY5, 112.0), (CX5, CY5, 112.8), .35, "red", seg=10)                     # aviation obstruction light
+for k in range(2):                                                             # base compound: baseband / power cabinets
+    B(CX5 - 11.5, CX5 - 8.5, CY5 - 5 + k * 4.5, CY5 - 1.5 + k * 4.5, 1.0, 6.0, "panel")
+B(CX5 - 12, CX5 - 8, CY5 - 5.5, CY5 + 3.5, 0, 1.0, "concrete")
+R((CX5 - 8.5, CY5, 7.0), (CX5 - 1.6, CY5, 7.0), .12, "cable_tc", seg=6)         # cables over the ice bridge
+for x in (CX5 - 8.5, CX5 - 2.5):
+    R((x, CY5 - .8, 1.0), (x, CY5 - .8, 7.4), .12, "steel", seg=6)
+    R((x, CY5 + .8, 1.0), (x, CY5 + .8, 7.4), .12, "steel", seg=6)
+B(CX5 - 8.5, CX5 - 1.6, CY5 - .9, CY5 + .9, 7.4, 7.6, "grating")                  # ice bridge
+for (a0, a1, b0, b1) in ((-12.4, 9.0, -9.6, -9.5), (-12.4, 9.0, 9.5, 9.6), (-12.4, -12.3, -9.6, 9.6), (8.9, 9.0, -9.6, 9.6)):
+    B(CX5 + a0, CX5 + a1, CY5 + b0, CY5 + b1, 0, 8.0, "fence")                  # compound fence
 pad(L, "Cable reel yard / outage laydown", 40, 320, 690, 900, "pad", z1=0.3, area="F")
 item(L, "Stormwater basin", (40, 320, 1430, 1640), (-8, 0), area="F", info="Detention basin; depth illustrative.")
 # a depression, not a slab: four sloped grass banks (rim at grade, toe at EL -8), the floor, and the permanent
