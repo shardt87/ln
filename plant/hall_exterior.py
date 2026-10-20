@@ -159,6 +159,9 @@ def build():
     # the SW corner (the gallery's west end stays plain cladding: the black there was tried and taken off)
     fuel.G["decals"].append(dict(c=[479.93, 480.0, 31.9], n=[-1, 0, 0], w=152.0, h=63.8, bg=None, lines=[], item=a["id"],
                                  layer=a["layer"], brand=0, img="livery_west.png", print=1))
+    # the chevrons continued above the band, on the upper gable panel (EL 65.6-96.8, y 534-556; user, Oct 20)
+    fuel.G["decals"].append(dict(c=[479.93, 545.0, 81.2], n=[-1, 0, 0], w=22.0, h=31.2, bg=None, lines=[], item=a["id"],
+                                 layer=a["layer"], brand=0, img="livery_west_up.png", print=1))
     # 3x1 CCGT on the west gable, above the band and over the door (y 429-521, EL 69-91), clear of the riser at y 527.5
     fuel.G["decals"].append(dict(c=[479.9, 475.0, 80.0], n=[-1, 0, 0], w=92.0, h=22.0, bg=None, lines=[], item=a["id"],
                                  layer=a["layer"], brand=0, img="hall_west_lettering.png", print=1))   # Barlow, as inside

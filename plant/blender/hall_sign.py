@@ -61,7 +61,9 @@ def livery(out, W_ft, H_ft, chevrons, s, u_black, ppf=40, notch=True):
     im = Image.new("RGBA", (Wp, Hp), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
     P = lambda u, v: (u * ppf, v * ppf)
-    if notch:
+    if u_black >= W_ft:                                  # chevrons only
+        pass
+    elif notch:
         d.polygon([P(u_black, 0), P(W_ft, 0), P(W_ft, H_ft), P(u_black, H_ft), P(u_black + s, H_ft / 2)], fill=FIELD)
     else:                                                # a plain rectangle
         d.rectangle([P(u_black, 0), P(W_ft, H_ft)], fill=FIELD)
@@ -80,6 +82,9 @@ def main():
     # (y 527.5-532), pointing at the door; a plain black rectangle from just past the riser (y 526) over the door to
     # the SW corner (y 404)
     livery(os.path.join(S, "livery_west.png"), 152.0, 63.8, [(3.0, 4.0), (10.0, 4.0)], 8.0, 30.0, notch=False)
+    # and above the band (z 65.6-96.8), the same two chevrons at the same u and slope, so they run on up the gable
+    livery(os.path.join(S, "livery_west_up.png"), 22.0, 31.2, [(3.0, 4.0), (10.0, 4.0)], 8.0 * 31.2 / 63.8, 22.0,
+           notch=False)
     # east end wall inside (u = 503 - y, z 65.7-98): chevrons between the flag and the sign, black field behind the
     # sign to the SE corner (y 404)
     livery(os.path.join(S, "livery_east_in.png"), 99.0, 32.3, [(1.0, 3.0), (6.2, 3.0)], 5.0, 11.4)

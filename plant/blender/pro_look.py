@@ -1217,6 +1217,8 @@ EPIC = [
          eye=(300, 262, 132), target=(600, 476, 58), lens=28, show="all", res=(1920, 1440), sun=(30, 215), plumes=False),
     dict(k="HX3", n="SIMpull tractor-trailer at the turbine hall west door: steel reels with the Southwire logo",
          eye=(402, 446, 24), target=(441, 486, 8), lens=35, show="all", res=(1920, 1440), sun=(30, 215), plumes=False),
+    dict(k="HX7", n="Turbine hall west gable: 3x1 CCGT lettering, copper chevrons running up past the band, SIMpull trailer",
+         eye=(318, 455, 46), target=(480, 482, 48), lens=24, show="all", sun=(30, 235), plumes=False),
     dict(k="HX4", n="Turbine hall gallery doors from the south-east: GT 3 and the steam-turbine door with their ID signs",
          eye=(1112, 334, 20), target=(1080, 371, 12), lens=30, show="all", res=(1920, 1440), sun=(30, 215), plumes=False),
     dict(k="HX5", n="Turbine hall gallery from the south: the GT 2 door and its ID sign between the filter houses",
