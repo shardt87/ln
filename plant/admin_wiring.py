@@ -367,6 +367,10 @@ def raise_mcr():
         if "v" in p:
             for v in p["v"]:
                 v[2] += RF
+    for p in G["parts"]:                                       # wall acoustic panels: stop below the window sills
+        if p["item"] == mcr["id"] and p["kind"] == "box" and p["color"] == "acoustic" and \
+                (p["min"][1] < IY0 + .5 or p["max"][1] > IY1 - .5) and p["max"][2] > 7.0:
+            p["max"][2] = 6.9
     for d in G.get("decals", []):
         if d["item"] == mcr["id"] and d["c"][2] < 10.5:
             d["c"][2] += RF
