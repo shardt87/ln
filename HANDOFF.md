@@ -192,6 +192,8 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
   Single windows (owner: "double window facing interior"): admin_wiring.single_windows() cuts the exterior walls at
   every exterior window and drops the interior glass panes; sills stay. Viewer v53.
   MCR wall acoustic panels trimmed to stop below the window sills (they rose with the raised floor). Viewer v54.
+  Fit-out tools now the reel-yard display models (simpull.py): Maxis XD10 puller pulling into the south-wall EMT,
+  Maxis feeder, two SIMpull BARREL hand trucks, CoilPAK cart, wire wagon, tension monitor, tripod light. Viewer v55.
   RTUs, each with a disconnect, conduit through the roof and an MC whip, plus a walkway. Condensing-unit pad on the
   north side (four precision-cooling units for the DCS/server room). Cameras ADM2 (front) and ADM3 (roof).
   `plant/tools/detail_clash.py` checks detail items (verify.py skips them). `attach.signs` now also checks walls

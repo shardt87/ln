@@ -580,16 +580,30 @@ def office_fitout():
     # temporary construction lighting until the troffers are energised, a work light at the ladder
     for yy in (350.0, 358.0, 366.0, 374.0):
         n += string_lights(x0 + 3.0, x1 - 2.0, yy, 11.6)
-    n += work_light(124.0, 361.0)
+    import simpull as sp
+    sp.tripod_light(124.0, 361.0, h=9.0)
+    n += 5
     # pulling THHN into the EMT on the east wall: cable puller, barrels feeding the conductors
-    run([(118.0, IY0 + .5, 15.2), (118.0, IY0 + .5, 9.5)], .1, "pipe")                       # EMT down the south wall
-    n += cable_puller(123.0, 352.0, 118.0, IY0 + .5, 9.2)
-    for k, c in enumerate(("cable_tc", "sw_red", "safety")):
-        n += cable_barrel(108.5 + k * 2.4, 351.0, c)
-        rod((108.5 + k * 2.4, 351.0, 5.0), (118.0, IY0 + .6, 9.5), .03, c, seg=4)          # conductors to the conduit
+    # pulling THHN into the EMT on the south wall with the Southwire tools from the reel-yard display (simpull.py):
+    # Maxis XD10 puller with its boom over the conduit, a Maxis feeder at the conduit mouth, two SIMpull BARREL hand
+    # trucks, a CoilPAK cart and a wire wagon of building-wire spools, a tension monitor
+    import simpull as sp
+    run([(118.0, IY0 + .5, 15.2), (118.0, IY0 + .5, 5.5)], .1, "pipe")                        # EMT down the south wall
+    head = sp.maxis_xd10(124.5, 352.5, a=math.pi * .75, boom_deg=40)
+    rod(head, (118.0, IY0 + .6, 5.5), .03, "panel", seg=4)                                   # pull rope to the conduit
+    sp.tension_monitor(127.5, 350.0)
+    sp.maxis_feeder(114.5, 349.0)
+    for k, bx in enumerate((107.0, 110.0)):
+        sp.barrel_truck(bx, 352.0, math.pi / 2)
+        for j, c in enumerate(("cable", "red", "pvc_blue")):
+            rod((bx + (j - 1) * .1, 352.0, 4.4), (114.5, 349.6, 3.0), .025, c, seg=6)        # into the feeder
+    sp.coilpak_cart(119.0, 374.0)
+    n += 30
     # materials, access and the crew
     n += reel_stand(100.0, 362.0)
-    n += wire_cart(112.0, 372.0)
+    import simpull as sp
+    sp.wire_wagon(112.0, 372.0)
+    n += 20
     n += ladder(128.0, 366.0, 9.0)
     n += scissor_lift(104.0, 357.0, 8.0)
     person(104.5, 357.0, math.pi / 2, z=8.0)
