@@ -183,6 +183,12 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
   fibre trough, busway with tap boxes and cords; open office stripped to slab and open grid with Cat 6A drops, MC
   home runs to wall boxes, troffers half hung / half boxed, MC reel stand, SIMpull wire cart, ladder, scissor lift,
   3 electricians. Cameras AW1-AW3. Viewer v51.
+  Then (owner): MCR on a 12 in raised access floor (admin_wiring.raise_mcr: MCR item up 1 ft except ceiling-hung
+  parts, carpet = floor tiles with 3 lifted, pedestals, entry ramp 1:12 with handrails, under-floor basket tray + MC +
+  fibre to the console grommets); fit-out gains a cable puller on the south-wall EMT, 3 SIMpull THHN barrels, LED
+  string lights and a work light. cable_schedule.py: products MC and CAT6; the building now has measured rows
+  (service, feeders in EMT, MC lighting / receptacle / console circuits, Cat 6A, fibre, FA loop) instead of the
+  floor-area allowance (5799 runs, 89 BOM lines). Camera AW4. Viewer v52.
   RTUs, each with a disconnect, conduit through the roof and an MC whip, plus a walkway. Condensing-unit pad on the
   north side (four precision-cooling units for the DCS/server room). Cameras ADM2 (front) and ADM3 (roof).
   `plant/tools/detail_clash.py` checks detail items (verify.py skips them). `attach.signs` now also checks walls

@@ -193,6 +193,8 @@ P = dict(
     SHD="Type SHD-GC 15 kV 3/C Cu, 2 grounds + GC, yellow CPE (portable)",
     W="Type W 2 kV 1/C Cu, EPDM / CPE (portable, cam-lock)",
     THHN="SIMpull THHN/THWN-2 600 V 1/C Cu (lighting, receptacles, small power)",
+    MC="Southwire MC 600 V, Cu THHN, Al interlocked armour (branch circuits)",
+    CAT6="Cat 6A U/FTP 4-pair 23 AWG, plenum CMP (data drops)",
     BARE="Bare Cu 4/0 AWG, 19 strand (ground grid and equipment grounds)",
     ACSR="Overhead conductor ACSR 1590 kcmil 'Falcon' (typ.)",
 )
@@ -200,10 +202,11 @@ CLASS = dict(MV15="MV 15 kV", MV15AX="MV 15 kV", MV5="MV 5 kV", MV5S="MV 5 kV", 
              LV="LV 600 V", LVAX="LV 600 V", VFD="LV 600 V", LV1C="LV 600 V", CT="Control", CTAX="Control",
              CTCT="Control", PLTC="Instrumentation", ITC="Instrumentation", TCX="Instrumentation", RTD="Instrumentation",
              FA="Fire alarm", FO="Fibre / data", PV="DC 2 kV", SHD="Portable MV", W="Portable LV", THHN="Building wire",
+             MC="Building wire", CAT6="Fibre / data",
              BARE="Grounding", ACSR="Overhead")
 REEL = dict(MV15=2500, MV15AX=2000, MV5=2500, MV5S=2500, MV25=2500, MV35=2500, HV230=1800, LV=2500, LVAX=2000, VFD=2500,
             LV1C=2500, CT=5000, CTAX=3000, CTCT=5000, PLTC=5000, ITC=5000, TCX=5000, RTD=5000, FA=5000, FO=10000,
-            PV=2500, SHD=1000, W=1000, THHN=5000, BARE=5000, ACSR=7000)
+            PV=2500, SHD=1000, W=1000, THHN=5000, BARE=5000, ACSR=7000, MC=1000, CAT6=1000)
 
 HAZ = re.compile(r"gas yard|metering|regulation|filter-separator|performance heater|M&R|ESD|fuel-gas|ULSD|LNG|H2 |"
                  r"electroly|gas conditioning|^GT\d|GFM|GT\d aux|SOS-|fuel|blending|compressor", re.I)
@@ -794,6 +797,52 @@ for it in ITEMS:
             add(it, it, f"Heat-trace circuit {k + 1} (power to the trace junction box)", "LV", "3/C+G", "10", 1, 1, 4, 480, 6,
                 "heat-trace cable itself by others", length=(180, 20, "Tray"))
 
+# control / admin building: the circuits drawn in admin_wiring.py, lengths from its geometry (replaces the floor-area
+# allowance for this building). Electrical room at (243, 389), MDF at (217, 392); runs go up 8 ft into the ceiling
+# space, along the corridor (y 381), into the room and down again.
+ADM = one(r"^Control / admin building \(main")
+if ADM:
+    done_bld.add(ADM["name"])
+    def _hr(x, y, fx, fy, up=16.0):
+        return abs(x - fx) + abs(381.0 - fy) + abs(y - 381.0) + up
+    EL, MDF = (243.0, 389.0), (217.0, 392.0)
+    nb = lambda t: dict(ADM, name=f"Control / admin building: {t}", tag=t)
+    add(nb("service duct bank, north wall x 262"), nb("MDP 480 V"), "Building service 480 V, 800 A: 2 sets in 4 in PVC",
+        "LV1C", "1/C", "500", 2, 4, 480, 480, 800, "from the north-wall duct bank", length=(30.0, 32.0, "Conduit"))
+    for dst, size, n, v, a, d in (("T-1 75 kVA", "3", 3, 480, 90, "MDP to T-1 primary"),
+                                  ("LP-1", "1", 4, 480, 100, "MDP to LP-1 277/480 V lighting"),
+                                  ("UPS-1", "4", 3, 480, 60, "MDP to UPS-1 (feeds EP-1)")):
+        add(nb("MDP 480 V"), nb(dst), d + ", THHN in EMT", "THHN", "1/C", size, 1, n, None, v, a, "", length=(12.0, 16.0, "Conduit"))
+    for dst in ("RP-1", "RP-2"):
+        add(nb("T-1 75 kVA"), nb(dst), f"T-1 to {dst} 120/208 V, THHN in EMT", "THHN", "1/C", "4/0", 1, 4, None, 208, 200, "",
+            length=(10.0, 16.0, "Conduit"))
+    add(nb("UPS-1"), nb("EP-1"), "UPS-1 to EP-1 (control-room critical loads), THHN in EMT", "THHN", "1/C", "2", 1, 4, None,
+        208, 110, "", length=(30.0, 16.0, "Conduit"))
+    south = ((155, "break room"), (179, "conference"), (206, "lobby"), (230, "server room"), (249, "ops meeting"),
+             (267, "supervisor"))
+    north = ((94, "lockers M"), (114, "lockers W"), (134, "restrooms"), (154, "permit office"), (174, "print room"),
+             (198, "training"))
+    rooms = [(x, 362.0, t) for x, t in south] + [(x, 389.5, t) for x, t in north]
+    L_light = sum(_hr(x, y, *EL) for x, y, _ in rooms) + 6 * 4 * 40           # + office / MCR fixture loops
+    L_rec = sum(_hr(x, y, *EL) for x, y, _ in rooms) + 7 * _hr(85, 360, *EL) + 6 * _hr(298, 370, *EL)
+    add(nb("LP-1"), nb("lighting, all rooms"), f"Lighting branch circuits, {len(rooms) + 6} home runs + fixture whips",
+        "MC", "2/C+G", "12", 1, 1, None, 277, 16, "MC 12/2, measured home runs", length=(L_light, 0, "Above ceiling"))
+    add(nb("RP-1 / RP-2"), nb("receptacles, all rooms"), f"Receptacle branch circuits, {len(rooms) + 7} home runs",
+        "MC", "3/C+G", "12", 1, 1, None, 120, 16, "MC 12/3, measured home runs", length=(L_rec, 0, "Above ceiling"))
+    add(nb("EP-1"), nb("MCR console floor boxes"), "Console power whips (6 positions, 2 circuits each)", "MC", "3/C+G", "12",
+        1, 1, None, 120, 16, "", length=(12 * _hr(298, 370, *EL), 0, "Under floor"))
+    drops = 9 * 4 + 12 * 2 + 6 * 4 + 16 * 2                                     # office, rooms, consoles, video wall
+    L_cat = 9 * 4 * _hr(112, 360, *MDF) + 12 * 2 * _hr(190, 370, *MDF) + 6 * 4 * _hr(298, 370, *MDF) \
+        + 16 * 2 * _hr(316, 370, *MDF) + 48 * _hr(228, 356, *MDF)
+    add(nb("MDF"), nb("data drops"), f"Cat 6A data drops ({drops} + 48 server-room links)", "CAT6", "4-pr", "23", 1, 1, None,
+        None, None, "basket tray + J-hooks, measured", length=(L_cat, 0, "Basket tray"))
+    for dst, x, y in (("MCR consoles / video wall", 300, 370), ("server room", 228, 356)):
+        add(nb("MDF"), nb(dst), f"Single-mode fibre MDF to {dst}", "FO", "12 SM", "-", 1, 1, None, None, None, "in innerduct",
+            length=(_hr(x, y, *MDF), 0, "Basket tray"))
+    L_fa = 2 * (IX := 233.0) + 12 * 18 + 9 * 12 + 40
+    add(nb("FACP (MCR)"), nb("fire-alarm loop"), "Fire-alarm SLC / NAC loop: detectors, horn / strobes, pull stations",
+        "FA", "2/C", "14", 1, 1, None, 24, None, "FPLR on J-hooks, measured", length=(L_fa, 0, "J-hooks"))
+
 # lighting / small power branch circuits (allowance per building by floor area)
 for it in ITEMS:
     if "Lighting" in " ".join(it.get("wiring", [])) and BLD.search(it["name"]) and it["name"] not in done_bld:
@@ -988,7 +1037,7 @@ def write():
     cnt = defaultdict(int)
     code = dict(MV15="MV", MV15AX="MV", MV5="MV", MV5S="MV", MV25="MV", MV35="MV", HV230="HV", LV="P", LVAX="P", VFD="P", LV1C="P",
                 CT="C", CTAX="C", CTCT="C", PLTC="I", ITC="I", TCX="I", RTD="I", FA="FA", FO="F", PV="DC", SHD="PP", W="PP",
-                THHN="L", BARE="G", ACSR="OH")
+                THHN="L", BARE="G", ACSR="OH", MC="L", CAT6="F")
     for i, r in enumerate(ROWS, 2):
         a = r["dst"]["area"] or "C"
         cnt[(a, code[r["prod"]])] += 1

@@ -255,7 +255,7 @@ def control_room():
     n += basket(360.0, 380.0, 296.0, 14.4, along="y")
     for k in range(6):                                                                    # cables dropping behind the wall
         y = 356.0 + k * 4.4
-        run([(316.5, y, 14.2), (318.6, y, 14.2), (318.6, y, 10.5)], .12, ("cable_inst", "cable_fo")[k % 2])
+        run([(316.5, y, 14.2), (318.6, y, 14.2), (318.6, y, 10.5 + RF)], .12, ("cable_inst", "cable_fo")[k % 2])
         n += 2
     # each console position: a poke-through floor box, its power whip and data / fibre up into the console body
     F, R = (IX1 - 1.0, (IY0 + IY1) / 2), 21.0
@@ -264,21 +264,108 @@ def control_room():
         cx, cy = F[0] - R * math.cos(th), F[1] + R * math.sin(th)
         a = math.atan2(F[1] - cy, F[0] - cx)
         fx, fy = cx + 2.2 * math.cos(a), cy + 2.2 * math.sin(a)                             # under the console body
-        box(fx - .45, fx + .45, fy - .45, fy + .45, .04, .08, "copper")                    # floor box cover
-        rod((fx - .2, fy, .08), (fx - .2, fy, 1.6), .07, "alu", seg=8)                     # MC power whip
-        rod((fx + .1, fy, .08), (fx + .1, fy, 1.6), .08, "cable_inst", seg=8)
-        rod((fx + .3, fy, .08), (fx + .3, fy, 1.6), .05, "cable_fo", seg=8)
-        n += 4
+        box(fx - .45, fx + .45, fy - .45, fy + .45, RF - .02, RF + .02, "rack")             # floor grommet
+        run([(304.0, fy, .5), (fx - .2, fy, .5), (fx - .2, fy, 1.6 + RF)], .07, "alu")     # MC power whip, under floor
+        run([(304.0, fy, .4), (fx + .1, fy, .4), (fx + .1, fy, 1.6 + RF)], .08, "cable_inst")
+        run([(304.0, fy, .35), (fx + .3, fy, .35), (fx + .3, fy, 1.6 + RF)], .05, "cable_fo")
+        n += 7
     # the floor-box feeds from EP-1 run in the slab (shown as the conduit run to the first box, off the MCR west wall)
     x = 280.0
     while x < 318:
         n += smoke(x, 352.0) + smoke(x, 372.0) + smoke(x, 390.0)
         x += 14.0
-    n += horn_strobe(MCR_X + .3, 360.0, 1, 0) + pull_station(MCR_X + .3, 382.0, 1, 0)
+    n += wallbox(MCR_X + .3, 360.0, 1, 0, 7.6 + RF, 8.3 + RF, "sw_red") + \
+        wallbox(MCR_X + .3, 386.0, 1, 0, 3.8 + RF, 4.4 + RF, "sw_red", d=.2, w=.22)
     return n
 
 
 MCR_X = 276.0
+
+
+RF = 1.0                                                    # raised access floor height in the control room
+HOLES = ((278.0, 280.0, 380.0, 382.0), (303.0, 305.0, 369.0, 371.0), (314.0, 316.0, 361.0, 363.0))
+RAMP = (276.2, 288.2, 378.4, 383.6)                         # entry ramp inside the corridor door, 1:12
+
+
+def _rect_minus(r, holes):
+    """Rectangles covering r = (x0, x1, y0, y1) minus the holes."""
+    x0, x1, y0, y1 = r
+    xs = sorted({x0, x1} | {h[0] for h in holes if x0 < h[0] < x1} | {h[1] for h in holes if x0 < h[1] < x1})
+    out = []
+    for a, b in zip(xs, xs[1:]):
+        cut = sorted((h[2], h[3]) for h in holes if h[0] <= a and h[1] >= b)
+        y = y0
+        for c0, c1 in cut:
+            if c0 > y:
+                out.append((a, b, y, c0))
+            y = max(y, c1)
+        if y < y1:
+            out.append((a, b, y, y1))
+    return out
+
+
+def raise_mcr():
+    """A 12 in raised access floor in the main control room: everything in the MCR item goes up by RF; the carpet
+    becomes the floor tiles, with three tiles lifted to show the under-floor cable and an entry ramp at the door."""
+    G = fuel.G
+    mcr = next(it for it in G["items"] if it["name"].startswith("Main control room:"))
+    rooms = next(it for it in G["items"] if it["name"].startswith("Control / admin building interior:"))
+    def zr(p):
+        if "min" in p:
+            return p["min"][2], p["max"][2]
+        if "a" in p:
+            return min(p["a"][2], p["b"][2]), max(p["a"][2], p["b"][2])
+        return min(v[2] for v in p["v"]), max(v[2] for v in p["v"])
+    for p in G["parts"]:
+        if p["item"] != mcr["id"]:
+            continue
+        lo, hi = zr(p)
+        if hi >= CEIL - .1 or lo >= 10.5:                     # hung from the ceiling (halo, troffers, bulkhead): stays
+            if p["kind"] == "box" and p["color"] == "acoustic" and lo < 11.5:
+                p["min"][2] += RF                             # the bulkhead now starts above the raised video wall
+            continue
+        if "min" in p:
+            p["min"][2] += RF
+            p["max"][2] += RF
+        if "a" in p:
+            p["a"][2] += RF
+            p["b"][2] += RF
+        if "v" in p:
+            for v in p["v"]:
+                v[2] += RF
+    for d in G.get("decals", []):
+        if d["item"] == mcr["id"] and d["c"][2] < 10.5:
+            d["c"][2] += RF
+    floor = next(p for p in G["parts"] if p["item"] == rooms["id"] and p["kind"] == "box" and p["color"] == "carpet"
+                 and abs(p["min"][0] - MCR_X) < .01)
+    G["parts"].remove(floor)
+    n = 0
+    for (a0, a1, b0, b1) in _rect_minus((MCR_X, IX1, IY0, IY1), HOLES + (RAMP,)):
+        box(a0, a1, b0, b1, RF - .08, RF, "carpet")                                       # floor tiles
+        n += 1
+    for (a0, a1, b0, b1) in HOLES:                                                        # open tiles: pedestals, stringers
+        for (x, y) in ((a0, b0), (a1, b0), (a0, b1), (a1, b1)):
+            rod((x, y, 0), (x, y, RF - .08), .05, "steel", seg=6)
+            box(x - .2, x + .2, y - .2, y + .2, RF - .12, RF - .08, "steel")
+        box(a1 + .3, a1 + 2.3, b0, b1, RF, RF + .08, "carpet")                             # the lifted tile, set down
+        rod((a1 + 1.3, (b0 + b1) / 2, RF + .08), (a1 + 1.3, (b0 + b1) / 2, RF + .25), .25, "panel", seg=10)  # lifter
+        n += 10
+    x0, x1, y0, y1 = RAMP                                                                 # entry ramp
+    v = [[x0, y0, 0], [x1, y0, RF - .08], [x1, y1, RF - .08], [x0, y1, 0],
+         [x0, y0, .04], [x1, y0, RF], [x1, y1, RF], [x0, y1, .04]]
+    fuel._add("hex", v=v, color="carpet")
+    for y in (y0 + .1, y1 - .1):
+        rod((x0, y, 3.0), (x1, y, 3.0 + RF), .06, "steel", seg=6)                          # handrails
+    # under-floor basket tray from the west wall to the console and the video wall, passing under the open tiles
+    pts = [(277.0, 381.0), (304.0, 381.0), (304.0, 362.0), (317.0, 362.0)]
+    for (a, b) in zip(pts, pts[1:]):
+        if a[1] == b[1]:
+            n += basket(min(a[0], b[0]), max(a[0], b[0]), a[1], .25)
+        else:
+            n += basket(min(a[1], b[1]), max(a[1], b[1]), a[0], .25, along="y")
+        rod((a[0], a[1] + .3, .5), (b[0], b[1] + .3, .5), .07, "alu", seg=8)               # MC power alongside
+        rod((a[0] + .3, a[1], .55), (b[0] + .3, b[1], .55), .05, "cable_fo", seg=8)
+    return n + 3
 
 
 def server_room():
@@ -368,6 +455,49 @@ def scissor_lift(x, y, deck=8.0):
     return n + 10
 
 
+def cable_puller(x, y, tx, ty, tz):
+    """Cable puller (tugger) on its floor stand, rope from the capstan up to the sheave at the conduit end."""
+    box(x - 1.6, x + 1.6, y - 1.2, y + 1.2, 0, .3, "crane")                               # base frame
+    rod((x, y, .3), (x, y, 3.6), .18, "crane", seg=8)                                     # mast
+    rod((x, y - .9, 2.6), (x, y + .9, 2.6), .45, "steel", seg=16)                          # capstan
+    box(x - .9, x - .2, y - .7, y + .7, 2.0, 3.2, "sw_red")                                # motor / gearbox
+    rod((x + .3, y, 3.4), (tx, ty, tz), .03, "panel", seg=4)                               # pulling rope
+    rod((tx, ty, tz), (tx, ty, tz + .5), .25, "steel", seg=12)                             # sheave at the conduit end
+    decal((x, y - 1.23, 1.0), (0, -1, 0), 2.6, .5, [("MAXIS CABLE PULLER", .55, 1, "#111111")], bg="#e0b01a", brand=True)
+    return 6
+
+
+def cable_barrel(x, y, c):
+    """THHN in a payoff barrel: the drum, its payoff cone, the conductor up and away to the pull."""
+    rod((x, y, 0), (x, y, 3.0), 1.0, "rack", seg=20)
+    rod((x, y, 3.0), (x, y, 3.6), .6, "steel", r2=.15, seg=14)                             # payoff cone
+    rod((x, y, 3.6), (x, y, 5.0), .05, c, seg=6)
+    decal((x, y - 1.02, 1.6), (0, -1, 0), 1.6, .8, [("SIMpull", .45, 1, "#ffffff"), ("BARREL  ·  THHN", .3, 0, "#e8e8e8")],
+          bg="#c41f27", brand=True)
+    return 3
+
+
+def string_lights(x0, x1, y, z):
+    """Temporary construction lighting: an LED stringer hung from the J-hooks, a lamp every 6 ft."""
+    n = 0
+    rod((x0, y, z), (x1, y, z), .03, "cable_tc", seg=4)
+    x = x0 + 2
+    while x < x1:
+        rod((x, y, z - .5), (x, y, z), .02, "cable_tc", seg=4)
+        rod((x, y, z - .9), (x, y, z - .5), .22, "lamp", r2=.12, seg=10)
+        x += 6.0
+        n += 2
+    return n + 1
+
+
+def work_light(x, y):
+    for a in (0, 2.1, 4.2):
+        rod((x + 1.0 * math.cos(a), y + 1.0 * math.sin(a), 0), (x, y, 4.5), .04, "steel", seg=4)
+    rod((x, y, 4.5), (x, y, 6.0), .05, "steel", seg=4)
+    box(x - .5, x + .5, y - .15, y + .15, 6.0, 6.8, "lamp")
+    return 5
+
+
 def office_fitout():
     n = clear_office()
     x0, x1, y0, y1 = OFF
@@ -409,6 +539,16 @@ def office_fitout():
     run([(x1, 379.0, 14.6), (x1 - 2.0, 370.0, 14.6), (96.0, 370.0, 14.6), (96.0, 352.0, 14.6), (120.0, 352.0, 14.6)],
         .045, "cable_fa")
     n += horn_strobe(x0 + .1, 362.0, 1, 0)
+    # temporary construction lighting until the troffers are energised, a work light at the ladder
+    for yy in (350.0, 358.0, 366.0, 374.0):
+        n += string_lights(x0 + 3.0, x1 - 2.0, yy, 11.6)
+    n += work_light(124.0, 361.0)
+    # pulling THHN into the EMT on the east wall: cable puller, barrels feeding the conductors
+    run([(118.0, IY0 + .5, 15.2), (118.0, IY0 + .5, 9.5)], .1, "pipe")                       # EMT down the south wall
+    n += cable_puller(123.0, 352.0, 118.0, IY0 + .5, 9.2)
+    for k, c in enumerate(("cable_tc", "sw_red", "safety")):
+        n += cable_barrel(108.5 + k * 2.4, 351.0, c)
+        rod((108.5 + k * 2.4, 351.0, 5.0), (118.0, IY0 + .6, 9.5), .03, c, seg=4)          # conductors to the conduit
     # materials, access and the crew
     n += reel_stand(100.0, 362.0)
     n += wire_cart(112.0, 372.0)
@@ -444,6 +584,7 @@ def build():
     n = office_fitout()
     on(it)
     fuel.D = True
+    n += raise_mcr()
     n += electrical_room() + telecom_room() + corridor_backbone() + room_branches() + control_room() + server_room()
     fuel.D = False
     return n
