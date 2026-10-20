@@ -1492,6 +1492,8 @@ import modular as _modular
 _modular.build()     # RICE hall and simple-cycle units at LOD 3
 import yard as _yard
 _yard.build()        # gensets, trailers, fuel cells, microturbines, skids in the modular yard
+import sc2_mirror as _sc2
+print('SC-2 mirrored', _sc2.build())  # SC-2 end for end (stacks paired, inlets outboard), before wiring and routes
 import hall as _hall
 _hall.build()        # turbine hall: GTs, generators, ST, skids, fit-out
 import hrsg as _hrsg
@@ -1666,7 +1668,8 @@ add_route("mvlv_cable", [(2310, 795), (2310, 809), (2249, 809), (2249, 504), (21
 add_route("mvlv_cable", [(2014, 350), (2014, 345), (2146, 345), (2146, 352)], MX)         # FC-5..12 -> inverter
 add_route("mvlv_cable", [(2146, 376), (2146, 420), (2165, 420), (2165, 430)], MX)         # inverter -> PAD-LV
 add_route("mvlv_cable", [(2198, 377), (2198, 415), (2175, 415), (2175, 430)], MX)         # MT-4..6 -> PAD-LV
-add_route("mvlv_cable", [(2150, 1252), (2235, 1252), (2235, 1324), (2240, 1324)], "OPT_MOD_ROUTES")   # SC-2 PCM -> ammonia skid
+add_route("mvlv_cable", [(2258.5, 1252), (2266, 1252), (2266, 1324), (2240, 1324)], "OPT_MOD_ROUTES")  # SC-2 PCM (mirrored
+                                                                          # to x 2218.5-2258.5 by sc2_mirror) -> ammonia skid
 add_route("fuel_gas", [(2340, 440), (2340, 452), (1985, 452), (1985, 536), (2130, 536)], MX)   # pad skid -> TM / CONT
 add_route("fuel_gas", [(2049.5, 452), (2049.5, 377)], MX)                                # header -> FC-5..12
 add_route("fuel_gas", [(2205, 452), (2205, 378)], MX)                                     # header -> MT-4..6
@@ -1679,7 +1682,7 @@ for k in range(8):                                                              
     add_route("mvlv_cable", [(2014 + 14 * k, 350), (2014 + 14 * k, 345)], MX)
 # SC-1 / SC-2 fuel gas from the fuel-gas compressor building (not drawn on sheet 07)
 add_route("fuel_gas", [(2290, 1182), (1940, 1182), (1940, 1190)], "OPT_MOD_ROUTES")
-add_route("fuel_gas", [(2140, 1182), (2140, 1190)], "OPT_MOD_ROUTES")
+add_route("fuel_gas", [(2228.5, 1182), (2228.5, 1190)], "OPT_MOD_ROUTES")  # SC-2 drop (mirrored package)
 # BESS main power transformer to the D4 upper position (230 kV cable to the take-off gantry)
 add_route("hv_cable", [(1756, 352), (1756, 170)], "OPT_BESS_ROUTES", sheet="typical (switchyard build-out)")
 # Turbine-hall cabling the drawing leaves to the vendor (typical): a control / instrument backbone

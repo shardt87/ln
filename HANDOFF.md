@@ -121,6 +121,11 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
   painted black as coping (+ end-wall strips), corner pilasters, RICE ENGINE HALL signs over both roll-ups; SC-1/2
   band + coping on the turbine enclosure (own nameplates kept); MOD-EH / MOD-LV / black-start switchgear band under
   the eave and a dark name sign by the door. No chevrons, lettering or logos. Cameras CB1-CB3. Viewer v39.
+- **SC-2 turned end for end** (owner, Oct 20): the two simple-cycle units face each other, stacks paired in the
+  middle (x 2045-2058 / 2110-2123), inlets at the outer ends (SC-2 inlet was 30 ft downwind of SC-1 stack).
+  `plant/sc2_mirror.py` mirrors SC-2 about x 2184.25 right after the yard pass (before wiring / routes /
+  manholes); modular_lod3 and campus_brand place their SC-2 detail mirrored; the gas drop and the PCM duct bank in
+  build_model.py are written at the mirrored positions. Camera SC3 (pair). Viewer v40.
 
 - **West gable chevron legs carried on above the band at their own angle** (owner, Oct 20: not a second chevron, not vertical): `livery_west_up.png` (blender/hall_sign.py), same
   width and slope as the upper legs below, EL 65.6-96.8, the first runs off the NE corner; camera HX7. Viewer v31.

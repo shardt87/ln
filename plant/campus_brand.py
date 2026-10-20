@@ -80,8 +80,10 @@ def build():
     fuel.D = False
     # SC-1 / SC-2: the turbine enclosure (x +25 .. +69.5 of the package, y 1193-1217, EL 1.5-22)
     for k, x in ((1, 1910), (2, 2110)):
+        from sc2_mirror import mx
+        e0, e1 = (x + 25, x + 69.5) if k == 1 else (mx(x + 69.5), mx(x + 25))   # SC-2 stands mirrored
         n += building(f"SC-{k}: aeroderivative simple-cycle unit", f"SC-{k} turbine enclosure",
-                      (x + 25, x + 69.5, 1193, 1217, 22), (17.6, 18.6), (21.2, 22.0), ("machine", "roof"),
+                      (e0, e1, 1193, 1217, 22), (17.6, 18.6), (21.2, 22.0), ("machine", "roof"),
                       corners=False)              # the enclosure already carries its SC-n nameplate
     # e-houses: band under the roof eave, sign beside the door (south faces)
     n += building("MOD-EH: 13.8 kV modular collector e-house", "MOD-EH", (1915.3, 1994.7, 880.3, 899.7, 15.4),

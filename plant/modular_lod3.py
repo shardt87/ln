@@ -163,16 +163,18 @@ def mv_bridge(S):
 
 
 def sc_trays(S):
+    from sc2_mirror import mx
     for k, x in enumerate((1910, 2110), 1):
+        xt = x + 12 if k == 1 else mx(x + 12)              # SC-2 stands mirrored (sc2_mirror.py)
         it = new(f"SC-{k}: generator cables to the PCM (13.8 kV MV-105 on ladder tray)",
-                 (x + 9, x + 15, 1217, 1246), (0, 14))
+                 (xt - 3, xt + 3, 1217, 1246), (0, 14))
         fuel.D = True
-        z = tray(S, [(x + 12, 1217.6), (x + 12, 1244.9)], 9.0, w=2.0,
+        z = tray(S, [(xt, 1217.6), (xt, 1244.9)], 9.0, w=2.0,
                  cables=tuple(("cable_mv", .2) for _ in range(6)) + (("cable_tc", .1),), name=f"SC-{k} gen",
                  style="tray", tag=f"SC{k}-T1")
         if z:
             from cable_moments import legends
-            legends({it["id"]}, {"cable_mv": MV_TXT}, (x + 9, x + 15, 1217, 1246, z - 1, z + 1))
+            legends({it["id"]}, {"cable_mv": MV_TXT}, (xt - 3, xt + 3, 1217, 1246, z - 1, z + 1))
         fuel.D = False
 
 
@@ -212,8 +214,10 @@ def equipment():
           bg="#ffffff")
     fuel.D = False
 
+    import sc2_mirror
     for k, x in enumerate((1910, 2110), 1):
         on(find(f"SC-{k}: aeroderivative"))
+        mark = sc2_mirror.since()
         fuel.D = True
         for zz in [9.0 + 1.6 * i for i in range(9)]:                     # filter-house weather hoods
             box(x - 20.9, x - 20, 1196.4, 1213.6, zz, zz + .18, "steel")
@@ -229,6 +233,8 @@ def equipment():
               [(f"SC-{k}", .42, True, None), ("LM6000-CLASS AERODERIVATIVE  ·  50 MW", .22, False, None)],
               bg="#ffffff")
         fuel.D = False
+        if k == 2:
+            sc2_mirror.mirror_since(mark)                  # drawn coordinates -> the mirrored unit
 
 
 # ---------------------------------------------------------------------------------------------------------
