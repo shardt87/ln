@@ -1359,6 +1359,8 @@ EPIC = [
          hide_layers=("CR_ROOF",), sun=(50, 160)),
     dict(k="ADM2", n="Control / admin building front: copper band, entrance portal, monument sign and flagpoles",
          eye=(262, 262, 26), target=(196, 352, 10), lens=28, show="all", sun=(38, 215)),
+    dict(k="ADM4", n="Control / admin building from the south-west: office windows, west end exit door",
+         eye=(52, 300, 22), target=(150, 360, 9), lens=28, show="all", sun=(38, 215)),
     dict(k="ADM3", n="Control / admin building roof: rooftop units, disconnects, MC whips, walkway; condensing-unit pad",
          eye=(292, 300, 88), target=(214, 386, 14), lens=24, show="all", sun=(48, 200)),
     # SIMpull / Maxis equipment (simpull.py)

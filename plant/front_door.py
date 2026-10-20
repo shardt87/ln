@@ -35,6 +35,18 @@ def facade():
                   [81, 322, 343, 398], [0, 20.6], area=bld.get("area"), register=False,
                   info="The turbine hall's facade language on the control / admin building: copper band, black coping "
                        "and corner pilasters, a black entrance portal with the campus name. Typical, not engineered.")
+    # the generic door / roll-up / louvre pass (detail3.py) put a roll-up over two office windows by the entrance, a
+    # personnel door under a window and a louvre through the band line on this front (owner, Oct 20: "random doors"):
+    # the roll-up and louvre go, the personnel door moves to the west end wall as the second exit
+    keep = []
+    for p in fuel.G["parts"]:
+        if p["item"] == bld["id"] and p["kind"] == "box" and p["min"][1] >= 344.5 and p["max"][1] <= 345.2:
+            if p["color"] in ("rollup", "louvre"):
+                continue
+            if p["color"] == "door":
+                p["min"], p["max"] = [82.75, 350.0, 0], [83.0, 353.5, 7.5]       # clear of the end-wall windows
+        keep.append(p)
+    fuel.G["parts"][:] = keep
     on(it)
     fuel.D = True
     n = 0

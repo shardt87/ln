@@ -105,6 +105,9 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
   The gallery/hall joint on both end walls carries one black corner pilaster (y 402.7-405) from grade to the roof,
   the band crossing it; the gallery coping stops against it (owner: the intersection read rough). Viewer v33.
   West gable "3x1 CCGT" lettering centred on the equipment door (y 460, was 475). Viewer v34.
+- **Admin building front cleaned** (owner, Oct 20: "random doors"): front_door.py drops the roll-up and louvre the
+  generic detail3 pass put on the south face and moves its personnel door to the west end wall (y 350-353.5);
+  camera ADM4 (south-west). Viewer v35.
 
 - **West gable chevron legs carried on above the band at their own angle** (owner, Oct 20: not a second chevron, not vertical): `livery_west_up.png` (blender/hall_sign.py), same
   width and slope as the upper legs below, EL 65.6-96.8, the first runs off the NE corner; camera HX7. Viewer v31.
