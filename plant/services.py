@@ -142,9 +142,7 @@ def buildings():
         rod((mx, my, z), (mx, my, z + 6), .12, "lamp", seg=6)
         rod((mx + .8, my, z + 2), (mx + .8 + r, my, z + 2), .08, "steel", seg=4)
     rod((mx - 5, my, 21.5), (mx - 5, my, 23), 2.2, "lamp", r2=1.6, seg=16)                 # dish
-    for k, fx in enumerate((x1 - 40, x1 - 34, x1 - 28)):                                  # flagpoles
-        rod((fx, y0 - 14, 0), (fx, y0 - 14, 30), .18, "steel", seg=8)
-        box(fx + .2, fx + 4.4, y0 - 14.05, y0 - 13.95, 25, 27.6, ("red", "sign", "door")[k])
+    # (the flagpoles that stood here moved to the entrance walk in front_door.py, Oct 20)
     for b in range(5):                                                                    # bike rack
         rod((x0 + 10 + b * 2, y0 - 3, 0), (x0 + 10 + b * 2, y0 - 3, 2.5), .07, "steel", seg=4)
     dress(False)
