@@ -2312,6 +2312,8 @@ print('campus finish', _cb.build())
 print('compressor building west louvre removed', _sc2.late())
 import reserved_pad as _rp                        # phase-2 pad for SC-3 / SC-4, pre-wired
 print('reserved pad', _rp.build())
+import gate_detail as _gd                         # zone 07 part 2: the gate checkpoint, its devices and their wiring
+print('gate checkpoint', _gd.build())
 
 
 # "conditional" was a drawing flag colour (yellow); the items keep basis="conditional" in their data, but are drawn

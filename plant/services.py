@@ -30,6 +30,10 @@ def _item(name, fp, z, **meta):
 def routes(add_route):
     # gate operator, barrier arms, card readers and the CCTV at the gate, fed from the gatehouse
     add_route("duct_bank", [(277, 312), (4, 312)], sheet="typical (services detail)")
+    # gatehouse to the access-control islands (gate_detail.py): north island pull box, then under the road to the
+    # south island's pull box
+    add_route("duct_bank", [(278, 312), (272, 312), (272, 298), (266, 298)], sheet="typical (services detail)")
+    add_route("duct_bank", [(266, 298), (266, 272)], sheet="typical (services detail)")
     # gatehouse LV supply and fibre from the control / admin building
     add_route("duct_bank", [(300, 325), (320, 325), (320, 392)], sheet="typical (services detail)")
 

@@ -167,6 +167,12 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
   installed capacity, ~1,690 MW = combined cycle ~1,350 + modular ~339 (RICE 144, SC 100, TM 70, CONT 20, FC + MT
   5), BESS ~60 MW / 120 MWh (assumed), CCS, 25 MW H2; "ratings approximate". The gate keeps its original board.
   E80 callout for TM-1/2 restored (TM-1/2 still exist; it was dropped by mistake). Camera ADM5. Viewer v49.
+- **Zone 07 part 2, main gate checkpoint at LOD 3, wiring visible** (owner, Oct 20): `plant/gate_detail.py` (after
+  reserved_pad): curbed islands at both lanes (card reader, call-box intercom, LPR pole, stop sign, red/green signal
+  on each barrier), saw-cut loops with lead-ins, conduit stub-ups + liquidtight whips into every device, outbound
+  pull box PB-G2 open with the cables and a cable ID placard, gatehouse windows on every face, exterior panel + AC
+  disconnect with conduit, canopy lights and SECURITY sign, CCTV pole, gate operator + photo-eyes. Duct banks
+  gatehouse -> islands in services.routes. verify below_ok gains "^Main gate checkpoint". Cameras GATE2, GATE3. v50.
   RTUs, each with a disconnect, conduit through the roof and an MC whip, plus a walkway. Condensing-unit pad on the
   north side (four precision-cooling units for the DCS/server room). Cameras ADM2 (front) and ADM3 (roof).
   `plant/tools/detail_clash.py` checks detail items (verify.py skips them). `attach.signs` now also checks walls
