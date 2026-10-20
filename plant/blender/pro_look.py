@@ -1441,6 +1441,8 @@ EPIC = [
          eye=(1968, 846, 14), target=(1950, 888, 8), lens=30, show="all", sun=(38, 215)),
     dict(k="SC3", n="SC-1 and SC-2 facing each other: the two stacks paired in the middle, inlets at the outer ends",
          eye=(2084, 1030, 95), target=(2084, 1205, 12), lens=22, show="all", sun=(38, 215)),
+    dict(k="SC4", n="SC-2 inlet end and the fuel-gas compressor building, moved east: clear working space between",
+         eye=(2300, 1105, 60), target=(2320, 1210, 10), lens=24, show="all", sun=(38, 215)),
     dict(k="E58", n="Cable reel yard: SIMpull Truck unloading SIMpull Reels on payoffs, reel rows",
          eye=(214, 702, 15), target=(160, 752, 6), lens=28, show="base"),
     dict(k="E108", n="Plant gas yard: inlet ESD, metering, regulation, performance heater, filter-separators, GT header",

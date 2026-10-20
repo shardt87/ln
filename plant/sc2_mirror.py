@@ -68,3 +68,14 @@ def mirror_since(mark, item=None):
     if item is not None and item.get("fp"):
         x0, x1 = item["fp"][0], item["fp"][1]
         item["fp"][0], item["fp"][1] = mx(x1), mx(x0)
+
+
+def late():
+    """After the detail passes: the fuel-gas compressor building (moved 40 ft east in build_model.py) keeps its
+    ventilation louvre on the east wall only, none on the west wall that faces SC-2's inlet."""
+    b = fuel.find("Fuel-gas compressors 3")
+    keep = [p for p in fuel.G["parts"] if not (p["item"] == b["id"] and p["kind"] == "box" and p["color"] == "louvre"
+                                                and p["max"][0] <= b["fp"][0] + .01)]
+    n = len(fuel.G["parts"]) - len(keep)
+    fuel.G["parts"][:] = keep
+    return n

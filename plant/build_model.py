@@ -1193,7 +1193,9 @@ for k, x in enumerate([1910, 2110], 1):
     solid(L, f"SC-{k} lube-oil fin-fan cooler", x + 50, x + 70, 1245, 1259, 0, 10, "bundle", area="I", register=False)
     solid(L, f"CONDITIONAL: SC-{k} inlet chiller / evaporative cooler", x, x + 60, 1135, 1170, 0, 14,
           "conditional", area="I", basis="conditional")
-building(L, "Fuel-gas compressors 3 x 100% electric", 2290, 2370, 1180, 1240, 20, area="I", sheet="SW-3X1-07")
+# drawn at x 2290-2370; moved 40 ft east (owner, Oct 20) so it stands ~45 ft clear of SC-2's inlet filter house, now on
+# this side since SC-2 was turned end for end (sc2_mirror.py): gas vents and ventilation exhaust kept off the inlet
+building(L, "Fuel-gas compressors 3 x 100% electric", 2330, 2410, 1180, 1240, 20, area="I", sheet="SW-3X1-07")
 tank(L, "Demin tank + trailer pad", 2310, 1280, 20, 30, area="I")
 solid(L, "Water-injection skid", 2255, 2275, 1280, 1290, 0, 8, "equip", area="I")
 solid(L, "Aqueous ammonia (SC units)", 2240, 2280, 1318, 1330, 0, 10, "tank", area="I")
@@ -1681,7 +1683,7 @@ add_route("fuel_gas", [(2332, 805), (2332, 782)], MX)                           
 for k in range(8):                                                                          # FC tails to the DC feeder
     add_route("mvlv_cable", [(2014 + 14 * k, 350), (2014 + 14 * k, 345)], MX)
 # SC-1 / SC-2 fuel gas from the fuel-gas compressor building (not drawn on sheet 07)
-add_route("fuel_gas", [(2290, 1182), (1940, 1182), (1940, 1190)], "OPT_MOD_ROUTES")
+add_route("fuel_gas", [(2330, 1182), (1940, 1182), (1940, 1190)], "OPT_MOD_ROUTES")  # from the moved building
 add_route("fuel_gas", [(2228.5, 1182), (2228.5, 1190)], "OPT_MOD_ROUTES")  # SC-2 drop (mirrored package)
 # BESS main power transformer to the D4 upper position (230 kV cable to the take-off gantry)
 add_route("hv_cable", [(1756, 352), (1756, 170)], "OPT_BESS_ROUTES", sheet="typical (switchyard build-out)")
@@ -2260,6 +2262,7 @@ import front_door as _fd                         # zone 07: the control / admin 
 print('front door (zone 07)', _fd.build())
 import campus_brand as _cb                        # the facade language, lighter, on RICE, SC-1/2 and the e-houses
 print('campus finish', _cb.build())
+print('compressor building west louvre removed', _sc2.late())
 
 
 # "conditional" was a drawing flag colour (yellow); the items keep basis="conditional" in their data, but are drawn
