@@ -99,8 +99,8 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
 
 ## In progress / not yet done
 
-- **West gable chevrons continued above the band** (owner, Oct 20): `livery_west_up.png` (blender/hall_sign.py), same
-  slope and position as the two below, EL 65.6-96.8; camera HX7 shows the whole gable. Viewer v29.
+- **West gable chevron stripes carried straight up above the band** (owner, Oct 20: straight, not a second chevron): `livery_west_up.png` (blender/hall_sign.py), same
+  width and position as the stripes below, EL 65.6-96.8; camera HX7 shows the whole gable. Viewer v30.
 - **Plant renamed SK-3X1 -> SW-3X1** (owner, Oct 19): all text, file names (SW-3X1_*, sw3x1_*), signage decals, viewer
   (v28), control-room screens, strategy deck and its cover rebuilt. Kept: the owner's source drawing file name
   `SK-3X1_Drawing_Set_Rev14.pdf`. Still showing the old name until regenerated: earlier finished renders with burned-in

@@ -82,9 +82,12 @@ def main():
     # (y 527.5-532), pointing at the door; a plain black rectangle from just past the riser (y 526) over the door to
     # the SW corner (y 404)
     livery(os.path.join(S, "livery_west.png"), 152.0, 63.8, [(3.0, 4.0), (10.0, 4.0)], 8.0, 30.0, notch=False)
-    # and above the band (z 65.6-96.8), the same two chevrons at the same u and slope, so they run on up the gable
-    livery(os.path.join(S, "livery_west_up.png"), 22.0, 31.2, [(3.0, 4.0), (10.0, 4.0)], 8.0 * 31.2 / 63.8, 22.0,
-           notch=False)
+    # and above the band (z 65.6-96.8): the two chevron stripes carried straight up from where they meet the band, same
+    # width and position (owner, Oct 20: one continuous stripe, not a second chevron)
+    up = Image.new("RGBA", (22 * 40, int(31.2 * 40)), (0, 0, 0, 0))
+    for (u, w) in [(3.0, 4.0), (10.0, 4.0)]:
+        ImageDraw.Draw(up).rectangle([u * 40, 0, (u + w) * 40 - 1, up.size[1]], fill=CHEV)
+    up.save(os.path.join(S, "livery_west_up.png"))
     # east end wall inside (u = 503 - y, z 65.7-98): chevrons between the flag and the sign, black field behind the
     # sign to the SE corner (y 404)
     livery(os.path.join(S, "livery_east_in.png"), 99.0, 32.3, [(1.0, 3.0), (6.2, 3.0)], 5.0, 11.4)
