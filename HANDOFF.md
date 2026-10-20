@@ -113,6 +113,9 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
   Blender build). The east interior keeps its black field behind the sign, chevrons recoloured. Viewer v36.
 - Old flagpole trio at the admin building SE corner (services.py, the floating "boxes at z 25" noted for the gate
   step) removed: the flags now fly only at the entrance walk (front_door.py). Viewer v37.
+- **FC-1..4, their inverter cabinet and MT-1..3 removed** (owner, Oct 20: the modular yard already has a set,
+  FC-5..12 / MT-4..6): build_model.py, their cable and gas routes in routes_optional.json, the worker and pickup
+  beside them (modular_lod3.py), cable_schedule.py (re-run), E80 callouts; camera MOD9 shows the cleared plot. v38.
 
 - **West gable chevron legs carried on above the band at their own angle** (owner, Oct 20: not a second chevron, not vertical): `livery_west_up.png` (blender/hall_sign.py), same
   width and slope as the upper legs below, EL 65.6-96.8, the first runs off the NE corner; camera HX7. Viewer v31.

@@ -293,10 +293,9 @@ def furniture(S):
     new("Modular yard: operators and vehicles", (1556, 2392, 860, 1336), (0, 8))
     pickup(S, 1640, 988)
     pickup(S, 1872, 1180, along_x=False)
-    pickup(S, 2060, 1114)
     pickup(S, 1990, 1233)
     for (x, y, a, v) in ((1710.5, 1027.6, 1.57, "hivis"), (1706.4, 1027.6, 1.2, "hivis_o"), (1830, 1133, 1.57, "hivis"),
-                         (1960, 1226, 0, "hivis"), (1725, 1218, 3.14, "hivis_o"), (2002, 1100, 1.0, "hivis")):
+                         (1960, 1226, 0, "hivis"), (1725, 1218, 3.14, "hivis_o")):
         p = S.place(x, y, .8, .8, 6)
         if p:
             person(p[0], p[1], .16, a, vest=v)

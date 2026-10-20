@@ -474,14 +474,14 @@ for t, kw in (("GEN-E", 2000), ("GEN-O", 1000)):
         round(I), "4 x 1/C per set incl. ground")
 add(BY_TAG["PAD-LV"], BY_TAG["PAD-TX"] if "PAD-TX" in BY_TAG else one(r"^PAD-TX"), "PAD-LV to PAD-TX", "LV1C", "1/C", "500",
     12, 4, 3000, 480, 3600, "12 sets of 4 x 1/C (or bus duct)")
-fc_inv = [one(r"^Fuel-cell inverter"), one(r"^FC-5..12 inverter")]
-for k in range(1, 13):
+fc_inv = [one(r"^FC-5..12 inverter")]                     # FC-1..4 / MT-1..3 taken out Oct 20 (one set, in the yard)
+for k in range(5, 13):
     fc = one(rf"^FC-{k}: SOFC")
-    lv_feeder(fc, fc_inv[0 if k <= 4 else 1], 250, f"FC-{k} SOFC output to inverter / AC cabinet", motor=False)
+    lv_feeder(fc, fc_inv[0], 250, f"FC-{k} SOFC output to inverter / AC cabinet", motor=False)
 for it in fc_inv:
     lv_feeder(it, one(r"^MOD-LV 480 V"), 2000 if "5..12" in it["name"] else 1000, "Fuel-cell AC cabinet to MOD-LV",
               motor=False)
-for k in range(1, 7):
+for k in range(4, 7):
     mt = one(rf"^MT-{k}: microturbine")
     lv_feeder(mt, one(r"^MOD-LV 480 V"), 1000, f"MT-{k} microturbine output", motor=False)
 for it in find(r"^Black-start genset"):

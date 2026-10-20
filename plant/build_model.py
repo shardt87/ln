@@ -1210,15 +1210,8 @@ ehouse(L, "MOD-EH: 13.8 kV modular collector e-house", 1915, 1995, 880, 900, 16,
        sheet="SW-3X1-08")
 xfmr(L, "T-MOD-1: 13.8/230 kV", 2045, 2085, 870, 905, 24, bushing=13, tag="T-MOD-1", area="I", sheet="SW-3X1-08")
 xfmr(L, "T-MOD-2: 13.8/230 kV", 2105, 2145, 870, 905, 24, bushing=13, tag="T-MOD-2", area="I", sheet="SW-3X1-08")
-for k in range(4):
-    x = 1995 + 14 * k
-    solid(L, f"FC-{k+1}: SOFC module (Bloom ES5 class, 200-300 kW)", x, x + 9, 1070, 1096, 0, 7, "bess",
-          area="I", basis="vendor", sheet="SW-3X1-12", info="26 ft 5 in x 8 ft 7 in x 6 ft 9 in.")
-solid(L, "Fuel-cell inverter / AC cabinet / desulfurizer", 2060, 2102, 1072, 1096, 0, 8, "ehouse", area="I")
-for k in range(3):
-    x = 2260 + 14 * k
-    solid(L, f"MT-{k+1}: microturbine 1 MW (Capstone C1000 class)", x, x + 8, 1068, 1096, 0, 9.5, "machine",
-          area="I", basis="vendor", sheet="SW-3X1-12", info="2438 x 8534 x 2896 mm.")
+# FC-1..4, their inverter cabinet and MT-1..3 stood here (x 1995-2296, y 1068-1096); taken out Oct 20 (owner: the
+# modular yard already carries a set, FC-5..12 / MT-4..6)
 ehouse(L, "MOD-LV 480 V board + 480 V : 13.8 kV step-up", 2215, 2267, 970, 982, 10, area="I", sheet="SW-3X1-08")
 L = "OPT_TMP"
 pad(L, "Portable pad lane", 2130, 2370, 620, 640, "road", z1=0.3, area="I")
