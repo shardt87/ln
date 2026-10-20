@@ -135,6 +135,11 @@ deck and the **Nov 11, 2026** internal Teams training (SVP of R&D attending). Co
   foundations + stack pads, two PCM pads tied into the yard MV duct bank (two routes in build_model.py), capped
   conduit stub-ups at the PCM pads and generator ends, handholes, capped gas risers. audit.py exempts "Reserved pad"
   (SC-3/4 is otherwise a removed-option name). Cameras SC5, SC6. Viewer v42.
+- **SC-4 pad = plug-and-play prefab demo** (owner, Oct 20): reserved_pad.demo(): three 40 ft prefab cable modules
+  (prefab.module, along x, y 1306, on pedestals) between the foundation and the PCM pad, pigtails coiled and tagged
+  at GEN TB / TCP / AUX SKID / SCR-CEMS landings, equipment footprints painted, PCM landing frame with the tails
+  dropped in, PLUG & PLAY sign; SC-3 stays bare for contrast (its gen-end stubs kept, SC-4's replaced by the trays).
+  Cameras SC7, SC8. Viewer v43.
 
 - **West gable chevron legs carried on above the band at their own angle** (owner, Oct 20: not a second chevron, not vertical): `livery_west_up.png` (blender/hall_sign.py), same
   width and slope as the upper legs below, EL 65.6-96.8, the first runs off the NE corner; camera HX7. Viewer v31.

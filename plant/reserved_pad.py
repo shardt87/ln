@@ -63,19 +63,105 @@ def build():
         # MV feeder to MOD-EH and control / aux conduits, stubbed up and capped through the PCM pad
         n += stubs(p0 + 6, p0 + 18, PY0 + 2, PY0 + 6, .6, 6, 2)
         n += stubs(p0 + 24, p0 + 32, PY0 + 2, PY0 + 4, .6, 4, 1, r=.15)
-        # generator leads and control at the generator end of the foundation, towards the PCM
-        n += stubs(xg - 4, xg + 4, FY1 - 4, FY1 - 1, .5, 4, 2)
-        # handhole beside the PCM pad, on the duct-bank line
-        hx = p0 + 12
-        box(hx - 2, hx + 2, PY0 - 6, PY0 - 2, 0, .25, "concrete")
-        box(hx - 1.6, hx + 1.6, PY0 - 5.6, PY0 - 2.4, .25, .3, "steel")
+        # generator leads and control at the generator end of the foundation, towards the PCM (SC-4: the prefab
+        # tray run carries them instead, demo() below)
+        if name == "SC-3":
+            n += stubs(xg - 4, xg + 4, FY1 - 4, FY1 - 1, .5, 4, 2)
+        # handhole beside the PCM pad, on the duct-bank line (SC-4: east of its PCM pad, clear of the tray run)
+        hx, hy = (p0 + 12, PY0 - 4) if name == "SC-3" else (p1 + 9, PY0 + 4)
+        box(hx - 2, hx + 2, hy - 2, hy + 2, 0, .25, "concrete")
+        box(hx - 1.6, hx + 1.6, hy - 1.6, hy + 1.6, .25, .3, "steel")
         # fuel-gas tie-in riser, capped and blinded, at the foundation's north edge
         xr = (f0 + f1) / 2
         rod((xr, FY0 - 2, 0), (xr, FY0 - 2, 2.6), .33, "fuelgas", seg=12)
         rod((xr, FY0 - 2, 2.6), (xr, FY0 - 2, 2.9), .6, "steel", seg=12)
         n += 4
     fuel.D = False
+    n += demo()
+    on(it)
     showcase.decal((X0 - 1.2, 1299.0, 5.0), (-1, 0, 0), 15.0, 3.2,
                    [("RESERVED - SC-3 / SC-4", .4, True, "#ffffff"),
                     ("FUTURE SIMPLE-CYCLE PAIR  ·  PRE-WIRED", .2, False, "#c4744a")], bg="#1d1f21")
     return n + 1
+
+
+# ------------------------------------------------------------------------------- SC-4: plug-and-play demonstration
+TY = 1306.0                                                   # tray run centre line, between foundation and PCM pad
+TZ = 1.6                                                      # module frame bottom, on steel pedestals
+
+
+def coil(x, y, z, cab, tag=None):
+    """Factory-terminated tail coiled flat at a landing point, end capped, tag on it."""
+    import showcase
+    for k in range(3):
+        rod((x, y, z + k * .22), (x, y, z + k * .22 + .2), 1.1 - k * .12, cab, seg=18)
+    rod((x + .9, y, z + .7), (x + 1.6, y, z + .7), .16, cab, seg=8)
+    rod((x + 1.6, y, z + .7), (x + 2.0, y, z + .7), .2, "red", seg=8)                  # end cap
+    if tag:
+        showcase.decal((x, y - 1.25, z + 1.4), (0, -1, 0), 2.6, .7, [(tag, .32, True, "#111111"),
+                       ("TERMINATED  ·  TESTED", .22, False, "#2f7a3c")], bg="#ffffff")
+    return 6
+
+
+def outline(x0, x1, y0, y1, z):
+    """Painted footprint of the equipment still to come."""
+    w = .3
+    for (a0, a1, b0, b1) in ((x0, x1, y0, y0 + w), (x0, x1, y1 - w, y1), (x0, x0 + w, y0, y1), (x1 - w, x1, y0, y1)):
+        box(a0, a1, b0, b1, z, z + .02, "deck_line")
+    return 4
+
+
+def demo():
+    """SC-4's pad as the prefab, plug-and-play showcase (owner, Oct 20): everything but the equipment. Three 40 ft
+    factory cable modules (prefab.py's spine modules: power, control and fibre tiers, cable laid and tied) on steel
+    pedestals between the foundation and the PCM pad; pigtails dropped and coiled at each landing point on the
+    foundation, factory-terminated and tested; the equipment footprints painted on the slab; a landing frame on the
+    PCM pad with the module tails dropped into it. SC-3 stays the plain reserved pad beside it."""
+    import prefab
+    import showcase
+    it = new_item("OPT_MOD", "Reserved pad SC-4: plug-and-play prefab cable demonstration", [2084, 2234, 1268, 1328],
+                  [0, 9], area="I", register=False,
+                  info="The future SC-4 pad with its cable system already in: three factory-built 40 ft cable "
+                       "modules (power / control / fibre tiers, cable laid and tied), pigtails coiled and tested at "
+                       "each equipment landing point, a landing frame on the PCM pad. Set the equipment, connect, "
+                       "energise. Typical, not engineered.")
+    on(it)
+    fuel.D = True
+    n = 0
+    xs = (2090.0, 2130.0, 2170.0)
+    for x in xs + (2210.0,):                                                            # pedestals at the splices
+        for s in (-2.2, 2.2):
+            box(x - .4, x + .4, TY + s - .4, TY + s + .4, .0, TZ, "steel")
+            box(x - .9, x + .9, TY + s - .9, TY + s + .9, .0, .25, "concrete")
+        n += 4
+    for k, x in enumerate(xs):
+        prefab.module(TY, x, TZ, along="x", tails=(k == 2), wrap=False,
+                      tag=[(f"SC-4  M{k + 1:02d}", .26, 1, "#111111"), (f"{k + 1} OF 3  ·  PCM  →  GT / AUX", .16, 0, "#222222"),
+                           ("PRE-WIRED  ·  TESTED", .14, 0, "#2f7a3c"), ("PREFAB CABLE MODULE", .14, 1, "#ffffff", 0, "#b5651d")])
+        n += 1
+    on(it)
+    # the equipment still to come, painted on the slab (package east, SCR west, as SC-2), and the landing points
+    n += outline(2125.5, 2214.5, 1270.5, 1299.5, .5)                                   # GT package
+    n += outline(2085.5, 2124.5, 1270.5, 1299.5, .5)                                   # SCR / CO catalyst
+    n += outline(2177.0, 2213.0, 1313.5, 1324.5, .6)                                   # PCM
+    landings = ((2203.0, "GEN TB", "cable_mv"), (2160.0, "TCP", "cable_inst"), (2135.0, "AUX SKID", "cable_tc"),
+                (2095.0, "SCR / CEMS", "cable_tc"))
+    for (x, t, cab) in landings:
+        # pigtail drops from the module's bottom tier to the foundation edge and is coiled at the landing point
+        rod((x, TY - 2.0, TZ + .5), (x, TY - 3.6, TZ + .2), .18, cab, seg=8)
+        rod((x, TY - 3.6, TZ + .2), (x, 1301.0, .6), .18, cab, seg=8)
+        n += 2 + coil(x, 1297.0, .5, cab, t)
+    # PCM landing frame: skid rails the PCM sets on, the module tails dropped into it
+    for (a0, a1, b0, b1) in ((2178, 2212, 1314, 1314.6), (2178, 2212, 1323.4, 1324), (2178, 2178.6, 1314, 1324),
+                             (2211.4, 2212, 1314, 1324)):
+        box(a0, a1, b0, b1, .6, 1.1, "steel")
+        n += 1
+    for k, cab in enumerate(("cable_mv", "cable_tc", "cable_inst")):
+        x = 2206.0 - k * 3
+        rod((2210.6, TY + .5, TZ + .4 + k * 2.5), (x, 1312.0, 1.6), .2, cab, seg=8)
+        n += 1 + coil(x, 1317.0, .6, cab, ("GEN LEADS", "CONTROL", "FIBRE")[k])
+    fuel.D = False
+    showcase.decal((2084.2, 1306.0, 5.2), (-1, 0, 0), 11.0, 3.0,
+                   [("PLUG & PLAY", .36, True, "#ffffff"), ("PREFAB CABLE SYSTEM INSTALLED", .17, False, "#c4744a"),
+                    ("SET THE EQUIPMENT  ·  CONNECT  ·  ENERGISE", .15, False, "#ffffff")], bg="#1d1f21")
+    return n
