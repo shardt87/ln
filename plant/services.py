@@ -50,23 +50,12 @@ def gate():
         rod((268.8, y_post, 3.3), (268.8, y_post + sgn * 13.5, 3.3), .18, "red", seg=6)
         box(262, 263, y_post + sgn * 2.2 - .4, y_post + sgn * 2.2 + .4, 0, 4.2, "panel")    # card reader
     box(272, 278, 270.5, 299.5, .3, .6, "amber")                                         # speed table
-    # campus welcome sign (owner, Oct 20: the monument from the office front, moved here and given the campus
-    # details): black monument with a copper cap facing the road, on a planted bed, just inside the gate
-    mx, my = 32.0, 306.0
-    box(mx - 15, mx + 15, my - 4.5, my + 4.5, 0, .06, "turf")
-    box(mx - 13.5, mx + 13.5, my - 1.4, my + 1.4, 0, .6, "concrete")
-    box(mx - 12.5, mx + 12.5, my - 1.0, my + 1.0, .6, 7.6, "hero_rail")
-    box(mx - 12.7, mx + 12.7, my - 1.2, my + 1.2, 7.6, 8.0, "hero_accent")
-    from front_door import shrub
-    for k in range(9):
-        shrub(mx - 12 + k * 3.0, my - 3.0, r=.9, h=1.8)
+    # entrance sign
+    for x in (24, 40):
+        box(x - .3, x + .3, 303, 303.6, 0, 9, "steel")
+    box(23, 41, 302.9, 303.7, 4.5, 9, "sign")
+    box(24, 31, 302.85, 302.9, 5.5, 8, "door")
     fuel.D = False
-    import showcase
-    showcase.decal((mx, my - 1.03, 4.1), (0, -1, 0), 23.5, 6.2,
-                   [("WELCOME TO", .1, 0, "#c4744a"), ("SW-3X1 POWER CAMPUS", .26, 1, "#f2f2f0"),
-                    ("3x1 COMBINED CYCLE  ·  SIMPLE CYCLE  ·  RICE ENGINES  ·  BATTERY STORAGE", .1, 1, "#f2f2f0"),
-                    ("CARBON CAPTURE  ·  HYDROGEN READY  ·  DATA CENTER", .1, 1, "#f2f2f0"),
-                    ("ALL VISITORS REPORT TO THE GATEHOUSE", .1, 1, "#c4744a")], bg=None)
 
 
 def fence_and_cctv():

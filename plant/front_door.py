@@ -2,7 +2,7 @@
 building, outside and on the roof. The same design family as the turbine hall, no Southwire logo here:
 - facade: a copper band round all four walls above the window band, black coping on the parapet, black corner
   pilasters; at the glazed entrance a black portal (piers either side of the canopy, a lintel above it) lettered
-  SW-3X1 POWER CAMPUS / CONTROL & ADMINISTRATION (the monument sign moved to the main gate) and three flagpoles (the US
+  SW-3X1 POWER CAMPUS / CONTROL & ADMINISTRATION, a plain campus information sign on the lawn and three flagpoles (the US
   flag in the middle);
 - rooftop HVAC: two more packaged units (over the lobby and over the control room, the 24/7 load) beside the two the
   rooftop pass placed, and every unit wired as an electrician would: a fused disconnect on a strut stand beside the
@@ -72,8 +72,27 @@ def facade():
     fuel.D = False
     showcase.decal((XM, y0 - .03, 14.15), (0, -1, 0), 22.0, 5.6,
                    [("SW-3X1 POWER CAMPUS", .42, 1, "#f2f2f0"), ("CONTROL & ADMINISTRATION", .2, 1, "#c4744a")], bg=None)
-    # (the monument sign stood here, west of the walk; moved Oct 20 to the main gate as the campus welcome sign,
-    # services.gate)
+    # campus information sign on the lawn west of the walk (owner, Oct 20: a plain technical sign, not a monument):
+    # the campus type and its installed capacity, on two posts. Ratings approximate (several are model assumptions)
+    sx, sy = XM - 28.0, 318.0
+    fuel.D = True
+    for x in (sx - 5.6, sx + 5.6):
+        rod((x, sy, 0), (x, sy, 9.6), .2, "steel", seg=8)
+    box(sx - 6.2, sx + 6.2, sy - .15, sy + .15, 2.6, 9.4, "steel")
+    n += 3
+    fuel.D = False
+    showcase.decal((sx, sy - .18, 6.0), (0, -1, 0), 12.0, 6.6,
+                   [("SW-3X1 POWER CAMPUS", .12, 1, "#111111"),
+                    ("NATURAL-GAS GENERATION CAMPUS  ·  INSTALLED ~1,690 MW", .075, 1, "#111111"),
+                    ("COMBINED CYCLE  3x1 H-CLASS (3 GT + 1 ST)  ·  ~1,350 MW", .065, 1, "#222222"),
+                    ("MODULAR POWER  ·  ~339 MW", .065, 1, "#222222"),
+                    ("RICE ENGINES  8 x 18 MW  ·  144 MW", .058, 0, "#333333"),
+                    ("SIMPLE CYCLE  2 x 50 MW (LM6000 CLASS)  ·  100 MW", .058, 0, "#333333"),
+                    ("MOBILE GAS TURBINES  2 x 35 MW (TM2500 CLASS)  ·  70 MW", .058, 0, "#333333"),
+                    ("CONTAINERIZED GENSETS  8 x 2.5 MW  ·  20 MW", .058, 0, "#333333"),
+                    ("FUEL CELLS + MICROTURBINES  ·  5 MW", .058, 0, "#333333"),
+                    ("BATTERY STORAGE ~60 MW / 120 MWh  ·  CARBON CAPTURE  ·  25 MW GREEN H2", .058, 0, "#222222"),
+                    ("230 kV SWITCHYARD  ·  RATINGS APPROXIMATE", .05, 0, "#555555")], bg="#f4f4f2")
     # three flagpoles east of the walk, 11 ft apart so the flags fly clear of each other: the US flag on the taller
     # middle pole, a company flag (black with a copper stripe) either side (owner, Oct 20: the blue one matched to it)
     fuel.D = True
