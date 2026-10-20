@@ -141,7 +141,7 @@ def build():
     for x in COLS[1:-1]:
         n += pilaster(N, x, 0, 98)
     for f in (W, E):
-        n += pilaster(f, 559.15, 0, 98, w=2.3) + pilaster(f, 403.85, 66.4, 98, w=2.3)            # flush with the corners
+        n += pilaster(f, 559.15, 0, 98, w=2.3) + pilaster(f, 403.85, 0, 98, w=2.3)   # flush with the corners; 403.85 also marks the gallery joint (Oct 20)
     n += pilaster(N, 481.0, 0, 98) + pilaster(N, 1099.0, 0, 98)
     n += windows(N, 482, 1098)
     # black coping round the main roof edge, all four walls (the south one is in the cladding item below)
@@ -178,7 +178,7 @@ def build():
     n += pilaster(W, 370.85, 0, ZB[0], w=2.3) + pilaster(E, 370.85, 0, ZB[0], w=2.3)
     n += windows(SU, 482, 1098)
     n += hstrip(SG, 480, 1100, ZB[1], 66.6, .35, "hero_rail")                   # gallery roof coping
-    n += hstrip(W, 369.6, 403, ZB[1], 66.6, .35, "hero_rail") + hstrip(E, 369.6, 403, ZB[1], 66.6, .35, "hero_rail")
+    n += hstrip(W, 369.6, 402.7, ZB[1], 66.6, .35, "hero_rail") + hstrip(E, 369.6, 402.7, ZB[1], 66.6, .35, "hero_rail")
     n += hstrip(SU, 480, 1100, 96.8, 98.2, .5, "hero_rail")                     # main roof coping, south
     for k in range(3):                                                           # intake louvres, each GT bay
         x0 = 694 + 160 * k
