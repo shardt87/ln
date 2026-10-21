@@ -238,3 +238,9 @@ open them locally in Chrome or Edge).
   the GT conduit run, bearing probes, stator RTD leads, space-heater MC feed, DC field leads from the collector end
   through a deck plate (west of the IPB phases). The cable schedule already counted these devices (DEV GT / GTG);
   the model now shows them. Cameras GTW1 / GTW2 (hall wall and roof lifted). Viewer v68.
+- Oct 21 turbine hall power-cable audit (owner): 480 V to every GT / GTG / skid was already scheduled from MCC-GTn and
+  the generator output rides the IPB. Missing and now scheduled per GT: ET-n secondary to EXC-n (5 x 3 x 750 kcmil
+  5 kV, ~2,200 A AC), EXC-n DC field leads to the GTG collector (8 x 2 x 1000 kcmil 2 kV, ~4,500 A DC), TX-LCI-n
+  secondary to LCI-n and LCI-n output to the GTG terminals (3 x 3 x 750 kcmil 5 kV each), GTG-n neutral to NGT-n
+  (25 kV 4/0); STG field leads from EXC-ST and neutral to NGT-ST. Model: MC-HL from the tray drop to both pump
+  motors on each GT aux skid, with local disconnects (gt_wiring.py). Viewer v69.

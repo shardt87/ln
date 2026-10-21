@@ -67,6 +67,16 @@ def build():
             rod((cx + 9.4, y_, 23.0), (cx + 7.9 * math.cos(a), 498.6, cz + 7.9 * math.sin(a)), .09, "steel", seg=6)
         n += 3
         fuel.D = False
+        # 480 V power, visible (owner, Oct 21: "is all the power cable there too"): Type MC-HL from the LV / control tray
+        # drop beside the aux skid (x 675.6, y 487, EL 30.5) to the skid's two pump motors, a local disconnect at each
+        on(find(f"GT{k + 1} aux:"))
+        fuel.D = True
+        for xm in (664.5 + dx, 671.5 + dx):
+            poly([(675.6 + dx, 486.4, 31.2), (675.6 + dx, 477.6, 31.2), (xm, 477.6, 31.2), (xm, 477.6, 29.0),
+                  (xm, 476.0, 29.0)], .1, "cable_mc")
+            box(xm - .5, xm + .5, 477.9, 478.5, 31.6, 33.0, "panel")                     # local disconnect
+        n += 4
+        fuel.D = False
 
         # generator
         gx, gz = 630 + dx, 28.0

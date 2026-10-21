@@ -368,6 +368,23 @@ for n in (1, 2, 3):
               note="21 kV from the generator terminals (IPB tap)")
     bfp = BY_TAG[f"BFP-{n}"]
     mv_feeder(S13[n - 1], bfp, 5000, 13.8, f"Boiler feed pump BFP-{n}A / {n}B", n=2, note="2 x 100 %, ~5 MW each (typ.)")
+    # turbine-hall power audit, Oct 21: the generator circuits between the IPB-fed equipment and the machine
+    gtg, exc, sfc = BY_TAG[f"GTG-{n}"], BY_TAG[f"EXC-{n}"], BY_TAG[f"SFC-{n}"]
+    add(et, exc, f"ET-{n} secondary to the static exciter EXC-{n} (3-phase AC)", "MV5S", "1/C", "750", 5, 3, 3000, 800,
+        2200, "~800 V AC, 5 kV insulated 1/C (typ. for exciter power)")
+    add(exc, gtg, f"EXC-{n} DC field leads to the GTG-{n} collector (+ / -)", "PV", "1/C", "1000", 8, 2, None, 600, 4500,
+        "~4,500 A DC field current (typ.); up the collector end through the deck plate")
+    add(BY_TAG[f"TX-LCI-{n}"], sfc, f"TX-LCI-{n} secondary to the static starter LCI-{n}", "MV5S", "1/C", "750", 3, 3, 9000,
+        4160, 1250)
+    add(sfc, gtg, f"LCI-{n} output to the GTG-{n} terminals (start sequence, through the starting disconnect)", "MV5S",
+        "1/C", "750", 3, 3, 9000, 4160, 1250, "variable frequency during the start; into the IPB at the starting switch")
+    add(gtg, BY_TAG[f"NGT-{n}"], f"GTG-{n} neutral to the grounding cubicle NGT-{n}", "MV25", "1/C", "4/0", 1, 1, None, 21000,
+        None, "generator neutral, 25 kV class")
+stg = BY_TAG["STG"]                                   # STG: field and neutral (power audit, Oct 21)
+add(BY_TAG["EXC-ST"], stg, "EXC-ST DC field leads to the STG collector (+ / -)", "PV", "1/C", "1000", 6, 2, None, 500, 3500,
+    "~3,500 A DC field current (typ.)")
+add(stg, BY_TAG["NGT-ST"], "STG neutral to the grounding cubicle NGT-ST", "MV25", "1/C", "4/0", 1, 1, None, 21000, None,
+    "generator neutral, 25 kV class")
 for t, s in (("T-R2A", 0), ("T-R2B", 1), ("T-R2C", 2), ("T-R3", 1), ("LCT-A", 0), ("LCT-B", 2)):
     it = one(rf"^{t}:") or BY_TAG.get(t)
     mv_feeder(S13[s], it, 2500 if t.startswith("T-R2") else 3000, 13.8, f"{t} unit / load-centre transformer primary",
