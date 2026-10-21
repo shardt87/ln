@@ -204,3 +204,10 @@ open them locally in Chrome or Edge).
   from MOD-EH); the SC PCMs get their own building services (lighting / HVAC from their 480 V board, DCS fibre and
   F&G to the control building). Unchanged and correct: RICE hall, reagent storage, RICE PCM on the RICE PCM; trays,
   pipes, signage, people, fence and site lighting carry no load of their own (lighting counted under Site lighting).
+- Oct 21 SC electrical system review (owner): one-line generator 13.8 kV -> 5 x 3 x 750 kcmil tray -> PCM 15 kV GCB ->
+  5 x 3 x 750 kcmil duct bank -> MOD-EH -> bus duct -> T-MOD-1 / -2 13.8/230 kV -> gantry -> H-MOD tie checks out.
+  Added: PCM aux transformer 2 MVA (MV primary row), 125 V DC battery cables, emergency DC lube-oil pump feed, 120 V
+  UPS to the unit control, hydraulic starter pump motor 225 kW (verify with the OEM), 2 welding receptacles per unit,
+  lighting on the SCR platforms (10), enclosure exterior (8) and fan platform (4); CT / VT secondaries now on the
+  #10 CTCT product. Capacity: the yard exports ~255 MW (~283 MVA); T-MOD bus duct raised to 6,300 A and T-MOD-1 / -2
+  noted ~150 MVA ONAN/ONAF in the model (5,000 A / ~120 MVA each was short). Viewer v65.

@@ -1254,8 +1254,10 @@ solid(L, "CONDITIONAL: BESS black-start alternative", 1655, 1700, 868, 900, 0, 9
       basis="conditional")
 ehouse(L, "MOD-EH: 13.8 kV modular collector e-house", 1915, 1995, 880, 900, 16, tag="MOD-EH", area="I",
        sheet="SW-3X1-08")
-xfmr(L, "T-MOD-1: 13.8/230 kV", 2045, 2085, 870, 905, 24, bushing=13, tag="T-MOD-1", area="I", sheet="SW-3X1-08")
-xfmr(L, "T-MOD-2: 13.8/230 kV", 2105, 2145, 870, 905, 24, bushing=13, tag="T-MOD-2", area="I", sheet="SW-3X1-08")
+xfmr(L, "T-MOD-1: 13.8/230 kV", 2045, 2085, 870, 905, 24, bushing=13, tag="T-MOD-1", area="I", sheet="SW-3X1-08",
+     info="~150 MVA ONAN/ONAF (electrical review, Oct 21: the modular yard exports ~255 MW, ~283 MVA at 0.9 pf; two at 150 MVA carry it with margin, one carries ~half the yard). Typical, not engineered.")
+xfmr(L, "T-MOD-2: 13.8/230 kV", 2105, 2145, 870, 905, 24, bushing=13, tag="T-MOD-2", area="I", sheet="SW-3X1-08",
+     info="~150 MVA ONAN/ONAF (electrical review, Oct 21: the modular yard exports ~255 MW, ~283 MVA at 0.9 pf; two at 150 MVA carry it with margin, one carries ~half the yard). Typical, not engineered.")
 # FC-1..4, their inverter cabinet and MT-1..3 stood here (x 1995-2296, y 1068-1096); taken out Oct 20 (owner: the
 # modular yard already carries a set, FC-5..12 / MT-4..6)
 ehouse(L, "MOD-LV 480 V board + 480 V : 13.8 kV step-up", 2215, 2267, 970, 982, 10, area="I", sheet="SW-3X1-08")

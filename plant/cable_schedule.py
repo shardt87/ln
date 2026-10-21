@@ -462,7 +462,7 @@ for k in (1, 2):
     pcm_k = one(rf"^SC-{k} PCM")
     add(sc, pcm_k, f"SC-{k} generator neutral to the NGR (in the terminal-box enclosure)", "MV15", "1/C", "2", 1, 1, None,
         13800, None, "neutral grounding resistor beside the generator enclosure", length=(15, 10, "Conduit"))
-    add(sc, pcm_k, f"SC-{k} generator CT / VT secondaries to the PCM protection", "CT", "12/C", "10", 2, 1,
+    add(sc, pcm_k, f"SC-{k} generator CT / VT secondaries to the PCM protection", "CTCT", "12/C", "10", 2, 1,
         note="line-side and neutral CTs, VTs in the terminal box")
     lv_feeder(pcm_k, one(rf"^SC-{k} ammonia flow-control"), 45, f"SC-{k} ammonia vaporiser electric heater", motor=False)
     lv_feeder(pcm_k, one(rf"^SC-{k} auxiliary skids"), 6, f"SC-{k} water-wash tank heater", motor=False)
@@ -470,14 +470,28 @@ for k in (1, 2):
     lv_feeder(pcm_k, cems_k, 15, f"SC-{k} CEMS shelter panel: analysers, heated sample line, lighting", motor=False)
     add(pcm_k, cems_k, f"SC-{k} CEMS data to the unit control (Modbus TCP)", "FO", "12 SM", "-")
     add(pcm_k, cems_k, f"SC-{k} CEMS shelter fire alarm loop", "FA", "2/C", "14")
+    # electrical system review, Oct 21: what the PCM holds and the package needs that was not counted
+    mv_feeder(pcm_k, pcm_k, 2000, 13.8, f"SC-{k} PCM auxiliary transformer primary, 2 MVA 13.8 kV / 480 V (from the GCB bus)",
+              motor=False, note="internal to the PCM; ~1.0-1.1 MW connected 480 V load + 0.5 MW conditional inlet chiller")
+    add(pcm_k, pcm_k, f"SC-{k} 125 V DC battery to charger / DC panel", "LV1C", "1/C", "4/0", 1, 2, None, 125, None,
+        "battery rack inside the PCM", length=(15, 5, "Tray"))
+    add(pcm_k, sc, f"SC-{k} emergency DC lube-oil pump (125 V DC, coast-down)", "LV1C", "1/C", "2", 1, 2, 7.5, 125, 65,
+        "LM6000 class: DC pump keeps the bearings fed on loss of AC")
+    add(pcm_k, sc, f"SC-{k} 120 V AC UPS to the unit control and protection", "LV1C", "1/C", "6", 1, 2, 5, 120, None)
+    lv_feeder(pcm_k, sc, 225, f"SC-{k} hydraulic starter pump motor (start sequence only)",
+              note="typical LM6000 hydraulic start; verify starter type / rating with the OEM")
+    for w_ in range(2):
+        lv_feeder(pcm_k, sc, 60, f"SC-{k} 480 V welding receptacle {w_ + 1}", motor=False)
     # the PCM's own building services (it is register-free, so the generic building pass never reached it)
     f_ = pcm_k["fp"]
     add(pcm_k, pcm_k, f"SC-{k} PCM lighting, receptacles and HVAC (from its own 480 V board)", "LV", "3/C+G", "2", 1, 1,
         40, 480, None, "internal to the PCM; aux transformer 13.8 kV / 480 V inside", length=((f_[1] - f_[0]) * 2, 10, "Tray"))
     add(CR, pcm_k, f"SC-{k} unit control panel: plant network / DCS fibre", "FO", "12 SM", "-")
     add(CR, pcm_k, f"SC-{k} PCM fire alarm / F&G node to the plant FACP", "FA", "2/C", "14")
-BUS_DUCT = [("RICE PCM to MOD-EH bus tie", "13.8 kV, ~6,300 A"), ("MOD-EH to T-MOD-1 LV side", "13.8 kV, ~5,000 A"),
-            ("MOD-EH to T-MOD-2 LV side", "13.8 kV, ~5,000 A"),
+# T-MOD LV bus duct: 6,300 A each (review, Oct 21: the yard can export ~255 MW, ~283 MVA at 0.9 pf: RICE 147 MW,
+# SC-1 / SC-2 100 MW, MOD-LV 7.5 MW; 5,000 A at 13.8 kV is ~120 MVA, the pair ~240 MVA, short of it)
+BUS_DUCT = [("RICE PCM to MOD-EH bus tie", "13.8 kV, ~6,300 A"), ("MOD-EH to T-MOD-1 LV side", "13.8 kV, ~6,300 A"),
+            ("MOD-EH to T-MOD-2 LV side", "13.8 kV, ~6,300 A"),
             ("Generator terminals to GSU / UAT / ET (isolated-phase bus)", "21 kV, as modelled (IPB routes)"),
             ("T-R4-1..4 secondaries to the ACC VFD lineups", "480 V, ~4,500 A each")]
 mv_feeder(one(r"^MOD-LV 480 V"), mod_eh, 7500, 13.8, "MOD-LV step-up to MOD-EH", motor=False)
@@ -802,7 +816,8 @@ for it in ITEMS:
 # outdoor and structure lighting, 480 V welding receptacles, heat-trace circuits (allowances counted from the model)
 LIGHT_STRUCT = [(r"^HRSG \d \+", 40), (r"^Air-cooled condenser", 80), (r"^Absorber [ABC] \(", 30), (r"^STR-", 20),
                 (r"^FH-\d:", 12), (r"stair tower", 8), (r"^DCC-[ABC]:", 8), (r"CCS cooling tower", 30),
-                (r"Inlet-chilling tower", 12), (r"^HRSG \d stack|HRSG \d stack", 6), (r"RICE \d SCR", 6), (r"^SC-\d stack", 4)]
+                (r"Inlet-chilling tower", 12), (r"^HRSG \d stack|HRSG \d stack", 6), (r"RICE \d SCR", 6), (r"^SC-\d stack", 4),
+                (r"^SC-\d SCR", 10), (r"^SC-\d: aeroderivative", 8), (r"^SC-\d tempering-air", 4)]   # SC platforms / enclosure
 for it in ITEMS:
     for p_, n in LIGHT_STRUCT:
         if re.search(p_, it["name"]):
