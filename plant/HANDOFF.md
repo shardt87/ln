@@ -156,3 +156,7 @@ open them locally in Chrome or Edge).
   actuators and expansion joints, short ducts straight into the collector; handrail, ladder, local control station,
   conduit up the column to each motor, sign under the deck edge. Bracing in the column rows (clear of the header).
   Viewer v58.
+- Oct 21 stack / SCR check (owner): SC stacks get an exhaust silencer section (EL 31-47, cones and flanges), a
+  heat-stained band at the outlet, a caged ladder, sampling ports above the platform, a base manway. SCR: caged
+  ladders EL 14 -> 27 and 27 -> roof, roof guardrail, expansion joints at both ends of the exhaust collector.
+  Cameras SC13 (from above) and SC14 (from grade). Viewer v59.

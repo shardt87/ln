@@ -11,7 +11,9 @@ the first pass left out:
   steel platform over the fuel-gas header, close-coupled to the collector (owner, Oct 21: model them better);
 - SCR: catalyst access doors; the ammonia flow-control skid with its dilution-air blower on the north (back) side,
   at the injection riser, towards the ammonia tank (owner, Oct 21: auxiliaries off the camera face);
-- stack: foundation ring, breeching expansion joint, a CEMS shelter at the base with its heated sample line to the
+- stack: foundation ring, breeching expansion joint, an exhaust silencer section, caged ladder, sampling ports, a
+  base manway, a heat band at the outlet; SCR ladders to the upper platform and the roof, roof guardrail, expansion
+  joints at both ends of the collector (owner, Oct 21: check the stacks); a CEMS shelter at the base with its heated sample line to the
   sampling platform;
 - auxiliaries: a low fuel-gas module (filter / separator and valves) tight against the enclosure at the gas drop,
   the off-line water-wash skid on the back side;
@@ -237,6 +239,20 @@ def scr(k, x):
     for (x0, z0) in ((x + 104, 6), (x + 116, 6), (x + 104, 18), (x + 116, 18)):  # catalyst access doors
         box(x0, x0 + 3, 1190.8, 1191, z0, z0 + 4, "door")
         n += 1
+    import modular
+    modular.ladder(x + 94, 1187.4, 14, 27, along="x")                          # EL 14 -> EL 27 platform
+    modular.ladder(x + 126, 1190.4, 27, 35, along="x")                         # EL 27 -> roof
+    for (a0, a1, b0, b1) in ((x + 91, x + 129, 1190.7, 1190.8), (x + 91, x + 129, 1219.2, 1219.3),
+                             (x + 90.7, x + 90.8, 1191, 1219), (x + 129.2, x + 129.3, 1191, 1219)):
+        box(a0, a1, b0, b1, 38.4, 38.55, "rail")                               # roof guardrail
+        box(a0, a1, b0, b1, 36.7, 36.85, "rail")
+    for xr in range(int(x + 91), int(x + 130), 6):
+        for yr in (1190.75, 1219.25):
+            rod((xr, yr, 35), (xr, yr, 38.5), .06, "rail", seg=4)
+    # expansion joints: collector at the turbine flange and at the SCR inlet
+    box(x + 70.0, x + 70.8, 1197.6, 1212.4, 5.6, 18.4, "steel_dark")
+    box(x + 89.4, x + 90.2, 1190.6, 1219.4, 2.6, 32.4, "steel_dark")
+    n += 12
     fuel.D = False
     item(k, x, "ammonia flow-control unit", [x + 95, x + 107, 1221.5, 1227], [0, 7],
          "Ammonia flow-control unit: aqueous ammonia metering, vaporiser and dilution-air blower to the injection "
@@ -261,6 +277,27 @@ def stack(k, x):
     rod((cx, cy, 0), (cx, cy, 1.2), 8.5, "concrete", seg=24)                   # foundation ring
     rod((cx, cy, 1.2), (cx, cy, 1.8), 7.0, "steel", seg=24)                    # base plate
     box(x + 133.5, x + 134.3, 1198.5, 1210.5, 10.5, 27.5, "steel_dark")         # breeching expansion joint
+    # exhaust silencer section above the breeching, cones in and out
+    rod((cx, cy, 31), (cx, cy, 33), 6.55, "stack", r2=7.3, seg=28)
+    rod((cx, cy, 33), (cx, cy, 45), 7.3, "stack", seg=28)
+    rod((cx, cy, 45), (cx, cy, 47), 7.3, "stack", r2=6.55, seg=28)
+    for zb in (33, 39, 45):
+        rod((cx, cy, zb - .2), (cx, cy, zb + .2), 7.45, "steel", seg=28)       # silencer flanges
+    rod((cx, cy, 77.2), (cx, cy, 79.2), 6.62, "steel_dark", seg=28)            # heat-stained band at the outlet
+    # caged ladder: hoops from 8 ft to the platform (the ladder itself is stack_dress's, at cx + r + .9)
+    lx = cx + 6.5 + .9
+    for zh in range(10, 52, 3):
+        rr = 7.45 if 31 <= zh <= 47 else 6.5
+        for (a, b) in (((lx, cy - .3), (lx + 1.6, cy - .3)), ((lx + 1.6, cy - .3), (lx + 1.6, cy + 1.7)),
+                       ((lx + 1.6, cy + 1.7), (lx, cy + 1.7))):
+            rod((a[0] + rr - 6.5, a[1], zh), (b[0] + rr - 6.5, b[1], zh), .05, "rail", seg=4)
+    for yv in (cy - .3, cy + 1.7):
+        rod((lx + 1.6, yv, 10), (lx + 1.6, yv, 30), .05, "rail", seg=4)
+    # sampling ports above the platform (clear of the ladder side) and a base manway
+    for (dx, dy) in ((0, -1), (0, 1), (-1, 0), (.7, -.7)):
+        rod((cx + dx * 6.5, cy + dy * 6.5, 55), (cx + dx * 7.6, cy + dy * 7.6, 55), .3, "steel", seg=10)
+    box(x + 140, x + 144, 1197.9, 1198.1, 3, 6.5, "door")
+    n0 = 21
     fuel.D = False
     it = item(k, x, "CEMS shelter", [x + 150, x + 162, 1194, 1205], [0, 52],
               "Continuous emissions monitoring shelter: NOx / CO / O2 / NH3 slip analysers, heated sample line "
@@ -277,7 +314,7 @@ def stack(k, x):
         box(x + 148.7, x + 149.4, 1201.2, 1202.0, z, z + .2, "steel")
     decal((x + 156, 1194.85, 9), (0, -1, 0), 7, 1.2, [(f"SC-{k} CEMS", .45, 1, "#111111"),
                                                      ("EMISSIONS MONITORING", .26, 0, "#222222")], bg="#ffffff")
-    n = 10 + stub(x + 161.4, 1199, .9, (x + 161, 1199, 2.5))
+    n = n0 + 10 + stub(x + 161.4, 1199, .9, (x + 161, 1199, 2.5))
     fuel.D = False
     on(it)
     return n
