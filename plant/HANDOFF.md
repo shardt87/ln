@@ -150,3 +150,9 @@ open them locally in Chrome or Edge).
   the injection grid moved to the north (back) face of each SCR; fuel-gas module made low (6 ft) and set tight
   against the enclosure; CO2 cylinders stand on the skid against the wall with a strap (rack removed). Tempering-air
   fans kept as they were. Viewer v57.
+- Oct 21 tempering-air fans remodelled (owner: model them better): two centrifugal fans (shaft along x, scroll housing,
+  top-horizontal outlet) on a steel platform at EL 7.6 over the fuel-gas header, motors inboard on a common base with
+  coupling guards and terminal boxes, inlet bells and silencers with weather hoods outboard, isolation dampers with
+  actuators and expansion joints, short ducts straight into the collector; handrail, ladder, local control station,
+  conduit up the column to each motor, sign under the deck edge. Bracing in the column rows (clear of the header).
+  Viewer v58.

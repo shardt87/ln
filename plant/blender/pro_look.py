@@ -1457,7 +1457,7 @@ EPIC = [
          eye=(2084, 1128, 34), target=(2084, 1200, 22), lens=20, show="all", sun=(38, 215)),
     dict(k="SC11", n="SC-1 north side: generator terminal box over the MV tray, NGR, water-wash skid, PCM and lube-oil cooler",
          eye=(1990, 1282, 42), target=(1935, 1222, 8), lens=24, show="all", sun=(38, 215)),
-    dict(k="SC12", n="SC-1 tempering-air fans: two fans with inlet filters, ducted over the fuel-gas header into the exhaust collector; low fuel-gas module at the wall",
+    dict(k="SC12", n="SC-1 tempering-air fans: two centrifugal fans on a platform over the fuel-gas header, close-coupled to the exhaust collector",
          eye=(2022, 1140, 22), target=(1984, 1186, 8), lens=24, show="all", sun=(38, 215)),
     dict(k="T5G1", n="Private 5G / LTE monopole: sector platform with massive-MIMO units, microwave backhaul, base compound",
          eye=(345, 380, 40), target=(262, 455, 62), lens=26, show="all", sun=(38, 215), plumes=False),

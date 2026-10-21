@@ -7,8 +7,8 @@ the first pass left out:
 - enclosures: panel joints on the generator enclosure, ventilation louvres, a vent-exhaust silencer on the turbine
   roof, door steps, a strap for the CO2 cylinders on the wall, the generator line-side terminal box and a neutral
   grounding resistor;
-- exhaust: expansion joints on the collector, two tempering-air fans (simple-cycle SCRs need the exhaust cooled to
-  catalyst temperature) with inlet filters and ducts over the fuel-gas header into the collector;
+- exhaust: two tempering-air fans (many simple-cycle SCRs cool the exhaust to catalyst temperature this way) on a
+  steel platform over the fuel-gas header, close-coupled to the collector (owner, Oct 21: model them better);
 - SCR: catalyst access doors; the ammonia flow-control skid with its dilution-air blower on the north (back) side,
   at the injection riser, towards the ammonia tank (owner, Oct 21: auxiliaries off the camera face);
 - stack: foundation ring, breeching expansion joint, a CEMS shelter at the base with its heated sample line to the
@@ -140,35 +140,94 @@ def auxiliaries(k, x):
 
 
 def tempering(k, x):
-    """Two 100 % tempering-air fans south of the fuel-gas header, ducted over it into the exhaust collector."""
-    item(k, x, "tempering-air fans (2 x 100 %)", [x + 70, x + 90, 1164, 1197], [0, 14],
+    """Two 100 % tempering-air fans on a steel platform over the fuel-gas header (y 1182, EL 4), close-coupled to
+    the exhaust collector: centrifugal fans with the shaft along x, motors inboard on a common base, inlet silencers
+    with weather hoods outboard, top-horizontal discharge through an isolation damper and expansion joint, a short
+    duct straight into the collector's south face."""
+    import modular
+    item(k, x, "tempering-air fans (2 x 100 %)", [x + 69, x + 90, 1176, 1197], [0, 18],
          "Tempering-air fans: ambient air into the exhaust collector to bring the exhaust down to SCR catalyst "
-         "temperature; inlet filters, dampers, ducts over the fuel-gas header.")
+         "temperature. Two centrifugal fans on a platform over the fuel-gas header, inlet silencers with weather "
+         "hoods, isolation dampers, short ducts into the collector.")
     n = 0
-    box(x + 71, x + 89, 1164, 1180.5, 0, .6, "concrete")
-    for xc in (x + 75.5, x + 84.5):
-        t = (xc - x - 70) / 20                                                  # where the duct meets the collector
-        ys = 1198 - 7 * t
-        rod((xc - 1.3, 1172.5, 3.6), (xc + 1.3, 1172.5, 3.6), 2.9, "machine", seg=20)   # fan scroll
-        rod((xc + 1.3, 1172.5, 3.6), (xc + 3.4, 1172.5, 3.6), 1.2, "motor", seg=14)
-        box(xc - 1.2, xc + 3.4, 1171.5, 1173.5, .6, 2.2, "steel")
-        box(xc - 1.8, xc + 1.8, 1165, 1168.8, .6, 7.5, "filter")               # inlet filter / silencer
-        box(xc - 1.2, xc + 1.2, 1168.8, 1170.6, 2, 5.4, "duct")
-        box(xc - 1.5, xc + 1.5, 1175, 1178, .6, 13, "duct")                    # riser
-        box(xc - 1.5, xc + 1.5, 1175, ys + .6, 10, 13, "duct")                 # over the header into the collector
-        n += 7
+    Y0, Y1, ZD = 1176.5, 1189.0, 7.6                                            # platform deck
+    for (xc, yc) in ((x + 70.5, 1177), (x + 80, 1177), (x + 89.5, 1177), (x + 70.5, 1188.6), (x + 80, 1188.6),
+                     (x + 89.5, 1188.6)):
+        box(xc - .9, xc + .9, yc - .9, yc + .9, 0, .5, "concrete")             # footings
+        box(xc - .3, xc + .3, yc - .3, yc + .3, .5, ZD - .6, "steel")           # columns
+        n += 2
+    for yb in (1177, 1188.6):
+        box(x + 70.2, x + 89.8, yb - .3, yb + .3, ZD - .6, ZD, "steel")        # edge beams
+    for xb in (x + 70.5, x + 80, x + 89.5):
+        box(xb - .3, xb + .3, Y0, Y1, ZD - .6, ZD, "steel")                    # cross beams over the header
+    box(x + 70, x + 90, Y0, Y1, ZD, ZD + .3, "grating")
+    n += 6
+    Z = ZD + .3
+    for sgn, xc in ((1, x + 74), (-1, x + 86)):                                # sgn: +1 motor east of the fan
+        zc, yc = Z + 3.6, 1180.6                                               # shaft centre line
+        box(xc - 1.6, xc + sgn * 6.4, yc - 2.2, yc + 2.2, Z, Z + .5, "steel")   # common fan / motor base
+        rod((xc - 1.3, yc, zc), (xc + 1.3, yc, zc), 3.2, "machine", seg=24)     # scroll housing
+        box(xc - 1.3, xc + 1.3, yc, yc + 3.2, zc, zc + 3.2, "machine")          # scroll cut-off to the outlet
+        box(xc - 1.3, xc + 1.3, yc + 3.2, yc + 5.2, zc + .5, zc + 3.2, "duct")  # outlet, top horizontal
+        box(xc - .5, xc + .5, yc - 1.5, yc + 1.5, Z + .5, zc - 2.6, "steel")    # housing pedestal
+        xm0 = xc + sgn * 1.9
+        rod((xc + sgn * 1.3, yc, zc), (xm0, yc, zc), .35, "steel", seg=10)      # shaft
+        box(min(xm0, xm0 + sgn * .8), max(xm0, xm0 + sgn * .8), yc - .8, yc + .8, zc - .8, zc + .8,
+            "amber")                                                            # coupling guard
+        xm1, xm2 = xm0 + sgn * .8, xm0 + sgn * 4.0
+        rod((xm1, yc, zc), (xm2, yc, zc), 1.35, "motor", seg=18)                # motor
+        box(min(xm1, xm2), max(xm1, xm2), yc - 1.0, yc + 1.0, Z + .5, zc - 1.1, "steel")
+        box(xm1 + sgn * 1.2 - .5, xm1 + sgn * 1.2 + .5, yc + 1.2, yc + 1.9, zc - .4, zc + .6, "panel")  # T-box
+        # inlet: bell, then a silencer with a weather hood, outboard
+        xi0, xi1 = xc - sgn * 1.3, xc - sgn * 2.4
+        rod((xi0, yc, zc), (xi1, yc, zc), 2.0, "duct", r2=2.4, seg=20)
+        xs0, xs1 = xi1, xi1 - sgn * 2.4
+        box(min(xs0, xs1), max(xs0, xs1), yc - 2.8, yc + 2.8, Z + .5, zc + 4.2, "filter")       # inlet silencer
+        box(min(xs0, xs1) - .1, max(xs0, xs1) + .1, yc - 3.0, yc + 3.0, zc + 4.2, zc + 4.5, "steel")
+        xh = xs1 - sgn * .2
+        box(min(xs1, xh), max(xs1, xh), yc - 2.6, yc + 2.6, Z + 1.2, zc + 3.8, "louvre")         # weather hood
+        n += 13
+        # discharge: isolation damper, expansion joint, duct into the collector
+        t = (xc - x - 70) / 20
+        ys = 1198 - 7 * t                                                       # collector south face at xc
+        y0 = yc + 5.2
+        box(xc - 1.6, xc + 1.6, y0, y0 + .9, zc + .2, zc + 3.5, "steel")        # damper frame
+        box(xc - 1.61, xc + 1.61, y0 + .4, y0 + .5, zc + .19, zc + 3.51, "steel_dark")
+        box(xc - 1.4, xc + 1.4, y0 + .9, y0 + 1.5, zc + .4, zc + 3.3, "steel_dark")  # expansion joint
+        box(xc - 1.3, xc + 1.3, y0 + 1.5, ys + .6, zc + .5, zc + 3.2, "duct")
+        n += 4
         fuel.D = True
-        box(xc - 1.7, xc + 1.7, 1179.4, 1180.2, 9.8, 13.2, "steel")             # isolation damper frame
-        box(xc - 1.71, xc + 1.71, 1179.75, 1179.85, 9.79, 13.21, "steel_dark")
-        rod((xc + 1.7, 1179.8, 11.5), (xc + 2.6, 1179.8, 11.5), .35, "motor", seg=10)
-        for ys_ in (1184, 1188):
-            box(xc - .3, xc + .3, ys_ - .3, ys_ + .3, 0, 10, "steel")           # duct supports
-        n += 4 + stub(xc + 3.4, 1170.6, .9, (xc + 3.2, 1171.6, 2.4))
+        rod((xc + sgn * 1.6, y0 + .45, zc + 1.8), (xc + sgn * 2.6, y0 + .45, zc + 1.8), .35, "motor", seg=10)
+        for ya in (yc - 1.6, yc + 1.6):                                         # anti-vibration mounts
+            for xa in (xc - .9, xc + .9):
+                rod((xa, ya, Z + .5), (xa, ya, Z + .9), .25, "steel_dark", seg=8)
+        box(xc - 1.5, xc + 1.5, y0 + 4.5, y0 + 4.8, ZD, zc + .5, "steel")       # duct hanger frame
+        # motor feed: stub at the column, conduit up the column and along the deck edge, whip into the T-box
+        xcol = x + 80
+        rod((xcol + sgn * .5, 1188.2, 0), (xcol + sgn * .5, 1188.2, Z + .2), .12, "pvc_grey", seg=8)
+        rod((xcol + sgn * .5, 1188.2, Z + .2), (xm1 + sgn * 1.2, 1188.2, Z + .2), .12, "alu", seg=8)
+        rod((xm1 + sgn * 1.2, 1188.2, Z + .2), (xm1 + sgn * 1.2, yc + 1.9, zc - .4), .09, "hero_rail", seg=8)
+        n += 10
         fuel.D = False
-    decal((x + 80, 1164.0, 5.5), (0, -1, 0), 7, 1.2, [(f"SC-{k} TEMPERING AIR FANS", .4, 1, "#111111"),
-                                                     ("2 x 100 %  ·  ROTATING EQUIPMENT", .26, 0, "#222222")],
+    fuel.D = True
+    for (a0, a1, b0, b1) in ((x + 70, x + 90, Y0, Y0 + .1), (x + 70, x + 70.1, Y0, Y1), (x + 89.9, x + 90, Y0, Y1)):
+        for zr in (Z + 1.75, Z + 3.5):                                          # handrail (north side: the ducts)
+            box(a0, a1, b0, b1, zr - .06, zr + .06, "rail")
+        box(a0, a1, b0, b1, Z, Z + .35, "rail")                                 # toe plate
+    for xr in range(int(x + 70), int(x + 91), 5):
+        rod((xr, Y0 + .05, Z), (xr, Y0 + .05, Z + 3.5), .06, "rail", seg=4)
+    for yb in (1177, 1188.6):                                                  # column bracing, in the column
+        rod((x + 70.5, yb, .5), (x + 80, yb, ZD - .6), .1, "steel", seg=6)     # rows (clear of the header)
+        rod((x + 89.5, yb, .5), (x + 80, yb, ZD - .6), .1, "steel", seg=6)
+    modular.ladder(x + 69.4, 1186.5, .5, Z, along="y")
+    box(x + 80 - .8, x + 80 + .8, Y0 - .3, Y0 - .1, Z + 1.0, Z + 2.6, "panel")  # local control station
+    for xh in (x + 72.5, x + 78):                                               # sign hung under the deck edge
+        box(xh - .06, xh + .06, 1176.6, 1176.7, ZD - .8, ZD - .6, "steel")
+    decal((x + 75.25, 1176.65, ZD - 1.4), (0, -1, 0), 6.5, 1.1,
+          [(f"SC-{k} TEMPERING AIR FANS", .42, 1, "#111111"), ("TAF-A / TAF-B  ·  2 x 100 %", .28, 0, "#222222")],
           bg="#ffffff")
-    return n
+    fuel.D = False
+    return n + 12
 
 
 def scr(k, x):
