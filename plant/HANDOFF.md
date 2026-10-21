@@ -165,3 +165,8 @@ open them locally in Chrome or Edge).
   copper chevrons (screens/sc_chevrons_e/_w.png from blender/hall_sign.py) at the exhaust end pointing at the paired
   stacks, and SC1 / SC2 painted in the hall's Barlow face (screens/unit_SC*.png) where the white nameplate was
   (removed in modular_lod3). South compartment louvre dropped for the livery (north one stays). Viewer v60.
+- Oct 21 SC stack / SCR branding (owner): the HRSG stacks' finish on the SC stacks (3.7 ft copper band under the
+  sampling platform, 1.2 ft band below the silencer, platform / rails / ladder / cage black; the dark outlet band
+  taken off, as the CC black-crown trial was) and the HRSG casing finish on the SCRs (slate "hrsg" casing, black
+  ribs, "SCR 1 / SCR 2" in copper between the platforms on the south face, the ribs broken behind it; upper catalyst
+  doors moved to the ends). Viewer v61.

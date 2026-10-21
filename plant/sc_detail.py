@@ -9,10 +9,10 @@ the first pass left out:
   grounding resistor;
 - exhaust: two tempering-air fans (many simple-cycle SCRs cool the exhaust to catalyst temperature this way) on a
   steel platform over the fuel-gas header, close-coupled to the collector (owner, Oct 21: model them better);
-- SCR: catalyst access doors; the ammonia flow-control skid with its dilution-air blower on the north (back) side,
+- SCR: the HRSGs' finish (slate casing, black ribs, "SCR k" in copper); catalyst access doors; the ammonia flow-control skid with its dilution-air blower on the north (back) side,
   at the injection riser, towards the ammonia tank (owner, Oct 21: auxiliaries off the camera face);
 - stack: foundation ring, breeching expansion joint, an exhaust silencer section, caged ladder, sampling ports, a
-  base manway, a heat band at the outlet; SCR ladders to the upper platform and the roof, roof guardrail, expansion
+  base manway; the HRSG stacks' finish: copper bands under the platform and lower down, platform / ladder black; SCR ladders to the upper platform and the roof, roof guardrail, expansion
   joints at both ends of the collector (owner, Oct 21: check the stacks); a CEMS shelter at the base with its heated sample line to the
   sampling platform;
 - auxiliaries: a low fuel-gas module (filter / separator and valves) tight against the enclosure at the gas drop,
@@ -237,7 +237,7 @@ def scr(k, x):
     on(find(f"SC-{k} SCR / CO catalyst"))
     fuel.D = True
     n = 0
-    for (x0, z0) in ((x + 104, 6), (x + 116, 6), (x + 104, 18), (x + 116, 18)):  # catalyst access doors
+    for (x0, z0) in ((x + 104, 6), (x + 116, 6), (x + 94, 18), (x + 124, 18)):   # catalyst access doors
         box(x0, x0 + 3, 1190.8, 1191, z0, z0 + 4, "door")
         n += 1
     import modular
@@ -250,6 +250,23 @@ def scr(k, x):
     for xr in range(int(x + 91), int(x + 130), 6):
         for yr in (1190.75, 1219.25):
             rod((xr, yr, 35), (xr, yr, 38.5), .06, "rail", seg=4)
+    # the combined cycle's HRSG finish (owner, Oct 21): slate casing, black ribs, the unit lettered large in copper
+    # between the platforms on the south face
+    scr_it = fuel.G["cur"]
+    split = []
+    for p in fuel.G["parts"]:
+        if p["item"] == scr_it["id"]:
+            if p["color"] == "equip":
+                p["color"] = "hrsg"
+            elif p["color"] == "steel" and p["kind"] == "box" and p["max"][2] - p["min"][2] > 20:
+                p["color"] = "hero_rail"                                        # casing stiffeners
+                if p["max"][1] <= 1191 and x + 100 < p["min"][0] < x + 120:     # a clear bay behind the lettering
+                    top = dict(p, min=[p["min"][0], p["min"][1], 26.7], max=list(p["max"]))
+                    p["max"] = [p["max"][0], p["max"][1], 18.4]
+                    split.append(top)
+    fuel.G["parts"].extend(split)
+    import hero
+    decal((x + 110, 1190.75, 22.2), (0, -1, 0), 17, 6.4, [(f"SCR {k}", .9, True, hero.COPPER)], bg=None)
     # expansion joints: collector at the turbine flange and at the SCR inlet
     box(x + 70.0, x + 70.8, 1197.6, 1212.4, 5.6, 18.4, "steel_dark")
     box(x + 89.4, x + 90.2, 1190.6, 1219.4, 2.6, 32.4, "steel_dark")
@@ -284,7 +301,8 @@ def stack(k, x):
     rod((cx, cy, 45), (cx, cy, 47), 7.3, "stack", r2=6.55, seg=28)
     for zb in (33, 39, 45):
         rod((cx, cy, zb - .2), (cx, cy, zb + .2), 7.45, "steel", seg=28)       # silencer flanges
-    rod((cx, cy, 77.2), (cx, cy, 79.2), 6.62, "steel_dark", seg=28)            # heat-stained band at the outlet
+    rod((cx, cy, 47.6), (cx, cy, 51.3), 6.62, "hero_accent", seg=40)           # copper band under the platform
+    rod((cx, cy, 27.6), (cx, cy, 28.8), 6.62, "hero_accent", seg=40)           # thin band, as on the HRSG stacks
     # caged ladder: hoops from 8 ft to the platform (the ladder itself is stack_dress's, at cx + r + .9)
     lx = cx + 6.5 + .9
     for zh in range(10, 52, 3):
@@ -298,7 +316,12 @@ def stack(k, x):
     for (dx, dy) in ((0, -1), (0, 1), (-1, 0), (.7, -.7)):
         rod((cx + dx * 6.5, cy + dy * 6.5, 55), (cx + dx * 7.6, cy + dy * 7.6, 55), .3, "steel", seg=10)
     box(x + 140, x + 144, 1197.9, 1198.1, 3, 6.5, "door")
-    n0 = 21
+    n0 = 22
+    st = fuel.G["cur"]
+    for p in fuel.G["parts"]:                       # platform, handrail, ladder and cage black, as on the HRSG stacks
+        if p["item"] == st["id"] and (p["color"] in ("rail", "grating") or
+                                      (p["color"] == "steel" and p["kind"] == "rod" and p.get("r", 0) < .2)):
+            p["color"] = "hero_rail"
     fuel.D = False
     it = item(k, x, "CEMS shelter", [x + 150, x + 162, 1194, 1205], [0, 52],
               "Continuous emissions monitoring shelter: NOx / CO / O2 / NH3 slip analysers, heated sample line "
