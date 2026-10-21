@@ -231,3 +231,10 @@ open them locally in Chrome or Edge).
   roof are x-rayed: new palette colour "xray" (#9fc4d8, opacity .22; Blender pro_look alpha .14, viewer 'glass'
   class); band, joints, doors and roof gear stay solid. SC-1 keeps its solid enclosure (cutaways SC19 / SC20).
   Camera SC21 (SC-2 x-ray from above). Viewer v67.
+- Oct 21 turbine hall GT wiring audit (owner: "I feel that we are missing"): GT1-3 had only the TC harness, two JBs
+  with conduit, the fuel manifold and lube lines; GTG-1..3 had no cable at all. New gt_wiring.py (after st_detail):
+  bearing proximity probes with extension cable to the JBs, IGV actuator servo / LVDT cable, four UV flame detectors
+  with leads to JB-2, ignition exciter and igniter leads; on each GTG an RTD / vibration box with rigid conduit along
+  the GT conduit run, bearing probes, stator RTD leads, space-heater MC feed, DC field leads from the collector end
+  through a deck plate (west of the IPB phases). The cable schedule already counted these devices (DEV GT / GTG);
+  the model now shows them. Cameras GTW1 / GTW2 (hall wall and roof lifted). Viewer v68.
