@@ -1469,6 +1469,8 @@ EPIC = [
          eye=(2193.5, 1316.5, 11.5), target=(2203, 1309.5, 9.6), lens=26, show="all", sun=(38, 215)),
     dict(k="SC17", n="SC-4 pad: testing a pre-terminated harness at the TCP landing, QR cable tags, the digital-model sign and the trough's cable ID placard",
          eye=(2151, 1284.5, 9.0), target=(2156.5, 1299, 2.6), lens=24, show="all", sun=(38, 215)),
+    dict(k="SC18", n="SC-1 generator leads: 5 x 3 x 750 kcmil MV-105 on the 36 in ladder tray from the terminal box to the PCM, NGR beside it",
+         eye=(1940, 1236, 17), target=(1922, 1226, 8), lens=26, show="all", sun=(38, 215)),
     dict(k="T5G1", n="Private 5G / LTE monopole: sector platform with massive-MIMO units, microwave backhaul, base compound",
          eye=(345, 380, 40), target=(262, 455, 62), lens=26, show="all", sun=(38, 215), plumes=False),
     dict(k="T5G2", n="5G sector platform close-up: panel antennas, massive-MIMO units, radio units, aviation light",

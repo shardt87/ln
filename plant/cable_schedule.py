@@ -330,18 +330,27 @@ def unit_eh(it):
     return None
 
 
+def sc_pcm(it):
+    """SC-1 / SC-2 equipment takes its 480 V, control and I/O from its own PCM (MCC, unit control panel, marshalling),
+    never from the RICE plant's PCM-1 that happens to stand nearer (cable audit, Oct 21)."""
+    m = re.match(r"(?:CONDITIONAL: )?SC-(\d)[: ]", it["name"])
+    if it["area"] == "I" and m and not it["name"].startswith(f"SC-{m.group(1)} PCM"):
+        return one(rf"^SC-{m.group(1)} PCM")
+    return None
+
+
 def lv_src(it):
     a = it["area"]
     n = gt_no(it)
     if a == "A" and n and re.search(r"GT\d|GTG|SOS|FS-GT|WASH|GFM|FH-|TCP|INL", it["name"]):
         return BY_TAG[f"MCC-GT{n}"]
-    return unit_eh(it) or nearest(LVS.get(a, [BY_TAG["MCC-C1"]]), it)
+    return unit_eh(it) or sc_pcm(it) or nearest(LVS.get(a, [BY_TAG["MCC-C1"]]), it)
 
 
 def ctl_src(it):
     if re.search(r"230 kV breaker|entrance|terminal tower", it["name"]):
         return RH
-    return unit_eh(it) or nearest(CTRLS.get(it["area"], [R1]), it)
+    return unit_eh(it) or sc_pcm(it) or nearest(CTRLS.get(it["area"], [R1]), it)
 
 
 # MV distribution and large drives ---------------------------------------------------------------------------
@@ -445,6 +454,18 @@ for k in (1, 2):
     sc = one(rf"^SC-{k}: aeroderivative")
     mv_feeder(sc, one(rf"^SC-{k} PCM"), 50000, 13.8, f"SC-{k} (LM6000 class) generator leads to its PCM / GCB", motor=False)
     mv_feeder(one(rf"^SC-{k} PCM"), mod_eh, 50000, 13.8, f"SC-{k} PCM to MOD-EH", motor=False)
+    # cable audit, Oct 21: what the second detail pass added round the unit
+    pcm_k = one(rf"^SC-{k} PCM")
+    add(sc, pcm_k, f"SC-{k} generator neutral to the NGR (in the terminal-box enclosure)", "MV15", "1/C", "2", 1, 1, None,
+        13800, None, "neutral grounding resistor beside the generator enclosure", length=(15, 10, "Conduit"))
+    add(sc, pcm_k, f"SC-{k} generator CT / VT secondaries to the PCM protection", "CT", "12/C", "10", 2, 1,
+        note="line-side and neutral CTs, VTs in the terminal box")
+    lv_feeder(pcm_k, one(rf"^SC-{k} ammonia flow-control"), 45, f"SC-{k} ammonia vaporiser electric heater", motor=False)
+    lv_feeder(pcm_k, one(rf"^SC-{k} auxiliary skids"), 6, f"SC-{k} water-wash tank heater", motor=False)
+    cems_k = one(rf"^SC-{k} CEMS shelter")
+    lv_feeder(pcm_k, cems_k, 15, f"SC-{k} CEMS shelter panel: analysers, heated sample line, lighting", motor=False)
+    add(pcm_k, cems_k, f"SC-{k} CEMS data to the unit control (Modbus TCP)", "FO", "12 SM", "-")
+    add(pcm_k, cems_k, f"SC-{k} CEMS shelter fire alarm loop", "FA", "2/C", "14")
 BUS_DUCT = [("RICE PCM to MOD-EH bus tie", "13.8 kV, ~6,300 A"), ("MOD-EH to T-MOD-1 LV side", "13.8 kV, ~5,000 A"),
             ("MOD-EH to T-MOD-2 LV side", "13.8 kV, ~5,000 A"),
             ("Generator terminals to GSU / UAT / ET (isolated-phase bus)", "21 kV, as modelled (IPB routes)"),
@@ -552,7 +573,7 @@ DEV = [
     (r"^HRSG \d \+", dict(m=[(4, 15, 0)], mov=45, ai=160, di=80, sol=20, tc=80)),
     (r"^BFP-", dict(m=[(4, 15, 0)], ai=30, di=20, rtd=24)),
     (r"^SCRB-", dict(m=[(2, 110, 0)], ai=6, di=6)),
-    (r"^CEMS shelter", dict(m=[(2, 5, 0)], ai=12, di=10)),
+    (r"^CEMS shelter|^SC-\d CEMS shelter", dict(m=[(2, 5, 0)], ai=12, di=10)),
     (r"blowdown tank", dict(mov=4, ai=6, di=4)),
     (r"chemical feed|^Chemical feed", dict(m=[(6, 2, 0)], ai=8, di=12)),
     (r"^SWAS", dict(ai=24, di=8)),
@@ -611,7 +632,10 @@ DEV = [
     (r"^RICE \d SCR", dict(m=[(1, 15, 0)], ai=10, di=6)),
     (r"^SC-\d: aeroderivative", dict(m=[(10, 30, 0)], ai=150, di=100, tc=40)),
     (r"^SC-\d lube-oil fin-fan", dict(m=[(4, 15, 0)], ai=4, di=8)),
-    (r"^SC-\d SCR", dict(m=[(2, 30, 0)], ai=12, di=8)),
+    (r"^SC-\d SCR", dict(ai=16, di=8)),               # catalyst temps / dP, NOx in / out; the fans are their own items
+    (r"^SC-\d tempering-air fans", dict(m=[(2, 185, 0)], ai=8, di=8)),       # 2 x 250 hp, vibration, damper limits
+    (r"^SC-\d ammonia flow-control", dict(m=[(2, 7.5, 0)], ai=8, di=8, sol=4)),   # dilution-air blowers, flow control
+    (r"^SC-\d auxiliary skids", dict(m=[(1, 7.5, 0)], ai=14, di=12, sol=4)),     # fuel-gas module I/O, ESD; water-wash pump
     (r"^TM-\d", dict(m=[(6, 22, 0)], ai=100, di=60, tc=20)),
     (r"^CONT-\d|^MOB-1|^GEN-[EO]", dict(ai=20, di=20)),
     (r"^Black-start genset", dict(ai=20, di=20)),

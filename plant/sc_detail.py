@@ -104,7 +104,7 @@ def enclosures(sc, x):
     # generator line-side terminal box over the MV tray (modular_lod3 sc_trays, x + 12) and the NGR beside it
     box(x + 8, x + 16, 1217, 1219.4, 10.4, 16, "panel")
     for dx in (-.6, 0, .6):
-        rod((x + 12 + dx, 1218.3, 9.6), (x + 12 + dx, 1218.3, 10.4), .16, "cable_mv", seg=8)
+        rod((x + 12 + dx, 1218.3, 10.1), (x + 12 + dx, 1218.3, 10.4), .16, "cable_mv", seg=8)   # tray to box
     box(x + 18, x + 23, 1219.5, 1223, 0, 7, "panel")
     box(x + 18.3, x + 22.7, 1219.8, 1222.7, 7, 7.6, "louvre")
     rod((x + 20.5, 1219.5, 5.5), (x + 20.5, 1217.2, 5.5), .2, "copper", seg=8)

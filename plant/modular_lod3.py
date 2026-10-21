@@ -169,8 +169,10 @@ def sc_trays(S):
         it = new(f"SC-{k}: generator cables to the PCM (13.8 kV MV-105 on ladder tray)",
                  (xt - 3, xt + 3, 1217, 1246), (0, 14))
         fuel.D = True
-        z = tray(S, [(xt, 1217.6), (xt, 1244.9)], 9.0, w=2.0,
-                 cables=tuple(("cable_mv", .2) for _ in range(6)) + (("cable_tc", .1),), name=f"SC-{k} gen",
+        # 5 sets x 3 x 750 kcmil MV-105 for ~2,100 A, as the cable schedule sizes it (cable audit, Oct 21: the tray
+        # showed 6), one layer on a 36 in ladder tray, the CT / VT control cable beside them
+        z = tray(S, [(xt, 1217.6), (xt, 1244.9)], 9.0, w=3.0,
+                 cables=tuple(("cable_mv", .08) for _ in range(15)) + (("cable_tc", .06),), name=f"SC-{k} gen",
                  style="tray", tag=f"SC{k}-T1")
         if z:
             from cable_moments import legends

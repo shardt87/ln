@@ -209,7 +209,8 @@ def demo():
     box(xb0, xb1, 1300.8, 1307.0, zb0, zb1, "alu")
     box(xb1, xb1 + .05, 1301.4, 1306.4, zb0 + .9, zb0 + 1.5, "louvre")                 # ventilation slots
     # second section shown open (owner, Oct 21: show the wire): west side panel off and laid on the slab, the
-    # 13.8 kV leads inside, 4 x 500 kcmil MV-105 per phase in two rows, held in spacer blocks, phase-taped
+    # 13.8 kV leads inside, 5 x 750 kcmil MV-105 per phase (as the cable schedule sizes SC-1 / SC-2), one row per
+    # phase, held in spacer blocks, phase-taped
     y0, y1 = 1307.0, 1313.4
     box(xb0, xb1, y0, y1, zb0, zb0 + .15, "alu")                                       # floor
     box(xb0, xb1, y0, y1, zb1 - .15, zb1, "alu")                                       # cover
@@ -217,21 +218,20 @@ def demo():
     box(xb1, xb1 + .05, y0 + .6, y1 - .6, zb0 + .9, zb0 + 1.5, "louvre")
     box(2197.2, 2199.4, 1307.4, 1313.0, 0, .12, "alu")                                 # the panel, off
     n += 7
-    tape = ("red", "amber", "pvc_blue")                                               # phases A / B / C
-    for i in range(6):
-        xc = 2202.25 + i * .34
-        for zc in (zb0 + .65, zb0 + 1.75):
-            rod((xc, y0 - .1, zc), (xc, y1 + .1, zc), .16, "cable_mv", seg=10)
+    tape = ("red", "amber", "cable_inst")                                             # phases A / B / C (blue)
+    for ph, zc in enumerate((zb0 + .55, zb0 + 1.2, zb0 + 1.85)):
+        for i in range(5):
+            xc = 2202.2 + i * .4
+            rod((xc, y0 - .1, zc), (xc, y1 + .1, zc), .13, "cable_mv", seg=10)
             for yt in (y0 + .9, y1 - .9):
-                rod((xc, yt, zc), (xc, yt + .3, zc), .18, tape[i // 2], seg=10)
+                rod((xc, yt, zc), (xc, yt + .3, zc), .15, tape[ph], seg=10)
             n += 3
     for ys in (y0 + 2.2, y1 - 2.2):                                                    # spacer blocks
-        box(xb0 + .1, xb1 - .1, ys - .2, ys + .2, zb0 + .15, zb0 + 1.0, "steel_dark")
-        box(xb0 + .1, xb1 - .1, ys - .2, ys + .2, zb0 + 1.4, zb0 + 2.1, "steel_dark")
+        box(xb0 + .1, xb1 - .1, ys - .2, ys + .2, zb0 + .15, zb1 - .15, "steel_dark")
         n += 2
     showcase.decal((xb0 - .08, 1303.9, zb0 + 1.2), (-1, 0, 0), 5.6, 1.5,
                    [("13.8 kV CABLE BUS  ·  GEN → PCM", .26, True, "#111111"),
-                    ("3 PHASES x 4 x 500 kcmil MV-105", .2, False, "#222222"),
+                    ("3 PHASES x 5 x 750 kcmil MV-105", .2, False, "#222222"),
                     ("FACTORY-SPACED IN BLOCKS  ·  PHASE-TAPED", .17, False, "#b5651d")], bg="#ffffff")
     for yf in (1300.8, 1307.0, 1313.4):                                                 # flanges, the middle one bolted
         box(xb0 - .25, xb1 + .25, yf - .15, yf + .15, zb0 - .25, zb1 + .25, "steel")

@@ -185,3 +185,16 @@ open them locally in Chrome or Edge).
   technician. Every harness tag carries a QR (screens/qr_cable.png, blender/qr_tags.py, placeholder record ID; needs
   `pip install qrcode` to regenerate); a SCAN ANY CABLE TAG digital-model sign with its QR; a cable ID placard on the
   open trough stretch. Cameras SC16 (cable bus cutaway), SC17 (testing / QR / placard). Viewer v63.
+- Oct 21 SC-1 / SC-2 cable audit (owner):
+  * fixed: every SC load (package motors, lube cooler, SCR, stack lighting, inlet chiller, new skids) was fed from the
+    RICE plant's PCM-1 (nearest by distance); cable_schedule.sc_pcm() now takes each unit's 480 V, control and I/O
+    from its own SC-k PCM;
+  * fixed: the second-pass equipment had no cables: tempering-air fans 2 x 185 kW (500 kcmil), ammonia flow-control
+    (2 x 7.5 kW blowers, 45 kW vaporiser heater, I/O, solenoids), fuel-gas module + water-wash (ARMOR-X / ITC, Class I
+    Div 2), CEMS shelter (panel, HVAC, analyser I/O, fibre, fire alarm), generator neutral to the NGR (MV-105 #2),
+    generator CT / VT secondaries; the SCR's two phantom 30 kW motors removed (the fans are their own item);
+  * fixed: model vs schedule: the generator tray showed 6 MV cables, the schedule sizes 5 x 3 x 750 kcmil MV-105
+    for ~2,100 A: tray now 36 in with 15 cables; the SC-4 cable bus cutaway shows the same 5 x 750 kcmil per phase,
+    one row per phase (red / amber / blue tape); terminal-box drops lifted clear of the tray;
+  * pre-existing, not SC: the admin building's 800 A service fails the 125 % ampacity check (2 sets).
+  Camera SC18 (generator tray). Viewer v64.
