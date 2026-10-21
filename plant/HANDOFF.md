@@ -146,3 +146,7 @@ open them locally in Chrome or Edge).
 - SCR stair turned to run along the platform: it used to straddle the y 1182 fuel-gas header (pre-existing clash).
 - Conduit stub-ups and whips into every new motor / skid.
 - Cameras SC9-SC12 (pro_look.py); previews in renders/sc_detail/.
+- Oct 21 tidy (owner: the auxiliaries looked bulky on the camera face): ammonia flow-control unit and the NH3 riser to
+  the injection grid moved to the north (back) face of each SCR; fuel-gas module made low (6 ft) and set tight
+  against the enclosure; CO2 cylinders stand on the skid against the wall with a strap (rack removed). Tempering-air
+  fans kept as they were. Viewer v57.

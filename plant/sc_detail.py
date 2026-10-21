@@ -5,13 +5,16 @@ the first pass left out:
 - inlet: a tapered transition out of the filter house, a silencer duct over the generator with its stiffener bands
   and expansion joint, and the inlet plenum dropping into the turbine enclosure;
 - enclosures: panel joints on the generator enclosure, ventilation louvres, a vent-exhaust silencer on the turbine
-  roof, door steps, CO2 cylinder rack, the generator line-side terminal box and a neutral grounding resistor;
+  roof, door steps, a strap for the CO2 cylinders on the wall, the generator line-side terminal box and a neutral
+  grounding resistor;
 - exhaust: expansion joints on the collector, two tempering-air fans (simple-cycle SCRs need the exhaust cooled to
   catalyst temperature) with inlet filters and ducts over the fuel-gas header into the collector;
-- SCR: catalyst access doors, an ammonia flow-control skid with its dilution-air blower at the injection riser;
+- SCR: catalyst access doors; the ammonia flow-control skid with its dilution-air blower on the north (back) side,
+  at the injection riser, towards the ammonia tank (owner, Oct 21: auxiliaries off the camera face);
 - stack: foundation ring, breeching expansion joint, a CEMS shelter at the base with its heated sample line to the
   sampling platform;
-- auxiliaries: a fuel-gas module (filter / separator and valves) on the gas drop, an off-line water-wash skid;
+- auxiliaries: a low fuel-gas module (filter / separator and valves) tight against the enclosure at the gas drop,
+  the off-line water-wash skid on the back side;
 - wiring: conduit stub-ups and liquidtight whips into every motor and skid, from the yard duct bank.
 Typical, not engineered."""
 import fuel
@@ -85,11 +88,10 @@ def enclosures(sc, x):
             box(xd - .4, xd + 4.4, y0, y1, 0, .75, "grating")
             box(xd - .4, xd + 4.4, u0, u1, .75, 1.5, "grating")
             n += 2
-    box(x + 5, x + 19, 1189.4, 1191.0, .2, .4, "steel")                         # CO2 cylinder rack
-    for xb in (x + 5, x + 12, x + 19):
-        box(xb - .1, xb + .1, 1189.4, 1191.0, .4, 7.5, "steel")
-    box(x + 5, x + 19, 1189.4, 1189.6, 5.6, 5.9, "steel")
-    n += 5
+    box(x + 5.4, x + 18.6, 1192.0, 1192.1, 5.2, 5.5, "steel")                    # strap over the CO2 cylinders
+    for xb in (x + 5.4, x + 18.6):
+        box(xb - .1, xb + .1, 1192.0, 1193.0, 5.2, 5.5, "steel")
+    n += 3
     decal((x + 32, 1192.8, 10.6), (0, -1, 0), 4, 1.2, [("DANGER  ·  CO2 FIRE SUPPRESSION", .3, 1, "#ffffff"),
                                                        ("DO NOT ENTER WHEN DISCHARGED", .22, 0, "#ffffff")],
           bg="#b3261e")
@@ -111,14 +113,14 @@ def enclosures(sc, x):
 
 
 def auxiliaries(k, x):
-    it = item(k, x, "auxiliary skids: fuel-gas module, water-wash skid", [x + 26, x + 48, 1183, 1233], [0, 12],
+    it = item(k, x, "auxiliary skids: fuel-gas module, water-wash skid", [x + 26, x + 47, 1186, 1233], [0, 10],
               "Fuel-gas module on the gas drop (coalescing filter / separator, flow meter, shut-off and control "
               "valves) and the off-line compressor water-wash skid (tank, pump, detergent).")
     n = 0
-    box(x + 35.5, x + 47.5, 1183.4, 1189.8, 0, .5, "concrete")                  # fuel-gas module
-    box(x + 36, x + 47, 1183.8, 1189.4, .5, 9, "machine")
-    box(x + 35.8, x + 47.2, 1183.6, 1189.6, 9, 9.4, "roof")
-    rod((x + 45.5, 1186.6, 9.4), (x + 45.5, 1186.6, 14), .2, "fuelgas", seg=8)  # vent
+    box(x + 36, x + 46, 1187.6, 1191.9, 0, .4, "concrete")                      # fuel-gas module, low, at the wall
+    box(x + 36.3, x + 45.7, 1187.9, 1191.6, .4, 5.8, "machine")
+    box(x + 36.1, x + 45.9, 1187.7, 1191.8, 5.8, 6.1, "roof")
+    rod((x + 44.8, 1189.8, 6.1), (x + 44.8, 1189.8, 9.5), .18, "fuelgas", seg=8)  # vent
     box(x + 26, x + 36, 1224, 1232, 0, .5, "concrete")                          # water-wash skid
     rod((x + 27.5, 1228, 3.5), (x + 33, 1228, 3.5), 2.6, "tank", seg=16)
     for xs in (x + 28.5, x + 32):
@@ -126,13 +128,13 @@ def auxiliaries(k, x):
     rod((x + 34.2, 1226, .9), (x + 34.2, 1226, 2.6), .7, "pump", seg=12)
     n += 9
     fuel.D = True
-    pipe([(x + 30, 1187, 2.5), (x + 36, 1187, 2.5)], 2.5, .32, "fuelgas")      # from the gas drop
-    pipe([(x + 44, 1189.4, 4), (x + 44, 1193, 4)], 4, .28, "fuelgas")           # to the gas manifold
+    pipe([(x + 30, 1189.2, 2.5), (x + 36.3, 1189.2, 2.5)], 2.5, .3, "fuelgas")  # from the gas drop
+    pipe([(x + 42, 1191.6, 3.6), (x + 42, 1193, 3.6)], 3.6, .26, "fuelgas")     # to the gas manifold
     pipe([(x + 34.2, 1226.7, 2.2), (x + 34.2, 1219.5, 2.2), (x + 34.2, 1217.2, 2.2)], 2.2, .15, "pipe")
-    for xd in (x + 37.5, x + 41.5):
-        box(xd, xd + 2.6, 1183.6, 1183.8, .8, 7.8, "door")
-    decal((x + 41.5, 1183.55, 8.4), (0, -1, 0), 5.5, .8, [(f"SC-{k} FUEL GAS MODULE", .5, 1, "#111111")], bg="#ffffff")
-    n += 5 + stub(x + 47.8, 1186, .8, (x + 47, 1186, 3)) + stub(x + 35.4, 1225, .8, (x + 34.6, 1225.6, 1.6))
+    for xd in (x + 37, x + 41):
+        box(xd, xd + 3.2, 1187.7, 1187.9, .7, 5.4, "door")
+    decal((x + 41, 1187.65, 5.2), (0, -1, 0), 5, .55, [(f"SC-{k} FUEL GAS MODULE", .55, 1, "#111111")], bg="#ffffff")
+    n += 5 + stub(x + 46.3, 1189.5, .8, (x + 45.7, 1189.5, 2.4)) + stub(x + 35.4, 1225, .8, (x + 34.6, 1225.6, 1.6))
     fuel.D = False
     return n
 
@@ -177,17 +179,17 @@ def scr(k, x):
         box(x0, x0 + 3, 1190.8, 1191, z0, z0 + 4, "door")
         n += 1
     fuel.D = False
-    item(k, x, "ammonia flow-control unit", [x + 95, x + 107, 1183.5, 1189], [0, 7],
+    item(k, x, "ammonia flow-control unit", [x + 95, x + 107, 1221.5, 1227], [0, 7],
          "Ammonia flow-control unit: aqueous ammonia metering, vaporiser and dilution-air blower to the injection "
          "grid riser.")
-    box(x + 95.5, x + 106.5, 1184, 1188.6, 0, .4, "concrete")
-    box(x + 96, x + 101.5, 1184.4, 1188.2, .4, 6, "panel")
-    rod((x + 103.5, 1186.3, .4), (x + 103.5, 1186.3, 4.6), 1.5, "steel", seg=14)  # vaporiser
-    rod((x + 102.2, 1185, 1.2), (x + 105.6, 1185, 1.2), .7, "motor", seg=12)   # dilution-air blower
+    box(x + 95.5, x + 106.5, 1221.9, 1226.5, 0, .4, "concrete")
+    box(x + 96, x + 101.5, 1222.3, 1226.1, .4, 6, "panel")
+    rod((x + 103.5, 1224.2, .4), (x + 103.5, 1224.2, 4.6), 1.5, "steel", seg=14)  # vaporiser
+    rod((x + 102.2, 1225.5, 1.2), (x + 105.6, 1225.5, 1.2), .7, "motor", seg=12)   # dilution-air blower
     fuel.D = True
-    pipe([(x + 103.5, 1186.3, 4.6), (x + 103.5, 1186.3, 5.5), (x + 100, 1188.9, 5.5)], 5.5, .22, "pipe")
-    n += 4 + 1 + stub(x + 95.2, 1186, .8, (x + 96, 1186, 2))
-    decal((x + 98.75, 1184.35, 4.6), (0, -1, 0), 4.5, 1.0, [("AMMONIA", .4, 1, "#ffffff"),
+    pipe([(x + 103.5, 1224.2, 4.6), (x + 103.5, 1224.2, 5.5), (x + 100, 1221.1, 5.5)], 5.5, .22, "pipe")
+    n += 4 + 1 + stub(x + 95.2, 1224, .8, (x + 96, 1224, 2))
+    decal((x + 98.75, 1226.15, 4.6), (0, 1, 0), 4.5, 1.0, [("AMMONIA", .4, 1, "#ffffff"),
                                                             ("AQUEOUS NH3  ·  19 %", .26, 0, "#ffffff")], bg="#26467a")
     fuel.D = False
     return n

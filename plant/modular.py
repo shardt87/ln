@@ -190,8 +190,8 @@ def simple_cycle():
         for xd in (x + 30, x + 52):                                             # enclosure doors
             for y, s in ((1193, -1), (1217, 1)):
                 box(xd, xd + 4, y, y + s * .15, 1.5, 9, "door")
-        for xb in range(x + 6, x + 20, 3):                                      # CO2 cylinders
-            rod((xb, 1190.2, 1.5), (xb, 1190.2, 7), .5, "red", seg=10)
+        for xb in range(x + 6, x + 20, 3):                                      # CO2 cylinders, on the skid
+            rod((xb, 1192.5, 1.5), (xb, 1192.5, 7), .45, "red", seg=10)         # against the enclosure wall
         # filter-change platform on the west face, reached by a ladder
         box(x - 23, x - 20, 1198, 1212, 24.6, 25, "grating")
         rod((x - 23, 1198, 28.4), (x - 23, 1212, 28.4), .07, "rail", seg=4)
@@ -213,9 +213,10 @@ def simple_cycle():
         for xr in range(x + 94, x + 128, 5):                                    # casing stiffeners
             for y, s in ((1191, -1), (1219, 1)):
                 box(xr - .25, xr + .25, y, y + s * .5, 3, 33, "steel")
-        pipe([(x + 100, 1189, 2), (x + 100, 1189, 30), (x + 100, 1191, 30)], 2, .25, "pipe")   # NH3 to the AIG
+        pipe([(x + 100, 1221, 2), (x + 100, 1221, 30), (x + 100, 1219, 30)], 2, .25, "pipe")   # NH3 to the AIG
+                                                                                # (north face, from the AFCU)
         for xg in (x + 97, x + 100, x + 103):
-            rod((xg, 1191, 30), (xg, 1191, 33.6), .15, "pipe", seg=6)
+            rod((xg, 1219, 30), (xg, 1219, 33.6), .15, "pipe", seg=6)
         for zp in (14, 27):                                                     # platforms on the south face
             box(x + 92, x + 128, 1186.6, 1191, zp - .3, zp, "grating")
             rod((x + 92, 1186.7, zp + 3.4), (x + 128, 1186.7, zp + 3.4), .07, "rail", seg=4)
