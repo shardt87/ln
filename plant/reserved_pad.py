@@ -90,7 +90,8 @@ def build():
 # that is not how such a pad is wired). As an LM6000-class pad is really built: generator power in a factory cable
 # bus over the short run to the PCM; control, instrument and fibre in a precast surface cable trough with lids
 # from the PCM pad to each skid landing; the harnesses factory-cut, pre-terminated and tested, coiled at each landing;
-# the ground-grid pigtails up at the foundation corners.
+# the ground-grid pigtails up at the foundation corners. Showing the wire (Oct 21): one cable-bus section opened on
+# its paralleled MV-105, testing in progress at a landing, QR tags tied to the digital model, a cable ID placard.
 TR0, TR1 = 1303.5, 1307.0                                     # main trench (y), between the foundation and the PCM pad
 TX0, TX1 = 2090.0, 2183.0                                     # x; stops short of the PCM duct-bank route at x 2187
 
@@ -106,7 +107,14 @@ def coil(x, y, z, cab, tag=None):
     if tag:
         showcase.decal((x, y - 1.25, z + 1.4), (0, -1, 0), 2.6, .7, [(tag, .32, True, "#111111"),
                        ("PRE-TERMINATED  ·  TESTED", .22, False, "#2f7a3c")], bg="#ffffff")
+        qr(x + 1.72, y - 1.25, z + 1.4, .7)                                              # QR: the cable's record
     return 7
+
+
+def qr(x, y, z, w, img="qr_cable.png"):
+    it = fuel.G["cur"]
+    fuel.G["decals"].append(dict(c=[x, y, z], n=[0, -1, 0], w=w, h=w, bg=None, lines=[], item=it["id"],
+                                 layer=it["layer"], brand=0, img=img, print=1))
 
 
 def outline(x0, x1, y0, y1, z):
@@ -198,11 +206,33 @@ def demo():
             box(xp - .2, xp + .2, yp - .2, yp + .2, .4, zb0 - .4, "steel")
         box(2200.2, 2205.8, yp - .25, yp + .25, zb0 - .4, zb0, "steel")
         n += 5
-    for (y0, y1) in ((1300.8, 1307.0), (1307.0, 1313.4)):
-        box(xb0, xb1, y0, y1, zb0, zb1, "alu")
-        for xs in (xb0 - .05, xb1):                                                    # ventilation slots
-            box(xs, xs + .05, y0 + .6, y1 - .6, zb0 + .9, zb0 + 1.5, "louvre")
-        n += 3
+    box(xb0, xb1, 1300.8, 1307.0, zb0, zb1, "alu")
+    box(xb1, xb1 + .05, 1301.4, 1306.4, zb0 + .9, zb0 + 1.5, "louvre")                 # ventilation slots
+    # second section shown open (owner, Oct 21: show the wire): west side panel off and laid on the slab, the
+    # 13.8 kV leads inside, 4 x 500 kcmil MV-105 per phase in two rows, held in spacer blocks, phase-taped
+    y0, y1 = 1307.0, 1313.4
+    box(xb0, xb1, y0, y1, zb0, zb0 + .15, "alu")                                       # floor
+    box(xb0, xb1, y0, y1, zb1 - .15, zb1, "alu")                                       # cover
+    box(xb1 - .1, xb1, y0, y1, zb0, zb1, "alu")                                        # east side
+    box(xb1, xb1 + .05, y0 + .6, y1 - .6, zb0 + .9, zb0 + 1.5, "louvre")
+    box(2197.2, 2199.4, 1307.4, 1313.0, 0, .12, "alu")                                 # the panel, off
+    n += 7
+    tape = ("red", "amber", "pvc_blue")                                               # phases A / B / C
+    for i in range(6):
+        xc = 2202.25 + i * .34
+        for zc in (zb0 + .65, zb0 + 1.75):
+            rod((xc, y0 - .1, zc), (xc, y1 + .1, zc), .16, "cable_mv", seg=10)
+            for yt in (y0 + .9, y1 - .9):
+                rod((xc, yt, zc), (xc, yt + .3, zc), .18, tape[i // 2], seg=10)
+            n += 3
+    for ys in (y0 + 2.2, y1 - 2.2):                                                    # spacer blocks
+        box(xb0 + .1, xb1 - .1, ys - .2, ys + .2, zb0 + .15, zb0 + 1.0, "steel_dark")
+        box(xb0 + .1, xb1 - .1, ys - .2, ys + .2, zb0 + 1.4, zb0 + 2.1, "steel_dark")
+        n += 2
+    showcase.decal((xb0 - .08, 1303.9, zb0 + 1.2), (-1, 0, 0), 5.6, 1.5,
+                   [("13.8 kV CABLE BUS  ·  GEN → PCM", .26, True, "#111111"),
+                    ("3 PHASES x 4 x 500 kcmil MV-105", .2, False, "#222222"),
+                    ("FACTORY-SPACED IN BLOCKS  ·  PHASE-TAPED", .17, False, "#b5651d")], bg="#ffffff")
     for yf in (1300.8, 1307.0, 1313.4):                                                 # flanges, the middle one bolted
         box(xb0 - .25, xb1 + .25, yf - .15, yf + .15, zb0 - .25, zb1 + .25, "steel")
         n += 1
@@ -211,6 +241,36 @@ def demo():
         n += 1
     showcase.decal((2203.0, 1300.2, zb0 - 1.3), (0, -1, 0), 4.0, 1.1, [("CABLE BUS  ·  GEN → PCM", .3, True, "#111111"),
                    ("13.8 kV  ·  AWAITING GENERATOR", .22, False, "#b3261e")], bg="#ffffff")
+    # testing in progress at the TCP landing: test cart with an insulation-resistance / VLF set and a laptop, leads
+    # clipped to the harness connector, a technician at the cart
+    import cable_moments
+    cx, cy, cz = 2165.0, 1296.2, .5
+    for (wx, wy) in ((cx - .9, cy - .9), (cx + .9, cy - .9), (cx - .9, cy + .9), (cx + .9, cy + .9)):
+        rod((wx, wy - .12, cz + .35), (wx, wy + .12, cz + .35), .35, "tyre", seg=10)
+    box(cx - 1.2, cx + 1.2, cy - 1.1, cy + 1.1, cz + .6, cz + 2.9, "panel")
+    box(cx - 1.0, cx + .2, cy - .9, cy + .9, cz + 2.9, cz + 3.8, "machine")             # test set
+    box(cx + .4, cx + 1.1, cy - .7, cy + .5, cz + 2.9, cz + 2.95, "steel_dark")         # laptop base
+    box(cx + 1.05, cx + 1.1, cy - .7, cy + .5, cz + 2.95, cz + 3.75, "steel_dark")      # laptop lid
+    showcase.decal((cx - .4, cy - .93, cz + 3.35), (0, -1, 0), 1.0, .7,
+                   [("IR 5 kV  ·  PASS", .3, True, "#7CFC9A"), ("> 10 GΩ  ·  VLF OK", .22, False, "#ffffff")],
+                   bg="#16181a")
+    rod((cx - .9, cy - .5, cz + 3.2), (2162.3, 1297.0, 1.4), .05, "red", seg=6)        # test leads to the connector
+    rod((cx - .9, cy - .3, cz + 3.2), (2162.2, 1297.0, 1.1), .05, "steel_dark", seg=6)
+    cable_moments.person(cx - .2, cy - 3.0, cz, a=1.57)
+    n += 10
+    # cable ID placard on the open stretch of the trough
+    showcase.decal((2163.0, 1303.45, 1.05), (0, -1, 0), 3.8, 1.55,
+                   [("TROUGH CT-4  ·  SC-4 CONTROL / INSTRUMENT / FIBRE", .15, True, "#111111"),
+                    ("CONTROL  ·  TC-ER 14 AWG MULTI-CONDUCTOR", .12, False, "#222222"),
+                    ("INSTRUMENT  ·  SHIELDED ITC / PLTC 16 AWG PAIRS", .12, False, "#26467a"),
+                    ("FIBRE  ·  12-STRAND SINGLE-MODE", .12, False, "#b5651d"),
+                    ("AUX POWER  ·  600 V TC-ER 4/C", .12, False, "#222222")], bg="#ffffff")
+    # the digital-model sign: every tag's QR opens that cable's record
+    showcase.decal((2148.0, 1302.6, 4.0), (0, -1, 0), 5.2, 2.0,
+                   [("SCAN ANY CABLE TAG", .2, True, "#111111"),
+                    ("OPENS ITS RECORD IN THE 3D MODEL", .13, False, "#222222"),
+                    ("ROUTE  ·  TERMINATION  ·  TEST REPORT  ·  SCHEDULE", .11, False, "#b5651d")], bg="#ffffff")
+    qr(2151.65, 1302.6, 4.0, 1.9, img="qr_sign.png")
     # ground grid: bare copper pigtails up at the foundation and PCM pad corners
     for (gx, gy) in ((2086.0, 1271.0), (2150.0, 1271.0), (2214.0, 1271.0), (2086.0, 1299.0), (2150.0, 1299.0),
                      (2214.0, 1299.0), (2176.0, 1313.0), (2214.0, 1325.0)):

@@ -179,3 +179,9 @@ open them locally in Chrome or Edge).
   pigtails at the foundation and PCM pad corners. Painted outlines, PCM landing frame and PLUG & PLAY sign kept.
   Camera SC15 (close). Viewer v62. NB: the nextgen brochure page 5 hero (SC7) still shows the old modules; re-render
   SC7 and rebuild brochure_nextgen.py when that brochure is next touched.
+- Oct 21 SC-4 pad "show the wire" (owner): cable bus second section opened (west panel off, laid on the slab):
+  3 phases x 4 x 500 kcmil MV-105 in two rows, spacer blocks, phase tape; label on the closed section. Testing in
+  progress at the TCP landing: test cart (IR / VLF set showing PASS, laptop), leads to the harness connector,
+  technician. Every harness tag carries a QR (screens/qr_cable.png, blender/qr_tags.py, placeholder record ID; needs
+  `pip install qrcode` to regenerate); a SCAN ANY CABLE TAG digital-model sign with its QR; a cable ID placard on the
+  open trough stretch. Cameras SC16 (cable bus cutaway), SC17 (testing / QR / placard). Viewer v63.
