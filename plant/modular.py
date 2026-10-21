@@ -257,3 +257,5 @@ def build():
     simple_cycle()
     import sc_detail                    # second pass: inlet duct, tempering fans, CEMS, auxiliaries
     sc_detail.build()
+    import sc_interior                  # inside the enclosures: generator, engine, harnesses (walls made in sc_detail)
+    sc_interior.build()

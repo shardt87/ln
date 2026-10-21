@@ -224,6 +224,7 @@ def equipment():
         for zz in [9.0 + 1.6 * i for i in range(9)]:                     # filter-house weather hoods
             box(x - 20.9, x - 20, 1196.4, 1213.6, zz, zz + .18, "steel")
             box(x - 20.9, x - 20.7, 1196.4, 1213.6, zz - .7, zz, "steel")
+        on(find(f"SC-{k} package enclosure"))             # roof fans and panel joints go with the walls (cutaways)
         for xs in (x + 30, x + 42, x + 56):                               # enclosure vent fans
             rod((xs, 1205, 22.6), (xs, 1205, 24.0), 1.5, "fan", seg=18)
             rod((xs, 1205, 24.0), (xs, 1205, 24.3), 1.7, "steel", seg=18)

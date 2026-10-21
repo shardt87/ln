@@ -69,8 +69,8 @@ def inlet(sc, x):
     return n + 6
 
 
-def enclosures(sc, x):
-    on(sc)
+def enclosures(sc, x, wl):
+    on(wl)                                            # wall-mounted detail goes with the enclosure walls (cutaways)
     fuel.D = True
     n = 0
     for xr in (x + 4, x + 8, x + 12, x + 16, x + 20):                          # generator enclosure panel joints
@@ -86,11 +86,13 @@ def enclosures(sc, x):
     box(x + 60.8, x + 68.2, 1196.8, 1203.2, 30.5, 31.0, "steel")
     box(x + 61, x + 68, 1196.8, 1197, 27.5, 30.2, "louvre")
     n += 3
+    on(sc)
     for xd in (x + 30, x + 52):                                                 # steps at the enclosure doors
         for (y0, y1, u0, u1) in ((1190.6, 1192, 1191.3, 1192), (1218, 1219.4, 1218, 1218.7)):
             box(xd - .4, xd + 4.4, y0, y1, 0, .75, "grating")
             box(xd - .4, xd + 4.4, u0, u1, .75, 1.5, "grating")
             n += 2
+    on(wl)
     box(x + 5.4, x + 18.6, 1192.0, 1192.1, 5.2, 5.5, "steel")                    # strap over the CO2 cylinders
     for xb in (x + 5.4, x + 18.6):
         box(xb - .1, xb + .1, 1192.0, 1193.0, 5.2, 5.5, "steel")
@@ -101,6 +103,7 @@ def enclosures(sc, x):
     decal((x + 54, 1192.8, 10.6), (0, -1, 0), 4, 1.2, [("HIGH NOISE AREA", .34, 1, "#111111"),
                                                        ("HEARING PROTECTION REQUIRED", .22, 0, "#111111")],
           bg="#f2c21b")
+    on(sc)
     # generator line-side terminal box over the MV tray (modular_lod3 sc_trays, x + 12) and the NGR beside it
     box(x + 8, x + 16, 1217, 1219.4, 10.4, 16, "panel")
     for dx in (-.6, 0, .6):
@@ -131,7 +134,6 @@ def auxiliaries(k, x):
     rod((x + 34.2, 1226, .9), (x + 34.2, 1226, 2.6), .7, "pump", seg=12)
     n += 9
     fuel.D = True
-    pipe([(x + 30, 1189.2, 2.5), (x + 36.3, 1189.2, 2.5)], 2.5, .3, "fuelgas")  # from the gas drop
     pipe([(x + 42, 1191.6, 3.6), (x + 42, 1193, 3.6)], 3.6, .26, "fuelgas")     # to the gas manifold
     pipe([(x + 34.2, 1226.7, 2.2), (x + 34.2, 1219.5, 2.2), (x + 34.2, 1217.2, 2.2)], 2.2, .15, "pipe")
     for xd in (x + 37, x + 41):
@@ -348,5 +350,7 @@ def build():
     n = 0
     for k, x in enumerate((1910, 2110), 1):
         sc = find(f"SC-{k}: aeroderivative")
-        n += inlet(sc, x) + enclosures(sc, x) + auxiliaries(k, x) + tempering(k, x) + scr(k, x) + stack(k, x)
+        import sc_interior
+        wl = sc_interior.walls(k, x)                  # hollow enclosures in their own item, the interior inside them
+        n += inlet(sc, x) + enclosures(sc, x, wl) + auxiliaries(k, x) + tempering(k, x) + scr(k, x) + stack(k, x)
     return n

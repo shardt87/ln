@@ -266,6 +266,8 @@ class Detail3:
             if not (nm.startswith(("SC-1:", "SC-2:", "SC-3:", "SC-4:")) or nm.startswith("TM-")):
                 continue
             m = self.main_box(it, "machine")
+            if nm.startswith(("SC-1:", "SC-2:")):
+                m = None                         # SC roof fans: modular_lod3, on the hollow enclosure (sc_interior)
             f = self.main_box(it, "filter")
             if m is not None:
                 (x0, y0, _), (x1, y1, z1) = m["min"], m["max"]

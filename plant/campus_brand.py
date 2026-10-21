@@ -35,14 +35,15 @@ def finish_item(bld, label, fp, z):
     return it
 
 
-def building(name, label, box_, zb, zc, wc, corners=True, signs=()):
-    """box_ = (x0, x1, y0, y1, ztop); zb = copper band (z0, z1); zc = coping (z0, z1) or None."""
+def building(name, label, box_, zb, zc, wc, corners=True, signs=(), walls=None):
+    """box_ = (x0, x1, y0, y1, ztop); zb = copper band (z0, z1); zc = coping (z0, z1) or None; walls = the item the
+    wall panels are in, when not the building's own (SC packages since Oct 21)."""
     bld = find(name)
     x0, x1, y0, y1, zt = box_
     it = finish_item(bld, label, [x0 - 2, x1 + 2, y0 - 2, y1 + 2], [0, zt + 1])
     fuel.D = True
     n = 0
-    F = faces(x0, x1, y0, y1, ({it["id"]}, {bld["id"]}), wc)
+    F = faces(x0, x1, y0, y1, ({it["id"]}, {bld["id"]} | ({find(walls)["id"]} if walls else set())), wc)
     for f, a0, a1 in F:
         n += hstrip(f, a0, a1, *zb, .25, "hero_accent")
         if zc:
@@ -83,7 +84,8 @@ def build():
         from sc2_mirror import mx
         e0, e1 = (x + 25, x + 69.5) if k == 1 else (mx(x + 69.5), mx(x + 25))   # SC-2 stands mirrored
         n += building(f"SC-{k}: aeroderivative simple-cycle unit", f"SC-{k} turbine enclosure",
-                      (e0, e1, 1193, 1217, 22), (17.2, 18.8), (21.2, 22.0), ("machine", "roof"))
+                      (e0, e1, 1193, 1217, 22), (17.2, 18.8), (21.2, 22.0), ("machine", "roof", "ehouse", "door"),
+                      walls=f"SC-{k} package enclosure")
         # the combined cycle's livery on the south face (owner, Oct 21): metallic copper chevrons at the exhaust end
         # pointing at the paired stacks, carried up through the band to the coping as on the hall gable, and the unit
         # painted large in the hall's Barlow face between the doors (the white nameplate came off)

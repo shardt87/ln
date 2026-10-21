@@ -1729,8 +1729,9 @@ add_route("fuel_gas", [(2332, 805), (2332, 782)], MX)                           
 for k in range(8):                                                                          # FC tails to the DC feeder
     add_route("mvlv_cable", [(2014 + 14 * k, 350), (2014 + 14 * k, 345)], MX)
 # SC-1 / SC-2 fuel gas from the fuel-gas compressor building (not drawn on sheet 07)
-add_route("fuel_gas", [(2330, 1182), (1940, 1182), (1940, 1190)], "OPT_MOD_ROUTES")  # from the moved building
-add_route("fuel_gas", [(2228.5, 1182), (2228.5, 1190)], "OPT_MOD_ROUTES")
+# the drops come up into each unit's fuel-gas module (sc_detail.py, x + 36 .. 46), not at the enclosure door (Oct 21)
+add_route("fuel_gas", [(2330, 1182), (1950, 1182), (1950, 1187.6)], "OPT_MOD_ROUTES")  # from the moved building
+add_route("fuel_gas", [(2218.5, 1182), (2218.5, 1187.6)], "OPT_MOD_ROUTES")
 # reserved SC-3 / SC-4 pad (reserved_pad.py): the PCM pads pre-wired into the yard MV duct bank
 add_route("mvlv_cable", [(1917, 1312), (1917, 1266), (1900, 1266), (1900, 1252)], "OPT_MOD_ROUTES", sheet="typical (reserved pad)")
 add_route("mvlv_cable", [(2187, 1312), (2187, 1305), (2266, 1305)], "OPT_MOD_ROUTES", sheet="typical (reserved pad)")  # SC-2 drop (mirrored package)

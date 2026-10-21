@@ -211,3 +211,15 @@ open them locally in Chrome or Edge).
   lighting on the SCR platforms (10), enclosure exterior (8) and fan platform (4); CT / VT secondaries now on the
   #10 CTCT product. Capacity: the yard exports ~255 MW (~283 MVA); T-MOD bus duct raised to 6,300 A and T-MOD-1 / -2
   noted ~150 MVA ONAN/ONAF in the model (5,000 A / ~120 MVA each was short). Viewer v65.
+- Oct 21 SC package interiors (owner: "inside the enclosures"): new sc_interior.py. walls() (called from
+  sc_detail.build before the detail) makes the generator / turbine compartments hollow in their own item "SC-k package
+  enclosure (walls and roof)" with openings for the shaft, the roof inlet duct and the exhaust diffuser; enclosure
+  doors, joints, louvres, vent silencer, roof fans (modular_lod3), CO2 strap and wall signs moved onto it; campus_brand
+  skips it as wall; detail3 no longer adds SC roof fans. interior(): generator (stator, end shields, exciter, bearings,
+  cooler, line-side terminal box with the 13.8 kV leads to the wall, neutral cubicle, lube lines), shaft and coupling
+  guards, inlet plenum, bellmouth, LM6000-class engine stages, mounts, fuel-gas manifold with 15 nozzles, water-
+  injection ring, fuel / water lines from the south wall, harnesses to JB-1/2/3 on the north wall, interior ladder tray
+  and wall transit, CO2 header and nozzles, gas / heat detectors, lights, walkways, monorail with hoist.
+  Fuel-gas drops now rise into each unit's fuel-gas module (build_model routes x 1950 / 2218.5) instead of at the
+  enclosure door. Cameras SC19 / SC20 hide "SC-1 package enclosure" and the exterior finish. Viewer v66 (use the
+  section cut at ~EL 16 to look inside in the viewer).
