@@ -132,3 +132,17 @@ open them locally in Chrome or Edge).
   built faster (SC-4 plug-and-play pad, SIMpull + Maxis fit-out) / sustainability + Formula E.
 - Formula E photo and logo: dashed placeholder until brand approval. Formula E facts as published; the series' own
   sustainability claims are attributed to it. Check all of these before printing.
+
+## SC-1 / SC-2 simple-cycle detail pass (Oct 21, viewer v56)
+- New `sc_detail.py`, called from `modular.build()` (drawn coordinates; SC-2's set is turned end for end by
+  `sc2_mirror.build()` with the rest of the unit, since every item is named "SC-k ...").
+- Inlet: tapered transition out of the filter house, silencer duct with bands and expansion joint, plenum into the
+  turbine enclosure (replaces the plain plenum box in modular.py). Generator vent fan moved off the duct (modular_lod3).
+- Enclosures: generator panel joints, vent louvres, turbine vent-exhaust silencer, door steps, CO2 rack and signs,
+  generator terminal box over the MV tray, NGR.
+- New items: SC-k auxiliary skids (fuel-gas module on the gas drop, water-wash skid), tempering-air fans (2 x 100 %,
+  ducted over the fuel-gas header into the collector), ammonia flow-control unit, CEMS shelter with heated sample
+  line to the stack platform. SCR access doors; stack foundation ring, breeching expansion joint.
+- SCR stair turned to run along the platform: it used to straddle the y 1182 fuel-gas header (pre-existing clash).
+- Conduit stub-ups and whips into every new motor / skid.
+- Cameras SC9-SC12 (pro_look.py); previews in renders/sc_detail/.

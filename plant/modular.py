@@ -178,7 +178,6 @@ def simple_cycle():
                 box(xl - .4, xl + .4, yl - .4, yl + .4, 0, 8, "steel")
         box(x - 20, x, 1196, 1214, 8, 26, "filter")                            # inlet filter house
         box(x - 20.4, x + .4, 1195.6, 1214.4, 26, 26.6, "roof")
-        box(x, x + 12, 1199, 1211, 17, 24, "duct")                              # inlet plenum duct
         # exhaust collector: drawn 20 x 30 ft box, a loft from the enclosure to the SCR face
         box(x + 70, x + 90, 1190, 1220, 0, 1, "concrete")
         fuel.G["parts"].append(dict(kind="hex", v=[[x + 70, 1198, 6], [x + 70, 1212, 6], [x + 70, 1212, 18],
@@ -224,9 +223,12 @@ def simple_cycle():
                 rod((xr, 1186.7, zp), (xr, 1186.7, zp + 3.4), .06, "rail", seg=4)
             for xr in (x + 92, x + 128):
                 box(xr - .3, xr + .3, 1186.6, 1187.2, 0, zp - .3, "steel")
-        for s in range(9):                                                      # stair flight to EL 14
-            z = 1.5 * s + 1.4
-            box(x + 128.6, x + 132, 1179 + s, 1180 + s, z, z + .2, "grating")
+        for s in range(9):                                # stair flight to EL 14, along the platform (clear of the
+            z = 1.5 * s + 1.4                             # fuel-gas header at y 1182 it used to straddle)
+            box(x + 136.6 - s, x + 137.6 - s, 1183.4, 1186.4, z, z + .2, "grating")
+        box(x + 126, x + 129.6, 1183.4, 1186.6, 13.7, 14, "grating")              # top landing onto the platform
+        for xs in (x + 129.6, x + 137.6):
+            box(xs - .2, xs + .2, 1183.4, 1183.8, 0, 14 if xs < x + 130 else 2.6, "steel")
         dress(False)
 
         st = find(f"SC-{k} stack (80 ft)")
@@ -252,3 +254,5 @@ def simple_cycle():
 def build():
     rice()
     simple_cycle()
+    import sc_detail                    # second pass: inlet duct, tempering fans, CEMS, auxiliaries
+    sc_detail.build()

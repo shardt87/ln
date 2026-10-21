@@ -225,7 +225,7 @@ def equipment():
         for xs in (x + 30, x + 42, x + 56):                               # enclosure vent fans
             rod((xs, 1205, 22.6), (xs, 1205, 24.0), 1.5, "fan", seg=18)
             rod((xs, 1205, 24.0), (xs, 1205, 24.3), 1.7, "steel", seg=18)
-        rod((x + 18, 1205, 17), (x + 18, 1205, 18.4), 1.3, "fan", seg=16)
+        rod((x + 18, 1196, 17), (x + 18, 1196, 18.4), 1.3, "fan", seg=16)   # clear of the inlet duct
         for xr in (x + 27, x + 37, x + 42, x + 47, x + 62, x + 67):        # turbine enclosure panel joints
             for y, s in ((1193, -1), (1217, 1)):
                 box(xr - .08, xr + .08, y, y + s * .12, 1.5, 22, "steel")
