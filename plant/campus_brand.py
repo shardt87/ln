@@ -84,7 +84,7 @@ def build():
         from sc2_mirror import mx
         e0, e1 = (x + 25, x + 69.5) if k == 1 else (mx(x + 69.5), mx(x + 25))   # SC-2 stands mirrored
         n += building(f"SC-{k}: aeroderivative simple-cycle unit", f"SC-{k} turbine enclosure",
-                      (e0, e1, 1193, 1217, 22), (17.2, 18.8), (21.2, 22.0), ("machine", "roof", "ehouse", "door"),
+                      (e0, e1, 1193, 1217, 22), (17.2, 18.8), (21.2, 22.0), ("machine", "roof", "ehouse", "door", "xray"),
                       walls=f"SC-{k} package enclosure")
         # the combined cycle's livery on the south face (owner, Oct 21): metallic copper chevrons at the exhaust end
         # pointing at the paired stacks, carried up through the band to the coping as on the hall gable, and the unit

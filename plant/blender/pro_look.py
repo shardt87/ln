@@ -98,7 +98,7 @@ LOOK = {
     "desk": ("paint", "#34383c", .35, 0), "console": ("paint", "#3d4247", .45, .1), "monitor": ("paint", "#141618", .35, .1),
     "keycap": ("paint", "#2a2d30", .6, 0), "chair": ("paint", "#24272a", .8, 0), "vinyl": ("paint", "#b9b6ad", .35, 0),
     "carpet": ("paint", "#454c53", .95, 0), "ceiling": ("paint", "#ecebe6", .9, 0), "wall_in": ("paint", "#e3e0d9", .8, 0),
-    "door_in": ("paint", "#9c7a55", .5, 0), "glass_in": ("paint", "#c8dde5", .05, 0), "blind": ("paint", "#dcd8cc", .8, 0),
+    "door_in": ("paint", "#9c7a55", .5, 0), "glass_in": ("paint", "#c8dde5", .05, 0), "xray": ("paint", "#a9d0e6", .05, 0), "blind": ("paint", "#dcd8cc", .8, 0),
     "acoustic": ("paint", "#5a6672", .95, 0), "rack": ("paint", "#1b1e21", .5, .3), "wood": ("paint", "#a9835b", .5, 0),
     "fabric": ("paint", "#5f6b74", .95, 0), "locker": ("paint", "#7d8c96", .4, .3), "foliage": ("paint", "#4b7a37", .7, 0),
     "binder_r": ("paint", "#a3332c", .5, 0), "binder_b": ("paint", "#2f5a8a", .5, 0), "binder_w": ("paint", "#e8e6e0", .5, 0),
@@ -153,11 +153,11 @@ if os.environ.get("SK_CABLE_MASK"):        # mask pass for the hero-cable compos
     for _k in _sel.get(os.environ["SK_CABLE_MASK"], CABLE_KEYS):
         LOOK[_k] = ("paint", "#ff0000", .5, 0)
 GRIME = (.44, .44, .44, 1)              # neutral weathering (was warm brown, which tinted the whole plant)
-ALPHA = {"glass_in": .18, "coilpak_p": .7, "coilpak_b": .7}
+ALPHA = {"glass_in": .18, "coilpak_p": .7, "coilpak_b": .7, "xray": .14}   # xray: SC-2 enclosure
 EMIT = {"led_r": 4.0, "led_g": 4.0, "led_a": 4.0, "hmi": .8, "lamp_in": 12.0}
 _mats = {}
 # materials kept clean: glass, lamps, people, signs, labels, cables and the like
-WEATHER_SKIP = {"boot", "reflect", "glove", "tent", "sw_red", "xlpe", "alu", "white_truck", "lamp", "sign", "label", "hivis", "hivis_o", "hardhat", "workwear", "skin", "glass",
+WEATHER_SKIP = {"xray", "boot", "reflect", "glove", "tent", "sw_red", "xlpe", "alu", "white_truck", "lamp", "sign", "label", "hivis", "hivis_o", "hardhat", "workwear", "skin", "glass",
                 "window", "insulator", "rail", "cable_mv", "cable_armor", "cable_tc", "cable_mc", "cable_inst", "cable_tcx",
                 "cable_fa", "cable_fo", "cable", "truck", "sea", "water",
                 "swgr_in", "cab_in", "panel_in", "epoxy", "mat", "led_r", "led_g", "led_a", "hmi", "yellow", "cu_bus", "mimic",
@@ -1477,6 +1477,8 @@ EPIC = [
     dict(k="SC20", n="SC-1 cutaway from the north: generator terminal box and 13.8 kV leads, interior tray and junction boxes, the MV tray outside",
          eye=(1950, 1250, 34), target=(1935, 1207, 7), lens=24, show="all", sun=(38, 215),
          hide=("SC-1 package enclosure", "SC-1 turbine enclosure exterior finish")),
+    dict(k="SC21", n="SC-2 with its enclosure x-rayed: generator, engine, harnesses and junction boxes seen through the panels",
+         eye=(2196, 1178, 62), target=(2224, 1206, 6), lens=24, show="all", sun=(38, 215)),
     dict(k="T5G1", n="Private 5G / LTE monopole: sector platform with massive-MIMO units, microwave backhaul, base compound",
          eye=(345, 380, 40), target=(262, 455, 62), lens=26, show="all", sun=(38, 215), plumes=False),
     dict(k="T5G2", n="5G sector platform close-up: panel antennas, massive-MIMO units, radio units, aviation light",

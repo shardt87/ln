@@ -223,3 +223,11 @@ open them locally in Chrome or Edge).
   Fuel-gas drops now rise into each unit's fuel-gas module (build_model routes x 1950 / 2218.5) instead of at the
   enclosure door. Cameras SC19 / SC20 hide "SC-1 package enclosure" and the exterior finish. Viewer v66 (use the
   section cut at ~EL 16 to look inside in the viewer).
+- Oct 21 SC interiors, second pass + x-ray (owner): sc_interior.refine(): accessory gearbox with radial drive and
+  hydraulic starter (+ hydraulic lines out south), lube supply / scavenge to the sumps and out north to the cooler,
+  ignition exciter and igniter leads, UV flame detectors, VSV unison ring and actuators with LVDT leads, speed and
+  vibration pickups with cables down the base to JB-3, generator stator RTDs and bearing probes to an RTD box, space
+  heaters, ceiling lighting conduit and lighting panel, fire-and-gas loop to an F&G panel. SC-2's enclosure walls and
+  roof are x-rayed: new palette colour "xray" (#9fc4d8, opacity .22; Blender pro_look alpha .14, viewer 'glass'
+  class); band, joints, doors and roof gear stay solid. SC-1 keeps its solid enclosure (cutaways SC19 / SC20).
+  Camera SC21 (SC-2 x-ray from above). Viewer v67.

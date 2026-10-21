@@ -61,21 +61,24 @@ def walls(k, x):
     fuel.G["parts"][:] = keep
     on(it)
     t = .3
+    # SC-2's enclosure is x-rayed (owner, Oct 21: one unit with the enclosure, one without): see-through panels, the
+    # band, joints, doors and roof gear stay solid as its frame
+    gen_c, tur_c, roof_c = ("ehouse", "machine", "roof") if k == 1 else ("xray", "xray", "xray")
     # generator compartment, x + .5 .. 24, EL 1.5 .. 17
-    panel(1, 1193, 1193 + t, x + .5, x + 24, 1.5, 16.7, "ehouse")
-    panel(1, 1217 - t, 1217, x + .5, x + 24, 1.5, 16.7, "ehouse")
-    panel(0, x + .5, x + .5 + t, 1193 + t, 1217 - t, 1.5, 16.7, "ehouse")
-    panel(0, x + 24 - t, x + 24, 1193 + t, 1217 - t, 1.5, 16.7, "ehouse", (YC - 1.5, YC + 1.5, ZS - 1.5, ZS + 1.5))
-    box(x + .5, x + 24, 1193, 1217, 16.7, 17.0, "ehouse")
+    panel(1, 1193, 1193 + t, x + .5, x + 24, 1.5, 16.7, gen_c)
+    panel(1, 1217 - t, 1217, x + .5, x + 24, 1.5, 16.7, gen_c)
+    panel(0, x + .5, x + .5 + t, 1193 + t, 1217 - t, 1.5, 16.7, gen_c)
+    panel(0, x + 24 - t, x + 24, 1193 + t, 1217 - t, 1.5, 16.7, gen_c, (YC - 1.5, YC + 1.5, ZS - 1.5, ZS + 1.5))
+    box(x + .5, x + 24, 1193, 1217, 16.7, 17.0, roof_c)
     # turbine compartment, x + 25 .. 69.5, EL 1.5 .. 22, roof EL 22 - 22.6 with the inlet duct coming through it
-    panel(1, 1193, 1193 + t, x + 25, x + 69.5, 1.5, 22, "machine")
-    panel(1, 1217 - t, 1217, x + 25, x + 69.5, 1.5, 22, "machine")
-    panel(0, x + 25, x + 25 + t, 1193 + t, 1217 - t, 1.5, 17.4, "machine", (YC - 1.5, YC + 1.5, ZS - 1.5, ZS + 1.5))
-    panel(0, x + 25, x + 25 + t, 1193 + t, 1217 - t, 17.4, 22, "machine", (1198.9, 1211.1, 17.4, 22))
-    panel(0, x + 69.5 - t, x + 69.5, 1193 + t, 1217 - t, 1.5, 22, "machine", (1200.5, 1209.5, 4.5, 13.5))
+    panel(1, 1193, 1193 + t, x + 25, x + 69.5, 1.5, 22, tur_c)
+    panel(1, 1217 - t, 1217, x + 25, x + 69.5, 1.5, 22, tur_c)
+    panel(0, x + 25, x + 25 + t, 1193 + t, 1217 - t, 1.5, 17.4, tur_c, (YC - 1.5, YC + 1.5, ZS - 1.5, ZS + 1.5))
+    panel(0, x + 25, x + 25 + t, 1193 + t, 1217 - t, 17.4, 22, tur_c, (1198.9, 1211.1, 17.4, 22))
+    panel(0, x + 69.5 - t, x + 69.5, 1193 + t, 1217 - t, 1.5, 22, tur_c, (1200.5, 1209.5, 4.5, 13.5))
     for (a0, a1, b0, b1) in ((x + 24.6, x + 69.9, 1192.6, 1198.7), (x + 24.6, x + 69.9, 1211.3, 1217.4),
                              (x + 28.3, x + 69.9, 1198.7, 1211.3)):
-        box(a0, a1, b0, b1, 22, 22.6, "roof")
+        box(a0, a1, b0, b1, 22, 22.6, roof_c)
     return it
 
 
@@ -192,7 +195,82 @@ def interior(k, x):
     rod((x + 50, YC, 19.7), (x + 50, YC, 15.5), .04, "steel", seg=4)
     box(x + 49.6, x + 50.4, YC - .3, YC + .3, 15.0, 15.5, "crane")                  # hook block
     n += 30
+    n += refine(k, x)
     fuel.D = False
+    return n
+
+
+def refine(k, x):
+    """Second interior pass (owner, Oct 21: more wires and refinement inside): the engine's accessory gearbox with the
+    hydraulic starter, lube supply / scavenge and the lines out to the fin-fan cooler; ignition exciter and igniter
+    leads; flame detectors; variable-stator-vane actuators on their unison ring with LVDT leads; speed and vibration
+    pickups with their cables down the base to JB-3; generator stator RTDs and bearing vibration probes to an RTD box;
+    space heaters; the lighting conduit and lighting panel; the fire-and-gas loop to the F&G panel."""
+    n = 0
+    # accessory gearbox under the front frame, radial drive up into the engine, hydraulic starter on its aft pad
+    box(x + 37.0, x + 38.4, YC - .8, YC + .8, 2.0, 3.0, "steel")
+    box(x + 36.2, x + 39.2, YC - 1.6, YC + 1.6, 3.0, 5.6, "gt_cold")
+    rod((x + 37.7, YC, 5.6), (x + 37.7, YC, 6.7), .25, "steel", seg=8)
+    rod((x + 39.2, YC, 4.3), (x + 41.2, YC, 4.3), .9, "motor", seg=16)               # hydraulic starter
+    for dy in (-.35, .35):                                                           # starter hydraulic lines out south
+        rod((x + 41.2, YC + dy, 4.3), (x + 41.2 + .2, YC + dy, 4.3), .12, "pipe", seg=6)
+    rod((x + 41.4, YC - .35, 4.3), (x + 41.4, 1193.6, 4.3), .12, "pipe", seg=6)
+    rod((x + 41.4, YC + .35, 4.6), (x + 41.4, 1193.6, 4.6), .12, "pipe", seg=6)
+    # lube: supply to the front and rear sumps, scavenge back, and the pair out through the north wall to the cooler
+    rod((x + 38.2, YC + 1.8, 3.4), (x + 55.0, YC + 1.8, 3.4), .12, "pipe", seg=6)
+    rod((x + 55.0, YC + 1.8, 3.4), (x + 55.0, YC + 1.8, 6.1), .12, "pipe", seg=6)
+    rod((x + 36.4, YC + 1.2, 5.6), (x + 36.0, YC + 1.2, 6.6), .12, "pipe", seg=6)
+    for zl in (3.0, 3.8):
+        rod((x + 38.6, YC + 1.6, zl), (x + 38.6, 1216.5, zl), .16, "pipe", seg=8)
+    n += 12
+    # ignition: exciter box on the base, two braided igniter leads to the combustor
+    box(x + 43.5, x + 45.5, 1209.5, 1211.0, 2.0, 3.8, "panel")
+    rod((x + 44.5, 1210.2, 3.8), (x + 46.8, YC + 2.7, ZS - 1.0), .09, "steel", seg=6)
+    rod((x + 44.9, 1210.2, 3.8), (x + 46.8, YC + 2.8, ZS + .6), .09, "steel", seg=6)
+    # flame detectors (UV) on the combustor, leads into the harness
+    for dy in (-1.6, 1.6):
+        rod((x + 48.5, YC + dy, ZS + 2.2), (x + 48.5, YC + dy, ZS + 2.9), .2, "steel_dark", seg=8)
+        rod((x + 48.5, YC + dy, ZS + 2.9), (x + 48.5, YC + .9 * (1 if dy > 0 else -1), ZS + 2.75), .05, "cable_inst", seg=4)
+    # variable stator vanes: unison ring and two actuators on the HP compressor, LVDT leads
+    ring(x + 39.5, 2.45, ZS, .07, "steel")
+    for s_ in (-1, 1):
+        rod((x + 38.0, YC + s_ * 2.9, ZS), (x + 40.6, YC + s_ * 2.9, ZS), .3, "steel", seg=10)
+        rod((x + 40.6, YC + s_ * 2.9, ZS), (x + 40.6, YC + s_ * .9, ZS + 2.75), .05, "cable_inst", seg=4)
+    n += 12
+    # speed pickups on the gearbox, vibration accelerometers on the front and rear frames; their cables down the base
+    # and along the north side to JB-3
+    for (sx, sz) in ((x + 36.6, 5.6), (x + 33.6, ZS - 2.8), (x + 57.4, ZS - 3.4)):
+        rod((sx, YC + .3, sz), (sx, YC + .3, sz - .5), .12, "steel_dark", seg=6)
+        rod((sx, YC + .3, sz - .5), (sx, YC + .3, 2.2), .04, "cable_inst", seg=4)
+        rod((sx, YC + .3, 2.2), (sx, 1214.9, 2.2), .04, "cable_inst", seg=4)
+    rod((x + 33.6, 1214.9, 2.2), (x + 57.4, 1214.9, 2.2), .1, "cable_inst", seg=6)
+    rod((x + 57.4, 1214.9, 2.2), (x + 57.4, 1215.9, 8.5), .1, "cable_inst", seg=6)
+    n += 12
+    # generator: stator RTDs and bearing vibration probes to an RTD box on the south side, space heater
+    box(x + 3.0, x + 5.0, 1197.8, 1199.2, 2.6, 5.0, "panel")
+    for xs in (x + 8, x + 11, x + 14):
+        rod((xs, 1200.5, 6.0), (xs, 1199.6, 5.2), .05, "cable_inst", seg=4)
+        rod((xs, 1199.6, 5.2), (x + 5.0, 1199.0, 4.4), .05, "cable_inst", seg=4)
+    for xb in (x + 3.6, x + 18.4):
+        rod((xb, YC - 1.5, ZS + .4), (xb, YC - 2.1, ZS + .9), .1, "steel_dark", seg=6)
+        rod((xb, YC - 2.1, ZS + .9), (x + 4.0, 1199.2, 5.0), .04, "cable_inst", seg=4)
+    box(x + 20.0, x + 22.5, 1193.4, 1194.0, 3.0, 5.0, "panel")                     # space heater
+    for xh in (x + 34, x + 60):
+        box(xh, xh + 2.5, 1193.4, 1194.0, 3.0, 5.0, "panel")
+    n += 14
+    # lighting conduit along the ceiling to the lighting panel; fire-and-gas loop to the F&G panel (north wall)
+    for yl in (1198.5, 1211.5):
+        rod((x + 31.0, yl, 21.75), (x + 67.0, yl, 21.75), .06, "alu", seg=6)
+    rod((x + 29.8, 1198.5, 21.75), (x + 29.8, 1216.3, 21.75), .06, "alu", seg=6)
+    rod((x + 29.8, 1198.5, 21.75), (x + 31.0, 1198.5, 21.75), .06, "alu", seg=6)
+    rod((x + 29.8, 1216.3, 21.75), (x + 29.8, 1216.3, 19.0), .06, "alu", seg=6)
+    box(x + 29.0, x + 30.6, 1215.9, 1216.6, 17.0, 19.0, "panel")                    # lighting panel
+    rod((x + 33.0, 1200.1, 21.55), (x + 62.0, 1200.1, 21.55), .05, "cable_fa", seg=4)
+    rod((x + 33.0, 1200.1, 21.55), (x + 28.0, 1200.1, 21.55), .05, "cable_fa", seg=4)
+    rod((x + 28.0, 1200.1, 21.55), (x + 28.0, 1216.3, 21.55), .05, "cable_fa", seg=4)
+    rod((x + 28.0, 1216.3, 21.55), (x + 28.0, 1216.3, 19.0), .05, "cable_fa", seg=4)
+    box(x + 27.3, x + 28.7, 1215.9, 1216.6, 17.0, 19.0, "red")                      # F&G panel
+    n += 10
     return n
 
 
