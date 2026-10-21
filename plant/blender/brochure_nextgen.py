@@ -83,7 +83,7 @@ def opener():
   <svg class="abs" style="left:0;top:{SH - 420}px" width="{CW}" height="420"><polygon points="0,130 {CW},40 {CW},420 0,420" fill="{INK}"/>
     <polygon points="0,130 {CW},40 {CW},52 0,142" fill="{COPPER}"/></svg>
   <div class="abs kicker" style="left:48px;top:48px;color:{WHITE}">Southwire &middot; Power Generation Solutions</div>
-  <div class="abs h1" style="left:44px;top:{SH - 330}px;font-size:84px">Built for the<br><em>next generation</em><br>of power.</div>
+  <div class="abs h1" style="left:44px;top:{SH - 352}px;font-size:70px">Built for the<br><em>next generation</em><br>of power.</div>
   <div class="abs lede" style="left:48px;top:{SH - 118}px;width:{CW - 96}px">The power plant has changed. One gas plant
     selling megawatt-hours has become a campus: efficient combined cycle, fast modular power, battery storage, carbon
     capture, green hydrogen and the data centres that now drive demand. Here is what changed, and the cable that makes it work.</div>
@@ -183,8 +183,8 @@ def sustain():
   <div class="abs lede" style="left:48px;top:206px;width:{CW - 96}px;font-size:13.5px">Sustainability at Southwire is a
     commitment, not a campaign: making cable responsibly, helping customers build with less waste, and putting
     electrification to work wherever it is needed, from the grid to the race track.</div>
-  <div class="abs ph" style="left:48px;top:300px;width:{CW - 96}px;height:250px">Formula E photo + logo<br>
-    <span style="font-weight:400;letter-spacing:.06em">insert after brand approval</span></div>
+  <div class="abs ph" style="left:48px;top:300px;width:{CW - 96}px;height:250px"><div>Formula E photo + logo<br>
+    <span style="font-weight:400;letter-spacing:.06em">insert after brand approval</span></div></div>
   <div class="abs" style="left:48px;top:574px;width:{CW - 96}px;column-count:2;column-gap:28px">
     <div class="li"><b>Formula E</b>Southwire is Formula E's Official Wire and Cable Provider, announced in March 2023
       for the 2022/23 season.</div>

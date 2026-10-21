@@ -125,3 +125,10 @@ open them locally in Chrome or Edge).
 | `brochure/` | Cable schedule workbook, X-ray data |
 | `coastal/`, `reference/`, `screens/`, `site/`, `threejs/` | Coastal variant, drawing reference data, control-room screen images, site data, three.js helpers |
 | `README.md`, `DETAIL_CYCLES.md` | Full documentation and the change log |
+
+## Next-generation power brochure section (Oct 21)
+- `blender/brochure_nextgen.py` builds `renders/nextgen/SW_NextGenPower.pdf` (6 pp, email credit on pp 2+), previews prev_01..06.png.
+- Pages: opener / then and now (8-row table) / the modern campus / decarbonisation (CCS, 25 MW PEM H2, H2-ready GTs) /
+  built faster (SC-4 plug-and-play pad, SIMpull + Maxis fit-out) / sustainability + Formula E.
+- Formula E photo and logo: dashed placeholder until brand approval. Formula E facts as published; the series' own
+  sustainability claims are attributed to it. Check all of these before printing.
