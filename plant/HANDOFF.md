@@ -170,3 +170,12 @@ open them locally in Chrome or Edge).
   taken off, as the CC black-crown trial was) and the HRSG casing finish on the SCRs (slate "hrsg" casing, black
   ribs, "SCR 1 / SCR 2" in copper between the platforms on the south face, the ribs broken behind it; upper catalyst
   doors moved to the ends). Viewer v61.
+- Oct 21 SC-4 plug-and-play pad remodelled (owner: the three-tier spine modules looked generic and clunky; how is such
+  a pad really wired?): reserved_pad.demo() now shows it as an LM6000-class pad is built: a factory cable bus (two
+  bolted aluminium sections on portal supports, capped flanges, "AWAITING GENERATOR") for the 13.8 kV generator leads
+  to the PCM; a precast surface cable trough on grade (2 ft, lids, two stretches open with the lids stacked beside)
+  carrying control / instrument / fibre to branches at each skid landing and the PCM pad; pre-terminated harnesses
+  with plug connectors and dust caps coiled at each landing (moved clear of the PCM MV stub-ups); ground-grid copper
+  pigtails at the foundation and PCM pad corners. Painted outlines, PCM landing frame and PLUG & PLAY sign kept.
+  Camera SC15 (close). Viewer v62. NB: the nextgen brochure page 5 hero (SC7) still shows the old modules; re-render
+  SC7 and rebuild brochure_nextgen.py when that brochure is next touched.
