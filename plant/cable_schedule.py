@@ -336,6 +336,10 @@ def sc_pcm(it):
     m = re.match(r"(?:CONDITIONAL: )?SC-(\d)[: ]", it["name"])
     if it["area"] == "I" and m and not it["name"].startswith(f"SC-{m.group(1)} PCM"):
         return one(rf"^SC-{m.group(1)} PCM")
+    # the shared systems that serve SC-1 / SC-2 (NOx water injection and its demin water, aqueous ammonia, fuel-gas
+    # compression) belong to the nearer SC unit's control and MCC too, not to the RICE plant (audit, Oct 21)
+    if it["area"] == "I" and re.match(r"Water-injection skid|Demin tank|Aqueous ammonia \(SC|Fuel-gas compressors 3", it["name"]):
+        return nearest([one(r"^SC-1 PCM"), one(r"^SC-2 PCM")], it)
     return None
 
 
@@ -466,6 +470,12 @@ for k in (1, 2):
     lv_feeder(pcm_k, cems_k, 15, f"SC-{k} CEMS shelter panel: analysers, heated sample line, lighting", motor=False)
     add(pcm_k, cems_k, f"SC-{k} CEMS data to the unit control (Modbus TCP)", "FO", "12 SM", "-")
     add(pcm_k, cems_k, f"SC-{k} CEMS shelter fire alarm loop", "FA", "2/C", "14")
+    # the PCM's own building services (it is register-free, so the generic building pass never reached it)
+    f_ = pcm_k["fp"]
+    add(pcm_k, pcm_k, f"SC-{k} PCM lighting, receptacles and HVAC (from its own 480 V board)", "LV", "3/C+G", "2", 1, 1,
+        40, 480, None, "internal to the PCM; aux transformer 13.8 kV / 480 V inside", length=((f_[1] - f_[0]) * 2, 10, "Tray"))
+    add(CR, pcm_k, f"SC-{k} unit control panel: plant network / DCS fibre", "FO", "12 SM", "-")
+    add(CR, pcm_k, f"SC-{k} PCM fire alarm / F&G node to the plant FACP", "FA", "2/C", "14")
 BUS_DUCT = [("RICE PCM to MOD-EH bus tie", "13.8 kV, ~6,300 A"), ("MOD-EH to T-MOD-1 LV side", "13.8 kV, ~5,000 A"),
             ("MOD-EH to T-MOD-2 LV side", "13.8 kV, ~5,000 A"),
             ("Generator terminals to GSU / UAT / ET (isolated-phase bus)", "21 kV, as modelled (IPB routes)"),
@@ -636,6 +646,8 @@ DEV = [
     (r"^SC-\d tempering-air fans", dict(m=[(2, 185, 0)], ai=8, di=8)),       # 2 x 250 hp, vibration, damper limits
     (r"^SC-\d ammonia flow-control", dict(m=[(2, 7.5, 0)], ai=8, di=8, sol=4)),   # dilution-air blowers, flow control
     (r"^SC-\d auxiliary skids", dict(m=[(1, 7.5, 0)], ai=14, di=12, sol=4)),     # fuel-gas module I/O, ESD; water-wash pump
+    (r"^Water-injection skid", dict(m=[(2, 75, 0)], ai=10, di=10, sol=2)),      # 2 x 100 % HP NOx water-injection pumps
+    (r"^Aqueous ammonia \(SC", dict(m=[(2, 3.7, 0)], ai=6, di=6)),               # unloading / forwarding pumps, level
     (r"^TM-\d", dict(m=[(6, 22, 0)], ai=100, di=60, tc=20)),
     (r"^CONT-\d|^MOB-1|^GEN-[EO]", dict(ai=20, di=20)),
     (r"^Black-start genset", dict(ai=20, di=20)),

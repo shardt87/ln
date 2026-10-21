@@ -198,3 +198,9 @@ open them locally in Chrome or Edge).
     one row per phase (red / amber / blue tape); terminal-box drops lifted clear of the tray;
   * pre-existing, not SC: the admin building's 800 A service fails the 125 % ampacity check (2 sets).
   Camera SC18 (generator tray). Viewer v64.
+- Oct 21 SC audit, part 2 (owner: "did you check these ones too"): every item round the SC units checked.
+  Fixed: water-injection skid (now 2 x 75 kW HP pumps + I/O), demin tank, aqueous ammonia (2 pumps + I/O) and the
+  fuel-gas compressors' control / home runs moved from the RICE PCM to the nearer SC PCM (sc_pcm(); their MV stays
+  from MOD-EH); the SC PCMs get their own building services (lighting / HVAC from their 480 V board, DCS fibre and
+  F&G to the control building). Unchanged and correct: RICE hall, reagent storage, RICE PCM on the RICE PCM; trays,
+  pipes, signage, people, fence and site lighting carry no load of their own (lighting counted under Site lighting).
