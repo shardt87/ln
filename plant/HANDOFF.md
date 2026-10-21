@@ -244,3 +244,9 @@ open them locally in Chrome or Edge).
   secondary to LCI-n and LCI-n output to the GTG terminals (3 x 3 x 750 kcmil 5 kV each), GTG-n neutral to NGT-n
   (25 kV 4/0); STG field leads from EXC-ST and neutral to NGT-ST. Model: MC-HL from the tray drop to both pump
   motors on each GT aux skid, with local disconnects (gt_wiring.py). Viewer v69.
+- Oct 21 turbine hall "all cables" audit (owner): every cable class checked per item for GT1-3 / GTG / skids / EXC /
+  NGT / SFC / GCB / GSU / UAT and the ST train. Added: TCP-1..3 and EHC-ST redundant DCS fibre and 120 V UPS feeds;
+  lube-oil skid fire detection (GT aux, ST aux); GSU / UAT transformer fire detection + deluge release; GCB 125 V DC
+  close / trip / spring charge and heater feeds; FS-GTn fire detection and CO2 release; GFM-n gas detection.
+  Admin building 800 A service now 3 sets 500 kcmil (was 2; the workbook's last ampacity FAIL). Workbook audit: all
+  PASS; the voltage-drop CHECK (EDG-1 / -2 3.1-3.3 %, fuel-cell AC 5.6 %) remains for review.

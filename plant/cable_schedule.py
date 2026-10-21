@@ -380,6 +380,22 @@ for n in (1, 2, 3):
         "1/C", "750", 3, 3, 9000, 4160, 1250, "variable frequency during the start; into the IPB at the starting switch")
     add(gtg, BY_TAG[f"NGT-{n}"], f"GTG-{n} neutral to the grounding cubicle NGT-{n}", "MV25", "1/C", "4/0", 1, 1, None, 21000,
         None, "generator neutral, 25 kV class")
+# turbine-hall "all cables" audit, Oct 21: networks, UPS, fire detection / release, breaker DC the passes above missed
+for u in ("1", "2", "3", "ST"):
+    eh = BY_TAG["R3"] if u == "ST" else BY_TAG[f"R2{'ABC'[int(u) - 1]}"]
+    ctrl_it = BY_TAG["EHC-ST"] if u == "ST" else BY_TAG[f"TCP-{u}"]
+    add(CR, ctrl_it, f"{ctrl_it['tag']} unit control network to the DCS (redundant fibre pair)", "FO", "12 SM", "-", 2, 1)
+    add(eh, ctrl_it, f"{ctrl_it['tag']} 120 V AC UPS feeds (redundant A / B)", "LV1C", "1/C", "6", 2, 2, 5, 120)
+    lube = BY_TAG["ST aux"] if u == "ST" else BY_TAG[f"GT{u} aux"]
+    add(eh, lube, f"{lube['tag']} lube-oil skid fire detection loop", "FA", "2/C", "14")
+    for t in ((f"GSU-{u}", f"UAT-{u}") if u != "ST" else ("GSU-ST",)):
+        add(eh, BY_TAG[t], f"{t} transformer fire detection and deluge-valve release", "FA", "2/C", "14", 2, 1)
+    gcb = BY_TAG["GCB-ST" if u == "ST" else f"GCB-{u}"]
+    add(eh, gcb, f"{gcb['tag']} 125 V DC closing / trip and spring-charging motor", "LV1C", "1/C", "6", 1, 2, 2, 125)
+    lv_feeder(eh, gcb, 3, f"{gcb['tag']} enclosure heaters and lighting", motor=False)
+    if u != "ST":
+        add(eh, BY_TAG[f"FS-GT{u}"], f"FS-GT{u} fire detection loop and CO2 release circuits", "FA", "2/C", "14", 3, 1)
+        add(eh, BY_TAG[f"GFM-{u}"], f"GFM-{u} gas detection (F&G) to the unit F&G node", "FA", "2/C", "14", 2, 1)
 stg = BY_TAG["STG"]                                   # STG: field and neutral (power audit, Oct 21)
 add(BY_TAG["EXC-ST"], stg, "EXC-ST DC field leads to the STG collector (+ / -)", "PV", "1/C", "1000", 6, 2, None, 500, 3500,
     "~3,500 A DC field current (typ.)")
@@ -875,8 +891,8 @@ if ADM:
         return abs(x - fx) + abs(381.0 - fy) + abs(y - 381.0) + up
     EL, MDF = (243.0, 389.0), (217.0, 392.0)
     nb = lambda t: dict(ADM, name=f"Control / admin building: {t}", tag=t)
-    add(nb("service duct bank, north wall x 262"), nb("MDP 480 V"), "Building service 480 V, 800 A: 2 sets in 4 in PVC",
-        "LV1C", "1/C", "500", 2, 4, 480, 480, 800, "from the north-wall duct bank", length=(30.0, 32.0, "Conduit"))
+    add(nb("service duct bank, north wall x 262"), nb("MDP 480 V"), "Building service 480 V, 800 A: 3 sets in 4 in PVC",
+        "LV1C", "1/C", "500", 3, 4, 480, 480, 800, "from the north-wall duct bank; 3 sets 500 kcmil for 125 % (audit, Oct 21)", length=(30.0, 32.0, "Conduit"))
     for dst, size, n, v, a, d in (("T-1 75 kVA", "3", 3, 480, 90, "MDP to T-1 primary"),
                                   ("LP-1", "1", 4, 480, 100, "MDP to LP-1 277/480 V lighting"),
                                   ("UPS-1", "4", 3, 480, 60, "MDP to UPS-1 (feeds EP-1)")):
