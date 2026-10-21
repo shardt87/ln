@@ -114,6 +114,21 @@ def main():
         im.save(p)
         print(p, im.size)
 
+    # SC-1 / SC-2 turbine enclosures, south face (owner, Oct 21: the combined cycle's branding on the simple cycle):
+    # two chevrons over the full wall height (EL 1.5-21.2, 11 ft wide), the band crossing them as on the gable;
+    # SC-1's point east and SC-2's west, both at the paired stacks
+    D = os.path.dirname(OUT)
+    p = os.path.join(D, "sc_chevrons_e.png")
+    livery(p, 11.0, 19.7, [(.5, 2.0), (4.0, 2.0)], 4.0, 11.0, notch=False)
+    Image.open(p).transpose(Image.FLIP_LEFT_RIGHT).save(os.path.join(D, "sc_chevrons_w.png"))
+    for t in ("SC1", "SC2"):
+        im = Image.new("RGBA", (3000, 1200), (0, 0, 0, 0))
+        ImageDraw.Draw(im).text((1500, 600), t, font=f, fill=INK, anchor="mm")
+        im = im.crop(im.getbbox())
+        p = os.path.join(D, f"unit_{t}.png")
+        im.save(p)
+        print(p, im.size)
+
 
 if __name__ == "__main__":
     main()

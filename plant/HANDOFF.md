@@ -160,3 +160,8 @@ open them locally in Chrome or Edge).
   heat-stained band at the outlet, a caged ladder, sampling ports above the platform, a base manway. SCR: caged
   ladders EL 14 -> 27 and 27 -> roof, roof guardrail, expansion joints at both ends of the exhaust collector.
   Cameras SC13 (from above) and SC14 (from grade). Viewer v59.
+- Oct 21 SC branding (owner: "the same branding of the combined cycle"): campus_brand.py gives SC-1 / SC-2 the hall's
+  set on the turbine enclosure: 1.6 ft copper band (EL 17.2-18.8), black coping, black corner pilasters, metallic
+  copper chevrons (screens/sc_chevrons_e/_w.png from blender/hall_sign.py) at the exhaust end pointing at the paired
+  stacks, and SC1 / SC2 painted in the hall's Barlow face (screens/unit_SC*.png) where the white nameplate was
+  (removed in modular_lod3). South compartment louvre dropped for the livery (north one stays). Viewer v60.

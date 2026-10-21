@@ -229,9 +229,7 @@ def equipment():
         for xr in (x + 27, x + 37, x + 42, x + 47, x + 62, x + 67):        # turbine enclosure panel joints
             for y, s in ((1193, -1), (1217, 1)):
                 box(xr - .08, xr + .08, y, y + s * .12, 1.5, 22, "steel")
-        decal((x + 41, 1192.85, 15.5), (0, -1, 0), 10, 2.2,
-              [(f"SC-{k}", .42, True, None), ("LM6000-CLASS AERODERIVATIVE  ·  50 MW", .22, False, None)],
-              bg="#ffffff")
+        # (the white SC-k nameplate stood here; the unit is lettered in campus_brand.py since Oct 21)
         fuel.D = False
         if k == 2:
             sc2_mirror.mirror_since(mark)                  # drawn coordinates -> the mirrored unit

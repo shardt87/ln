@@ -3,7 +3,8 @@ cycle stays the hero; the rest should read as the same campus without competing 
 lettering, no logos here:
 - RICE engine hall: a 1 ft copper band (the hall's is 1.6 ft) at about two thirds of the wall, black coping on the
   roof edge, black corner pilasters, and a name sign over each end roll-up door;
-- SC-1 / SC-2: the same band and coping round the turbine enclosure (its own SC-n nameplate stays);
+- SC-1 / SC-2: since Oct 21 the combined cycle's set (owner): the hall's 1.6 ft band, coping, corner pilasters,
+  metallic copper chevrons at the exhaust end pointing at the paired stacks, and the unit painted large (SC1 / SC2);
 - the modular e-houses (MOD-EH, MOD-LV, black-start switchgear) stay plain (owner, Oct 20).
 Signs in the gallery-door style (Southwire black panel, white letters). Strips are cut round anything standing at
 the walls (hall_exterior.Face). Typical, not engineered."""
@@ -82,7 +83,17 @@ def build():
         from sc2_mirror import mx
         e0, e1 = (x + 25, x + 69.5) if k == 1 else (mx(x + 69.5), mx(x + 25))   # SC-2 stands mirrored
         n += building(f"SC-{k}: aeroderivative simple-cycle unit", f"SC-{k} turbine enclosure",
-                      (e0, e1, 1193, 1217, 22), (17.6, 18.6), (21.2, 22.0), ("machine", "roof"),
-                      corners=False)              # the enclosure already carries its SC-n nameplate
+                      (e0, e1, 1193, 1217, 22), (17.2, 18.8), (21.2, 22.0), ("machine", "roof"))
+        # the combined cycle's livery on the south face (owner, Oct 21): metallic copper chevrons at the exhaust end
+        # pointing at the paired stacks, carried up through the band to the coping as on the hall gable, and the unit
+        # painted large in the hall's Barlow face between the doors (the white nameplate came off)
+        it = find(f"SC-{k} turbine enclosure exterior finish")
+        X = (lambda v: v) if k == 1 else mx
+        fuel.G["decals"].append(dict(c=[X(x + 62.5), 1192.86, 11.35], n=[0, -1, 0], w=11.0, h=19.7, bg=None,
+                                     lines=[], item=it["id"], layer=it["layer"], brand=0,
+                                     img="sc_chevrons_e.png" if k == 1 else "sc_chevrons_w.png", print=1, metal=.7))
+        fuel.G["decals"].append(dict(c=[X(x + 43), 1192.86, 12.9], n=[0, -1, 0], w=(8.8, 10.1)[k - 1], h=5.4, bg=None, lines=[],
+                                     item=it["id"], layer=it["layer"], brand=0, img=f"unit_SC{k}.png", print=1))
+        n += 2
     # (the e-houses had a band and name sign here; taken off Oct 20 at the owner's request, they stay plain equipment)
     return n
