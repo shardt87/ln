@@ -3,7 +3,7 @@
 - absorbers A-C: a painted green band round the shell between the EL 200 and EL 250 platforms with "CCS" lettered (muted sage band, dark grey-green letters, so the CCS stays secondary to the power block)
   on it four times round (clear of the ladder, the tray riser and the amine risers), "CARBON CAPTURE · ABSORBER x"
   under the lettering; a sage sustainability leaf (screens/ccs_leaf.png) in each gap between the letterings
-  (one big leaf per gap);
+  (one big leaf per gap); the unit number (1-3 for A-C) large on the shell under each CCS, EL 160-184;
 - surfaces: crushed stone over the CCS block (ring road to utilities road, west edge to the east spine road),
   a concrete drive north of the absorbers;
 - equipment nameplates: DCC, booster fan, stripper, reboiler, CO2 compression, solvent storage;
@@ -63,6 +63,8 @@ def absorber_identity():
                   [("CCS", .85, True, "#3d5c47")], bg=None)
             decal((gx + Rp * ca, cy + Rp * sa, 212.4), (ca, sa, 0), 22, 2.8,
                   [(f"CARBON CAPTURE  ·  ABSORBER {t}", .7, True, "#3d5c47")], bg=None)
+            decal((gx + Rp * ca, cy + Rp * sa, 172.0), (ca, sa, 0), 14, 24,                 # unit number under the
+                  [(str(i + 1), .92, True, "#3d5c47")], bg=None)                              # band (owner, Oct 22)
         it = fuel.G["cur"]
         # one big sustainability leaf in each gap between the CCS letterings (owner, Oct 22; the leaf redrawn and the
         # pair at the south-west gap made one, the platform rail there runs in front of it)

@@ -354,3 +354,10 @@ leaf, so the grey and green leaves become one solid shape; JPEG specks median-fi
 re-thresholded for a smooth edge), leaves out the "Growing Green" wordmark, and fills it with one green
 (61, 100, 72); the white vein cuts stay transparent. Same screens/ccs_leaf.png, same 20 ft decals in the four gaps on
 absorbers A-C. Previews renders/ccs_leaf/ (CL1, CL3). verify PASS, audit CLEAN.
+
+## Oct 22 — CCS absorbers numbered 1-3 (viewer v84)
+Owner: "add 1 on the side of absorber A and 2 and 3 for the others". `ccs_lod3.absorber_identity()`: a 24 ft numeral
+(1 / 2 / 3 for A / B / C) in the CCS sage on the grey shell under each of the four CCS letterings, centred EL 172
+between the EL 130 and EL 200 platforms (checked clear of the risers, piping and the fire-alarm device at EL 156).
+The small "ABSORBER A-C" line and the viewer tags keep their letters. Camera CL4 (the three from the south); previews
+renders/ccs_numbers/. verify PASS, audit CLEAN.
