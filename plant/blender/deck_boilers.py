@@ -380,14 +380,25 @@ def spot_html(cam, spots, r=17):
     return out
 
 
+APPNAME = {"1": "MV-105 15 kV", "2": "TC-ER power", "3": "ARMOR-X MC-HL", "4": "MC-HL VFD", "5": "Control TC-ER",
+           "6": "Instrumentation PLTC", "7": "Thermocouple ext.", "—": "XHHW-2 1/C 500 kcmil"}
+
+
+def apps(prod):
+    """The cable applications behind a spot's product numbers, named (numbers as on the offering slide)."""
+    return " &nbsp;".join(f'<span style="color:{COPPER}">{APPNAME[k]}</span>'
+                          + (f'<sup style="font-size:9px;color:{GREY}"> {k}</sup>' if k != "—" else "")
+                          for k in prod.split(" · "))
+
+
 def spot_list(spots):
     return "".join(
-        f'<div style="position:relative;padding:7px 0 8px 36px;border-top:1px solid #2c3036">'
+        f'<div style="position:relative;padding:6px 0 7px 36px;border-top:1px solid #2c3036">'
         f'<span class="abs" style="left:0;top:8px;width:25px;height:25px;border-radius:13px;border:2.5px solid {COPPER};'
         f'font:800 13px/20px BC;color:{WHITE};text-align:center">{n}</span>'
-        f'<div style="font:800 15px/1.1 BC;color:{WHITE};text-transform:uppercase;letter-spacing:.03em">{t}'
-        f'<span style="float:right;font:700 12px/1.3 BC;color:{COPPER};letter-spacing:.06em">{prod}</span></div>'
-        f'<div style="font:400 11.5px/1.3 B;color:{GREY};margin-top:2px">{sub}</div></div>'
+        f'<div style="font:800 15px/1.1 BC;color:{WHITE};text-transform:uppercase;letter-spacing:.03em">{t}</div>'
+        f'<div style="font:400 11.5px/1.3 B;color:{GREY};margin-top:2px">{sub}</div>'
+        f'<div style="font:700 11.5px/1.25 BC;letter-spacing:.04em;margin-top:2px">{apps(prod)}</div></div>'
         for (n, t, sub, prod, p) in spots)
 
 
@@ -406,15 +417,15 @@ def slide_hero():
     cam = dict(cams(["ISO1"])["ISO1"], res=(1440, 810))
     h = N["hrsg"]
     lede = ("One HRSG train and everything wired to it: cable in copper (MV) and amber (LV, control, instruments), "
-            "the rest of the plant faded. Product numbers refer to the offering slide.")
-    extra = f"""<div class="abs" style="left:1086px;top:700px;width:300px;display:flex;gap:24px">
+            "the rest of the plant faded.")
+    extra = f"""<div class="abs" style="left:48px;top:640px;display:flex;gap:28px;padding:14px 20px;background:rgba(14,16,18,.82);border-radius:4px">
       <div><div class="big" style="font-size:30px">{h['cables']:,}</div><div class="bigl">cables / train</div></div>
       <div><div class="big" style="font-size:30px">{kft(h['ft'])}</div><div class="bigl">ft / train</div></div></div>"""
     return f"""
 <section class="page slide">
   <img class="abs" src="{img('ISO1')}" style="left:0;top:0;width:1440px;height:810px;object-fit:cover">
   {spot_html(cam, HERO_SPOTS)}
-  {panel("Boiler solutions &nbsp;&middot;&nbsp; HRSG", "The HRSG, <em>every cable</em>", lede, spot_list(HERO_SPOTS), extra)}
+  {panel("Boiler solutions &nbsp;&middot;&nbsp; HRSG", "The HRSG, <em>every cable</em>", lede, spot_list(HERO_SPOTS).replace("padding:6px 0 7px 36px", "padding:4px 0 5px 36px"), extra).replace("top:262px", "top:222px")}
   <div class="abs" style="left:0;top:730px;width:1040px;height:80px;background:linear-gradient(180deg,rgba(14,16,18,0),rgba(14,16,18,.95) 55%)"></div>
   {foot(2).replace("right:64px", "right:420px")}
 </section>"""
@@ -535,14 +546,14 @@ def slide_room():
     inset = os.path.join(PLANT, "renders", "boilers_full", "RA2_pro_clean.jpg")
     inset = url(inset if os.path.exists(inset) else os.path.join(R, "RA2_pro_clean.jpg"))
     lede = "Roof and two walls lifted off the HRSG 1 e-house: every cable leg, transformer to section."
-    extra = f"""<div class="abs" style="left:1086px;top:664px;width:300px;height:116px;border:2px solid {COPPER};border-radius:4px;overflow:hidden">
+    extra = f"""<div class="abs" style="left:40px;top:560px;width:340px;height:192px;border:2px solid {COPPER};border-radius:4px;overflow:hidden">
       <img src="{inset}" style="width:100%;height:100%;object-fit:cover;display:block"></div>
-      <div class="abs cap" style="left:1086px;top:784px;width:300px;font-size:10.5px">Inside: LC-R2A and MCC-R2A-1 (right), VFDs (left), trays overhead</div>"""
+      <div class="abs cap" style="left:40px;top:540px;width:360px;font-size:10.5px;color:#fff;text-shadow:0 1px 3px #000">Inside: LC-R2A and MCC-R2A-1 (right), VFDs (left), trays overhead</div>"""
     return f"""
 <section class="page slide">
   <img class="abs" src="{img('RA1')}" style="left:0;top:0;width:1440px;height:810px;object-fit:cover">
   {spot_html(cam, spots)}
-  {panel("Boiler solutions &nbsp;&middot;&nbsp; the e-house", "Inside <em>the room</em>", lede, spot_list(spots).replace("padding:7px 0 8px 36px", "padding:5px 0 5px 36px"), extra).replace("top:262px", "top:218px").replace("top:168px", "top:160px")}
+  {panel("Boiler solutions &nbsp;&middot;&nbsp; the e-house", "Inside <em>the room</em>", lede, spot_list(spots).replace("padding:6px 0 7px 36px", "padding:4px 0 5px 36px"), extra).replace("top:262px", "top:218px").replace("top:168px", "top:160px")}
   <div class="abs" style="left:0;top:730px;width:1040px;height:80px;background:linear-gradient(180deg,rgba(14,16,18,0),rgba(14,16,18,.95) 55%)"></div>
   {foot(4).replace("right:64px", "right:420px")}
 </section>"""
