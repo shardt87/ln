@@ -1,17 +1,21 @@
 """Sustainability leaf for the CCS absorber bands (owner, Oct 22: "add a leaf for sustainability on the spaces in between
-CCS"; redrawn the same day: "I didn't like the shape of this leaf ... one big one in between those CCS"). A single
-smooth leaf drawn from cubic Bezier curves, tip up and to the right, a curved midrib with sweeping veins and a curled
-stem, in the lettering's dark sage; the veins are cut out in the band's light green. Transparent ground; writes
-screens/ccs_leaf.png (square)."""
+CCS"; redrawn twice the same day: "didn't like the shape ... one big one", then "from the distance ... looks like just a
+blob, make sure that it looks like a leaf from distance as well").
+
+Drawn for legibility at distance, as a signage icon rather than an illustration: an elongated blade with a long
+drawn-out tip and a strong stem (the silhouette alone reads as a leaf), split along the midrib by a wide band-coloured
+gap into two halves in two greens (the light side catching the sun), and only three thick vein cuts per side, wide
+enough to survive at a few pixels. Transparent ground; writes screens/ccs_leaf.png (square)."""
+import math
 import os
 
 from PIL import Image, ImageDraw
 
 D = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "screens")
-INK, VEIN = (61, 92, 71, 255), (169, 189, 176, 255)
+DARK, LIGHT, GAP = (52, 84, 62, 255), (92, 133, 98, 255), (0, 0, 0, 0)
 
 
-def bez(p0, p1, p2, p3, n=80):
+def bez(p0, p1, p2, p3, n=100):
     out = []
     for k in range(n + 1):
         t = k / n
@@ -22,7 +26,7 @@ def bez(p0, p1, p2, p3, n=80):
 
 
 def stroke(d, pts, w0, w1, fill):
-    """A tapered stroke along pts, width w0 at the start to w1 at the end."""
+    """A tapered round-capped stroke along pts, width w0 at the start to w1 at the end."""
     for k, (a, b) in enumerate(zip(pts, pts[1:])):
         w = w0 + (w1 - w0) * k / max(1, len(pts) - 2)
         d.line([a, b], fill=fill, width=max(1, int(w)))
@@ -31,33 +35,32 @@ def stroke(d, pts, w0, w1, fill):
 
 def main(out=os.path.join(D, "ccs_leaf.png"), S=1200, ss=3):
     s = S * ss
-    P = lambda x, y: (x * s, y * s)
+    P = lambda p: (p[0] * s, p[1] * s)
     im = Image.new("RGBA", (s, s), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
-    base, tip = (.30, .74), (.86, .12)
-    # blade: upper-left edge bulging out, lower-right edge fuller, both meeting in a fine point at the tip
-    upper = bez(base, (.08, .46), (.40, .10), tip)
-    lower = bez(tip, (.86, .50), (.62, .80), base)
-    d.polygon([P(*p) for p in upper + lower], fill=INK)
-    # curled stem out of the base
-    stroke(d, [P(*p) for p in bez((.34, .69), (.24, .82), (.16, .88), (.10, .90), 40)], s * .028, s * .014, INK)
-    # midrib: a gentle curve from the base toward the tip, tapering
-    rib = bez(base, (.46, .56), (.66, .34), (.80, .18), 80)
-    stroke(d, [P(*p) for p in rib], s * .020, s * .006, VEIN)
-    # veins: sweeping from the midrib toward the tip side of each edge, shorter toward the tip
-    for t, ln in ((.18, .20), (.36, .19), (.54, .16), (.72, .11)):
-        i = int(t * (len(rib) - 1))
-        x, y = rib[i]
-        stroke(d, [P(*p) for p in bez((x, y), (x - .04 * ln / .2, y - .05 * ln / .2), (x - .10 * ln / .2, y - .12 * ln / .2),
-                                    (x - .11 * ln / .2, y - .19 * ln / .2), 30)], s * .011, s * .003, VEIN)   # to the upper edge
-        stroke(d, [P(*p) for p in bez((x, y), (x + .06 * ln / .2, y), (x + .13 * ln / .2, y - .03 * ln / .2),
-                                    (x + .18 * ln / .2, y - .08 * ln / .2), 30)], s * .011, s * .003, VEIN)   # to the lower edge
-    # trim anything outside the blade (vein tips) by re-masking with the blade shape plus the stem
-    mask = Image.new("L", (s, s), 0)
-    md = ImageDraw.Draw(mask)
-    md.polygon([P(*p) for p in upper + lower], fill=255)
-    stroke(md, [P(*p) for p in bez((.34, .69), (.24, .82), (.16, .88), (.10, .90), 40)], s * .028, s * .014, 255)
-    im.putalpha(Image.composite(im.getchannel("A"), Image.new("L", (s, s), 0), mask))
+    base, tip = (.27, .73), (.92, .08)                      # leaf axis tilted 45 deg, tip up to the right
+    # the two halves of the blade, each bounded by its edge and the (curved) midrib; the long tip is drawn out
+    rib = bez(base, (.45, .58), (.70, .33), tip)
+    upper = bez(base, (.05, .40), (.42, .02), tip)          # upper-left edge
+    lower = bez(tip, (.98, .42), (.62, .92), base)          # lower-right edge
+    d.polygon([P(p) for p in upper + list(reversed(rib))], fill=DARK)
+    d.polygon([P(p) for p in rib + lower], fill=LIGHT)
+    # stem: thick, slightly curved, continuing the midrib line out of the base
+    stroke(d, [P(p) for p in bez((.33, .67), base, (.19, .82), (.11, .91), 60)], s * .045, s * .030, DARK)
+    # cuts in the ground colour (transparent): a wide midrib gap and three thick veins per side, angled to the tip
+    cut = Image.new("L", (s, s), 0)
+    c = ImageDraw.Draw(cut)
+    stroke(c, [P(p) for p in rib[4:92]], s * .034, s * .010, 255)
+    ang = math.radians(-45)                                 # leaf axis direction (to the tip)
+    ax = (math.cos(ang), math.sin(ang))
+    for t, ln in ((.30, .25), (.50, .21), (.68, .15)):
+        x, y = rib[int(t * (len(rib) - 1))]
+        for sgn in (-1, 1):                                 # -1: upper-left half, +1: lower-right half
+            nrm = (ax[1] * -sgn, -ax[0] * -sgn)              # perpendicular to the axis, toward that edge
+            e = (x + (nrm[0] * .75 + ax[0] * .65) * ln, y + (nrm[1] * .75 + ax[1] * .65) * ln)
+            m = (x + (nrm[0] * .45 + ax[0] * .15) * ln, y + (nrm[1] * .45 + ax[1] * .15) * ln)
+            stroke(c, [P(p) for p in bez((x, y), m, m, e, 40)], s * .024, s * .008, 255)
+    im.putalpha(Image.composite(Image.new("L", (s, s), 0), im.getchannel("A"), cut))
     im.resize((S, S), Image.LANCZOS).save(out)
     print("wrote", out)
 

@@ -70,7 +70,7 @@ def absorber_identity():
             ca, sa = math.cos(math.radians(a)), math.sin(math.radians(a))
             Rp = R + .3
             fuel.G["decals"].append(dict(c=[round(gx + Rp * ca, 2), round(cy + Rp * sa, 2), 227.0], n=[ca, sa, 0],
-                                         w=17.0, h=17.0, bg=None, lines=[], item=it["id"],
+                                         w=20.0, h=20.0, bg=None, lines=[], item=it["id"],
                                          layer=it["layer"], img="ccs_leaf.png", print=1))
         fuel.D = False
 

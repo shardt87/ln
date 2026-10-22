@@ -331,3 +331,11 @@ CCS". `blender/leaf_icon.py` redrawn from cubic Beziers: a smooth pointed blade 
 with four sweeping veins per side, curled stem; same dark sage on transparent. `ccs_lod3.absorber_identity()`: one
 17 x 17 ft leaf centred in each of the four gaps (45, 135, -45, -135 deg) on absorbers A-C; at -135 the caged ladder
 runs in front of it. Camera CL3 (absorber A from the south-west); previews renders/ccs_leaf/. verify PASS, audit CLEAN.
+
+## Oct 22 — CCS leaf made legible at distance (viewer v81)
+Owner: "from the distance ... looks like just a blob; make sure it looks like a leaf from distance as well". The thin
+veins vanished at distance and the outline alone was near-oval. `blender/leaf_icon.py` redrawn as a signage icon: a
+pointed blade with a drawn-out tip, a thick stem continuing the axis, a wide midrib gap splitting it into two greens
+(#34543e / #5c8562), three thick vein cuts per side (cuts are transparent, so the band shows through). Checked at 120,
+48 and 24 px. Decal enlarged 17 -> 20 ft. Previews renders/ccs_leaf/ (CL1 distance, CL3 close). verify PASS, audit
+CLEAN.
