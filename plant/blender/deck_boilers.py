@@ -519,7 +519,7 @@ ROOM_SPOTS = [
     (5, "MCC drops", "power and control into each bucket", "2 · 5", (582.0, 620.0, 11.0)),
     (6, "VFD and MCC-2", "SCR blowers, chemical feed, blowdown", "2 · 4", (569.9, 628.0, 11.2)),
     (7, "Marshalling", "home-run multipairs from the field JBs", "6 · 7", (566.5, 636.0, 11.6)),
-    (8, "Out to the field", "power via the north wall, instruments via the roof", "2 · 5 · 6", (575.75, 644.0, 24.0)),
+    (8, "Out to the field", "power via the north wall, instruments via the roof", "2 · 5 · 6", (575.75, 644.0, 13.4)),
     (9, "UPS, DC and panels", "125 V DC, 120 V AC UPS, lighting", "2 · 5", (553.6, 630.0, 9.0)),
 ]
 

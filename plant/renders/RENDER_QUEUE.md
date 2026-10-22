@@ -1,0 +1,20 @@
+# Render queue: full-quality renders to run at the end
+
+Owner (Oct 22): work at preview quality for now (14 samples, scale 50, ~1-2 min a view). Do the full-quality pass
+for everything on this list in one batch once the content is settled.
+
+Full-quality command (from `plant/`, absolute paths; ~3-5 min a view at 32 samples):
+
+    SP=<scratchpad>; $SP/bvenv/bin/python /home/user/ln/plant/blender/SW-3X1_Rev14_blender_build.py \
+        --views <K1,K2,...> --style pro --set epic --samples 32 --scale 100 --out $SP/full
+    $SP/bvenv/bin/python /home/user/ln/plant/blender/finish_pro.py $SP/full
+    cp $SP/full/*_pro_clean.jpg renders/boilers_full/   # deck_boilers.py prefers these over renders/boilers
+    python3 blender/deck_boilers.py
+
+Shot rule: hide the plant cable-tray / IPB item (`hide=("Cable trays and isolated",)`) when it clutters a close-up. Keep
+it where tray congestion is the point of the shot. Process piping stays visible.
+
+| View | Used on | Status | Note |
+|---|---|---|---|
+| RA1 | Boilers slide 4 (main), slide 5 (R2A node) | preview only | trays hidden, Oct 22; the full render with trays was deleted |
+| RA2 | Boilers slide 4 (inset) | full done Oct 22 | re-render only if the R2A interior changes |

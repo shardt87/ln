@@ -1550,7 +1550,7 @@ EPIC = [
          ghost=dict(keep=("HRSG 1", "BFP-1", "SCRB-1", "CEMS shelter, HRSG 1", "R2A", "GT1 exhaust duct", "T-R2A"), glow=9.0)),
     dict(k="RA1", n="R2A HRSG e-house cutaway: T-R2A secondary over the room, lineups, trays and every cable drop",
          eye=(534, 606, 27), target=(570, 636, 5), lens=22, show="all", sun=(62, 200), plumes=False,
-         hide_layers=("HALL_ROOF", "R2A_ROOF"), lamps=160, lamp_z=13, lamp_box=(552, 584, 612, 652),
+         hide=("Cable trays and isolated",), hide_layers=("HALL_ROOF", "R2A_ROOF"), lamps=160, lamp_z=13, lamp_box=(552, 584, 612, 652),
          fill=((560, 625, 11.0, 2500, 2), (560, 640, 11.0, 2500, 2), (575, 620, 11.0, 2500, 2), (575, 638, 11.0, 2500, 2))),
     dict(k="RA2", n="R2A inside: LC-R2A and MCC-R2A-1 (right), VFDs (left), ladder trays and the drops into each section",
          eye=(575.0, 613.6, 10.7), target=(577.2, 650, 8.6), lens=16, show="all", plumes=False,

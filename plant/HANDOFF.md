@@ -482,3 +482,7 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
     - CEMS fibre / FA / THHN added to the train rows.
   - Bar: the train (~156,000 ft), then "feeding the room" (86 cables, 12,400 ft), not counted in the train because R2A also serves GT1.
   - Footers now read n/7.
+- Follow-up (owner): preview quality only for now. Full renders are listed in renders/RENDER_QUEUE.md and run in one batch at the end.
+  - RA1 now hides the plant tray / IPB item (`hide=("Cable trays and isolated",)`); the big pipe over R2A is process piping and stays.
+  - Rule going forward: hide that item on close-ups unless tray congestion is the point of the shot.
+  - The full RA1 render with trays was deleted; the deck uses the preview.
