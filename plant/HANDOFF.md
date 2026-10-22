@@ -369,3 +369,12 @@ absorbers A-C): the word and the digit are two panels, each tangent to the shell
 the curve; 9.2 ft DejaVu Bold (the size "CCS" already rendered at), .22 em space, the 28.7 ft pair centred on the face.
 The Growing Green sprigs trimmed 20 -> 16.5 ft to keep clear of the wider lettering. Previews renders/ccs_numbers/
 (CL1, CL3, CL4). verify PASS, audit CLEAN.
+
+## Oct 22 — CCS over the unit number, framed to the sprig (viewer v86)
+Owner: "didn't like that you made it smaller; put the numbers below CCS, same size as before ... CCS 1 in the middle,
+the height and bottom the same as the sprig (enquadrado)". `ccs_lod3.absorber_identity()`: on each face "CCS" at its
+original 10 ft type (DejaVu Bold, caps 7.5 ft) over the unit digit (1-3 for A-C) in the same type, both centred on
+the face; the two lines span exactly the sprig's visible height (ZS = 0.935 x 20 = 18.7 ft, measured from the alpha
+of screens/ccs_leaf.png), 3.7 ft line gap, block and sprig both centred at EL 226.5. Line panels 24.5 x 15 ft so the
+renderer neither shrinks nor offsets the line; .17 ft corrects the "mm" anchor to the glyph centre. Sprig back to 20 ft.
+Previews renders/ccs_numbers/ (CL1, CL3, CL4). verify PASS, audit CLEAN.

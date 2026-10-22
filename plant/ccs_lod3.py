@@ -3,7 +3,8 @@
 - absorbers A-C: a painted green band round the shell between the EL 200 and EL 250 platforms with "CCS" lettered (muted sage band, dark grey-green letters, so the CCS stays secondary to the power block)
   on it four times round (clear of the ladder, the tray riser and the amine risers), "CARBON CAPTURE · ABSORBER x"
   under the lettering; a sage sustainability leaf (screens/ccs_leaf.png) in each gap between the letterings
-  (one big leaf per gap); the lettering reads CCS 1 / CCS 2 / CCS 3 for absorbers A-C;
+  (one big leaf per gap); each lettering is CCS over the unit number (1-3 for A-C), the two lines framed to the
+  sprig's height;
 - surfaces: crushed stone over the CCS block (ring road to utilities road, west edge to the east spine road),
   a concrete drive north of the absorbers;
 - equipment nameplates: DCC, booster fan, stripper, reboiler, CO2 compression, solvent storage;
@@ -47,6 +48,9 @@ def shells():
             p["color"] = "hrsg"
 
 
+ZS = .935 * 20.0                     # visible height of the Growing Green sprig in its 20 ft panel (ft)
+
+
 def absorber_identity():
     for i, dx in enumerate((0, 160, 320)):
         t = "ABC"[i]
@@ -59,15 +63,15 @@ def absorber_identity():
         for a in (0, 90, 180, -90):                                                  # lettering, four faces (clear of ladder / riser)
             ca, sa = math.cos(math.radians(a)), math.sin(math.radians(a))
             Rp = R + .25
-            # "CCS 1" / "CCS 2" / "CCS 3" (owner, Oct 22): the word and the unit number as two panels, each tangent to
-            # the shell at its own angle so the pair follows the curve; 9.2 ft type (DejaVu Bold: CCS 2.21 em, space
-            # .30 em, digit .70 em, the space set to .22 em (the digit carries its own side bearing) -> 28.7 ft), the pair centred on the face, clear of the sprigs either side
-            P, half = 9.2, (2.2066 + .22 + .6958) * 9.2 / 2
-            for (txt, du, w) in (("CCS", -half + 2.2066 * P / 2, 23.0), (str(i + 1), half - .6958 * P / 2, 8.0)):
-                b = a + math.degrees(du / Rp)
-                cb, sb = math.cos(math.radians(b)), math.sin(math.radians(b))
-                decal((gx + Rp * cb, cy + Rp * sb, 227.5), (cb, sb, 0), w, 20,
-                      [(txt, P / (.95 * 20), True, "#3d5c47")], bg=None)
+            # "CCS" over the unit number (owner, Oct 22: "numbers below CCS, same size as before ... enquadrado"):
+            # CCS at its original 10 ft type (DejaVu Bold, capitals .75 em = 7.5 ft), the digit centred under it in the
+            # same type, the two lines spanning exactly the sprig's visible height (18.7 ft of its 20 ft panel), both
+            # centred at EL 226.5; panels sized so the renderer centres the line (line height <= panel) and never
+            # shrinks it (text width <= .92 w); the .17 ft term is the glyph-centre offset of the "mm" anchor
+            P, zc, cap = 10.0, 226.5, 7.5
+            for (txt, zl) in (("CCS", zc + ZS / 2 - cap / 2), (str(i + 1), zc - ZS / 2 + cap / 2)):
+                decal((gx + Rp * ca, cy + Rp * sa, round(zl - .17, 2)), (ca, sa, 0), 24.5, 15,
+                      [(txt, P / (.95 * 15), True, "#3d5c47")], bg=None)
             decal((gx + Rp * ca, cy + Rp * sa, 212.4), (ca, sa, 0), 22, 2.8,
                   [(f"CARBON CAPTURE  ·  ABSORBER {t}", .7, True, "#3d5c47")], bg=None)
         it = fuel.G["cur"]
@@ -76,8 +80,8 @@ def absorber_identity():
         for a in (45, 135, -45, -135):
             ca, sa = math.cos(math.radians(a)), math.sin(math.radians(a))
             Rp = R + .3
-            fuel.G["decals"].append(dict(c=[round(gx + Rp * ca, 2), round(cy + Rp * sa, 2), 227.0], n=[ca, sa, 0],
-                                         w=16.5, h=16.5, bg=None, lines=[], item=it["id"],
+            fuel.G["decals"].append(dict(c=[round(gx + Rp * ca, 2), round(cy + Rp * sa, 2), 226.5], n=[ca, sa, 0],
+                                         w=20.0, h=20.0, bg=None, lines=[], item=it["id"],
                                          layer=it["layer"], img="ccs_leaf.png", print=1))
         fuel.D = False
 
