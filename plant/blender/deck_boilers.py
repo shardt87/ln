@@ -269,12 +269,13 @@ def slide3():
 XCOL = {'HV 230 kV': '#b06ae0', 'MV 35 kV': '#e0503a', 'MV 25 kV': '#e86a2c', 'MV 15 kV': '#f05a28', 'MV 5 kV': '#f2892e',
         'LV 600 V': '#f2c613', 'DC 2 kV': '#17a589', 'Portable MV': '#f7b733', 'Portable LV': '#a3b1b8', 'Control': '#3a8fd9',
         'Instrumentation': '#36c26b', 'Fire alarm': '#ff3d7f', 'Fibre / data': '#ff9f1a'}
-ISO_SPOTS = [(1, "230 kV interconnection", "switchyard, line exits, HV ties", (1180, 150, 40)),
-             (2, "GSUs and 21 kV bus", "generator step-up, unit aux transformers, IPB", (790, 345, 36)),
-             (3, "Generators and MV switchgear", "13.8 kV feeders, excitation, static starters", (790, 455, 60)),
-             (4, "HRSG trains", "feed pumps, duct burners, drums, SCR, CEMS", (790, 690, 100)),
-             (5, "HRSG e-houses", "MCCs and DCS I/O per unit", (568, 632, 16)),
-             (6, "Main cable rack", "MV, LV, control and fibre to the units", (880, 838, 44))]
+ISO_SPOTS = [(1, "GSUs and 230 kV ties", "step-up transformers, the lines to the switchyard", (790, 345, 36)),
+             (2, "Generators and 21 kV bus", "IPB, unit aux transformers, excitation", (790, 432, 40)),
+             (3, "Gas turbines", "instrument, control and aux power on every unit", (790, 497, 40)),
+             (4, "Hall MV and LV trays", "13.8 kV feeders, MCC power, control", (880, 520, 48)),
+             (5, "HRSG trains", "feed pumps, duct burners, drums, SCR, CEMS", (790, 690, 100)),
+             (6, "HRSG e-houses", "MCCs and DCS I/O per unit", (568, 632, 16)),
+             (7, "Main cable rack", "MV, LV, control and fibre to the units", (880, 838, 44))]
 
 
 def slide_iso():
@@ -300,7 +301,7 @@ def slide_iso():
             continue
         cls = X["classes"][best[pi]]
         used.add(cls)
-        sw = min(3.4, .8 + .2 * _m.sqrt(count[pi]))
+        sw = min(2.8, .7 + .16 * _m.sqrt(count[pi]))
         d = "M" + " L".join(f"{a:.1f},{b:.1f}" for a, b in pp)
         paths.append(f'<path d="{d}" stroke="{XCOL[cls]}" stroke-width="{sw:.2f}"/>')
     svg_paths = "".join(paths)
@@ -324,18 +325,18 @@ def slide_iso():
   <img class="abs" src="{img('ISO1')}" style="left:0;top:0;width:1440px;height:810px;object-fit:cover">
   <svg class="abs" width="1440" height="810" viewBox="0 0 1440 810" style="left:0;top:0">
     <defs><filter id="gl" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="3.2"/></filter></defs>
-    <g fill="none" stroke-linejoin="round" stroke-linecap="round" opacity=".55" filter="url(#gl)">{svg_paths}</g>
-    <g fill="none" stroke-linejoin="round" stroke-linecap="round" opacity=".95">{svg_paths}</g>
+    <g fill="none" stroke-linejoin="round" stroke-linecap="round" opacity=".4" filter="url(#gl)">{svg_paths}</g>
+    <g fill="none" stroke-linejoin="round" stroke-linecap="round" opacity=".82">{svg_paths}</g>
   </svg>
   {spots}
   <div class="abs" style="left:0;top:0;width:1440px;height:200px;background:linear-gradient(180deg,rgba(14,16,18,.92) 0%,
        rgba(14,16,18,.6) 60%,rgba(14,16,18,0) 100%)"></div>
   <div class="abs" style="left:1050px;top:0;width:390px;height:810px;background:linear-gradient(90deg,rgba(14,16,18,0) 0%,
        rgba(14,16,18,.88) 18%,rgba(14,16,18,.94) 100%)"></div>
-  <div class="abs kicker" style="left:64px;top:46px">Boiler solutions &nbsp;&middot;&nbsp; the whole cable path</div>
+  <div class="abs kicker" style="left:64px;top:46px">Boiler solutions &nbsp;&middot;&nbsp; turbines to boilers</div>
   <div class="abs h2" style="left:62px;top:74px;font-size:50px">From the interconnection <em>to the HRSG</em></div>
   <div class="abs lede" style="left:64px;top:130px;width:960px;font-size:15px">Every routed cable in the model from the
-    230 kV yard to the boilers, by voltage class. HRSG trains in full; the rest of the plant faded.</div>
+    230 kV ties through the opened turbine hall to the boilers, by voltage class. Turbines and HRSG trains in full; the rest faded.</div>
   <div class="abs iso" style="left:1100px;top:118px;width:290px">{items}</div>
   <div class="abs" style="left:1100px;top:560px;width:290px">
     <div class="big" style="font-size:38px">{h['cables']:,}</div><div class="bigl" style="margin-top:4px">cables per HRSG train</div>
