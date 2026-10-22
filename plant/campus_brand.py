@@ -64,7 +64,7 @@ def build():
     # RICE engine hall: walls 1570-1810 x 1040-1130, eaves EL 34; roll-up doors in both end walls (y 1077-1093, to
     # EL 16), so the signs sit over them
     n += building("RICE engine hall (8 engines)", "RICE engine hall", (1570, 1810, 1040, 1130, 34),
-                  (22.5, 23.5), None, ("hall", "roof", "steel"),
+                  (22.5, 23.5), None, ("hall", "roof", "steel"), corners=False,   # no corner posts: the band
                   signs=[((1569.75, 1085, 18.0), (-1, 0, 0), 16.0, 2.4, "RICE ENGINE HALL"),
                          ((1810.25, 1085, 18.0), (1, 0, 0), 16.0, 2.4, "RICE ENGINE HALL")])
     # its long walls already carry a steel eave trim (EL 33.4-34.2): painted black, it is the coping; the end walls get

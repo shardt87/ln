@@ -274,3 +274,6 @@ open them locally in Chrome or Edge).
   rice_exhaust(): the eight 90 ft stacks get the HRSG stacks' copper bands (under the EL 62 platform and a thin one
   at EL 38) with platforms / rails / ladders black, and the SCR housings and silencers the HRSG casing finish (slate
   "hrsg", black ribs). Camera RICE2 (south-east overview). Viewer v73.
+- Oct 22 RICE hall tidy (owner: two name signs; black corner post and copper band not mixing): the white "RICE ENGINE
+  HALL / 8 x 18 MW" panel above the band removed (modular_lod3), the black door sign stays at each end; RICE corner
+  pilasters off (campus_brand corners=False), the band wraps the corners clean. Camera RICE3. Viewer v74.

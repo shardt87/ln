@@ -205,9 +205,8 @@ def equipment():
         fuel.D = False
     on(find("RICE engine hall"))
     fuel.D = True
-    decal((1810.1, 1085, 27), (1, 0, 0), 26, 3.6,
-          [("RICE ENGINE HALL", .5, True, None), ("8 x 18 MW GAS ENGINES  ·  HEARING PROTECTION REQUIRED", .2, False, None)],
-          bg="#ffffff")
+    # (a white RICE ENGINE HALL panel stood here above the band; owner, Oct 22: one name sign per end, the black one over
+    # the door in campus_brand.py stays)
     fuel.D = False
     on(find("PCM: power control module"))
     fuel.D = True
