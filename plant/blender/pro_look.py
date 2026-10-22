@@ -1508,6 +1508,8 @@ EPIC = [
          eye=(207, 711, 8), target=(178, 735, 5), lens=26, show="all", sun=(30, 200)),
     dict(k="RL2", n="Reel yard rows: Southwire steel reels with black flanges and the copper meatball",
          eye=(132, 700, 9), target=(170, 760, 4), lens=26, show="all", sun=(30, 200)),
+    dict(k="RB1", n="RICE MV bridge: the 13.8 kV cables sweeping round the ladder-tray elbow to the PCM",
+         eye=(1856, 1104, 17.5), target=(1843, 1115, 11.5), lens=26, show="all", sun=(34, 230)),
     dict(k="T5G1", n="Private 5G / LTE monopole: sector platform with massive-MIMO units, microwave backhaul, base compound",
          eye=(345, 380, 40), target=(262, 455, 62), lens=26, show="all", sun=(38, 215), plumes=False),
     dict(k="T5G2", n="5G sector platform close-up: panel antennas, massive-MIMO units, radio units, aviation light",

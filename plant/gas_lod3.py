@@ -472,6 +472,24 @@ def _seg_box(a, b, z, w):
     return x0, x1, y0, y1
 
 
+def _rounded(pts, Rb, n=8):
+    """Centre line of an orthogonal polyline with each corner replaced by a radius-Rb arc: [(point, unit tangent,
+    on an arc)]."""
+    unit = lambda a, b: ((b[0] - a[0]) / (abs(b[0] - a[0]) + abs(b[1] - a[1])),
+                         (b[1] - a[1]) / (abs(b[0] - a[0]) + abs(b[1] - a[1])))
+    out = [(tuple(pts[0]), unit(pts[0], pts[1]), False)]
+    for i in range(1, len(pts) - 1):
+        P, d1, d2 = pts[i], unit(pts[i - 1], pts[i]), unit(pts[i], pts[i + 1])
+        C = (P[0] - d1[0] * Rb + d2[0] * Rb, P[1] - d1[1] * Rb + d2[1] * Rb)
+        for k in range(n + 1):
+            a = math.pi / 2 * k / n
+            u = (-d2[0] * math.cos(a) + d1[0] * math.sin(a), -d2[1] * math.cos(a) + d1[1] * math.sin(a))
+            t = (d2[0] * math.sin(a) + d1[0] * math.cos(a), d2[1] * math.sin(a) + d1[1] * math.cos(a))
+            out.append(((C[0] + Rb * u[0], C[1] + Rb * u[1]), t, True))
+    out.append((tuple(pts[-1]), unit(pts[-2], pts[-1]), False))
+    return out
+
+
 def tray(S, pts, z, w=1.5, cables=CABLES, stand=16.0, name="", tag=None, style="conduit"):
     """Cable route along an orthogonal polyline at elevation z (raised in 1.5 ft steps until clear).
     style "conduit" (gas areas, as built at stations of this size): a bank of rigid galvanized conduits clamped on a
@@ -486,28 +504,48 @@ def tray(S, pts, z, w=1.5, cables=CABLES, stand=16.0, name="", tag=None, style="
     else:
         print("gas_lod3: tray blocked", name, pts[0])
         return None
-    for a, b in zip(pts, pts[1:]):
+    # the tray path with radiused elbows at the corners (owner, Oct 22: the cables "cut out" at the bend); the cables
+    # follow the elbow at their own offset, as laid in a 90 deg ladder-tray fitting
+    path = _rounded(pts, max(2.0, w))
+    for (p0, t0, arc0), (p1, t1, arc1) in zip(path, path[1:]):
+        if not (arc0 or arc1) or (abs(p1[0] - p0[0]) + abs(p1[1] - p0[1])) < 1e-6:
+            continue
+        for s in (-1, 1):                                                         # elbow side rails
+            q0 = (p0[0] - t0[1] * s * w / 2, p0[1] + t0[0] * s * w / 2)
+            q1 = (p1[0] - t1[1] * s * w / 2, p1[1] + t1[0] * s * w / 2)
+            rod((q0[0], q0[1], z - .1), (q1[0], q1[1], z - .1), .09, "pipe", seg=6)
+        rod((p0[0] + t0[1] * w / 2, p0[1] - t0[0] * w / 2, z - .26), (p0[0] - t0[1] * w / 2, p0[1] + t0[0] * w / 2, z - .26),
+            .04, "pipe", seg=4)                                                   # elbow rungs
+    for j, (c, r) in enumerate(cables):                                           # cables laid in the tray
+        off = -w / 2 + .25 + j * (w - .5) / max(1, len(cables) - 1)
+        q = [(p[0] - t[1] * off, p[1] + t[0] * off) for p, t, _ in path]
+        for qa, qb in zip(q, q[1:]):
+            if abs(qb[0] - qa[0]) + abs(qb[1] - qa[1]) > 1e-6:
+                rod((qa[0], qa[1], z - .22 + r), (qb[0], qb[1], z - .22 + r), r, c, seg=6)
+    for i, (a, b) in enumerate(zip(pts, pts[1:])):
         x0, x1, y0, y1 = _seg_box(a, b, z, w)
         S.add([x0, y0, z - .6, x1, y1, z + .9])
         alongx = a[1] == b[1]
+        L = abs(b[0] - a[0]) + abs(b[1] - a[1])
+        Rb = max(2.0, w)
+        ta = Rb / L if i > 0 else 0.0                                             # straight part between the elbows
+        tb = 1 - Rb / L if i < len(pts) - 2 else 1.0
+        sa = (a[0] + (b[0] - a[0]) * ta, a[1] + (b[1] - a[1]) * ta)
+        sb = (a[0] + (b[0] - a[0]) * tb, a[1] + (b[1] - a[1]) * tb)
         for s in (-1, 1):                                                         # side rails
             if alongx:
-                box(x0, x1, a[1] + s * w / 2 - .06, a[1] + s * w / 2 + .06, z - .35, z + .15, "pipe")
+                box(min(sa[0], sb[0]), max(sa[0], sb[0]), a[1] + s * w / 2 - .06, a[1] + s * w / 2 + .06, z - .35, z + .15, "pipe")
             else:
-                box(a[0] + s * w / 2 - .06, a[0] + s * w / 2 + .06, y0, y1, z - .35, z + .15, "pipe")
-        L = abs(b[0] - a[0]) + abs(b[1] - a[1])
+                box(a[0] + s * w / 2 - .06, a[0] + s * w / 2 + .06, min(sa[1], sb[1]), max(sa[1], sb[1]), z - .35, z + .15, "pipe")
         for k in range(int(L) + 1):                                               # rungs every foot
             t = k / max(L, 1)
+            if not ta <= t <= tb:
+                continue
             px, py = a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t
             if alongx:
                 box(px - .05, px + .05, py - w / 2, py + w / 2, z - .3, z - .22, "pipe")
             else:
                 box(px - w / 2, px + w / 2, py - .05, py + .05, z - .3, z - .22, "pipe")
-        for j, (c, r) in enumerate(cables):                                       # cables laid in the tray
-            off = -w / 2 + .25 + j * (w - .5) / max(1, len(cables) - 1)
-            pa = (a[0], a[1] + off) if alongx else (a[0] + off, a[1])
-            pb = (b[0], b[1] + off) if alongx else (b[0] + off, b[1])
-            rod((pa[0], pa[1], z - .22 + r), (pb[0], pb[1], z - .22 + r), r, c, seg=6)
         if tag:                                                                   # tray ID tags on the outer rail
             for k in range(1, int(L // 30) + 1):
                 t = k * 30 / L

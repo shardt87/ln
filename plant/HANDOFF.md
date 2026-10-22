@@ -308,3 +308,11 @@ Owner: "correct the reels and SIMpull truck with the Southwire logo on flange an
 Owner: "instead of red on the trucks change it to copper". The cab stripe and flatbed skirts of `showcase.simpull_truck`
 and the skirts and cab stripe of the hall_exterior tractor-trailer are now `hero_accent` (the copper of the stack
 bands and chevrons). Logos unchanged. Previews: renders/truck_copper/ (RL1, HX3). verify PASS, audit CLEAN.
+
+## Oct 22 — ladder-tray elbows: the cables bend (viewer v78)
+Owner (tour stop 32, RICE generator cables to the PCM): "why are the cables not curving or bending, it looks cut out".
+The ladder-tray builder (`gas_lod3.tray`, style "tray") drew each leg's cables as straight rods that stopped square at
+the corner and overlapped the next leg. Now `_rounded()` replaces each corner with a radius-max(2 ft, w) elbow: every
+cable follows the centre line at its own offset (concentric arcs), the elbow has curved side rails and radial rungs,
+and the straight rails / rungs stop at the elbow. Used by the RICE MV bridge (MY-T1) and the SC generator trays.
+Camera RB1 added; previews renders/tray_bend/ (E115, RB1). verify PASS, audit CLEAN.
