@@ -303,3 +303,8 @@ Owner: "correct the reels and SIMpull truck with the Southwire logo on flange an
   solid logo on the doors, red skirts with the white logo and SIMpull SOLUTIONS, tyres; same 34 ft footprint.
 - Cameras RL1 (truck close-up) and RL2 (reel rows) added. Previews: renders/reels_livery/.
 - verify PASS, audit CLEAN.
+
+## Oct 22 — SIMpull trucks: copper instead of red (viewer v77)
+Owner: "instead of red on the trucks change it to copper". The cab stripe and flatbed skirts of `showcase.simpull_truck`
+and the skirts and cab stripe of the hall_exterior tractor-trailer are now `hero_accent` (the copper of the stack
+bands and chevrons). Logos unchanged. Previews: renders/truck_copper/ (RL1, HX3). verify PASS, audit CLEAN.

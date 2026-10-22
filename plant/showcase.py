@@ -81,7 +81,7 @@ def simpull_reel(x, y, z0, axis="x", cols=("cable", "red", "pvc_blue", "binder_w
 
 def simpull_truck(x, y):
     """SIMpull Truck in the Southwire livery (as the tractor-trailer, hall_exterior.simpull_delivery): white cab with
-    the red stripe and the solid logo on the doors, flatbed with red skirts carrying the white logo and SIMpull
+    the copper stripe and the solid logo on the doors, flatbed with copper skirts carrying the white logo and SIMpull
     SOLUTIONS, three SIMpull Reels with meatball flanges on payoffs; cab to the east, tail lift at the rear (west)."""
     import simpull
     L, Wd = 34.0, 8.4
@@ -92,21 +92,21 @@ def simpull_truck(x, y):
         fuel.G["decals"].append(dict(c=[round(v, 2) for v in c], n=list(n), w=w, h=round(w / aspect, 2), bg=None,
                                      lines=[], item=it["id"], layer=it["layer"], brand=1, img=img, print=1))
     box(x0 + 1, x1 - 1, y - 1.6, y + 1.6, 1.6, 2.6, "steel_dark")                 # chassis rails
-    # cab and hood, windows, red stripe, exhaust stacks
+    # cab and hood, windows, copper stripe, exhaust stacks
     box(x1 - 9, x1, y0 + .2, y1 - .2, 2.6, 6.2, "white_truck")
     box(x1 - 9, x1 - 2.6, y0 + .2, y1 - .2, 6.2, 10.2, "white_truck")
     box(x1 - 2.65, x1 - 2.55, y0 + .6, y1 - .6, 6.6, 9.6, "glass")                    # windscreen
     for s in (y0 + .15, y1 - .15):
         box(x1 - 6.0, x1 - 3.4, s - .06, s + .06, 6.7, 9.4, "glass")                  # door windows
     for s in (y0 + .14, y1 - .26):
-        box(x1 - 9, x1, s, s + .12, 3.4, 4.0, "sw_red")                               # cab stripe
+        box(x1 - 9, x1, s, s + .12, 3.4, 4.0, "hero_accent")                               # cab stripe
     for s in (y0 + .6, y1 - .6):
         rod((x1 - 9.3, s, 2.6), (x1 - 9.3, s, 11.6), .22, "alu", seg=10)              # exhaust stacks
     box(x1 - .2, x1 + .3, y0 + .8, y1 - .8, 2.4, 5.4, "steel")                    # grille / bumper
-    # flatbed deck with red side skirts and a headboard
+    # flatbed deck with copper side skirts and a headboard
     box(x0, x1 - 9.6, y0, y1, 3.6, 4.2, "steel_dark")
     for s in (y0, y1 - .12):
-        box(x0, x1 - 9.6, s, s + .12, 2.2, 4.2, "sw_red")
+        box(x0, x1 - 9.6, s, s + .12, 2.2, 4.2, "hero_accent")
     box(x1 - 10.2, x1 - 9.6, y0, y1, 4.2, 10.6, "steel_dark")                     # headboard
     for ax in (x0 + 4, x0 + 8.5, x1 - 2.6):                                         # wheels (duals at the rear)
         rod((ax, y0 - .1, 1.9), (ax, y0 + 1.1, 1.9), 1.9, "tyre", seg=16)
@@ -116,7 +116,7 @@ def simpull_truck(x, y):
     # three SIMpull Reels on payoffs, arbors across the truck
     for k in range(3):
         simpull_reel(x0 + 3.6 + k * 6.6, y, 4.2, axis="y")
-    # livery: the white logo and SIMpull SOLUTIONS on both red skirts, the solid logo on the cab doors
+    # livery: the white logo and SIMpull SOLUTIONS on both copper skirts, the solid logo on the cab doors
     for sgn, s, sc in ((-1, y0 - .03, y0 + .1), (1, y1 + .03, y1 - .1)):
         logo((x0 + 5.5, s, 3.2), (0, sgn, 0), 6.4, "sw_logo_white.png")
         decal((x0 + 16.4, s, 3.2), (0, sgn, 0), 12, 1.4,

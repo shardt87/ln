@@ -13,7 +13,7 @@
   above them (GT1 / GT2 / GT3 / ST1, sign-wide, Barlow Condensed ExtraBold), a black surround and two wall lights at the
   west equipment door;
 - a Southwire SIMpull tractor-trailer where the generic flatbed stood (same size and heading, cab north): four 10.5 ft
-  steel reels, black flanges each filled by the copper Southwire meatball, red skirts with the SIMpull SOLUTIONS livery, crew at the tail, two more reels staged by the door, one standing, one laid flat (user, Oct 19, "better for branding").
+  steel reels, black flanges each filled by the copper Southwire meatball, copper skirts with the SIMpull SOLUTIONS livery, crew at the tail, two more reels staged by the door, one standing, one laid flat (user, Oct 19, "better for branding").
 Every strip is cut back wherever something of another item stands within a few inches of the wall (pipes, trays,
 risers, filter-house frames, inlet ducts), so nothing new touches the plant. The south pieces sit in their own
 "Turbine hall south cladding ..." item and lift off with the cladding in the cutaway views."""
@@ -211,7 +211,7 @@ def build():
 
 def simpull_delivery(lay, area):
     """A Southwire SIMpull tractor-trailer where the generic flatbed stood (x 436-444, y 459-522, cab to the north):
-    a white tractor with a Southwire-red stripe and logos on the doors, a 52 ft flatbed with red skirts and the
+    a white tractor with a copper stripe and logos on the doors, a 52 ft flatbed with copper skirts and the
     SIMpull SOLUTIONS livery, four 10.5 ft steel reels with black flanges filled by the copper Southwire meatball, chocked across the deck
     (paralleled, colour-coded conductors), a crew at the tail."""
     import showcase
@@ -233,18 +233,18 @@ def simpull_delivery(lay, area):
     on(it)
     fuel.D = True
     n = 0
-    # trailer: deck, red skirts, rear bumper, landing gear, wheels (tandem at the rear)
+    # trailer: deck, copper skirts, rear bumper, landing gear, wheels (tandem at the rear)
     box(xc - hw, xc + hw, yt0, yt1, zd - .9, zd, "steel_dark")
     for s in (-1, 1):
         x0 = xc + s * hw
-        box(min(x0, x0 + s * .15), max(x0, x0 + s * .15), yt0, yt1, zd - 2.6, zd, "sw_red")
+        box(min(x0, x0 + s * .15), max(x0, x0 + s * .15), yt0, yt1, zd - 2.6, zd, "hero_accent")
         box(xc + s * 3.2 - .3, xc + s * 3.2 + .3, yt1 - 12.5, yt1 - 12.0, .4, zd - .9, "steel")       # landing gear
     box(xc - hw + .4, xc + hw - .4, yt0 - .5, yt0, 1.6, 2.4, "steel")
     for yw in (yt0 + 4.5, yt0 + 9.0):
         for s in (-1, 1):
             rod((xc + s * (hw - 1.3), yw, 1.7), (xc + s * (hw + .05), yw, 1.7), 1.7, "tyre", seg=16)
     n += 9
-    # tractor: chassis, sleeper cab, hood, windscreen, red stripe, fifth wheel under the trailer nose, wheels
+    # tractor: chassis, sleeper cab, hood, windscreen, copper stripe, fifth wheel under the trailer nose, wheels
     yc0 = yt1 - 3.0
     box(xc - 1.8, xc + 1.8, yc0, yt1 + 11.0, 1.6, 3.0, "steel_dark")
     box(xc - 4.0, xc + 4.0, yt1 + .5, yt1 + 7.5, 3.0, 12.5, "white_truck")                      # sleeper + cab
@@ -252,7 +252,7 @@ def simpull_delivery(lay, area):
     box(xc - 3.4, xc + 3.4, yt1 + 7.45, yt1 + 7.55, 8.0, 11.6, "glass")                         # windscreen
     for s in (-1, 1):
         box(min(xc + s * 4.0, xc + s * 4.06), max(xc + s * 4.0, xc + s * 4.06), yt1 + 4.6, yt1 + 7.2, 8.4, 11.2, "glass")
-        box(min(xc + s * 4.0, xc + s * 4.08), max(xc + s * 4.0, xc + s * 4.08), yt1 + .5, yt1 + 7.5, 4.6, 5.4, "sw_red")
+        box(min(xc + s * 4.0, xc + s * 4.08), max(xc + s * 4.0, xc + s * 4.08), yt1 + .5, yt1 + 7.5, 4.6, 5.4, "hero_accent")
         rod((xc + s * 4.3, yt1 + 1.0, 3.0), (xc + s * 4.3, yt1 + 1.0, 13.8), .28, "alu", seg=10)  # exhaust stacks
     box(xc - 3.8, xc + 3.8, yt1 + 11.5, yt1 + 12.0, 2.4, 6.4, "steel")                          # grille / bumper
     for yw in (yt1 - 1.5, yt1 + 2.5, yt1 + 9.5):
@@ -275,7 +275,7 @@ def simpull_delivery(lay, area):
             box(xc - W / 2, xc + W / 2, y + sy * R * .62 - .4, y + sy * R * .62 + .4, zd, zd + .6, "sp_yellow")
         n += 6
     fuel.D = False
-    # livery: Southwire logo and SIMpull SOLUTIONS on both red skirts, the solid-colour logo on the cab doors
+    # livery: Southwire logo and SIMpull SOLUTIONS on both copper skirts, the solid-colour logo on the cab doors
     for s in (-1, 1):
         logo((xc + s * (hw + .17), yt0 + 9.0, zd - 1.3), (s, 0, 0), 8.0, "sw_logo_white.png")
         decal((xc + s * (hw + .17), yt0 + 31.0, zd - 1.3), (s, 0, 0), 26, 2.0,
