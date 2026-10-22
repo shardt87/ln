@@ -445,3 +445,15 @@ a separate 3D view at an elevation angle", the rest of the plant faded.
   elevation" (ELV1, elevation scale grade / EL 42 / EL 86 / EL 180, 7 callouts), 4 brownfield, 5 the offering.
   The earlier plant-wide iso with the cable-route overlay was replaced at the owner's direction (the overlay code is
   gone; the routed-path data remains in brochure/cables_xray.json).
+
+## Oct 22 — boiler deck slide 4: switchgear room to the HRSG (wiring diagram), 6 slides
+Owner: "you're missing the switchgear room ... what are the cable applications there ... a diagram, the breakdown".
+`blender/deck_boilers.py` slide_diagram(): a one-line / riser of one HRSG train: GSU-1 / UAT-1 -> switchgear room R1
+(SWGR-13.8-1, E82 render inset) -> BFP-1A/B (MV-105 15 kV, 6 cables, 8,400 ft) and the MV feeder to T-R2A -> HRSG
+e-house R2A (480 V MCC, DCS I/O, E32 render inset) -> five field legs coloured by application (TC-ER power / VFD,
+control TC-ER / ARMOR-X MC-HL, instrumentation PLTC / ITC / RTD, thermocouple extension, fibre / fire alarm from the
+control room), each with offering-slide product numbers, cable count and footage summed from the Cable Schedule for
+HRSG 1 + BFP-1 + SCRB-1 + CEMS-1 + duct burner / chemical feed / blowdown; an exploded bar of the ~156,000 ft by
+application. Gap noted on the slide: the 13.8 kV SWGR-13.8-1 -> T-R2A feeder is not in the cable schedule (only its
+control / instrument cables are), so it is drawn but not counted. Deck: 1 overview, 2 HRSG hero, 3 elevation,
+4 wiring diagram, 5 brownfield, 6 offering.
