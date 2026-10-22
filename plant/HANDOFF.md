@@ -385,3 +385,32 @@ Owner preferred the v84 look ("cleaner; too cluttered with numbers" in the band 
 the grey shell (EL 172) only under the south (-90) and north (90) CCS: on the east / west faces they showed as slivers
 at the absorber edges. The band-lettering experiments of v85-v86 are dropped. Previews renders/ccs_numbers/ (CL4, CL1).
 verify PASS, audit CLEAN.
+
+## Oct 22 — boiler section: greenfield HRSG, package boiler, brownfield outage + deck slides (viewer v88)
+Owner: boilers for gas power, greenfield and brownfield, to talk with the boiler OEMs (Vogt Power, B&W). Kept the
+auxiliary boiler's combined-cycle role. All typical, not engineered.
+- `aux_boiler.py` (new): AB-1 gas-fired package boiler at LOD 3 in the drawn envelope (x 935-995, y 1450-1540, EL 70):
+  D-type casing on its skid, windbox / burner with igniter and two flame scanners, drum heads, water column and level
+  transmitters, roof platform with safety valves and the main-steam MOV, FD fan + 200 hp motor + inlet silencer,
+  natural-gas train (manual, regulator, SSOV-vent-SSOV, vent line, gas detector), outlet box, economizer, breeching,
+  70 ft stack with CEMS platform and caged ladder, deaerator, two feedwater pumps, chemical feed, blowdown tank,
+  AB-MCC e-house, EL 17.5 ladder tray to the BMS panel, VFD cable to the fan, scanner cables, MC-HL on strut to the
+  gas train, drum-level cable, area lights, signs. Steam line ties into the aux-steam route at (993.4, 1495, EL 12).
+  The placeholder block / stack in build_model.py and the old dressing in utilities.py were removed.
+- `hrsg_electrical.py` (new): per HRSG a duct burner (gas header up the east-wall slot at y 636, 8 runners with
+  flex hose, igniter, scanner, a cable ladder to the DB JB; fuel skid with SSOV-vent-SSOV and FCV at x 676-690,
+  y 690-701 between the tray posts; BMS panel; MC-HL on strut; scanner multicable at EL 4.6) and the BFP 13.8 kV
+  terminations (tray under the drop's end glands at EL 10.3, 3 x 1/C into an MV terminal box per motor, ground bond).
+- `brownfield.py` (new): HRSG 3 outage. build_model.py splits HRSG 3's roof (opening x 943-957, y 674-686) and the
+  centre drum-frame stringer. Old HP evaporator module (12 ft wide, 70 ft, weathered) on a spreader bar over the roof,
+  tag lines to two crew on the drum walkway; crawler crane (tracks on mats, house, counterweight, 215 ft lattice
+  boom, mast, pendants, load lines) at x 1040-1088, y 639-679; new module on a heavy-haul lowboy on the ring road
+  (y 907-919); cable work by R2C (two SIMpull Reels on Cradles, sheave, cable up to the HRSG marshalling JB,
+  pre-terminated harness crates with QR, cable-recycling bin, cone-and-chain barricade, two-sided outage sign, crew).
+- cable_schedule.py / wiring.py: AB-1 devices (FD fan 150 kW, 2 BFP 75 kW, chem 2 x 4 kW, ai 30, di 30, sol 6; LV
+  330 kW) and the duct burners (ai 8, di 24, sol 6; 15 kW). brochure/boiler_numbers.json: one HRSG train 705 cables /
+  156,200 ft; AB-1 83 cables / 42,430 ft.
+- Cameras BX1/BX2 (aux boiler), BH1/BH2 (duct burner, BFP), BB1-BB4 (outage); previews renders/boilers/.
+- Deck: `blender/deck_boilers.py` -> renders/deck/boilers/SW-3X1_boilers.pdf (2 slides, 1440 x 810, deck style,
+  credit in each footer) + PNGs; talking points renders/deck/boilers/talking_points.md (OEM names only there).
+- verify PASS, audit CLEAN; workbook audit unchanged (the known voltage-drop CHECK only).

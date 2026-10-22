@@ -9,8 +9,7 @@ Dressing:
   valves on the outside wall, a jockey-pump controller;
 - ammonia storage: bund walls, truck unloading connection and hose station, vapour scrubber,
   safety shower / eyewash, wind sock;
-- auxiliary boiler: burner front and windbox, FD fan with inlet silencer, economizer on the
-  stack breeching, feedwater pump skid, blowdown tank;
+- auxiliary boiler: now aux_boiler.py (gas-fired package boiler at LOD 3);
 - air compressors: air receivers and a desiccant dryer beside the building;
 - oil-water separator: inlet pipe, access hatches, oil skimmer.
 All typical, not engineered.
@@ -66,21 +65,7 @@ def build():
     rod((x0 - 4, y1 - 2, 21), (x0 - 1, y1 - 2, 20.6), .5, "hivis_o", r2=.2, seg=10)
     dress(False)
 
-    # auxiliary boiler
-    it = find("Auxiliary boiler")
-    x0, x1, y0, y1 = it["fp"]
-    on(it)
-    dress(True)
-    box(x0 - 2, x0, y0 + 30, y0 + 50, 6, 20, "machine")                                     # burner front / windbox
-    rod((x0 - 4, y0 + 40, 13), (x0 - 2, y0 + 40, 13), 3.2, "machine", seg=16)             # burner
-    rod((x0 - 10, y0 + 40, 6), (x0 - 4, y0 + 40, 6), 2.6, "fan", seg=16)                  # FD fan
-    rod((x0 - 10, y0 + 40, 9), (x0 - 10, y0 + 40, 17), 1.8, "duct", seg=14)               # inlet silencer
-    box(x1 - 14, x1 - 6, y1 - 14, y1 - 6, 30, 40, "duct")                                   # economizer on the breeching
-    box(x0 + 4, x0 + 18, y0 - 8, y0 - .5, 0, .6, "concrete")                                # feedwater pump skid
-    for xp in (x0 + 7, x0 + 14):
-        rod((xp, y0 - 6, 2), (xp, y0 - 3, 2), 1.1, "pump", seg=12)
-        rod((xp, y0 - 3, 2), (xp, y0 - 1, 2), 1, "motor", seg=12)
-    dress(False)
+    # auxiliary boiler: built at LOD 3 by aux_boiler.py (package boiler, Oct 22)
 
     # air compressors: receivers and dryer north of the building
     it = find("Air compressors AC-A/B/C")

@@ -386,11 +386,20 @@ for i, gx in enumerate(GX, start=1):
     B(597 + dx, 663 + dx, 629, 759, 1.5, 85, "hrsg")
     for yy in range(640, 760, 20):                            # casing stiffener bands
         B(596.5 + dx, 663.5 + dx, yy - 0.6, yy + 0.6, 1.5, 85, "steel")
-    B(596.6 + dx, 663.4 + dx, 628.6, 759.4, 85, 86, "roof")    # casing roof (headers below)
+    if i == 3:      # outage (brownfield.py): the roof cut open over one HP evaporator module, x 943-957, y 674-686
+        for (a0, a1, b0, b1) in ((596.6, 663.4, 628.6, 674), (596.6, 663.4, 686, 759.4), (596.6, 623, 674, 686),
+                                 (637, 663.4, 674, 686)):
+            B(a0 + dx, a1 + dx, b0, b1, 85, 86, "roof")
+    else:
+        B(596.6 + dx, 663.4 + dx, 628.6, 759.4, 85, 86, "roof")    # casing roof (headers below)
     for fx in (600, 630, 660):                                 # drum-support frame, EL 86-89
         for fy in (650, 670, 690, 710, 724, 740):
             B(fx + dx - .6, fx + dx + .6, fy - .6, fy + .6, 86, 88.6, "steel")
-        B(fx + dx - .5, fx + dx + .5, 649, 741, 88.6, 89.2, "steel")
+        if i == 3 and fx == 630:                               # centre stringer unbolted over the module slot
+            B(fx + dx - .5, fx + dx + .5, 649, 671, 88.6, 89.2, "steel")
+            B(fx + dx - .5, fx + dx + .5, 689, 741, 88.6, 89.2, "steel")
+        else:
+            B(fx + dx - .5, fx + dx + .5, 649, 741, 88.6, 89.2, "steel")
     for fy in (650, 670, 690, 710, 724, 740):
         B(600 + dx, 660 + dx, fy - .4, fy + .4, 88.6, 89.2, "steel")
     for (yy, rr) in ((660, 3.4), (700, 4.6), (732, 3.2)):     # IP, HP, LP drums
@@ -1006,9 +1015,10 @@ B(800, 873, 1450, 1492, 0, 4, "concrete")
 R((808, 1471, 12), (865, 1471, 12), 8, "tank", seg=24)
 for xs in (818, 855):
     B(xs - 2, xs + 2, 1464, 1478, 0, 5, "concrete")
-item(L, "Auxiliary boiler", (935, 995, 1450, 1540), (0, 70), area="E", basis="typical")
-B(935, 995, 1450, 1540, 0, 30, "building")
-V(985, 1530, 3, 30, 70, "stack")
+item(L, "Auxiliary boiler", (935, 995, 1450, 1540), (0, 70), area="E", basis="typical",
+     info="Gas-fired package boiler AB-1 (~150,000 lb/h class, D-type): start-up and sealing steam, HRSG / ST "
+          "warm-keeping, CCS reboiler back-up. Burner and BMS, FD fan on VFD, gas train (double block and bleed), "
+          "economizer, 70 ft stack, deaerator and feedwater pumps, AB-MCC e-house (aux_boiler.py; typical).")
 item(L, "H2 / CO2 storage (generator gas)", (1080, 1125, 1450, 1510), (0, 10), area="E", basis="typical")
 for k in range(4):
     R((1084 + 10 * k, 1453, 4), (1084 + 10 * k, 1507, 4), 3.2, "tank", seg=16)
@@ -2327,6 +2337,12 @@ import gallery_electrical as _gel                  # turbine hall south gallery 
 print('gallery electrical', _gel.build())
 import mv_terminations as _mvt                    # MV connections at the generators: SC-1 TB-G1 opened, GT1 starting disconnect
 print('MV terminations', _mvt.build())
+import aux_boiler as _ab                         # boiler section (Oct 22): AB-1 gas-fired package boiler at LOD 3
+print('aux boiler', _ab.build())
+import hrsg_electrical as _hel                    # boiler section: HRSG duct burners, BFP MV terminations
+print('HRSG electrical', _hel.build())
+import brownfield as _bf                          # boiler section: HRSG 3 module-replacement outage (brownfield)
+print('brownfield outage', _bf.build())
 
 
 # "conditional" was a drawing flag colour (yellow); the items keep basis="conditional" in their data, but are drawn

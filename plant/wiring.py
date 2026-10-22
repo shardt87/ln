@@ -184,6 +184,8 @@ OVERRIDES = [
     (r"^Chemical feed$", [LV + " (metering pumps, mixers)", CTRL, INST + " (tank level, dosing flow)", GND]),
     (r"^Wastewater treatment$", [LV + " (mixers, clarifier drive, pumps, filter press)", CTRL, INST + " (pH, level, turbidity)",
                                  LIGHT, GND]),
+    (r"^HRSG \d duct burner", [CTRL + " (burner management, flame scanners, igniters)", LV_HAZ + " (skid valves, igniter transformers)",
+                               INST + " (gas pressure, flow)", GND]),
     (r"^Auxiliary boiler$", [LV + " (FD fan, feedwater pumps)", CTRL + " (burner management system, flame scanners)",
                              INST + " (drum level, steam pressure)", FA + " (fuel-gas detection)", GND]),
     (r"^Gas yard local control enclosure", [LV, CTRL, INST_IS + " (field instruments in the gas yard)", DATA, GND]),

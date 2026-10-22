@@ -653,7 +653,8 @@ DEV = [
     (r"regulation", dict(ai=12, di=12, sol=6)),
     (r"performance heater", dict(ai=10, di=10)),
     (r"ESD valve|insulating joint", dict(di=8, sol=4)),
-    (r"Auxiliary boiler", dict(m=[(3, 30, 0)], ai=25, di=25)),
+    (r"^HRSG \d duct burner", dict(ai=8, di=24, sol=6)),        # boiler section: 8 runners, scanners, igniters, skid valves
+    (r"Auxiliary boiler", dict(m=[(1, 150, 0), (2, 75, 0), (2, 4, 0)], ai=30, di=30, sol=6)),   # FD fan, BFPs, chem
     (r"Ammonia storage", dict(m=[(2, 7, 0)], ai=8, di=10)),
     (r"Fire pump house", dict(m=[(1, 250, 0), (1, 15, 0)], ai=10, di=30)),
     (r"^Wastewater treatment", dict(m=[(8, 15, 0)], ai=20, di=30)),
@@ -776,7 +777,7 @@ DEF_KW = [(r"GT\d aux", 400), (r"GT1:|GT2:|GT3:", 150), (r"HRSG \d \+", 150), (r
           (r"CRANE|Bridge crane", 150), (r"intercooler", 2 * 150), (r"Water-wash pumps", 2 * 110), (r"DCC-[ABC] pumps", 2 * 200),
           (r"CCS-CT|cooling tower", 30 * 110), (r"DMP-", 20), (r"RB-", 10), (r"STR-", 30), (r"ABS-|Absorber [ABC] \(", 40),
           (r"instrument air", 2 * 250), (r"dehydration", 150), (r"Reclaimer", 75), (r"Activated-carbon", 15),
-          (r"Solvent|NaOH", 20), (r"wastewater|Wastewater", 60), (r"Fire pump house", 60), (r"Auxiliary boiler", 75),
+          (r"Solvent|NaOH", 20), (r"wastewater|Wastewater", 60), (r"Fire pump house", 60), (r"Auxiliary boiler", 330), (r"duct burner", 15),
           (r"Ammonia storage", 15), (r"Oil-water", 15), (r"tank", 10), (r"HTP-", 120), (r"LS-1|lift station", 30),
           (r"Stormwater pump", 2 * 75), (r"ULSD unloading and forwarding pumps", 2 * 55), (r"ULSD truck", 15),
           (r"performance heater", 60), (r"Gas metering|regulation|filter-separators|ESD valve", 10),
