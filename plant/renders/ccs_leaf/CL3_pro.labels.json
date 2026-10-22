@@ -1,7 +1,7 @@
-[
- {
-  "k": "CL2",
-  "name": "Absorber B close: the sage leaf between the CCS letterings",
+{
+ "view": {
+  "k": "CL3",
+  "name": "Absorber A from the south-west: one big leaf between the CCS letterings",
   "show": [
    "SITE",
    "BASE_POWER_BLOCK",
@@ -52,7 +52,10 @@
    34,
    210
   ],
-  "sheet": "SW-3X1",
-  "seconds": 95.2
- }
-]
+  "sheet": "SW-3X1"
+ },
+ "labels": [],
+ "callouts": [],
+ "rw": 1920,
+ "rh": 1080
+}

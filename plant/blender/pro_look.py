@@ -1514,6 +1514,8 @@ EPIC = [
          eye=(505, 1085, 285), target=(700, 1250, 226), lens=34, show="all", sun=(34, 210), plumes=False),
     dict(k="CL2", n="Absorber B close: the sage leaf between the CCS letterings",
          eye=(880, 1140, 236), target=(790, 1220, 227), lens=40, show="all", sun=(34, 210), plumes=False),
+    dict(k="CL3", n="Absorber A from the south-west: one big leaf between the CCS letterings",
+         eye=(560, 1130, 236), target=(630, 1220, 227), lens=40, show="all", sun=(34, 210), plumes=False),
     dict(k="T5G1", n="Private 5G / LTE monopole: sector platform with massive-MIMO units, microwave backhaul, base compound",
          eye=(345, 380, 40), target=(262, 455, 62), lens=26, show="all", sun=(38, 215), plumes=False),
     dict(k="T5G2", n="5G sector platform close-up: panel antennas, massive-MIMO units, radio units, aviation light",

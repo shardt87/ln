@@ -324,3 +324,10 @@ absorber_identity()` prints it in every gap between the four CCS letterings on a
 135 and -45 deg; the south-west gap carries the caged ladder (-135 deg), so two 8 ft leaves flank it (-121, -149).
 Cameras CL1 (absorbers from the south-west) and CL2 (absorber B close); previews renders/ccs_leaf/. verify PASS, audit
 CLEAN.
+
+## Oct 22 — CCS leaf redrawn, one big leaf per gap (viewer v80)
+Owner: "didn't like the shape of this leaf, and I also don't want two side by side, just one big one in between those
+CCS". `blender/leaf_icon.py` redrawn from cubic Beziers: a smooth pointed blade tilted up to the right, curved midrib
+with four sweeping veins per side, curled stem; same dark sage on transparent. `ccs_lod3.absorber_identity()`: one
+17 x 17 ft leaf centred in each of the four gaps (45, 135, -45, -135 deg) on absorbers A-C; at -135 the caged ladder
+runs in front of it. Camera CL3 (absorber A from the south-west); previews renders/ccs_leaf/. verify PASS, audit CLEAN.
