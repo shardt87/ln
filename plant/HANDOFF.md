@@ -414,3 +414,15 @@ auxiliary boiler's combined-cycle role. All typical, not engineered.
 - Deck: `blender/deck_boilers.py` -> renders/deck/boilers/SW-3X1_boilers.pdf (2 slides, 1440 x 810, deck style,
   credit in each footer) + PNGs; talking points renders/deck/boilers/talking_points.md (OEM names only there).
 - verify PASS, audit CLEAN; workbook audit unchanged (the known voltage-drop CHECK only).
+
+## Oct 22 — boiler slide 3: the offering, cable circled at every spot
+Owner: "one slide at the end with all the offering, circling the cable on each spot, and the cable specs, links, stock
+number reference". `blender/deck_boilers.py` slide3(): four scene tiles (BX1 package boiler, BH2 duct-burner skid,
+new camera BF1 = BFP 13.8 kV terminations, BB3 outage cable work) with numbered copper circles projected from the
+cable's 3D position in the model (bz.project, clamped inside the tile), and a table of 8 products: MV-105 15 kV
+(SPEC 46302, #95604599, 500 kcmil), TC-ER power (45252, #95305999, 12 AWG 3/C), ARMOR-X MC-HL (45352, #89052799,
+8 AWG 4/C), ARMOR-X MC-HL VFD (45352, #89051899, 3/0 3/C), control TC-ER (45053, #89067701, 14 AWG 5/C),
+instrumentation PLTC/ITC SPOS (43303), thermocouple extension (42345), SIMpull Cradle (SPR-CRDL, #67606001); each with
+a clickable link to its Southwire page. Stock numbers come from Southwire's catalogue listings found by web search
+(southwire.com itself was not reachable from the container to open the pages); one representative size each, noted on
+the slide. The deck is now 3 slides (BOILERS n/3); talking_points.md has the same product list.

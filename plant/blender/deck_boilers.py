@@ -4,7 +4,9 @@ dark ground, copper accents, Barlow), from the SW-3X1 boiler scenes and the mode
 
   1. Boilers: greenfield & brownfield: the three boiler types in the model (HRSG with duct burner, gas-fired package
      boiler, HRSG module replacement) with their cable counts, and what Southwire cable goes to each;
-  2. Brownfield: the outage clock is the cost: the module lift, the cable work that rides the same window.
+  2. Brownfield: the outage clock is the cost: the module lift, the cable work that rides the same window;
+  3. The boiler offering: each product circled where it runs in the boiler scenes, with its Southwire SPEC, a stock
+     number for a representative size and a link to the product page (from Southwire's catalogue listings, Oct 2026).
 
 Numbers: brochure/boiler_numbers.json (one HRSG train incl. its feed pumps, SCR blowers, chemical feed, CEMS and duct
 burner; the auxiliary boiler), summed from the Cable Schedule sheet. Equipment is generic in the model and on the
@@ -69,7 +71,7 @@ def foot(n, short=False):
     left = ("SW-3X1 MODEL &middot; NOT ENGINEERED" if short else
             "SW-3X1 MODEL &middot; CONCEPTUAL ILLUSTRATION, NOT ENGINEERED &middot; QUANTITIES FROM THE MODEL'S CABLE SCHEDULE")
     return f"""<div class="abs foot" style="left:64px;right:64px;bottom:26px;display:flex;justify-content:space-between;
-      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/2</span></div>"""
+      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/3</span></div>"""
 
 
 def slide1():
@@ -161,12 +163,111 @@ def slide2():
 </section>"""
 
 
+# ------------------------------------------------------------------------------- slide 3: the offering
+# Southwire products for the boiler scope. Stock numbers are one representative catalogue size per product (the size
+# noted), taken from Southwire's own product listings; other sizes and constructions are on the same SPEC.
+PRODUCTS = [
+    (1, "MV-105 15 kV", "1/C Cu, 220 mil NL-EPR 133 %, tape shield, SIMpull PVC", "Feed-pump motors, 13.8 kV", "46302",
+     "95604599", "500 kcmil", "https://southwire.com/wire-cable/medium-voltage-power-cable/1-c-cu-15kv-220-nlepr-133-simpull-pvc-mv-105/p/95604599"),
+    (2, "Type TC-ER power", "3/C Cu XHHW-2 + ground, PVC, 600 V", "Fans, pumps, MCC feeders", "45252", "95305999",
+     "12 AWG 3/C", "https://www.southwire.com/wire-cable/power-control/cu-600-1000v-xlpe-insulation-pvc-jacket-xhhw-2-ct-rated-sunlight-resistant-for-direct-burial-silicone-free/p/95305999"),
+    (3, "ARMOR-X MC-HL", "Cu XLPE XHHW-2, welded armor, PVC, 600 V, Class I Div 2", "Gas trains, burner skids", "45352",
+     "89052799", "8 AWG 4/C", "https://www.southwire.com/wire-cable/armored-power-cable/4-c-cu-600v-xlpe-xhhw-2-armor-x-pvc-power-cable-with-ground/p/89052799"),
+    (4, "ARMOR-X MC-HL VFD", "3/C Cu XLPE XHHW-2 + ground, VFD rated", "FD fan on its drive", "45352", "89051899",
+     "3/0 3/C", "https://www.southwire.com/wire-cable/armored-power-cable/3-c-cu-600v-xlpe-xhhw-2-armor-x-pvc-power-cable-with-ground-vfd/p/89051899"),
+    (5, "Control TC-ER", "Cu XLPE XHHW-2, 600 V", "BMS panels, valves, MOVs", "45053", "89067701", "14 AWG 5/C",
+     "https://southwire.com/wire-cable/power-control/spec45053-cu-600v-xlpe-insulation-thermoplastic-cpe-tp-jacket-xhhw-2-ct-rated-sunlight-resistant-for-direct-burial-silicone-free/p/89067701"),
+    (6, "Instrumentation PLTC / ITC", "300 V, shielded pairs + overall shield (SPOS)", "Flame scanners, drum level, transmitters",
+     "43303", "per pair count", "", "https://www.southwire.com/wire-cable/instrumentation/300v-cu-pvc-pairs-pvc-spos-instrumentation/p/SPEC43303"),
+    (7, "Thermocouple extension", "PVC, PLTC multi-pair (KX on request), 105 °C", "HRSG gas-path and tube temperatures",
+     "42345", "per construction", "", "https://cabletechsupport.southwire.com/en/cablespec/download_spec/?spec=42345"),
+    (8, "SIMpull Cradle", "for 51 / 61 in SIMpull Reels, one-person payoff", "Outage staging and pulls", "SPR-CRDL",
+     "67606001", "", "https://www.southwire.com/tools-equipment/material-handling-storage/spr-crdl-simpull-cradle/p/67606001"),
+]
+# where each product is circled: view -> [(product no., 3D point in the model)]
+SPOTS = {
+    "BX1": [(2, (946.0, 1496.0, 15.0)), (3, (980.0, 1464.3, 3.0)), (4, (945.5, 1461.7, 9.0)), (5, (967.8, 1475.5, 7.5)),
+            (6, (963.2, 1515.0, 14.2))],
+    "BH2": [(3, (683.0, 692.85, 2.9)), (5, (691.75, 692.75, 6.5)), (6, (680.0, 692.5, 4.6))],
+    "BF1": [(1, (684.4, 630.4, 9.3)), (1, (684.4, 643.6, 9.3))],
+    "BB3": [(8, (888.5, 692.5, 1.2)), (6, (889.6, 683.0, 5.6)), (5, (895.0, 680.2, 3.0))],
+}
+CAPS = {"BX1": "Package boiler AB-1", "BH2": "HRSG duct-burner skid", "BF1": "HRSG feed pumps, 13.8 kV",
+        "BB3": "Outage cable work, HRSG 3"}
+
+
+def cams():
+    import re
+    txt = open(os.path.join(HERE, "pro_look.py")).read()
+    out = {}
+    for k in SPOTS:
+        m = re.search(r'k="%s".*?eye=\(([^)]*)\), target=\(([^)]*)\), lens=([\d.]+)' % k, txt, re.S)
+        out[k] = dict(eye=[float(v) for v in m.group(1).split(",")], target=[float(v) for v in m.group(2).split(",")],
+                      lens=float(m.group(3)), res=(1920, 1080))
+    return out
+
+
+def slide3():
+    C = cams()
+    W, H, G, X0, TOP = 314, 150, 18, 64, 150
+    tiles = ""
+    for k, view in enumerate(SPOTS):
+        x = X0 + k * (W + G)
+        dots = ""
+        for (n, p) in SPOTS[view]:
+            u, v = bz.project(C[view], p)
+            sc = W / 1920                                                   # object-fit: cover crops top and bottom
+            px, py = u * sc, v * sc - (1080 * sc - H) / 2
+            px, py = min(max(px, 15), W - 15), min(max(py, 15), H - 15)
+            dots += (f'<div class="abs" style="left:{px - 13:.1f}px;top:{py - 13:.1f}px;width:26px;height:26px;'
+                     f'border-radius:13px;border:2.5px solid {COPPER};background:rgba(14,16,18,.72);'
+                     f'font:800 14px/21px BC;color:{WHITE};text-align:center">{n}</div>')
+        tiles += f"""
+  <div class="abs" style="left:{x}px;top:{TOP}px;width:{W}px;height:{H}px;overflow:hidden">
+    <img src="{img(view)}" style="width:100%;height:100%;object-fit:cover">{dots}</div>
+  <div class="abs cap" style="left:{x}px;top:{TOP + H + 6}px;width:{W}px">{CAPS[view]}</div>"""
+    rows = ""
+    for (n, name, cons, use, spec, stock, size, link) in PRODUCTS:
+        st = f"{stock}<span class='sz'>{(' &middot; ' + size) if size else ''}</span>"
+        short = link.split("//", 1)[1].split("/")[0].replace("www.", "")
+        rows += f"""<tr><td><span class="nb">{n}</span></td><td><div class="pn">{name}</div><div class="pc">{cons}</div></td>
+          <td class="pu">{use}</td><td class="ps">{spec}</td><td class="ps">{st}</td>
+          <td><a href="{link}">{short} &rsaquo;</a></td></tr>"""
+    return f"""
+<section class="page slide">
+  <style>
+    table.p {{ border-collapse: collapse; width: 1312px; }}
+    table.p th {{ font: 700 11.5px/1 BC; letter-spacing: .14em; color: {GREY}; text-transform: uppercase; text-align: left;
+                 padding: 0 8px 7px; }}
+    table.p td {{ padding: 3px 8px; border-top: 1px solid #2c3036; vertical-align: middle; }}
+    .nb {{ display: inline-block; width: 24px; height: 24px; border-radius: 12px; border: 2.5px solid {COPPER};
+           font: 800 13px/19px BC; color: {WHITE}; text-align: center; }}
+    .pn {{ font: 800 15.5px/1.05 BC; color: {WHITE}; text-transform: uppercase; letter-spacing: .03em; }}
+    .pc {{ font: 400 10.5px/1.25 B; color: {GREY}; margin-top: 1px; }}
+    .pu {{ font: 400 12.5px/1.3 B; color: {WHITE}; }}
+    .ps {{ font: 700 15px/1.1 BC; color: {COPPER}; letter-spacing: .04em; white-space: nowrap; }}
+    .sz {{ font: 400 11px/1 B; color: {GREY}; letter-spacing: 0; }}
+    table.p a {{ font: 700 12.5px/1 BC; letter-spacing: .06em; color: {COPPER_L}; text-decoration: none; }}
+  </style>
+  <div class="abs kicker" style="left:64px;top:52px">Boiler solutions &nbsp;&middot;&nbsp; the offering</div>
+  <div class="abs h2" style="left:62px;top:80px;font-size:52px">The cable at <em>every spot</em></div>
+  {tiles}
+  <table class="p abs" style="left:64px;top:{TOP + H + 26}px">
+    <tr><th></th><th>Product</th><th>Where it runs</th><th>SPEC</th><th>Southwire stock # &middot; size</th><th>Spec sheet</th></tr>
+    {rows}</table>
+  <div class="abs cap" style="left:64px;top:735px;width:1312px">Stock numbers are one catalogue size per product, from
+    Southwire's product listings; every size and construction is on the same SPEC. Confirm current stock with Southwire
+    customer service before quoting.</div>
+  {foot(3)}
+</section>"""
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     import pymupdf
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS}</style></head><body>"
     out = pymupdf.open()
-    for i, sec in enumerate((slide1(), slide2())):
+    for i, sec in enumerate((slide1(), slide2(), slide3())):
         hp = os.path.join(OUT, f"_s{i}.html")
         sec = sec.replace('<section class="page slide">', '<section class="page slide"><div class="s">', 1).replace(
             "</section>", "</div></section>")

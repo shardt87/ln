@@ -1534,6 +1534,8 @@ EPIC = [
          eye=(882, 701, 9.5), target=(898, 686, 2.5), lens=22, show="all", sun=(42, 330), plumes=False),
     dict(k="BB4", n="The new HP evaporator module on its heavy-haul lowboy, ring road north of HRSG 3",
          eye=(1080, 960, 30), target=(995, 913, 6), lens=26, show="all", sun=(34, 120), plumes=False),
+    dict(k="BF1", n="BFP-1A/B: 13.8 kV MV-105 cables off the drop tray into the motor terminal boxes",
+         eye=(700, 652, 16), target=(684, 637, 8), lens=26, show="all", sun=(36, 95)),
     dict(k="T5G1", n="Private 5G / LTE monopole: sector platform with massive-MIMO units, microwave backhaul, base compound",
          eye=(345, 380, 40), target=(262, 455, 62), lens=26, show="all", sun=(38, 215), plumes=False),
     dict(k="T5G2", n="5G sector platform close-up: panel antennas, massive-MIMO units, radio units, aviation light",
