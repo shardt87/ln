@@ -72,7 +72,7 @@ def foot(n, short=False):
     left = ("SW-3X1 MODEL &middot; NOT ENGINEERED" if short else
             "SW-3X1 MODEL &middot; CONCEPTUAL ILLUSTRATION, NOT ENGINEERED &middot; QUANTITIES FROM THE MODEL'S CABLE SCHEDULE")
     return f"""<div class="abs foot" style="left:64px;right:64px;bottom:26px;display:flex;justify-content:space-between;
-      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/4</span></div>"""
+      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/5</span></div>"""
 
 
 def slide1():
@@ -160,7 +160,7 @@ def slide2():
     <img src="{img('BB2')}" style="width:100%;height:100%;object-fit:cover"></div>
   <div class="abs cap" style="left:870px;top:712px;width:243px">Cable work at the HRSG e-house</div>
   <div class="abs cap" style="left:1133px;top:712px;width:243px">Old module on the hook</div>
-  {foot(3, short=True).replace("left:64px", "left:870px")}
+  {foot(4, short=True).replace("left:64px", "left:870px")}
 </section>"""
 
 
@@ -259,7 +259,7 @@ def slide3():
   <div class="abs cap" style="left:64px;top:735px;width:1312px">Stock numbers are one catalogue size per product, from
     Southwire's product listings; every size and construction is on the same SPEC. Confirm current stock with Southwire
     customer service before quoting.</div>
-  {foot(4)}
+  {foot(5)}
 </section>"""
 
 
@@ -348,12 +348,107 @@ def slide_iso():
 </section>"""
 
 
+# ------------------------------------------------------------------------------- HRSG hero (iso) and elevation slides
+# HRSG 1 train in its own finish, every cable glowing copper / amber, the rest of the plant faded (ISO1 / ELV1 in
+# pro_look.py, ghost view of the render script). Numbered details are placed from the model's coordinates; the number
+# after each detail points to the product on the offering slide.
+HERO_SPOTS = [(1, "Feed pumps, 13.8 kV", "MV terminal boxes off the drop tray", "1", (684.4, 637, 9)),
+              (2, "Duct burner", "gas header, 8 runners, igniters and flame scanners", "5 · 6", (664.6, 636, 46)),
+              (3, "Duct-burner skid and BMS", "double block and bleed, Class I Div 2", "3 · 5", (683, 695, 4)),
+              (4, "Drums and roof valves", "drum-level transmitters, motor-operated stop valves", "2 · 6", (662.6, 700, 92)),
+              (5, "Riser tray to the roof", "control, instrument and thermocouple cable", "5 · 6 · 7", (670.3, 626, 82)),
+              (6, "Chemical feed", "metering-pump motors", "2", (683, 674, 6)),
+              (7, "SCR dilution-air blowers", "480 V motors", "2 · 4", (687, 715, 5)),
+              (8, "CEMS shelter", "analyzers and stack probes", "6", (656, 813, 8))]
+ELEV_SPOTS = [(1, "HRSG e-house R2A", "MCCs and DCS I/O for the unit", "2 · 5", (568, 632, 10)),
+              (2, "EL 42 control tray", "into the west-wall marshalling box", "5 · 6", (595.6, 690, 41)),
+              (3, "Ammonia injection grid", "AIG header and lances, SCR", "5 · 6", (594.8, 664, 55)),
+              (4, "Blowdown tank", "level and valve control", "5 · 6", (582, 710, 12)),
+              (5, "Drums and roof valves", "level transmitters, MOVs", "2 · 6", (630, 700, 96)),
+              (6, "Stack and CEMS ports", "sample lines, probes", "6", (630, 790, 120)),
+              (7, "GT exhaust to the HRSG", "inlet duct thermocouples", "7", (630, 548, 34))]
+
+
+def spot_html(cam, spots, r=17):
+    out = ""
+    for (n, t, sub, prod, p) in spots:
+        u, v = bz.project(cam, p)
+        u, v = min(max(u, 24), 1036), min(max(v, 24), 786)
+        out += (f'<div class="abs" style="left:{u - r:.0f}px;top:{v - r:.0f}px;width:{2 * r}px;height:{2 * r}px;'
+                f'border-radius:{r}px;border:3px solid {COPPER};background:rgba(14,16,18,.84);font:800 18px/{2 * r - 6}px BC;'
+                f'color:{WHITE};text-align:center;box-shadow:0 0 0 5px rgba(227,154,95,.28)">{n}</div>')
+    return out
+
+
+def spot_list(spots):
+    return "".join(
+        f'<div style="position:relative;padding:7px 0 8px 36px;border-top:1px solid #2c3036">'
+        f'<span class="abs" style="left:0;top:8px;width:25px;height:25px;border-radius:13px;border:2.5px solid {COPPER};'
+        f'font:800 13px/20px BC;color:{WHITE};text-align:center">{n}</span>'
+        f'<div style="font:800 15px/1.1 BC;color:{WHITE};text-transform:uppercase;letter-spacing:.03em">{t}'
+        f'<span style="float:right;font:700 12px/1.3 BC;color:{COPPER};letter-spacing:.06em">{prod}</span></div>'
+        f'<div style="font:400 11.5px/1.3 B;color:{GREY};margin-top:2px">{sub}</div></div>'
+        for (n, t, sub, prod, p) in spots)
+
+
+def panel(kicker, title, lede, spots, extra=""):
+    return f"""
+  <div class="abs" style="left:1040px;top:0;width:400px;height:810px;background:linear-gradient(90deg,rgba(14,16,18,0) 0%,
+       rgba(14,16,18,.9) 12%,rgba(14,16,18,.96) 100%)"></div>
+  <div class="abs kicker" style="left:1086px;top:46px;font-size:12px">{kicker}</div>
+  <div class="abs h2" style="left:1084px;top:70px;font-size:40px;width:300px">{title}</div>
+  <div class="abs lede" style="left:1086px;top:168px;width:300px;font-size:13px">{lede}</div>
+  <div class="abs" style="left:1086px;top:{262}px;width:300px">{spots}</div>
+  {extra}"""
+
+
+def slide_hero():
+    cam = dict(cams(["ISO1"])["ISO1"], res=(1440, 810))
+    h = N["hrsg"]
+    lede = ("One HRSG train and everything wired to it: cable in copper (MV) and amber (LV, control, instruments), "
+            "the rest of the plant faded. Product numbers refer to the offering slide.")
+    extra = f"""<div class="abs" style="left:1086px;top:700px;width:300px;display:flex;gap:24px">
+      <div><div class="big" style="font-size:30px">{h['cables']:,}</div><div class="bigl">cables / train</div></div>
+      <div><div class="big" style="font-size:30px">{kft(h['ft'])}</div><div class="bigl">ft / train</div></div></div>"""
+    return f"""
+<section class="page slide">
+  <img class="abs" src="{img('ISO1')}" style="left:0;top:0;width:1440px;height:810px;object-fit:cover">
+  {spot_html(cam, HERO_SPOTS)}
+  {panel("Boiler solutions &nbsp;&middot;&nbsp; HRSG", "The HRSG, <em>every cable</em>", lede, spot_list(HERO_SPOTS), extra)}
+  <div class="abs" style="left:0;top:730px;width:1040px;height:80px;background:linear-gradient(180deg,rgba(14,16,18,0),rgba(14,16,18,.95) 55%)"></div>
+  {foot(2).replace("right:64px", "right:420px")}
+</section>"""
+
+
+def slide_elev():
+    cam = dict(cams(["ELV1"])["ELV1"], res=(1440, 810))
+    P = lambda p: bz.project(cam, p)
+    scale = ""
+    x0 = P((552, 600, 0))[0] - 40
+    for (z, lab) in ((0, "GRADE"), (42, "EL 42 &middot; control tray"), (86, "EL 86 &middot; casing roof"), (180, "EL 180 &middot; stack top")):
+        u, v = P((552, 600, z)) if z < 150 else P((630, 790, z))
+        scale += (f'<div class="abs" style="left:24px;top:{v:.0f}px;width:{max(60, u - 24):.0f}px;border-top:1px dashed rgba(227,154,95,.75)"></div>'
+                  f'<div class="abs" style="left:24px;top:{v - 20:.0f}px;font:700 11px/1 BC;letter-spacing:.12em;color:{WHITE};'
+                  f'background:rgba(14,16,18,.78);padding:4px 7px 3px">{lab}</div>')
+    lede = ("The same train at a low angle from the west: e-house, the tray into the marshalling box, the ammonia grid, "
+            "drums and stack. Cable in copper and amber, the rest faded.")
+    return f"""
+<section class="page slide">
+  <img class="abs" src="{img('ELV1')}" style="left:0;top:0;width:1440px;height:810px;object-fit:cover">
+  {scale}
+  {spot_html(cam, ELEV_SPOTS)}
+  {panel("Boiler solutions &nbsp;&middot;&nbsp; elevation", "The train <em>in elevation</em>", lede, spot_list(ELEV_SPOTS))}
+  <div class="abs" style="left:0;top:730px;width:1040px;height:80px;background:linear-gradient(180deg,rgba(14,16,18,0),rgba(14,16,18,.95) 55%)"></div>
+  {foot(3).replace("right:64px", "right:420px")}
+</section>"""
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     import pymupdf
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS}</style></head><body>"
     out = pymupdf.open()
-    for i, sec in enumerate((slide1(), slide_iso(), slide2(), slide3())):
+    for i, sec in enumerate((slide1(), slide_hero(), slide_elev(), slide2(), slide3())):
         hp = os.path.join(OUT, f"_s{i}.html")
         sec = sec.replace('<section class="page slide">', '<section class="page slide"><div class="s">', 1).replace(
             "</section>", "</div></section>")
