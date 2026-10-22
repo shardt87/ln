@@ -488,3 +488,4 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
   - The full RA1 render with trays was deleted; the deck uses the preview.
 - ELV1 (slide 3): the ghost keep now also holds HRSG 2, HRSG 3 (stacks, ducts and skids) and the brownfield outage crane, all in real colour. Preview image only; queued in RENDER_QUEUE.md.
 - Spot lists (slides 2-4) now name the cable application on every circle (APPNAME in deck_boilers.py; small superscript = product number on the offering slide). Slide 2 stats moved onto the image; slide 4 inset moved to the image's lower left.
+- references/boilers/README.md: public one-lines (Mill Creek 6 KY PSC 2025-00045, HRSG MCC 1A/1B), HRSG package spec, duct-burner bulletins, MV/TC cable sample specs, standards list. Downloads blocked by the container network policy: links only.
