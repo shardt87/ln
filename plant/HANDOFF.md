@@ -457,3 +457,28 @@ HRSG 1 + BFP-1 + SCRB-1 + CEMS-1 + duct burner / chemical feed / blowdown; an ex
 application. Gap noted on the slide: the 13.8 kV SWGR-13.8-1 -> T-R2A feeder is not in the cable schedule (only its
 control / instrument cables are), so it is drawn but not counted. Deck: 1 overview, 2 HRSG hero, 3 elevation,
 4 wiring diagram, 5 brownfield, 6 offering.
+
+## Oct 22: boiler slide 4/5: the wires inside the room, every leg (7 slides)
+- Schedule gap fixed (cable_schedule.py): the 480 V secondaries were missing for every unit and load-centre transformer.
+  - Added: T-R2A/B/C → R2A/B/C at 10 sets of 4 x 1/C 500 kcmil; T-R3 → R3 and LCT-A/B → LC-480-A/B at 12 sets.
+  - Sizing: 125 % of full-load current, so the Audit sheet lists them as bus-duct candidates.
+- Correction to the previous entry: the SWGR-13.8-1 → T-R2A primary WAS in the schedule (A-MV-0015, 3 cables, 660 ft); the slide footnote saying otherwise is gone.
+- r2a_interior.py (new; runs after hrsg_electrical): R2A is now a shell instead of a solid block.
+  - Lifting layer: the roof, west wall and south wall sit on the new layer R2A_ROOF so a cutaway can lift them. The layer is in BASE_SHOW, view A and the viewer ROOFS; viewer view B3 is the R2A cutaway.
+  - Lineups: LC-R2A 480 V switchgear (main at the north end), MCC-R2A-1 / -2, VFDs, DCS / marshalling, UPS, 125 V DC battery, panels and FACP.
+  - Trays and drops: ladder trays EL 11.4 / 11.9 / 12.4, with drops into every section.
+  - T-R2A: the secondary leaves the LV box, crosses to the north-wall sleeve and runs over the room into the main breaker; the MV-105 primary drops off the EL 36 tray into the air terminal chamber.
+  - Field exits tie into the existing route risers: the north-wall transit frame at EL 8.9 and the roof glands at (575.75, 644).
+  - Also: building wire, the FA loop and detectors, ground bus and a technician.
+  - Checks: verify PASS, audit CLEAN.
+- Cameras RA1 (cutaway from the SW, R2A_ROOF hidden) and RA2 (inside, east aisle at tray height), both with `fill` lights. Full renders are in renders/boilers_full.
+- deck_boilers.py now reads every leg from the Cable Schedule sheet (legs(); the run formula as in the workbook), and asserts the train equals boiler_numbers.json (705).
+  - New slide 4 "Inside the room": RA1 with 9 numbered legs and the RA2 inset.
+  - Slide 5, the diagram, lists every leg:
+    - primary 3 / 660 ft and secondary 40 / 4,800 ft;
+    - T-R2A auxiliaries 38 / 3,600;
+    - DCS fibre 730;
+    - room THHN 2,280 plus 330;
+    - CEMS fibre / FA / THHN added to the train rows.
+  - Bar: the train (~156,000 ft), then "feeding the room" (86 cables, 12,400 ft), not counted in the train because R2A also serves GT1.
+  - Footers now read n/7.

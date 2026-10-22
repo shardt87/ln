@@ -72,7 +72,7 @@ def foot(n, short=False):
     left = ("SW-3X1 MODEL &middot; NOT ENGINEERED" if short else
             "SW-3X1 MODEL &middot; CONCEPTUAL ILLUSTRATION, NOT ENGINEERED &middot; QUANTITIES FROM THE MODEL'S CABLE SCHEDULE")
     return f"""<div class="abs foot" style="left:64px;right:64px;bottom:26px;display:flex;justify-content:space-between;
-      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/6</span></div>"""
+      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/7</span></div>"""
 
 
 def slide1():
@@ -160,7 +160,7 @@ def slide2():
     <img src="{img('BB2')}" style="width:100%;height:100%;object-fit:cover"></div>
   <div class="abs cap" style="left:870px;top:712px;width:243px">Cable work at the HRSG e-house</div>
   <div class="abs cap" style="left:1133px;top:712px;width:243px">Old module on the hook</div>
-  {foot(5, short=True).replace("left:64px", "left:870px")}
+  {foot(6, short=True).replace("left:64px", "left:870px")}
 </section>"""
 
 
@@ -259,7 +259,7 @@ def slide3():
   <div class="abs cap" style="left:64px;top:735px;width:1312px">Stock numbers are one catalogue size per product, from
     Southwire's product listings; every size and construction is on the same SPEC. Confirm current stock with Southwire
     customer service before quoting.</div>
-  {foot(6)}
+  {foot(7)}
 </section>"""
 
 
@@ -444,107 +444,216 @@ def slide_elev():
 
 
 # ------------------------------------------------------------------------------- the wiring diagram (one-line / riser)
-# One HRSG train from the switchgear room to the field, each leg by cable application with the product number on the
-# offering slide and the count / footage summed from the Cable Schedule (HRSG 1, its feed pumps, SCR blowers, chemical
-# feed, blowdown, CEMS, duct burner). The 13.8 kV feeder to T-R2A is drawn but not in the schedule (noted).
-APP = [  # (application, colour, product numbers, cables, ft, field)
-    ("MV-105 15 kV", "#f05a28", "1", 6, 8400, "Feed pumps BFP-1A / 1B, 13.8 kV"),
-    ("TC-ER 600 V power · VFD", "#f2c613", "2 · 4", 77, 17800, "Motors, MOVs, heaters: SCR blowers, chemical feed, blowdown, CEMS"),
-    ("Control TC-ER · ARMOR-X MC-HL", "#3a8fd9", "5 · 3", 96, 21140, "Valves, MOVs, burner management, local stations"),
-    ("Instrumentation PLTC / ITC · RTD", "#36c26b", "6", 439, 86600, "Field junction boxes to transmitters, flame scanners, RTDs"),
-    ("Thermocouple extension", "#17a589", "7", 84, 19680, "Gas-path, tube-metal and duct thermocouples"),
-    ("Fibre · fire alarm", "#ff9f1a", "—", 2, 2160, "CEMS data to the control room; detection loop"),
+# Every leg from the switchgear room to the field, read from the Cable Schedule sheet (run length as the workbook's
+# formula: ROUNDUP((route + drops + 2 x 10 ft) x 1.1, -10) x sets x cables per set):
+# - the HRSG 1 train (HRSG 1, its feed pumps, SCR blowers, chemical feed, blowdown, CEMS, duct burner): 705 cables;
+# - what feeds the room: the T-R2A 13.8 kV primary, its 480 V secondary into LC-R2A, the transformer's own fans,
+#   controls and monitoring, the DCS fibre from the control room and the e-house's own wiring. R2A also serves the
+#   GT1 unit loads, so these legs are shown but kept out of the train total.
+TRAIN = r"HRSG[- ]1\b|BFP-1|SCRB-1|CEMS-1|STK-1|HRSG 1 "
+
+
+def legs():
+    import math
+    import re
+    import openpyxl
+    wb = openpyxl.load_workbook(os.path.join(PLANT, "brochure", "SW-3X1_Cable_Schedule_and_BOM.xlsx"), read_only=True)
+    rm = {r[0]: r[1] for r in wb["Read Me"].iter_rows(min_row=12, max_row=13, values_only=True)}
+    allow, end = float(list(rm.values())[0]), float(list(rm.values())[1])
+    out = {}
+
+    def put(k, r):
+        n = r[13] * r[14]
+        ft = math.ceil(((r[19] or 0) + (r[20] or 0) + 2 * end) * (1 + allow) / 10) * 10 * n
+        a = out.setdefault(k, dict(cables=0, ft=0, rows=[]))
+        a["cables"] += n
+        a["ft"] += ft
+        a["rows"].append(r[0])
+    for r in list(wb["Cable Schedule"].iter_rows(values_only=True))[1:]:
+        ends = " ".join(str(r[k]) for k in (4, 5, 6, 7))
+        svc, cls, prod = str(r[3]), r[8], str(r[9])
+        if "T-R2A unit / load-centre transformer primary" in svc:
+            put("primary", r)
+        elif svc.startswith("T-R2A 480 V secondary"):
+            put("secondary", r)
+        elif "T-R2A" in ends:
+            put("traux", r)
+        elif r[4] == "CR" and r[6] == "R2A":
+            put("fibre_r2a", r)
+        elif r[4] == "R2A" and r[6] == "R2A":
+            put("room_bw" if cls == "Building wire" else "room", r)
+        elif re.search(TRAIN, ends):
+            k = {"MV 15 kV": "mv", "LV 600 V": "lv", "Control": "ctrl"}.get(cls)
+            if cls == "Instrumentation":
+                k = "tcx" if "Thermocouple" in prod else "inst"
+            put(k or "misc", r)
+    return out
+
+
+L = legs()
+_train = sum(L[k]["cables"] for k in ("mv", "lv", "ctrl", "inst", "tcx", "misc"))
+assert _train == N["hrsg"]["cables"], (_train, N["hrsg"]["cables"])     # same train as the hero slide
+SUPPLY = [  # (key, label, colour, product, field)
+    ("primary", "MV-105 15 kV", "#f05a28", "1", "SWGR-13.8-1 to T-R2A, 13.8 kV primary"),
+    ("secondary", "XHHW-2 1/C 500 kcmil", "#f2c613", "—", "T-R2A 480 V secondary into LC-R2A, 10 sets x 4"),
+    ("traux", "TC-ER power · control · PLTC", "#9aa3ab", "2 · 5 · 6", "T-R2A fans, controls, temperature / gas monitoring"),
+    ("fibre_r2a", "Fibre", "#ff9f1a", "—", "Control room to the R2A DCS network cabinet"),
+    ("room_bw", "SIMpull THHN · building wire", "#c58bff", "—", "Lighting, receptacles, small power inside R2A"),
+    ("room", "TC-ER · FPLR", "#c58bff", "2 · 5", "Panel feeder, control and fire-alarm loop inside R2A"),
 ]
+APP = [  # (key, application, colour, product numbers, field)
+    ("mv", "MV-105 15 kV", "#f05a28", "1", "Feed pumps BFP-1A / 1B, 13.8 kV"),
+    ("lv", "TC-ER 600 V power · VFD", "#f2c613", "2 · 4", "Motors, MOVs, heaters: SCR blowers, chemical feed, blowdown, CEMS"),
+    ("ctrl", "Control TC-ER · ARMOR-X MC-HL", "#3a8fd9", "5 · 3", "Valves, MOVs, burner management, local stations"),
+    ("inst", "Instrumentation PLTC / ITC · RTD", "#36c26b", "6", "Field junction boxes to transmitters, flame scanners, RTDs"),
+    ("tcx", "Thermocouple extension", "#17a589", "7", "Gas-path, tube-metal and duct thermocouples"),
+    ("misc", "Fibre · fire alarm · THHN", "#ff9f1a", "—", "CEMS shelter: data to the control room, detection, lighting"),
+]
+
+# the e-house cutaway (RA1): each leg where it runs in the room
+ROOM_SPOTS = [
+    (1, "13.8 kV primary", "MV-105 off the EL 36 tray into T-R2A", "1", (561.0, 677.4, 14)),
+    (2, "480 V secondary", "10 sets of 4 x 1/C 500 kcmil", "—", (560.0, 657.5, 12.7)),
+    (3, "Main breaker", "the 40 cables drop into LC-R2A", "—", (582.0, 649.6, 11.2)),
+    (4, "LC-R2A feeders", "to MCCs, VFDs, UPS and panels", "2", (580.4, 638.0, 11.0)),
+    (5, "MCC drops", "power and control into each bucket", "2 · 5", (582.0, 620.0, 11.0)),
+    (6, "VFD and MCC-2", "SCR blowers, chemical feed, blowdown", "2 · 4", (569.9, 628.0, 11.2)),
+    (7, "Marshalling", "home-run multipairs from the field JBs", "6 · 7", (566.5, 636.0, 11.6)),
+    (8, "Out to the field", "power via the north wall, instruments via the roof", "2 · 5 · 6", (575.75, 644.0, 24.0)),
+    (9, "UPS, DC and panels", "125 V DC, 120 V AC UPS, lighting", "2 · 5", (553.6, 630.0, 9.0)),
+]
+
+
+def slide_room():
+    cam = dict(cams(["RA1"])["RA1"], res=(1440, 810))
+    lab = {1: "primary", 2: "secondary"}
+    spots = []
+    for (n, t, sub, prod, p) in ROOM_SPOTS:
+        if n in lab:
+            sub += f" &middot; {L[lab[n]]['cables']} cables, {L[lab[n]]['ft']:,} ft"
+        spots.append((n, t, sub, prod, p))
+    inset = os.path.join(PLANT, "renders", "boilers_full", "RA2_pro_clean.jpg")
+    inset = url(inset if os.path.exists(inset) else os.path.join(R, "RA2_pro_clean.jpg"))
+    lede = "Roof and two walls lifted off the HRSG 1 e-house: every cable leg, transformer to section."
+    extra = f"""<div class="abs" style="left:1086px;top:664px;width:300px;height:116px;border:2px solid {COPPER};border-radius:4px;overflow:hidden">
+      <img src="{inset}" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+      <div class="abs cap" style="left:1086px;top:784px;width:300px;font-size:10.5px">Inside: LC-R2A and MCC-R2A-1 (right), VFDs (left), trays overhead</div>"""
+    return f"""
+<section class="page slide">
+  <img class="abs" src="{img('RA1')}" style="left:0;top:0;width:1440px;height:810px;object-fit:cover">
+  {spot_html(cam, spots)}
+  {panel("Boiler solutions &nbsp;&middot;&nbsp; the e-house", "Inside <em>the room</em>", lede, spot_list(spots).replace("padding:7px 0 8px 36px", "padding:5px 0 5px 36px"), extra).replace("top:262px", "top:218px").replace("top:168px", "top:160px")}
+  <div class="abs" style="left:0;top:730px;width:1040px;height:80px;background:linear-gradient(180deg,rgba(14,16,18,0),rgba(14,16,18,.95) 55%)"></div>
+  {foot(4).replace("right:64px", "right:420px")}
+</section>"""
 
 
 def slide_diagram():
     epic = lambda k: url(os.path.join(PLANT, "renders", "epic", f"{k}_pro_clean.jpg"))
-    X_SW0, X_SW1, Y_SW0, Y_SW1 = 214, 444, 176, 436                    # R1 switchgear room node
-    X_E0, X_E1, Y_E0, Y_E1 = 618, 848, 300, 560                        # R2A e-house node
+    X_SW0, X_SW1, Y_SW0, Y_SW1 = 190, 410, 176, 436                    # R1 switchgear room node
+    X_E0, X_E1, Y_E0, Y_E1 = 600, 850, 250, 556                        # R2A e-house node
     XF0, XF1 = 1006, 1376                                               # field column
-    rows = [190, 268, 346, 424, 502, 580]
+    rows = [176 + 64 * k for k in range(7)]
     lines, nodes = "", ""
+
     def wire(pts, col, w=4):
         return (f'<polyline points="{" ".join(f"{a},{b}" for a, b in pts)}" fill="none" stroke="{col}" stroke-width="{w}" '
                 f'stroke-linejoin="round" stroke-linecap="round"/>')
-    # grid / UAT -> switchgear
-    lines += wire([(170, 300), (X_SW0, 300)], "#b06ae0", 5)
-    # switchgear -> BFP (row 0) and -> T-R2A -> R2A
-    lines += wire([(X_SW1, rows[0] + 16), (XF0, rows[0] + 16)], APP[0][1], 5)
-    lines += wire([(X_SW1, 380), (520, 380), (520, 430), (560, 430)], APP[0][1], 5)
-    lines += wire([(600, 430), (X_E0, 430)], APP[1][1], 5)
-    # e-house -> field rows 1-4; control room -> row 5
+    tag = lambda x, y, txt, col: (f'<div class="abs" style="left:{x}px;top:{y}px;font:700 11px/1 BC;letter-spacing:.05em;'
+                                  f'color:{INK};background:{col};padding:4px 7px 3px;border-radius:3px;white-space:nowrap">{txt}</div>')
+    fmt = lambda k: f"{L[k]['cables']} CABLES &middot; {L[k]['ft']:,} FT"
+    # generator -> switchgear
+    lines += wire([(160, 296), (X_SW0, 296)], "#b06ae0", 5)
+    # switchgear -> feed pumps (field row 0)
+    lines += wire([(X_SW1, rows[0] + 18), (XF0, rows[0] + 18)], APP[0][2], 5)
+    nodes += tag(470, rows[0] + 4, f"MV-105 15 KV &middot; {fmt('mv')} &middot; 1", APP[0][2])
+    # switchgear -> T-R2A (primary) -> R2A (secondary)
+    lines += wire([(X_SW1, 382), (500, 382), (500, 452), (522, 452)], SUPPLY[0][2], 5)
+    nodes += tag(420, 396, f"PRIMARY &middot; MV-105 &middot; {fmt('primary')}", SUPPLY[0][2])
+    lines += wire([(572, 452), (X_E0, 452)], SUPPLY[1][2], 7)
+    nodes += tag(330, 492, f"SECONDARY &middot; 1/C 500 KCMIL &middot; {fmt('secondary')}", SUPPLY[1][2])
+    nodes += (f'<div class="abs" style="left:522px;top:424px;width:50px;height:56px;border:2px solid {GREY};border-radius:25px;'
+              f'background:#15181b;font:800 10px/1.1 BC;color:{WHITE};text-align:center;padding-top:11px">T-R2A<br>'
+              f'<span style="font-weight:700;color:{GREY}">13.8/<br>0.48</span></div>')
+    # T-R2A aux leg
+    lines += wire([(547, 480), (547, 600), (XF0 - 60, 600), (XF0 - 60, rows[5] + 18), (XF0, rows[5] + 18)], SUPPLY[2][2], 3)
+    # e-house -> field rows 1-4
     for k in range(1, 5):
-        y = rows[k] + 16
-        ys = 340 + (k - 1) * 52
-        lines += wire([(X_E1, ys), (928, ys), (928, y), (XF0, y)], APP[k][1], 4)
-    lines += wire([(444, 626), (940, 626), (940, rows[5] + 16), (XF0, rows[5] + 16)], APP[5][1], 3)
-    # labels on the switchgear -> BFP leg and the T-R2A feeder
-    tag = lambda x, y, txt, col: (f'<div class="abs" style="left:{x}px;top:{y}px;font:700 11.5px/1 BC;letter-spacing:.06em;'
-                                  f'color:{INK};background:{col};padding:4px 7px 3px;border-radius:3px">{txt}</div>')
-    nodes += tag(560, rows[0] + 3, "MV-105 15 KV &middot; 6 CABLES &middot; 8,400 FT &middot; 1", APP[0][1])
-    nodes += tag(452, 392, "MV-105 &middot; FEEDER*", APP[0][1])
+        y = rows[k] + 18
+        ys = 290 + (k - 1) * 40
+        lines += wire([(X_E1, ys), (930 + 8 * k, ys), (930 + 8 * k, y), (XF0, y)], APP[k][2], 4)
+    # control room: fibre to R2A and to CEMS (row 6)
+    lines += wire([(410, 650), (725, 650), (725, Y_E1)], SUPPLY[3][2], 3)
+    nodes += tag(470, 658, f"DCS FIBRE &middot; {fmt('fibre_r2a').replace('1 CABLES', '1 CABLE')}", SUPPLY[3][2])
+    lines += wire([(410, 640), (980, 640), (980, rows[6] + 18), (XF0, rows[6] + 18)], APP[5][2], 3)
     # source node
-    nodes += (f'<div class="abs" style="left:40px;top:268px;width:130px;height:64px;border:2px solid #b06ae0;border-radius:6px;'
+    nodes += (f'<div class="abs" style="left:40px;top:264px;width:120px;height:64px;border:2px solid #b06ae0;border-radius:6px;'
               f'padding:9px 10px;background:rgba(176,106,224,.08)"><div class="ct" style="font-size:15px">GSU-1 &middot; UAT-1</div>'
-              f'<div class="cd" style="font-size:11px">21 / 13.8 kV from the generator</div></div>')
+              f'<div class="cd" style="font-size:11px">21 / 13.8 kV</div></div>')
     # switchgear room node with the render
     nodes += (f'<div class="abs" style="left:{X_SW0}px;top:{Y_SW0}px;width:{X_SW1 - X_SW0}px;height:{Y_SW1 - Y_SW0}px;'
               f'border:2px solid {COPPER};border-radius:6px;overflow:hidden;background:#15181b">'
-              f'<img src="{epic("E82")}" style="width:100%;height:150px;object-fit:cover;display:block">'
+              f'<img src="{epic("E82")}" style="width:100%;height:140px;object-fit:cover;display:block">'
               f'<div style="padding:10px 12px"><div class="cnum">Switchgear room R1</div>'
               f'<div class="ct" style="font-size:19px;margin-top:5px">SWGR-13.8-1</div>'
-              f'<div class="cd" style="font-size:11.5px;margin-top:4px">13.8 kV metal-clad lineup: breakers for the feed pumps '
-              f'and the HRSG e-house transformer</div></div></div>')
-    # T-R2A node
-    nodes += (f'<div class="abs" style="left:556px;top:404px;width:48px;height:52px;border:2px solid {GREY};border-radius:24px;'
-              f'background:#15181b;font:800 10px/1.1 BC;color:{WHITE};text-align:center;padding-top:10px">T-R2A<br>'
-              f'<span style="font-weight:700;color:{GREY}">13.8/<br>0.48</span></div>')
-    # e-house node with the render
+              f'<div class="cd" style="font-size:11.5px;margin-top:4px">13.8 kV metal-clad: the feed-pump breakers and the '
+              f'T-R2A transformer feeder</div></div></div>')
+    # e-house node with the cutaway render and the room's own wiring
     nodes += (f'<div class="abs" style="left:{X_E0}px;top:{Y_E0}px;width:{X_E1 - X_E0}px;height:{Y_E1 - Y_E0}px;'
               f'border:2px solid {COPPER};border-radius:6px;overflow:hidden;background:#15181b">'
-              f'<img src="{epic("E32")}" style="width:100%;height:120px;object-fit:cover;display:block">'
-              f'<div style="padding:10px 12px"><div class="cnum">HRSG e-house R2A</div>'
-              f'<div class="ct" style="font-size:19px;margin-top:5px">480 V MCC &middot; DCS I/O</div>'
-              f'<div class="cd" style="font-size:11.5px;margin-top:4px">motor starters, VFDs, UPS, marshalling for the train'
-              f'</div></div></div>')
+              f'<img src="{img("RA1")}" style="width:100%;height:126px;object-fit:cover;display:block">'
+              f'<div style="padding:9px 12px"><div class="cnum">HRSG e-house R2A</div>'
+              f'<div class="ct" style="font-size:18px;margin-top:4px">LC-R2A &middot; MCCs &middot; VFDs &middot; DCS</div>'
+              f'<div class="cd" style="font-size:11px;margin-top:3px">480 V switchgear, starters, drives, UPS / DC, marshalling</div>'
+              f'<div style="font:400 10.5px/1.35 B;color:{GREY};margin-top:6px;border-top:1px solid #2c3036;padding-top:5px">'
+              f'<span style="color:{SUPPLY[4][2]};font-weight:700">In the room:</span> lighting and receptacles, '
+              f'{L["room_bw"]["ft"]:,} ft THHN; panel feeder, control, fire-alarm loop, {L["room"]["ft"]:,} ft</div></div></div>')
     # control room node
-    nodes += (f'<div class="abs" style="left:214px;top:600px;width:230px;height:52px;border:2px solid {APP[5][1]};border-radius:6px;'
+    nodes += (f'<div class="abs" style="left:190px;top:618px;width:220px;height:52px;border:2px solid {APP[5][2]};border-radius:6px;'
               f'padding:8px 12px;background:#15181b"><div class="ct" style="font-size:15px">Main control room</div>'
               f'<div class="cd" style="font-size:11px">DCS servers, CEMS data</div></div>')
-    # field nodes
-    for k, (app, col, prod, n, ft, field) in enumerate(APP):
+    # field nodes: rows 0-4 = train, 5 = T-R2A aux, 6 = CEMS fibre / FA / THHN
+    fr = [APP[0], APP[1], APP[2], APP[3], APP[4], SUPPLY[2], APP[5]]
+    for k, (key, app, col, prod, field) in enumerate(fr):
         y = rows[k]
-        nodes += (f'<div class="abs" style="left:{XF0}px;top:{y}px;width:{XF1 - XF0}px;height:62px;border-left:5px solid {col};'
-                  f'background:#15181b;padding:7px 12px 6px">'
-                  f'<div style="font:800 14.5px/1.1 BC;color:{WHITE};text-transform:uppercase;letter-spacing:.03em">{field}</div>'
-                  f'<div style="font:400 11.5px/1.3 B;color:{GREY};margin-top:4px"><span style="color:{col};font-weight:700">{app}</span>'
-                  f' &middot; {n:,} cables &middot; {ft:,} ft &nbsp;<span style="font:700 12px/1 BC;color:{COPPER}">{prod}</span></div></div>')
-    # exploded breakdown: where one train's cable goes
-    tot = sum(a[4] for a in APP)
+        nodes += (f'<div class="abs" style="left:{XF0}px;top:{y}px;width:{XF1 - XF0}px;height:56px;border-left:5px solid {col};'
+                  f'background:#15181b;padding:6px 12px 5px">'
+                  f'<div style="font:800 14px/1.1 BC;color:{WHITE};text-transform:uppercase;letter-spacing:.03em">{field}</div>'
+                  f'<div style="font:400 11px/1.3 B;color:{GREY};margin-top:3px"><span style="color:{col};font-weight:700">{app}</span>'
+                  f' &middot; {L[key]["cables"]:,} cables &middot; {L[key]["ft"]:,} ft &nbsp;<span style="font:700 12px/1 BC;color:{COPPER}">{prod}</span></div></div>')
+    # exploded breakdown: the train by application, then what feeds the room
+    tr = [(a[1], a[2], L[a[0]]["ft"]) for a in APP]
+    su = [(a[1], a[2], L[a[0]]["ft"]) for a in SUPPLY]
+    t_tr, t_su = sum(f for *_, f in tr), sum(f for *_, f in su)
     bars = ""
     x = 64
-    W = 1312
-    for (app, col, prod, n, ft, field) in sorted(APP, key=lambda a: -a[4]):
-        w = W * ft / tot
-        lab = f"{app.split(' ·')[0]} {ft / 1000:,.1f}k" if w > 120 else (f"{ft / 1000:,.1f}k" if w > 34 else "")
-        bars += (f'<div class="abs" style="left:{x:.1f}px;top:706px;width:{w - 2:.1f}px;height:30px;background:{col};'
-                 f'font:700 12px/30px BC;letter-spacing:.05em;color:{INK};padding-left:8px;overflow:hidden;white-space:nowrap">'
-                 f'{lab}</div>')
-        x += w
+    W = 1312 - 12
+    for grp in (sorted(tr, key=lambda a: -a[2]), sorted(su, key=lambda a: -a[2])):
+        for (app, col, ft) in grp:
+            w = W * ft / (t_tr + t_su)
+            lab = f"{app.split(' ·')[0]} {ft / 1000:,.1f}k" if w > 130 else (f"{ft / 1000:,.1f}k" if w > 34 else "")
+            bars += (f'<div class="abs" style="left:{x:.1f}px;top:714px;width:{max(w - 2, 1.5):.1f}px;height:28px;background:{col};'
+                     f'font:700 11.5px/28px BC;letter-spacing:.05em;color:{INK};padding-left:7px;overflow:hidden;white-space:nowrap">'
+                     f'{lab}</div>')
+            x += w
+        x += 12
+    n_su = sum(L[a[0]]["cables"] for a in SUPPLY)
     return f"""
 <section class="page slide">
   <div class="abs kicker" style="left:64px;top:52px">Boiler solutions &nbsp;&middot;&nbsp; how it is wired</div>
   <div class="abs h2" style="left:62px;top:80px;font-size:50px">Switchgear room <em>to the HRSG</em></div>
-  <div class="abs lede" style="left:64px;top:136px;width:900px;font-size:14px">One HRSG train, broken out by cable application:
-    each leg with its Southwire product (numbers as on the offering slide), cable count and footage from the model's schedule.</div>
+  <div class="abs lede" style="left:64px;top:136px;width:900px;font-size:14px">Every leg, from the 13.8 kV breaker to the field
+    devices, by cable application: Southwire product (numbers as on the offering slide), cable count and footage from the
+    model's schedule.</div>
   <svg class="abs" width="1440" height="810" viewBox="0 0 1440 810" style="left:0;top:0">{lines}</svg>
   {nodes}
-  <div class="abs kicker" style="left:64px;top:682px;font-size:12px">Exploded: where one train's ~{round(tot, -3):,.0f} ft of cable goes</div>
+  <div class="abs kicker" style="left:64px;top:690px;font-size:12px">The HRSG 1 train: {_train:,} cables, ~{round(t_tr, -3):,.0f} ft</div>
+  <div class="abs kicker" style="right:64px;top:690px;font-size:12px;color:{GREY};text-align:right">+ feeding the room: {n_su} cables, {t_su:,} ft</div>
   {bars}
-  <div class="abs cap" style="left:64px;top:742px;width:1312px">* The 13.8 kV feeder from SWGR-13.8-1 to the e-house
-    transformer T-R2A is drawn as designed but not yet in the model's cable schedule, so it is not in the totals.</div>
-  {foot(4)}
+  <div class="abs cap" style="left:64px;top:748px;width:1312px">R2A also serves the GT1 unit loads, so the T-R2A primary and
+    secondary, the transformer auxiliaries, the DCS fibre and the room's own wiring are shown here but are not in the train total.
+    Schedule rows: {", ".join(L["primary"]["rows"] + L["secondary"]["rows"])} and the rest by tag.</div>
+  {foot(5)}
 </section>"""
 
 
@@ -553,7 +662,7 @@ def main():
     import pymupdf
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS}</style></head><body>"
     out = pymupdf.open()
-    for i, sec in enumerate((slide1(), slide_hero(), slide_elev(), slide_diagram(), slide2(), slide3())):
+    for i, sec in enumerate((slide1(), slide_hero(), slide_elev(), slide_room(), slide_diagram(), slide2(), slide3())):
         hp = os.path.join(OUT, f"_s{i}.html")
         sec = sec.replace('<section class="page slide">', '<section class="page slide"><div class="s">', 1).replace(
             "</section>", "</div></section>")

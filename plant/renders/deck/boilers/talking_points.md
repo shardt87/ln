@@ -26,6 +26,19 @@ Notes for the boiler slides (SW-3X1_boilers.pdf). The equipment in the model and
    - instrumentation and fire alarm.
 3. **Brownfield module replacement (HRSG 3 outage).** An HP evaporator module is lifted out through the opened roof, and the new module waits on a lowboy. The cable work happens in the same window: SIMpull reels, pre-terminated harnesses landing on the marshalling box, and old cable cut back into recycling.
 
+## Inside the e-house and the full wiring (slides 4 and 5)
+
+- **Slide 4** lifts the roof off R2A, the HRSG 1 e-house. It traces every leg from the transformer to the drops into each section:
+  - the 13.8 kV primary (MV-105, 3 cables, 660 ft) into T-R2A;
+  - the 480 V secondary (10 sets of 4 x 1/C 500 kcmil XHHW-2, 40 cables, 4,800 ft) over the room to the LC-R2A main breaker;
+  - the feeders to the MCCs and VFDs, the drops into every bucket, the marshalling home runs, and the UPS / DC panels;
+  - the exits to the field: power through the north-wall transit frame, instruments, thermocouple, fire alarm and fibre through the roof glands.
+- **Slide 5** is the one-line. Every number comes from a schedule row:
+  - the HRSG 1 train is **705 cables, about 156,000 ft**;
+  - feeding the room adds **86 cables, about 12,400 ft**: the T-R2A primary and secondary, the transformer fans, controls and monitoring, the DCS fibre, and the room's own lighting, receptacles and fire-alarm wiring.
+  - R2A also serves the GT1 unit, so the feed is shown but not counted in the train.
+- The 480 V secondary was missing from the schedule until this pass. It is now in for every unit and load-centre transformer (T-R2A/B/C, T-R3, LCT-A/B). At 10 to 12 parallel sets, it is also a bus-duct candidate; ask the EPC which they carry.
+
 ## The message for boiler companies
 
 - **"The outage clock is the cost."** On a replacement or a conversion, cable is on the critical path unless it's staged and pre-terminated before the unit comes down.

@@ -1807,6 +1807,7 @@ LAYERS = {
     "BASE_ELECTRICAL": ("Electrical: GSUs, UATs, GCBs, e-houses, EDGs", "Base plant"),
     "R1_ROOF": ("R1 roof", "Base plant"), "R1_WALL_E": ("R1 east wall", "Base plant"),
     "R1_INTERIOR": ("R1 interior (SW-3X1-05)", "Base plant"),
+    "R2A_ROOF": ("R2A e-house roof, west and south walls (cutaway)", "Base plant"),
     "R4_ROOF": ("R4 roof", "Base plant"), "R4_WALL_E": ("R4 east wall", "Base plant"),
     "R4_INTERIOR": ("R4 VFD interior", "Base plant"),
     "CR_ROOF": ("Control / admin building roof and ceiling", "Base plant"),
@@ -1846,17 +1847,19 @@ AREAS = {"A": "Power block", "B": "ACC", "C": "Grid interface", "D": "Fuel gas",
          "F": "Controls / service", "G": "Carbon capture", "H": "BESS", "I": "Modular / portable power",
          "J": "GT inlet chilling", "K": "Fuel supply (adjacent market)", "L": "BTM data centre (design option)"}
 # Views from SW-3X1-11 (collections to show), plus two convenience views.
-BASE_SHOW = ["SITE", "BASE_POWER_BLOCK", "HALL_ROOF", "BASE_INLET_AIR", "BASE_ELECTRICAL", "R1_ROOF", "R1_WALL_E",
+BASE_SHOW = ["SITE", "BASE_POWER_BLOCK", "HALL_ROOF", "BASE_INLET_AIR", "BASE_ELECTRICAL", "R1_ROOF", "R1_WALL_E", "R2A_ROOF",
              "R4_ROOF", "R4_WALL_E", "BASE_SWITCHYARD", "BASE_UTILITIES", "BASE_SERVICES", "ROUTES_BASE",
              "PROCESS_PIPING"]
 VIEWS = [
     dict(k="A", n="A Plant overview", show=["SITE", "BASE_POWER_BLOCK", "BASE_ELECTRICAL", "BASE_INLET_AIR",
-         "BASE_SWITCHYARD", "HALL_ROOF", "R1_ROOF", "R1_WALL_E", "R4_ROOF", "R4_WALL_E", "ROUTES_BASE",
+         "BASE_SWITCHYARD", "HALL_ROOF", "R1_ROOF", "R1_WALL_E", "R2A_ROOF", "R4_ROOF", "R4_WALL_E", "ROUTES_BASE",
          "PROCESS_PIPING"], t=[930, 560, 30], c=[-150, -560, 950]),
     dict(k="B", n="B R1 cutaway", show=["SITE", "BASE_ELECTRICAL", "R1_INTERIOR", "ROUTES_BASE"],
          t=[442, 692, 4], c=[560, 560, 120]),
     dict(k="B2", n="B2 R4 VFD room", show=["SITE", "BASE_ELECTRICAL", "R4_INTERIOR", "ROUTES_BASE", "BASE_POWER_BLOCK"],
          t=[1195, 338, 6], c=[1330, 250, 95]),
+    dict(k="B3", n="B3 R2A HRSG e-house cutaway", show=["SITE", "BASE_ELECTRICAL", "ROUTES_BASE", "BASE_POWER_BLOCK"],
+         t=[568, 634, 6], c=[628, 560, 95]),
     dict(k="C", n="C Pumps / ACC routes", show=["SITE", "BASE_POWER_BLOCK", "BASE_ELECTRICAL", "BASE_UTILITIES",
          "ROUTES_BASE", "PROCESS_PIPING"], t=[1250, 800, 20], c=[1190, 1070, 190]),
     dict(k="H", n="Turbine hall (roof off)", show=["SITE", "BASE_POWER_BLOCK", "BASE_INLET_AIR", "BASE_ELECTRICAL",
@@ -2341,6 +2344,8 @@ import aux_boiler as _ab                         # boiler section (Oct 22): AB-1
 print('aux boiler', _ab.build())
 import hrsg_electrical as _hel                    # boiler section: HRSG duct burners, BFP MV terminations
 print('HRSG electrical', _hel.build())
+import r2a_interior as _r2a                       # boiler slide 4: R2A e-house shell, lineups and every cable leg
+print('R2A interior', _r2a.build())
 import brownfield as _bf                          # boiler section: HRSG 3 module-replacement outage (brownfield)
 print('brownfield outage', _bf.build())
 

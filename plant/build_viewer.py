@@ -47,7 +47,7 @@ model["views"].append(dict(k="FUEL", n="Fuel systems: M&R, gas yard, ULSD", show
                            t=[1640, 1660, 4], c=[1330, 1330, 330]))
 # every view shows the whole campus (options, BTM campus, coastal terminal), so equipment never drops out when the
 # view changes; a view still leaves out the roofs / walls it cuts away, and the underground views keep their own set
-ROOFS = {"HALL_ROOF", "R1_ROOF", "R1_WALL_E", "R4_ROOF", "R4_WALL_E", "CR_ROOF", "H2_ROOF"}
+ROOFS = {"HALL_ROOF", "R1_ROOF", "R2A_ROOF", "R1_WALL_E", "R4_ROOF", "R4_WALL_E", "CR_ROOF", "H2_ROOF"}
 FULL = [l for l in model["layers"] if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND",
                                                 "OPT_H2P", "OPT_H2P_ROUTES", "NOBESS_GROUND", "NOMOD_GROUND")]
 for v in model["views"]:

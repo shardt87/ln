@@ -405,6 +405,12 @@ for t, s in (("T-R2A", 0), ("T-R2B", 1), ("T-R2C", 2), ("T-R3", 1), ("LCT-A", 0)
     it = one(rf"^{t}:") or BY_TAG.get(t)
     mv_feeder(S13[s], it, 2500 if t.startswith("T-R2") else 3000, 13.8, f"{t} unit / load-centre transformer primary",
               motor=False)
+    kva = 2500 if t.startswith("T-R2") else 3000                     # 480 V secondary into its load centre (audit, Oct 22)
+    I = kva / (1.732 * .48)
+    sets = -(-int(1.25 * I) // AMP_LV["500"])
+    lc = BY_TAG[{"T-R2A": "R2A", "T-R2B": "R2B", "T-R2C": "R2C", "T-R3": "R3", "LCT-A": "LC-480-A", "LCT-B": "LC-480-B"}[t]]
+    add(it, lc, f"{t} 480 V secondary to the {lc['tag']} incomer", "LV1C", "1/C", "500", sets, 4, kva, 480, round(I),
+        f"{sets} sets of 4 x 1/C 500 kcmil (3 phases + neutral) at 125 %")
 for k, t in enumerate(("T4-A", "T4-B")):
     mv_feeder(S13[0 if k == 0 else 2], BY_TAG[t], 10000, 13.8, f"{t} station transformer primary", motor=False)
     mv_feeder(BY_TAG[t], S4[k], 10000, 4.16, f"{t} secondary to SWGR-4.16-{'AB'[k]} incomer", motor=False)
