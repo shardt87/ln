@@ -655,12 +655,82 @@ if args.style == "pro":
             bsdf.inputs["Alpha"].default_value = h["hall_alpha"]
             if hasattr(hall_m, "blend_method"):
                 hall_m.blend_method = "BLEND"
+        # fill lights for shaded close-ups: (x, y, z, watts, radius ft)
+        for (fx, fy, fz, fw, fr) in h.get("fill", ()):
+            ld = bpy.data.lights.new("fill", "POINT")
+            ld.energy, ld.shadow_soft_size, ld.color = fw, fr * FT, (1.0, .97, .92)
+            lo = bpy.data.objects.new("fill", ld)
+            lo.location = Vector((fx, fy, fz)) * FT
+            scene.collection.objects.link(lo)
+            lamps_on.append(lo)
+        # ghost view (cable-route slides): the plant faded to pale clay, the kept items in their own finish, every
+        # cable / bus / conductor glowing (HV / MV copper, LV / control / instrument amber), tray steel mid grey
+        ghost_saved, ghost_hidden = [], []
+        if h.get("ghost"):
+            g = h["ghost"]
+            keep = tuple(g.get("keep", ()))
+            def _mat(name, base, emit=None, strength=0.0, rough=.85, alpha=1.0):
+                m = bpy.data.materials.get(name) or bpy.data.materials.new(name)
+                m.use_nodes = True
+                b = m.node_tree.nodes["Principled BSDF"]
+                b.inputs["Base Color"].default_value = (*base, 1)
+                b.inputs["Roughness"].default_value = rough
+                if emit:
+                    for nm in ("Emission Color", "Emission"):
+                        if nm in b.inputs:
+                            b.inputs[nm].default_value = (*emit, 1)
+                            break
+                    b.inputs["Emission Strength"].default_value = strength
+                b.inputs["Alpha"].default_value = alpha
+                if alpha < 1 and hasattr(m, "blend_method"):
+                    m.blend_method = "BLEND"
+                return m
+            m_ghost = _mat("ghost clay", (.80, .82, .84), rough=.95, alpha=g.get("alpha", 1.0))
+            m_ground = _mat("ghost ground", (.72, .74, .74), rough=1.0)
+            m_hv = _mat("ghost glow hv", (1.0, .42, .10), (1.0, .42, .10), g.get("glow", 9.0), .4)
+            m_lv = _mat("ghost glow lv", (1.0, .72, .25), (1.0, .70, .22), g.get("glow", 9.0) * .6, .4)
+            m_tray = _mat("ghost tray", (.33, .36, .39), rough=.6)
+            HV = {"cable_mv", "ipb", "conductor", "cable", "cable_shd", "cu_bus", "cable_armor"}
+            LV = {"cable_tc", "cable_mc", "cable_inst", "cable_tcx", "cable_fo", "cable_fa"}
+            for iid, obs in item_objs.items():
+                nm = items[iid]["name"]
+                kept = nm.startswith(keep)
+                tray = nm.startswith(("Cable trays and isolated", "Underground: MV / LV duct banks"))
+                for ob in obs:
+                    if ob.type != "MESH":
+                        continue
+                    if ob.name.startswith("decal"):
+                        if not kept:
+                            ob.hide_render = True
+                            ghost_hidden.append(ob)
+                        continue
+                    ghost_saved.append((ob, [sl.material for sl in ob.material_slots]))
+                    for sl in ob.material_slots:
+                        key = sl.material.name[4:] if sl.material and sl.material.name.startswith("pro ") else ""
+                        if key in HV:
+                            sl.material = m_hv
+                        elif key in LV:
+                            sl.material = m_lv
+                        elif kept:
+                            pass
+                        elif tray:
+                            sl.material = m_tray
+                        elif key in ("ground", "road", "gravel", "gravel_yard", "turf", "pad", "corridor"):
+                            sl.material = m_ground
+                        else:
+                            sl.material = m_ghost
+            print("ghost view:", len(ghost_saved), "objects re-dressed")
         if not args.no_render:
             t1 = time.time()
             scene.render.filepath = base + ".png"
             bpy.ops.render.render(write_still=True)
             info["seconds"] = round(time.time() - t1, 1)
             print(f"rendered {h['k']:<3} {h['n']:<40} {h['lens']} mm  {info['seconds']}s")
+        for ob, ms in ghost_saved:
+            for sl, m in zip(ob.material_slots, ms):
+                sl.material = m
+        for ob in ghost_hidden:
+            ob.hide_render = False
         if hall_m:
             hall_m.node_tree.nodes["Principled BSDF"].inputs["Alpha"].default_value = hall_a
         for lo in lamps_on:

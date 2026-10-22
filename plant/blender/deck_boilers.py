@@ -60,7 +60,8 @@ table.m td:first-child {{ font: 800 17px/1 BC; letter-spacing: .04em; text-trans
 
 
 def img(k):
-    return url(os.path.join(R, f"{k}_pro_clean.jpg"))
+    full = os.path.join(PLANT, "renders", "boilers_full", f"{k}_pro_clean.jpg")    # full-quality renders when present
+    return url(full if os.path.exists(full) else os.path.join(R, f"{k}_pro_clean.jpg"))
 
 
 def kft(ft):
@@ -71,7 +72,7 @@ def foot(n, short=False):
     left = ("SW-3X1 MODEL &middot; NOT ENGINEERED" if short else
             "SW-3X1 MODEL &middot; CONCEPTUAL ILLUSTRATION, NOT ENGINEERED &middot; QUANTITIES FROM THE MODEL'S CABLE SCHEDULE")
     return f"""<div class="abs foot" style="left:64px;right:64px;bottom:26px;display:flex;justify-content:space-between;
-      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/3</span></div>"""
+      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/4</span></div>"""
 
 
 def slide1():
@@ -159,7 +160,7 @@ def slide2():
     <img src="{img('BB2')}" style="width:100%;height:100%;object-fit:cover"></div>
   <div class="abs cap" style="left:870px;top:712px;width:243px">Cable work at the HRSG e-house</div>
   <div class="abs cap" style="left:1133px;top:712px;width:243px">Old module on the hook</div>
-  {foot(2, short=True).replace("left:64px", "left:870px")}
+  {foot(3, short=True).replace("left:64px", "left:870px")}
 </section>"""
 
 
@@ -196,11 +197,11 @@ CAPS = {"BX1": "Package boiler AB-1", "BH2": "HRSG duct-burner skid", "BF1": "HR
         "BB3": "Outage cable work, HRSG 3"}
 
 
-def cams():
+def cams(keys=None):
     import re
     txt = open(os.path.join(HERE, "pro_look.py")).read()
     out = {}
-    for k in SPOTS:
+    for k in keys or SPOTS:
         m = re.search(r'k="%s".*?eye=\(([^)]*)\), target=\(([^)]*)\), lens=([\d.]+)' % k, txt, re.S)
         out[k] = dict(eye=[float(v) for v in m.group(1).split(",")], target=[float(v) for v in m.group(2).split(",")],
                       lens=float(m.group(3)), res=(1920, 1080))
@@ -258,7 +259,91 @@ def slide3():
   <div class="abs cap" style="left:64px;top:735px;width:1312px">Stock numbers are one catalogue size per product, from
     Southwire's product listings; every size and construction is on the same SPEC. Confirm current stock with Southwire
     customer service before quoting.</div>
-  {foot(3)}
+  {foot(4)}
+</section>"""
+
+
+# ------------------------------------------------------------------------------- slide: interconnection to the HRSG
+# The ISO1 render (plant faded to clay, HRSG trains in their own finish, cables glowing) with the model's routed cable
+# paths (brochure/cables_xray.json, written by cable_schedule.py) drawn over it by voltage class, and numbered spots.
+XCOL = {'HV 230 kV': '#b06ae0', 'MV 35 kV': '#e0503a', 'MV 25 kV': '#e86a2c', 'MV 15 kV': '#f05a28', 'MV 5 kV': '#f2892e',
+        'LV 600 V': '#f2c613', 'DC 2 kV': '#17a589', 'Portable MV': '#f7b733', 'Portable LV': '#a3b1b8', 'Control': '#3a8fd9',
+        'Instrumentation': '#36c26b', 'Fire alarm': '#ff3d7f', 'Fibre / data': '#ff9f1a'}
+ISO_SPOTS = [(1, "230 kV interconnection", "switchyard, line exits, HV ties", (1180, 150, 40)),
+             (2, "GSUs and 21 kV bus", "generator step-up, unit aux transformers, IPB", (790, 345, 36)),
+             (3, "Generators and MV switchgear", "13.8 kV feeders, excitation, static starters", (790, 455, 60)),
+             (4, "HRSG trains", "feed pumps, duct burners, drums, SCR, CEMS", (790, 690, 100)),
+             (5, "HRSG e-houses", "MCCs and DCS I/O per unit", (568, 632, 16)),
+             (6, "Main cable rack", "MV, LV, control and fibre to the units", (880, 838, 44))]
+
+
+def slide_iso():
+    import math as _m
+    X = json.load(open(os.path.join(PLANT, "brochure", "cables_xray.json")))
+    cam = dict(cams(["ISO1"])["ISO1"], res=(1440, 810))
+    P = lambda p: bz.project(cam, p)
+    best, count = {}, {}
+    for r in X["cables"]:
+        pi = r[12]
+        if pi is None or pi < 0:
+            continue
+        best[pi] = min(best.get(pi, 99), r[1])
+        count[pi] = count.get(pi, 0) + r[5]
+    used, paths = set(), []
+    for pi in sorted(best, key=lambda q: -best[q]):
+        pts = X["paths"][pi]
+        xyz = [pts[i:i + 3] for i in range(0, len(pts) - 2, 3)]
+        if not any(380 < q[0] < 1520 and -10 < q[1] < 880 for q in xyz):           # the power block and the switchyard
+            continue
+        pp = [P(q) for q in xyz]
+        if not any(0 <= a <= 1440 and 0 <= b <= 810 for a, b in pp):
+            continue
+        cls = X["classes"][best[pi]]
+        used.add(cls)
+        sw = min(3.4, .8 + .2 * _m.sqrt(count[pi]))
+        d = "M" + " L".join(f"{a:.1f},{b:.1f}" for a, b in pp)
+        paths.append(f'<path d="{d}" stroke="{XCOL[cls]}" stroke-width="{sw:.2f}"/>')
+    svg_paths = "".join(paths)
+    spots = ""
+    for (n, t, sub, p) in ISO_SPOTS:
+        u, v = P(p)
+        spots += (f'<div class="abs" style="left:{u - 17:.0f}px;top:{v - 17:.0f}px;width:34px;height:34px;border-radius:17px;'
+                  f'border:3px solid {COPPER};background:rgba(14,16,18,.82);font:800 18px/28px BC;color:{WHITE};'
+                  f'text-align:center;box-shadow:0 0 0 4px rgba(227,154,95,.25)">{n}</div>')
+    items = "".join(f'<div class="li" style="padding:7px 0 8px 34px;font-size:13px"><span class="abs" style="left:0;top:7px;'
+                     f'width:24px;height:24px;border-radius:12px;border:2.5px solid {COPPER};font:800 13px/19px BC;color:{WHITE};'
+                     f'text-align:center">{n}</span><b style="font-size:15px">{t}</b><br>{sub}</div>'
+                     for (n, t, sub, p) in ISO_SPOTS).replace('.li:before', '')
+    leg = "".join(f'<span style="display:inline-flex;align-items:center;margin:0 12px 6px 0" class="cap">'
+                  f'<span style="width:18px;height:4px;border-radius:2px;background:{c};margin-right:6px"></span>{k}</span>'
+                  for k, c in XCOL.items() if k in used)
+    h = N["hrsg"]
+    return f"""
+<section class="page slide">
+  <style> .iso .li:before {{ display: none; }} </style>
+  <img class="abs" src="{img('ISO1')}" style="left:0;top:0;width:1440px;height:810px;object-fit:cover">
+  <svg class="abs" width="1440" height="810" viewBox="0 0 1440 810" style="left:0;top:0">
+    <defs><filter id="gl" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="3.2"/></filter></defs>
+    <g fill="none" stroke-linejoin="round" stroke-linecap="round" opacity=".55" filter="url(#gl)">{svg_paths}</g>
+    <g fill="none" stroke-linejoin="round" stroke-linecap="round" opacity=".95">{svg_paths}</g>
+  </svg>
+  {spots}
+  <div class="abs" style="left:0;top:0;width:1440px;height:200px;background:linear-gradient(180deg,rgba(14,16,18,.92) 0%,
+       rgba(14,16,18,.6) 60%,rgba(14,16,18,0) 100%)"></div>
+  <div class="abs" style="left:1050px;top:0;width:390px;height:810px;background:linear-gradient(90deg,rgba(14,16,18,0) 0%,
+       rgba(14,16,18,.88) 18%,rgba(14,16,18,.94) 100%)"></div>
+  <div class="abs kicker" style="left:64px;top:46px">Boiler solutions &nbsp;&middot;&nbsp; the whole cable path</div>
+  <div class="abs h2" style="left:62px;top:74px;font-size:50px">From the interconnection <em>to the HRSG</em></div>
+  <div class="abs lede" style="left:64px;top:130px;width:960px;font-size:15px">Every routed cable in the model from the
+    230 kV yard to the boilers, by voltage class. HRSG trains in full; the rest of the plant faded.</div>
+  <div class="abs iso" style="left:1100px;top:118px;width:290px">{items}</div>
+  <div class="abs" style="left:1100px;top:560px;width:290px">
+    <div class="big" style="font-size:38px">{h['cables']:,}</div><div class="bigl" style="margin-top:4px">cables per HRSG train</div>
+    <div class="big" style="font-size:38px;margin-top:12px">{kft(h['ft'])}</div><div class="bigl" style="margin-top:4px">ft of cable per train</div></div>
+  <div class="abs" style="left:0;top:660px;width:1100px;height:150px;background:linear-gradient(180deg,rgba(14,16,18,0) 0%,
+       rgba(14,16,18,.85) 45%,rgba(14,16,18,.92) 100%)"></div>
+  <div class="abs" style="left:64px;top:724px;width:980px">{leg}</div>
+  {foot(2)}
 </section>"""
 
 
@@ -267,7 +352,7 @@ def main():
     import pymupdf
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS}</style></head><body>"
     out = pymupdf.open()
-    for i, sec in enumerate((slide1(), slide2(), slide3())):
+    for i, sec in enumerate((slide1(), slide_iso(), slide2(), slide3())):
         hp = os.path.join(OUT, f"_s{i}.html")
         sec = sec.replace('<section class="page slide">', '<section class="page slide"><div class="s">', 1).replace(
             "</section>", "</div></section>")
