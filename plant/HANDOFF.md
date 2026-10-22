@@ -289,3 +289,17 @@ open them locally in Chrome or Edge).
     exciter to the existing EL 30 field tray; LED high-bays at EL 30 where clear. The tray model already carried
     ET -> EXC (EL 10.5) and EXC -> GTG (EL 30): no duplicates. gt_wiring field leads now rise from the collector to
     that tray end (no deck penetration). Cameras E25 / E53 lit and cut away. Viewer v75.
+
+## Oct 22 — every reel and the SIMpull Truck in the Southwire livery (viewer v76)
+Owner: "correct the reels and SIMpull truck with the Southwire logo on flange and trucks that are still the old model".
+- `simpull.meatball()` / `simpull.logo_flange()`: black steel flange (spoked) filled by the copper `sw_meatball.png`
+  image decal, the same treatment as the hall_exterior tractor-trailer reels.
+- Applied to every older reel builder: `showcase.reel` (timber flanges and stencils gone; reel yard, modular_lod3,
+  jack_reel, cable moments), `simpull.sp_reel`, `flange_reel` (meatball on the SIMpull Flange), `stack_reel`,
+  `reel_roller` (all reel-roller scenes incl. the SC-1 moment and the GT1 outage pull), `maintenance.reel_trailer`
+  (meatball placed in site coordinates in `scene()`, the local parts are transformed by `_place`),
+  `admin_wiring.reel_stand`. 133 meatball decals in the model.
+- `showcase.simpull_truck` (reel yard and modular-yard pull): white cab with the red stripe, exhaust stacks, the
+  solid logo on the doors, red skirts with the white logo and SIMpull SOLUTIONS, tyres; same 34 ft footprint.
+- Cameras RL1 (truck close-up) and RL2 (reel rows) added. Previews: renders/reels_livery/.
+- verify PASS, audit CLEAN.

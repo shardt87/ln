@@ -434,12 +434,11 @@ def reel_stand(x, y):
         rod((x - 1.2, y + s, 0), (x, y + s, 2.6), .08, "steel", seg=6)
         rod((x + 1.2, y + s, 0), (x, y + s, 2.6), .08, "steel", seg=6)
     rod((x, y - 2.1, 2.6), (x, y + 2.1, 2.6), .07, "steel", seg=8)                        # spindle
-    for s in (-1.4, 1.2):
-        rod((x, y + s, 2.6), (x, y + s + .2, 2.6), 1.9, "rack", seg=24)                  # flanges
+    import simpull
+    for s in (-1, 1):                                                                      # black flanges, meatball
+        simpull.logo_flange((x, y + s * 1.2, 2.6), (0, s), 1.9, .2, spokes=8, gap=.1)
     rod((x, y - 1.2, 2.6), (x, y + 1.2, 2.6), 1.6, "alu", seg=24)                         # MC on the reel
     run([(x, y, 4.2), (x + 2.0, y, 9.0), (x + 4.0, y, 14.6)], .07, "alu")                 # paying up to the hooks
-    decal((x, y - 1.43, 2.6), (0, -1, 0), 2.6, 1.0, [("SOUTHWIRE", .42, 1, "#ffffff"), ("MC  12/2  ·  250 FT", .3, 0, "#f2f2f0")],
-          bg="#c41f27", brand=True)
     return 14
 
 

@@ -59,6 +59,23 @@ def flange_disc(c, ax, R, t, col="sp_black", spokes=10):
         rod(a, b, .07, col, seg=6)
 
 
+def meatball(c, n, d, up=None):
+    """The copper Southwire meatball as a printed image decal, d ft across, facing n (the owner's reel livery)."""
+    it = fuel.G["cur"]
+    m = dict(c=[round(v, 2) for v in c], n=list(n), w=round(d, 2), h=round(d, 2), bg=None, lines=[], item=it["id"],
+             layer=it["layer"], brand=1, img="sw_meatball.png", print=1)
+    if up:
+        m["up"] = list(up)
+    fuel.G.setdefault("decals", []).append(m)
+
+
+def logo_flange(c, ax, R, t=.3, spokes=12, gap=.2):
+    """Black steel reel flange (inner face at c, ax pointing outward) filled by the Southwire meatball, as on the
+    SIMpull tractor-trailer reels (hall_exterior.simpull_delivery)."""
+    flange_disc(c, ax, R, t, col="sp_black", spokes=spokes)
+    meatball((c[0] + ax[0] * (t + gap), c[1] + ax[1] * (t + gap), c[2]), (ax[0], ax[1], 0), 2 * R * .97)
+
+
 def bands(pt, W, r, cols, t=.18):
     n = len(cols)
     for k, c in enumerate(cols):
@@ -83,17 +100,13 @@ def sp_reel(x, y, z0=0.0, axis="y", cols=FEEDER, cradle=True, label="SIMpull THH
             box(min(b0[0], b1[0]), max(b0[0], b1[0]), min(b0[1], b1[1]), max(b0[1], b1[1]), z0 + .12, z0 + .5, "steel_dark")
         for o in (-1.05, 1.05):                                                            # rollers under the flanges
             rod(pt(-W / 2 - .2, o, -zc + z0 + .38), pt(W / 2 + .2, o, -zc + z0 + .38), .18, "steel", seg=12)
-    for s, sg in ((-W / 2, -1), (W / 2, 1)):
-        base = pt(s - (.16 if sg > 0 else 0))
-        flange_disc(base if sg > 0 else pt(s), (ax[0] * sg, ax[1] * sg), R, .16) if sg > 0 else \
-            flange_disc(pt(s + .16), (-ax[0], -ax[1]), R, .16)
+    for sg in (-1, 1):                                                                     # black flanges, meatball
+        logo_flange(pt(sg * (W / 2 - .16)), (ax[0] * sg, ax[1] * sg), R, .16, spokes=10, gap=.14)
     bands(pt, W, R * .76, cols)
     rod(pt(-W / 2 + .16), pt(W / 2 - .16), R * .3, "sp_black", seg=20)                    # inner drum core
     for sg in (-1, 1):                                                                     # magnetic chocks
         c = pt(sg * (W / 2 - .05), R * .55, -R + .12)
         box(c[0] - .25, c[0] + .25, c[1] - .25, c[1] + .25, zb - .02, zb + .25, "sp_yellow")
-        decal(pt(sg * (W / 2 + .14), 0, -R * .55), (ax[0] * sg, ax[1] * sg, 0), 1.25, .75,
-              [("SIMpull REEL", .22, 1, INK), (label, .13, 0, "#333"), (BRAND, .16, 1, RED, 1)], bg="#f4f4f1")
     if heads:                                                                              # paralleled ends with SIMpull Heads
         for k, c in enumerate(cols):
             a = pt(-W / 2 + .35 + k * .45, -R * .9, R * .1)
@@ -122,8 +135,7 @@ def flange_reel(x, y, axis="y", D=3.0, W=2.2, cols=("hardhat", "hivis_o", "concr
         box(c[0] - .2, c[0] + .2, c[1] - .2, c[1] + .2, 0, .2, "sp_yellow")                                       # chock
         e = pt(sg * (W / 2 + .2), 0, -RF + .15)
         rod(e, (e[0], e[1], e[2] - .15), .08, "sw_red", seg=8)                                                        # eye bolt
-        decal(pt(sg * (W / 2 + .2), 0, -RF * .5), (ax[0] * sg, ax[1] * sg, 0), 1.0, .45,
-              [("SIMpull FLANGE", .34, 1, "#f2f2f2"), (BRAND, .26, 1, RED, 1)], bg=None)
+        meatball(pt(sg * (W / 2 + .3)), (ax[0] * sg, ax[1] * sg, 0), 2 * RF * .97)
     bands(pt, W, R * .82, cols, t=.2)
 
 
@@ -140,13 +152,9 @@ def stack_reel(x, y, D=6.0, W=4.0, cols=FEEDER, z=0.0, jax=True, label="SIMpull 
             box(x - .3, x + .3, yy - .2, yy + .2, zc - 1.2, zc - .2, "sp_yellow")                                # lift jack
         rod((x, y - W / 2 - .9, zc), (x, y + W / 2 + .9, zc), .14, "steel", seg=8)
     pt = lambda s, o=0.0, dz=0.0: (x, y + s, zc + dz)
-    for s in (-W / 2, W / 2 - .3):
-        rod(pt(s), pt(s + .3), R, "timber", seg=36)
+    for sg in (-1, 1):                                                                       # black steel flanges, meatball
+        logo_flange(pt(sg * (W / 2 - .3)), (0, sg), R)
     bands(pt, W, R * .8, cols * 2, t=.3)
-    for sg in (-1, 1):
-        decal((x, y + sg * (W / 2 + .02), zc - R * .45), (0, sg, 0), 2.2, 1.0,
-              [(BRAND, .22, 1, RED, 1), (label, .14, 1, INK), ("CUT TO LENGTH  ·  SIMpull HEADS", .11, 0, "#444")],
-              bg="#f2efe6")
 
 
 def reel_roller(x, y, cap=45, reel_D=8.0, reel_W=5.0, cable="cable_mv", label="MV-105 35 kV 750 KCMIL", steel=True):
@@ -173,19 +181,9 @@ def reel_roller(x, y, cap=45, reel_D=8.0, reel_W=5.0, cable="cable_mv", label="M
     R = reel_D / 2
     zc = .85 + math.sqrt(max(.1, (R + .32) ** 2 - 1.35 ** 2))
     pt = lambda s, o=0.0, dz=0.0: (x, y + s, zc + dz)
-    for s in (-reel_W / 2, reel_W / 2 - .35):
-        rod(pt(s), pt(s + .35), R, "steel_dark" if steel else "timber", seg=44)
-        if steel:
-            for k in range(16):                                                                                # pressed-steel ribs
-                t = 2 * math.pi * k / 16
-                sg = -1 if s < 0 else 1
-                yy = y + s + (0 if s < 0 else .35) + sg * .03
-                rod((x + R * .3 * math.cos(t), yy, zc + R * .3 * math.sin(t)),
-                    (x + R * .95 * math.cos(t), yy, zc + R * .95 * math.sin(t)), .06, "steel_dark", seg=6)
+    for sg in (-1, 1):                                                                                         # black steel flanges, meatball
+        logo_flange(pt(sg * (reel_W / 2 - .35)), (0, sg), R, .35, spokes=16)
     bands(pt, reel_W, R * .78, [cable] * 3, t=.35)
-    for sg in (-1, 1):
-        decal((x, y + sg * (reel_W / 2 + .06), zc - R * .4), (0, sg, 0), 2.6, 1.1,
-              [(BRAND, .24, 1, RED, 1), (label, .15, 1, "#f2f2f2")], bg=None)
 
 
 # ------------------------------------------------------------------------------- carts, drums, pullers
