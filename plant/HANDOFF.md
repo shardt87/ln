@@ -250,3 +250,12 @@ open them locally in Chrome or Edge).
   close / trip / spring charge and heater feeds; FS-GTn fire detection and CO2 release; GFM-n gas detection.
   Admin building 800 A service now 3 sets 500 kcmil (was 2; the workbook's last ampacity FAIL). Workbook audit: all
   PASS; the voltage-drop CHECK (EDG-1 / -2 3.1-3.3 %, fuel-cell AC 5.6 %) remains for review.
+- Oct 22 MV connections at the generators (owner: "how MV connects to the turbine", both views): new
+  mv_terminations.py (late, after admin_wiring). SC-1 TB-G1 opened (closed box and token drops removed from the SC-1
+  item; SC-2 keeps its closed box): wall bushings, copper phase bars, 15 x 750 kcmil MV-105 up from the tray through
+  the gland plate, each with phase tape, cold-shrink termination with three sheds, compression lug and bolt, shield
+  drain to a ground bus bonded to the grid; cover on the slab with the TB-G1 legend; DANGER 13,800 V sign. North-face
+  generator vent louvre moved clear of the box (sc_detail). GT1: SDS-1 starting disconnect in the electrical gallery
+  beside the IPB (stand, switch housing with viewing window and handle, open cable chamber with a light, 9
+  terminations on three bars, tap enclosure to the bus), LCI-1 output 3 x 3 x 750 kcmil on a ladder tray from SFC-1
+  at y 388 (north of the EL 42 tray posts). Cameras MVT1, MVT2 (cutaway). Viewer v70.

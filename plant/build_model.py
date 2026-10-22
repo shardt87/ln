@@ -2321,6 +2321,8 @@ import gate_detail as _gd                         # zone 07 part 2: the gate che
 print('gate checkpoint', _gd.build())
 import admin_wiring as _aw                        # admin / control building wiring; open office mid fit-out
 print('admin building wiring', _aw.build())
+import mv_terminations as _mvt                    # MV connections at the generators: SC-1 TB-G1 opened, GT1 starting disconnect
+print('MV terminations', _mvt.build())
 
 
 # "conditional" was a drawing flag colour (yellow); the items keep basis="conditional" in their data, but are drawn

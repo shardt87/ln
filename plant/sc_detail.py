@@ -78,7 +78,8 @@ def enclosures(sc, x, wl):
             box(xr - .08, xr + .08, y, y + s * .12, 1.5, 17, "steel")
             n += 1
     for y, s in ((1193, -1), (1217, 1)):
-        box(x + 4.5, x + 11.5, y, y + s * .2, 10, 14.5, "louvre")              # generator vent intake
+        gx0 = x + 4.5 if s < 0 else x + 1.0                       # north: clear of the terminal box (x + 8 .. 16)
+        box(gx0, gx0 + 7.0 if s < 0 else x + 7.6, y, y + s * .2, 10, 14.5, "louvre")   # generator vent intake
         if s > 0:                                                               # turbine compartment intake,
             box(x + 60, x + 66, y, y + s * .2, 12, 16, "louvre")               # north face (south: the livery)
         n += 2
