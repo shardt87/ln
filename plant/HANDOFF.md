@@ -316,3 +316,11 @@ the corner and overlapped the next leg. Now `_rounded()` replaces each corner wi
 cable follows the centre line at its own offset (concentric arcs), the elbow has curved side rails and radial rungs,
 and the straight rails / rungs stop at the elbow. Used by the RICE MV bridge (MY-T1) and the SC generator trays.
 Camera RB1 added; previews renders/tray_bend/ (E115, RB1). verify PASS, audit CLEAN.
+
+## Oct 22 — sustainability leaf on the CCS absorber bands (viewer v79)
+Owner: "add a leaf for sustainability on the spaces in between CCS". `blender/leaf_icon.py` draws screens/ccs_leaf.png
+(a single leaf in the lettering's dark sage #3d5c47, veins in the band's light green, transparent). `ccs_lod3.
+absorber_identity()` prints it in every gap between the four CCS letterings on absorbers A-C: one 12.5 ft leaf at 45,
+135 and -45 deg; the south-west gap carries the caged ladder (-135 deg), so two 8 ft leaves flank it (-121, -149).
+Cameras CL1 (absorbers from the south-west) and CL2 (absorber B close); previews renders/ccs_leaf/. verify PASS, audit
+CLEAN.
