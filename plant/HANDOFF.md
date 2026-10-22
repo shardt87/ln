@@ -259,3 +259,9 @@ open them locally in Chrome or Edge).
   beside the IPB (stand, switch housing with viewing window and handle, open cable chamber with a light, 9
   terminations on three bars, tap enclosure to the bus), LCI-1 output 3 x 3 x 750 kcmil on a ladder tray from SFC-1
   at y 388 (north of the EL 42 tray posts). Cameras MVT1, MVT2 (cutaway). Viewer v70.
+- Oct 22 cable moment at SC-1 (owner: "make a wire cable moment"): mv_terminations.moment(): two electricians on a
+  scissor lift at the opened TB-G1 with cold-shrink kits and a tool bag; the last set of 750 kcmil MV-105 off a reel
+  on an RR-SW30 reel roller (simpull.reel_roller) over a sheave into the generator tray (tray cables carry their
+  printed jacket legends from modular_lod3); reel tender; VLF test cart ready; story sign (generator leads 13.8 kV,
+  15 x 750 kcmil MV-105, terminate / VLF test / energize). TB-G1 cover moved north (y 1224.4-1227.2) and its ground
+  bond moved to the east end, clear of the lift. Camera CM-SC1. Viewer v71.

@@ -1493,6 +1493,8 @@ EPIC = [
          eye=(647.5, 377.0, 21.0), target=(646, 388, 20.3), lens=26, show="all", sun=(45, 200), lamps=4000,
          hide=("Turbine hall south cladding", "Turbine hall exterior electrical", "FH-1", "FH-2", "FH-3",
                "GT1 inlet duct", "GT2 inlet duct", "GT3 inlet duct"), hide_layers=("HALL_ROOF",)),
+    dict(k="CM-SC1", n="Cable moment, SC-1: terminating the 13.8 kV generator leads, the last set of MV-105 off the reel over a sheave into the tray",
+         eye=(1897, 1253, 27), target=(1916, 1229, 6.5), lens=24, show="all", sun=(38, 215)),
     dict(k="T5G1", n="Private 5G / LTE monopole: sector platform with massive-MIMO units, microwave backhaul, base compound",
          eye=(345, 380, 40), target=(262, 455, 62), lens=26, show="all", sun=(38, 215), plumes=False),
     dict(k="T5G2", n="5G sector platform close-up: panel antennas, massive-MIMO units, radio units, aviation light",

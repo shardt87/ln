@@ -55,7 +55,7 @@ def sc1_terminal_box():
         box(xs, xs + .15, 1217.25, 1219.4, 10.4, 16, "panel")
     box(x + 8.15, x + 15.85, 1217.2, 1219.4, 15.85, 16, "panel")
     box(x + 8.15, x + 15.85, 1217.2, 1219.4, 10.4, 10.55, "steel")                    # gland plate
-    box(x + 8.5, x + 15.5, 1220.6, 1223.4, 0, .12, "panel")                          # the cover, on the slab
+    box(x + 8.5, x + 15.5, 1224.4, 1227.2, 0, .12, "panel")                          # the cover, on the slab
     n += 6
     # bushings through the wall and the phase bars
     for ph, xp in enumerate((x + 9.6, x + 12.0, x + 14.4)):
@@ -74,9 +74,9 @@ def sc1_terminal_box():
             rod((xt, 1218.35, 9.25), (xc, 1218.35, 10.55), .08, "cable_mv", seg=8)
         n += 6
     box(x + 8.4, x + 15.6, 1218.9, 1219.1, 10.6, 10.8, "copper")                     # ground bus
-    rod((x + 8.4, 1219.0, 10.7), (x + 8.0, 1220.2, .3), .05, "copper", seg=6)        # bonded down to the grid
+    rod((x + 15.6, 1219.0, 10.7), (x + 16.4, 1219.7, .3), .05, "copper", seg=6)      # bonded down to the grid
     import showcase
-    showcase.decal((x + 12, 1223.45, .3), (0, 0, 1), 6.0, 1.4,
+    showcase.decal((x + 12, 1225.8, .14), (0, 0, 1), 6.0, 1.4,
                    [("TB-G1  ·  13.8 kV  ·  GENERATOR LINE SIDE", .26, True, "#111111"),
                     ("3 x 5 x 750 kcmil MV-105  ·  COLD-SHRINK TERMINATIONS", .18, False, "#222222")], bg="#ffffff",
                    up=(0, 1, 0))
@@ -149,5 +149,58 @@ def gt1_starting_connection():
     return n
 
 
+def moment():
+    """Cable moment at SC-1 (owner, Oct 22: "make a wire cable moment"): the 13.8 kV generator leads being terminated.
+    Two electricians on a scissor lift at the opened terminal box with the cold-shrink kits; the last set of
+    750 kcmil MV-105 paying off a reel on an RR-SW30 reel roller, up over a sheave into the ladder tray (the tray
+    cables carry their printed jacket legends, modular_lod3); a VLF test cart standing by for the withstand test;
+    a sign telling the story. Typical, not engineered."""
+    import cable_moments as cm
+    import simpull
+    import showcase
+    x = 1910.0
+    it = new_item("OPT_MOD", "Cable moment: SC-1 13.8 kV generator leads (terminating, the last set off the reel)",
+                  [x - 3, x + 20, 1219, 1244], [0, 14], area="I", register=False,
+                  info="Electricians terminating the 15 x 750 kcmil MV-105 generator leads in TB-G1 with cold-shrink kits; "
+                       "the last set off a reel on an RR-SW30 reel roller over a sheave into the tray; VLF test cart "
+                       "ready for the withstand test. Typical, not engineered.")
+    on(it)
+    fuel.D = True
+    n = 0
+    cm.scissor_lift(x + 2.6, x + 9.6, 1219.9, 1223.4, 0, 8.4)                          # at the opened box
+    cm.person(x + 6.4, 1220.9, 8.4, a=-1.5708)
+    cm.person(x + 8.8, 1221.3, 8.4, a=-1.5708, vest="hivis_o")
+    for (bx, by) in ((x + 3.0, 1222.3), (x + 4.5, 1222.3)):                          # termination kits
+        box(bx, bx + 1.2, by, by + .8, 8.4, 9.1, "timber")
+    rod((x + 5.9, 1222.6, 8.4), (x + 5.9, 1222.6, 9.2), .25, "sp_yellow", seg=10)      # cable-prep tool bag
+    n += 6
+    # the last set off the reel: RR-SW30 roller, reel of 750 kcmil MV-105, payoff over a sheave into the tray
+    simpull.reel_roller(x + 2.0, 1236.5, cap=30, reel_D=6.0, reel_W=3.6, cable="cable_mv",
+                        label="MV-105 15 kV 750 KCMIL CU EPR")
+    cm.sheave(x + 10.2, 1236.5, 10.4, axis="x", r=.8)
+    rod((x + 2.0, 1236.5, 7.0), (x + 7.0, 1236.5, 9.8), .08, "cable_mv", seg=8)
+    rod((x + 7.0, 1236.5, 9.8), (x + 10.2, 1236.5, 11.2), .08, "cable_mv", seg=8)
+    rod((x + 10.2, 1236.5, 11.2), (x + 11.4, 1236.5, 9.3), .08, "cable_mv", seg=8)
+    cm.person(x + 5.5, 1239.0, 0, a=0.0)                                                # reel tender
+    n += 6
+    # VLF test cart, leads coiled on it, ready for the withstand test after termination
+    tx, ty = x + 17.0, 1226.0
+    for (wx, wy) in ((tx - .8, ty - .7), (tx + .8, ty - .7), (tx - .8, ty + .7), (tx + .8, ty + .7)):
+        rod((wx, wy - .1, .3), (wx, wy + .1, .3), .3, "tyre", seg=10)
+    box(tx - 1.1, tx + 1.1, ty - 1.0, ty + 1.0, .5, 2.8, "panel")
+    box(tx - .9, tx + .3, ty - .8, ty + .8, 2.8, 3.8, "machine")
+    rod((tx + .7, ty, 3.0), (tx + .7, ty, 3.4), .45, "red", seg=12)                    # test lead coil
+    showcase.decal((tx - .3, ty - 1.03, 3.3), (0, -1, 0), 1.2, .55, [("VLF 0.1 Hz", .4, True, "#7CFC9A"),
+                   ("READY", .3, False, "#ffffff")], bg="#16181a")
+    n += 8
+    showcase.decal((x - 2.4, 1230.5, 5.0), (-1, 0, 0), 6.4, 2.4,
+                   [("SC-1 GENERATOR LEADS  ·  13.8 kV", .2, True, "#111111"),
+                    ("15 x 750 kcmil MV-105  ·  5 PER PHASE", .15, False, "#222222"),
+                    ("TERMINATE  ·  VLF TEST  ·  ENERGIZE", .15, True, "#b5651d"),
+                    ("SOUTHWIRE MV-105 · SIMpull REEL", .12, False, "#444444")], bg="#ffffff")
+    fuel.D = False
+    return n
+
+
 def build():
-    return sc1_terminal_box() + gt1_starting_connection()
+    return sc1_terminal_box() + gt1_starting_connection() + moment()
