@@ -2,7 +2,8 @@
 cycle stays the hero; the rest should read as the same campus without competing with it). No chevrons, no large
 lettering, no logos here:
 - RICE engine hall: a 1 ft copper band (the hall's is 1.6 ft) at about two thirds of the wall, black coping on the
-  roof edge, black corner pilasters, and a name sign over each end roll-up door;
+  roof edge, black corner pilasters, and a name sign over each end roll-up door; since Oct 22 the copper chevrons on
+  the east end wall, beside the door (the owner's last branding step: the rest of the modular yard stays as is);
 - SC-1 / SC-2: since Oct 21 the combined cycle's set (owner): the hall's 1.6 ft band, coping, corner pilasters,
   metallic copper chevrons at the exhaust end pointing at the paired stacks, and the unit painted large (SC1 / SC2);
 - the modular e-houses (MOD-EH, MOD-LV, black-start switchgear) stay plain (owner, Oct 20).
@@ -79,6 +80,12 @@ def build():
     for f in (Face(0, 1570, -1, sk, ("hall", "roof", "steel")), Face(0, 1810, 1, sk, ("hall", "roof", "steel"))):
         n += hstrip(f, 1039.1, 1130.9, 33.4, 34.2, .3, "hero_rail")
     fuel.D = False
+    # RICE east end wall: the combined cycle's copper chevrons (metallic, as on the hall gable) north of the roll-up
+    # door and pointing at it, running through the band to the eave trim; no lettering beyond the name sign (Oct 22)
+    rf = find("RICE engine hall exterior finish")
+    fuel.G["decals"].append(dict(c=[1810.07, 1110.0, 17.1], n=[1, 0, 0], w=14.0, h=32.6, bg=None, lines=[],
+                                 item=rf["id"], layer=rf["layer"], brand=0, img="rice_chevrons.png", print=1, metal=.7))
+    n += 1
     # SC-1 / SC-2: the turbine enclosure (x +25 .. +69.5 of the package, y 1193-1217, EL 1.5-22)
     for k, x in ((1, 1910), (2, 2110)):
         from sc2_mirror import mx

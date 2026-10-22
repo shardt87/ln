@@ -1495,6 +1495,8 @@ EPIC = [
                "GT1 inlet duct", "GT2 inlet duct", "GT3 inlet duct"), hide_layers=("HALL_ROOF",)),
     dict(k="CM-SC1", n="Cable moment, SC-1: terminating the 13.8 kV generator leads, the last set of MV-105 off the reel over a sheave into the tray",
          eye=(1897, 1253, 27), target=(1916, 1229, 6.5), lens=24, show="all", sun=(38, 215)),
+    dict(k="RICE1", n="RICE engine hall, east end: the copper chevrons beside the roll-up door, band and coping, name sign",
+         eye=(1858, 1150, 34), target=(1810, 1092, 16), lens=24, show="all", sun=(38, 215)),
     dict(k="T5G1", n="Private 5G / LTE monopole: sector platform with massive-MIMO units, microwave backhaul, base compound",
          eye=(345, 380, 40), target=(262, 455, 62), lens=26, show="all", sun=(38, 215), plumes=False),
     dict(k="T5G2", n="5G sector platform close-up: panel antennas, massive-MIMO units, radio units, aviation light",

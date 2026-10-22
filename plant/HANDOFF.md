@@ -265,3 +265,7 @@ open them locally in Chrome or Edge).
   printed jacket legends from modular_lod3); reel tender; VLF test cart ready; story sign (generator leads 13.8 kV,
   15 x 750 kcmil MV-105, terminate / VLF test / energize). TB-G1 cover moved north (y 1224.4-1227.2) and its ground
   bond moved to the east end, clear of the lift. Camera CM-SC1. Viewer v71.
+- Oct 22 RICE branding, the last branding step (owner: "RICE branding and that's it"; the rest of the modular yard
+  stays as is): metallic copper chevrons on the RICE hall's east end wall north of the roll-up door, pointing at it,
+  full wall height through the band (screens/rice_chevrons.png from blender/hall_sign.py; decal in campus_brand.py).
+  Camera RICE1. Viewer v72.
