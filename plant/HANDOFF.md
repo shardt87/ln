@@ -269,3 +269,8 @@ open them locally in Chrome or Edge).
   stays as is): metallic copper chevrons on the RICE hall's east end wall north of the roll-up door, pointing at it,
   full wall height through the band (screens/rice_chevrons.png from blender/hall_sign.py; decal in campus_brand.py).
   Camera RICE1. Viewer v72.
+- Oct 22 RICE branding revised (owner: the chevrons crossing the band read odd; "missing the stacks and the rest of the
+  composition"): chevrons now under the band only (EL .8-22.3, 10 ft wide, rice_chevrons.png); campus_brand
+  rice_exhaust(): the eight 90 ft stacks get the HRSG stacks' copper bands (under the EL 62 platform and a thin one
+  at EL 38) with platforms / rails / ladders black, and the SCR housings and silencers the HRSG casing finish (slate
+  "hrsg", black ribs). Camera RICE2 (south-east overview). Viewer v73.

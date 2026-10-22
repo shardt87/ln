@@ -121,10 +121,11 @@ def main():
     p = os.path.join(D, "sc_chevrons_e.png")
     livery(p, 11.0, 19.7, [(.5, 2.0), (4.0, 2.0)], 4.0, 11.0, notch=False)
     Image.open(p).transpose(Image.FLIP_LEFT_RIGHT).save(os.path.join(D, "sc_chevrons_w.png"))
-    # RICE engine hall, east end wall (owner, Oct 22: "RICE branding and that's it"): two chevrons full wall height
-    # (EL .8-33.4, 14 ft wide) north of the roll-up door, pointing at it (seen from the east the door is to the left)
+    # RICE engine hall, east end wall (owner, Oct 22: "RICE branding and that's it"): two chevrons north of the roll-up
+    # door, pointing at it (seen from the east the door is to the left); below the copper band only, EL .8-22.3, 10 ft
+    # wide (the first cut ran through the band to the eaves and read odd, owner)
     p = os.path.join(D, "rice_chevrons.png")
-    livery(p, 14.0, 32.6, [(.6, 2.6), (5.0, 2.6)], 5.6, 14.0, notch=False)
+    livery(p, 10.0, 21.5, [(.5, 2.0), (3.8, 2.0)], 4.0, 10.0, notch=False)
     Image.open(p).transpose(Image.FLIP_LEFT_RIGHT).save(p)
     for t in ("SC1", "SC2"):
         im = Image.new("RGBA", (3000, 1200), (0, 0, 0, 0))

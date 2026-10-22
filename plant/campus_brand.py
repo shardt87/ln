@@ -81,11 +81,11 @@ def build():
         n += hstrip(f, 1039.1, 1130.9, 33.4, 34.2, .3, "hero_rail")
     fuel.D = False
     # RICE east end wall: the combined cycle's copper chevrons (metallic, as on the hall gable) north of the roll-up
-    # door and pointing at it, running through the band to the eave trim; no lettering beyond the name sign (Oct 22)
+    # door and pointing at it, under the band (it runs clean above them); no lettering beyond the name sign (Oct 22)
     rf = find("RICE engine hall exterior finish")
-    fuel.G["decals"].append(dict(c=[1810.07, 1110.0, 17.1], n=[1, 0, 0], w=14.0, h=32.6, bg=None, lines=[],
+    fuel.G["decals"].append(dict(c=[1810.07, 1109.0, 11.55], n=[1, 0, 0], w=10.0, h=21.5, bg=None, lines=[],
                                  item=rf["id"], layer=rf["layer"], brand=0, img="rice_chevrons.png", print=1, metal=.7))
-    n += 1
+    n += 1 + rice_exhaust()
     # SC-1 / SC-2: the turbine enclosure (x +25 .. +69.5 of the package, y 1193-1217, EL 1.5-22)
     for k, x in ((1, 1910), (2, 2110)):
         from sc2_mirror import mx
@@ -105,4 +105,34 @@ def build():
                                      item=it["id"], layer=it["layer"], brand=0, img=f"unit_SC{k}.png", print=1))
         n += 2
     # (the e-houses had a band and name sign here; taken off Oct 20 at the owner's request, they stay plain equipment)
+    return n
+
+
+def rice_exhaust():
+    """The rest of the composition on the RICE exhaust trains (owner, Oct 22: "you're missing the stacks"): the HRSG
+    stacks' finish on the eight 90 ft stacks (copper band under the EL 62 platform, a thin band lower down, platform,
+    rails and ladder black) and the HRSG casing finish on the SCR housings and silencers (slate, black ribs)."""
+    from fuel import rod
+    n = 0
+    for k in range(8):
+        it = find(f"RICE {k + 1} SCR")
+        st = next(p for p in fuel.G["parts"] if p["item"] == it["id"] and p["kind"] == "rod" and p["color"] == "stack"
+                  and p.get("r", 0) >= 2.9)
+        cx, cy = st["a"][0], st["a"][1]
+        for p in fuel.G["parts"]:
+            if p["item"] != it["id"]:
+                continue
+            if p["color"] == "equip":
+                p["color"] = "hrsg"                                              # SCR casing and silencer, slate
+            elif p["color"] in ("rail", "grating") or (p["color"] == "steel" and p["kind"] == "rod" and p.get("r", 0) < .2):
+                p["color"] = "hero_rail"                                         # platforms, rails, ladders black
+            elif p["color"] == "steel" and p["kind"] == "box" and p["max"][2] - p["min"][2] >= 9.9 and \
+                    min(p["max"][0] - p["min"][0], p["max"][1] - p["min"][1]) <= .25:
+                p["color"] = "hero_rail"                                         # casing stiffeners: black ribs
+        on(it)
+        fuel.D = True
+        rod((cx, cy, 57.0), (cx, cy, 60.6), 3.08, "hero_accent", seg=32)        # copper band under the platform
+        rod((cx, cy, 38.0), (cx, cy, 38.9), 3.08, "hero_accent", seg=32)        # thin band
+        fuel.D = False
+        n += 2
     return n

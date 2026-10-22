@@ -1497,6 +1497,8 @@ EPIC = [
          eye=(1897, 1253, 27), target=(1916, 1229, 6.5), lens=24, show="all", sun=(38, 215)),
     dict(k="RICE1", n="RICE engine hall, east end: the copper chevrons beside the roll-up door, band and coping, name sign",
          eye=(1858, 1150, 34), target=(1810, 1092, 16), lens=24, show="all", sun=(38, 215)),
+    dict(k="RICE2", n="RICE plant from the south-east: the eight stacks with their copper bands, slate SCRs, the chevrons beside the east door",
+         eye=(1880, 960, 70), target=(1720, 1050, 35), lens=24, show="all", sun=(38, 215)),
     dict(k="T5G1", n="Private 5G / LTE monopole: sector platform with massive-MIMO units, microwave backhaul, base compound",
          eye=(345, 380, 40), target=(262, 455, 62), lens=26, show="all", sun=(38, 215), plumes=False),
     dict(k="T5G2", n="5G sector platform close-up: panel antennas, massive-MIMO units, radio units, aviation light",
