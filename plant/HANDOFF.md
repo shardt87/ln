@@ -346,3 +346,11 @@ green". `blender/leaf_icon.py` now draws a sprig in that manner (drawn, not trac
 stem, a top leaf and three left / right pairs growing larger toward the foot, wide pointed leaves curling up at the tip,
 each with a curved vein cut to the band colour; all one green (61, 100, 72). Same file (screens/ccs_leaf.png), same 20 ft
 decal in each of the four gaps on absorbers A-C. Previews renders/ccs_leaf/ (CL1, CL3). verify PASS, audit CLEAN.
+
+## Oct 22 — CCS mark: the Southwire Growing Green sprig itself (viewer v83)
+Owner: "use the same model, you can use it since it's Southwire". The owner-supplied mark is kept at
+blender/ref/southwire_growing_green.jpg; `blender/leaf_icon.py` now lifts the sprig off it (any non-white pixel is
+leaf, so the grey and green leaves become one solid shape; JPEG specks median-filtered; upscaled 6x, blurred and
+re-thresholded for a smooth edge), leaves out the "Growing Green" wordmark, and fills it with one green
+(61, 100, 72); the white vein cuts stay transparent. Same screens/ccs_leaf.png, same 20 ft decals in the four gaps on
+absorbers A-C. Previews renders/ccs_leaf/ (CL1, CL3). verify PASS, audit CLEAN.
