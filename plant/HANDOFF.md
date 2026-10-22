@@ -426,3 +426,22 @@ instrumentation PLTC/ITC SPOS (43303), thermocouple extension (42345), SIMpull C
 a clickable link to its Southwire page. Stock numbers come from Southwire's catalogue listings found by web search
 (southwire.com itself was not reachable from the container to open the pages); one representative size each, noted on
 the slide. The deck is now 3 slides (BOILERS n/3); talking_points.md has the same product list.
+
+## Oct 22 — boiler deck: HRSG hero + elevation slides, full-quality renders (5 slides)
+Owner: pictures "too dark, not clean, details not there"; then "focus on the HRSG isometric as the hero and details, and
+a separate 3D view at an elevation angle", the rest of the plant faded.
+- Render script (`blender/SW-3X1_Rev14_blender_build.py`), two new per-camera options in pro_look: `fill` = point
+  lights (x, y, z, W, radius ft) for shaded close-ups; `ghost` = dict(keep=item prefixes, glow, alpha): every item not
+  kept goes to pale clay (ground to a grey clay), cable / bus / conductor materials glow (HV / MV copper, LV / control /
+  instrument amber), the tray / duct-bank items' steel goes mid grey, decals of faded items hidden; restored after
+  the render.
+- Cameras: ISO1 = HRSG 1 train isometric from the SE (HRSG 2 train, turbine-hall shell and filter houses hidden),
+  ELV1 = HRSG 1 from the west at ~6 deg elevation (R1 and the hall shell hidden); both ghosted with the HRSG 1 train,
+  BFP-1, SCRB-1, CEMS-1, R2A and the GT1 exhaust duct kept. Framings solved from the projection (see deck_boilers).
+  BH2 / BF1 / BB3 got exposure / fill tuning, BX1 / BB1 / BB2 a light exposure lift.
+- Full-quality renders (1920 x 1080, 20-64 spp, denoised) in renders/boilers_full/ (deck_boilers prefers them).
+- `blender/deck_boilers.py`: 5 slides: 1 overview, 2 "The HRSG, every cable" (ISO1, 8 numbered details placed from
+  model coordinates, each with the offering-slide product numbers, 705 cables / 156,000 ft per train), 3 "The train in
+  elevation" (ELV1, elevation scale grade / EL 42 / EL 86 / EL 180, 7 callouts), 4 brownfield, 5 the offering.
+  The earlier plant-wide iso with the cable-route overlay was replaced at the owner's direction (the overlay code is
+  gone; the routed-path data remains in brochure/cables_xray.json).
