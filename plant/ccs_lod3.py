@@ -3,8 +3,8 @@
 - absorbers A-C: a painted green band round the shell between the EL 200 and EL 250 platforms with "CCS" lettered (muted sage band, dark grey-green letters, so the CCS stays secondary to the power block)
   on it four times round (clear of the ladder, the tray riser and the amine risers), "CARBON CAPTURE · ABSORBER x"
   under the lettering; a sage sustainability leaf (screens/ccs_leaf.png) in each gap between the letterings
-  (one big leaf per gap); each lettering is CCS over the unit number (1-3 for A-C), the two lines framed to the
-  sprig's height;
+  (one big leaf per gap); the unit number (1-3 for A-C) large on the shell under the south and north CCS, EL 160-184 (on all four
+  faces the side ones showed as slivers at the absorber edges);
 - surfaces: crushed stone over the CCS block (ring road to utilities road, west edge to the east spine road),
   a concrete drive north of the absorbers;
 - equipment nameplates: DCC, booster fan, stripper, reboiler, CO2 compression, solvent storage;
@@ -48,9 +48,6 @@ def shells():
             p["color"] = "hrsg"
 
 
-ZS = .935 * 20.0                     # visible height of the Growing Green sprig in its 20 ft panel (ft)
-
-
 def absorber_identity():
     for i, dx in enumerate((0, 160, 320)):
         t = "ABC"[i]
@@ -63,24 +60,20 @@ def absorber_identity():
         for a in (0, 90, 180, -90):                                                  # lettering, four faces (clear of ladder / riser)
             ca, sa = math.cos(math.radians(a)), math.sin(math.radians(a))
             Rp = R + .25
-            # "CCS" over the unit number (owner, Oct 22: "numbers below CCS, same size as before ... enquadrado"):
-            # CCS at its original 10 ft type (DejaVu Bold, capitals .75 em = 7.5 ft), the digit centred under it in the
-            # same type, the two lines spanning exactly the sprig's visible height (18.7 ft of its 20 ft panel), both
-            # centred at EL 226.5; panels sized so the renderer centres the line (line height <= panel) and never
-            # shrinks it (text width <= .92 w); the .17 ft term is the glyph-centre offset of the "mm" anchor
-            P, zc, cap = 10.0, 226.5, 7.5
-            for (txt, zl) in (("CCS", zc + ZS / 2 - cap / 2), (str(i + 1), zc - ZS / 2 + cap / 2)):
-                decal((gx + Rp * ca, cy + Rp * sa, round(zl - .17, 2)), (ca, sa, 0), 24.5, 15,
-                      [(txt, P / (.95 * 15), True, "#3d5c47")], bg=None)
+            decal((gx + Rp * ca, cy + Rp * sa, 227.5), (ca, sa, 0), 24, 20,
+                  [("CCS", .85, True, "#3d5c47")], bg=None)
             decal((gx + Rp * ca, cy + Rp * sa, 212.4), (ca, sa, 0), 22, 2.8,
                   [(f"CARBON CAPTURE  ·  ABSORBER {t}", .7, True, "#3d5c47")], bg=None)
+            if a in (90, -90):                                                        # unit number under the band,
+                decal((gx + Rp * ca, cy + Rp * sa, 172.0), (ca, sa, 0), 14, 24,             # south and north faces only
+                      [(str(i + 1), .92, True, "#3d5c47")], bg=None)                          # (owner, Oct 22)
         it = fuel.G["cur"]
         # one big sustainability leaf in each gap between the CCS letterings (owner, Oct 22; the leaf redrawn and the
         # pair at the south-west gap made one, the platform rail there runs in front of it)
         for a in (45, 135, -45, -135):
             ca, sa = math.cos(math.radians(a)), math.sin(math.radians(a))
             Rp = R + .3
-            fuel.G["decals"].append(dict(c=[round(gx + Rp * ca, 2), round(cy + Rp * sa, 2), 226.5], n=[ca, sa, 0],
+            fuel.G["decals"].append(dict(c=[round(gx + Rp * ca, 2), round(cy + Rp * sa, 2), 227.0], n=[ca, sa, 0],
                                          w=20.0, h=20.0, bg=None, lines=[], item=it["id"],
                                          layer=it["layer"], img="ccs_leaf.png", print=1))
         fuel.D = False

@@ -378,3 +378,10 @@ the face; the two lines span exactly the sprig's visible height (ZS = 0.935 x 20
 of screens/ccs_leaf.png), 3.7 ft line gap, block and sprig both centred at EL 226.5. Line panels 24.5 x 15 ft so the
 renderer neither shrinks nor offsets the line; .17 ft corrects the "mm" anchor to the glyph centre. Sprig back to 20 ft.
 Previews renders/ccs_numbers/ (CL1, CL3, CL4). verify PASS, audit CLEAN.
+
+## Oct 22 — back to the shell numbers, south and north faces only (viewer v87)
+Owner preferred the v84 look ("cleaner; too cluttered with numbers" in the band versions) and agreed to trimming it.
+`ccs_lod3.py` restored to v84 (band: CCS + Growing Green sprig at 20 ft, unchanged), with the 24 ft unit numbers on
+the grey shell (EL 172) only under the south (-90) and north (90) CCS: on the east / west faces they showed as slivers
+at the absorber edges. The band-lettering experiments of v85-v86 are dropped. Previews renders/ccs_numbers/ (CL4, CL1).
+verify PASS, audit CLEAN.
