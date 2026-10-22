@@ -277,3 +277,15 @@ open them locally in Chrome or Edge).
 - Oct 22 RICE hall tidy (owner: two name signs; black corner post and copper band not mixing): the white "RICE ENGINE
   HALL / 8 x 18 MW" panel above the band removed (modular_lod3), the black door sign stays at each end; RICE corner
   pilasters off (campus_brand corners=False), the band wraps the corners clean. Camera RICE3. Viewer v74.
+- Oct 22 electrical audit, RICE hall + turbine hall gallery (owner: "too rough"):
+  * RICE (new rice_electrical.py, before mv_terminations): MV leads from every generator terminal box (6 cables) to
+    an EL 20 MV ladder tray over the generator line, east-end drop to EL 12 and through a wall sleeve onto the PCM
+    bridge; parallel control tray; trapeze hangers to the roof steel (clear of the parked crane); per engine an
+    engine control panel (HMI, lamps, E-stop) with a conduit pair to the control tray, three engine JBs and the
+    harness along the base frame; LED high-bays in three rows on MC from LP-RE; welding receptacles on the north
+    columns; horn-strobes; ridge methane detectors on their loop. Camera RICEIN (roof / wall lifted).
+  * Gallery (new gallery_electrical.py): EXC / SPC / NGT / ET / SFC / GCB rebuilt with swgr_rooms fronts (drive,
+    pc_panel, dry_xfmr), nameplates, GCB mechanism cabinets and bus flanges; DC field cables rising from each
+    exciter to the existing EL 30 field tray; LED high-bays at EL 30 where clear. The tray model already carried
+    ET -> EXC (EL 10.5) and EXC -> GTG (EL 30): no duplicates. gt_wiring field leads now rise from the collector to
+    that tray end (no deck penetration). Cameras E25 / E53 lit and cut away. Viewer v75.

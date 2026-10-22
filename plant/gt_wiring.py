@@ -95,9 +95,12 @@ def build():
             poly([(gx + 6.9, yr, 26.5), (gx + 7.4, yr, 26.5), (gx + 7.4, 438.0, 26.5)], .05, "cable_inst", seg=4)
         poly([(gx + 7.6, 436.8, 24.6), (gx + 7.6, 428.0, 24.6), (gx + 7.6, 428.0, 21.6), (gx + 3.0, 428.0, 21.6)],
              .08, "cable_mc")                                                          # space-heater feed
-        for (xl, zl) in ((gx - 5.6, gz + .5), (gx - 6.2, gz - .5)):  # DC field leads out of the collector housing,
-            poly([(gx - 3.5, 411.8, zl), (xl, 411.8, zl), (xl, 411.8, 20.2)], .14, "cable_tc")  # west of the IPB phases
-        box(gx - 6.9, gx - 4.9, 410.8, 412.8, 20.0, 20.25, "steel")                   # deck penetration plate
+        # DC field leads: up out of the collector housing to EL 32.5, over to the end of the EL 30 field tray from
+        # the exciter (tray model, x gx + 6, y 407; Oct 22 gallery audit: they used to drop through the deck)
+        for (dxl, c) in ((-.5, "cable_tc"), (.5, "red")):
+            poly([(gx + dxl, 411.8, gz + 3.6), (gx + dxl, 411.8, 32.5), (gx + 6.0 + dxl, 411.8, 32.5),
+                  (gx + 6.0 + dxl, 407.2, 32.5), (gx + 6.0 + dxl, 407.2, 30.3)], .14, c)
+        box(gx - 1.2, gx + 1.2, 411.0, 412.6, gz + 3.5, gz + 3.8, "steel")              # brush-gear cover gland
         n += 8
         fuel.D = False
     return n
