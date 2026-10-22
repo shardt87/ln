@@ -361,3 +361,11 @@ Owner: "add 1 on the side of absorber A and 2 and 3 for the others". `ccs_lod3.a
 between the EL 130 and EL 200 platforms (checked clear of the risers, piping and the fire-alarm device at EL 156).
 The small "ABSORBER A-C" line and the viewer tags keep their letters. Camera CL4 (the three from the south); previews
 renders/ccs_numbers/. verify PASS, audit CLEAN.
+
+## Oct 22 — CCS 1 / CCS 2 / CCS 3 on the band (viewer v85)
+Owner: "I meant by the side of the CCS on the band, so CCS 1, CCS 2, CCS 3; no need for another number below". The v84
+shell numerals are removed. `ccs_lod3.absorber_identity()` now letters each of the four faces "CCS n" (n = 1-3 for
+absorbers A-C): the word and the digit are two panels, each tangent to the shell at its own angle so the pair follows
+the curve; 9.2 ft DejaVu Bold (the size "CCS" already rendered at), .22 em space, the 28.7 ft pair centred on the face.
+The Growing Green sprigs trimmed 20 -> 16.5 ft to keep clear of the wider lettering. Previews renders/ccs_numbers/
+(CL1, CL3, CL4). verify PASS, audit CLEAN.
