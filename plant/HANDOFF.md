@@ -339,3 +339,10 @@ pointed blade with a drawn-out tip, a thick stem continuing the axis, a wide mid
 (#34543e / #5c8562), three thick vein cuts per side (cuts are transparent, so the band shows through). Checked at 120,
 48 and 24 px. Decal enlarged 17 -> 20 ft. Previews renders/ccs_leaf/ (CL1 distance, CL3 close). verify PASS, audit
 CLEAN.
+
+## Oct 22 — CCS mark: a Growing Green style sprig, one colour (viewer v82)
+Owner supplied the Southwire "Growing Green" mark as the reference: "use this ... but all same colour, not just one leaf
+green". `blender/leaf_icon.py` now draws a sprig in that manner (drawn, not traced; no wordmark): a gently curving
+stem, a top leaf and three left / right pairs growing larger toward the foot, wide pointed leaves curling up at the tip,
+each with a curved vein cut to the band colour; all one green (61, 100, 72). Same file (screens/ccs_leaf.png), same 20 ft
+decal in each of the four gaps on absorbers A-C. Previews renders/ccs_leaf/ (CL1, CL3). verify PASS, audit CLEAN.

@@ -1,21 +1,21 @@
-"""Sustainability leaf for the CCS absorber bands (owner, Oct 22: "add a leaf for sustainability on the spaces in between
-CCS"; redrawn twice the same day: "didn't like the shape ... one big one", then "from the distance ... looks like just a
-blob, make sure that it looks like a leaf from distance as well").
+"""Sustainability mark for the CCS absorber bands (owner, Oct 22: "add a leaf for sustainability on the spaces in between
+CCS"; then, with the Southwire "Growing Green" mark as the reference: "use this as reference ... all same colour, not
+just one leaf green").
 
-Drawn for legibility at distance, as a signage icon rather than an illustration: an elongated blade with a long
-drawn-out tip and a strong stem (the silhouette alone reads as a leaf), split along the midrib by a wide band-coloured
-gap into two halves in two greens (the light side catching the sun), and only three thick vein cuts per side, wide
-enough to survive at a few pixels. Transparent ground; writes screens/ccs_leaf.png (square)."""
+A sprig in the manner of that mark, drawn here (not traced) and in one colour: a gently curving stem, a leaf at the
+top and three pairs of leaves growing larger toward the base, each pointed leaf bowed upward with a curved vein cut
+through it to the band colour. The stem and the stacked leaves keep it legible at distance. Transparent ground;
+writes screens/ccs_leaf.png (square)."""
 import math
 import os
 
 from PIL import Image, ImageDraw
 
 D = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "screens")
-DARK, LIGHT, GAP = (52, 84, 62, 255), (92, 133, 98, 255), (0, 0, 0, 0)
+INK = (61, 100, 72, 255)                                     # one green, a shade greener than the CCS lettering
 
 
-def bez(p0, p1, p2, p3, n=100):
+def bez(p0, p1, p2, p3, n=80):
     out = []
     for k in range(n + 1):
         t = k / n
@@ -26,11 +26,23 @@ def bez(p0, p1, p2, p3, n=100):
 
 
 def stroke(d, pts, w0, w1, fill):
-    """A tapered round-capped stroke along pts, width w0 at the start to w1 at the end."""
     for k, (a, b) in enumerate(zip(pts, pts[1:])):
         w = w0 + (w1 - w0) * k / max(1, len(pts) - 2)
         d.line([a, b], fill=fill, width=max(1, int(w)))
         d.ellipse([b[0] - w / 2, b[1] - w / 2, b[0] + w / 2, b[1] + w / 2], fill=fill)
+
+
+def leaf(base, ang, L, W, bow):
+    """Outline and vein of one leaf in image units: base, direction ang (deg, image axes, y down), length, half width,
+    bow (+1 / -1 bends the tip toward local +y / -y, 0 straight)."""
+    A = math.radians(ang)
+    T = lambda x, y: (base[0] + x * math.cos(A) - y * math.sin(A), base[1] + x * math.sin(A) + y * math.cos(A))
+    b = bow * W * 1.25                                       # tip lift: the leaves curl up as in the reference
+    tip = (L, b)
+    edge1 = bez((0, 0), (L * .10, W * 1.30), (L * .72, W * 1.25 + b * .6), tip)
+    edge2 = bez(tip, (L * .80, -W * .55 + b * .9), (L * .30, -W * 1.05 + b * .2), (0, 0))
+    vein = bez((L * .16, W * .10), (L * .40, W * .28 + b * .1), (L * .66, W * .25 + b * .45), (L * .88, b * .85), 40)
+    return [T(*p) for p in edge1 + edge2], [T(*p) for p in vein]
 
 
 def main(out=os.path.join(D, "ccs_leaf.png"), S=1200, ss=3):
@@ -38,30 +50,29 @@ def main(out=os.path.join(D, "ccs_leaf.png"), S=1200, ss=3):
     P = lambda p: (p[0] * s, p[1] * s)
     im = Image.new("RGBA", (s, s), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
-    base, tip = (.27, .73), (.92, .08)                      # leaf axis tilted 45 deg, tip up to the right
-    # the two halves of the blade, each bounded by its edge and the (curved) midrib; the long tip is drawn out
-    rib = bez(base, (.45, .58), (.70, .33), tip)
-    upper = bez(base, (.05, .40), (.42, .02), tip)          # upper-left edge
-    lower = bez(tip, (.98, .42), (.62, .92), base)          # lower-right edge
-    d.polygon([P(p) for p in upper + list(reversed(rib))], fill=DARK)
-    d.polygon([P(p) for p in rib + lower], fill=LIGHT)
-    # stem: thick, slightly curved, continuing the midrib line out of the base
-    stroke(d, [P(p) for p in bez((.33, .67), base, (.19, .82), (.11, .91), 60)], s * .045, s * .030, DARK)
-    # cuts in the ground colour (transparent): a wide midrib gap and three thick veins per side, angled to the tip
     cut = Image.new("L", (s, s), 0)
     c = ImageDraw.Draw(cut)
-    stroke(c, [P(p) for p in rib[4:92]], s * .034, s * .010, 255)
-    ang = math.radians(-45)                                 # leaf axis direction (to the tip)
-    ax = (math.cos(ang), math.sin(ang))
-    for t, ln in ((.30, .25), (.50, .21), (.68, .15)):
-        x, y = rib[int(t * (len(rib) - 1))]
-        for sgn in (-1, 1):                                 # -1: upper-left half, +1: lower-right half
-            nrm = (ax[1] * -sgn, -ax[0] * -sgn)              # perpendicular to the axis, toward that edge
-            e = (x + (nrm[0] * .75 + ax[0] * .65) * ln, y + (nrm[1] * .75 + ax[1] * .65) * ln)
-            m = (x + (nrm[0] * .45 + ax[0] * .15) * ln, y + (nrm[1] * .45 + ax[1] * .15) * ln)
-            stroke(c, [P(p) for p in bez((x, y), m, m, e, 40)], s * .024, s * .008, 255)
+    # stem: from the foot, curving gently, up to the top leaf
+    stem = bez((.47, .97), (.53, .78), (.47, .48), (.505, .22), 120)
+    stroke(d, [P(p) for p in stem], s * .040, s * .014, INK)
+    at = lambda t: stem[int(t * (len(stem) - 1))]
+    # (stem position, direction deg, length, half width, bow): top leaf, then left / right pairs, larger toward the foot
+    leaves = [(1.00, -96, .19, .060, 1),
+              (.80, -158, .22, .078, 1), (.74, -24, .23, .080, -1),
+              (.56, -170, .27, .095, 1), (.50, -12, .28, .098, -1),
+              (.31, -178, .31, .110, 1), (.24, -4, .36, .125, -1)]
+    for t, ang, L, W, bow in leaves:
+        outline, vein = leaf(at(t), ang, L, W, bow)
+        d.polygon([P(p) for p in outline], fill=INK)
+        stroke(c, [P(p) for p in vein], s * .016, s * .005, 255)
     im.putalpha(Image.composite(Image.new("L", (s, s), 0), im.getchannel("A"), cut))
-    im.resize((S, S), Image.LANCZOS).save(out)
+    bb = im.getbbox()                                        # centre the sprig on the square
+    sq = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    cw, ch = bb[2] - bb[0], bb[3] - bb[1]
+    sc = min(1.0, s * .96 / max(cw, ch))
+    spr = im.crop(bb).resize((int(cw * sc), int(ch * sc)), Image.LANCZOS)
+    sq.alpha_composite(spr, ((s - spr.width) // 2, (s - spr.height) // 2))
+    sq.resize((S, S), Image.LANCZOS).save(out)
     print("wrote", out)
 
 
