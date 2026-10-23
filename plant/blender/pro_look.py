@@ -1572,7 +1572,7 @@ EPIC = [
     dict(k="CM4", n="HRSG 1 stack top: obstruction lights, lighting JB and photocell, conduit, lightning air terminals and down conductors",
          eye=(596, 766, 194), target=(628, 790, 174), lens=30, show="base", sun=(40, 230), plumes=False),
     dict(k="BR1", n="Boiler Row aerial: package boiler AB-1, utility gas boiler UB-1 with its STG hall, electric boiler EB-1",
-         eye=(1115, 1290, 205), target=(1125, 1585, 62), lens=22, show="all", sun=(38, 215), plumes=False,
+         eye=(1125, 1320, 300), target=(1140, 1580, 20), lens=22, show="all", sun=(38, 215), plumes=False,
          hide=("Cable trays and isolated",)),
     dict(k="BR2", n="Boiler Row at grade: UB-1 burner front, gas train and BMS, FD fans; the stack and STG hall beyond",
          eye=(1062, 1462, 58), target=(1036, 1532, 34), lens=22, show="all", sun=(38, 215), plumes=False,

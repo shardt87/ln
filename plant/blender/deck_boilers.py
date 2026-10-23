@@ -951,11 +951,11 @@ SECTIONS = [  # (label, sub, gas temperature after the section, colour, drum, ca
 ROW_SPOTS = [
     (1, "Package boiler AB-1", "gas train, BMS, FD fan on a VFD", "2 · 5 · 6", (965, 1495, 35)),
     (2, "Burner front and gas train", "12 burners, flame scanners, safety shut-offs", "3 · 5", (1042, 1532, 50)),
-    (3, "FD fans, 13.8 kV motors", "MV terminations at each fan", "1", (1092, 1546, 9)),
-    (4, "Stack and CEMS", "emissions analyzers, obstruction lights", "2 · 6 · FO", (1134, 1612, 120)),
-    (5, "Steam turbine hall", "generator, step-up transformer", "5 · 6 · 7", (1190, 1580, 60)),
-    (6, "Electric boiler EB-1", "electrode vessel, 13.8 kV bushings", "1 · 5", (1278, 1580, 42)),
-    (7, "EB-1 13.8 kV e-house", "breaker, PLC, MV feeder in", "1 · FO", (1281, 1530, 14)),
+    (3, "FD fans, 13.8 kV motors", "MV terminations at each fan", "1", (1092, 1556, 9)),
+    (4, "The spine rack", "steam, gas and condensate on top; cable trays below", "1 · 5 · 6", (1160, 1516, 32)),
+    (5, "Control room and MCC", "every boiler's cable starts here", "2 · 5 · 6 · FO", (1165, 1484, 16)),
+    (6, "Electric boiler EB-1", "13.8 kV e-house, MV feed buried from the south", "1 · 5", (1278, 1590, 42)),
+    (7, "Steam storage", "run on cheap power, store the steam", "6", (1328, 1592, 14)),
 ]
 
 
@@ -997,7 +997,7 @@ def slide_row():
   <div class="abs kicker" style="left:1000px;top:30px;font-size:12px">Boiler solutions &nbsp;&middot;&nbsp; Boiler Row</div>
   <div class="abs h2" style="left:998px;top:52px;font-size:38px;width:420px">Three boilers, <em>three cable stories</em></div>
   <div class="abs" style="left:1000px;top:130px;width:400px">{legend}</div>
-  {ins("BR2", 1000, "UB-1 burner front: gas train, BMS, FD fans")}
+  {ins("BR2", 1000, "Spine rack in front of the UB-1 burner front")}
   {ins("BR3", 1206, "EB-1 cutaway: MV-105, three parallel sets")}
   {card(40, "1 &nbsp;&middot;&nbsp; Package boiler", "Gas package boiler", "Start-up and sealing steam; factory-built, one skid",
         f"{a['cables']}", kft(a['ft']), "Control-dense and compact: TC-ER power and control, instrument pairs, pre-wired at the factory.")}

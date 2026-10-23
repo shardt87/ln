@@ -50,14 +50,14 @@ def ladder_tray(pts, z, w, cables, step=2.0):
 
 
 def utility_boiler():
-    it = fuel.new_item(L, "UB-1: utility gas-fired boiler, 300 MW class (Boiler Row, representative)", (992, 1150, 1515, 1640),
+    it = fuel.new_item(L, "UB-1: utility gas-fired boiler, 300 MW class (Boiler Row, representative)", (992, 1150, 1515, 1637),
                        (0, 230), area="D", register=False, basis="typical",
                        info="Representative 300 MW-class natural-gas-fired utility boiler, as built new for AI-campus power "
                             "or converted from coal: boiler house, burner front, gas train and BMS (Class I Div 2), FD fans "
                             "on 13.8 kV motors, SCR, air heater, 230 ft stack with CEMS. Showcase, not part of SW-3X1.")
     on(it)
     fuel.D = False
-    X0, X1, Y0, Y1, H = 1008.0, 1076.0, 1542.0, 1624.0, 170.0
+    X0, X1, Y0, Y1, H = 1008.0, 1076.0, 1550.0, 1632.0, 170.0
     box(X0 - 4, X1 + 4, Y0 - 4, Y1 + 4, 0, 1.0, "concrete")
     box(X0, X1, Y0, Y1, 1.0, H, "hrsg_b")                                            # clad boiler house
     fuel.D = True
@@ -79,10 +79,10 @@ def utility_boiler():
     for z in (36, 49, 62):                                                           # burner-front platforms
         box(X0 + 4, X1 - 4, Y0 - 16, Y0 - 7, z - .3, z, "grating")
         rail([(X0 + 4, Y0 - 16), (X1 - 4, Y0 - 16)], z)
-    # stair tower at the SW corner
-    box(X0 - 14, X0 - 2, Y0 - 2, Y0 + 12, 0, H + 4, "steel")
+    # stair tower at the NW corner
+    box(X0 - 14, X0 - 2, Y1 - 16, Y1, 0, H + 4, "steel")
     for z in range(10, int(H), 10):
-        box(X0 - 14.5, X0 - 1.5, Y0 - 2.5, Y0 + 12.5, z - .3, z, "grating")
+        box(X0 - 14.5, X0 - 1.5, Y1 - 16.5, Y1 + .5, z - .3, z, "grating")
     decal((X0 + 34, Y0 - .5, 140), (0, -1, 0), 44, 9, [("UTILITY GAS BOILER  UB-1", .42, True, "#111111"),
                                                        ("300 MW CLASS  ·  NATURAL GAS  ·  REPRESENTATIVE", .24, False, "#333333")],
           bg="#ffffff")
@@ -99,12 +99,12 @@ def utility_boiler():
     for c_ in range(4):                                                              # risers to each burner column
         x = X0 + 14 + c_ * 13.3
         poly([(x, GY, 4.0), (x, GY, 8.0), (x, Y0 - 8, 8.0), (x, Y0 - 8, 36.0)], .35, "fuelgas", seg=8)
-    BX0, BX1 = X1 - 18, X1 - 10                                                      # BMS panel
-    box(BX0, BX1, GY - 10, GY - 7, 0, 8, "cabinet")
-    decal(((BX0 + BX1) / 2, GY - 10.05, 7.0), (0, -1, 0), 6.5, 1.0, [("UB-1  BURNER MANAGEMENT", .55, True, "#111111")], bg="#ffffff")
+    BX0, BX1 = X1 - 4, X1 + 4                                                        # BMS panel
+    box(BX0, BX1, GY - 3, GY, 0, 8, "cabinet")
+    decal(((BX0 + BX1) / 2, GY - 3.05, 7.0), (0, -1, 0), 6.5, 1.0, [("UB-1  BURNER MANAGEMENT", .55, True, "#111111")], bg="#ffffff")
     box(X0 + 8, BX0, GY - 4.4, GY - 4.0, 3.0, 3.2, "steel")                         # strut
     for dz in (0, .35, .7):
-        poly([(BX0, GY - 8.5, 3.2 + dz), (X0 + 8, GY - 4.2, 3.2 + dz)], .12, "cable_armor", seg=8)
+        poly([(BX0, GY - 1.5, 3.2 + dz), (BX0 - 2, GY - 4.2, 3.2 + dz), (X0 + 8, GY - 4.2, 3.2 + dz)], .12, "cable_armor", seg=8)
     for xv in (X0 + 14, X0 + 22, X0 + 30, X0 + 40):
         poly([(xv, GY - 4.2, 3.4), (xv, GY - 1.2, 3.4), (xv, GY - 1.2, 5.0)], .09, "cable_armor", seg=6)
     decal((X0 + 26, GY - 3.1, 1.6), (0, -1, 0), 10, 1.0, [("DANGER  ·  NATURAL GAS  ·  CLASS I DIV 2", .5, True, "#ffffff")], bg="#b8322a")
@@ -169,7 +169,7 @@ def steam_turbine_hall():
 
 def electric_boiler():
     it = fuel.new_item(L, "EB-1: electric (electrode) boiler, 30 MW at 13.8 kV, with its MV e-house (Boiler Row)",
-                       (1250, 1325, 1520, 1640), (0, 48), area="D", register=False, basis="typical",
+                       (1250, 1300.5, 1520, 1640), (0, 48), area="D", register=False, basis="typical",
                        info="Electrode boiler, 30 MW, 13.8 kV, ~1,250 A: MV-105 in parallel sets from the EB-1 13.8 kV "
                             "breaker to the boiler bushings, bare-copper grounding, PLC, circulation pumps. Showcase.")
     on(it)
@@ -201,7 +201,7 @@ def electric_boiler():
         rod((bx, by, 28.5), (bx, by, 32.0), .55, "insulator", seg=12)               # MV bushing
         rod((bx, by, 32.0), (bx, by, 32.6), .35, "copper", seg=8)
         BT.append((bx, by))
-    poly([(VX + 4, VY, 27.5), (VX + 9, VY, 27.5), (VX + 9, VY, 22), (X1, VY, 22)], .9, "pipe", seg=12)   # steam out
+    poly([(VX + 4, VY, 27.5), (VX + 9, VY, 27.5), (VX + 9, VY, 22), (1328, VY, 22), (1328, VY, 14.2)], .9, "pipe", seg=12)   # steam out to storage
     for k in range(2):                                                               # circulation pumps
         px = VX - 9 + k * 6
         box(px - 2, px + 2, Y0 + 9, Y0 + 14, 1.0, 1.6, "concrete")
@@ -242,6 +242,124 @@ def electric_boiler():
     return it
 
 
+def steam_storage():
+    it = fuel.new_item(L, "EB-1 steam accumulator (thermal storage, Boiler Row)", (1318, 1340, 1512, 1616), (0, 32),
+                       area="D", register=False, basis="typical",
+                       info="Steam accumulator: EB-1 runs when power is cheap or surplus and stores the steam for later. Showcase.")
+    on(it)
+    fuel.D = False
+    box(1319, 1338, 1570, 1614, 0, .8, "concrete")
+    rod((1328, 1572, 8.5), (1328, 1612, 8.5), 5.6, "tank", seg=32)
+    fuel.D = True
+    for y in (1578, 1606):
+        box(1324, 1332, y - 1.5, y + 1.5, .8, 5, "concrete")                        # saddles
+    for y in (1572, 1612):
+        rod((1328, y, 8.5), (1328, y + (-1 if y < 1600 else 1) * 1.6, 8.5), 5.6, "tank", r2=3.0, seg=32)  # heads
+    rod((1328, 1592, 14.1), (1328, 1592, 14.8), .9, "steel", seg=12)
+    decal((1322.3, 1592, 9), (-1, 0, 0), 22, 2.6, [("STEAM STORAGE", .62, True, "#111111")], bg="#ffffff")
+    poly([(1328, 1570.4, 8.5), (1328, 1566, 8.5), (1328, 1566, 31.2), (1328, 1513.6, 31.2)], .8, "pipe", seg=12)   # to the spine
+    fuel.D = False
+    return it
+
+
+SPY, SPX0, SPX1 = 1516.0, 999.0, 1340.0
+
+
+def spine():
+    it = fuel.new_item(L, "Boiler Row spine rack: steam header, gas header, condensate and cable trays", (992, 1342, 1505, 1531),
+                       (0, 34), area="D", register=False, basis="typical",
+                       info="One rack along the fronts of all three boilers: steam header back to the plant via the AB-1 aux-steam header, "
+                            "fuel-gas header, condensate return; ladder trays below with control, instrument and MV cable. Showcase.")
+    on(it)
+    fuel.D = False
+    bents = [(x, SPY) for x in range(int(SPX0) + 4, int(SPX1) + 1, 22) if not 1004 < x < 1032] + [(1034, SPY), (SPX1, SPY)]
+    for (x, y) in bents:
+        horiz = y == SPY
+        for d in (-4, 4):
+            px, py = (x, y + d) if horiz else (x + d, y)
+            box(px - .6, px + .6, py - .6, py + .6, 0, 32, "hero_accent")
+        a, b = ((x, y - 4.6), (x, y + 4.6)) if horiz else ((x - 4.6, y), (x + 4.6, y))
+        for z in (22, 30):
+            box(min(a[0], b[0]) - .5, max(a[0], b[0]) + .5, min(a[1], b[1]) - .5, max(a[1], b[1]) + .5, z - 1.1, z, "hero_accent")
+    fuel.D = True
+    # pipes on the top tier: the main run east-west, then the west leg south to AB-1's aux-steam header
+    for off, r, c in ((-2.4, 1.15, "pipe"), (0, .55, "pipe"), (2.4, .65, "fuelgas")):
+        poly([(SPX1, SPY + off, 31.2), (998 - off, SPY + off, 31.2), (998 - off, SPY + off, 14),
+              (995.2, SPY + off, 14)], r, c, seg=12)                               # into AB-1's aux-steam header
+    decal((1240, SPY - 5.2, 26), (0, -1, 0), 34, 2.2, [("STEAM  ·  CONDENSATE  ·  FUEL GAS  ·  CABLE", .6, True, "#ffffff")], bg="#b8322a")
+    # ladder trays on the lower tier: control / instrument (amber) and MV
+    ladder_tray([(SPX1 - 4, SPY), (1000, SPY)], 22.2, 4.2, [("cable_tc", .14)] * 10 + [("cable_mv", .2)] * 3)
+    for x, z in ((1046, 6.0), (1190, 20.0), (1282, 14.6)):                         # drops: UB-1 gas train, STG, EB-1 e-house
+        for k in range(5):
+            poly([(x + k * .35, SPY + 2, 22.4), (x + k * .35, SPY + 4.6, 22.4), (x + k * .35, SPY + 4.6, z)], .1,
+                 "cable_tc", seg=6)
+    for k in range(5):                                                              # AB-1: into its east face
+        poly([(1000, SPY - 1 + k * .5, 22.4), (996.5, SPY - 1 + k * .5, 22.4), (996.5, SPY - 1 + k * .5, 10)], .1, "cable_tc", seg=6)
+    poly([(1200, 1530, 30), (1200, 1513.6, 30), (1200, 1513.6, 31.2)], .7, "pipe", seg=10)   # STG extraction steam
+    fuel.D = False
+    return it
+
+
+HUB = (1135.0, 1195.0, 1462.0, 1505.0)
+TRY = 1515.0
+
+
+def hub():
+    it = fuel.new_item(L, "Boiler Row control room and MCC (cable hub)", (1130, 1200, 1458, 1515), (0, 21), area="D",
+                       register=False, basis="typical",
+                       info="Shared control room, DCS / BMS cabinets and 480 V MCC for the three boilers; amber control and "
+                            "instrument cable rises from here into the spine tray to every bay. Showcase.")
+    on(it)
+    x0, x1, y0, y1 = HUB
+    fuel.D = False
+    box(x0 - 1, x1 + 1, y0 - 1, y1 + 1, 0, 1.2, "concrete")
+    box(x0, x1, y0, y1, 1.2, 16, "ehouse")
+    box(x0 - .4, x1 + .4, y0 - .4, y1 + .4, 16, 16.8, "roof")
+    fuel.D = True
+    box(x0 + 8, x0 + 16, y0 + 10, y0 + 22, 16.8, 20, "machine")                       # rooftop HVAC
+    box(x1 - 14, x1 - 9, y0 - .3, y0, 1.2, 8.5, "steel_dark")                        # door
+    decal(((x0 + x1) / 2, y0 - .1, 12.5), (0, -1, 0), 38, 3.4, [("BOILER ROW CONTROL  ·  MCC", .5, True, "#111111"),
+                                                               ("every boiler's cable starts here", .3, False, "#555555")],
+          bg="#ffffff")
+    # every boiler's cable leaves here: up the north wall and into the spine tray at EL 22
+    for k in range(10):
+        poly([(1160 + k * .5, y1, 9), (1160 + k * .5, y1 + 1.2, 9), (1160 + k * .5, y1 + 1.2, 22.4), (1160 + k * .5, SPY - 1, 22.4)],
+             .14, "cable_tc", seg=6)
+    box(1158.5, 1166.5, y1, y1 + 2.4, 8, 22, "steel")                                 # riser channel
+    fuel.D = False
+    return it
+
+
+def mv_feed():
+    """The 13.8 kV feeder to EB-1 comes in buried: a marker strip with red posts from the south to the e-house stub-ups."""
+    it = fuel.new_item(L, "EB-1 13.8 kV feeder duct bank (marker strip)", (1290, 1298, 1462, 1521), (0, 4), area="D",
+                       register=False, basis="typical")
+    on(it)
+    fuel.D = True
+    box(1292, 1296, 1462, 1520.5, 0, .12, "concrete")
+    for y in range(1466, 1520, 12):
+        rod((1297.2, y, 0), (1297.2, y, 3.2), .18, "red", seg=8)
+    decal((1294, 1474, .14), (0, 0, 1), 12, 2.6, [("13.8 kV  MV-105  ·  DANGER", .55, True, "#ffffff")], bg="#b8322a",
+          up=(0, 1, 0))
+    fuel.D = False
+
+
+def bays():
+    """Three bays, each on its own pad with a bay plate painted on the ground in front."""
+    it = fuel.new_item(L, "Boiler Row bays: pads and bay plates", (925, 1352, 1440, 1640), (0, .3), area="D", register=False,
+                       basis="typical")
+    on(it)
+    fuel.D = True
+    for (cx, cy, n, t, sub) in ((965, 1444.5, "1", "PACKAGE BOILER", "gas · start-up steam"),
+                                (1058, 1497, "2", "UTILITY BOILER", "gas · 300 MW class"),
+                                (1250, 1497, "3", "ELECTRIC BOILER", "13.8 kV · no flame")):
+        decal((cx, cy, .16), (0, 0, 1), 44, 11.5, [(f"{n}  ·  {t}", .44, True, "#e39a5f"), (sub.upper(), .26, True, "#ffffff")],
+              bg="#1d2125", up=(0, 1, 0))
+    box(1003, 1250, 1546, 1636, 0, .14, "concrete")                                   # bay 2 pad (boiler + STG)
+    box(1253, 1342, 1520, 1636, 0, .14, "concrete")                                   # bay 3 pad
+    fuel.D = False
+
+
 def sign():
     it = fuel.new_item(L, "Boiler Row sign", (1005, 1030, 1505, 1512), (0, 12), area="D", register=False, basis="typical")
     on(it)
@@ -259,5 +377,10 @@ def build():
     utility_boiler()
     steam_turbine_hall()
     electric_boiler()
+    steam_storage()
+    spine()
+    hub()
+    mv_feed()
+    bays()
     sign()
     return len(fuel.G["parts"]) - n0

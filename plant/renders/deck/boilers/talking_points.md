@@ -51,6 +51,8 @@ Notes for the boiler slides (SW-3X1_boilers.pdf, 15 slides). The equipment in th
 ## Boiler Row: three boilers, three cable stories (slide 4)
 
 - **What it is:** the open land east of the auxiliary boiler, laid out as a row of three boilers, each with its own cable story. The utility and electric boilers are showcase pieces, not part of the SW-3X1 plant; their cable numbers are typical estimates (tools/boiler_row_numbers.py), not the plant schedule.
+- **How it is laid out ("Steam Street"):** three bays side by side, with the fronts to the camera and a bay plate painted on the ground in front of each. One copper-coloured spine rack runs along the fronts: steam, condensate and fuel gas on top, cable trays below. Steam goes back to the plant through the package boiler's aux-steam header. A shared control room and MCC sits in front of the rack, and every boiler's control and instrument cable rises from it into the spine tray. The electric boiler's 13.8 kV feed comes in buried from the south (marker strip and red posts). The steam-storage tank beside it is how electric boilers are really used: run when power is cheap or surplus, and store the steam.
+- **Is it a factory?** No: a steam-plant yard (open pads, a rack, an e-house). Package and electric boilers are also what factories buy (food, chemicals, paper, district heat); say so, the model doesn't need a factory building.
 - **1 · Package boiler (AB-1):** **83 cables, about 42,000 ft.** Control-dense and compact; most of it is pre-wired at the factory.
 - **2 · Utility gas boiler (UB-1, 300 MW class):** **about 1,840 cables and 970,000 ft** for the boiler and its steam-turbine island.
   - Two-thirds of the footage is instrument pairs and thermocouple extension.
