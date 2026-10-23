@@ -37,7 +37,7 @@ def bbox(p):
 
 def mine(p):
     it = ITEMS[p["item"]]
-    return it["layer"] in ("OPT_BOILERS", "BOILER_ROW_ROOF") or it["name"] == "Auxiliary boiler"
+    return it["layer"] in ("OPT_BOILERS", "BOILER_ROW_ROOF") or it["name"] in ("Auxiliary boiler", "CEMS shelter, AB-1")
 
 
 parts = []

@@ -143,7 +143,7 @@ Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) t
 ## 3. Wire and cable takeaways (9 min, 3 slides)
 
 **Slide A: The whole plant in one number (3 min)**
-- The model's cable schedule: **6,003 runs, 21,189 cables, about 6.4 million ft (~1,200 miles).**
+- The model's cable schedule: **6,011 runs, 21,217 cables, about 6.4 million ft (~1,200 miles).**
 - By footage:
   - instrumentation, 2.8 M ft;
   - 600 V power, 1.3 M ft;

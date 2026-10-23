@@ -61,7 +61,7 @@ Notes for the boiler slides (SW-3X1_boilers.pdf, 15 slides). The equipment in th
 - **The support yard (west of the unit):** a condensate storage tank with two transfer pumps on 480 V motors; an emergency diesel generator for safe shutdown, cabled into the 13.8 kV switchgear building (1/C 500 kcmil on a ladder tray); a CEMS shelter at the stack with a heated sample line to the EL 120 platform.
 - **The power-station block (spot 5):** the boiler house, the **heater bay** and the turbine hall now form one stepped building, the silhouette people recognise as a power station. The heater bay (105 ft) holds the feedwater heaters, the boiler feed pumps, the deaerator on the roof and the **unit control room**. Under the control room is the **cable spreading room**, where every circuit of the unit is marshalled, fed from the spine tray. Line: "Every circuit in this unit passes through one room."
 - **Is it a factory?** No: a steam-plant yard (open pads, a rack, an e-house). Package and electric boilers are also what factories buy (food, chemicals, paper, district heat); say so, the model doesn't need a factory building.
-- **1 · Package boiler (AB-1):** **83 cables, about 42,000 ft.** Control-dense and compact; most of it is pre-wired at the factory.
+- **1 · Package boiler (AB-1):** **111 cables, about 57,000 ft** with its CEMS shelter. Control-dense and compact; most of it is pre-wired at the factory.
 - **2 · Utility gas boiler (UB-1, 300 MW class):** **about 1,840 cables and 970,000 ft** for the boiler and its steam-turbine island.
   - Two-thirds of the footage is instrument pairs and thermocouple extension.
   - ARMOR-X MC-HL at every burner and on the gas train (Class I Div 2).
@@ -135,7 +135,7 @@ The temperatures and pressures below are typical ranges for a three-pressure reh
      - **ARMOR-X MC-HL** for the duct-burner gas skid (a Class I Div 2 area);
      - **control TC-ER**;
      - **instrumentation PLTC / TC-ER** and **thermocouple extension**, for drum level, pressures and temperatures.
-2. **Gas-fired package boiler (auxiliary boiler AB-1).** This is the plant's start-up and sealing-steam boiler, and the same kind of package sold to industrial sites. It is **83 cables, about 42,000 ft**:
+2. **Gas-fired package boiler (auxiliary boiler AB-1).** This is the plant's start-up and sealing-steam boiler, and the same kind of package sold to industrial sites. It is **111 cables, about 57,000 ft** with its CEMS shelter:
    - TC-ER power and VFD cable for the combustion-air fan motor;
    - burner-management control and flame-scanner cable;
    - ARMOR-X MC-HL to the gas train's valves;

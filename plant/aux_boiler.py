@@ -337,4 +337,32 @@ def _build():
     fuel.D = False
     import maintenance as mt
     mt.person(971.0, 1475.5, .6, 3.14)
+    n += cems_shelter()
     return n
+
+
+def cems_shelter():
+    """AB-1 CEMS shelter at the foot of the stack (Oct 23: every stack on the campus has one; a gas boiler of this size,
+    ~180-200 MMBtu/h, is above the 100 MMBtu/h line for continuous NOx monitoring). NOx / O2 analyzers, the heated
+    sample line from the probe on the EL 50 platform, power and signal conduit up from the AB-MCC duct bank."""
+    it = fuel.new_item("BASE_UTILITIES", "CEMS shelter, AB-1", (948, 963, 1536, 1553), (0, 53), area="E", register=False,
+                       basis="typical",
+                       info="Walk-in analyzer shelter for the auxiliary boiler stack: NOx / O2 (CO optional), heated sample "
+                            "line from the EL 50 probe, DAHS link by fibre to the control room; fed from the AB-MCC.")
+    on(it)
+    fuel.D = False
+    box(949, 961, 1541.5, 1552, 0, .8, "concrete")
+    box(949.3, 960.7, 1541.8, 1551.7, .8, 9.5, "ehouse")
+    box(949, 961, 1541.5, 1552, 9.5, 10.1, "roof")
+    fuel.D = True
+    box(955, 958, 1546, 1549, 10.1, 11.8, "machine")                                   # HVAC
+    box(949.2, 949.3, 1544, 1547.5, .8, 7.5, "door")
+    decal((949.15, 1548.5, 7.6), (-1, 0, 0), 5.6, 1.1, [("AB-1 CEMS", .62, True, "#111111")], bg="#ffffff")
+    box(956.4, 957.6, 1536.2, 1537.2, 50.0, 51.6, "steel")                            # probe / sample box on the platform
+    poly([(957, 1537.2, 50.4), (957, 1537.6, 50.4), (957, 1537.6, 10.6), (957, 1541.8, 10.6), (957, 1541.8, 8.5)], .25,
+         "steel_dark", seg=8)                                                         # heated sample line down the stack
+    for k in range(3):                                                                # power, signal, fibre conduits up
+        rod((951 + k * .7, 1552.4, 0), (951 + k * .7, 1552.4, 3.5), .2, "alu", seg=8)
+        rod((951 + k * .7, 1552.4, 3.5), (951 + k * .7, 1551.7, 3.5), .2, "alu", seg=8)
+    fuel.D = False
+    return 12

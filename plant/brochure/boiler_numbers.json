@@ -55,25 +55,25 @@
   "products": {}
  },
  "aux": {
-  "runs": 21,
-  "cables": 83,
-  "ft": 42430,
+  "runs": 29,
+  "cables": 111,
+  "ft": 56530,
   "classes": {
    "Control": {
-    "cables": 12,
-    "ft": 14120
+    "cables": 14,
+    "ft": 19360
    },
    "Fire alarm": {
     "cables": 1,
     "ft": 490
    },
    "Instrumentation": {
-    "cables": 64,
-    "ft": 12760
+    "cables": 88,
+    "ft": 16380
    },
    "LV 600 V": {
-    "cables": 6,
-    "ft": 15060
+    "cables": 8,
+    "ft": 20300
    }
   },
   "products": {
@@ -81,7 +81,8 @@
    "Fire alarm FPLR 2/C #14 shielded, red jacket (NEC 760)": 490,
    "Instrumentation PLTC / TC-ER 300 V, #18 twisted shielded pairs, overall shield": 12760,
    "Type TC-ER 600 V 3/C Cu XHHW-2 + ground, PVC jacket": 15060
-  }
+  },
+  "note": "AB-1 + its CEMS shelter (Oct 23): the 8 CEMS rows of the schedule added to the 83 / 42,430 ft package"
  },
  "ub": {
   "runs": 13,
