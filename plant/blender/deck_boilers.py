@@ -535,7 +535,7 @@ ROOM_SPOTS = [
     (5, "MCC drops", "power and control into each bucket", "2 · 5", (582.0, 620.0, 11.0)),
     (6, "VFD and MCC-2", "SCR blowers, chemical feed, blowdown", "2 · 4", (569.9, 628.0, 11.2)),
     (7, "Marshalling", "home-run multipairs from the field JBs", "6 · 7", (566.5, 636.0, 11.6)),
-    (8, "Out to the field", "power via the north wall, instruments via the roof", "2 · 5 · 6", (575.75, 644.0, 13.4)),
+    (8, "Out to the field", "power via the north wall, instruments via the roof", "2 · 5 · 6", (575.75, 644.0, 19.5)),
     (9, "UPS, DC and panels", "125 V DC, 120 V AC UPS, lighting", "2 · 5", (553.6, 630.0, 9.0)),
 ]
 
@@ -553,7 +553,10 @@ def slide_room():
     lede = "Roof and two walls lifted off the HRSG 1 e-house: every cable leg, transformer to section."
     extra = f"""<div class="abs" style="left:40px;top:560px;width:340px;height:192px;border:2px solid {COPPER};border-radius:4px;overflow:hidden">
       <img src="{inset}" style="width:100%;height:100%;object-fit:cover;display:block"></div>
-      <div class="abs cap" style="left:40px;top:540px;width:360px;font-size:10.5px;color:#fff;text-shadow:0 1px 3px #000">Inside: LC-R2A and MCC-R2A-1 (right), VFDs (left), trays overhead</div>"""
+      <div class="abs cap" style="left:40px;top:540px;width:360px;font-size:10.5px;color:#fff;text-shadow:0 1px 3px #000">Inside: LC-R2A and MCC-R2A-1 (right), VFDs (left), trays overhead</div>
+      <div class="abs" style="left:400px;top:560px;width:340px;height:192px;border:2px solid {COPPER};border-radius:4px;overflow:hidden">
+      <img src="{img('RA3')}" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+      <div class="abs cap" style="left:400px;top:540px;width:380px;font-size:10.5px;color:#fff;text-shadow:0 1px 3px #000">Interconnection: MV tray to T-R2A, control tray into the roof riser</div>"""
     return f"""
 <section class="page slide">
   <img class="abs" src="{img('RA1')}" style="left:0;top:0;width:1440px;height:810px;object-fit:cover">

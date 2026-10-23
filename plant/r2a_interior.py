@@ -95,11 +95,80 @@ def shell(it):
     fuel.D = True
 
 
+def split_plant_trays(region=(562.0, 640.0, 640.0, 760.0)):
+    """Move the plant tray / riser parts around R2A into their own item ("R2A interconnection trays ...") so a cutaway can
+    hide the overhead rack yet keep the trays that connect the e-house to the plant: the roof-gland riser and the EL 42
+    control tray to the HRSG, the north-wall riser and the EL 30 LV tray, the EL 36 MV tray down to T-R2A. Box parts and
+    axis-aligned rods that cross the region edge are cut in two at the edge."""
+    import copy
+    G = fuel.G
+    tray = next(i for i in G["items"] if i["name"].startswith("Cable trays"))
+    x0, x1, y0, y1 = region
+    new = fuel.new_item("ROUTES_BASE", "R2A interconnection trays: risers and drops between the e-house and the plant trays",
+                        (x0, x1, y0, y1), (0, 50), area="A", register=False,
+                        info="The plant tray parts around R2A (cut from the tray system for the cutaway views).")
+    keep, moved = [], 0
+
+    def inside(lo, hi):
+        return lo[0] >= x0 and hi[0] <= x1 and lo[1] >= y0 and hi[1] <= y1
+
+    for p in G["parts"]:
+        if p["item"] != tray["id"]:
+            keep.append(p)
+            continue
+        if p["kind"] == "box":
+            lo, hi = p["min"], p["max"]
+        elif p["kind"] == "rod":
+            lo = [min(p["a"][i], p["b"][i]) for i in range(3)]
+            hi = [max(p["a"][i], p["b"][i]) for i in range(3)]
+        else:
+            keep.append(p)
+            continue
+        if hi[0] < x0 or lo[0] > x1 or hi[1] < y0 or lo[1] > y1:
+            keep.append(p)
+            continue
+        if inside(lo, hi):
+            p["item"] = new["id"]
+            keep.append(p)
+            moved += 1
+            continue
+        # crosses the edge: split along the one axis it runs on (boxes: the long axis; rods: axis-aligned only)
+        if p["kind"] == "rod":
+            ax = [i for i in range(3) if p["a"][i] != p["b"][i]]
+            if len(ax) != 1 or ax[0] == 2:
+                keep.append(p)
+                continue
+            ax = ax[0]
+        else:
+            ax = 0 if (hi[0] - lo[0]) >= (hi[1] - lo[1]) else 1
+            other = 1 - ax
+            if lo[other] < (x0, y0)[other] or hi[other] > (x1, y1)[other]:
+                keep.append(p)
+                continue
+        a_lo, a_hi = (x0, x1) if ax == 0 else (y0, y1)
+        cuts = sorted({lo[ax], hi[ax], *(c for c in (a_lo, a_hi) if lo[ax] < c < hi[ax])})
+        for c0, c1 in zip(cuts, cuts[1:]):
+            q = copy.deepcopy(p)
+            if q["kind"] == "box":
+                q["min"][ax], q["max"][ax] = round(c0, 2), round(c1, 2)
+            else:
+                s0 = q["a"][ax] <= q["b"][ax]
+                q["a"][ax], q["b"][ax] = (round(c0, 2), round(c1, 2)) if s0 else (round(c1, 2), round(c0, 2))
+            mid = (c0 + c1) / 2
+            if a_lo <= mid <= a_hi:
+                q["item"] = new["id"]
+                moved += 1
+            keep.append(q)
+    G["parts"][:] = keep
+    return moved
+
+
 def build():
     G = fuel.G
     it = next(i for i in G["items"] if i["tag"] == "R2A")
     n0 = len(G["parts"])
     shell(it)
+    split_plant_trays()
     room = fuel.new_item("BASE_ELECTRICAL", "R2A e-house interior: 480 V switchgear, MCCs, VFDs, DCS marshalling, UPS / DC, "
                          "trays and cable drops", (IX0, IX1, IY0, IY1), (Z, ZC), area="A", sheet="SW-3X1-03",
                          register=False,

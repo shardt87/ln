@@ -105,7 +105,7 @@ def main():
     # 5. cable trays and IPB must not pass through structures or equipment (generated geometry);
     #    allowed: the IPB entering its GCB and generator terminals, trays through the R1 wall sleeves
     tray = next((i["id"] for i in M["items"] if i["name"].startswith("Cable trays")), None)
-    allowed = re.compile(r"^GCB-|^Cable pull: |^Cable dressing: |^GTG-\d|R1 east-wall tray exits|^Common turbine hall|^Turbine hall south cladding|^Turbine hall exterior finish|^Reserved pad|^Turbine deck|^Laydown|"
+    allowed = re.compile(r"^R2A interconnection trays|^GCB-|^Cable pull: |^Cable dressing: |^GTG-\d|R1 east-wall tray exits|^Common turbine hall|^Turbine hall south cladding|^Turbine hall exterior finish|^Reserved pad|^Turbine deck|^Laydown|"
                          r"^230 kV switchyard|^Pipe supports|^Underground:")
 
     def pbox(p):
