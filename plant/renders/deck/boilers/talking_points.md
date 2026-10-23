@@ -1,6 +1,6 @@
 # Boilers: greenfield and brownfield talking points
 
-Notes for the boiler slides (SW-3X1_boilers.pdf, 8 slides). The equipment in the model and on the slides is generic. Company names appear only in these notes.
+Notes for the boiler slides (SW-3X1_boilers.pdf, 9 slides). The equipment in the model and on the slides is generic. Company names appear only in these notes.
 
 ## Who builds what (check the latest before each meeting)
 
@@ -39,7 +39,24 @@ Notes for the boiler slides (SW-3X1_boilers.pdf, 8 slides). The equipment in the
   - R2A also serves the GT1 unit, so the feed is shown but not counted in the train.
 - The 480 V secondary was missing from the schedule until this pass. It is now in for every unit and load-centre transformer (T-R2A/B/C, T-R3, LCT-A/B). At 10 to 12 parallel sets, it is also a bus-duct candidate; ask the EPC which they carry.
 
-## What the spec calls for (slide 6)
+## The electrical system: levels and ratings (slide 6)
+
+All ratings are the model's typical values, not engineered.
+
+- **The levels, top down:**
+  - **230 kV:** GSU-1.
+  - **21 kV:** the generator and isolated-phase bus. UAT-1 (21 / 13.8 kV, 40 MVA) feeds SWGR-13.8-1 at 1,674 A over 4 sets of 750 kcmil MV-105.
+  - **13.8 kV:** SWGR-13.8-1 (1,200 A, 40 kA, arc-resistant) feeds the two 5,000 kW direct-on-line feed pumps (232 A each, 250 kcmil MV-105) and T-R2A (105 A, #2).
+  - **480 V:** T-R2A (2,500 kVA, 3,007 A secondary, 40 x 500 kcmil) feeds LC-R2A (4,000 A main, 65 kA), then MCC-R2A-1 / -2 (800 A, 65 kA) and the VFDs.
+  - **120 V AC / 125 V DC:** a 10 kVA UPS and a 60-cell battery for the DCS, F&G and breaker control.
+  - **Signals:** 4-20 mA, thermocouple millivolts and 24 V DC discretes.
+- **Numbers to remember:**
+  - **About 750 kW is connected at 480 V on one HRSG train (77 circuits).** The SCR blowers are the big ones, 2 x 110 kW.
+  - **About 74 % of the train's cables are instrument or thermocouple pairs.** HRSG cable is mostly signal cable by count, so instrumentation is where the volume is.
+  - **Arc flash is 8.4 cal/cm² at 13.8 kV and 24.6 at 480 V** (model labels). The 480 V gear is the higher hazard: a lower voltage, but more current and longer clearing.
+- **Real plants vary.** Many plants put the feed pumps on a 4.16 or 6.9 kV bus; Mill Creek 6 uses 6.9 kV. The cable logic is the same.
+
+## What the spec calls for (slide 7)
 
 Public sources are listed in `references/boilers/README.md`. Have the standard numbers ready; boiler and EPC engineers
 write their specifications around them.

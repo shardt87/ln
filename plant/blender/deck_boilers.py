@@ -72,7 +72,7 @@ def foot(n, short=False):
     left = ("SW-3X1 MODEL &middot; NOT ENGINEERED" if short else
             "SW-3X1 MODEL &middot; CONCEPTUAL ILLUSTRATION, NOT ENGINEERED &middot; QUANTITIES FROM THE MODEL'S CABLE SCHEDULE")
     return f"""<div class="abs foot" style="left:64px;right:64px;bottom:26px;display:flex;justify-content:space-between;
-      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/8</span></div>"""
+      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/9</span></div>"""
 
 
 def slide1():
@@ -160,7 +160,7 @@ def slide2():
     <img src="{img('BB2')}" style="width:100%;height:100%;object-fit:cover"></div>
   <div class="abs cap" style="left:870px;top:712px;width:243px">Cable work at the HRSG e-house</div>
   <div class="abs cap" style="left:1133px;top:712px;width:243px">Old module on the hook</div>
-  {foot(7, short=True).replace("left:64px", "left:870px")}
+  {foot(8, short=True).replace("left:64px", "left:870px")}
 </section>"""
 
 
@@ -259,7 +259,7 @@ def slide3():
   <div class="abs cap" style="left:64px;top:735px;width:1312px">Stock numbers are one catalogue size per product, from
     Southwire's product listings; every size and construction is on the same SPEC. Confirm current stock with Southwire
     customer service before quoting.</div>
-  {foot(8)}
+  {foot(9)}
 </section>"""
 
 
@@ -668,6 +668,68 @@ def slide_diagram():
 </section>"""
 
 
+# ------------------------------------------------------------------------------- the electrical system: levels and ratings
+# Ratings as modelled (typical, not engineered): Load List / Cable Schedule sheets, swgr_rooms.py / r2a_interior.py
+# nameplates. Each level with what it is and the cable it drives.
+LEVELS = [  # (voltage, colour, equipment and ratings, what it feeds / current, the cable it drives)
+    ("230 kV", "#8e98a3", "GSU-1, 21 / 230 kV step-up", "Plant to the grid, overhead line",
+     "Overhead conductor (outside the HRSG scope)"),
+    ("21 kV", "#b06ae0", "GT1 generator, isolated-phase bus; UAT-1 21 / 13.8 kV, 40 MVA",
+     "UAT-1 secondary 1,674 A into SWGR-13.8-1", "4 sets of 3 x 1/C 750 kcmil MV-105"),
+    ("13.8 kV", "#f05a28", "SWGR-13.8-1: metal-clad, 1,200 A, 40 kA, arc-resistant",
+     "Feed pumps BFP-1A / 1B, 5,000 kW each, direct-on-line, 232 A; T-R2A primary, 105 A",
+     "3 x 1/C 250 kcmil MV-105 per pump; 3 x 1/C #2 to T-R2A"),
+    ("480 V", "#f2c613", "T-R2A 2,500 kVA &rarr; LC-R2A 4,000 A main, 65 kA &rarr; MCC-R2A-1 / -2, 800 A, 65 kA; VFDs",
+     "Secondary 3,007 A; SCR blowers 2 x 110 kW (156 A); 45 HRSG MOVs; feed-pump and chemical-feed auxiliaries; "
+     "welding receptacles",
+     "10 sets of 4 x 1/C 500 kcmil; 3/0 TC-ER / MC-HL VFD; #10 TC-ER to each MOV"),
+    ("120 V AC / 125 V DC", "#3a8fd9", "UPS-R2A 10 kVA; 125 V DC battery, 60 cells; DC and UPS panels",
+     "DCS, F&G node, breaker trip and close, burner-management power",
+     "1/C #6 and control TC-ER 14 AWG"),
+    ("Signals", "#36c26b", "4-20 mA / HART, thermocouple millivolts, 24 V DC discretes",
+     "Drum level, pressures, flame scanners, gas-path and tube-metal temperatures",
+     "439 instrument + 84 thermocouple-extension cables, shielded pairs"),
+]
+
+
+def slide_system():
+    rows = ""
+    for (v, col, eq, feeds, cab) in LEVELS:
+        rows += (f'<div style="display:flex;align-items:stretch;border-top:1px solid #2c3036;min-height:62px">'
+                 f'<div style="width:150px;display:flex;align-items:center"><span style="font:800 16px/1 BC;color:{INK};'
+                 f'background:{col};padding:6px 10px 5px;border-radius:3px;letter-spacing:.03em">{v}</span></div>'
+                 f'<div style="width:300px;padding:8px 14px 8px 0;font:700 14px/1.25 BC;color:{WHITE};letter-spacing:.02em">{eq}</div>'
+                 f'<div style="width:300px;padding:8px 14px 8px 0;font:400 12px/1.35 B;color:{GREY}">{feeds}</div>'
+                 f'<div style="flex:1;padding:8px 0;font:700 13px/1.3 BC;color:{COPPER};letter-spacing:.02em">{cab}</div></div>')
+    h = N["hrsg"]
+    inst = L["inst"]["cables"] + L["tcx"]["cables"]
+    inst_ft = L["inst"]["ft"] + L["tcx"]["ft"]
+    facts = [
+        ("750 kW", "connected at 480 V on one HRSG train, 77 circuits"),
+        ("2 x 5 MW", "feed pumps: the largest motors on the train, at 13.8 kV"),
+        ("3,007 A", "on the T-R2A secondary: 40 cables of 500 kcmil"),
+        (f"{100 * inst / h['cables']:.0f} %", f"of the train's cables are instrument or thermocouple pairs ({100 * inst_ft / h['ft']:.0f} % of the footage)"),
+        ("8.4 / 24.6", "cal/cm² arc flash at 13.8 kV / 480 V (equipment labels)"),
+    ]
+    tiles = "".join(f'<div style="flex:1;border-left:3px solid {COPPER};padding:2px 0 2px 12px"><div class="big" style="font-size:30px">'
+                    f'{a}</div><div class="cd" style="font-size:11.5px;margin-top:4px">{b}</div></div>' for a, b in facts)
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:52px">Boiler solutions &nbsp;&middot;&nbsp; the electrical system</div>
+  <div class="abs h2" style="left:62px;top:80px;font-size:50px">Levels, ratings <em>and the cable they drive</em></div>
+  <div class="abs lede" style="left:64px;top:136px;width:1100px;font-size:14px">One HRSG train from the generator down to the
+    field signals: each voltage level, the equipment and its rating, what it feeds, and the cable that follows.</div>
+  <div class="abs" style="left:64px;top:186px;width:1312px">
+    <div style="display:flex;font:700 12px/1.1 BC;letter-spacing:.1em;color:{GREY};text-transform:uppercase;padding-bottom:6px">
+      <div style="width:150px">Level</div><div style="width:300px">Equipment &middot; rating</div>
+      <div style="width:300px">Feeds &middot; current</div><div style="flex:1">Cable it drives</div></div>{rows}</div>
+  <div class="abs" style="left:64px;top:636px;width:1312px;display:flex;gap:22px">{tiles}</div>
+  <div class="abs cap" style="left:64px;top:744px;width:1312px">Ratings are the model's typical values (Load List and nameplates),
+    not engineered. Real plants vary: many put the feed pumps on a 4.16 or 6.9 kV bus.</div>
+  {foot(6)}
+</section>"""
+
+
 # ------------------------------------------------------------------------------- what the spec calls for
 # Requirements an owner / EPC cable specification calls up for the HRSG section, per application, and the Southwire
 # answer. Sources: references/boilers/README.md (public one-lines, HRSG package spec, sample Division 26 specs, standards).
@@ -732,7 +794,7 @@ def slide_spec():
       Raceway and cable design for generating stations: IEEE 422. Grounding: IEEE 80 / 665. Area classification:
       NEC 500, API RP 500. Field acceptance: NETA ATS.</div></div>
   </div>
-  {foot(6)}
+  {foot(7)}
 </section>"""
 
 
@@ -741,7 +803,7 @@ def main():
     import pymupdf
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS}</style></head><body>"
     out = pymupdf.open()
-    for i, sec in enumerate((slide1(), slide_hero(), slide_elev(), slide_room(), slide_diagram(), slide_spec(), slide2(), slide3())):
+    for i, sec in enumerate((slide1(), slide_hero(), slide_elev(), slide_room(), slide_diagram(), slide_system(), slide_spec(), slide2(), slide3())):
         hp = os.path.join(OUT, f"_s{i}.html")
         sec = sec.replace('<section class="page slide">', '<section class="page slide"><div class="s">', 1).replace(
             "</section>", "</div></section>")
