@@ -72,7 +72,7 @@ def foot(n, short=False):
     left = ("SW-3X1 MODEL &middot; NOT ENGINEERED" if short else
             "SW-3X1 MODEL &middot; CONCEPTUAL ILLUSTRATION, NOT ENGINEERED &middot; QUANTITIES FROM THE MODEL'S CABLE SCHEDULE")
     return f"""<div class="abs foot" style="left:64px;right:64px;bottom:26px;display:flex;justify-content:space-between;
-      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/9</span></div>"""
+      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/10</span></div>"""
 
 
 def slide1():
@@ -160,7 +160,7 @@ def slide2():
     <img src="{img('BB2')}" style="width:100%;height:100%;object-fit:cover"></div>
   <div class="abs cap" style="left:870px;top:712px;width:243px">Cable work at the HRSG e-house</div>
   <div class="abs cap" style="left:1133px;top:712px;width:243px">Old module on the hook</div>
-  {foot(8, short=True).replace("left:64px", "left:870px")}
+  {foot(9, short=True).replace("left:64px", "left:870px")}
 </section>"""
 
 
@@ -259,7 +259,7 @@ def slide3():
   <div class="abs cap" style="left:64px;top:735px;width:1312px">Stock numbers are one catalogue size per product, from
     Southwire's product listings; every size and construction is on the same SPEC. Confirm current stock with Southwire
     customer service before quoting.</div>
-  {foot(9)}
+  {foot(10)}
 </section>"""
 
 
@@ -427,7 +427,7 @@ def slide_hero():
   {spot_html(cam, HERO_SPOTS)}
   {panel("Boiler solutions &nbsp;&middot;&nbsp; HRSG", "The HRSG, <em>every cable</em>", lede, spot_list(HERO_SPOTS).replace("padding:6px 0 7px 36px", "padding:4px 0 5px 36px"), extra).replace("top:262px", "top:222px")}
   <div class="abs" style="left:0;top:730px;width:1040px;height:80px;background:linear-gradient(180deg,rgba(14,16,18,0),rgba(14,16,18,.95) 55%)"></div>
-  {foot(2).replace("right:64px", "right:420px")}
+  {foot(3).replace("right:64px", "right:420px")}
 </section>"""
 
 
@@ -450,7 +450,7 @@ def slide_elev():
   {spot_html(cam, ELEV_SPOTS)}
   {panel("Boiler solutions &nbsp;&middot;&nbsp; elevation", "The train <em>in elevation</em>", lede, spot_list(ELEV_SPOTS))}
   <div class="abs" style="left:0;top:730px;width:1040px;height:80px;background:linear-gradient(180deg,rgba(14,16,18,0),rgba(14,16,18,.95) 55%)"></div>
-  {foot(3).replace("right:64px", "right:420px")}
+  {foot(4).replace("right:64px", "right:420px")}
 </section>"""
 
 
@@ -555,7 +555,7 @@ def slide_room():
   {spot_html(cam, spots)}
   {panel("Boiler solutions &nbsp;&middot;&nbsp; the e-house", "Inside <em>the room</em>", lede, spot_list(spots).replace("padding:6px 0 7px 36px", "padding:4px 0 5px 36px"), extra).replace("top:262px", "top:218px").replace("top:168px", "top:160px")}
   <div class="abs" style="left:0;top:730px;width:1040px;height:80px;background:linear-gradient(180deg,rgba(14,16,18,0),rgba(14,16,18,.95) 55%)"></div>
-  {foot(4).replace("right:64px", "right:420px")}
+  {foot(5).replace("right:64px", "right:420px")}
 </section>"""
 
 
@@ -664,7 +664,90 @@ def slide_diagram():
   <div class="abs cap" style="left:64px;top:748px;width:1312px">R2A also serves the GT1 unit loads, so the T-R2A primary and
     secondary, the transformer auxiliaries, the DCS fibre and the room's own wiring are shown here but are not in the train total.
     Schedule rows: {", ".join(L["primary"]["rows"] + L["secondary"]["rows"])} and the rest by tag.</div>
-  {foot(5)}
+  {foot(6)}
+</section>"""
+
+
+# ------------------------------------------------------------------------------- how an HRSG works (basics)
+# Typical three-pressure reheat HRSG behind a heavy-duty gas turbine; temperatures and pressures are typical ranges.
+SECTIONS = [  # (label, sub, gas temperature after the section, colour, drum, cable at this section)
+    ("Duct burner", "supplementary firing", "up to 1,600 °F", "#ff7a3d", None, "MC-HL to the gas train; scanner pairs"),
+    ("HP superheater + reheater", "dries and superheats steam", "~1,000 °F", "#f05a28", None, "thermocouple ext., tube metals"),
+    ("HP evaporator", "boils water at HP", "~700 °F", "#e39a5f", "HP", "drum level, 2-of-3; MOVs"),
+    ("SCR + CO catalyst", "NOx and CO removal", "600-750 °F window", "#b06ae0", None, "blowers on VFDs; AIG valves"),
+    ("HP econ. + IP", "preheats HP water; IP steam", "~500 °F", "#3a8fd9", "IP", "MOVs, transmitters"),
+    ("LP evaporator", "low-pressure steam", "~320 °F", "#36c26b", "LP", "drum level; LP valves"),
+    ("Condensate preheater", "last heat out of the gas", "~180 °F", "#17a589", None, "temperatures; recirc pumps"),
+]
+
+
+def slide_basics():
+    X0, Y0, W, H = 64, 214, 1312, 470
+    svg = ""
+    # gas turbine exhaust and inlet duct (diverging)
+    svg += f'<polygon points="{X0},{Y0 + 150} {X0 + 120},{Y0 + 150} {X0 + 180},{Y0 + 70} {X0 + 180},{Y0 + 300} {X0 + 120},{Y0 + 230} {X0},{Y0 + 230}" fill="#2a2f35" stroke="#59606a"/>'
+    svg += f'<text x="{X0 + 8}" y="{Y0 + 140}" fill="{GREY}" font-family="BC" font-weight="700" font-size="13" letter-spacing="1">GAS TURBINE EXHAUST</text>'
+    svg += f'<text x="{X0 + 8}" y="{Y0 + 196}" fill="{WHITE}" font-family="BC" font-weight="800" font-size="22">~1,100 °F</text>'
+    svg += f'<text x="{X0 + 8}" y="{Y0 + 216}" fill="{GREY}" font-family="B" font-size="11">~2,000 lb/s of hot exhaust</text>'
+    # sections
+    cx0, cw = X0 + 186, 118
+    for k, (lab, sub, t, col, drum, cab) in enumerate(SECTIONS):
+        x = cx0 + k * (cw + 6)
+        svg += f'<rect x="{x}" y="{Y0 + 70}" width="{cw}" height="230" fill="{col}" fill-opacity=".16" stroke="{col}" stroke-width="2"/>'
+        for r in range(9):                                                  # tube rows
+            svg += f'<line x1="{x + 14 + r * 11}" y1="{Y0 + 84}" x2="{x + 14 + r * 11}" y2="{Y0 + 286}" stroke="{col}" stroke-opacity=".55" stroke-width="2.4"/>'
+        svg += (f'<foreignObject x="{x + 4}" y="{Y0 + 196}" width="{cw - 8}" height="100"><div xmlns="http://www.w3.org/1999/xhtml" '
+                f'style="background:rgba(14,16,18,.86);padding:5px 6px;font:800 13px/1.05 BC;color:{WHITE};text-transform:uppercase">'
+                f'{lab}<div style="font:400 10.5px/1.25 B;color:{GREY};text-transform:none;margin-top:3px">{sub}</div></div></foreignObject>')
+        svg += f'<text x="{x + cw / 2}" y="{Y0 + 324}" text-anchor="middle" fill="{COPPER}" font-family="BC" font-weight="800" font-size="15">{t}</text>'
+        svg += (f'<foreignObject x="{x - 2}" y="{Y0 + 336}" width="{cw + 4}" height="44"><div xmlns="http://www.w3.org/1999/xhtml" '
+                f'style="font:400 10.5px/1.25 B;color:#c9ced3;text-align:center">{cab}</div></foreignObject>')
+        if drum:
+            dx = x + cw / 2
+            svg += f'<rect x="{dx - 44}" y="{Y0 + 16}" width="88" height="30" rx="15" fill="#3c434b" stroke="{WHITE}" stroke-width="1.5"/>'
+            svg += f'<text x="{dx}" y="{Y0 + 36}" text-anchor="middle" fill="{WHITE}" font-family="BC" font-weight="800" font-size="14">{drum} DRUM</text>'
+            svg += f'<line x1="{dx - 20}" y1="{Y0 + 46}" x2="{dx - 20}" y2="{Y0 + 70}" stroke="{WHITE}" stroke-width="2"/>'
+            svg += f'<line x1="{dx + 20}" y1="{Y0 + 46}" x2="{dx + 20}" y2="{Y0 + 70}" stroke="{WHITE}" stroke-width="2"/>'
+    # stack
+    sx = cx0 + 7 * (cw + 6) + 6
+    svg += f'<rect x="{sx}" y="{Y0 - 26}" width="52" height="326" fill="#2a2f35" stroke="#59606a"/>'
+    svg += f'<text x="{sx + 26}" y="{Y0 - 34}" text-anchor="middle" fill="{GREY}" font-family="BC" font-weight="700" font-size="13" letter-spacing="1">STACK</text>'
+    svg += f'<text x="{sx + 26}" y="{Y0 + 324}" text-anchor="middle" fill="{COPPER}" font-family="BC" font-weight="800" font-size="15">~180 °F</text>'
+    svg += (f'<foreignObject x="{sx - 8}" y="{Y0 + 336}" width="72" height="44"><div xmlns="http://www.w3.org/1999/xhtml" '
+            f'style="font:400 10.5px/1.25 B;color:#c9ced3;text-align:center">CEMS: analyzers, fibre</div></foreignObject>')
+    # gas-flow arrow
+    ay = Y0 + 58
+    svg += f'<line x1="{X0 + 190}" y1="{ay}" x2="{sx - 12}" y2="{ay}" stroke="{COPPER}" stroke-width="2.5" stroke-dasharray="8 6"/>'
+    svg += f'<polygon points="{sx - 12},{ay - 6} {sx},{ay} {sx - 12},{ay + 6}" fill="{COPPER}"/>'
+    svg += f'<text x="{X0 + 196}" y="{ay - 8}" fill="{COPPER}" font-family="BC" font-weight="700" font-size="12" letter-spacing="1.5">GAS FLOW, COOLING</text>'
+    # water / steam loop (below)
+    wy = Y0 + 410
+    svg += f'<line x1="{sx + 20}" y1="{wy}" x2="{X0 + 200}" y2="{wy}" stroke="#4aa3ff" stroke-width="3"/>'
+    svg += f'<polygon points="{X0 + 200},{wy - 7} {X0 + 186},{wy} {X0 + 200},{wy + 7}" fill="#4aa3ff"/>'
+    svg += (f'<text x="{sx + 18}" y="{wy - 10}" text-anchor="end" fill="#4aa3ff" font-family="BC" font-weight="700" font-size="13" '
+            f'letter-spacing="1">WATER IN AT THE COLD END (FEED PUMPS) &#8594; ECONOMIZERS &#8594; DRUMS &#8594; EVAPORATORS &#8594; SUPERHEATERS &#8594; STEAM OUT AT THE HOT END</text>')
+    svg += (f'<text x="{X0}" y="{wy + 28}" fill="{WHITE}" font-family="B" font-size="13">Steam to the steam turbine, typical: '
+            f'<tspan fill="{COPPER}" font-weight="700">HP ~1,800-2,400 psig, ~1,050 °F</tspan> &#183; '
+            f'<tspan fill="{COPPER}" font-weight="700">reheat / IP ~400-600 psig, ~1,050 °F</tspan> &#183; '
+            f'<tspan fill="{COPPER}" font-weight="700">LP ~50-80 psig</tspan></text>')
+    facts = [("~1/3", "of a combined-cycle plant's output comes from HRSG steam, with no extra fuel (duct firing aside)"),
+             ("~60 %+", "combined-cycle efficiency, against ~40 % for the gas turbine alone"),
+             ("3 x 3", "three pressures, three drums; each drum level measured three ways, typically voted 2-out-of-3"),
+             ("~1 hour", "a hot start: about an hour: every start cycles the tubes, which is why tube-metal thermocouples matter")]
+    tiles = "".join(f'<div style="flex:1;border-left:3px solid {COPPER};padding:2px 0 2px 12px"><div class="big" style="font-size:28px">'
+                    f'{a}</div><div class="cd" style="font-size:11.5px;margin-top:4px">{b}</div></div>' for a, b in facts)
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:52px">Boiler solutions &nbsp;&middot;&nbsp; the basics</div>
+  <div class="abs h2" style="left:62px;top:80px;font-size:50px">How an HRSG <em>works</em></div>
+  <div class="abs lede" style="left:64px;top:136px;width:1180px;font-size:14px">A heat-recovery steam generator turns the gas
+    turbine's waste heat into steam. The exhaust crosses rows of finned tubes, hottest sections first; water enters at the cold end
+    and leaves as superheated steam at the hot end. Below each section: the cable it needs.</div>
+  <svg class="abs" width="1440" height="810" viewBox="0 0 1440 810" style="left:0;top:0;overflow:visible">{svg}</svg>
+  <div class="abs" style="left:64px;top:664px;width:1312px;display:flex;gap:22px">{tiles}</div>
+  <div class="abs cap" style="left:64px;top:740px;width:1312px">Typical three-pressure reheat HRSG with SCR behind an F-class
+    gas turbine; section order, temperatures and pressures vary by design.</div>
+  {foot(2)}
 </section>"""
 
 
@@ -726,7 +809,7 @@ def slide_system():
   <div class="abs" style="left:64px;top:636px;width:1312px;display:flex;gap:22px">{tiles}</div>
   <div class="abs cap" style="left:64px;top:744px;width:1312px">Ratings are the model's typical values (Load List and nameplates),
     not engineered. Real plants vary: many put the feed pumps on a 4.16 or 6.9 kV bus.</div>
-  {foot(6)}
+  {foot(7)}
 </section>"""
 
 
@@ -794,7 +877,7 @@ def slide_spec():
       Raceway and cable design for generating stations: IEEE 422. Grounding: IEEE 80 / 665. Area classification:
       NEC 500, API RP 500. Field acceptance: NETA ATS.</div></div>
   </div>
-  {foot(7)}
+  {foot(8)}
 </section>"""
 
 
@@ -803,7 +886,7 @@ def main():
     import pymupdf
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS}</style></head><body>"
     out = pymupdf.open()
-    for i, sec in enumerate((slide1(), slide_hero(), slide_elev(), slide_room(), slide_diagram(), slide_system(), slide_spec(), slide2(), slide3())):
+    for i, sec in enumerate((slide1(), slide_basics(), slide_hero(), slide_elev(), slide_room(), slide_diagram(), slide_system(), slide_spec(), slide2(), slide3())):
         hp = os.path.join(OUT, f"_s{i}.html")
         sec = sec.replace('<section class="page slide">', '<section class="page slide"><div class="s">', 1).replace(
             "</section>", "</div></section>")

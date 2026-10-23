@@ -1,12 +1,40 @@
 # Boilers: greenfield and brownfield talking points
 
-Notes for the boiler slides (SW-3X1_boilers.pdf, 9 slides). The equipment in the model and on the slides is generic. Company names appear only in these notes.
+Notes for the boiler slides (SW-3X1_boilers.pdf, 10 slides). The equipment in the model and on the slides is generic. Company names appear only in these notes.
 
 ## Who builds what (check the latest before each meeting)
 
 - **Vogt Power International** is a Babcock Power company. Note that Babcock Power is not Babcock & Wilcox. Vogt designs and supplies HRSGs, the heat-recovery boilers behind gas turbines. It also does HRSG retrofits and replacement parts, such as tube modules (harps), economizers and duct burners.
 - **Babcock & Wilcox (B&W)** builds utility and industrial boilers, including package boilers for gas firing. It also supplies HRSGs and environmental equipment such as SCR. Its aftermarket business covers retrofits, upgrades and fuel conversions, such as coal-to-gas.
 - Other HRSG names you may meet on the same projects include Nooter/Eriksen and NEM.
+
+## How an HRSG works (slide 2)
+
+The temperatures and pressures below are typical ranges for a three-pressure reheat HRSG behind an F-class gas turbine.
+
+- **The idea.** The gas turbine's exhaust leaves at about 1,100 °F. The HRSG passes it over banks of finned tubes and turns that heat into steam for the steam turbine.
+  - That steam makes **about a third** of the plant's output with no extra fuel.
+  - This is how combined cycle reaches **60 %+ efficiency**, against about 40 % for a gas turbine alone.
+- **Gas side, hot to cold:**
+  - the duct burner (optional supplementary firing, up to about 1,600 °F);
+  - the HP superheater and reheater;
+  - the HP evaporator under the HP drum;
+  - the SCR and CO catalyst, placed where the gas is in its 600-750 °F window;
+  - the HP economizer and IP sections, then the LP evaporator;
+  - the condensate preheater;
+  - the stack, at about 180 °F.
+- **Water side, the other way (counterflow).** The feed pumps push water into the cold end. It passes through the economizers into the drums, circulates through the evaporators, and leaves the superheaters as steam:
+  - HP: about 1,800-2,400 psig, ~1,050 °F;
+  - reheat / IP: about 400-600 psig, ~1,050 °F;
+  - LP: about 50-80 psig.
+- **Where cable lands, section by section** (this is the bridge to the rest of the deck):
+  - MC-HL and scanner pairs at the duct burner;
+  - thermocouple extension for the tube metals in the hot sections;
+  - drum-level transmitters on each drum, three per drum and typically voted 2-out-of-3, plus MOVs;
+  - VFD cable to the SCR blowers;
+  - MV-105 to the feed pumps;
+  - CEMS instrumentation and fibre at the stack.
+- **Cycling is the wear story.** A modern unit hot-starts in about an hour, and every start heats and cools the thick parts (drums, headers). That's why there are so many tube-metal thermocouples: about 84 thermocouple-extension cables per train in the model.
 
 ## The three boiler stories in the model
 
