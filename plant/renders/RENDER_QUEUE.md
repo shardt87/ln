@@ -21,7 +21,7 @@ it where tray congestion is the point of the shot. Process piping stays visible.
 | ELV1 | Boilers slide 8 | preview only | HRSG 2/3, all stacks and the outage crane kept in colour, Oct 22; the stale full render was deleted |
 | CM1 / CM2 / CM3 / CM4 | Boilers slide 10 (CEMS: cutaway main; exterior, stack-platform and stack-top insets) | preview only | new Oct 23; Steam Street layout (spine rack, control room, steam storage, bay plates) |
 | RA3 | Boilers slide 9 (interconnection inset) | preview only | new Oct 23: MV tray to T-R2A, EL 42 control tray into the roof riser; process piping hidden |
-| BR1 / BR2 / BR3 | Boilers slide 4 (Boiler Row: aerial main; BR3 electric-boiler cutaway inset; BR2 spine close-up for marketing); Nov 11 tour | preview only | new Oct 23; Steam Street layout (spine rack, control room, steam storage, bay plates) |
+| BR1 / BR2 / BR3 (BR1, BR2 re-shot Oct 23 with the heater bay) | Boilers slide 4 (Boiler Row: aerial main; BR3 electric-boiler cutaway inset; BR2 spine close-up for marketing); Nov 11 tour | preview only | new Oct 23; Steam Street layout (spine rack, control room, steam storage, bay plates) |
 | BR4 / BR5 | BR5: Boilers slide 4 inset (burner front close-up); BR4: back bay (talking points, marketing) | preview only | new Oct 23: UB-1 13.8 kV switchgear + SST-A/B, gas metering; burner hardware |
 | BR6 / BX1 / BX2 | BR6: UB-1 cooling tower + CW pumps (marketing); BX1: boilers slide 1 (package boiler, now at Boiler Row west); BX2 | preview only | Oct 23: AB-1 moved; the stale BX1 full render was deleted |
 | BR7 | Burner front, wide (stair tower, braces, scanner cooling air, lights, operators): marketing / MC-HL story | preview only | new Oct 23 |

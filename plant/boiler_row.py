@@ -230,20 +230,21 @@ def utility_boiler():
 
 
 def steam_turbine_hall():
-    it = fuel.new_item(L, "UB-1 steam-turbine hall and generator step-up (Boiler Row)", (1150, 1250, 1525, 1640), (0, 75),
+    it = fuel.new_item(L, "UB-1 steam-turbine hall and generator step-up (Boiler Row)", (1150, 1250, 1525, 1640), (0, 84),
                        area="D", register=False, basis="typical",
                        info="Steam turbine generator for UB-1 in its hall (overhead crane), generator step-up transformer and "
                             "isolated-phase bus. Showcase.")
     on(it)
     fuel.D = False
-    X0, X1, Y0, Y1 = 1160.0, 1222.0, 1530.0, 1630.0
-    box(X0, X1, Y0, Y1, 0, 72, "building")
-    box(X0 - .5, X1 + .5, Y0 - .5, Y1 + .5, 72, 74, "roof")
+    X0, X1, Y0, Y1 = 1160.0, 1222.0, 1530.0, 1632.0
+    box(X0, X1, Y0, Y1, 0, 80, "building")
+    box(X0, X1 + .5, Y0 - .5, Y1 + .5, 80, 82, "roof")
     fuel.D = True
-    for y in range(int(Y0) + 6, int(Y1), 10):
-        box(X0 - .3, X0, y - .2, y + .2, 0, 72, "steel")
-    box(X0 - .1, X0, Y0 + 30, Y0 + 70, 40, 62, "louvre")
-    decal((X0 - .2, (Y0 + Y1) / 2, 66), (-1, 0, 0), 30, 4.6, [("STEAM TURBINE GENERATOR", .55, True, "#111111")], bg="#ffffff")
+    box(X0 - .6, X1 + .6, Y0 - .6, Y1 + .6, 78, 80, "hero_accent")                   # copper coping, as on the heater bay
+    for x in range(int(X0) + 6, int(X1), 10):
+        box(x - .2, x + .2, Y0 - .3, Y0, 0, 78, "steel")                              # south-face ribs
+    box(X1, X1 + .1, Y0 + 30, Y0 + 70, 40, 62, "louvre")
+    decal(((X0 + X1) / 2, Y0 - .35, 70), (0, -1, 0), 50, 5.0, [("UB-1 TURBINE HALL", .55, True, "#111111")], bg="#ffffff")
     # main steam line from the boiler penthouse
     for (y, r) in ((1583, 1.3), (1588.5, 1.8), (1577.5, 1.5)):                     # main steam, hot reheat, cold reheat
         poly([(1060, y, 184), (1060, y, 188), (1150 - (y - 1583), y, 188), (1150 - (y - 1583), y, 60), (X0, y, 60)], r, "pipe", seg=14)
@@ -331,6 +332,47 @@ def electric_boiler():
              .2, "cable_mv", seg=8)
     box(VX - 7.4, VX - 6.2, VY - 1.8, VY + .8, TZ, 30.5, "steel")                       # riser cleat channel
     decal((TX, Y0 + 30, TZ + 1.2), (-1, 0, 0), 9, .9, [("MV-105  ·  3 SETS  ·  13.8 kV", .55, True, "#111111")], bg="#ffd200")
+    fuel.D = False
+    return it
+
+
+def heater_bay():
+    """The bay that joins the UB-1 boiler house and the turbine hall into one power-station block (owner, Oct 23): feedwater
+    heaters, the deaerator on the roof, boiler feed pumps, the unit control room and, under it, the cable spreading room
+    where every circuit of the unit comes together. Same cladding and copper coping as the turbine hall."""
+    it = fuel.new_item(L, "UB-1 heater bay: feedwater heaters, deaerator, unit control room, cable spreading room (Boiler Row)",
+                       (1110, 1160, 1528, 1598), (0, 122), area="D", register=False, basis="typical",
+                       info="Heater bay between the boiler house and the turbine hall: LP / HP feedwater heaters, deaerator and "
+                            "storage tank on the roof, boiler feed pumps at grade, unit control room at EL 30 and the cable "
+                            "spreading room below it, where every circuit of the unit is marshalled. Showcase.")
+    on(it)
+    X0, X1, Y0, Y1, H = 1110.0, 1159.9, 1530.0, 1598.0, 105.0
+    fuel.D = False
+    box(X0, X1, Y0, Y1, 0, H, "building")
+    box(X0 - .5, X1, Y0 - .5, Y1 + .5, H, H + 2, "roof")
+    fuel.D = True
+    box(X0 - .6, X1, Y0 - .6, Y1 + .6, H - 2, H, "hero_accent")                       # copper coping
+    for x in range(int(X0) + 5, int(X1), 10):
+        box(x - .2, x + .2, Y0 - .3, Y0, 0, H - 2, "steel")                           # south-face ribs
+    box(X0 + 3, X1 - 3, Y0 - .15, Y0, 30, 36, "glass")                                 # unit control room windows
+    box(X0 + 3, X1 - 3, Y0 - .2, Y0, 8, 13, "louvre")                                 # cable spreading room vents
+    box(X0 + 4, X0 + 10, Y0 - .3, Y0, 0, 10, "steel_dark")                            # roller door
+    decal(((X0 + X1) / 2, Y0 - .35, 46), (0, -1, 0), 40, 5.0, [("UB-1 HEATER BAY", .5, True, "#111111"),
+                                                               ("UNIT CONTROL ROOM  ·  FEEDWATER", .3, False, "#333333")],
+          bg="#ffffff")
+    decal((X0 + 30, Y0 - .35, 15.2), (0, -1, 0), 16, 1.6, [("CABLE SPREADING ROOM", .62, True, "#111111")], bg="#ffd200")
+    # deaerator and storage tank on the roof
+    for x in (X0 + 10, X1 - 10):
+        box(x - 2, x + 2, 1560, 1570, H + 2, H + 5, "steel")                            # saddles
+    rod((X0 + 6, 1565, H + 10), (X1 - 6, 1565, H + 10), 6.0, "tank", seg=28)            # storage tank
+    rod((X0 + 14, 1565, H + 16), (X0 + 14, 1565, H + 26), 2.6, "tank", seg=20)         # deaerator head
+    rod((X0 + 14, 1565, H + 26), (X0 + 14, 1565, H + 28), 2.6, "tank", r2=1.2, seg=20)
+    rail([(X0 + 1, Y0 + 1), (X1 - 1, Y0 + 1), (X1 - 1, Y1 - 1), (X0 + 1, Y1 - 1), (X0 + 1, Y0 + 1)], H + 2)
+    # cable from the spine tray into the spreading room
+    for k in range(10):
+        x = 1131 + k * .45
+        poly([(x, 1518, 22.4), (x, 1521.5, 22.4), (x, 1521.5, 11), (x, Y0, 11)], .14, "cable_tc", seg=6)
+    box(1129.5, 1136.5, Y0 - .3, Y0, 9, 13, "steel")                                  # wall sleeve frame
     fuel.D = False
     return it
 
@@ -641,21 +683,21 @@ def support_yard():
     fuel.D = False
 
     # CEMS shelter at the UB-1 stack
-    it = fuel.new_item(L, "UB-1 CEMS shelter at the stack (Boiler Row)", (1110, 1126, 1584, 1612), (0, 122), area="D", register=False,
+    it = fuel.new_item(L, "UB-1 CEMS shelter at the stack (Boiler Row)", (1104, 1126, 1598, 1616), (0, 122), area="D", register=False,
                        basis="typical",
                        info="Analyzer shelter for the UB-1 stack: NOx / CO / O2 / NH3 slip, heated sample line from the EL 120 "
                             "platform; power, instrument pairs and fibre to the DCS. Showcase.")
     on(it)
     fuel.D = False
-    box(1111, 1123, 1586, 1602, 0, 1, "concrete")
-    box(1111.3, 1122.7, 1586.3, 1601.7, 1, 10.5, "ehouse")
-    box(1111, 1123, 1586, 1602, 10.5, 11.1, "roof")
+    box(1111, 1123, 1600, 1614, 0, 1, "concrete")
+    box(1111.3, 1122.7, 1600.3, 1613.7, 1, 10.5, "ehouse")
+    box(1111, 1123, 1600, 1614, 10.5, 11.1, "roof")
     fuel.D = True
-    decal((1111.25, 1594, 8.5), (-1, 0, 0), 10, 1.4, [("UB-1 CEMS", .62, True, "#111111")], bg="#ffffff")
-    box(1118, 1121, 1590, 1594, 11.1, 13, "machine")                                  # HVAC
-    poly([(1123, 1600, 8), (1124.8, 1606, 8), (1124.8, 1612.6, 8), (1124.8, 1612.6, 119.6)], .35, "steel_dark", seg=8)   # heated sample line
+    decal((1111.25, 1607, 8.5), (-1, 0, 0), 10, 1.4, [("UB-1 CEMS", .62, True, "#111111")], bg="#ffffff")
+    box(1115, 1118, 1603, 1607, 11.1, 13, "machine")                                  # HVAC
+    poly([(1123, 1611, 8), (1124.6, 1612.6, 8), (1124.6, 1612.6, 119.6)], .35, "steel_dark", seg=8)   # heated sample line
     for k in range(3):
-        poly([(1111, 1588 + k * .5, 6), (1108.6, 1588 + k * .5, 6), (1108.6, 1588 + k * .5, 20.4)], .1, "cable_tc", seg=6)
+        poly([(1111, 1602 + k * .5, 6), (1108.6, 1602 + k * .5, 6), (1108.6, 1602 + k * .5, 20.4)], .1, "cable_tc", seg=6)
     fuel.D = False
 
 
@@ -705,6 +747,7 @@ def build():
     n0 = len(fuel.G["parts"])
     utility_boiler()
     steam_turbine_hall()
+    heater_bay()
     electric_boiler()
     steam_storage()
     spine()
