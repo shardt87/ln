@@ -378,37 +378,57 @@ def cooling():
                        info="Mechanical-draft cooling tower for the UB-1 condenser, 3 cells; two vertical CW pumps on 4.16 kV "
                             "motors (MV-105), CW supply and return below grade to the STG; tower MCC with fan VFDs. Showcase.")
     on(it)
+    # same build as the CCS cooling tower (ccs.cooling_tower): basin, tower casing, concrete cell walls, grating fan deck,
+    # flared fan stacks with blades, hub, gearbox, shaft and motor outside the stack, intake louvres, teal hot-water risers
     X0, X1, Y0, Y1 = 936.0, 984.0, 1450.0, 1540.0
+    CELL = 30.0
     fuel.D = False
-    box(X0 - 2, X1 + 2, Y0 - 2, Y1 + 2, 0, 3.5, "concrete")                           # basin
-    box(X0, X1, Y0, Y1, 3.5, 36, "louvre")                                            # casing / fill
-    box(X0 - .5, X1 + .5, Y0 - .5, Y1 + .5, 36, 37, "steel")                           # fan deck
+    box(X0, X1, Y0, Y1, 0, 3, "water")
+    box(X0, X1, Y0, Y1, 3, 40, "tower")
+    box(X0, X1, Y0, Y1, 40, 42, "grating")
+    for c in range(1, 3):
+        box(X0, X1, Y0 + CELL * c - .5, Y0 + CELL * c + .5, 3, 42, "concrete")
     fuel.D = True
-    for k in range(3):
-        cy = Y0 + 15 + k * 30
-        rod((960, cy, 37), (960, cy, 49), 12.5, "steel", r2=13.5, seg=36)                # fan stack
-        rod((960, cy, 49.0), (960, cy, 49.12), 12.6, "steel_dark", seg=36)             # open top: dark throat
-        rod((960, cy, 49.12), (960, cy, 49.5), 1.4, "steel", seg=14)                   # fan hub
-        for kb in range(6):                                                           # fan blades
-            ang = kb * math.pi / 3 + .3
-            rod((960, cy, 49.3), (960 + 11.5 * math.cos(ang), cy + 11.5 * math.sin(ang), 49.3), .55, "steel", seg=6)
-        rod((960, cy, 37.2), (960, cy, 39), 3.2, "motor", seg=16)                       # gearbox / motor
-        box(X1 - 2, X1, cy - 2, cy + 2, 37, 39.5, "cabinet")                            # local disconnect
-        poly([(X1 - 1, cy, 39.5), (X1 - 1, cy, 40), (964, cy, 40), (964, cy, 38.5)], .1, "cable_tc", seg=6)
-        box(X0 - .1, X0, cy - 13, cy + 13, 5, 32, "steel_dark")                          # air-inlet louvre shade
-        for j in (-1, 1):
-            box(X1 + 0, X1 + .3, cy + j * 14.6 - .3, cy + j * 14.6 + .3, 3.5, 36, "steel")
-    for x in (X0, X1):
-        for y in range(int(Y0), int(Y1) + 1, 15):
-            box(x - .3, x + .3, y - .3, y + .3, 3.5, 36, "steel")
-    box(X1 - 4, X1 - 1, Y1 - 1, Y1 + 2, 3.5, 37, "steel")                               # stair to the fan deck
-    rail([(X0, Y0), (X1, Y0), (X1, Y1), (X0, Y1), (X0, Y0)], 37)
-    decal(((X0 + X1) / 2, Y0 - .6, 30), (0, -1, 0), 40, 4.0, [("UB-1 COOLING TOWER", .48, True, "#111111"),
-                                                              ("3 CELLS  ·  CONDENSER COOLING", .28, False, "#333333")], bg="#ffffff")
+    for c in range(3):
+        cx, cy = (X0 + X1) / 2, Y0 + CELL * (c + .5)
+        rod((cx, cy, 42), (cx, cy, 50), 12.5, "tower", r2=13.2, seg=24)                  # fan stack
+        for b in range(8):
+            a = 2 * math.pi * b / 8 + .3 * c
+            rod((cx + 1.6 * math.cos(a), cy + 1.6 * math.sin(a), 50.25),
+                (cx + 12 * math.cos(a), cy + 12 * math.sin(a), 50.35), .45, "fan", r2=.3, seg=6)
+        rod((cx, cy, 50), (cx, cy, 50.03), 12.9, "fanhub", seg=28)                       # open stack (dark throat)
+        rod((cx, cy, 50.03), (cx, cy, 50.6), 1.7, "fan", seg=16)                         # hub
+        box(cx - 1.4, cx + 1.4, cy - 1.4, cy + 1.4, 42, 43.6, "machine")                  # gearbox
+        rod((cx + 1.4, cy, 42.8), (cx + 15, cy, 42.8), .3, "steel", seg=8)                # drive shaft
+        rod((cx + 15, cy, 42.8), (cx + 19, cy, 42.8), 1.1, "motor", seg=12)               # motor outside the stack
+        box(X1 - 2.2, X1 - .4, cy + 3, cy + 5, 42, 44.5, "cabinet")                       # local disconnect
+        poly([(X1 - 1.3, cy + 4, 44.5), (X1 - 1.3, cy + 4, 45), (cx + 17, cy + 4, 45), (cx + 17, cy + .9, 43.4)], .1,
+             "cable_tc", seg=6)
+        for (x0, x1) in ((X0 - .3, X0), (X1, X1 + .3)):                                   # intake louvres on the long faces
+            box(x0, x1, Y0 + CELL * c + 1.5, Y0 + CELL * (c + 1) - 1.5, 4, 22, "louvre")
+    for y in (Y0 + 1, Y1 - 1):
+        rod((X0 + 1, y, 45), (X1 - 1, y, 45), .07, "rail", seg=4)
+    for x in (X0 + 1, X1 - 1):
+        rod((x, Y0 + 1, 45), (x, Y1 - 1, 45), .07, "rail", seg=4)
+    # access stair at the north end, as on the CCS tower
+    for k in range(20):
+        box(X0 + 4 + k * 1.9, X0 + 5.2 + k * 1.9, Y1 + .5, Y1 + 4.5, 2 * k + 2, 2 * k + 2.3, "grating")
+    for ys in (Y1 + .5, Y1 + 4.5):
+        rod((X0 + 2.1, ys, 0), (X0 + 4 + 38.2, ys, 42), .18, "steel", seg=6)
+        rod((X0 + 2.1, ys, 3.5), (X0 + 4 + 38.2, ys, 45.5), .06, "rail", seg=4)
+    # hot-water return from the STG condenser: up out of the ground at the north-east corner, a header along the east face
+    # and a riser into every cell
+    poly([(987, 1546, 0), (987, 1546, 4), (987, Y0 + 4, 4)], 2.0, "waterline", seg=16)
+    for c in range(3):
+        y = Y0 + CELL * (c + .5) - 8
+        rod((987, y, 4), (987, y, 38), 1.2, "waterline", seg=12)
+        rod((987, y, 38), (X1, y, 38), 1.2, "waterline", seg=12)
+    decal(((X0 + X1) / 2, Y0 - .35, 31), (0, -1, 0), 40, 4.0, [("UB-1 COOLING TOWER", .48, True, "#111111"),
+                                                               ("3 CELLS  ·  CONDENSER COOLING", .28, False, "#333333")], bg="#ffffff")
     # fan riser: VFD-rated cable from the tower MCC up the stair to the deck
     for k in range(3):
-        poly([(925, 1500 + k * .5, 11), (X1 + .5, 1500 + k * .5, 11), (X1 + .5, Y1 + .5 - k * .5, 11), (X1 + .5, Y1 + .5 - k * .5, 37.4)],
-             .14, "cable_tc", seg=6)
+        poly([(925, 1500 + k * .5, 11), (933, 1500 + k * .5, 11), (933, Y1 + 5.5 + k * .4, 11), (X0 + 44, Y1 + 5.5 + k * .4, 11),
+              (X0 + 44, Y1 + 5.5 + k * .4, 42.6), (X0 + 44, Y1 - 1 - k * .4, 42.6)], .14, "cable_tc", seg=6)
     # CW pump pit on the east side with two vertical pumps, 4.16 kV motors, discharge pipes down to the buried CW lines
     box(X1 + 2, X1 + 14, Y0 + 10, Y0 + 40, 0, 1.2, "concrete")
     for k, py in enumerate((Y0 + 17.0, Y0 + 33.0)):

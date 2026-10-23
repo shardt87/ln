@@ -1587,7 +1587,7 @@ EPIC = [
          eye=(1050, 1505, 56), target=(1040, 1543, 47), lens=24, show="all", sun=(38, 215), plumes=False,
          hide=("Cable trays and isolated",)),
     dict(k="BR6", n="UB-1 cooling tower and CW pumps (4.16 kV, MV-105) where AB-1 stood; the spine rack beyond",
-         eye=(1012, 1420, 70), target=(968, 1495, 24), lens=24, show="all", sun=(38, 215), plumes=False,
+         eye=(1030, 1410, 95), target=(960, 1560, 30), lens=24, show="all", sun=(38, 215), plumes=False,
          hide=("Cable trays and isolated",)),
     dict(k="T5G1", n="Private 5G / LTE monopole: sector platform with massive-MIMO units, microwave backhaul, base compound",
          eye=(345, 380, 40), target=(262, 455, 62), lens=26, show="all", sun=(38, 215), plumes=False),
