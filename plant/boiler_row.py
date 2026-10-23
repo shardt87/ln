@@ -323,8 +323,8 @@ def spine():
     fuel.D = True
     # pipes on the top tier: the main run east-west, then the west leg south to AB-1's aux-steam header
     for off, r, c in ((-2.4, 1.15, "pipe"), (0, .55, "pipe"), (2.4, .65, "fuelgas")):
-        poly([(SPX1, SPY + off, 31.2), (998 - off, SPY + off, 31.2), (998 - off, SPY + off, 14),
-              (995.2, SPY + off, 14)], r, c, seg=12)                               # into AB-1's aux-steam header
+        end = [(998, SPY + off, 12.0), (998, 1510, 12.0)] if off < 0 else [(998 + off, SPY + off, .5)]
+        poly([(SPX1, SPY + off, 31.2), (998 + max(off, 0), SPY + off, 31.2)] + end, r, c, seg=12)   # steam into the plant aux header
     decal((1240, SPY - 5.2, 26), (0, -1, 0), 34, 2.2, [("STEAM  ·  CONDENSATE  ·  FUEL GAS  ·  CABLE", .6, True, "#ffffff")], bg="#b8322a")
     # ladder trays on the lower tier: control / instrument (amber) and MV
     ladder_tray([(SPX1 - 4, SPY), (1000, SPY)], 22.2, 4.2, [("cable_tc", .14)] * 10 + [("cable_mv", .2)] * 3)
@@ -365,6 +365,68 @@ def hub():
         poly([(1160 + k * .5, y1, 9), (1160 + k * .5, y1 + 1.2, 9), (1160 + k * .5, y1 + 1.2, 22.4), (1160 + k * .5, SPY - 1, 22.4)],
              .14, "cable_tc", seg=6)
     box(1158.5, 1166.5, y1, y1 + 2.4, 8, 22, "steel")                                 # riser channel
+    fuel.D = False
+    return it
+
+
+def cooling():
+    """UB-1's condenser cooling, where AB-1 stood: a three-cell mechanical-draft cooling tower with its basin, two vertical
+    circulating-water pumps on 4.16 kV motors (MV-105), CW pipes going below grade to the STG condenser, and the tower MCC
+    (fan motors on VFDs) fed from the plant duct bank at x 915."""
+    it = fuel.new_item(L, "UB-1 cooling tower (3 cells) and circulating-water pumps (Boiler Row)", (912, 1000, 1442, 1544), (0, 52),
+                       area="D", register=False, basis="typical",
+                       info="Mechanical-draft cooling tower for the UB-1 condenser, 3 cells; two vertical CW pumps on 4.16 kV "
+                            "motors (MV-105), CW supply and return below grade to the STG; tower MCC with fan VFDs. Showcase.")
+    on(it)
+    X0, X1, Y0, Y1 = 936.0, 984.0, 1450.0, 1540.0
+    fuel.D = False
+    box(X0 - 2, X1 + 2, Y0 - 2, Y1 + 2, 0, 3.5, "concrete")                           # basin
+    box(X0, X1, Y0, Y1, 3.5, 36, "louvre")                                            # casing / fill
+    box(X0 - .5, X1 + .5, Y0 - .5, Y1 + .5, 36, 37, "steel")                           # fan deck
+    fuel.D = True
+    for k in range(3):
+        cy = Y0 + 15 + k * 30
+        rod((960, cy, 37), (960, cy, 49), 12.5, "steel", r2=13.5, seg=36)                # fan stack
+        rod((960, cy, 49.0), (960, cy, 49.12), 12.6, "steel_dark", seg=36)             # open top: dark throat
+        rod((960, cy, 49.12), (960, cy, 49.5), 1.4, "steel", seg=14)                   # fan hub
+        for kb in range(6):                                                           # fan blades
+            ang = kb * math.pi / 3 + .3
+            rod((960, cy, 49.3), (960 + 11.5 * math.cos(ang), cy + 11.5 * math.sin(ang), 49.3), .55, "steel", seg=6)
+        rod((960, cy, 37.2), (960, cy, 39), 3.2, "motor", seg=16)                       # gearbox / motor
+        box(X1 - 2, X1, cy - 2, cy + 2, 37, 39.5, "cabinet")                            # local disconnect
+        poly([(X1 - 1, cy, 39.5), (X1 - 1, cy, 40), (964, cy, 40), (964, cy, 38.5)], .1, "cable_tc", seg=6)
+        box(X0 - .1, X0, cy - 13, cy + 13, 5, 32, "steel_dark")                          # air-inlet louvre shade
+        for j in (-1, 1):
+            box(X1 + 0, X1 + .3, cy + j * 14.6 - .3, cy + j * 14.6 + .3, 3.5, 36, "steel")
+    for x in (X0, X1):
+        for y in range(int(Y0), int(Y1) + 1, 15):
+            box(x - .3, x + .3, y - .3, y + .3, 3.5, 36, "steel")
+    box(X1 - 4, X1 - 1, Y1 - 1, Y1 + 2, 3.5, 37, "steel")                               # stair to the fan deck
+    rail([(X0, Y0), (X1, Y0), (X1, Y1), (X0, Y1), (X0, Y0)], 37)
+    decal(((X0 + X1) / 2, Y0 - .6, 30), (0, -1, 0), 40, 4.0, [("UB-1 COOLING TOWER", .48, True, "#111111"),
+                                                              ("3 CELLS  ·  CONDENSER COOLING", .28, False, "#333333")], bg="#ffffff")
+    # fan riser: VFD-rated cable from the tower MCC up the stair to the deck
+    for k in range(3):
+        poly([(925, 1500 + k * .5, 11), (X1 + .5, 1500 + k * .5, 11), (X1 + .5, Y1 + .5 - k * .5, 11), (X1 + .5, Y1 + .5 - k * .5, 37.4)],
+             .14, "cable_tc", seg=6)
+    # CW pump pit on the east side with two vertical pumps, 4.16 kV motors, discharge pipes down to the buried CW lines
+    box(X1 + 2, X1 + 14, Y0 + 10, Y0 + 40, 0, 1.2, "concrete")
+    for k, py in enumerate((Y0 + 17.0, Y0 + 33.0)):
+        rod((X1 + 8, py, 1.2), (X1 + 8, py, 6), 2.0, "steel", seg=20)                     # pump head
+        rod((X1 + 8, py, 6), (X1 + 8, py, 12), 2.4, "motor", seg=20)                      # 4.16 kV motor
+        rod((X1 + 8, py, 12), (X1 + 8, py, 12.8), 1.4, "motor", seg=16)
+        box(X1 + 10.4, X1 + 12.6, py - 1.2, py + 1.2, 7, 10, "motor")                    # MV terminal box
+        for j in range(3):
+            rod((X1 + 11.1 + j * .35, py, 7), (X1 + 11.1 + j * .35, py, .1), .17, "cable_mv", seg=8)   # MV-105 stub-up
+        poly([(X1 + 8, py, 3.5), (X1 + 8, py - 4, 3.5), (X1 + 8, py - 4, .05)], 1.6, "pipe", seg=16)   # discharge, below grade
+        decal((X1 + 13.05, py, 9.2), (1, 0, 0), 4.6, .9, [(f"CWP-{'AB'[k]}  ·  4.16 kV", .6, True, "#111111")], bg="#ffd200")
+    # tower MCC e-house (fans on VFDs), fed from the plant duct bank at x 915
+    box(916, 932, 1488, 1512, 0, 2.5, "concrete")
+    box(916.3, 931.7, 1488.3, 1511.7, 2.5, 12, "ehouse")
+    box(916, 932, 1488, 1512, 12, 12.6, "roof")
+    decal((931.75, 1500, 10), (1, 0, 0), 14, 1.4, [("CT MCC  ·  FAN VFDs", .62, True, "#111111")], bg="#ffffff")
+    for k in range(4):
+        rod((917.5 + k * .7, 1486.8, 0), (917.5 + k * .7, 1486.8, 2.4), .22, "pipe", seg=8)        # stub-ups from the duct bank
     fuel.D = False
     return it
 
@@ -467,14 +529,14 @@ def mv_feed():
 
 def bays():
     """Three bays, each on its own pad with a bay plate painted on the ground in front."""
-    it = fuel.new_item(L, "Boiler Row bays: pads and bay plates", (925, 1352, 1440, 1640), (0, .3), area="D", register=False,
+    it = fuel.new_item(L, "Boiler Row bays: pads and bay plates", (1000, 1602, 1280, 1640), (0, .3), area="D", register=False,
                        basis="typical")
     on(it)
     fuel.D = True
-    for (cx, cy, n, t, sub) in ((965, 1444.5, "1", "PACKAGE BOILER", "gas · start-up steam"),
-                                (1058, 1497, "2", "UTILITY BOILER", "gas · 300 MW class"),
-                                (1250, 1497, "3", "ELECTRIC BOILER", "13.8 kV · no flame")):
-        decal((cx, cy, .16), (0, 0, 1), 44, 11.5, [(f"{n}  ·  {t}", .44, True, "#e39a5f"), (sub.upper(), .26, True, "#ffffff")],
+    for (cx, cy, t, sub) in ((1058, 1497, "UTILITY BOILER", "gas · 300 MW class"),
+                             (1250, 1497, "ELECTRIC BOILER", "13.8 kV · no flame"),
+                             (1579, 1290, "PACKAGE BOILER", "start-up steam for the campus")):
+        decal((cx, cy, .16), (0, 0, 1), 44, 11.5, [(t, .44, True, "#e39a5f"), (sub.upper(), .26, True, "#ffffff")],
               bg="#1d2125", up=(0, 1, 0))
     box(1003, 1250, 1546, 1636, 0, .14, "concrete")                                   # bay 2 pad (boiler + STG)
     box(1253, 1342, 1520, 1636, 0, .14, "concrete")                                   # bay 3 pad
@@ -501,6 +563,7 @@ def build():
     steam_storage()
     spine()
     hub()
+    cooling()
     back_bay()
     mv_feed()
     bays()

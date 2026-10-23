@@ -213,7 +213,7 @@
   {
    "sec": "3 · HRSG and its e-house",
    "title": "Boiler Row: three boilers, three cable stories",
-   "eq": "Three bays on one copper spine rack: gas package boiler AB-1, a 300 MW-class gas-fired utility boiler with its steam-turbine hall, a 30 MW electrode boiler with its 13.8 kV e-house and steam storage; a shared control room and MCC",
+   "eq": "A complete 300 MW-class gas-fired utility unit on one copper spine rack: boiler with burner front, fans, SCR and stack; steam-turbine hall; cooling tower and CW pumps; 13.8 kV switchgear and transformers; gas metering. Beside it a 30 MW electrode boiler with steam storage. The package boiler now serves the whole campus from the modular yard",
    "sys": "Package: start-up steam. Utility: new for AI campuses or converted from coal. Electric: steam from power, no flame and no stack",
    "cab": "All the cable starts at the control room and rides the spine. Package: control-dense, factory pre-wired. Utility: ~1,800 cables, two-thirds instrument footage, ARMOR-X MC-HL at every burner. Electric: 1,255 A at 13.8 kV, 18 MV-105 750 kcmil",
    "c": [

@@ -1,10 +1,13 @@
 {
  "footprints": {
-  "checked": 211,
-  "matched": 211,
+  "checked": 210,
+  "matched": 210,
   "missing": [],
   "ok": true,
-  "tolerance_ft": 0.6
+  "tolerance_ft": 0.6,
+  "relocated": [
+   "Auxiliary boiler AB-1 -> modular yard x 1534-1624, y 1300-1360 (owner, Oct 23)"
+  ]
  },
  "heights": {
   "rows": [
@@ -223,7 +226,7 @@
   "ok": true
  },
  "clashes": {
-  "pairs_tested": 1456999,
+  "pairs_tested": 1457005,
   "clashes": [],
   "ok": true
  },
@@ -233,8 +236,8 @@
  },
  "summary": {
   "ok": true,
-  "items": 1013,
-  "parts": 154749,
-  "routes": 712
+  "items": 1014,
+  "parts": 155434,
+  "routes": 719
  }
 }

@@ -88,7 +88,39 @@ def decal(*a, **k):
     showcase.decal(*a, **k)
 
 
+# Oct 23 (owner): AB-1 moves to the west edge of the modular yard, beside the plant pipe corridor, so Boiler Row can be a
+# complete utility unit. It is drawn at its old place and turned 90 deg anticlockwise into x 1534-1624, y 1300-1360
+# (burner front east, steam outlet north to the aux-steam line up the corridor, gas in from the gas yard).
+def _mv(x, y):
+    return 3074.0 - y, x + 365.0
+
+
+def _relocate(it, p0, d0):
+    for p in fuel.G["parts"][p0:]:
+        if "min" in p:
+            (ax, ay), (bx, by) = _mv(p["min"][0], p["min"][1]), _mv(p["max"][0], p["max"][1])
+            p["min"][:2] = [round(min(ax, bx), 2), round(min(ay, by), 2)]
+            p["max"][:2] = [round(max(ax, bx), 2), round(max(ay, by), 2)]
+        elif "a" in p:
+            for k in ("a", "b"):
+                p[k][:2] = [round(v, 2) for v in _mv(p[k][0], p[k][1])]
+    for d in fuel.G.get("decals", [])[d0:]:
+        d["c"][:2] = [round(v, 2) for v in _mv(d["c"][0], d["c"][1])]
+        for k in ("n", "up"):
+            if k in d:
+                d[k] = [-d[k][1], d[k][0]] + list(d[k][2:])
+    it["fp"] = [1534.0, 1624.0, 1300.0, 1360.0]
+    it["info"] += " Moved Oct 23 to the west edge of the modular yard (shared start-up steam for the whole campus)."
+
+
 def build():
+    p0, d0 = len(fuel.G["parts"]), len(fuel.G.get("decals", []))
+    n = _build()
+    _relocate(find("Auxiliary boiler"), p0, d0)
+    return n
+
+
+def _build():
     it = find("Auxiliary boiler")
     on(it)
     fuel.D = True

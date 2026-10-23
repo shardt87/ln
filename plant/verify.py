@@ -69,9 +69,14 @@ def plan_match(x0, x1, y0, y1):
 # Not modelled on purpose: dashed optional-reserve zones and adjacent-market
 # frames on sheet 01 (their contents are modelled from sheet 02 instead).
 ZONE_FILLS = {"#fbfbf9", "#e7f3f2"}
-rows = []
+# Owner-approved relocations off the drawn position (reported, not matched).
+MOVED = {(935.0, 995.0, 1450.0, 1540.0): "Auxiliary boiler AB-1 -> modular yard x 1534-1624, y 1300-1360 (owner, Oct 23)"}
+rows, moved = [], []
 for r in ref["sheet01_rects"]:
     if r["fill"] in ZONE_FILLS:
+        continue
+    if (float(r["x"][0]), float(r["x"][1]), float(r["y"][0]), float(r["y"][1])) in MOVED:
+        moved.append(MOVED[(float(r["x"][0]), float(r["x"][1]), float(r["y"][0]), float(r["y"][1]))])
         continue
     m = plan_match(r["x"][0], r["x"][1], r["y"][0], r["y"][1])
     rows.append(dict(sheet="SW-3X1-01", x=r["x"], y=r["y"], fill=r["fill"], match=m,
@@ -82,7 +87,7 @@ for r in ref["sheet05_rects"]:
                      name=items[m]["name"] if m else None))
 miss = [r for r in rows if not r["match"]]
 results["footprints"] = dict(checked=len(rows), matched=len(rows) - len(miss), missing=miss,
-                             ok=not miss, tolerance_ft=TOL)
+                             ok=not miss, tolerance_ft=TOL, relocated=moved)
 
 # 2. heights (sheet 13) -------------------------------------------------------
 H13 = [("BESS container", r"^BESS container", 9.5, 1.0), ("E-house (R2A)", r"^R2A:", 14, 0),
@@ -264,6 +269,8 @@ results["summary"] = dict(ok=ok, items=len(model["items"]), parts=len(model["par
 json.dump(results, open(os.path.join(HERE, "verify_report.json"), "w"), indent=1)
 
 print(f"footprints : {results['footprints']['matched']}/{results['footprints']['checked']} drawing shapes matched (tol {TOL} ft)")
+for m in results["footprints"]["relocated"]:
+    print(f"   RELOCATED {m}")
 for m in miss:
     print(f"   MISSING  {m['sheet']} x={m['x']} y={m['y']} fill={m['fill']}")
 print(f"heights    : {sum(r['ok'] for r in hrows)}/{len(hrows)} sheet-13 heights reproduced")
