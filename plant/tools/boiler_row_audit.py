@@ -22,7 +22,7 @@ WIRING = CABLE | {"alu", "ipb"}              # a conduit stub-up or isolated-pha
 PIPE = {"pipe", "fuelgas", "waterline", "alu", "steel_dark_pipe"}
 EQUIP = {"motor", "cabinet", "xfmr", "ehouse", "panel", "lamp"}
 SOLID = {"building", "ehouse", "xfmr", "tank", "hrsg_b", "machine", "tower", "cabinet", "motor"}
-REGION = (770, 1350, 1440, 1660)
+REGION = (190, 1350, 1440, 1880)
 TOL = .35
 
 

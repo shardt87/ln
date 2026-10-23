@@ -949,7 +949,7 @@ SECTIONS = [  # (label, sub, gas temperature after the section, colour, drum, ca
 
 
 ROW_SPOTS = [
-    (1, "Cooling tower and CW pumps", "UB-1 condenser cooling; pumps on 4.16 kV", "1 · 4", (960, 1495, 40)),
+    (1, "Shared cooling tower", "UB-1 cells at its west end; CW pumps on 4.16 kV", "1 · 4", (865, 1770, 50)),
     (2, "Burner front and gas train", "12 burners: scanners, igniters, valves, actuators", "3 · 5", (1042, 1532, 50)),
     (3, "FD fans, 13.8 kV motors", "MV terminations at each fan", "1", (1092, 1556, 9)),
     (4, "The spine rack", "steam, gas and condensate on top; cable trays below", "1 · 5 · 6", (1230, 1516, 32)),

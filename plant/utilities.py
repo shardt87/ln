@@ -33,6 +33,7 @@ def routes(add_route):
     add_route("aux_steam", [(842.4, 1600), (852, 1600), (852, 1552), (994, 1552), (994, 1510), (998, 1510)], sheet=sheet)
     add_route("duct_bank", [(915, 1450), (778, 1450), (778, 1596), (785.5, 1596)], sheet=sheet)  # AB-MCC feeder
     add_route("duct_bank", [(915, 1450), (912, 1450), (912, 1616), (931, 1616)], sheet=sheet)      # UB-1 switchgear incomer
+    add_route("duct_bank", [(445, 1868), (210, 1868), (210, 1854)], sheet=sheet)                # UB-1 cooling cells MCC
 
 
 def build():

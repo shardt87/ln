@@ -483,84 +483,94 @@ def hub():
     return it
 
 
-def cooling():
-    """UB-1's condenser cooling, where AB-1 stood: a three-cell mechanical-draft cooling tower with its basin, two vertical
-    circulating-water pumps on 4.16 kV motors (MV-105), CW pipes going below grade to the STG condenser, and the tower MCC
-    (fan motors on VFDs) fed from the plant duct bank at x 915."""
-    it = fuel.new_item(L, "UB-1 cooling tower (3 cells) and circulating-water pumps (Boiler Row)", (912, 1000, 1442, 1544), (0, 52),
-                       area="D", register=False, basis="typical",
-                       info="Mechanical-draft cooling tower for the UB-1 condenser, 3 cells; two vertical CW pumps on 4.16 kV "
-                            "motors (MV-105), CW supply and return below grade to the STG; tower MCC with fan VFDs. Showcase.")
+def shared_cooling():
+    """UB-1 condenser cooling on the shared cooling tower (owner, Oct 23: use the CCS tower, add cells): 8 cells added at the
+    west end of the CCS cooling tower in the same build (4 x 2 at 50 x 60 ft, basin, casing, deck, flared stacks with fans,
+    gearbox and motor, louvres, rail, the hot-water header continued with a riser into each cell), two vertical CW pumps
+    on 4.16 kV motors (MV-105) at the west end, the UB-1 cells' MCC fed from the plant duct bank, and the buried CW supply
+    and return to the UB-1 turbine hall shown by a marker strip with posts."""
+    ct = fuel.find("CCS cooling tower")
+    if "UB-1" not in ct["info"]:
+        ct["info"] += " Shared with UB-1 (Boiler Row): 8 more cells at the west end for its condenser."
+    it = fuel.new_item(L, "UB-1 cooling-tower cells (8, on the shared CCS cooling tower) and CW pumps (Boiler Row)",
+                       (200, 440, 1730, 1868), (0, 51), area="D", register=False, basis="typical",
+                       info="Eight cells added to the CCS cooling tower for the UB-1 condenser (~350 MWth), two vertical CW "
+                            "pumps on 4.16 kV motors (MV-105), the cells' MCC with fan VFDs, CW supply and return buried to "
+                            "the turbine hall. Showcase.")
     on(it)
-    # same build as the CCS cooling tower (ccs.cooling_tower): basin, tower casing, concrete cell walls, grating fan deck,
-    # flared fan stacks with blades, hub, gearbox, shaft and motor outside the stack, intake louvres, teal hot-water risers
-    X0, X1, Y0, Y1 = 936.0, 984.0, 1450.0, 1540.0
-    CELL = 30.0
+    X0, X1, Y0, Y1 = 240.0, 440.0, 1740.0, 1860.0
     fuel.D = False
     box(X0, X1, Y0, Y1, 0, 3, "water")
     box(X0, X1, Y0, Y1, 3, 40, "tower")
     box(X0, X1, Y0, Y1, 40, 42, "grating")
-    for c in range(1, 3):
-        box(X0, X1, Y0 + CELL * c - .5, Y0 + CELL * c + .5, 3, 42, "concrete")
+    for c in range(4):
+        box(X0 + 50 * c - .5, X0 + 50 * c + .5, Y0, Y1, 3, 42, "concrete")             # cell walls (west end wall at c = 0)
     fuel.D = True
-    for c in range(3):
-        cx, cy = (X0 + X1) / 2, Y0 + CELL * (c + .5)
-        rod((cx, cy, 42), (cx, cy, 50), 12.5, "tower", r2=13.2, seg=24)                  # fan stack
-        for b in range(8):
-            a = 2 * math.pi * b / 8 + .3 * c
-            rod((cx + 1.6 * math.cos(a), cy + 1.6 * math.sin(a), 50.25),
-                (cx + 12 * math.cos(a), cy + 12 * math.sin(a), 50.35), .45, "fan", r2=.3, seg=6)
-        rod((cx, cy, 50), (cx, cy, 50.03), 12.9, "fanhub", seg=28)                       # open stack (dark throat)
-        rod((cx, cy, 50.03), (cx, cy, 50.6), 1.7, "fan", seg=16)                         # hub
-        box(cx - 1.4, cx + 1.4, cy - 1.4, cy + 1.4, 42, 43.6, "machine")                  # gearbox
-        rod((cx + 1.4, cy, 42.8), (cx + 15, cy, 42.8), .3, "steel", seg=8)                # drive shaft
-        rod((cx + 15, cy, 42.8), (cx + 19, cy, 42.8), 1.1, "motor", seg=12)               # motor outside the stack
-        box(X1 - 2.2, X1 - .4, cy + 3, cy + 5, 42, 44.5, "cabinet")                       # local disconnect
-        poly([(X1 - 1.3, cy + 4, 44.5), (X1 - 1.3, cy + 4, 45), (cx + 17, cy + 4, 45), (cx + 17, cy + .9, 43.4)], .1,
-             "cable_tc", seg=6)
-        for (x0, x1) in ((X0 - .3, X0), (X1, X1 + .3)):                                   # intake louvres on the long faces
-            box(x0, x1, Y0 + CELL * c + 1.5, Y0 + CELL * (c + 1) - 1.5, 4, 22, "louvre")
-    for y in (Y0 + 1, Y1 - 1):
-        rod((X0 + 1, y, 45), (X1 - 1, y, 45), .07, "rail", seg=4)
-    for x in (X0 + 1, X1 - 1):
-        rod((x, Y0 + 1, 45), (x, Y1 - 1, 45), .07, "rail", seg=4)
-    # access stair at the north end, as on the CCS tower
-    for k in range(20):
-        box(X0 + 4 + k * 1.9, X0 + 5.2 + k * 1.9, Y1 + .5, Y1 + 4.5, 2 * k + 2, 2 * k + 2.3, "grating")
-    for ys in (Y1 + .5, Y1 + 4.5):
-        rod((X0 + 2.1, ys, 0), (X0 + 4 + 38.2, ys, 42), .18, "steel", seg=6)
-        rod((X0 + 2.1, ys, 3.5), (X0 + 4 + 38.2, ys, 45.5), .06, "rail", seg=4)
-    # hot-water return from the STG condenser: up out of the ground at the north-east corner, a header along the east face
-    # and a riser into every cell
-    poly([(987, 1546, 0), (987, 1546, 4), (987, Y0 + 4, 4)], 2.0, "waterline", seg=16)
-    for c in range(3):
-        y = Y0 + CELL * (c + .5) - 8
-        rod((987, y, 4), (987, y, 38), 1.2, "waterline", seg=12)
-        rod((987, y, 38), (X1, y, 38), 1.2, "waterline", seg=12)
-    decal(((X0 + X1) / 2, Y0 - .35, 31), (0, -1, 0), 40, 4.0, [("UB-1 COOLING TOWER", .48, True, "#111111"),
-                                                               ("3 CELLS  ·  CONDENSER COOLING", .28, False, "#333333")], bg="#ffffff")
-    # fan riser: VFD-rated cable from the tower MCC up the stair to the deck
-    for k in range(3):
-        poly([(925, 1500 + k * .5, 11), (933, 1500 + k * .5, 11), (933, Y1 + 5.5 + k * .4, 11), (X0 + 44, Y1 + 5.5 + k * .4, 11),
-              (X0 + 44, Y1 + 5.5 + k * .4, 42.6), (X0 + 44, Y1 - 1 - k * .4, 42.6)], .14, "cable_tc", seg=6)
-    # CW pump pit on the east side with two vertical pumps, 4.16 kV motors, discharge pipes down to the buried CW lines
-    box(X1 + 2, X1 + 14, Y0 + 10, Y0 + 40, 0, 1.2, "concrete")
-    for k, py in enumerate((Y0 + 17.0, Y0 + 33.0)):
-        rod((X1 + 8, py, 1.2), (X1 + 8, py, 6), 2.0, "steel", seg=20)                     # pump head
-        rod((X1 + 8, py, 6), (X1 + 8, py, 12), 2.4, "motor", seg=20)                      # 4.16 kV motor
-        rod((X1 + 8, py, 12), (X1 + 8, py, 12.8), 1.4, "motor", seg=16)
-        box(X1 + 10.4, X1 + 12.6, py - 1.2, py + 1.2, 7, 10, "motor")                    # MV terminal box
+    for c in range(4):
+        for r_ in range(2):
+            cx, cy = X0 + 25 + 50 * c, 1770 + 60 * r_
+            rod((cx, cy, 42), (cx, cy, 50), 18, "tower", r2=19, seg=24)
+            for b in range(8):
+                a = 2 * math.pi * b / 8 + .3 * c
+                rod((cx + 2 * math.cos(a), cy + 2 * math.sin(a), 50.25),
+                    (cx + 17.5 * math.cos(a), cy + 17.5 * math.sin(a), 50.35), .55, "fan", r2=.35, seg=6)
+            rod((cx, cy, 50), (cx, cy, 50.03), 18.6, "fanhub", seg=28)
+            rod((cx, cy, 50.03), (cx, cy, 50.6), 2.2, "fan", seg=16)
+            rod((cx, cy, 42), (cx, cy, 44.8), .45, "steel", seg=8)
+            box(cx - 1.8, cx + 1.8, cy - 1.8, cy + 1.8, 42, 44, "machine")
+            rod((cx + 1.8, cy, 43), (cx + 20, cy, 43), .35, "steel", seg=8)
+            rod((cx + 20, cy, 43), (cx + 25, cy, 43), 1.3, "motor", seg=12)
+            poly([(cx + 25, cy, 43.6), (cx + 25, Y1 - .6, 43.6), (cx + 25, Y1 - .6, 41.8)], .12, "cable_tc", seg=6)  # fan motor feed
+        for (y0, y1) in ((Y0 - .3, Y0), (Y1, Y1 + .3)):
+            box(X0 + 50 * c + 1.5, X0 + 50 * c + 48.5, y0, y1, 4, 22, "louvre")
+        x = X0 + 25 + 50 * c                                                         # hot-water riser into the cell
+        rod((x, 1734, 4), (x, 1734, 38), 1.4, "waterline", seg=12)
+        rod((x, 1734, 38), (x, 1740, 38), 1.4, "waterline", seg=12)
+    rod((X1 + 5, 1734, 4), (X0 + 25, 1734, 4), 2.2, "waterline", seg=16)               # header continued from the CCS header
+    rod((X0 + 25, 1734, 4), (X0 + 22.5, 1734, 4), 2.5, "steel", seg=16)                # end cap
+    for xr in range(int(X0) + 1, int(X1) + 1, 25):                                    # deck rail posts
+        for yr in (Y0 + 1, Y1 - 1):
+            rod((xr, yr, 42), (xr, yr, 45), .05, "rail", seg=4)
+    rod((X1, Y0 + 1, 45), (X0 + 1, Y0 + 1, 45), .07, "rail", seg=4)
+    rod((X1, Y1 - 1, 45), (X0 + 1, Y1 - 1, 45), .07, "rail", seg=4)
+    rod((X0 + 1, Y0 + 1, 45), (X0 + 1, Y1 - 1, 45), .07, "rail", seg=4)
+    poly([(X0 + 2, Y1 - .6, 43.6), (X0 + 2, Y1 + 2, 43.6), (X0 + 2, Y1 + 2, 12), (222, Y1 + 2, 12), (222, 1852, 12)], .14,
+         "cable_tc", seg=6)                                                          # fan feeders down the west end to the MCC
+    poly([(X0 + 2, Y1 - .6, 43.6), (X1, Y1 - .6, 43.6)], .12, "cable_tc", seg=6)        # deck cable run along the north edge
+    decal(((X0 + X1) / 2, Y0 - .35, 30), (0, -1, 0), 50, 4.0, [("UB-1 CELLS  ·  SHARED COOLING TOWER", .5, True, "#111111")],
+          bg="#ffffff")
+    # CW pumps on the west end (4.16 kV), discharge below grade toward UB-1
+    box(X0 - 16, X0 - 2, 1760, 1800, 0, 1.2, "concrete")
+    for k, py in enumerate((1770.0, 1790.0)):
+        rod((X0 - 9, py, 1.2), (X0 - 9, py, 6), 2.0, "steel", seg=20)
+        rod((X0 - 9, py, 6), (X0 - 9, py, 12), 2.4, "motor", seg=20)
+        box(X0 - 13.6, X0 - 11.4, py - 1.2, py + 1.2, 7, 10, "motor")
         for j in range(3):
-            rod((X1 + 11.1 + j * .35, py, 7), (X1 + 11.1 + j * .35, py, .1), .17, "cable_mv", seg=8)   # MV-105 stub-up
-        poly([(X1 + 8, py, 3.5), (X1 + 8, py - 4, 3.5), (X1 + 8, py - 4, .05)], 1.6, "pipe", seg=16)   # discharge, below grade
-        decal((X1 + 13.05, py, 9.2), (1, 0, 0), 4.6, .9, [(f"CWP-{'AB'[k]}  ·  4.16 kV", .6, True, "#111111")], bg="#ffd200")
-    # tower MCC e-house (fans on VFDs), fed from the plant duct bank at x 915
-    box(916, 932, 1488, 1512, 0, 2.5, "concrete")
-    box(916.3, 931.7, 1488.3, 1511.7, 2.5, 12, "ehouse")
-    box(916, 932, 1488, 1512, 12, 12.6, "roof")
-    decal((931.75, 1500, 10), (1, 0, 0), 14, 1.4, [("CT MCC  ·  FAN VFDs", .62, True, "#111111")], bg="#ffffff")
+            rod((X0 - 12.9 + j * .35, py, 7), (X0 - 12.9 + j * .35, py, .1), .17, "cable_mv", seg=8)
+        poly([(X0 - 9, py, 3.5), (X0 - 9, py + 4, 3.5), (X0 - 9, py + 4, .05)], 1.6, "pipe", seg=16)
+        decal((X0 - 13.65, py, 9.2), (-1, 0, 0), 4.6, .9, [(f"CWP-{'AB'[k]}  ·  4.16 kV", .6, True, "#111111")], bg="#ffd200")
+    fuel.D = False
+    box(206, 236, 1838, 1852, 0, 2.5, "concrete")
+    box(206.3, 235.7, 1838.3, 1851.7, 2.5, 12, "ehouse")
+    box(206, 236, 1838, 1852, 12, 12.6, "roof")
+    fuel.D = True
+    decal((221, 1837.65, 10), (0, -1, 0), 16, 1.4, [("UB-1 CELLS MCC  ·  FAN VFDs", .6, True, "#111111")], bg="#ffffff")
     for k in range(4):
-        rod((917.5 + k * .7, 1486.8, 0), (917.5 + k * .7, 1486.8, 2.4), .22, "pipe", seg=8)        # stub-ups from the duct bank
+        rod((210 + k * .7, 1853.2, 0), (210 + k * .7, 1853.2, 2.4), .22, "pipe", seg=8)      # stub-ups from the duct bank
+    # buried CW supply / return to the UB-1 turbine hall: marker strip with posts (under the road at the crossing)
+    pts = [(X0 - 9, 1700), (1150, 1700), (1150, 1640)]
+    for (a, b) in zip(pts, pts[1:]):
+        box(min(a[0], b[0]) - 2, max(a[0], b[0]) + 2, min(a[1], b[1]) - 2, max(a[1], b[1]) + 2, 0, .12, "concrete")
+        n = int(math.dist(a, b) // 40)
+        for k in range(1, n + 1):
+            t = k / (n + 1)
+            px, py = a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t
+            if 1648 < py < 1677:
+                continue
+            rod((px + 2.6, py + 2.6, 0), (px + 2.6, py + 2.6, 3.2), .18, "red", seg=8)
+    box(X0 - 11, X0 - 7, 1700, 1794, 0, .12, "concrete")
+    decal((700, 1700, .14), (0, 0, 1), 26, 3.4, [("UB-1 CW SUPPLY + RETURN  ·  BURIED", .55, True, "#ffffff")], bg="#1d6f8a",
+          up=(0, 1, 0))
     fuel.D = False
     return it
 
@@ -768,7 +778,7 @@ def build():
     steam_storage()
     spine()
     hub()
-    cooling()
+    shared_cooling()
     back_bay()
     support_yard()
     mv_feed()
