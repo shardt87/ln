@@ -950,12 +950,13 @@ SECTIONS = [  # (label, sub, gas temperature after the section, colour, drum, ca
 
 ROW_SPOTS = [
     (1, "Package boiler AB-1", "gas train, BMS, FD fan on a VFD", "2 · 5 · 6", (965, 1495, 35)),
-    (2, "Burner front and gas train", "12 burners, flame scanners, safety shut-offs", "3 · 5", (1042, 1532, 50)),
+    (2, "Burner front and gas train", "12 burners: scanners, igniters, valves, actuators", "3 · 5", (1042, 1532, 50)),
     (3, "FD fans, 13.8 kV motors", "MV terminations at each fan", "1", (1092, 1556, 9)),
     (4, "The spine rack", "steam, gas and condensate on top; cable trays below", "1 · 5 · 6", (1160, 1516, 32)),
     (5, "Control room and MCC", "every boiler's cable starts here", "2 · 5 · 6 · FO", (1165, 1484, 16)),
     (6, "Electric boiler EB-1", "13.8 kV e-house, MV feed buried from the south", "1 · 5", (1278, 1590, 42)),
     (7, "Steam storage", "run on cheap power, store the steam", "6", (1328, 1592, 14)),
+    (8, "13.8 kV switchgear and transformers", "where UB-1's MV-105 starts; gas metering beside it", "1 · 3", (960, 1620, 15)),
 ]
 
 
@@ -972,9 +973,9 @@ def slide_row():
         spots += (f'<div class="abs" style="left:{x - 15:.0f}px;top:{y - 15:.0f}px;width:30px;height:30px;border-radius:15px;'
                   f'border:3px solid {COPPER};background:rgba(14,16,18,.84);font:800 16px/24px BC;color:{WHITE};text-align:center;'
                   f'box-shadow:0 0 0 4px rgba(227,154,95,.28)">{n}</div>')
-    legend = "".join(f'<div style="display:flex;gap:8px;padding:3px 0 3px;border-top:1px solid #2c3036;font:700 11px/1.2 BC;'
+    legend = "".join(f'<div style="display:flex;gap:8px;padding:2px 0 2px;border-top:1px solid #2c3036;font:700 10.5px/1.15 BC;'
                      f'letter-spacing:.03em"><span style="flex:0 0 14px;font:800 14px/1.1 BC;color:{COPPER}">{n}</span><span>'
-                     f'<b style="color:#fff;font:700 13px/1.1 BC;text-transform:uppercase">{t}</b><br>{apps(prod)}</span></div>'
+                     f'<b style="color:#fff;font:700 12.5px/1.05 BC;text-transform:uppercase">{t}</b><br>{apps(prod)}</span></div>'
                      for (n, t, sub, prod, p) in ROW_SPOTS)
 
     def card(x, num, title, what, cables, ft, story, extra=""):
@@ -997,7 +998,7 @@ def slide_row():
   <div class="abs kicker" style="left:1000px;top:30px;font-size:12px">Boiler solutions &nbsp;&middot;&nbsp; Boiler Row</div>
   <div class="abs h2" style="left:998px;top:52px;font-size:38px;width:420px">Three boilers, <em>three cable stories</em></div>
   <div class="abs" style="left:1000px;top:130px;width:400px">{legend}</div>
-  {ins("BR2", 1000, "Spine rack in front of the UB-1 burner front")}
+  {ins("BR5", 1000, "Every burner: scanner, igniter, valve, drive")}
   {ins("BR3", 1206, "EB-1 cutaway: MV-105, three parallel sets")}
   {card(40, "1 &nbsp;&middot;&nbsp; Package boiler", "Gas package boiler", "Start-up and sealing steam; factory-built, one skid",
         f"{a['cables']}", kft(a['ft']), "Control-dense and compact: TC-ER power and control, instrument pairs, pre-wired at the factory.")}

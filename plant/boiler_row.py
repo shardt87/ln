@@ -50,7 +50,7 @@ def ladder_tray(pts, z, w, cables, step=2.0):
 
 
 def utility_boiler():
-    it = fuel.new_item(L, "UB-1: utility gas-fired boiler, 300 MW class (Boiler Row, representative)", (992, 1150, 1515, 1637),
+    it = fuel.new_item(L, "UB-1: utility gas-fired boiler, 300 MW class (Boiler Row, representative)", (990, 1150, 1515, 1637),
                        (0, 230), area="D", register=False, basis="typical",
                        info="Representative 300 MW-class natural-gas-fired utility boiler, as built new for AI-campus power "
                             "or converted from coal: boiler house, burner front, gas train and BMS (Class I Div 2), FD fans "
@@ -69,16 +69,57 @@ def utility_boiler():
     box(X0 + 12, X1 - 12, Y0 + 20, Y1 - 20, H + 2, H + 14, "hrsg_b")                # drum penthouse
     # burner front: windbox and three rows of four burners on the south face
     box(X0 + 6, X1 - 6, Y0 - 7, Y0, 30, 72, "machine")
-    for r_ in range(3):
+    GY = Y0 - 22
+    BF = Y0 - 7                                                                       # windbox face
+    for r_, lv in enumerate("ABC"):
+        z = 38 + r_ * 13
+        zp = z - 2                                                                    # platform level
         for c_ in range(4):
             x = X0 + 14 + c_ * 13.3
-            z = 38 + r_ * 13
-            rod((x, Y0 - 7, z), (x, Y0 - 9.5, z), 2.2, "steel_dark", seg=16)
-            rod((x + 1.6, Y0 - 9.5, z + 1.6), (x + 1.6, Y0 - 10.4, z + 2.0), .3, "steel", seg=8)   # flame scanner
-            rod((x + 1.6, Y0 - 10.4, z + 2.0), (x + 1.6, Y0 - 11.2, z + 2.0), .06, "cable_inst", seg=4)
+            rod((x, BF + .05, z), (x, BF - .3, z), 2.7, "steel_dark", seg=24)          # quarl / mounting flange
+            rod((x, BF - .3, z), (x, BF - 2.6, z), 2.0, "steel", seg=24)              # air register housing
+            rod((x, BF - 2.6, z), (x, BF - 2.9, z), 2.25, "steel_dark", seg=24)       # front plate
+            rod((x, BF - 2.9, z), (x, BF - 4.6, z), .35, "steel", seg=10)             # gas gun
+            poly([(x, BF - 4.6, z), (x, BF - 4.6, z + 2.9)], .22, "fuelgas", seg=8)     # gun hose up to the level header
+            box(x - .45, x + .45, BF - 5.05, BF - 4.15, z + 1.5, z + 2.3, "red")         # burner gas valve
+            rod((x + 1.6, BF - 2.9, z + 1.6), (x + 2.1, BF - 4.4, z + 2.2), .28, "steel", seg=10)    # flame scanner
+            rod((x - 1.6, BF - 2.9, z + 1.0), (x - 1.9, BF - 4.8, z + 1.3), .16, "steel_dark", seg=8)  # igniter
+            box(x - 2.6, x - 1.4, BF - 5.6, BF - 4.6, zp, zp + 1.2, "cabinet")            # igniter transformer
+            box(x - .7, x + .7, BF - 2.2, BF - .8, z + 2.1, z + 3.1, "motor")             # air-register actuator
+            for (a, b) in (((x + 2.1, BF - 4.4, z + 2.2), (x + 2.1, BF - 5.4, zp + .4)),   # flex conduit to the tray
+                           ((x - 2.0, BF - 5.1, zp + 1.2), (x - 2.0, BF - 5.6, zp + .4)),
+                           ((x + .7, BF - 1.5, z + 2.6), (x + 1.1, BF - 5.5, zp + .4)),
+                           ((x, BF - 4.6, z + 1.9), (x + .4, BF - 5.5, zp + .4))):
+                poly([a, (a[0], b[1], a[2]), b], .07, "cable_armor", seg=6)
+        poly([(X0 + 9, BF - 4.6, z + 2.9), (X1 - 9, BF - 4.6, z + 2.9)], .45, "fuelgas", seg=10)   # level gas header
+        box(X0 + 10, X1 - 8, BF - 6.1, BF - 4.9, zp + .2, zp + .45, "steel")             # level cable tray on the platform
+        box(X1 - 7.5, X1 - 5, BF - 6.4, BF - 5.4, zp, zp + 2.6, "cabinet")                # level junction box
+        decal((X1 - 6.25, BF - 6.45, zp + 1.9), (0, -1, 0), 2.4, .5, [(f"BURNER LEVEL {lv} JB", .7, True, "#111111")], bg="#ffd200")
+        for k in range(4):
+            poly([(X1 - 6.25 + (k - 1.5) * .3, BF - 5.9, zp), (X1 - 6.25 + (k - 1.5) * .3, BF - 5.9, zp - .6),
+                  (X1 - 4.4, BF - 5.9, zp - .6)], .08, "cable_armor", seg=6)
+    poly([(X0 + 9, GY, 4.0), (X0 + 9, GY, 6.0), (X0 + 9, BF - 4.6, 6.0), (X0 + 9, BF - 4.6, 66.9)], .55, "fuelgas", seg=10)  # main gas riser
+    box(X1 - 4.6, X1 - 3.4, BF - 6.4, BF - 5.2, 3, 64, "steel")                         # BMS riser channel, levels A-C to the panel
+    for k in range(6):
+        rod((X1 - 4.4 + k * .16, BF - 5.0, 3.2), (X1 - 4.4 + k * .16, BF - 5.0, 62.6), .07, "cable_armor", seg=6)
     for z in (36, 49, 62):                                                           # burner-front platforms
         box(X0 + 4, X1 - 4, Y0 - 16, Y0 - 7, z - .3, z, "grating")
         rail([(X0 + 4, Y0 - 16), (X1 - 4, Y0 - 16)], z)
+    # exposed structural steel: columns outside the casing, safety-valve vents on the penthouse roof
+    for x in (X0, X0 + 17, X0 + 34, X0 + 51, X1):
+        for y in (Y0 - 1.6, Y1):
+            box(x - .9, x + .9, y, y + 1.6, 0, H + 2, "steel_dark")
+    for y in (Y0 + 20.5, Y0 + 41, Y0 + 61.5):
+        box(X0 - 1.6, X0, y - .9, y + .9, 0, H + 2, "steel_dark")
+    for k in range(6):
+        vx = X0 + 18 + k * 6.4
+        rod((vx, Y0 + 40, H + 14), (vx, Y0 + 40, H + 26), .55, "pipe", seg=10)       # safety-valve vent stacks
+        rod((vx, Y0 + 40, H + 24), (vx, Y0 + 40, H + 30), 1.25, "steel", seg=14)     # silencers
+    # hot-air duct: air heater outlet to the windbox
+    box(X1 + 4, X1 + 13, Y0 - 6, Y0 + 44, 70, 79, "duct")
+    box(X0 + 6, X1 + 13, Y0 - 7, Y0, 72, 79, "duct")
+    # elevator beside the stair tower
+    box(X0 - 12, X0 - 3, Y1 - 27, Y1 - 17, 0, H + 12, "building")
     # stair tower at the NW corner
     box(X0 - 14, X0 - 2, Y1 - 16, Y1, 0, H + 4, "steel")
     for z in range(10, int(H), 10):
@@ -89,16 +130,13 @@ def utility_boiler():
     # gas train + burner management at the foot of the burner front (Class I Div 2)
     GY = Y0 - 22
     box(X0 + 6, X1 - 6, GY - 3, GY + 3, 0, 1.2, "steel_dark")
-    poly([(X0 - 10, GY, 0.3), (X0 - 10, GY, 4.0), (X1 - 8, GY, 4.0)], .7, "fuelgas", seg=12)   # gas header up from the buried plant line
+    poly([(926, 1584, 4.0), (X0 - 10, 1584, 4.0), (X0 - 10, GY, 4.0), (X1 - 8, GY, 4.0)], .7, "fuelgas", seg=12)   # gas header up from the buried plant line
     for xv, kind in ((X0 + 14, "ssov"), (X0 + 22, "vent"), (X0 + 30, "ssov"), (X0 + 40, "fcv")):
         rod((xv - .9, GY, 4.0), (xv + .9, GY, 4.0), 1.1, "steel", seg=12)
         if kind == "vent":
             box(xv - .6, xv + .6, GY - .6, GY + .6, 4.8, 6.4, "amber")
         else:
             box(xv - .8, xv + .8, GY - .8, GY + .8, 5.0, 7.0, "red")
-    for c_ in range(4):                                                              # risers to each burner column
-        x = X0 + 14 + c_ * 13.3
-        poly([(x, GY, 4.0), (x, GY, 8.0), (x, Y0 - 8, 8.0), (x, Y0 - 8, 36.0)], .35, "fuelgas", seg=8)
     BX0, BX1 = X1 - 4, X1 + 4                                                        # BMS panel
     box(BX0, BX1, GY - 3, GY, 0, 8, "cabinet")
     decal(((BX0 + BX1) / 2, GY - 3.05, 7.0), (0, -1, 0), 6.5, 1.0, [("UB-1  BURNER MANAGEMENT", .55, True, "#111111")], bg="#ffffff")
@@ -153,7 +191,8 @@ def steam_turbine_hall():
     box(X0 - .1, X0, Y0 + 30, Y0 + 70, 40, 62, "louvre")
     decal((X0 - .2, (Y0 + Y1) / 2, 66), (-1, 0, 0), 30, 4.6, [("STEAM TURBINE GENERATOR", .55, True, "#111111")], bg="#ffffff")
     # main steam line from the boiler penthouse
-    poly([(1064, 1583, 172), (1064, 1583, 176), (1150, 1583, 176), (1150, 1583, 60), (X0, 1583, 60)], 1.2, "pipe", seg=12)
+    for (y, r) in ((1583, 1.3), (1588.5, 1.8), (1577.5, 1.5)):                     # main steam, hot reheat, cold reheat
+        poly([(1060, y, 184), (1060, y, 188), (1150 - (y - 1583), y, 188), (1150 - (y - 1583), y, 60), (X0, y, 60)], r, "pipe", seg=14)
     # GSU transformer and IPB on the east
     box(X1 + 4, X1 + 22, Y0 + 30, Y0 + 54, 0, 1, "concrete")
     box(X1 + 7, X1 + 19, Y0 + 33, Y0 + 51, 1, 18, "xfmr")
@@ -330,6 +369,88 @@ def hub():
     return it
 
 
+def back_bay():
+    """Behind AB-1, west of UB-1: where UB-1's MV and its gas start. Two station-service transformers and the UB-1 13.8 kV
+    switchgear e-house (MV-105 out to the FD fans on a tray behind the boiler), and the gas metering and pressure-reducing
+    station (Class I Div 2, ARMOR-X MC-HL on strut) feeding the UB-1 gas train."""
+    it = fuel.new_item(L, "UB-1 electrical bay: station-service transformers SST-A/B and the 13.8 kV switchgear e-house (Boiler Row)",
+                       (928, 1108, 1556, 1646), (0, 22), area="D", register=False, basis="typical",
+                       info="Two 13.8 kV station-service transformers on an oil-containment pad with a firewall, and the UB-1 "
+                            "13.8 kV switchgear: MV-105 to the FD fans and feed pumps leaves here. Showcase.")
+    on(it)
+    fuel.D = False
+    box(934, 988, 1562, 1596, 0, .8, "concrete")                                      # containment pad
+    for k, x in enumerate((938.0, 966.0)):
+        box(x, x + 16, 1567, 1589, .8, 14, "xfmr")
+        fuel.D = True
+        for j in range(5):
+            box(x - 1.2, x, 1569 + j * 4, 1571.5 + j * 4, 2, 12, "radiator")
+        for j in range(3):
+            rod((x + 4 + j * 4, 1578, 14), (x + 4 + j * 4, 1578, 19), .45, "insulator", seg=10)
+        box(x + 4, x + 12, 1589, 1592, 4, 11, "steel")                                 # MV cable box
+        decal((x + 8, 1566.9, 11), (0, -1, 0), 8, 1.4, [(f"SST-{'AB'[k]}  ·  13.8 kV", .6, True, "#111111")], bg="#ffd200")
+        for j in range(6):                                                           # MV-105 to the switchgear
+            poly([(x + 5.5 + j, 1592, 9), (x + 5.5 + j, 1594, 12.4), (x + 5.5 + j, 1617, 12.4), (x + 5.5 + j, 1619.6, 7)],
+                 .2, "cable_mv", seg=8)
+        fuel.D = False
+    box(959.5, 961.5, 1563, 1595, .8, 18, "concrete")                                # firewall
+    fuel.D = True
+    for (x0, x1) in ((941, 954), (969, 982)):                                         # ladder trays transformers to e-house
+        box(x0, x1, 1593.5, 1617.5, 12, 12.25, "steel")
+    fuel.D = False
+    EX0, EX1, EY0, EY1 = 930.0, 990.0, 1619.6, 1636.0
+    box(EX0, EX1, EY0, EY1, 0, 2.5, "concrete")
+    box(EX0 + .3, EX1 - .3, EY0 + .3, EY1 - .3, 2.5, 14.5, "ehouse")
+    box(EX0, EX1, EY0, EY1, 14.5, 15.2, "roof")
+    fuel.D = True
+    decal((960, EY0 - .02, 12.2), (0, -1, 0), 30, 1.8, [("UB-1  13.8 kV SWITCHGEAR  ·  MV-105 STARTS HERE", .55, True, "#111111")],
+          bg="#ffffff")
+    for x in (944, 976):
+        box(x - 1.6, x + 1.6, EY0 - 4, EY0, 2.5, 3, "grating")                          # landings
+    box(EX1 - 6, EX1 - 2, EY0 + 4, EY0 + 12, 15.2, 18, "machine")                     # HVAC
+    # MV-105 to the FD fans: out of the e-house roof, a ladder tray behind the boiler, then down to the fan motors
+    for j in range(6):
+        poly([(981 + j * .6, EY0 + 8, 15.2), (981 + j * .6, EY0 + 8, 20.5), (984, EY0 + 8 + (j - 2.5) * .5, 20.5)],
+             .2, "cable_mv", seg=8)
+    ladder_tray([(984, EY0 + 8), (984, 1642), (1106, 1642), (1106, 1576)], 20.4, 3.6, [("cable_mv", .2)] * 6)
+    for (x, y) in ((986.4, 1640), (1030, 1644.2), (1070, 1644.2), (1108.4, 1610), (1108.4, 1585)):
+        rod((x, y, 0), (x, y, 20), .25, "steel", seg=8)
+    for k_, fy in enumerate((1554.0, 1574.0)):                                       # drops to the FD fan MV terminal boxes
+        for j in range(3):
+            poly([(1106, 1576 + j * .5, 20.6), (1106, fy + 4.5 + j * .5, 20.6), (1095.5 + j * .4, fy + 4.5, 20.6),
+                  (1095.5 + j * .4, fy + 4.5, 7)], .18, "cable_mv", seg=8)
+    fuel.D = False
+
+    it2 = fuel.new_item(L, "UB-1 gas metering and pressure-reducing station (Boiler Row)", (880, 928, 1556, 1612), (0, 14), area="D",
+                        register=False, basis="typical",
+                        info="Fuel-gas metering, filter-separator and two pressure-reducing runs for UB-1; Class I Div 2, "
+                             "instrument and power in ARMOR-X MC-HL on strut. Showcase.")
+    on(it2)
+    fuel.D = False
+    box(882, 926, 1560, 1608, 0, .6, "gravel")
+    fuel.D = True
+    rod((890, 1566, 1), (890, 1566, 13), 3.0, "tank", seg=24)                         # filter-separator
+    for y in (1578.0, 1590.0):                                                        # two regulator runs
+        poly([(884, y, 3.2), (924, y, 3.2)], .6, "fuelgas", seg=12)
+        for x, c in ((896, "red"), (904, "steel"), (912, "red"), (918, "steel")):
+            box(x - .9, x + .9, y - .9, y + .9, 2.4, 5.2, c)
+        for x in (888, 922):
+            box(x - .6, x + .6, y - 2, y + 2, 0, 2.6, "concrete")
+    poly([(884, 1566, 3.2), (884, 1590, 3.2)], .6, "fuelgas", seg=12)
+    poly([(924, 1578, 3.2), (926, 1578, 3.2), (926, 1584, 3.2), (926, 1584, 4.0)], .7, "fuelgas", seg=12)
+    poly([(924, 1590, 3.2), (926, 1590, 3.2), (926, 1584, 3.2)], .7, "fuelgas", seg=12)
+    rod((905, 1600, .6), (905, 1600, 4.4), .3, "steel", seg=8)                         # meter run
+    box(902, 908, 1598, 1602, 2.6, 5, "steel")
+    box(914, 922, 1603, 1606, 0, 7, "cabinet")                                        # metering RTU / analyzer
+    decal((918, 1602.95, 6.2), (0, -1, 0), 7, .9, [("GAS METERING RTU", .6, True, "#111111")], bg="#ffffff")
+    box(886, 922, 1594.6, 1595, 3, 3.2, "steel")                                      # strut
+    for k in range(4):
+        poly([(918, 1603, 3.4 + k * .3), (918, 1595, 3.4 + k * .3), (886 + k * 9, 1595, 3.4 + k * .3),
+              (886 + k * 9, 1591, 4.6)], .09, "cable_armor", seg=6)
+    decal((904, 1559.5, 1.4), (0, -1, 0), 14, 1.0, [("DANGER  ·  NATURAL GAS  ·  CLASS I DIV 2", .55, True, "#ffffff")], bg="#b8322a")
+    fuel.D = False
+
+
 def mv_feed():
     """The 13.8 kV feeder to EB-1 comes in buried: a marker strip with red posts from the south to the e-house stub-ups."""
     it = fuel.new_item(L, "EB-1 13.8 kV feeder duct bank (marker strip)", (1290, 1298, 1462, 1521), (0, 4), area="D",
@@ -380,6 +501,7 @@ def build():
     steam_storage()
     spine()
     hub()
+    back_bay()
     mv_feed()
     bays()
     sign()
