@@ -76,7 +76,7 @@ def foot(n, short=False):
     left = ("SW-3X1 MODEL &middot; NOT ENGINEERED" if short else
             "SW-3X1 MODEL &middot; CONCEPTUAL ILLUSTRATION, NOT ENGINEERED &middot; QUANTITIES FROM THE MODEL'S CABLE SCHEDULE")
     return f"""<div class="abs foot" style="left:64px;right:64px;bottom:26px;display:flex;justify-content:space-between;
-      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/13</span></div>"""
+      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/14</span></div>"""
 
 
 def slide1():
@@ -164,7 +164,7 @@ def slide2():
     <img src="{img('BB2')}" style="width:100%;height:100%;object-fit:cover"></div>
   <div class="abs cap" style="left:870px;top:712px;width:243px">Cable work at the HRSG e-house</div>
   <div class="abs cap" style="left:1133px;top:712px;width:243px">Old module on the hook</div>
-  {foot(12, short=True).replace("left:64px", "left:870px")}
+  {foot(13, short=True).replace("left:64px", "left:870px")}
 </section>"""
 
 
@@ -263,7 +263,7 @@ def slide3():
   <div class="abs cap" style="left:64px;top:735px;width:1312px">Stock numbers are one catalogue size per product, from
     Southwire's product listings; every size and construction is on the same SPEC. Confirm current stock with Southwire
     customer service before quoting.</div>
-  {foot(13)}
+  {foot(14)}
 </section>"""
 
 
@@ -432,7 +432,7 @@ def slide_hero():
   {spot_html(cam, HERO_SPOTS)}
   {panel("Boiler solutions &nbsp;&middot;&nbsp; HRSG", "The HRSG, <em>every cable</em>", lede, spot_list(HERO_SPOTS).replace("padding:6px 0 7px 36px", "padding:4px 0 5px 36px"), extra).replace("top:262px", "top:222px")}
   <div class="abs" style="left:0;top:730px;width:1040px;height:80px;background:linear-gradient(180deg,rgba(14,16,18,0),rgba(14,16,18,.95) 55%)"></div>
-  {foot(4).replace("right:64px", "right:420px")}
+  {foot(5).replace("right:64px", "right:420px")}
 </section>"""
 
 
@@ -455,7 +455,7 @@ def slide_elev():
   {spot_html(cam, ELEV_SPOTS)}
   {panel("Boiler solutions &nbsp;&middot;&nbsp; elevation", "The train <em>in elevation</em>", lede, spot_list(ELEV_SPOTS))}
   <div class="abs" style="left:0;top:730px;width:1040px;height:80px;background:linear-gradient(180deg,rgba(14,16,18,0),rgba(14,16,18,.95) 55%)"></div>
-  {foot(5).replace("right:64px", "right:420px")}
+  {foot(6).replace("right:64px", "right:420px")}
 </section>"""
 
 
@@ -563,7 +563,7 @@ def slide_room():
   {spot_html(cam, spots)}
   {panel("Boiler solutions &nbsp;&middot;&nbsp; the e-house", "Inside <em>the room</em>", lede, spot_list(spots).replace("padding:6px 0 7px 36px", "padding:4px 0 5px 36px"), extra).replace("top:262px", "top:218px").replace("top:168px", "top:160px")}
   <div class="abs" style="left:0;top:730px;width:1040px;height:80px;background:linear-gradient(180deg,rgba(14,16,18,0),rgba(14,16,18,.95) 55%)"></div>
-  {foot(6).replace("right:64px", "right:420px")}
+  {foot(7).replace("right:64px", "right:420px")}
 </section>"""
 
 
@@ -607,7 +607,7 @@ def slide_cems():
   {panel("Boiler solutions &nbsp;&middot;&nbsp; emissions", "The stack and <em>the CEMS shelter</em>", lede,
          spot_list(CEMS_SPOTS).replace("padding:6px 0 7px 36px", "padding:4px 0 5px 36px"), extra).replace("top:262px", "top:222px").replace("top:168px", "top:166px")}
   <div class="abs" style="left:0;top:730px;width:1040px;height:80px;background:linear-gradient(180deg,rgba(14,16,18,0),rgba(14,16,18,.95) 55%)"></div>
-  {foot(7).replace("right:64px", "right:420px")}
+  {foot(8).replace("right:64px", "right:420px")}
 </section>"""
 
 
@@ -716,7 +716,59 @@ def slide_diagram():
   <div class="abs cap" style="left:64px;top:748px;width:1312px">R2A also serves the GT1 unit loads, so the T-R2A primary and
     secondary, the transformer auxiliaries, the DCS fibre and the room's own wiring are shown here but are not in the train total.
     Schedule rows: {", ".join(L["primary"]["rows"] + L["secondary"]["rows"])} and the rest by tag.</div>
-  {foot(8)}
+  {foot(9)}
+</section>"""
+
+
+# ------------------------------------------------------------------------------- every boiler, the cable behind it
+BOILER_TYPES = [  # (type, where, cable story, products, in the model)
+    ("HRSG", "Combined cycle, cogeneration", "~74 % instrument pairs; 13.8 kV feed pumps; duct-burner gas skid",
+     "MV-105 · TC-ER · MC-HL · PLTC · TC ext.", "In the model"),
+    ("Package / industrial", "Plants, hospitals, campuses, start-up steam", "Burner management, fan VFDs, compact skid wiring",
+     "TC-ER · MC-HL VFD · Control", "In the model"),
+    ("Utility boiler", "Existing large units; coal-to-gas conversions",
+     "Conversions add gas trains and burner management in Class I Div 2; large MV fan and pump motors", "MC-HL · MV-105 · Control", ""),
+    ("Fluidized bed · biomass · waste-to-energy", "Industrial and municipal",
+     "Heavy fans and conveyors; heat, dust and abrasion", "Armored MC-HL · TC-ER · MV-105", ""),
+    ("Once-through steam generators", "Fast-cycling plants; oil-field steam", "No drums but more temperature points; remote sites",
+     "PLTC · TC ext. · TC-ER", ""),
+    ("Electric boilers", "Decarbonized industrial steam",
+     "Fed at medium voltage, often 4-15 kV and many MW: the largest single cable load of any boiler", "MV-105 · MV terminations", "Newest market"),
+    ("Waste-heat boilers", "Refineries, cement, metals", "The HRSG pattern: instrument-heavy, hot and outdoors",
+     "PLTC · TC ext. · TC-ER", ""),
+]
+
+
+def slide_types():
+    cards = ""
+    for k, (t, where, story, prod, tag) in enumerate(BOILER_TYPES):
+        col, row = k % 4, k // 4
+        x, y = 64 + col * 334, 196 + row * 236
+        hi = tag == "Newest market"
+        bd = COPPER if hi else "#2c3036"
+        badge = (f'<div class="abs" style="right:12px;top:12px;font:700 11px/1 BC;letter-spacing:.08em;text-transform:uppercase;'
+                 f'padding:4px 7px 3px;border-radius:3px;background:{COPPER if hi else "#2c3036"};color:{INK if hi else WHITE}">{tag}</div>'
+                 if tag else "")
+        cards += (f'<div class="abs" style="left:{x}px;top:{y}px;width:314px;height:218px;border:2px solid {bd};border-radius:6px;'
+                  f'background:{"rgba(227,154,95,.08)" if hi else "#15181b"};padding:14px 16px">{badge}'
+                  f'<div style="font:800 21px/1.05 BC;color:{WHITE};text-transform:uppercase;letter-spacing:.02em;width:{"190px" if tag else "280px"}">{t}</div>'
+                  f'<div style="font:400 12px/1.35 B;color:{GREY};margin-top:6px">{where}</div>'
+                  f'<div style="font:400 13px/1.42 B;color:#d4d8dc;margin-top:10px;border-top:1px solid #2c3036;padding-top:9px">{story}</div>'
+                  f'<div class="abs" style="left:16px;right:16px;bottom:13px;font:700 12.5px/1.25 BC;color:{COPPER};letter-spacing:.03em">{prod}</div></div>')
+    # eighth tile: the takeaway
+    cards += (f'<div class="abs" style="left:{64 + 3 * 334}px;top:{196 + 236}px;width:314px;height:218px;padding:16px 4px">'
+              f'<div class="cnum">The pattern</div><div style="font:800 25px/1.12 BC;color:{WHITE};margin-top:8px;text-transform:uppercase">'
+              f'Every boiler is <em style="font-style:normal;color:{COPPER}">instrument-heavy, hot and on a deadline</em></div>'
+              f'<div class="cd" style="font-size:12.5px;margin-top:10px">Same product families across all of them; '
+              f'gas brings MC&#8209;HL, electric brings MV.</div></div>')
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:52px">Boiler solutions &nbsp;&middot;&nbsp; the market</div>
+  <div class="abs h2" style="left:62px;top:80px;font-size:50px">Every boiler, <em>the cable behind it</em></div>
+  <div class="abs lede" style="left:64px;top:136px;width:1100px;font-size:14px">The model covers the HRSG and the gas package boiler
+    in depth. The same boiler makers build these too, and each one has its own cable story.</div>
+  {cards}
+  {foot(2)}
 </section>"""
 
 
@@ -809,7 +861,7 @@ def slide_basics():
   <div class="abs" style="left:64px;top:664px;width:1312px;display:flex;gap:22px">{tiles}</div>
   <div class="abs cap" style="left:64px;top:740px;width:1312px">Typical three-pressure reheat HRSG with SCR behind an H-class
     gas turbine; section order, temperatures and pressures vary by design.</div>
-  {foot(2)}
+  {foot(3)}
 </section>"""
 
 
@@ -898,7 +950,7 @@ def slide_cycle():
   <svg class="abs" width="1440" height="810" viewBox="0 0 1440 810" style="left:0;top:0;overflow:visible"><defs>{marks}</defs>{L_}</svg>
   {nodes}
   <div class="abs" style="left:64px;top:674px;width:1312px;display:flex;gap:22px">{tiles}</div>
-  {foot(3)}
+  {foot(4)}
 </section>"""
 
 
@@ -960,7 +1012,7 @@ def slide_system():
   <div class="abs" style="left:64px;top:636px;width:1312px;display:flex;gap:22px">{tiles}</div>
   <div class="abs cap" style="left:64px;top:744px;width:1312px">Ratings are the model's typical values (Load List and nameplates),
     not engineered. Real plants vary: many put the feed pumps on a 4.16 or 6.9 kV bus.</div>
-  {foot(9)}
+  {foot(10)}
 </section>"""
 
 
@@ -1028,7 +1080,7 @@ def slide_spec():
       Raceway and cable design for generating stations: IEEE 422. Grounding: IEEE 80 / 665. Area classification:
       NEC 500, API RP 500. Field acceptance: NETA ATS.</div></div>
   </div>
-  {foot(10)}
+  {foot(11)}
 </section>"""
 
 
@@ -1080,7 +1132,7 @@ def slide_value():
        color:{WHITE};letter-spacing:.01em">"On an HRSG, cable is three-quarters instrumentation and fully on the critical path.
     <em style="font-style:normal;color:{COPPER}">One spec-compliant supply, staged and fast to pull: wired on time, reading right
     the first time."</em></div>
-  {foot(11)}
+  {foot(12)}
 </section>"""
 
 
@@ -1089,7 +1141,7 @@ def main():
     import pymupdf
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS}</style></head><body>"
     out = pymupdf.open()
-    for i, sec in enumerate((slide1(), slide_basics(), slide_cycle(), slide_hero(), slide_elev(), slide_room(), slide_cems(), slide_diagram(), slide_system(), slide_spec(), slide_value(), slide2(), slide3())):
+    for i, sec in enumerate((slide1(), slide_types(), slide_basics(), slide_cycle(), slide_hero(), slide_elev(), slide_room(), slide_cems(), slide_diagram(), slide_system(), slide_spec(), slide_value(), slide2(), slide3())):
         hp = os.path.join(OUT, f"_s{i}.html")
         sec = sec.replace('<section class="page slide">', '<section class="page slide"><div class="s">', 1).replace(
             "</section>", "</div></section>")
