@@ -1,6 +1,6 @@
 # Boilers: greenfield and brownfield talking points
 
-Notes for the boiler slides (SW-3X1_boilers.pdf, 10 slides). The equipment in the model and on the slides is generic. Company names appear only in these notes.
+Notes for the boiler slides (SW-3X1_boilers.pdf, 11 slides). The equipment in the model and on the slides is generic. Company names appear only in these notes.
 
 ## Who builds what (check the latest before each meeting)
 
@@ -35,6 +35,21 @@ The temperatures and pressures below are typical ranges for a three-pressure reh
   - MV-105 to the feed pumps;
   - CEMS instrumentation and fibre at the stack.
 - **Cycling is the wear story.** A modern unit hot-starts in about an hour, and every start heats and cools the thick parts (drums, headers). That's why there are so many tube-metal thermocouples: about 84 thermocouple-extension cables per train in the model.
+
+## The whole cycle: what goes in, what comes out (slide 3)
+
+- **In:** natural gas, air and a little makeup water. **Out:** electricity to the 230 kV grid, stack gas at about 180 °F (CO2 and water vapour, with NOx cut by the SCR), and heat rejected to the air at the condenser.
+- **The path:**
+  - Three gas turbines burn the gas, each spinning a generator; that's about 2/3 of the output.
+  - Their exhaust, at about 1,100 °F, goes through three HRSGs, which make steam.
+  - All three HRSGs feed **one** steam turbine, which spins one more generator; that's about 1/3 of the output, with no extra fuel.
+- **"Is it still steam after the turbine?"** Yes, but spent. It leaves the steam turbine at about 100-120 °F, below atmospheric pressure, and part of it is already water. The air-cooled condenser (80 cells, 80 fans) turns it fully back into water under vacuum.
+- **The water loop is closed.** The condensate pumps send the water to the feed pumps (13.8 kV, MV-105), then back into the HRSGs, round and round. Only a little makeup water replaces blowdown.
+- **Cable on the loop:**
+  - 21 kV isolated-phase bus from the generators to the step-up transformers;
+  - MV-105 to the feed pumps;
+  - VFD cable to the 80 condenser fans (four 480 V drive lineups in the R4 e-house);
+  - instruments on every pump, valve and level.
 
 ## The three boiler stories in the model
 

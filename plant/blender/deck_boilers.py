@@ -72,7 +72,7 @@ def foot(n, short=False):
     left = ("SW-3X1 MODEL &middot; NOT ENGINEERED" if short else
             "SW-3X1 MODEL &middot; CONCEPTUAL ILLUSTRATION, NOT ENGINEERED &middot; QUANTITIES FROM THE MODEL'S CABLE SCHEDULE")
     return f"""<div class="abs foot" style="left:64px;right:64px;bottom:26px;display:flex;justify-content:space-between;
-      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/10</span></div>"""
+      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/11</span></div>"""
 
 
 def slide1():
@@ -160,7 +160,7 @@ def slide2():
     <img src="{img('BB2')}" style="width:100%;height:100%;object-fit:cover"></div>
   <div class="abs cap" style="left:870px;top:712px;width:243px">Cable work at the HRSG e-house</div>
   <div class="abs cap" style="left:1133px;top:712px;width:243px">Old module on the hook</div>
-  {foot(9, short=True).replace("left:64px", "left:870px")}
+  {foot(10, short=True).replace("left:64px", "left:870px")}
 </section>"""
 
 
@@ -259,7 +259,7 @@ def slide3():
   <div class="abs cap" style="left:64px;top:735px;width:1312px">Stock numbers are one catalogue size per product, from
     Southwire's product listings; every size and construction is on the same SPEC. Confirm current stock with Southwire
     customer service before quoting.</div>
-  {foot(10)}
+  {foot(11)}
 </section>"""
 
 
@@ -427,7 +427,7 @@ def slide_hero():
   {spot_html(cam, HERO_SPOTS)}
   {panel("Boiler solutions &nbsp;&middot;&nbsp; HRSG", "The HRSG, <em>every cable</em>", lede, spot_list(HERO_SPOTS).replace("padding:6px 0 7px 36px", "padding:4px 0 5px 36px"), extra).replace("top:262px", "top:222px")}
   <div class="abs" style="left:0;top:730px;width:1040px;height:80px;background:linear-gradient(180deg,rgba(14,16,18,0),rgba(14,16,18,.95) 55%)"></div>
-  {foot(3).replace("right:64px", "right:420px")}
+  {foot(4).replace("right:64px", "right:420px")}
 </section>"""
 
 
@@ -450,7 +450,7 @@ def slide_elev():
   {spot_html(cam, ELEV_SPOTS)}
   {panel("Boiler solutions &nbsp;&middot;&nbsp; elevation", "The train <em>in elevation</em>", lede, spot_list(ELEV_SPOTS))}
   <div class="abs" style="left:0;top:730px;width:1040px;height:80px;background:linear-gradient(180deg,rgba(14,16,18,0),rgba(14,16,18,.95) 55%)"></div>
-  {foot(4).replace("right:64px", "right:420px")}
+  {foot(5).replace("right:64px", "right:420px")}
 </section>"""
 
 
@@ -555,7 +555,7 @@ def slide_room():
   {spot_html(cam, spots)}
   {panel("Boiler solutions &nbsp;&middot;&nbsp; the e-house", "Inside <em>the room</em>", lede, spot_list(spots).replace("padding:6px 0 7px 36px", "padding:4px 0 5px 36px"), extra).replace("top:262px", "top:218px").replace("top:168px", "top:160px")}
   <div class="abs" style="left:0;top:730px;width:1040px;height:80px;background:linear-gradient(180deg,rgba(14,16,18,0),rgba(14,16,18,.95) 55%)"></div>
-  {foot(5).replace("right:64px", "right:420px")}
+  {foot(6).replace("right:64px", "right:420px")}
 </section>"""
 
 
@@ -664,7 +664,7 @@ def slide_diagram():
   <div class="abs cap" style="left:64px;top:748px;width:1312px">R2A also serves the GT1 unit loads, so the T-R2A primary and
     secondary, the transformer auxiliaries, the DCS fibre and the room's own wiring are shown here but are not in the train total.
     Schedule rows: {", ".join(L["primary"]["rows"] + L["secondary"]["rows"])} and the rest by tag.</div>
-  {foot(6)}
+  {foot(7)}
 </section>"""
 
 
@@ -751,6 +751,93 @@ def slide_basics():
 </section>"""
 
 
+# ------------------------------------------------------------------------------- the whole cycle: what goes in, what comes out
+# SW-3X1 is 3 x 1: three H-class gas turbines, three HRSGs, one steam turbine, an 80-cell air-cooled condenser.
+# Ratings typical (model info: GTG 350-450 MVA, STG 550-650 MVA, 21 kV, GSUs 21 / 230 kV).
+def slide_cycle():
+    def box(x, y, w, h, col, title, sub, big=""):
+        return (f'<div class="abs" style="left:{x}px;top:{y}px;width:{w}px;height:{h}px;border:2px solid {col};border-radius:6px;'
+                f'background:#15181b;padding:9px 12px"><div style="font:800 17px/1.05 BC;color:{WHITE};text-transform:uppercase;'
+                f'letter-spacing:.03em">{title}</div><div style="font:400 11.5px/1.35 B;color:{GREY};margin-top:4px">{sub}</div>'
+                f'{big}</div>')
+
+    def pill(x, y, txt, col, fg=INK):
+        return (f'<div class="abs" style="left:{x}px;top:{y}px;font:700 11.5px/1 BC;letter-spacing:.05em;color:{fg};background:{col};'
+                f'padding:5px 8px 4px;border-radius:3px;white-space:nowrap;text-transform:uppercase">{txt}</div>')
+
+    def line(pts, col, w=5, dash=""):
+        d = f' stroke-dasharray="{dash}"' if dash else ""
+        return (f'<polyline points="{" ".join(f"{a},{b}" for a, b in pts)}" fill="none" stroke="{col}" stroke-width="{w}"'
+                f' stroke-linejoin="round"{d} marker-end="url(#ah{col[1:]})"/>')
+    cols = {"gas": "#f2c613", "air": "#9aa3ab", "exh": "#ff7a3d", "stm": "#e5484d", "spent": "#8fd3ff", "cond": "#3a8fd9",
+            "pwr": "#b06ae0", "heat": "#c9ced3"}
+    marks = "".join(f'<marker id="ah{c[1:]}" markerWidth="16" markerHeight="16" refX="12" refY="8" orient="auto" markerUnits="userSpaceOnUse">'
+                    f'<path d="M0,2 L13,8 L0,14 z" fill="{c}"/></marker>' for c in set(cols.values()))
+    L_ = ""
+    L_ += line([(176, 252), (238, 252)], cols["gas"])                                  # gas in
+    L_ += line([(176, 312), (238, 312)], cols["air"])                                  # air in
+    L_ += line([(440, 282), (520, 282)], cols["exh"], 9)                               # GT exhaust to HRSG
+    L_ += line([(690, 214), (690, 168)], cols["exh"], 6)                               # stack out
+    L_ += line([(752, 250), (858, 250)], cols["stm"], 7)                               # steam to ST
+    L_ += line([(1062, 280), (1126, 280)], cols["spent"], 9, "10 6")                   # spent steam to ACC
+    L_ += line([(1240, 214), (1240, 168)], cols["heat"], 5, "4 6")                     # heat to air
+    L_ += line([(1240, 352), (1240, 566), (650, 566), (650, 356)], cols["cond"], 6)    # condensate back to the HRSG
+    L_ += line([(1330, 640), (1330, 580), (1252, 580)], cols["cond"], 3, "3 5")        # makeup water
+    L_ += line([(338, 336), (338, 396)], cols["pwr"], 4)                               # GT shaft to generator
+    L_ += line([(960, 336), (960, 396)], cols["pwr"], 4)                               # ST shaft to generator
+    L_ += line([(338, 464), (338, 516), (1060, 516), (1060, 472), (1096, 472)], cols["pwr"], 5)   # power to the GSUs
+    L_ += line([(960, 464), (960, 516)], cols["pwr"], 5)
+    L_ += line([(1296, 470), (1370, 470)], cols["pwr"], 5)
+    nodes = ""
+    nodes += box(40, 222, 136, 58, cols["gas"], "Natural gas", "fuel in")
+    nodes += box(40, 288, 136, 58, cols["air"], "Air", "drawn in, filtered")
+    nodes += box(238, 224, 202, 112, COPPER, "Gas turbines x 3", "H-class: burns gas in compressed air, spins a generator; "
+                 "exhaust leaves at ~1,100 °F")
+    nodes += box(520, 214, 232, 142, COPPER, "HRSGs x 3", "recover the exhaust heat: water in, steam out at three pressures "
+                 "(HP / IP / LP, ~1,050 °F)")
+    nodes += box(858, 224, 204, 112, COPPER, "Steam turbine x 1", "the steam of all three HRSGs expands through HP, IP and LP "
+                 "casings and spins one more generator")
+    nodes += box(1126, 214, 230, 138, "#8fd3ff", "Air-cooled condenser", "80 cells, 80 fans: cools the spent steam back into "
+                 "water under vacuum")
+    for (x, lab) in ((300, "GT generators 21 kV"), (922, "ST generator 21 kV")):
+        nodes += (f'<div class="abs" style="left:{x}px;top:400px;width:76px;height:64px;border:2px solid {cols["pwr"]};border-radius:32px;'
+                  f'background:#15181b;font:800 22px/60px BC;color:{WHITE};text-align:center">G</div>')
+        nodes += f'<div class="abs cap" style="left:{x + 84}px;top:416px;width:110px">{lab}</div>'
+    nodes += box(1100, 444, 196, 56, cols["pwr"], "GSUs 21 / 230 kV", "step up to the grid")
+    nodes += pill(1100, 506, "Out: electricity to the grid", cols["pwr"], WHITE)
+    nodes += pill(604, 136, "Out: stack gas ~180 °F (CO2, water vapour; NOx cut by the SCR)", cols["exh"])
+    nodes += pill(1150, 136, "Out: heat to the air", cols["heat"])
+    nodes += pill(762, 222, "Steam", cols["stm"], WHITE)
+    nodes += pill(1052, 302, "Spent steam", cols["spent"])
+    nodes += pill(448, 254, "Exhaust", cols["exh"])
+    nodes += pill(380, 528, "~2/3 of the output", COPPER)
+    nodes += pill(800, 528, "~1/3, from the HRSG steam", COPPER)
+    nodes += pill(820, 578, "Water (condensate) pumped back: condensate pumps, then the feed pumps, 13.8 kV", cols["cond"], WHITE)
+    nodes += pill(1196, 646, "In: makeup water (small)", cols["cond"], WHITE)
+    q = [("Is it still steam?", "Leaving the steam turbine it is spent steam: about 100-120 °F, below atmospheric pressure, part "
+          "water already. The condenser finishes the job and turns it back into water."),
+         ("A closed loop", "The same water goes round and round: pump, HRSG, turbine, condenser. Only a little makeup water "
+          "replaces blowdown losses."),
+         ("Where the power comes from", "Fuel is burned only in the gas turbines (and duct burners). The steam turbine adds "
+          "about half again on top, from heat that would otherwise go up the stack."),
+         ("The cable on the loop", "21 kV isolated-phase bus to the GSUs; MV-105 to the feed pumps; VFD cable to 80 condenser fans; "
+          "instruments on every pump, valve and level.")]
+    tiles = "".join(f'<div style="flex:1;border-left:3px solid {COPPER};padding:2px 0 2px 12px"><div style="font:800 15px/1.1 BC;'
+                    f'color:{WHITE};text-transform:uppercase;letter-spacing:.03em">{a}</div><div class="cd" style="font-size:11.5px;'
+                    f'margin-top:4px">{b}</div></div>' for a, b in q)
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:52px">Boiler solutions &nbsp;&middot;&nbsp; the whole cycle</div>
+  <div class="abs h2" style="left:62px;top:80px;font-size:50px">What goes in, <em>what comes out</em></div>
+  <div class="abs lede" style="left:64px;top:136px;width:520px;font-size:13.5px">SW-3X1 is a 3 x 1 combined cycle: three gas
+    turbines, three HRSGs, one steam turbine.</div>
+  <svg class="abs" width="1440" height="810" viewBox="0 0 1440 810" style="left:0;top:0;overflow:visible"><defs>{marks}</defs>{L_}</svg>
+  {nodes}
+  <div class="abs" style="left:64px;top:674px;width:1312px;display:flex;gap:22px">{tiles}</div>
+  {foot(3)}
+</section>"""
+
+
 # ------------------------------------------------------------------------------- the electrical system: levels and ratings
 # Ratings as modelled (typical, not engineered): Load List / Cable Schedule sheets, swgr_rooms.py / r2a_interior.py
 # nameplates. Each level with what it is and the cable it drives.
@@ -809,7 +896,7 @@ def slide_system():
   <div class="abs" style="left:64px;top:636px;width:1312px;display:flex;gap:22px">{tiles}</div>
   <div class="abs cap" style="left:64px;top:744px;width:1312px">Ratings are the model's typical values (Load List and nameplates),
     not engineered. Real plants vary: many put the feed pumps on a 4.16 or 6.9 kV bus.</div>
-  {foot(7)}
+  {foot(8)}
 </section>"""
 
 
@@ -877,7 +964,7 @@ def slide_spec():
       Raceway and cable design for generating stations: IEEE 422. Grounding: IEEE 80 / 665. Area classification:
       NEC 500, API RP 500. Field acceptance: NETA ATS.</div></div>
   </div>
-  {foot(8)}
+  {foot(9)}
 </section>"""
 
 
@@ -886,7 +973,7 @@ def main():
     import pymupdf
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS}</style></head><body>"
     out = pymupdf.open()
-    for i, sec in enumerate((slide1(), slide_basics(), slide_hero(), slide_elev(), slide_room(), slide_diagram(), slide_system(), slide_spec(), slide2(), slide3())):
+    for i, sec in enumerate((slide1(), slide_basics(), slide_cycle(), slide_hero(), slide_elev(), slide_room(), slide_diagram(), slide_system(), slide_spec(), slide2(), slide3())):
         hp = os.path.join(OUT, f"_s{i}.html")
         sec = sec.replace('<section class="page slide">', '<section class="page slide"><div class="s">', 1).replace(
             "</section>", "</div></section>")
