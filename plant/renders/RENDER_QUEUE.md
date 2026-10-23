@@ -23,6 +23,6 @@ it where tray congestion is the point of the shot. Process piping stays visible.
 | RA3 | Boilers slide 9 (interconnection inset) | preview only | new Oct 23: MV tray to T-R2A, EL 42 control tray into the roof riser; process piping hidden |
 | BR1 / BR2 / BR3 | Boilers slide 4 (Boiler Row: aerial main; BR3 electric-boiler cutaway inset; BR2 spine close-up for marketing); Nov 11 tour | preview only | new Oct 23; Steam Street layout (spine rack, control room, steam storage, bay plates) |
 | BR4 / BR5 | BR5: Boilers slide 4 inset (burner front close-up); BR4: back bay (talking points, marketing) | preview only | new Oct 23: UB-1 13.8 kV switchgear + SST-A/B, gas metering; burner hardware |
-| BR6 / BX1 / BX2 | BR6: UB-1 cooling tower + CW pumps (marketing); BX1: boilers slide 1 (package boiler, now in the modular yard); BX2 | preview only | Oct 23: AB-1 moved; the stale BX1 full render was deleted |
+| BR6 / BX1 / BX2 | BR6: UB-1 cooling tower + CW pumps (marketing); BX1: boilers slide 1 (package boiler, now at Boiler Row west); BX2 | preview only | Oct 23: AB-1 moved; the stale BX1 full render was deleted |
 | BR7 | Burner front, wide (stair tower, braces, scanner cooling air, lights, operators): marketing / MC-HL story | preview only | new Oct 23 |
-| BR8 | Boiler Row west: condensate storage, EDG, SIMpull reel laydown and truck (marketing) | preview only | new Oct 23 |
+| BR8 | Boiler Row west: package boiler AB-1, condensate storage, EDG | preview only | new Oct 23 |

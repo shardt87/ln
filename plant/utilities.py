@@ -29,10 +29,9 @@ def routes(add_route):
     add_route("water", [(530, 1616), (530, 1626), (720, 1626), (720, 1605)], sheet=sheet)   # fire / service water
     # plant aux-steam header: fed from the Boiler Row spine (UB-1 extraction, EB-1 steam storage) at its west end ...
     add_route("aux_steam", [(998, 1510), (998, 1495), (1040, 1495), (1040, 852)], sheet=sheet)
-    # ... and from the package boiler AB-1, moved to the modular yard (Oct 23): up the plant pipe corridor
-    add_route("aux_steam", [(1579, 1359), (1579, 1362), (1527, 1362), (1527, 881), (1040, 881)], sheet=sheet)
-    add_route("fuel_gas", [(1612.5, 1432), (1612.5, 1362), (1612.5, 1358)], sheet=sheet)        # gas yard -> AB-1 gas train
-    add_route("duct_bank", [(1500, 1296), (1583, 1296), (1583, 1301)], sheet=sheet)              # AB-MCC feeder, off the x 1500 bank
+    # ... and from the package boiler AB-1 (moved west into Boiler Row, Oct 23), south of the UB-1 electrical bay
+    add_route("aux_steam", [(844, 1600), (852, 1600), (852, 1552), (994, 1552), (994, 1510), (998, 1510)], sheet=sheet)
+    add_route("duct_bank", [(915, 1450), (778, 1450), (778, 1596), (785.5, 1596)], sheet=sheet)  # AB-MCC feeder
 
 
 def build():

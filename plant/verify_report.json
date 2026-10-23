@@ -6,7 +6,7 @@
   "ok": true,
   "tolerance_ft": 0.6,
   "relocated": [
-   "Auxiliary boiler AB-1 -> modular yard x 1534-1624, y 1300-1360 (owner, Oct 23)"
+   "Auxiliary boiler AB-1 -> Boiler Row west x 784-844, y 1555-1645 (owner, Oct 23)"
   ]
  },
  "heights": {
@@ -226,7 +226,7 @@
   "ok": true
  },
  "clashes": {
-  "pairs_tested": 1457022,
+  "pairs_tested": 1457023,
   "clashes": [],
   "ok": true
  },
@@ -237,7 +237,7 @@
  "summary": {
   "ok": true,
   "items": 1018,
-  "parts": 156550,
-  "routes": 719
+  "parts": 155548,
+  "routes": 714
  }
 }

@@ -88,11 +88,13 @@ def decal(*a, **k):
     showcase.decal(*a, **k)
 
 
-# Oct 23 (owner): AB-1 moves to the west edge of the modular yard, beside the plant pipe corridor, so Boiler Row can be a
-# complete utility unit. It is drawn at its old place and turned 90 deg anticlockwise into x 1534-1624, y 1300-1360
-# (burner front east, steam outlet north to the aux-steam line up the corridor, gas in from the gas yard).
+# Oct 23 (owner): AB-1 moves west into Boiler Row (x 784-844, y 1555-1645, same orientation), so its old place can take the
+# UB-1 cooling tower; its steam ties into the Boiler Row header. It is drawn at its old place and shifted (-151, +105).
+DX, DY = -151.0, 105.0
+
+
 def _mv(x, y):
-    return 3074.0 - y, x + 365.0
+    return x + DX, y + DY
 
 
 def _relocate(it, p0, d0):
@@ -106,11 +108,8 @@ def _relocate(it, p0, d0):
                 p[k][:2] = [round(v, 2) for v in _mv(p[k][0], p[k][1])]
     for d in fuel.G.get("decals", [])[d0:]:
         d["c"][:2] = [round(v, 2) for v in _mv(d["c"][0], d["c"][1])]
-        for k in ("n", "up"):
-            if k in d:
-                d[k] = [-d[k][1], d[k][0]] + list(d[k][2:])
-    it["fp"] = [1534.0, 1624.0, 1300.0, 1360.0]
-    it["info"] += " Moved Oct 23 to the west edge of the modular yard (shared start-up steam for the whole campus)."
+    it["fp"] = [784.0, 844.0, 1555.0, 1645.0]
+    it["info"] += " Moved Oct 23 west into Boiler Row; its steam ties into the Boiler Row aux-steam header."
 
 
 def build():

@@ -191,8 +191,8 @@ PRODUCTS = [
 ]
 # where each product is circled: view -> [(product no., 3D point in the model)]
 SPOTS = {
-    "BX1": [(2, (1578.0, 1311.0, 15.0)), (3, (1609.7, 1345.0, 3.0)), (4, (1612.3, 1310.5, 9.0)), (5, (1598.5, 1332.8, 7.5)),
-            (6, (1559.0, 1328.2, 14.2))],
+    "BX1": [(2, (795.0, 1601.0, 15.0)), (3, (829.0, 1569.3, 3.0)), (4, (794.5, 1566.7, 9.0)), (5, (816.8, 1580.5, 7.5)),
+            (6, (812.2, 1620.0, 14.2))],
     "BH2": [(3, (683.0, 692.85, 2.9)), (5, (691.75, 692.75, 6.5)), (6, (680.0, 692.5, 4.6))],
     "BF1": [(1, (684.4, 630.4, 9.3)), (1, (684.4, 643.6, 9.3))],
     "BB3": [(8, (888.5, 692.5, 1.2)), (6, (889.6, 683.0, 5.6)), (5, (895.0, 680.2, 3.0))],
@@ -1000,7 +1000,7 @@ def slide_row():
   <div class="abs" style="left:1000px;top:130px;width:400px">{legend}</div>
   {ins("BR5", 1000, "Every burner: scanner, igniter, valve, drive")}
   {ins("BR3", 1206, "EB-1 cutaway: MV-105, three parallel sets")}
-  {card(40, "1 &nbsp;&middot;&nbsp; Package boiler", "Gas package boiler", "Start-up steam for the campus; in the modular yard",
+  {card(40, "1 &nbsp;&middot;&nbsp; Package boiler", "Gas package boiler", "Start-up steam; next to the utility unit, on the same header",
         f"{a['cables']}", kft(a['ft']), "Control-dense and compact: TC-ER power and control, instrument pairs, pre-wired at the factory.")}
   {card(508, "2 &nbsp;&middot;&nbsp; Utility boiler", "Gas-fired utility boiler", "300 MW class; new for AI campuses or converted from coal",
         f"~{u['cables']:,}", "~" + kft(u['ft']),

@@ -640,24 +640,6 @@ def support_yard():
         poly([(878.5, 1610.6 + k * .4, 8), (879.5, 1610.6 + k * .4, 10)], .14, "cable", seg=6)
     fuel.D = False
 
-    # cable laydown: SIMpull reels staged for the boiler outage, the SIMpull Truck delivering
-    it = fuel.new_item(L, "Boiler Row cable laydown: SIMpull reels staged for the UB-1 outage", (782, 846, 1560, 1648), (0, 12),
-                       area="D", register=False, basis="typical",
-                       info="Reels staged by circuit for the burner-management and MV work: MV-105, ARMOR-X MC-HL, TC-ER, "
-                            "instrumentation; the SIMpull Truck delivering. Showcase.")
-    on(it)
-    fuel.D = True
-    box(784, 844, 1562, 1626, 0, .3, "gravel")
-    for r_, (cable, D, W, prod) in enumerate((("cable_mv", 8.0, 5.0, "MV-105"), ("cable_armor", 6.5, 4.4, "ARMOR-X MC-HL"),
-                                              ("cable_tc", 6.0, 4.0, "TC-ER"), ("cable_inst", 5.0, 3.6, "PLTC"))):
-        for c in range(4):
-            showcase.reel(791 + c * 13, 1569 + r_ * 14, D, W, "x", cable, prod)
-    decal((814, 1561.6, 2.2), (0, -1, 0), 26, 2.6, [("BOILER ROW CABLE LAYDOWN", .5, True, "#ffffff"),
-                                                     ("SIMPULL REELS  ·  STAGED BY CIRCUIT", .3, True, "#e39a5f")], bg="#15181b")
-    showcase.simpull_truck(815, 1638)
-    mt.person(840, 1590, .3, 3.0)
-    fuel.D = False
-
     # CEMS shelter at the UB-1 stack
     it = fuel.new_item(L, "UB-1 CEMS shelter at the stack (Boiler Row)", (1110, 1126, 1584, 1612), (0, 122), area="D", register=False,
                        basis="typical",
@@ -693,14 +675,14 @@ def mv_feed():
 
 def bays():
     """Three bays, each on its own pad with a bay plate painted on the ground in front."""
-    it = fuel.new_item(L, "Boiler Row bays: pads and bay plates", (1000, 1602, 1280, 1640), (0, .3), area="D", register=False,
+    it = fuel.new_item(L, "Boiler Row bays: pads and bay plates", (790, 1342, 1490, 1640), (0, .3), area="D", register=False,
                        basis="typical")
     on(it)
     fuel.D = True
     for (cx, cy, t, sub) in ((1058, 1497, "UTILITY BOILER", "gas · 300 MW class"),
                              (1250, 1497, "ELECTRIC BOILER", "13.8 kV · no flame"),
-                             (1579, 1290, "PACKAGE BOILER", "start-up steam for the campus")):
-        decal((cx, cy, .16), (0, 0, 1), 44, 11.5, [(t, .44, True, "#e39a5f"), (sub.upper(), .26, True, "#ffffff")],
+                             (814, 1551, "PACKAGE BOILER", "start-up steam")):
+        decal((cx, cy, .16), (0, 0, 1), 44, 9 if cx < 900 else 11.5, [(t, .44, True, "#e39a5f"), (sub.upper(), .26, True, "#ffffff")],
               bg="#1d2125", up=(0, 1, 0))
     box(1003, 1250, 1546, 1636, 0, .14, "concrete")                                   # bay 2 pad (boiler + STG)
     box(1253, 1342, 1520, 1636, 0, .14, "concrete")                                   # bay 3 pad
