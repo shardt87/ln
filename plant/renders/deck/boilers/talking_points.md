@@ -17,6 +17,9 @@ Notes for the boiler slides (SW-3X1_boilers.pdf, 14 slides). The equipment in th
   - **Once-through units** have no drums but more temperature points.
   - **Waste-heat boilers** follow the HRSG pattern.
 - **Lead with electric boilers.** They are fed at medium voltage, often 4-15 kV and many MW, making them the largest single cable load of any boiler type and a straight MV-105 sale. They're also the newest market, driven by industrial decarbonization. Check current ratings before quoting numbers.
+- **The example along the bottom: a utility boiler converted to gas** (a drawing, not the model). The gas train feeds burners on the furnace front wall. The drum sits on top; the flue gas runs through the backpass, the SCR, the air heater and the ESP / baghouse; FD and ID fans move the air and gas, and the stack is at the end.
+  - The fans, drum and stack stay. The conversion adds the gas train and burner management, which is the cable work: MC-HL in Class I Div 2, plus new flame scanners and gas analysis.
+  - The FD and ID fans are 4-13.8 kV motors of thousands of hp, often re-powered on VFDs.
 - **The pattern:** every boiler is instrument-heavy, hot and on a deadline. Gas brings MC-HL; electric brings MV.
 
 ## How an HRSG works (slide 3)

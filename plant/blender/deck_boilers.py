@@ -739,27 +739,100 @@ BOILER_TYPES = [  # (type, where, cable story, products, in the model)
 ]
 
 
+def utility_example():
+    """A drawn side view of a utility boiler converted to gas, with the cable at each piece of equipment."""
+    X0, Y0, H = 64, 556, 200                       # band: x 64-1376, y 556-756
+    g = ""
+    st = "#59606a"
+    def rect(x, y, w, h, fill="#2a2f35", stroke=st, sw=1.5):
+        return f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{fill}" stroke="{stroke}" stroke-width="{sw}"/>'
+    def lab(x, y, t, c=GREY, size=11, anchor="middle", w=700):
+        return (f'<text x="{x}" y="{y}" text-anchor="{anchor}" fill="{c}" font-family="BC" font-weight="{w}" font-size="{size}" '
+                f'letter-spacing=".5">{t}</text>')
+    base = Y0 + 186                                # grade line
+    g += f'<line x1="{X0 + 330}" y1="{base}" x2="{X0 + 1312}" y2="{base}" stroke="#3a4048" stroke-width="2"/>'
+    # gas train (conversion) -> burners on the furnace front wall
+    g += rect(X0 + 340, base - 34, 86, 26, "#3a3424", "#f2c613")
+    g += lab(X0 + 383, base - 17, "GAS TRAIN", "#f2c613", 10.5)
+    g += f'<polyline points="{X0 + 426},{base - 21} {X0 + 448},{base - 21} {X0 + 448},{base - 96} {X0 + 470},{base - 96}" fill="none" stroke="#f2c613" stroke-width="3"/>'
+    # furnace (tall), burners, drum on top
+    fx = X0 + 470
+    g += rect(fx, Y0 + 26, 96, base - Y0 - 26, "#2e3338", "#9aa3ab", 2)
+    for k in range(3):
+        g += f'<circle cx="{fx + 2}" cy="{base - 110 + k * 22}" r="6" fill="#ff7a3d" stroke="#ffb27a"/>'
+    for r in range(9):
+        g += f'<line x1="{fx + 12 + r * 9}" y1="{Y0 + 34}" x2="{fx + 12 + r * 9}" y2="{base - 6}" stroke="#4a525b" stroke-width="2"/>'
+    g += f'<rect x="{fx + 14}" y="{Y0 + 6}" width="68" height="20" rx="10" fill="#3c434b" stroke="{WHITE}" stroke-width="1.2"/>'
+    g += lab(fx + 48, Y0 + 20, "DRUM", WHITE, 10.5)
+    g += lab(fx + 48, Y0 + 92, "FURNACE", WHITE, 12)
+    # backpass with superheater / economizer, then SCR, air heater
+    bx = fx + 106
+    g += rect(bx, Y0 + 26, 70, 120, "#2a2f35")
+    for r in range(5):
+        g += f'<line x1="{bx + 6}" y1="{Y0 + 44 + r * 18}" x2="{bx + 64}" y2="{Y0 + 44 + r * 18}" stroke="#4a525b" stroke-width="3"/>'
+    g += lab(bx + 35, Y0 + 40, "BACKPASS", GREY, 9.5)
+    g += f'<path d="M{fx + 96},{Y0 + 40} L{bx},{Y0 + 40}" stroke="#ff7a3d" stroke-width="2" stroke-dasharray="5 4"/>'
+    sx = bx + 86
+    g += rect(sx, Y0 + 50, 54, 52, "#2d2638", "#b06ae0")
+    g += lab(sx + 27, Y0 + 80, "SCR", "#b06ae0", 11)
+    ax = sx + 66
+    g += rect(ax, Y0 + 96, 58, 56, "#2a2f35")
+    g += lab(ax + 29, Y0 + 128, "AIR HTR", GREY, 9.5)
+    # fans: FD (to the air heater) and ID (to the stack)
+    fdx = ax + 12
+    g += f'<circle cx="{fdx}" cy="{base - 14}" r="13" fill="#2a2f35" stroke="#f05a28" stroke-width="2"/>'
+    g += lab(fdx, base - 10, "FD", "#f05a28", 10)
+    idx = ax + 108
+    g += rect(ax + 76, Y0 + 104, 50, 40, "#2a2f35")
+    g += lab(ax + 101, Y0 + 128, "ESP / BAG", GREY, 8.5)
+    g += f'<circle cx="{idx}" cy="{base - 14}" r="13" fill="#2a2f35" stroke="#f05a28" stroke-width="2"/>'
+    g += lab(idx, base - 10, "ID", "#f05a28", 10)
+    stx = idx + 34
+    g += rect(stx, Y0 + 14, 28, base - Y0 - 14, "#2a2f35")
+    g += lab(stx + 14, Y0 + 8, "STACK", GREY, 10)
+    g += f'<path d="M{sx + 54},{Y0 + 76} L{ax + 29},{Y0 + 76} L{ax + 29},{Y0 + 96}" fill="none" stroke="#ff7a3d" stroke-width="2" stroke-dasharray="5 4"/>'
+    g += f'<path d="M{ax + 58},{Y0 + 124} L{ax + 76},{Y0 + 124} M{ax + 126},{Y0 + 124} L{stx},{Y0 + 124}" fill="none" stroke="#ff7a3d" stroke-width="2" stroke-dasharray="5 4"/>'
+    # cable callouts (right block)
+    calls = [("#f2c613", "Gas train + burner management", "ARMOR-X MC-HL, Class I Div 2 (the conversion scope)"),
+             ("#36c26b", "Flame scanners, drum level, gas analysis", "Instrumentation PLTC, thermocouple extension"),
+             ("#f05a28", "FD and ID fans, 4-13.8 kV, thousands of hp", "MV-105, often on VFDs: MC-HL VFD"),
+             ("#3a8fd9", "Dampers, sootblowers, SCR ammonia, valves", "TC-ER power and control"),
+             ("#ff9f1a", "CEMS at the stack, DCS", "PLTC pairs and fibre")]
+    cx0 = X0 + 900
+    calls_html = "".join(
+        f'<div style="display:flex;gap:8px;margin-top:5px"><span style="width:9px;height:9px;margin-top:4px;background:{c};flex:none"></span>'
+        f'<div><span style="font:700 12.5px/1.2 BC;color:{WHITE};text-transform:uppercase;letter-spacing:.03em">{t}</span>'
+        f'<span style="font:400 11.5px/1.3 B;color:{COPPER}"> &nbsp;{p}</span></div></div>' for c, t, p in calls)
+    head = (f'<div class="abs" style="left:{X0}px;top:{Y0 + 4}px;width:300px"><div class="cnum">Example</div>'
+            f'<div style="font:800 24px/1.05 BC;color:{WHITE};text-transform:uppercase;margin-top:6px">A utility boiler, <em style="font-style:normal;color:{COPPER}">converted to gas</em></div>'
+            f'<div class="cd" style="font-size:12px;margin-top:8px">Hundreds of MW. Gas burners replace coal; the fans, '
+            f'drum and stack stay. The cable work is the conversion.</div></div>')
+    return (f'<div class="abs" style="left:{X0}px;top:{Y0 - 12}px;width:1312px;border-top:1px solid #2c3036"></div>{head}'
+            f'<svg class="abs" width="1440" height="810" viewBox="0 0 1440 810" style="left:0;top:0;overflow:visible">{g}</svg>'
+            f'<div class="abs" style="left:{cx0}px;top:{Y0 - 2}px;width:{1376 - cx0}px">{calls_html}</div>')
+
+
 def slide_types():
     cards = ""
     for k, (t, where, story, prod, tag) in enumerate(BOILER_TYPES):
         col, row = k % 4, k // 4
-        x, y = 64 + col * 334, 196 + row * 236
+        x, y = 64 + col * 334, 172 + row * 186
         hi = tag == "Newest market"
         bd = COPPER if hi else "#2c3036"
         badge = (f'<div class="abs" style="right:12px;top:12px;font:700 11px/1 BC;letter-spacing:.08em;text-transform:uppercase;'
                  f'padding:4px 7px 3px;border-radius:3px;background:{COPPER if hi else "#2c3036"};color:{INK if hi else WHITE}">{tag}</div>'
                  if tag else "")
-        cards += (f'<div class="abs" style="left:{x}px;top:{y}px;width:314px;height:218px;border:2px solid {bd};border-radius:6px;'
-                  f'background:{"rgba(227,154,95,.08)" if hi else "#15181b"};padding:14px 16px">{badge}'
-                  f'<div style="font:800 21px/1.05 BC;color:{WHITE};text-transform:uppercase;letter-spacing:.02em;width:{"190px" if tag else "280px"}">{t}</div>'
-                  f'<div style="font:400 12px/1.35 B;color:{GREY};margin-top:6px">{where}</div>'
-                  f'<div style="font:400 13px/1.42 B;color:#d4d8dc;margin-top:10px;border-top:1px solid #2c3036;padding-top:9px">{story}</div>'
-                  f'<div class="abs" style="left:16px;right:16px;bottom:13px;font:700 12.5px/1.25 BC;color:{COPPER};letter-spacing:.03em">{prod}</div></div>')
+        cards += (f'<div class="abs" style="left:{x}px;top:{y}px;width:314px;height:174px;border:2px solid {bd};border-radius:6px;'
+                  f'background:{"rgba(227,154,95,.08)" if hi else "#15181b"};padding:11px 14px">{badge}'
+                  f'<div style="font:800 19px/1.05 BC;color:{WHITE};text-transform:uppercase;letter-spacing:.02em;width:{"190px" if tag else "280px"}">{t}</div>'
+                  f'<div style="font:400 11.5px/1.3 B;color:{GREY};margin-top:4px">{where}</div>'
+                  f'<div style="font:400 12px/1.36 B;color:#d4d8dc;margin-top:7px;border-top:1px solid #2c3036;padding-top:6px">{story}</div>'
+                  f'<div class="abs" style="left:16px;right:16px;bottom:10px;font:700 12px/1.25 BC;color:{COPPER};letter-spacing:.03em">{prod}</div></div>')
     # eighth tile: the takeaway
-    cards += (f'<div class="abs" style="left:{64 + 3 * 334}px;top:{196 + 236}px;width:314px;height:218px;padding:16px 4px">'
-              f'<div class="cnum">The pattern</div><div style="font:800 25px/1.12 BC;color:{WHITE};margin-top:8px;text-transform:uppercase">'
+    cards += (f'<div class="abs" style="left:{64 + 3 * 334}px;top:{172 + 186}px;width:314px;height:174px;padding:8px 4px">'
+              f'<div class="cnum">The pattern</div><div style="font:800 22px/1.1 BC;color:{WHITE};margin-top:6px;text-transform:uppercase">'
               f'Every boiler is <em style="font-style:normal;color:{COPPER}">instrument-heavy, hot and on a deadline</em></div>'
-              f'<div class="cd" style="font-size:12.5px;margin-top:10px">Same product families across all of them; '
+              f'<div class="cd" style="font-size:12px;margin-top:7px">Same product families across all of them; '
               f'gas brings MC&#8209;HL, electric brings MV.</div></div>')
     return f"""
 <section class="page slide">
@@ -768,6 +841,7 @@ def slide_types():
   <div class="abs lede" style="left:64px;top:136px;width:1100px;font-size:14px">The model covers the HRSG and the gas package boiler
     in depth. The same boiler makers build these too, and each one has its own cable story.</div>
   {cards}
+  {utility_example()}
   {foot(2)}
 </section>"""
 
