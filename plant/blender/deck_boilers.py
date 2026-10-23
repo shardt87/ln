@@ -740,12 +740,19 @@ def slide_basics():
 <section class="page slide">
   <div class="abs kicker" style="left:64px;top:52px">Boiler solutions &nbsp;&middot;&nbsp; the basics</div>
   <div class="abs h2" style="left:62px;top:80px;font-size:50px">How an HRSG <em>works</em></div>
-  <div class="abs lede" style="left:64px;top:136px;width:1180px;font-size:14px">A heat-recovery steam generator turns the gas
-    turbine's waste heat into steam. The exhaust crosses rows of finned tubes, hottest sections first; water enters at the cold end
-    and leaves as superheated steam at the hot end. Below each section: the cable it needs.</div>
+  <div class="abs lede" style="left:64px;top:136px;width:640px;font-size:13.5px">The exhaust crosses rows of finned tubes, hottest
+    sections first; water enters at the cold end and leaves as superheated steam at the hot end. Below each section: the cable it needs.</div>
+  <div class="abs" style="left:760px;top:34px;width:616px;border:2px solid {COPPER};border-radius:6px;background:rgba(227,154,95,.07);
+       padding:11px 16px 12px">
+    <div class="cnum">Why it's there</div>
+    <div style="font:400 12.5px/1.42 B;color:#d4d8dc;margin-top:5px">A gas turbine alone sends ~60 % of its fuel's energy up the stack
+      as ~1,100 °F exhaust (~40 % efficient). The HRSG is a boiler heated by that exhaust: its steam drives the steam turbine, so the
+      <b style="color:{WHITE}">same fuel makes about a third more power</b> (~60 %+ efficient; fuel, CO2 and cost per MWh down by
+      about a third). It also houses the SCR that cuts NOx, and its duct burners can fire extra gas for peak output.
+      <b style="color:{COPPER}">The bridge between the two halves of a combined cycle.</b></div></div>
   <svg class="abs" width="1440" height="810" viewBox="0 0 1440 810" style="left:0;top:0;overflow:visible">{svg}</svg>
   <div class="abs" style="left:64px;top:664px;width:1312px;display:flex;gap:22px">{tiles}</div>
-  <div class="abs cap" style="left:64px;top:740px;width:1312px">Typical three-pressure reheat HRSG with SCR behind an F-class
+  <div class="abs cap" style="left:64px;top:740px;width:1312px">Typical three-pressure reheat HRSG with SCR behind an H-class
     gas turbine; section order, temperatures and pressures vary by design.</div>
   {foot(2)}
 </section>"""

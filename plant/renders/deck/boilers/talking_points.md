@@ -10,7 +10,15 @@ Notes for the boiler slides (SW-3X1_boilers.pdf, 11 slides). The equipment in th
 
 ## How an HRSG works (slide 2)
 
-The temperatures and pressures below are typical ranges for a three-pressure reheat HRSG behind an F-class gas turbine.
+**Why it's there (the panel at the top right of the slide).**
+- **The problem:** a gas turbine alone wastes about 60 % of its fuel energy as exhaust at about 1,100 °F, so it runs at about 40 % efficiency.
+- **What the HRSG does:** it is a boiler heated by that exhaust. Its steam drives the steam turbine, so the same fuel makes about a third more power. Efficiency rises to about 60 %+, and fuel, CO2 and cost per MWh drop by about a third.
+- **Side jobs:**
+  - **Emissions:** it houses the SCR, at the temperature window the catalyst needs.
+  - **Peak output:** its duct burners can fire extra gas.
+- **One line:** the HRSG is the bridge between the two halves of a combined cycle. Without it you have a gas-turbine plant; with it, a combined-cycle plant.
+
+The temperatures and pressures below are typical ranges for a three-pressure reheat HRSG behind an H-class gas turbine.
 
 - **The idea.** The gas turbine's exhaust leaves at about 1,100 °F. The HRSG passes it over banks of finned tubes and turns that heat into steam for the steam turbine.
   - That steam makes **about a third** of the plant's output with no extra fuel.
