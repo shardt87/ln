@@ -16,6 +16,15 @@ Notes for the boiler slides (SW-3X1_boilers.pdf, 15 slides). The equipment in th
   - **Fluidized bed and waste-to-energy** mean heavy fans and conveyors, heat, dust and abrasion.
   - **Once-through units** have no drums but more temperature points.
   - **Waste-heat boilers** follow the HRSG pattern.
+- **News hook for the B&W meeting** (company names here, not on the slides):
+  - **What:** on Mar 4, 2026, Babcock & Wilcox received full notice to proceed on a $2.4 billion EPC contract with Base Electron, an IPP backed by Applied Digital, for 1.2 GW. That is **four 300 MW natural-gas-fired boilers, each with a steam turbine generator** (steam turbines from Siemens Energy), powering Applied Digital's AI campuses. There is an option for another 1.2 GW.
+  - **How it differs from our plant:** it isn't combined cycle. There's no gas turbine; the boiler burns the gas and the steam turbine makes all the power. Industry reporting points to multi-year gas-turbine backlogs, and this route can be procured sooner.
+  - **The cable is the utility-boiler pattern at scale:**
+    - MC-HL for burner management and the gas trains;
+    - MV-105 for very large FD and ID fans and feed pumps, which carry the whole plant's steam;
+    - PLTC and thermocouple extension for drum level, flame scanners and temperatures;
+    - CEMS, the generator step-up and the plant's MV system.
+  - Sources: the B&W press release and Q4 2025 results (babcock.com, businesswire.com), Mar 4, 2026.
 - **Lead with electric boilers.** They are fed at medium voltage, often 4-15 kV and many MW, making them the largest single cable load of any boiler type and a straight MV-105 sale. They're also the newest market, driven by industrial decarbonization. Check current ratings before quoting numbers.
 - **The example along the bottom: a utility boiler converted to gas** (a drawing, not the model). The gas train feeds burners on the furnace front wall. The drum sits on top; the flue gas runs through the backpass, the SCR, the air heater and the ESP / baghouse; FD and ID fans move the air and gas, and the stack is at the end.
   - The fans, drum and stack stay. The conversion adds the gas train and burner management, which is the cable work: MC-HL in Class I Div 2, plus new flame scanners and gas analysis.

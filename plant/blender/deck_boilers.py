@@ -726,7 +726,7 @@ BOILER_TYPES = [  # (type, where, cable story, products, in the model)
      "MV-105 · TC-ER · MC-HL · PLTC · TC ext.", "In the model"),
     ("Package / industrial", "Plants, hospitals, campuses, start-up steam", "Burner management, fan VFDs, compact skid wiring",
      "TC-ER · MC-HL VFD · Control", "In the model"),
-    ("Utility boiler", "Existing large units; coal-to-gas conversions",
+    ("Utility boiler: new gas-fired or converted", "Large units; coal-to-gas conversions; AI and data-centre power",
      "Conversions add gas trains and burner management in Class I Div 2; large MV fan and pump motors", "MC-HL · MV-105 · Control", ""),
     ("Fluidized bed · biomass · waste-to-energy", "Industrial and municipal",
      "Heavy fans and conveyors; heat, dust and abrasion", "Armored MC-HL · TC-ER · MV-105", ""),
@@ -806,7 +806,9 @@ def utility_example():
     head = (f'<div class="abs" style="left:{X0}px;top:{Y0 + 4}px;width:300px"><div class="cnum">Example</div>'
             f'<div style="font:800 24px/1.05 BC;color:{WHITE};text-transform:uppercase;margin-top:6px">A utility boiler, <em style="font-style:normal;color:{COPPER}">converted to gas</em></div>'
             f'<div class="cd" style="font-size:12px;margin-top:8px">Hundreds of MW. Gas burners replace coal; the fans, '
-            f'drum and stack stay. The cable work is the conversion.</div></div>')
+            f'drum and stack stay. The cable work is the conversion.</div>'
+            f'<div style="font:700 12px/1.3 BC;color:{COPPER};margin-top:8px;letter-spacing:.03em">The same layout is being built new '
+            f'for AI campuses: 300 MW per unit.</div></div>')
     return (f'<div class="abs" style="left:{X0}px;top:{Y0 - 12}px;width:1312px;border-top:1px solid #2c3036"></div>{head}'
             f'<svg class="abs" width="1440" height="810" viewBox="0 0 1440 810" style="left:0;top:0;overflow:visible">{g}</svg>'
             f'<div class="abs" style="left:{cx0}px;top:{Y0 - 2}px;width:{1376 - cx0}px">{calls_html}</div>')
