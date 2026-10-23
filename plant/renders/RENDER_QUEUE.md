@@ -26,3 +26,4 @@ it where tray congestion is the point of the shot. Process piping stays visible.
 | BR6 / BX1 / BX2 | BR6: UB-1 cells on the shared CCS cooling tower + CW pumps (marketing); BX1: boilers slide 1 (package boiler, back on its drawn spot); BX2 | preview only | Oct 23: AB-1 moved and moved back; full render needed (the old one was deleted) |
 | BR7 | Burner front, wide (stair tower, braces, scanner cooling air, lights, operators): marketing / MC-HL story | preview only | new Oct 23 |
 | BR8 | Boiler Row west: package boiler AB-1, condensate storage, EDG | preview only | new Oct 23 |
+| BR9 | UB-1 CEMS shelter at the stack (north side, by the road) | preview only | new Oct 23 |

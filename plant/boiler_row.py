@@ -712,22 +712,25 @@ def support_yard():
         poly([(878.5, 1610.6 + k * .4, 8), (879.5, 1610.6 + k * .4, 10)], .14, "cable", seg=6)
     fuel.D = False
 
-    # CEMS shelter at the UB-1 stack
-    it = fuel.new_item(L, "UB-1 CEMS shelter at the stack (Boiler Row)", (1104, 1126, 1598, 1616), (0, 122), area="D", register=False,
+    # CEMS shelter at the UB-1 stack: on the open north side, facing the road (stack at 1134, 1620, r 9.5)
+    it = fuel.new_item(L, "UB-1 CEMS shelter at the stack (Boiler Row)", (1118, 1140, 1628, 1649), (0, 122), area="D", register=False,
                        basis="typical",
                        info="Analyzer shelter for the UB-1 stack: NOx / CO / O2 / NH3 slip, heated sample line from the EL 120 "
                             "platform; power, instrument pairs and fibre to the DCS. Showcase.")
     on(it)
     fuel.D = False
-    box(1111, 1123, 1600, 1614, 0, 1, "concrete")
-    box(1111.3, 1122.7, 1600.3, 1613.7, 1, 10.5, "ehouse")
-    box(1111, 1123, 1600, 1614, 10.5, 11.1, "roof")
+    box(1121, 1137, 1633, 1646, 0, .8, "concrete")
+    box(1121.3, 1136.7, 1633.3, 1645.7, .8, 10.5, "ehouse")
+    box(1121, 1137, 1633, 1646, 10.5, 11.1, "roof")
     fuel.D = True
-    decal((1111.25, 1607, 8.5), (-1, 0, 0), 10, 1.4, [("UB-1 CEMS", .62, True, "#111111")], bg="#ffffff")
-    box(1115, 1118, 1603, 1607, 11.1, 13, "machine")                                  # HVAC
-    poly([(1123, 1611, 8), (1124.6, 1612.6, 8), (1124.6, 1612.6, 119.6)], .35, "steel_dark", seg=8)   # heated sample line
-    for k in range(3):
-        poly([(1111, 1602 + k * .5, 6), (1108.6, 1602 + k * .5, 6), (1108.6, 1602 + k * .5, 20.4)], .1, "cable_tc", seg=6)
+    decal((1129, 1645.75, 8.3), (0, 1, 0), 10, 1.4, [("UB-1 CEMS", .62, True, "#111111")], bg="#ffffff")
+    box(1131, 1135, 1636, 1640, 11.1, 13, "machine")                                  # HVAC
+    box(1123, 1126.5, 1645.7, 1645.8, .8, 7.5, "door")
+    box(1133, 1135, 1645.7, 1646.4, 4, 7, "red")                                      # cal-gas bottle rack
+    poly([(1129, 1633.3, 9), (1129, 1631.4, 9), (1129, 1631.4, 119.6)], .35, "steel_dark", seg=8)   # heated sample line up the stack
+    for k in range(4):                                                                # power / signal / fibre conduits up
+        rod((1137.4, 1636 + k * .7, 0), (1137.4, 1636 + k * .7, 4), .2, "alu", seg=8)
+        rod((1137.4, 1636 + k * .7, 4), (1136.7, 1636 + k * .7, 4), .2, "alu", seg=8)
     fuel.D = False
 
 
