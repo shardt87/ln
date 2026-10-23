@@ -86,6 +86,11 @@ body.tour .read,body.tour .hud,body.tour .north,body.tour .tourgo,body.tour #lab
 #tour .tnav{position:absolute;right:clamp(12px,2vw,32px);bottom:clamp(12px,2vh,28px);display:flex;gap:6px;align-items:center;pointer-events:auto;font:600 14px "IBM Plex Mono",monospace;color:#f3f1ec}
 #tour .tnav button{font:600 15px "IBM Plex Sans Condensed",sans-serif;background:rgba(22,26,29,.82);color:#f3f1ec;border:1px solid rgba(255,255,255,.25);padding:6px 12px;cursor:pointer}
 #tour .tnav span{background:rgba(22,26,29,.82);padding:6px 10px}
+#tour .tchap{position:absolute;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:4px;pointer-events:auto;max-width:calc(100% - 24px);flex-wrap:wrap;justify-content:center}
+#tour .tchap:empty{display:none}
+#tour .tchap button{font:600 13px "IBM Plex Sans Condensed",sans-serif;background:rgba(22,26,29,.72);color:#cfd5d8;border:1px solid rgba(255,255,255,.18);padding:4px 10px;cursor:pointer;white-space:nowrap}
+#tour .tchap button[aria-current="true"]{background:#c8692b;color:#fff;border-color:#c8692b}
+body.rec #tour .tchap{display:none}
 body.rec #tour .tnav{display:none}
 body.tour .stamp{z-index:5;bottom:clamp(52px,6vh,72px);right:clamp(12px,2vw,32px);color:#e08a4a;text-shadow:0 1px 2px rgba(0,0,0,.5)}
 .insp h2{font-size:18px;margin:0;line-height:1.2;text-wrap:balance}
@@ -186,8 +191,10 @@ footer{color:var(--ink2);font-size:12px;border-top:1px solid var(--rule);padding
     <div class="stamp">Conceptual illustration<br>Not engineered · not for construction<span class="credit">Model by Stephan Hardt</span></div>
     <div class="loading" id="loading">building model…</div>
     <button class="tourgo" id="tourGo" title="Guided tour: the power path, the electrical systems and the cable (keys: arrows / space / Esc)">▶ Tour</button>
+    <button class="tourgo" id="tourGo2" style="left:92px;background:#1d2b38" title="Nov 11 training tour: seven stops, about 30 min (keys: arrows / space, 1-7 jump to a stop, Esc)">▶ Nov 11</button>
     <div id="tour" hidden aria-live="polite">
       <div class="tbar"><i id="tprog"></i></div>
+      <div class="tchap" id="tchap"></div>
       <div class="tcap" id="tcap"><p class="tsec" id="tsec"></p><h2 id="ttl"></h2>
         <dl><dt>Equipment</dt><dd id="teq"></dd><dt>System</dt><dd id="tsys"></dd><dt>Cable</dt><dd class="cab" id="tcab"></dd></dl></div>
       <div class="tnav"><button id="tPrev" aria-label="Previous stop">‹ Back</button><span id="tnum"></span><button id="tNext" aria-label="Next stop">Next ›</button><button id="tExit">Exit</button></div>
@@ -839,7 +846,8 @@ toggle('bFill', on=>{ XR.fill=on; xrayBuild(); xraySync();
 
 // ---------- guided tour: the power path, the electrical systems and the cable ----------
 const TOUR = /*TOUR_JSON*/null;
-const T = {on:false, i:-1, fly:null, arrive:0, base:null, saved:null, pending:null};
+const TOUR2 = /*TOUR2_JSON*/null;
+const T = {on:false, i:-1, fly:null, arrive:0, base:null, saved:null, pending:null, tour:null, chaps:[]};
 const tourEl=document.getElementById('tour'), tcap=document.getElementById('tcap'), tprog=document.getElementById('tprog');
 const lensFov = lens => 2*Math.atan((18/lens)/camera.aspect)*180/Math.PI;
 const ease = k => k<.5 ? 4*k*k*k : 1-Math.pow(-2*k+2,3)/2;
@@ -852,7 +860,7 @@ function tourLayers(s){
   labelsEl.hidden = true;
 }
 function tourGo(i){
-  if(!TOUR) return; i=Math.max(0,Math.min(TOUR.stops.length-1,i)); const s=TOUR.stops[i]; T.i=i;
+  const TR=T.tour||TOUR; if(!TR) return; i=Math.max(0,Math.min(TR.stops.length-1,i)); const s=TR.stops[i]; T.i=i;
   if(T.pending) tourLayers(T.pending); T.pending=s;            // the new stop's layers switch in mid-flight
   const t0=now(), fc=camera.position.clone(), ft=T.base ? T.base.t.clone() : controls.target.clone(), c=P(...s.c), t=P(...s.t);
   const d=fc.distanceTo(c), dur=Math.min(6500, Math.max(2600, 1800 + d*1.6));
@@ -861,8 +869,9 @@ function tourGo(i){
   T.base=null;
   document.getElementById('tsec').textContent=s.sec; document.getElementById('ttl').textContent=s.title;
   document.getElementById('teq').textContent=s.eq; document.getElementById('tsys').textContent=s.sys; document.getElementById('tcab').textContent=s.cab;
-  document.getElementById('tnum').textContent=`${i+1} / ${TOUR.stops.length}`;
-  tprog.style.width=((i+1)/TOUR.stops.length*100)+'%';
+  document.getElementById('tnum').textContent=`${i+1} / ${TR.stops.length}`;
+  tprog.style.width=((i+1)/TR.stops.length*100)+'%';
+  chapMark();
   return dur;
 }
 function tourTick(now_){
@@ -872,13 +881,19 @@ function tourTick(now_){
     tcap.style.opacity = Math.max(0, 1-k*4);
     if(T.pending && k>=.45){ tourLayers(T.pending); T.pending=null; }
     if(k>=1){ if(T.pending){ tourLayers(T.pending); T.pending=null; } T.fly=null; T.arrive=f.t0+f.dur; T.base={c:f.c.clone(), t:f.t.clone()}; camera.near=f.near; camera.updateProjectionMatrix(); } }
-  else if(T.base){ const s=TOUR.stops[T.i], sec=(now_-T.arrive)/1000, a=THREE.MathUtils.degToRad((s.drift??1)*sec);
+  else if(T.base){ const s=(T.tour||TOUR).stops[T.i], sec=(now_-T.arrive)/1000, a=THREE.MathUtils.degToRad((s.drift??1)*sec);
     const off=T.base.c.clone().sub(T.base.t).applyAxisAngle(new THREE.Vector3(0,1,0), a).multiplyScalar(1-Math.min(.06, .005*sec));
     camera.position.copy(T.base.t).add(off); camera.lookAt(T.base.t); controls.target.copy(T.base.t);
     tcap.style.opacity = Math.min(1, Math.max(0,(sec-.15)/.6)); }
 }
-function tourStart(i=0){
-  if(!TOUR) return; T.on=true; T.saved={near:camera.near, fov:camera.fov, tags:labelsEl.hidden};
+function chapMark(){ const bs=[...document.getElementById('tchap').children]; let cur=-1;
+  T.chaps.forEach((c,k)=>{ if(T.i>=c.i) cur=k; }); bs.forEach((b,k)=>b.setAttribute('aria-current', k===cur)); }
+function chapBuild(){ const el=document.getElementById('tchap'); el.innerHTML=''; T.chaps=[];
+  if(T.tour!==TOUR2) return;                                   // chapter bar: the Nov 11 tour's seven stops
+  let last=null; T.tour.stops.forEach((s,i)=>{ const m=/^(\d+) · (.*)$/.exec(s.sec||''); if(m && s.sec!==last){ T.chaps.push({i, n:m[1], name:m[2]}); } last=s.sec; });
+  for(const c of T.chaps){ const b=document.createElement('button'); b.textContent=`${c.n} ${c.name}`; b.onclick=()=>tourGo(c.i); el.appendChild(b); } }
+function tourStart(i=0, tour=TOUR){
+  if(!tour) return; T.tour=tour; chapBuild(); T.on=true; T.saved={near:camera.near, fov:camera.fov, tags:labelsEl.hidden};
   document.body.classList.add('tour'); tourEl.hidden=false; labelsEl.hidden=true; controls.enabled=false; T.base=null;
   resize(); tourGo(i);
 }
@@ -889,15 +904,18 @@ function tourExit(){
   camera.near=T.saved.near; camera.fov=T.saved.fov; camera.updateProjectionMatrix(); labelsEl.hidden=T.saved.tags; controls.enabled=true;
   requestAnimationFrame(resize);
 }
-document.getElementById('tourGo').onclick=()=>tourStart(0);
+document.getElementById('tourGo').onclick=()=>tourStart(0, TOUR);
+document.getElementById('tourGo2').onclick=()=>tourStart(0, TOUR2);
 document.getElementById('tNext').onclick=()=>tourGo(T.i+1);
 document.getElementById('tPrev').onclick=()=>tourGo(T.i-1);
 document.getElementById('tExit').onclick=tourExit;
 addEventListener('keydown', e=>{ if(!T.on) return;
   if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){ e.preventDefault(); tourGo(T.i+1); }
   else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){ e.preventDefault(); tourGo(T.i-1); }
-  else if(e.key==='Escape') tourExit(); });
+  else if(e.key==='Escape') tourExit();
+  else if(/^[1-9]$/.test(e.key) && T.chaps.length){ const c=T.chaps.find(c=>c.n===e.key); if(c){ e.preventDefault(); tourGo(c.i); } } });
 if(!TOUR) document.getElementById('tourGo').hidden=true;
+if(!TOUR2) document.getElementById('tourGo2').hidden=true;
 window.tourAPI = {start:tourStart, go:tourGo, exit:tourExit, n:()=>TOUR?TOUR.stops.length:0, state:()=>({i:T.i, flying:!!T.fly, cam:camera.position.toArray().map(Math.round), tgt:controls.target.toArray().map(Math.round), fov:Math.round(camera.fov)}),
   stop:i=>TOUR.stops[i], advance:t=>{ window.__rec=true; window.__clock=t; tourTick(t); },
   // recording: one deterministic frame at clock t, read straight from the canvas (captions are composited afterwards)

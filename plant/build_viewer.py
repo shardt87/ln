@@ -102,7 +102,10 @@ tpl = tpl.replace('<script id="mz" type="text/plain">', '<script id="cz" type="t
 tour = open(os.path.join(HERE, "presentation", "tour.json")).read()
 if GENERIC:                                           # unbranded build: generic cable names in the tour captions
     tour = tour.replace("ARMOR-X MC-HL", "MC-HL").replace("ARMOR-X ", "")
-for key, data in (("TOUR", tour), ("PALETTE", open(os.path.join(HERE, "palette.json")).read()),
+tour2 = open(os.path.join(HERE, "presentation", "tour_nov11.json")).read()
+if GENERIC:
+    tour2 = tour2.replace("ARMOR-X MC-HL", "MC-HL").replace("ARMOR-X ", "")
+for key, data in (("TOUR", tour), ("TOUR2", tour2), ("PALETTE", open(os.path.join(HERE, "palette.json")).read()),
                   ("REPORT", open(os.path.join(HERE, "verify_report.json")).read())):
     tpl = tpl.replace(f"/*{key}_JSON*/null", data)
 OUT = sys.argv[sys.argv.index("--out") + 1] if "--out" in sys.argv else os.path.join(HERE, "viewer", "index.html")

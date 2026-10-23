@@ -1,0 +1,430 @@
+{
+ "note": "Nov 11 training tour (presentation/Nov11_run_of_show.md): the seven stops of the run of show, about 30 min. Chapters = the sec values; the viewer's chapter bar (and keys 1-7) jumps to the first stop of each. Cameras as in tour.json.",
+ "stops": [
+  {
+   "sec": "Welcome \u00b7 SW-3X1 power campus",
+   "title": "A 3x1 gas power campus, from fuel to the grid",
+   "eq": "Three gas turbines, three HRSGs, one steam turbine; modular yard, battery storage, a behind-the-meter data centre, LNG",
+   "sys": "About 1.6 GW of combined cycle plus modular generation; conceptual, sized like real US plants",
+   "cab": "About 6,000 cable runs and 6.4 million ft in the model's cable schedule",
+   "c": [
+    -420,
+    -820,
+    760
+   ],
+   "t": [
+    1250,
+    880,
+    0
+   ],
+   "lens": 34,
+   "show": "O6",
+   "drift": 1.2
+  },
+  {
+   "sec": "1 \u00b7 Grid and switchyard",
+   "title": "230 kV breaker-and-a-half switchyard",
+   "eq": "Circuit breakers, disconnects, CTs and VTs, line take-off gantries",
+   "sys": "Two breakers per circuit: any breaker can be maintained without an outage",
+   "cab": "CT / VT and breaker control cable in trench to the relay house; ACSR overhead conductor to the utility",
+   "c": [
+    2140,
+    15,
+    95
+   ],
+   "t": [
+    1450,
+    160,
+    10
+   ],
+   "lens": 28,
+   "drift": 0.8
+  },
+  {
+   "sec": "1 \u00b7 Grid and switchyard",
+   "title": "Generator step-up transformers",
+   "eq": "Three 21/230 kV GSUs with firewalls, HV bushings, surge arresters, take-off gantries",
+   "sys": "Each unit's generator is stepped up to 230 kV and taken overhead to the switchyard",
+   "cab": "CT, alarm and cooling-control cable in Type TC-ER; deluge fire-protection wiring; MV-105 to the unit transformers",
+   "c": [
+    705,
+    255,
+    34
+   ],
+   "t": [
+    640,
+    340,
+    22
+   ],
+   "lens": 24,
+   "drift": 1.2
+  },
+  {
+   "sec": "2 \u00b7 Turbine hall",
+   "title": "Gas turbine and generator",
+   "eq": "H-class gas turbine and hydrogen-cooled generator on the EL 20 turbine deck",
+   "sys": "The generator makes power at about 21 kV (typical for this class)",
+   "cab": "Instrument, control and lube-oil skid cables drop from the overhead tray to the skids",
+   "c": [
+    604,
+    466,
+    46
+   ],
+   "t": [
+    634,
+    506,
+    28
+   ],
+   "lens": 24,
+   "hide": [
+    "HALL_ROOF"
+   ],
+   "drift": 1.5
+  },
+  {
+   "sec": "2 \u00b7 Turbine hall",
+   "title": "Isolated-phase bus to the step-up transformer",
+   "eq": "Isolated-phase bus, generator circuit breaker, unit auxiliary transformer tap, GSU",
+   "sys": "About 11 kA per phase at 21 kV leaves the generator; the GSU steps it up to 230 kV",
+   "cab": "No cable on the main path: at these currents it is bus duct. Cable starts at the taps",
+   "c": [
+    694,
+    326,
+    42
+   ],
+   "t": [
+    636,
+    384,
+    21
+   ],
+   "lens": 24,
+   "hide": [
+    "HALL_ROOF"
+   ],
+   "drift": 1.5
+  },
+  {
+   "sec": "2 \u00b7 Turbine hall",
+   "title": "R1: 13.8 kV and 4.16 kV switchgear",
+   "eq": "Metal-clad switchgear lineups across the operating aisle, MCCs, protection and control panels",
+   "sys": "The plant runs on its own power: unit auxiliary transformers feed 13.8 kV, then 4.16 kV and 480 V",
+   "cab": "MV-105 15 kV and 5 kV to motors and transformers; Type TC-ER 600 V power and control",
+   "c": [
+    456,
+    636.5,
+    6
+   ],
+   "t": [
+    460.5,
+    700,
+    4.6
+   ],
+   "lens": 16,
+   "add": [
+    "R1_INTERIOR"
+   ],
+   "near": 0.3,
+   "drift": 1.0
+  },
+  {
+   "sec": "3 \u00b7 HRSG and its e-house",
+   "title": "HRSG 1: from the e-house to the marshalling box",
+   "eq": "HRSG casing, EL 42 control and instrument tray, marshalling box",
+   "sys": "Hundreds of transmitters, valves and thermocouples per HRSG, marshalled locally",
+   "cab": "Instrumentation PLTC / TC-ER shielded pairs, thermocouple extension, RTD triads",
+   "c": [
+    546,
+    728,
+    64
+   ],
+   "t": [
+    584,
+    662,
+    32
+   ],
+   "lens": 22,
+   "drift": 1.2
+  },
+  {
+   "sec": "3 \u00b7 HRSG and its e-house",
+   "title": "Inside the HRSG e-house",
+   "eq": "T-R2A 2,500 kVA, LC-R2A 480 V switchgear, two MCCs, VFDs, DCS marshalling, UPS and 125 V DC",
+   "sys": "13.8 kV in, 480 V out to every motor, valve and heater on the HRSG; the DCS I/O for the train",
+   "cab": "MV-105 primary, 40 x 500 kcmil secondary, TC-ER drops into every bucket, instrument home runs; one HRSG train = 707 cables, ~157,000 ft",
+   "c": [
+    534,
+    606,
+    27
+   ],
+   "t": [
+    570,
+    636,
+    5
+   ],
+   "lens": 22,
+   "hide": [
+    "HALL_ROOF",
+    "R2A_ROOF"
+   ],
+   "drift": 0.8
+  },
+  {
+   "sec": "3 \u00b7 HRSG and its e-house",
+   "title": "The stack and the CEMS shelter",
+   "eq": "Stack probes at EL 103, heated sample line, walk-in analyzer shelter (NOx, CO, O2, NH3 slip)",
+   "sys": "Continuous emissions monitoring: the data that keeps the plant in compliance",
+   "cab": "TC-ER power, PLTC instrument pairs, FPLR fire alarm, fibre to the control room; ~31 cables per shelter",
+   "c": [
+    680,
+    790,
+    34
+   ],
+   "t": [
+    655,
+    814,
+    3
+   ],
+   "lens": 28,
+   "hide": [
+    "HALL_ROOF",
+    "CEMS_ROOF"
+   ],
+   "drift": 1.0
+  },
+  {
+   "sec": "3 \u00b7 HRSG and its e-house",
+   "title": "Top of the stack",
+   "eq": "Red aviation obstruction lights, lighting junction box and photocell, lightning air terminals",
+   "sys": "Lights fed from the e-house with a failure alarm to the DCS; bare-copper down conductors to the ground grid",
+   "cab": "TC-ER up 180 ft of conduit, a control cable for the alarm, bare copper grounding",
+   "c": [
+    596,
+    766,
+    194
+   ],
+   "t": [
+    628,
+    790,
+    174
+   ],
+   "lens": 30,
+   "drift": 1.0
+  },
+  {
+   "sec": "4 \u00b7 Cooling and water",
+   "title": "The air-cooled condenser",
+   "eq": "80 fan cells on a raised deck, steam ducts and street risers, wind wall, stair towers",
+   "sys": "Dry cooling: the steam turbine exhaust is condensed by air, so the plant needs no cooling-tower water",
+   "cab": "VFD cable from the R4 drives to every fan motor, up the street risers in tray",
+   "c": [
+    1500,
+    300,
+    165
+   ],
+   "t": [
+    1100,
+    800,
+    90
+   ],
+   "lens": 20,
+   "drift": 0.8
+  },
+  {
+   "sec": "4 \u00b7 Cooling and water",
+   "title": "R4: the air-cooled condenser fan drives",
+   "eq": "Two lineups of variable-frequency drives, output trays overhead",
+   "sys": "One 480 V drive per fan, 80 fans on the air-cooled condenser",
+   "cab": "VFD cable: three symmetrical grounds and an overall shield, to contain common-mode noise",
+   "c": [
+    1148,
+    321.5,
+    6.8
+   ],
+   "t": [
+    1210,
+    321.5,
+    5.6
+   ],
+   "lens": 16,
+   "add": [
+    "R4_INTERIOR"
+   ],
+   "near": 0.3,
+   "drift": 1.0
+  },
+  {
+   "sec": "5 \u00b7 Modular generation",
+   "title": "The modular power yard",
+   "eq": "RICE engine hall, simple-cycle units, aeroderivatives, fuel cells, microturbines, the PCM and MOD-EH",
+   "sys": "Fast-start capacity on its own 13.8 kV collector, beside the combined cycle",
+   "cab": "MV-105 15 kV collector feeders in tray and duct bank to MOD-EH",
+   "c": [
+    1560,
+    760,
+    230
+   ],
+   "t": [
+    1930,
+    1130,
+    0
+   ],
+   "lens": 32,
+   "drift": 1.0
+  },
+  {
+   "sec": "5 \u00b7 Modular generation",
+   "title": "RICE engine hall",
+   "eq": "Eight 18-cylinder gas engines in one hall: exhaust trains, SCRs, 90 ft stacks, radiators",
+   "sys": "Reciprocating engine-generators: fast start, high part-load efficiency, little water",
+   "cab": "MV-105 generator leads; ARMOR-X MC on strut to the radiator fan disconnects",
+   "c": [
+    1840,
+    955,
+    26
+   ],
+   "t": [
+    1700,
+    1035,
+    24
+   ],
+   "lens": 24,
+   "drift": 1.2
+  },
+  {
+   "sec": "5 \u00b7 Modular generation",
+   "title": "Simple-cycle aeroderivative units",
+   "eq": "Two LM6000-class units: inlet filter house, turbine enclosure, SCR, 80 ft stack",
+   "sys": "Peaking power in about ten minutes from start; 13.8 kV generators onto the collector",
+   "cab": "MV-105 generator leads; Type TC-ER control; ARMOR-X MC-HL in the fuel-gas skid",
+   "c": [
+    2085,
+    1120,
+    30
+   ],
+   "t": [
+    2010,
+    1205,
+    16
+   ],
+   "lens": 24,
+   "drift": 1.2
+  },
+  {
+   "sec": "5 \u00b7 Modular generation",
+   "title": "Battery energy storage",
+   "eq": "Battery containers, PCS / MV skids, DC trenches, collector feeders",
+   "sys": "Rides through load steps and supports the grid in seconds",
+   "cab": "2 kV DC conductors in the trench; MV-105 35 kV aluminium collector circuits",
+   "c": [
+    1548,
+    596,
+    28
+   ],
+   "t": [
+    1672,
+    538,
+    4
+   ],
+   "lens": 24,
+   "drift": 1.2
+  },
+  {
+   "sec": "6 \u00b7 Behind the meter",
+   "title": "A data-centre campus behind the meter",
+   "eq": "About 150 MW of IT load: two data halls, rooftop dry coolers, 36 backup gensets, a 40 MW / 80 MWh BESS",
+   "sys": "Supplied from the modular yard; the grid tie is normally open",
+   "cab": "13.8 kV cable bus from MOD-EH to the step-ups; 34.5 kV distribution to the halls",
+   "c": [
+    2380,
+    140,
+    340
+   ],
+   "t": [
+    2900,
+    900,
+    20
+   ],
+   "lens": 24,
+   "drift": 0.8
+  },
+  {
+   "sec": "6 \u00b7 Behind the meter",
+   "title": "Three ways to power the campus",
+   "eq": "13.8 / 34.5 kV step-ups, the 230 kV tie, switchgear and the BTM battery",
+   "sys": "1 islanded gensets and battery \u00b7 2 from the modular yard \u00b7 3 grid tie, normally open",
+   "cab": "MV-105 35 kV feeders; HV XLPE on the 230 kV tie",
+   "c": [
+    2470,
+    700,
+    60
+   ],
+   "t": [
+    2610,
+    830,
+    12
+   ],
+   "lens": 24,
+   "paths": true,
+   "drift": 1.0
+  },
+  {
+   "sec": "7 \u00b7 Fuel: gas yard and LNG",
+   "title": "The gas yard: Class I, Division 2",
+   "eq": "Metering, regulation, performance heater, filter-separators",
+   "sys": "Fuel gas makes this a classified area: every entry is sealed",
+   "cab": "Rigid conduit with EYS seals, and ARMOR-X MC-HL run exposed on strut",
+   "c": [
+    1622,
+    1519,
+    16
+   ],
+   "t": [
+    1700,
+    1504,
+    6
+   ],
+   "lens": 22,
+   "drift": 1.2
+  },
+  {
+   "sec": "7 \u00b7 Fuel: gas yard and LNG",
+   "title": "LNG: one rack, into the e-house roof",
+   "eq": "LNG e-house, MC-HL rack to the send-out pumps, reel roller, sheave, capstan",
+   "sys": "Send-out pump power and controls, with a roof entry into the e-house",
+   "cab": "ARMOR-X MC-HL pulled from the reel; intrinsically safe instrument cable (blue jacket)",
+   "c": [
+    2042,
+    1880,
+    32
+   ],
+   "t": [
+    2010,
+    1835,
+    6
+   ],
+   "lens": 26,
+   "drift": 1.2
+  },
+  {
+   "sec": "Wire and cable \u00b7 the whole campus",
+   "title": "Every megawatt travels through a cable",
+   "eq": "One campus, from the gas turbine to the grid and the data centre",
+   "sys": "Power, control, instrumentation, fire alarm and fibre",
+   "cab": "About 1,120 miles of cable, mapped on its route",
+   "c": [
+    -350,
+    -750,
+    1400
+   ],
+   "t": [
+    1210,
+    900,
+    40
+   ],
+   "lens": 34,
+   "show": "O6",
+   "xray": true,
+   "drift": 1.0
+  }
+ ]
+}

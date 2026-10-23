@@ -54,7 +54,7 @@ Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) t
 
 ## 2. The 3D tour: seven stops (30 min, about 4 min each)
 
-**How to run it:** share the viewer full screen and click the saved view for each stop. The **tour mode** (stop bar 1-7) is still to be built. Use the same three beats at every stop:
+**How to run it:** open the viewer and press **▶ Nov 11** (top left of the 3D window). It goes full screen with captions (Equipment / System / Cable). Use **→ / space** for the next view, **←** to go back, keys **1-7** (or the chapter bar at the top) to jump to a stop, and **Esc** to leave. The tour has 21 views: an opening, 19 across the seven stops, and a closing cable X-ray. Use the same three beats at every stop:
 
 1. **What it does** (1 min)
 2. **Electrical system** (1 min)
@@ -186,7 +186,7 @@ Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) t
 
 | Date | Task |
 |---|---|
-| Oct 24-27 | React to this draft; mark what to cut or keep. Claude builds the tour mode in the viewer (7 stops). |
+| Oct 24-27 | React to this draft; mark what to cut or keep. Tour mode done (▶ Nov 11 in the viewer); walk it once and note any view to change. |
 | Oct 28-31 | One slide per stop (reuse zone and boiler slides). Optional: modular turbine packages, **only if done in one day**. |
 | Nov 2-3 | Full-quality render batch overnight (renders/RENDER_QUEUE.md); record the backup video. |
 | **Nov 4** | **Dry run with one colleague, timed.** |
