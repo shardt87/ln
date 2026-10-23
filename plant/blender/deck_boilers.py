@@ -76,7 +76,7 @@ def foot(n, short=False):
     left = ("SW-3X1 MODEL &middot; NOT ENGINEERED" if short else
             "SW-3X1 MODEL &middot; CONCEPTUAL ILLUSTRATION, NOT ENGINEERED &middot; QUANTITIES FROM THE MODEL'S CABLE SCHEDULE")
     return f"""<div class="abs foot" style="left:64px;right:64px;bottom:26px;display:flex;justify-content:space-between;
-      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/11</span></div>"""
+      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/12</span></div>"""
 
 
 def slide1():
@@ -164,7 +164,7 @@ def slide2():
     <img src="{img('BB2')}" style="width:100%;height:100%;object-fit:cover"></div>
   <div class="abs cap" style="left:870px;top:712px;width:243px">Cable work at the HRSG e-house</div>
   <div class="abs cap" style="left:1133px;top:712px;width:243px">Old module on the hook</div>
-  {foot(10, short=True).replace("left:64px", "left:870px")}
+  {foot(11, short=True).replace("left:64px", "left:870px")}
 </section>"""
 
 
@@ -263,7 +263,7 @@ def slide3():
   <div class="abs cap" style="left:64px;top:735px;width:1312px">Stock numbers are one catalogue size per product, from
     Southwire's product listings; every size and construction is on the same SPEC. Confirm current stock with Southwire
     customer service before quoting.</div>
-  {foot(11)}
+  {foot(12)}
 </section>"""
 
 
@@ -984,12 +984,64 @@ def slide_spec():
 </section>"""
 
 
+# ------------------------------------------------------------------------------- pain points and value proposition
+PAINS = [
+    ("Mostly signal cable", "~74 % of an HRSG's cables are instrument or thermocouple pairs; bad shield grounding or routing "
+     "next to drives and MV makes noisy drum-level and flame-scanner signals that can trip the unit"),
+    ("Thermocouple extension errors", "~84 runs per train: wrong alloy, reversed polarity or copper substituted; found as a bad "
+     "tube-metal reading after startup"),
+    ("Heat and sun", "Hot casings, roof penthouses, drum platforms: 90-105 °C ratings, sunlight-resistant jackets, derating"),
+    ("Movement and cycling", "The HRSG grows inches when hot and cycles daily: slack at module joints, vibration, termination fatigue"),
+    ("Gas in the boiler", "Duct burners and fuel skids make Class I Div 2 areas; NFPA 85 burner management; conversions add it"),
+    ("Big parallel feeders", "3,007 A transformer secondary = 40 cables of 500 kcmil; equal lengths in congested tray"),
+    ("Drives", "SCR blowers and fans on VFDs: bearing currents and voltage spikes without VFD-rated cable"),
+    ("Scope gaps", "Vendor junction boxes, EPC home runs: legs fall between the two (our own schedule missed the 480 V "
+     "secondaries)"),
+    ("Schedule and labour", "Cable is on the critical path, above all in an outage; electricians are scarce; no room to stage reels"),
+]
+VALUES = [
+    ("One supplier, whole scope", "MV-105, TC-ER, ARMOR-X MC-HL and VFD, instrumentation, thermocouple extension, THHN, fire "
+     "alarm: one PO, one spec-compliance package (IEEE 1202, UL 1277 / 2225 / 13)"),
+    ("Faster pulls: SIMpull", "Pre-lubricated jacket cuts pulling force and time; parallel conductors on one reel go in one pull"),
+    ("Staged for the outage", "Cut-to-length reels labelled per pull, SIMpull Cradles for one-person payoff: ready before the trip"),
+    ("One cable for hazardous areas", "ARMOR-X MC-HL is rated Div 2 and Div 1: fewer conduits and seals, unaffected by "
+     "reclassification"),
+    ("The right construction", "VFD-rated cable for drives, individually shielded pairs, matched-alloy colour-coded "
+     "thermocouple extension"),
+    ("Engineering up front", "Ampacity, voltage drop, spec review; takeoff ready: ~705 cables, ~156,000 ft per train, "
+     "~470,000 ft for three"),
+    ("Sustainability", "Reel returns and scrap recycling for cable cut back in brownfield outages"),
+]
+
+
+def slide_value():
+    def items(rows, col):
+        return "".join(f'<div style="display:flex;gap:10px;padding:6px 0 7px;border-top:1px solid #2c3036">'
+                       f'<div style="width:9px;height:9px;margin-top:5px;background:{col};flex:none"></div><div>'
+                       f'<span style="font:800 14.5px/1.15 BC;color:{WHITE};text-transform:uppercase;letter-spacing:.03em">{h}</span>'
+                       f'<span style="font:400 12px/1.38 B;color:#c9ced3"> &nbsp;{t}</span></div></div>' for h, t in rows)
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:52px">Boiler solutions &nbsp;&middot;&nbsp; why it matters</div>
+  <div class="abs h2" style="left:62px;top:80px;font-size:50px">Pain points <em>and the answer</em></div>
+  <div class="abs" style="left:64px;top:150px;width:640px">
+    <div class="cnum" style="color:#ff7a5c;margin-bottom:6px">Technical pain points</div>{items(PAINS, "#ff7a5c")}</div>
+  <div class="abs" style="left:736px;top:150px;width:640px">
+    <div class="cnum" style="margin-bottom:6px">Value proposition</div>{items(VALUES, COPPER)}</div>
+  <div class="abs" style="left:64px;top:690px;width:1312px;border-top:2px solid {COPPER};padding-top:12px;font:800 22px/1.2 BC;
+       color:{WHITE};letter-spacing:.01em">"On an HRSG, cable is three-quarters instrumentation and fully on the critical path.
+    <em style="font-style:normal;color:{COPPER}">One spec-compliant supply, staged and fast to pull: wired on time, reading right
+    the first time."</em></div>
+  {foot(10)}
+</section>"""
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     import pymupdf
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS}</style></head><body>"
     out = pymupdf.open()
-    for i, sec in enumerate((slide1(), slide_basics(), slide_cycle(), slide_hero(), slide_elev(), slide_room(), slide_diagram(), slide_system(), slide_spec(), slide2(), slide3())):
+    for i, sec in enumerate((slide1(), slide_basics(), slide_cycle(), slide_hero(), slide_elev(), slide_room(), slide_diagram(), slide_system(), slide_spec(), slide_value(), slide2(), slide3())):
         hp = os.path.join(OUT, f"_s{i}.html")
         sec = sec.replace('<section class="page slide">', '<section class="page slide"><div class="s">', 1).replace(
             "</section>", "</div></section>")

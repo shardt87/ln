@@ -1,6 +1,6 @@
 # Boilers: greenfield and brownfield talking points
 
-Notes for the boiler slides (SW-3X1_boilers.pdf, 11 slides). The equipment in the model and on the slides is generic. Company names appear only in these notes.
+Notes for the boiler slides (SW-3X1_boilers.pdf, 12 slides). The equipment in the model and on the slides is generic. Company names appear only in these notes.
 
 ## Who builds what (check the latest before each meeting)
 
@@ -135,6 +135,29 @@ write their specifications around them.
   - IEEE 80 / 665 (grounding);
   - API RP 500 / NEC 500 (area classification);
   - NETA ATS (field acceptance).
+
+## Pain points and the answer (slide 10)
+
+- **Pain points:**
+  - **Mostly signal cable:** about 74 % of an HRSG's cables are instrument or thermocouple pairs, and they are noise-sensitive.
+  - **Thermocouple-extension errors:** wrong alloy, reversed polarity or copper substituted.
+  - **Heat and sun.**
+  - **Movement and cycling.**
+  - **Gas in the boiler:** Class I Div 2 and NFPA 85.
+  - **Big parallel feeders:** 3,007 A, or 40 cables of 500 kcmil.
+  - **Drives:** VFD bearing currents and voltage spikes.
+  - **Scope gaps between the HRSG vendor and the EPC.** Our own schedule missed the 480 V secondaries until this pass, which makes a good real anecdote.
+  - **Schedule and labour.**
+- **The answer:**
+  - one supplier for the whole scope;
+  - SIMpull for faster pulls, with parallel sets in one pull;
+  - staged for the outage;
+  - ARMOR-X MC-HL rated for Div 2 and Div 1;
+  - the right construction (VFD-rated, individually shielded, matched-alloy);
+  - engineering up front, with the takeoff ready (~705 cables and ~156,000 ft per train);
+  - sustainability: reel returns and recycling.
+- **One line:** "On an HRSG, cable is three-quarters instrumentation and fully on the critical path. One spec-compliant supply, staged and fast to pull: wired on time, reading right the first time."
+- **Check before the meeting:** confirm which reel, cut-to-length, staging and recycling services Southwire offers today, and in which regions.
 
 ## The message for boiler companies
 

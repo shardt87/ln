@@ -496,3 +496,4 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 - Slide 3 / 2 accuracy pass: spent steam 100-150 °F (ACC), condensate pumps to the HRSG LP end and feed pumps from the LP drum / DA to HP / IP, reheat loop shown, GT exhaust 1,500-2,000 lb/s per GT.
 - Slide 2: 'Why it's there' panel (the HRSG's purpose: ~1/3 more power from the same fuel, ~40 % -> 60 %+, SCR housing, duct firing, the bridge between the two halves). Footnote changed to H-class. Talking points updated.
 - Slide 2 panel restyled as a quick review (owner liked the chat format): 'What it is' (without it / with it / the payoff) and 'Fun facts' bullets (.qr list style).
+- Boiler deck slide 10 'Pain points and the answer' (PAINS / VALUES in deck_boilers.py): 9 technical pain points, 7 value points, closing line. The deck is now 12 slides (brownfield 11, offering 12).
