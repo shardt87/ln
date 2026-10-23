@@ -48,7 +48,22 @@ Notes for the boiler slides (SW-3X1_boilers.pdf, 15 slides). The equipment in th
   - PLTC for level, conductivity, pressure and temperature.
 - **Check before quoting:** all ratings are typical. Confirm voltage, MW and sizing for each project.
 
-## How an HRSG works (slide 4)
+## Boiler Row: three boilers, three cable stories (slide 4)
+
+- **What it is:** the open land east of the auxiliary boiler, laid out as a row of three boilers, each with its own cable story. The utility and electric boilers are showcase pieces, not part of the SW-3X1 plant; their cable numbers are typical estimates (tools/boiler_row_numbers.py), not the plant schedule.
+- **1 · Package boiler (AB-1):** **83 cables, about 42,000 ft.** Control-dense and compact; most of it is pre-wired at the factory.
+- **2 · Utility gas boiler (UB-1, 300 MW class):** **about 1,840 cables and 970,000 ft** for the boiler and its steam-turbine island.
+  - Two-thirds of the footage is instrument pairs and thermocouple extension.
+  - ARMOR-X MC-HL at every burner and on the gas train (Class I Div 2).
+  - MV-105 to the FD fans and feed pumps.
+  - This is the kind of unit being built new for AI-campus power, and the same burner front is what a coal-to-gas conversion adds.
+- **3 · Electric (electrode) boiler (EB-1, 30 MW at 13.8 kV):** only **97 cables, about 27,000 ft**, but the cable is the fuel line.
+  - 30 MW at 13.8 kV is **about 1,255 A**, so the feed is **18 MV-105 750 kcmil cables in three parallel sets**, plus the feeder from the plant switchgear.
+  - No flame and no stack: steam from grid or surplus power.
+- **Line:** "The package boiler is control cable, the utility boiler is instrument cable, and the electric boiler is MV cable."
+- **OEM angle (talking points only, never on the slide):** the gas-fired utility boiler is the B&W / Base Electron type of project (4 x 300 MW); electrode boilers are the electrification play.
+
+## How an HRSG works (slide 5)
 
 **Why it's there (the panel at the top right of the slide).**
 - **The problem:** a gas turbine alone wastes about 60 % of its fuel energy as exhaust at about 1,100 °F, so it runs at about 40 % efficiency.
@@ -84,7 +99,7 @@ The temperatures and pressures below are typical ranges for a three-pressure reh
   - CEMS instrumentation and fibre at the stack.
 - **Cycling is the wear story.** A modern unit hot-starts in about an hour, and every start heats and cools the thick parts (drums, headers). That's why there are so many tube-metal thermocouples: about 84 thermocouple-extension cables per train in the model.
 
-## The whole cycle: what goes in, what comes out (slide 5)
+## The whole cycle: what goes in, what comes out (slide 6)
 
 - **In:** natural gas, air and a little makeup water. **Out:** electricity to the 230 kV grid, stack gas at about 180 °F (CO2 and water vapour, with NOx cut by the SCR), and heat rejected to the air at the condenser.
 - **The path:**
@@ -117,7 +132,7 @@ The temperatures and pressures below are typical ranges for a three-pressure reh
    - instrumentation and fire alarm.
 3. **Brownfield module replacement (HRSG 3 outage).** An HP evaporator module is lifted out through the opened roof, and the new module waits on a lowboy. The cable work happens in the same window: SIMpull reels, pre-terminated harnesses landing on the marshalling box, and old cable cut back into recycling.
 
-## Inside the e-house and the full wiring (slides 8 and 10)
+## Inside the e-house and the full wiring (slides 9 and 11)
 
 - **Slide 4** lifts the roof off R2A, the HRSG 1 e-house. It traces every leg from the transformer to the drops into each section:
   - the 13.8 kV primary (MV-105, 3 cables, 660 ft) into T-R2A;
@@ -130,7 +145,7 @@ The temperatures and pressures below are typical ranges for a three-pressure reh
   - R2A also serves the GT1 unit, so the feed is shown but not counted in the train.
 - The 480 V secondary was missing from the schedule until this pass. It is now in for every unit and load-centre transformer (T-R2A/B/C, T-R3, LCT-A/B). At 10 to 12 parallel sets, it is also a bus-duct candidate; ask the EPC which they carry.
 
-## The stack and the CEMS shelter (slide 9)
+## The stack and the CEMS shelter (slide 10)
 
 - **What it is:** a continuous emissions monitoring system (CEMS). Each stack has a walk-in analyzer shelter at its foot that proves the plant's NOx, CO, O2 and ammonia slip to the regulator around the clock.
 - **How it works:**
@@ -153,7 +168,7 @@ The temperatures and pressures below are typical ranges for a three-pressure reh
 - **Why it matters:** if the CEMS goes down, the plant is out of compliance. That makes the instrument pairs and the fibre the most important cable on the site per foot.
 - **Shelter makers:** the photos the owner shared came from a CEMS-shelter manufacturer. Several companies make prefabricated walk-in shelters with factory-wired panels, trays, grounding and fire suppression, which is another pre-wired, plug-and-play cable opportunity. Keep company names off the slides.
 
-## The electrical system: levels and ratings (slide 11)
+## The electrical system: levels and ratings (slide 12)
 
 All ratings are the model's typical values, not engineered.
 
@@ -170,7 +185,7 @@ All ratings are the model's typical values, not engineered.
   - **Arc flash is 8.4 cal/cm² at 13.8 kV and 24.6 at 480 V** (model labels). The 480 V gear is the higher hazard: a lower voltage, but more current and longer clearing.
 - **Real plants vary.** Many plants put the feed pumps on a 4.16 or 6.9 kV bus; Mill Creek 6 uses 6.9 kV. The cable logic is the same.
 
-## What the spec calls for (slide 12)
+## What the spec calls for (slide 13)
 
 Public sources are listed in `references/boilers/README.md`. Have the standard numbers ready; boiler and EPC engineers
 write their specifications around them.
@@ -199,7 +214,7 @@ write their specifications around them.
   - API RP 500 / NEC 500 (area classification);
   - NETA ATS (field acceptance).
 
-## Pain points and the answer (slide 13)
+## Pain points and the answer (slide 14)
 
 - **Pain points:**
   - **Mostly signal cable:** about 74 % of an HRSG's cables are instrument or thermocouple pairs, and they are noise-sensitive.
@@ -236,7 +251,7 @@ write their specifications around them.
 - The model is a conceptual illustration, not engineered. Cable counts and footage are typical quantities from the model's cable schedule (see the workbook's Audit sheet).
 - Duct-burner and package-boiler device counts are typical for the equipment class, not a specific vendor's design.
 
-## The offering (slide 15): product, SPEC, stock number, link
+## The offering (slide 16): product, SPEC, stock number, link
 
 Stock numbers are one representative catalogue size per product, taken from Southwire's product listings. Every size and construction is on the same SPEC. Confirm current stock with Southwire customer service before quoting.
 

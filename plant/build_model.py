@@ -1841,6 +1841,8 @@ LAYERS = {
     "OPT_DC": ("L BTM data centre (~150 MW, design option)", "Optional / adjacent"),
     "OPT_DC_ROUTES": ("L BTM routes", "Optional routes"),
     "OPT_UNDERGROUND": ("Underground: option duct banks", "Optional routes"),
+    "OPT_BOILERS": ("Boiler Row: utility gas boiler and electric boiler (showcase)", "Optional / adjacent"),
+    "BOILER_ROW_ROOF": ("Boiler Row: electric-boiler roof and south / east walls (cutaway)", "Optional / adjacent"),
     "NOMOD_GROUND": ("Ground patch (views without the modular yard)", "Base plant"),
     "NOBESS_GROUND": ("Ground patch (views without the BESS)", "Base plant"),
 }
@@ -2349,6 +2351,8 @@ import r2a_interior as _r2a                       # boiler slide 4: R2A e-house 
 print('R2A interior', _r2a.build())
 import cems_lod3 as _cems                       # boiler deck: CEMS shelters at LOD 3 (analyzers, sample line, every cable)
 print('CEMS shelters', _cems.build())
+import boiler_row as _brw                         # Boiler Row (Oct 23): utility gas boiler UB-1 + STG, electric boiler EB-1, sign
+print('Boiler Row', _brw.build())
 import brownfield as _bf                          # boiler section: HRSG 3 module-replacement outage (brownfield)
 print('brownfield outage', _bf.build())
 

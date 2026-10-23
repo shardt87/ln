@@ -82,5 +82,211 @@
    "Instrumentation PLTC / TC-ER 300 V, #18 twisted shielded pairs, overall shield": 12760,
    "Type TC-ER 600 V 3/C Cu XHHW-2 + ground, PVC jacket": 15060
   }
+ },
+ "ub": {
+  "runs": 13,
+  "cables": 1843,
+  "ft": 972360,
+  "classes": {
+   "MV 15 kV": {
+    "cables": 36,
+    "ft": 16080
+   },
+   "LV 600 V": {
+    "cables": 122,
+    "ft": 55200
+   },
+   "Control": {
+    "cables": 472,
+    "ft": 229680
+   },
+   "Instrumentation": {
+    "cables": 1181,
+    "ft": 640560
+   },
+   "Fibre / data": {
+    "cables": 12,
+    "ft": 18840
+   },
+   "Fire alarm": {
+    "cables": 20,
+    "ft": 12000
+   }
+  },
+  "rows": [
+   {
+    "cls": "MV 15 kV",
+    "product": "MV-105 15 kV 1/C 500 kcmil",
+    "what": "FD fans A/B, 13.8 kV motors (1 set of 3 each)",
+    "cables": 6,
+    "ft": 2700
+   },
+   {
+    "cls": "MV 15 kV",
+    "product": "MV-105 15 kV 1/C 750 kcmil",
+    "what": "boiler feed pumps A/B, 13.8 kV (2 sets of 3 each)",
+    "cables": 12,
+    "ft": 5880
+   },
+   {
+    "cls": "MV 15 kV",
+    "product": "MV-105 15 kV 1/C 500 kcmil",
+    "what": "condensate pumps A/B, 4.16 kV (1 set of 3 each)",
+    "cables": 6,
+    "ft": 3180
+   },
+   {
+    "cls": "MV 15 kV",
+    "product": "MV-105 15 kV 1/C 750 kcmil",
+    "what": "unit station-service transformer primaries (2 sets of 3, x2)",
+    "cables": 12,
+    "ft": 4320
+   },
+   {
+    "cls": "LV 600 V",
+    "product": "Type TC-ER 600 V 3/C + G",
+    "what": "480 V motors, valve actuators, heaters, HVAC",
+    "cables": 120,
+    "ft": 54000
+   },
+   {
+    "cls": "Control",
+    "product": "Control cable 600 V Type TC-ER #14",
+    "what": "DCS control, interlocks, MCC starters",
+    "cables": 380,
+    "ft": 193800
+   },
+   {
+    "cls": "Control",
+    "product": "ARMOR-X MC-HL 600 V (Class I Div 2)",
+    "what": "burner management: 12 burners x scanner, igniter, valves, position switches; gas-train SSOVs and vent",
+    "cables": 92,
+    "ft": 35880
+   },
+   {
+    "cls": "Instrumentation",
+    "product": "Instrumentation PLTC #18 shielded pairs",
+    "what": "pressure, flow, level, drum, O2, analyzers",
+    "cables": 900,
+    "ft": 495000
+   },
+   {
+    "cls": "Instrumentation",
+    "product": "Thermocouple extension, type K",
+    "what": "furnace, superheater, reheater, metal temperatures",
+    "cables": 250,
+    "ft": 137500
+   },
+   {
+    "cls": "Instrumentation",
+    "product": "Instrumentation PLTC #18 shielded pairs",
+    "what": "CEMS shelter at the stack (same as the HRSG shelter)",
+    "cables": 31,
+    "ft": 8060
+   },
+   {
+    "cls": "LV 600 V",
+    "product": "Type TC-ER 600 V 3/C + G #10",
+    "what": "stack aviation obstruction lights + failure alarm",
+    "cables": 2,
+    "ft": 1200
+   },
+   {
+    "cls": "Fibre / data",
+    "product": "Fibre optic, single-mode",
+    "what": "DCS ring, BMS, CEMS, STG controls",
+    "cables": 12,
+    "ft": 18840
+   },
+   {
+    "cls": "Fire alarm",
+    "product": "Fire alarm FPLR 2/C #14",
+    "what": "boiler house, STG hall, burner front detectors",
+    "cables": 20,
+    "ft": 12000
+   }
+  ]
+ },
+ "eb": {
+  "runs": 7,
+  "cables": 97,
+  "ft": 27230,
+  "classes": {
+   "MV 15 kV": {
+    "cables": 18,
+    "ft": 11790
+   },
+   "LV 600 V": {
+    "cables": 10,
+    "ft": 1600
+   },
+   "Control": {
+    "cables": 24,
+    "ft": 4320
+   },
+   "Instrumentation": {
+    "cables": 40,
+    "ft": 7200
+   },
+   "Fibre / data": {
+    "cables": 1,
+    "ft": 1240
+   },
+   "Ground": {
+    "cables": 4,
+    "ft": 1080
+   }
+  },
+  "rows": [
+   {
+    "cls": "MV 15 kV",
+    "product": "MV-105 15 kV 1/C 750 kcmil",
+    "what": "13.8 kV feeder, plant switchgear to the EB-1 e-house (3 sets of 3)",
+    "cables": 9,
+    "ft": 10620
+   },
+   {
+    "cls": "MV 15 kV",
+    "product": "MV-105 15 kV 1/C 750 kcmil",
+    "what": "EB-1 breaker to the three boiler bushings (3 sets of 3)",
+    "cables": 9,
+    "ft": 1170
+   },
+   {
+    "cls": "LV 600 V",
+    "product": "Type TC-ER 600 V 3/C + G, VFD-rated",
+    "what": "circulation pumps, feedwater, aux transformer, HVAC, lighting",
+    "cables": 10,
+    "ft": 1600
+   },
+   {
+    "cls": "Control",
+    "product": "Control cable 600 V Type TC-ER #14",
+    "what": "PLC, breaker control, interlocks, electrode positioning",
+    "cables": 24,
+    "ft": 4320
+   },
+   {
+    "cls": "Instrumentation",
+    "product": "Instrumentation PLTC #18 shielded pairs",
+    "what": "pressure, level, conductivity, temperatures",
+    "cables": 40,
+    "ft": 7200
+   },
+   {
+    "cls": "Fibre / data",
+    "product": "Fibre optic, single-mode",
+    "what": "PLC to the plant DCS",
+    "cables": 1,
+    "ft": 1240
+   },
+   {
+    "cls": "Ground",
+    "product": "Bare copper 4/0 AWG",
+    "what": "vessel, e-house and cable-shield grounding",
+    "cables": 4,
+    "ft": 1080
+   }
+  ]
  }
 }

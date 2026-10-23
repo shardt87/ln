@@ -40,11 +40,11 @@ Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) t
 - Message: new gas build, modular and behind-the-meter (BTM) generation, and upgrades to the existing fleet all need cable.
 - **Check the market numbers you quote against current Southwire market intelligence.**
 
-**Slide 2: Simple cycle vs combined cycle (3 min).** Reuse boilers slide 5, "What goes in, what comes out".
+**Slide 2: Simple cycle vs combined cycle (3 min).** Reuse boilers slide 6, "What goes in, what comes out".
 - In: gas, air, a little water. Out: power, stack gas, heat.
 - The gas turbines make about 2/3 of the power; the steam from their exhaust makes about 1/3 more with no extra fuel.
 
-**Slide 3: How an HRSG works (2 min).** Reuse boilers slide 4: the "What it is" and "Fun facts" box.
+**Slide 3: How an HRSG works (2 min).** Reuse boilers slide 5: the "What it is" and "Fun facts" box.
 
 **Slide 4: The campus at a glance (2 min).** Use the 16-zone overview slide.
 - "This is SW-3X1, a 3x1 combined-cycle plant: three gas turbines, three HRSGs and one steam turbine, with a modular generation yard, a battery yard, a behind-the-meter data centre, LNG supply, and options for carbon capture and hydrogen."
@@ -54,7 +54,7 @@ Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) t
 
 ## 2. The 3D tour: seven stops (30 min, about 4 min each)
 
-**How to run it:** open the viewer and press **▶ Nov 11** (top left of the 3D window). It goes full screen with captions (Equipment / System / Cable). Use **→ / space** for the next view, **←** to go back, keys **1-7** (or the chapter bar at the top) to jump to a stop, and **Esc** to leave. The tour has 21 views: an opening, 19 across the seven stops, and a closing cable X-ray. Use the same three beats at every stop:
+**How to run it:** open the viewer and press **▶ Nov 11** (top left of the 3D window). It goes full screen with captions (Equipment / System / Cable). Use **→ / space** for the next view, **←** to go back, keys **1-7** (or the chapter bar at the top) to jump to a stop, and **Esc** to leave. The tour has 22 views: an opening, 20 across the seven stops, and a closing cable X-ray. Use the same three beats at every stop:
 
 1. **What it does** (1 min)
 2. **Electrical system** (1 min)
@@ -94,7 +94,9 @@ Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) t
 - **Show:**
   - the HRSG close-up;
   - the e-house cutaway with its 9 callouts;
-  - the CEMS shelter (boilers slides 6, 8 and 9). Pick **one** of the three if time is short.
+  - the CEMS shelter (boilers slides 7, 9 and 10). Pick **one** of the three if time is short.
+- **Close the stop on Boiler Row** (the last view of stop 3; boilers slide 4): the package, utility and electric boilers side by side.
+  - **Line:** "Three boilers, three cable stories. The package boiler is control cable, the utility boiler is instrument cable, and the electric boiler is MV cable."
 
 ### Stop 4: Cooling and water: air-cooled condenser and water treatment
 - **Does:** the ACC turns spent steam back into water. 80 fans, no cooling-tower water.
@@ -149,7 +151,7 @@ Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) t
   - MV, about 0.4 M ft.
 - Message: "Most of the footage is small cable: instrument and control. MV is the high-value part, but it isn't the volume."
 
-**Slide B: Product map (3 min).** Reuse boilers slide 12, "What the spec calls for", or the brochure product map:
+**Slide B: Product map (3 min).** Reuse boilers slide 13, "What the spec calls for", or the brochure product map:
 - MV-105;
 - TC-ER;
 - ARMOR-X MC-HL;
@@ -157,7 +159,7 @@ Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) t
 - SIMpull THHN;
 - fibre and fire alarm.
 
-**Slide C: Pain points and our answer (3 min).** Reuse boilers slide 13.
+**Slide C: Pain points and our answer (3 min).** Reuse boilers slide 14.
 
 **Close with three things to remember:**
 1. Gas plants are growing again, driven by data centres and firm power.

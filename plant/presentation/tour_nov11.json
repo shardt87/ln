@@ -2,7 +2,7 @@
  "note": "Nov 11 training tour (presentation/Nov11_run_of_show.md): the seven stops of the run of show, about 30 min. Chapters = the sec values; the viewer's chapter bar (and keys 1-7) jumps to the first stop of each. Cameras as in tour.json.",
  "stops": [
   {
-   "sec": "Welcome \u00b7 SW-3X1 power campus",
+   "sec": "Welcome · SW-3X1 power campus",
    "title": "A 3x1 gas power campus, from fuel to the grid",
    "eq": "Three gas turbines, three HRSGs, one steam turbine; modular yard, battery storage, a behind-the-meter data centre, LNG",
    "sys": "About 1.6 GW of combined cycle plus modular generation; conceptual, sized like real US plants",
@@ -22,7 +22,7 @@
    "drift": 1.2
   },
   {
-   "sec": "1 \u00b7 Grid and switchyard",
+   "sec": "1 · Grid and switchyard",
    "title": "230 kV breaker-and-a-half switchyard",
    "eq": "Circuit breakers, disconnects, CTs and VTs, line take-off gantries",
    "sys": "Two breakers per circuit: any breaker can be maintained without an outage",
@@ -41,7 +41,7 @@
    "drift": 0.8
   },
   {
-   "sec": "1 \u00b7 Grid and switchyard",
+   "sec": "1 · Grid and switchyard",
    "title": "Generator step-up transformers",
    "eq": "Three 21/230 kV GSUs with firewalls, HV bushings, surge arresters, take-off gantries",
    "sys": "Each unit's generator is stepped up to 230 kV and taken overhead to the switchyard",
@@ -60,7 +60,7 @@
    "drift": 1.2
   },
   {
-   "sec": "2 \u00b7 Turbine hall",
+   "sec": "2 · Turbine hall",
    "title": "Gas turbine and generator",
    "eq": "H-class gas turbine and hydrogen-cooled generator on the EL 20 turbine deck",
    "sys": "The generator makes power at about 21 kV (typical for this class)",
@@ -82,7 +82,7 @@
    "drift": 1.5
   },
   {
-   "sec": "2 \u00b7 Turbine hall",
+   "sec": "2 · Turbine hall",
    "title": "Isolated-phase bus to the step-up transformer",
    "eq": "Isolated-phase bus, generator circuit breaker, unit auxiliary transformer tap, GSU",
    "sys": "About 11 kA per phase at 21 kV leaves the generator; the GSU steps it up to 230 kV",
@@ -104,7 +104,7 @@
    "drift": 1.5
   },
   {
-   "sec": "2 \u00b7 Turbine hall",
+   "sec": "2 · Turbine hall",
    "title": "R1: 13.8 kV and 4.16 kV switchgear",
    "eq": "Metal-clad switchgear lineups across the operating aisle, MCCs, protection and control panels",
    "sys": "The plant runs on its own power: unit auxiliary transformers feed 13.8 kV, then 4.16 kV and 480 V",
@@ -127,7 +127,7 @@
    "drift": 1.0
   },
   {
-   "sec": "3 \u00b7 HRSG and its e-house",
+   "sec": "3 · HRSG and its e-house",
    "title": "HRSG 1: from the e-house to the marshalling box",
    "eq": "HRSG casing, EL 42 control and instrument tray, marshalling box",
    "sys": "Hundreds of transmitters, valves and thermocouples per HRSG, marshalled locally",
@@ -146,7 +146,7 @@
    "drift": 1.2
   },
   {
-   "sec": "3 \u00b7 HRSG and its e-house",
+   "sec": "3 · HRSG and its e-house",
    "title": "Inside the HRSG e-house",
    "eq": "T-R2A 2,500 kVA, LC-R2A 480 V switchgear, two MCCs, VFDs, DCS marshalling, UPS and 125 V DC",
    "sys": "13.8 kV in, 480 V out to every motor, valve and heater on the HRSG; the DCS I/O for the train",
@@ -169,7 +169,7 @@
    "drift": 0.8
   },
   {
-   "sec": "3 \u00b7 HRSG and its e-house",
+   "sec": "3 · HRSG and its e-house",
    "title": "The stack and the CEMS shelter",
    "eq": "Stack probes at EL 103, heated sample line, walk-in analyzer shelter (NOx, CO, O2, NH3 slip)",
    "sys": "Continuous emissions monitoring: the data that keeps the plant in compliance",
@@ -192,7 +192,7 @@
    "drift": 1.0
   },
   {
-   "sec": "3 \u00b7 HRSG and its e-house",
+   "sec": "3 · HRSG and its e-house",
    "title": "Top of the stack",
    "eq": "Red aviation obstruction lights, lighting junction box and photocell, lightning air terminals",
    "sys": "Lights fed from the e-house with a failure alarm to the DCS; bare-copper down conductors to the ground grid",
@@ -211,7 +211,26 @@
    "drift": 1.0
   },
   {
-   "sec": "4 \u00b7 Cooling and water",
+   "sec": "3 · HRSG and its e-house",
+   "title": "Boiler Row: three boilers, three cable stories",
+   "eq": "Gas package boiler AB-1, a 300 MW-class gas-fired utility boiler with its steam-turbine hall, a 30 MW electrode boiler with its 13.8 kV e-house",
+   "sys": "Package: start-up steam. Utility: new for AI campuses or converted from coal. Electric: steam from power, no flame and no stack",
+   "cab": "Package: control-dense, factory pre-wired. Utility: ~1,800 cables, two-thirds instrument footage, ARMOR-X MC-HL at every burner. Electric: 1,255 A at 13.8 kV, 18 MV-105 750 kcmil",
+   "c": [
+    1115,
+    1290,
+    205
+   ],
+   "t": [
+    1125,
+    1585,
+    62
+   ],
+   "lens": 28,
+   "drift": 1.0
+  },
+  {
+   "sec": "4 · Cooling and water",
    "title": "The air-cooled condenser",
    "eq": "80 fan cells on a raised deck, steam ducts and street risers, wind wall, stair towers",
    "sys": "Dry cooling: the steam turbine exhaust is condensed by air, so the plant needs no cooling-tower water",
@@ -230,7 +249,7 @@
    "drift": 0.8
   },
   {
-   "sec": "4 \u00b7 Cooling and water",
+   "sec": "4 · Cooling and water",
    "title": "R4: the air-cooled condenser fan drives",
    "eq": "Two lineups of variable-frequency drives, output trays overhead",
    "sys": "One 480 V drive per fan, 80 fans on the air-cooled condenser",
@@ -253,7 +272,7 @@
    "drift": 1.0
   },
   {
-   "sec": "5 \u00b7 Modular generation",
+   "sec": "5 · Modular generation",
    "title": "The modular power yard",
    "eq": "RICE engine hall, simple-cycle units, aeroderivatives, fuel cells, microturbines, the PCM and MOD-EH",
    "sys": "Fast-start capacity on its own 13.8 kV collector, beside the combined cycle",
@@ -272,7 +291,7 @@
    "drift": 1.0
   },
   {
-   "sec": "5 \u00b7 Modular generation",
+   "sec": "5 · Modular generation",
    "title": "RICE engine hall",
    "eq": "Eight 18-cylinder gas engines in one hall: exhaust trains, SCRs, 90 ft stacks, radiators",
    "sys": "Reciprocating engine-generators: fast start, high part-load efficiency, little water",
@@ -291,7 +310,7 @@
    "drift": 1.2
   },
   {
-   "sec": "5 \u00b7 Modular generation",
+   "sec": "5 · Modular generation",
    "title": "Simple-cycle aeroderivative units",
    "eq": "Two LM6000-class units: inlet filter house, turbine enclosure, SCR, 80 ft stack",
    "sys": "Peaking power in about ten minutes from start; 13.8 kV generators onto the collector",
@@ -310,7 +329,7 @@
    "drift": 1.2
   },
   {
-   "sec": "5 \u00b7 Modular generation",
+   "sec": "5 · Modular generation",
    "title": "Battery energy storage",
    "eq": "Battery containers, PCS / MV skids, DC trenches, collector feeders",
    "sys": "Rides through load steps and supports the grid in seconds",
@@ -329,7 +348,7 @@
    "drift": 1.2
   },
   {
-   "sec": "6 \u00b7 Behind the meter",
+   "sec": "6 · Behind the meter",
    "title": "A data-centre campus behind the meter",
    "eq": "About 150 MW of IT load: two data halls, rooftop dry coolers, 36 backup gensets, a 40 MW / 80 MWh BESS",
    "sys": "Supplied from the modular yard; the grid tie is normally open",
@@ -348,10 +367,10 @@
    "drift": 0.8
   },
   {
-   "sec": "6 \u00b7 Behind the meter",
+   "sec": "6 · Behind the meter",
    "title": "Three ways to power the campus",
    "eq": "13.8 / 34.5 kV step-ups, the 230 kV tie, switchgear and the BTM battery",
-   "sys": "1 islanded gensets and battery \u00b7 2 from the modular yard \u00b7 3 grid tie, normally open",
+   "sys": "1 islanded gensets and battery · 2 from the modular yard · 3 grid tie, normally open",
    "cab": "MV-105 35 kV feeders; HV XLPE on the 230 kV tie",
    "c": [
     2470,
@@ -368,7 +387,7 @@
    "drift": 1.0
   },
   {
-   "sec": "7 \u00b7 Fuel: gas yard and LNG",
+   "sec": "7 · Fuel: gas yard and LNG",
    "title": "The gas yard: Class I, Division 2",
    "eq": "Metering, regulation, performance heater, filter-separators",
    "sys": "Fuel gas makes this a classified area: every entry is sealed",
@@ -387,7 +406,7 @@
    "drift": 1.2
   },
   {
-   "sec": "7 \u00b7 Fuel: gas yard and LNG",
+   "sec": "7 · Fuel: gas yard and LNG",
    "title": "LNG: one rack, into the e-house roof",
    "eq": "LNG e-house, MC-HL rack to the send-out pumps, reel roller, sheave, capstan",
    "sys": "Send-out pump power and controls, with a roof entry into the e-house",
@@ -406,7 +425,7 @@
    "drift": 1.2
   },
   {
-   "sec": "Wire and cable \u00b7 the whole campus",
+   "sec": "Wire and cable · the whole campus",
    "title": "Every megawatt travels through a cable",
    "eq": "One campus, from the gas turbine to the grid and the data centre",
    "sys": "Power, control, instrumentation, fire alarm and fibre",
