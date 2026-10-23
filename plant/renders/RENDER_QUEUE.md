@@ -27,3 +27,4 @@ it where tray congestion is the point of the shot. Process piping stays visible.
 | BR7 | Burner front, wide (stair tower, braces, scanner cooling air, lights, operators): marketing / MC-HL story | preview only | new Oct 23 |
 | BR8 | Boiler Row west: package boiler AB-1, condensate storage, EDG | preview only | new Oct 23 |
 | BR9 | UB-1 CEMS shelter at the stack (north side, by the road) | preview only | new Oct 23 |
+| E95 / E96 | EPC brochure (skid pre-wire workstation) | full render stale | Oct 23: workstation moved beside the inlet chillers; renders/epic E95 / E96 still show the old spot; re-render at full quality, then rebuild the EPC brochure |

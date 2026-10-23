@@ -367,8 +367,8 @@ def prefab():
     down on its bents, modules 1-4 already set from the MOD-EH e-house; electricians on the boom lift take the coiled tails.</div>
   <div class="abs" style="left:{half + 48}px;top:48px;width:{half - 96}px;height:330px;overflow:hidden"><img src="{url(epic('E95'))}"
      style="width:100%;height:100%;object-fit:cover"></div>
-  <div class="abs cap" style="left:{half + 48}px;top:384px;width:{half - 96}px">Skid pre-wire workstation in the maintenance
-    laydown, away from energised plant: skids wired under cover, tested skids ready to set, a PDC e-house in shipping splits.</div>
+  <div class="abs cap" style="left:{half + 48}px;top:384px;width:{half - 96}px">Skid pre-wire workstation beside the inlet
+    chillers and the cable reel yard, away from energised plant: skids wired under cover, tested skids ready to set, a PDC e-house in shipping splits.</div>
   <div class="abs" style="left:{half + 48}px;top:428px;width:250px;height:150px;overflow:hidden"><img src="{url(epic('E94'))}"
      style="width:100%;height:100%;object-fit:cover"></div>
   <div class="abs" style="left:{half + 312}px;top:428px;width:250px;height:150px;overflow:hidden"><img src="{url(epic('E93'))}"

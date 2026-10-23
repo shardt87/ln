@@ -1,6 +1,6 @@
-"""Skid pre-assembly / pre-wire workstation for the modular-yard expansion, in the drawn maintenance laydown
-(north-west corner, gravel, fenced): away from energised plant, reached from the west spine road, the east half of
-the laydown left clear for engine / turbine exchanges. Finished skids go out on a lowboy to the modular yard.
+"""Skid pre-assembly / pre-wire workstation for the modular-yard expansion, on the open strip between the cable reel
+yard and the inlet chillers (moved Oct 23 from the maintenance laydown, now shared with cooling-tower cells): away from energised plant, reached
+from the west spine road, beside the prefab staging bay and the reels. Finished skids go out on a lowboy to the modular yard.
 
 On an expansion the electrical crew wires skids at waist height on a work pad before the crane sets them: junction
 boxes, skid-edge tray and conduit are mounted, the skid wiring is pulled and terminated, the field tails are cut to
@@ -216,8 +216,9 @@ def _build():
     return 1
 
 
-# laid out at the modular yard first, moved into the maintenance laydown (x 45-405, y 1705-1880), west half
-DX, DY = -1941.0, 798.0
+# laid out at the modular yard first; moved (Oct 23, owner) from the maintenance laydown, where the shared cooling-tower
+# cells crowded it, to the open strip between the cable reel yard and the inlet chillers (x 70-206, y 922-1026)
+DX, DY = -1931.0, 8.0
 
 
 def build():
@@ -236,24 +237,25 @@ def build():
     for d in Dc[m:]:
         d["c"][0] = round(d["c"][0] + DX, 3)
         d["c"][1] = round(d["c"][1] + DY, 3)
-    it["fp"] = [it["fp"][0] + DX, it["fp"][1] + DX, it["fp"][2] + DY, it["fp"][3] + DY]
-    it["name"] = it["name"].replace("(modular-yard expansion)", "in the maintenance laydown (modular-yard expansion)")
-    it["info"] += (" Set up in the maintenance laydown (away from energised plant, contractor access from the west spine "
-                   "road); finished skids go out on a lowboy to the modular yard. East half kept clear for engine / "
-                   "turbine exchanges.")
-    # area sign at the laydown entrance and a lowboy waiting for the first pick
+    it["fp"] = [66.0, 206.0, 918.0, 1030.0]
+    it["name"] = it["name"].replace("(modular-yard expansion)", "beside the inlet chillers, next to the cable reel yard (modular-yard expansion)")
+    it["info"] += (" Set up on the open strip between the cable reel yard and the inlet chillers (away from energised "
+                   "plant, contractor access from the west spine road, next to the prefab staging bay and the reels); "
+                   "finished skids go out on a lowboy to the modular yard.")
+    # area sign at the pad entrance and a lowboy waiting for the first pick (same offsets as the move: +10, -790)
     fuel.on(it)
     fuel.D = True
-    decal((178, 1712, 4.5), (0, -1, 0), 9, 2.6, [("PREFAB / PRE-WIRE AREA", .3, 1, "#ffffff"), ("MODULAR-YARD EXPANSION", .18, 0, "#e6e6e6"),
-                                                 ("HARD HAT · SAFETY GLASSES · GLOVES", .16, 1, "#f2c200")], bg="#22303a")
+    ox, oy = 10.0, -790.0
+    decal((178 + ox, 1712 + oy, 4.5), (0, -1, 0), 9, 2.6, [("PREFAB / PRE-WIRE AREA", .3, 1, "#ffffff"), ("MODULAR-YARD EXPANSION", .18, 0, "#e6e6e6"),
+                                                         ("HARD HAT · SAFETY GLASSES · GLOVES", .16, 1, "#f2c200")], bg="#22303a")
     for x in (173.6, 182.4):
-        rod((x, 1712.1, 0), (x, 1712.1, 5.8), .1, "steel", seg=6)
-    box(150, 196, 1806, 1816, 2.8, 3.4, "steel_dark")                                  # lowboy deck
-    box(150, 160, 1806, 1816, 3.4, 5.2, "steel_dark")                                  # gooseneck
+        rod((x + ox, 1712.1 + oy, 0), (x + ox, 1712.1 + oy, 5.8), .1, "steel", seg=6)
+    box(150 + ox, 196 + ox, 1806 + oy, 1816 + oy, 2.8, 3.4, "steel_dark")              # lowboy deck
+    box(150 + ox, 160 + ox, 1806 + oy, 1816 + oy, 3.4, 5.2, "steel_dark")              # gooseneck
     for xx in (186, 190, 194):
         for s_ in (-1, 1):
-            rod((xx, 1811 + s_ * 4.2, 1.6), (xx, 1811 + s_ * 3.0, 1.6), 1.6, "tyre", seg=14)
+            rod((xx + ox, 1811 + oy + s_ * 4.2, 1.6), (xx + ox, 1811 + oy + s_ * 3.0, 1.6), 1.6, "tyre", seg=14)
     for s_ in (-1, 1):
-        rod((156, 1811 + s_ * 3, 2.8), (156, 1811 + s_ * 3, 0), .2, "steel", seg=6)
+        rod((156 + ox, 1811 + oy + s_ * 3, 2.8), (156 + ox, 1811 + oy + s_ * 3, 0), .2, "steel", seg=6)
     fuel.D = False
     return 1

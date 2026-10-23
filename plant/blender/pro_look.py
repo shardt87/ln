@@ -1378,9 +1378,9 @@ EPIC = [
     dict(k="E94", n="Spine splice: electricians on the boom lift take the coiled tails of module 4 as module 5 comes down",
          eye=(1998, 1046, 17.5), target=(1976, 1066, 15.5), lens=22, show="all", sun=(38, 140)),
     dict(k="E95", n="Skid pre-wire workstation, ready-to-set row and PDC shipping splits",
-         eye=(236, 1668, 62), target=(118, 1772, 1), lens=22, show="all", sun=(40, 150)),
+         eye=(246, 878, 62), target=(128, 982, 1), lens=22, show="all", sun=(40, 150)),
     dict(k="E96", n="At the pre-wire pad: JBs, skid-edge tray and tagged tails on the fuel-gas skid, megger at the bench",
-         eye=(89, 1753, 9.5), target=(73, 1778, 5), lens=20, show="all", sun=(40, 150)),
+         eye=(99, 963, 9.5), target=(83, 988, 5), lens=20, show="all", sun=(40, 150)),
     # turbine hall access (hall_access.py)
     dict(k="E97", n="Under the turbine deck: walkway at grade between the pedestals, crossover stile and stair up between GT1 and GT2",
          eye=(668, 428, 6.2), target=(716, 470, 7.5), lens=18, show="all", lamps=450, lamp_z=15, lamp_box=(560, 1100, 404, 556),
