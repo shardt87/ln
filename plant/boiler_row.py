@@ -105,6 +105,60 @@ def utility_boiler():
     for z in (36, 49, 62):                                                           # burner-front platforms
         box(X0 + 4, X1 - 4, Y0 - 16, Y0 - 7, z - .3, z, "grating")
         rail([(X0 + 4, Y0 - 16), (X1 - 4, Y0 - 16)], z)
+        rail([(X0 + 4, Y0 - 16), (X0 + 4, Y0 - 7)], z) if z != 36 else None
+        rail([(X1 - 4, Y0 - 16), (X1 - 4, Y0 - 7)], z)
+        for xk in range(int(X0) + 10, int(X1) - 3, 12):                               # knee braces under the platform
+            rod((xk, Y0 - 15.4, z - .4), (xk, Y0 - 7.2, z - 6.5), .22, "steel", seg=6)
+            box(xk - .2, xk + .2, Y0 - 15.6, Y0 - 7, z - .9, z - .3, "steel")
+        for xl in (X0 + 20, X0 + 40, X1 - 12):                                       # platform lights + their circuit
+            rod((xl, Y0 - 15.8, z + 3.5), (xl, Y0 - 15.8, z + 4.4), .06, "steel", seg=6)
+            box(xl - .5, xl + .5, Y0 - 16.1, Y0 - 15.5, z + 4.4, z + 4.8, "lamp")
+        poly([(X0 + 4.2, Y0 - 15.8, z + 3.5), (X1 - 12, Y0 - 15.8, z + 3.5)], .05, "cable_tc", seg=4)
+    # windbox stiffeners between and around the burners
+    for zs in (33, 46, 59, 71):
+        box(X0 + 6, X1 - 6, BF - .7, BF, zs - .5, zs + .5, "steel_dark")
+    for c_ in range(5):
+        xs = X0 + 7.35 + c_ * 13.3
+        box(xs - .4, xs + .4, BF - .7, BF, 30, 72, "steel_dark")
+    # stair tower to the three burner levels (west end): columns, switchback flights, landings, rails
+    SX0, SX1, SY0, SY1 = X0 - 8, X0 + 3.5, Y0 - 16, Y0 - 7
+    for (cx, cy) in ((SX0, SY0), (SX1, SY0), (SX0, SY1), (SX1, SY1)):
+        box(cx - .4, cx + .4, cy - .4, cy + .4, 0, 66, "steel")
+    zl = 0.0
+    for k in range(10):                                                              # 6.5 ft flights, alternating
+        z0, z1 = k * 6.5, (k + 1) * 6.5 if k < 9 else 62
+        y_ = SY0 + 2 if k % 2 == 0 else SY1 - 2
+        xa, xb = (SX0 + 1, SX1 - 3) if k % 2 == 0 else (SX1 - 3, SX0 + 1)
+        n = 9
+        for j in range(n):
+            t = j / n
+            xx = xa + (xb - xa) * t
+            box(min(xx, xx + (xb - xa) / n), max(xx, xx + (xb - xa) / n), y_ - 1.8, y_ + 1.8,
+                z0 + (z1 - z0) * t, z0 + (z1 - z0) * t + .25, "grating")
+        rod((xa, y_ - 1.9, z0 + 3.4), (xb, y_ - 1.9, z1 + 3.4), .05, "rail", seg=4)
+        box(SX1 - 3, SX1, SY0 + .2, SY1 - .2, z1 - .25, z1, "grating")                 # landing
+    rail([(SX0, SY0), (SX0, SY1)], 62)
+    decal(((SX0 + SX1) / 2, SY0 - .45, 8), (0, -1, 0), 8, 1.2, [("BURNER LEVELS A-C", .6, True, "#111111")], bg="#ffd200")
+    # flame-scanner cooling air: two blowers at grade, a riser and a header per level, a hose to every scanner
+    box(X0 + 22, X0 + 34, Y0 - 15, Y0 - 11, 0, .6, "concrete")
+    for k in range(2):
+        bx_ = X0 + 25 + k * 6
+        rod((bx_, Y0 - 13, .6), (bx_, Y0 - 13, 3.2), 1.3, "machine", seg=16)               # blower
+        box(bx_ + 1.3, bx_ + 3.3, Y0 - 14, Y0 - 12, .6, 2.4, "motor")                     # motor (480 V)
+        poly([(bx_ + 3.3, Y0 - 13, 1.5), (bx_ + 3.3, Y0 - 15.5, 1.5), (bx_ + 3.3, Y0 - 15.5, .1)], .1, "cable_tc", seg=6)
+    poly([(X0 + 31, Y0 - 13, 3.2), (X0 + 31, Y0 - 13, 5), (X0 + 31, BF - .9, 5), (X0 + 31, BF - .9, 66)], .35, "pipe", seg=8)
+    decal((X0 + 28, Y0 - 15.1, 2.6), (0, -1, 0), 6, .8, [("SCANNER COOLING AIR", .6, True, "#111111")], bg="#ffffff")
+    for r_ in range(3):
+        z = 38 + r_ * 13
+        poly([(X0 + 10, BF - .9, z + 3.7), (X1 - 9, BF - .9, z + 3.7)], .22, "pipe", seg=8)
+        for c_ in range(4):
+            x = X0 + 14 + c_ * 13.3
+            poly([(x + 2.1, BF - .9, z + 3.7), (x + 2.1, BF - 4.4, z + 3.7), (x + 2.1, BF - 4.4, z + 2.4)], .08, "pipe", seg=6)
+    # operators on burner levels B and A, one at the BMS panel
+    import maintenance as mt
+    mt.person(X0 + 30, Y0 - 12, 49, 0.0)
+    mt.person(X1 - 12, Y0 - 13, 36, 3.14)
+    mt.person(X1 + 2, GY - 6, 0, 1.57)
     # exposed structural steel: columns outside the casing, safety-valve vents on the penthouse roof
     for x in (X0, X0 + 17, X0 + 34, X0 + 51, X1):
         for y in (Y0 - 1.6, Y1):
