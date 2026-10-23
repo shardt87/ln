@@ -55,6 +55,10 @@ table.m td:first-child {{ font: 800 17px/1 BC; letter-spacing: .04em; text-trans
 .li:before {{ content: ''; position: absolute; left: 0; top: 15px; width: 9px; height: 9px; background: {COPPER}; }}
 .li b {{ font: 800 16.5px/1.2 BC; letter-spacing: .05em; color: {WHITE}; text-transform: uppercase; margin-right: 8px; }}
 .cap {{ font: 400 12px/1.35 B; color: #aab0b6; }}
+.qr {{ list-style: none; margin-top: 5px; }}
+.qr li {{ font: 400 11.6px/1.3 B; color: #d4d8dc; padding-left: 12px; position: relative; margin-top: 3px; }}
+.qr li:before {{ content: ''; position: absolute; left: 0; top: 6px; width: 5px; height: 5px; background: {COPPER}; }}
+.qr b {{ color: {WHITE}; }}
 .foot {{ font: 400 11px/1 B; color: #80868c; letter-spacing: .04em; }}
 """
 
@@ -742,14 +746,17 @@ def slide_basics():
   <div class="abs h2" style="left:62px;top:80px;font-size:50px">How an HRSG <em>works</em></div>
   <div class="abs lede" style="left:64px;top:136px;width:640px;font-size:13.5px">The exhaust crosses rows of finned tubes, hottest
     sections first; water enters at the cold end and leaves as superheated steam at the hot end. Below each section: the cable it needs.</div>
-  <div class="abs" style="left:760px;top:34px;width:616px;border:2px solid {COPPER};border-radius:6px;background:rgba(227,154,95,.07);
-       padding:11px 16px 12px">
-    <div class="cnum">Why it's there</div>
-    <div style="font:400 12.5px/1.42 B;color:#d4d8dc;margin-top:5px">A gas turbine alone sends ~60 % of its fuel's energy up the stack
-      as ~1,100 °F exhaust (~40 % efficient). The HRSG is a boiler heated by that exhaust: its steam drives the steam turbine, so the
-      <b style="color:{WHITE}">same fuel makes about a third more power</b> (~60 %+ efficient; fuel, CO2 and cost per MWh down by
-      about a third). It also houses the SCR that cuts NOx, and its duct burners can fire extra gas for peak output.
-      <b style="color:{COPPER}">The bridge between the two halves of a combined cycle.</b></div></div>
+  <div class="abs" style="left:700px;top:22px;width:676px;border:2px solid {COPPER};border-radius:6px;background:rgba(227,154,95,.07);
+       padding:8px 16px 9px;display:flex;gap:22px">
+    <div style="flex:1.15"><div class="cnum">What it is</div><ul class="qr">
+      <li><b>Without it:</b> ~60 % of the fuel's energy goes up the stack as ~1,100 °F exhaust (~40 % efficient).</li>
+      <li><b>With it:</b> a boiler heated by that exhaust; its steam drives the steam turbine.</li>
+      <li><b>The payoff:</b> ~1/3 more power from the same fuel (~60 %+ efficient).</li></ul></div>
+    <div style="flex:1"><div class="cnum">Fun facts</div><ul class="qr">
+      <li>Fuel, CO2 and cost per MWh drop by about a third.</li>
+      <li>The NOx catalyst (SCR) lives <b>inside</b> it, where the gas is just the right temperature.</li>
+      <li>Duct burners can fire extra gas for peak demand.</li>
+      <li style="color:{COPPER}">No HRSG: a gas-turbine plant. With one: combined cycle.</li></ul></div></div>
   <svg class="abs" width="1440" height="810" viewBox="0 0 1440 810" style="left:0;top:0;overflow:visible">{svg}</svg>
   <div class="abs" style="left:64px;top:664px;width:1312px;display:flex;gap:22px">{tiles}</div>
   <div class="abs cap" style="left:64px;top:740px;width:1312px">Typical three-pressure reheat HRSG with SCR behind an H-class
