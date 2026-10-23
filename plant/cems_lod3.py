@@ -182,8 +182,40 @@ def shelter(k):
     return 1
 
 
+def stack_top(k):
+    """Stack top: lighting junction box and photocell at the top platform, flexible leads to the three obstruction
+    lights (EL 177), the conduit up the west side (hrsg.py) and the lightning protection: air terminals, two bare
+    copper down conductors with test clamps at grade."""
+    import math
+    dx = 160 * k
+    gx, gy, r = 630 + dx, 790.0, 11.0
+    fuel.on(fuel.find(f"HRSG {k + 1} stack"))
+    fuel.D = True
+    cx, cy = gx - r - .25, gy                                                       # conduit up the west side
+    box(cx - .5, cx + .1, cy - .6, cy + .6, 170.0, 171.6, "panel")                 # lighting junction box
+    rod((cx - .5, cy, 171.8), (cx - .5, cy, 172.3), .14, "steel_dark", seg=8)       # photocell
+    for (lx, ly) in ((gx + 11.5, gy), (gx - 6.31 + .2, gy + 9.93), (gx - 6.14 + .2, gy - 10.02)):
+        ang = math.atan2(ly - gy, lx - gx)
+        pts = [(cx, cy, 171.0)]
+        a0 = math.pi
+        steps = 8
+        da = ((ang - a0 + math.pi) % (2 * math.pi)) - math.pi
+        for j in range(1, steps + 1):
+            a_ = a0 + da * j / steps
+            pts.append((gx + (r + .25) * math.cos(a_), gy + (r + .25) * math.sin(a_), 171.0 + 6.0 * j / steps))
+        for a_, b_ in zip(pts, pts[1:]):
+            rod(a_, b_, .05, "cable_tc", seg=4)                                       # light lead (TC-ER, clipped)
+    rod((gx, gy, 180.0), (gx, gy, 180.06), r - .6, "tyre", seg=40)                     # open flue (soot-dark liner)
+    for a_ in (math.pi * .75, math.pi * 1.25):                                       # test clamps at grade
+        x_, y_ = gx + (r + .2) * math.cos(a_), gy + (r + .2) * math.sin(a_)
+        box(x_ - .25, x_ + .25, y_ - .25, y_ + .25, 2.0, 2.6, "copper")
+        rod((x_, y_, 0), (x_ + 2.0 * math.cos(a_), y_ + 2.0 * math.sin(a_), 0.1), .06, "copper", seg=4)
+    fuel.D = False
+
+
 def build():
     n0 = len(fuel.G["parts"])
     for k in range(3):
         shelter(k)
+        stack_top(k)
     return len(fuel.G["parts"]) - n0

@@ -462,7 +462,7 @@ def slide_elev():
 # ------------------------------------------------------------------------------- the wiring diagram (one-line / riser)
 # Every leg from the switchgear room to the field, read from the Cable Schedule sheet (run length as the workbook's
 # formula: ROUNDUP((route + drops + 2 x 10 ft) x 1.1, -10) x sets x cables per set):
-# - the HRSG 1 train (HRSG 1, its feed pumps, SCR blowers, chemical feed, blowdown, CEMS, duct burner): 705 cables;
+# - the HRSG 1 train (HRSG 1, its feed pumps, SCR blowers, chemical feed, blowdown, CEMS, stack, duct burner): 707 cables;
 # - what feeds the room: the T-R2A 13.8 kV primary, its 480 V secondary into LC-R2A, the transformer's own fans,
 #   controls and monitoring, the DCS fibre from the control room and the e-house's own wiring. R2A also serves the
 #   GT1 unit loads, so these legs are shown but kept out of the train total.
@@ -589,7 +589,7 @@ def slide_cems():
             ft += math.ceil(((r[19] or 0) + (r[20] or 0) + 20) * 1.1 / 10) * 10 * c
     ins = lambda k, x, cap: (f'<div class="abs" style="left:{x}px;top:28px;width:300px;height:169px;border:2px solid {COPPER};'
                              f'border-radius:4px;overflow:hidden"><img src="{img(k)}" style="width:100%;height:100%;object-fit:cover"></div>'
-                             f'<div class="abs cap" style="left:{x}px;top:202px;width:300px;color:#fff;text-shadow:0 1px 3px #000">{cap}</div>')
+                             f'<div class="abs cap" style="left:{x}px;top:202px;width:300px;color:#fff;text-shadow:0 1px 3px #000,0 0 6px #000">{cap}</div>')
     lede = "The analyzer shelter at each stack proves the plant's emissions. Roof and two walls lifted: every cable to it."
     extra = f"""<div class="abs" style="left:40px;top:632px;display:flex;gap:28px;padding:14px 20px;background:rgba(14,16,18,.82);border-radius:4px">
       <div><div class="big" style="font-size:30px">{n}</div><div class="bigl">cables / shelter</div></div>
@@ -599,6 +599,7 @@ def slide_cems():
   <img class="abs" src="{img('CM2')}" style="left:0;top:0;width:1440px;height:810px;object-fit:cover">
   {ins("CM1", 40, "Outside: conduit stub-ups, XP boxes, strobe and horn, HVAC")}
   {ins("CM3", 356, "Up the stack: probes and junction box at EL 103")}
+  {ins("CM4", 672, "Stack top: obstruction lights, lightning protection")}
   {spot_html(cam, CEMS_SPOTS)}
   {panel("Boiler solutions &nbsp;&middot;&nbsp; emissions", "The stack and <em>the CEMS shelter</em>", lede,
          spot_list(CEMS_SPOTS).replace("padding:6px 0 7px 36px", "padding:4px 0 5px 36px"), extra).replace("top:262px", "top:222px").replace("top:168px", "top:166px")}
@@ -935,7 +936,7 @@ def slide_system():
     inst = L["inst"]["cables"] + L["tcx"]["cables"]
     inst_ft = L["inst"]["ft"] + L["tcx"]["ft"]
     facts = [
-        ("750 kW", "connected at 480 V on one HRSG train, 77 circuits"),
+        ("750 kW", "connected at 480 V on one HRSG train, 78 circuits"),
         ("2 x 5 MW", "feed pumps: the largest motors on the train, at 13.8 kV"),
         ("3,007 A", "on the T-R2A secondary: 40 cables of 500 kcmil"),
         (f"{100 * inst / h['cables']:.0f} %", f"of the train's cables are instrument or thermocouple pairs ({100 * inst_ft / h['ft']:.0f} % of the footage)"),
@@ -1052,8 +1053,8 @@ VALUES = [
      "reclassification"),
     ("The right construction", "VFD-rated cable for drives, individually shielded pairs, matched-alloy colour-coded "
      "thermocouple extension"),
-    ("Engineering up front", "Ampacity, voltage drop, spec review; takeoff ready: ~705 cables, ~156,000 ft per train, "
-     "~470,000 ft for three"),
+    ("Engineering up front", "Ampacity, voltage drop, spec review; takeoff ready: ~707 cables, ~157,000 ft per train, "
+     "~472,000 ft for three"),
     ("Sustainability", "Reel returns and scrap recycling for cable cut back in brownfield outages"),
 ]
 

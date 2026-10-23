@@ -62,7 +62,7 @@ The temperatures and pressures below are typical ranges for a three-pressure reh
 ## The three boiler stories in the model
 
 1. **Greenfield heat-recovery boiler (HRSG 1–3).** A three-pressure HRSG with SCR and a duct burner.
-   - One HRSG train in the model's cable schedule is **705 cables, about 156,000 ft**.
+   - One HRSG train in the model's cable schedule is **707 cables, about 157,000 ft**.
    - That train includes its feed pumps, SCR blowers, chemical feed, CEMS and the duct burner.
    - The cable runs:
      - **MV-105 15 kV** to the 13.8 kV feed-pump motors;
@@ -85,7 +85,7 @@ The temperatures and pressures below are typical ranges for a three-pressure reh
   - the feeders to the MCCs and VFDs, the drops into every bucket, the marshalling home runs, and the UPS / DC panels;
   - the exits to the field: power through the north-wall transit frame, instruments, thermocouple, fire alarm and fibre through the roof glands.
 - **Slide 5** is the one-line. Every number comes from a schedule row:
-  - the HRSG 1 train is **705 cables, about 156,000 ft**;
+  - the HRSG 1 train is **707 cables, about 157,000 ft**;
   - feeding the room adds **86 cables, about 12,400 ft**: the T-R2A primary and secondary, the transformer fans, controls and monitoring, the DCS fibre, and the room's own lighting, receptacles and fire-alarm wiring.
   - R2A also serves the GT1 unit, so the feed is shown but not counted in the train.
 - The 480 V secondary was missing from the schedule until this pass. It is now in for every unit and load-centre transformer (T-R2A/B/C, T-R3, LCT-A/B). At 10 to 12 parallel sets, it is also a bus-duct candidate; ask the EPC which they carry.
@@ -106,6 +106,10 @@ The temperatures and pressures below are typical ranges for a three-pressure reh
   - the control-room fibre;
   - building wire for lights and receptacles.
   Outside it's rigid conduit and explosion-proof fittings, with a strobe and horn.
+- **The top of the stack (third inset):**
+  - **Aviation obstruction lights:** two tiers of red lights (EL 90 and EL 177), with a lighting junction box and photocell at the top platform. The cable runs up the stack in conduit, about 180 ft vertically.
+  - **What the schedule now carries:** each stack has its own TC-ER feed for the lights and a 7/C control cable for the light-failure alarm to the DCS. A failed obstruction light has to be noticed and reported, so the alarm matters. These rows were missing until the owner asked, so the HRSG train is now 707 cables and about 157,000 ft.
+  - **Lightning protection:** air terminals on the rim and two bare copper down-conductors with test clamps, bonded to the ground grid. Bare copper and grounding conductors are a Southwire line too.
 - **Why it matters:** if the CEMS goes down, the plant is out of compliance. That makes the instrument pairs and the fibre the most important cable on the site per foot.
 - **Shelter makers:** the photos the owner shared came from a CEMS-shelter manufacturer. Several companies make prefabricated walk-in shelters with factory-wired panels, trays, grounding and fire suppression, which is another pre-wired, plug-and-play cable opportunity. Keep company names off the slides.
 
@@ -121,7 +125,7 @@ All ratings are the model's typical values, not engineered.
   - **120 V AC / 125 V DC:** a 10 kVA UPS and a 60-cell battery for the DCS, F&G and breaker control.
   - **Signals:** 4-20 mA, thermocouple millivolts and 24 V DC discretes.
 - **Numbers to remember:**
-  - **About 750 kW is connected at 480 V on one HRSG train (77 circuits).** The SCR blowers are the big ones, 2 x 110 kW.
+  - **About 750 kW is connected at 480 V on one HRSG train (78 circuits).** The SCR blowers are the big ones, 2 x 110 kW.
   - **About 74 % of the train's cables are instrument or thermocouple pairs.** HRSG cable is mostly signal cable by count, so instrumentation is where the volume is.
   - **Arc flash is 8.4 cal/cm² at 13.8 kV and 24.6 at 480 V** (model labels). The 480 V gear is the higher hazard: a lower voltage, but more current and longer clearing.
 - **Real plants vary.** Many plants put the feed pumps on a 4.16 or 6.9 kV bus; Mill Creek 6 uses 6.9 kV. The cable logic is the same.
@@ -173,7 +177,7 @@ write their specifications around them.
   - staged for the outage;
   - ARMOR-X MC-HL rated for Div 2 and Div 1;
   - the right construction (VFD-rated, individually shielded, matched-alloy);
-  - engineering up front, with the takeoff ready (~705 cables and ~156,000 ft per train);
+  - engineering up front, with the takeoff ready (~707 cables and ~157,000 ft per train);
   - sustainability: reel returns and recycling.
 - **One line:** "On an HRSG, cable is three-quarters instrumentation and fully on the critical path. One spec-compliant supply, staged and fast to pull: wired on time, reading right the first time."
 - **Check before the meeting:** confirm which reel, cut-to-length, staging and recycling services Southwire offers today, and in which regions.

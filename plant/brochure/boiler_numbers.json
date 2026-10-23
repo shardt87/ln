@@ -1,16 +1,16 @@
 {
  "hrsg": {
-  "runs": 221,
-  "cables": 705,
-  "ft": 156200,
+  "runs": 223,
+  "cables": 707,
+  "ft": 157380,
   "classes": {
    "Building wire": {
     "cables": 1,
     "ft": 420
    },
    "Control": {
-    "cables": 96,
-    "ft": 21140
+    "cables": 97,
+    "ft": 21730
    },
    "Fibre / data": {
     "cables": 1,
@@ -25,8 +25,8 @@
     "ft": 106280
    },
    "LV 600 V": {
-    "cables": 77,
-    "ft": 17800
+    "cables": 78,
+    "ft": 18390
    },
    "MV 15 kV": {
     "cables": 6,
@@ -35,7 +35,7 @@
   },
   "products": {
    "SIMpull THHN/THWN-2 600 V 1/C Cu (lighting, receptacles, small power)": 420,
-   "Control cable 600 V Type TC-ER, Cu #14 AWG, PVC jacket": 19680,
+   "Control cable 600 V Type TC-ER, Cu #14 AWG, PVC jacket": 20270,
    "ARMOR-X MC-HL 600 V control, Cu #14 AWG (Class I Div 2)": 1460,
    "Fibre optic, single-mode, 12-fibre, armored, orange jacket": 1720,
    "Fire alarm FPLR 2/C #14 shielded, red jacket (NEC 760)": 440,
@@ -43,7 +43,7 @@
    "RTD cable, #18 shielded triads, PLTC": 4590,
    "Thermocouple extension KX, #16 shielded pairs, PLTC": 19680,
    "Instrumentation ITC / PLTC, IS, #18 shielded pairs, blue jacket": 6480,
-   "Type TC-ER 600 V 3/C Cu XHHW-2 + ground, PVC jacket": 17800,
+   "Type TC-ER 600 V 3/C Cu XHHW-2 + ground, PVC jacket": 18390,
    "MV-105 15 kV 1/C Cu, EPR 133%, Cu tape shield, PVC jacket (triplexed)": 8400
   }
  },

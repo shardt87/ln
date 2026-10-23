@@ -1566,6 +1566,8 @@ EPIC = [
          lamp_box=(648, 664, 806, 820), fill=((656, 812, 9.5, 1200, 2),)),
     dict(k="CM3", n="HRSG 1 stack sampling platform (EL 100): CEMS probes, probe junction box, heated sample line on its tray",
          eye=(662, 786, 110), target=(641.5, 795.5, 101), lens=34, show="base", sun=(45, 120), plumes=False),
+    dict(k="CM4", n="HRSG 1 stack top: obstruction lights, lighting JB and photocell, conduit, lightning air terminals and down conductors",
+         eye=(596, 766, 194), target=(628, 790, 174), lens=30, show="base", sun=(40, 230), plumes=False),
     dict(k="T5G1", n="Private 5G / LTE monopole: sector platform with massive-MIMO units, microwave backhaul, base compound",
          eye=(345, 380, 40), target=(262, 455, 62), lens=26, show="all", sun=(38, 215), plumes=False),
     dict(k="T5G2", n="5G sector platform close-up: panel antennas, massive-MIMO units, radio units, aviation light",

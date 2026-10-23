@@ -869,6 +869,16 @@ for it in ITEMS:
                     max(sz, "10", key=SIZES_LV.index), st_, 1, 3, 480, 5, "fixture-to-fixture run included",
                     length=(rl + 300, rv, rk))
             break
+# stack aviation obstruction lights (owner, Oct 23: "the top of the stack and the lighting"): their own feed (two
+# tiers of red obstruction lights, photocell) and the light-failure alarm to the DCS, separate from the platform lighting
+for it in ITEMS:
+    if re.match(r"^HRSG \d stack", it["name"]):
+        src = lv_src(it)
+        rl, rv, rk = route_len(src, it)
+        add(src, it, f"{it['tag'] or it['name']} aviation obstruction lights (2 tiers x 3 red, photocell)", "LV", "3/C+G",
+            "10", 1, 1, 1.5, 480, 3, "up the stack conduit to EL 177", length=(rl, rv + 180, rk))
+        add(src, it, f"{it['tag'] or it['name']} obstruction-light failure alarm to the DCS (outage reporting)", "CT", "7/C",
+            "14", 1, 1, length=(rl, rv + 180, rk))
 site_l = next((it for it in ITEMS if it["name"].startswith("Site lighting")), None)
 if site_l:
     poles = sum(1 for p_ in M["parts"] if p_["item"] == site_l["id"] and p_["kind"] == "rod" and abs(p_["a"][2] - p_["b"][2]) > 20)
