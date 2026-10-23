@@ -43,8 +43,8 @@ The temperatures and pressures below are typical ranges for a three-pressure reh
   - Three gas turbines burn the gas, each spinning a generator; that's about 2/3 of the output.
   - Their exhaust, at about 1,100 °F, goes through three HRSGs, which make steam.
   - All three HRSGs feed **one** steam turbine, which spins one more generator; that's about 1/3 of the output, with no extra fuel.
-- **"Is it still steam after the turbine?"** Yes, but spent. It leaves the steam turbine at about 100-120 °F, below atmospheric pressure, and part of it is already water. The air-cooled condenser (80 cells, 80 fans) turns it fully back into water under vacuum.
-- **The water loop is closed.** The condensate pumps send the water to the feed pumps (13.8 kV, MV-105), then back into the HRSGs, round and round. Only a little makeup water replaces blowdown.
+- **"Is it still steam after the turbine?"** Yes, but spent. It leaves the steam turbine at about 100-150 °F (an air-cooled condenser runs warmer than a water-cooled one), below atmospheric pressure, and part of it is already water. The air-cooled condenser (80 cells, 80 fans) turns it fully back into water under vacuum.
+- **The water loop is closed.** The condensate pumps return the water to the HRSGs' low-pressure end; the feed pumps (13.8 kV, MV-105) take it from the LP drum / deaerator and lift it to HP and IP pressure. HP-turbine exhaust goes back to the HRSGs' reheaters before the IP / LP turbine. Only a little makeup water replaces blowdown.
 - **Cable on the loop:**
   - 21 kV isolated-phase bus from the generators to the step-up transformers;
   - MV-105 to the feed pumps;

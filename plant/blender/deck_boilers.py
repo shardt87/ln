@@ -688,7 +688,7 @@ def slide_basics():
     svg += f'<polygon points="{X0},{Y0 + 150} {X0 + 120},{Y0 + 150} {X0 + 180},{Y0 + 70} {X0 + 180},{Y0 + 300} {X0 + 120},{Y0 + 230} {X0},{Y0 + 230}" fill="#2a2f35" stroke="#59606a"/>'
     svg += f'<text x="{X0 + 8}" y="{Y0 + 140}" fill="{GREY}" font-family="BC" font-weight="700" font-size="13" letter-spacing="1">GAS TURBINE EXHAUST</text>'
     svg += f'<text x="{X0 + 8}" y="{Y0 + 196}" fill="{WHITE}" font-family="BC" font-weight="800" font-size="22">~1,100 °F</text>'
-    svg += f'<text x="{X0 + 8}" y="{Y0 + 216}" fill="{GREY}" font-family="B" font-size="11">~2,000 lb/s of hot exhaust</text>'
+    svg += f'<text x="{X0 + 8}" y="{Y0 + 216}" fill="{GREY}" font-family="B" font-size="11">~1,500-2,000 lb/s per gas turbine</text>'
     # sections
     cx0, cw = X0 + 186, 118
     for k, (lab, sub, t, col, drum, cab) in enumerate(SECTIONS):
@@ -779,6 +779,7 @@ def slide_cycle():
     L_ += line([(440, 282), (520, 282)], cols["exh"], 9)                               # GT exhaust to HRSG
     L_ += line([(690, 214), (690, 168)], cols["exh"], 6)                               # stack out
     L_ += line([(752, 250), (858, 250)], cols["stm"], 7)                               # steam to ST
+    L_ += line([(858, 314), (752, 314)], cols["stm"], 3, "6 5")                        # cold reheat back to the HRSG
     L_ += line([(1062, 280), (1126, 280)], cols["spent"], 9, "10 6")                   # spent steam to ACC
     L_ += line([(1240, 214), (1240, 168)], cols["heat"], 5, "4 6")                     # heat to air
     L_ += line([(1240, 352), (1240, 566), (650, 566), (650, 356)], cols["cond"], 6)    # condensate back to the HRSG
@@ -795,7 +796,7 @@ def slide_cycle():
                  "exhaust leaves at ~1,100 °F")
     nodes += box(520, 214, 232, 142, COPPER, "HRSGs x 3", "recover the exhaust heat: water in, steam out at three pressures "
                  "(HP / IP / LP, ~1,050 °F)")
-    nodes += box(858, 224, 204, 112, COPPER, "Steam turbine x 1", "the steam of all three HRSGs expands through HP, IP and LP "
+    nodes += box(858, 224, 204, 112, COPPER, "Steam turbine x 1", "steam from all three HRSGs expands through HP, IP and LP "
                  "casings and spins one more generator")
     nodes += box(1126, 214, 230, 138, "#8fd3ff", "Air-cooled condenser", "80 cells, 80 fans: cools the spent steam back into "
                  "water under vacuum")
@@ -808,14 +809,15 @@ def slide_cycle():
     nodes += pill(604, 136, "Out: stack gas ~180 °F (CO2, water vapour; NOx cut by the SCR)", cols["exh"])
     nodes += pill(1150, 136, "Out: heat to the air", cols["heat"])
     nodes += pill(762, 222, "Steam", cols["stm"], WHITE)
+    nodes += pill(764, 322, "Reheat", cols["stm"], WHITE)
     nodes += pill(1052, 302, "Spent steam", cols["spent"])
     nodes += pill(448, 254, "Exhaust", cols["exh"])
     nodes += pill(380, 528, "~2/3 of the output", COPPER)
     nodes += pill(800, 528, "~1/3, from the HRSG steam", COPPER)
-    nodes += pill(820, 578, "Water (condensate) pumped back: condensate pumps, then the feed pumps, 13.8 kV", cols["cond"], WHITE)
+    nodes += pill(700, 578, "Condensate pumps return the water to the HRSG's LP end; the 13.8 kV feed pumps lift it to HP / IP", cols["cond"], WHITE)
     nodes += pill(1196, 646, "In: makeup water (small)", cols["cond"], WHITE)
-    q = [("Is it still steam?", "Leaving the steam turbine it is spent steam: about 100-120 °F, below atmospheric pressure, part "
-          "water already. The condenser finishes the job and turns it back into water."),
+    q = [("Is it still steam?", "Leaving the turbine it is spent steam: ~100-150 °F, below atmospheric pressure, part water "
+          "already. The air-cooled condenser turns it back into water."),
          ("A closed loop", "The same water goes round and round: pump, HRSG, turbine, condenser. Only a little makeup water "
           "replaces blowdown losses."),
          ("Where the power comes from", "Fuel is burned only in the gas turbines (and duct burners). The steam turbine adds "
