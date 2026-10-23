@@ -587,6 +587,96 @@ def back_bay():
     fuel.D = False
 
 
+def support_yard():
+    """West of the UB-1 electrical bay (x 782-878, y 1502-1645) and at the stack: what a complete unit still needs."""
+    import showcase
+    import maintenance as mt
+    # condensate storage tank and transfer pumps
+    it = fuel.new_item(L, "UB-1 condensate storage tank and transfer pumps (Boiler Row)", (790, 845, 1510, 1550), (0, 40), area="D",
+                       register=False, basis="typical",
+                       info="Condensate storage tank (~30 ft dia) and two transfer pumps on 480 V motors (TC-ER power). Showcase.")
+    on(it)
+    fuel.D = False
+    rod((810, 1530, 0), (810, 1530, 1.2), 16.5, "concrete", seg=36)
+    rod((810, 1530, 1.2), (810, 1530, 36), 15, "tank", seg=36)
+    fuel.D = True
+    rod((810, 1530, 36), (810, 1530, 38.5), 15, "tank", r2=4, seg=36)
+    for z in (12, 24):
+        rod((810, 1530, z), (810, 1530, z + .4), 15.15, "steel", seg=36)
+    for k in range(10):                                                             # spiral-ish stair up the shell
+        a = -1.2 + k * .16
+        x_, y_ = 810 + 15.6 * math.cos(a), 1530 + 15.6 * math.sin(a)
+        box(x_ - 1.2, x_ + 1.2, y_ - 1.2, y_ + 1.2, 1.2 + k * 3.6, 1.5 + k * 3.6, "grating")
+    decal((810, 1514.85, 28), (0, -1, 0), 20, 3.0, [("UB-1 CONDENSATE STORAGE", .5, True, "#111111")], bg="#ffffff")
+    for k, py in enumerate((1524.0, 1536.0)):
+        box(830, 840, py - 2.5, py + 2.5, 0, .6, "concrete")
+        rod((832, py, 1.8), (835, py, 1.8), 1.0, "machine", seg=14)                  # pump
+        rod((835, py, 1.8), (839, py, 1.8), .9, "motor", seg=14)                     # 480 V motor
+        poly([(825.6, py, 3), (832, py, 3), (832, py, 1.8)], .45, "pipe", seg=10)
+        poly([(839, py + .6, 2.3), (839, py + 2.2, 2.3), (839, py + 2.2, .1)], .1, "cable_tc", seg=6)
+    fuel.D = False
+
+    # emergency diesel generator for safe shutdown, cabled into the UB-1 switchgear e-house
+    it = fuel.new_item(L, "UB-1 emergency diesel generator, 480 V, ~2 MW (Boiler Row)", (843, 932, 1598, 1640), (0, 24), area="D",
+                       register=False, basis="typical",
+                       info="Standby generator for safe shutdown (turning gear, lube oil, DC chargers, emergency lighting): "
+                            "sub-base day tank, exhaust silencer, ATS in the e-house; 1/C 500 kcmil in parallel on a ladder "
+                            "tray into the switchgear. Showcase.")
+    on(it)
+    fuel.D = False
+    box(845, 880, 1604, 1620, 0, 1.2, "concrete")
+    box(846, 879, 1605, 1619, 1.2, 4, "steel_dark")                                   # sub-base day tank
+    box(846.5, 878.5, 1605.5, 1618.5, 4, 14, "machine")                              # enclosure
+    fuel.D = True
+    box(846.4, 849, 1606, 1618, 5, 13, "louvre")                                     # radiator end
+    rod((872, 1612, 14), (872, 1612, 20), .9, "stack", seg=12)                       # exhaust
+    rod((872, 1612, 15), (872, 1612, 18), 1.6, "steel", seg=14)                      # silencer
+    decal((862, 1605.4, 11.5), (0, -1, 0), 22, 1.8, [("UB-1 EMERGENCY DIESEL GENERATOR  ·  480 V", .58, True, "#111111")],
+          bg="#ffd200")
+    for (x, y) in ((884, 1612), (906, 1612), (928, 1612)):
+        rod((x, y + 2.2, 0), (x, y + 2.2, 9.6), .2, "steel", seg=8)
+    ladder_tray([(879, 1612), (929.5, 1612), (929.5, 1622)], 9.8, 3.0, [("cable", .28)] * 8)
+    for k in range(8):
+        poly([(878.5, 1610.6 + k * .4, 8), (879.5, 1610.6 + k * .4, 10)], .14, "cable", seg=6)
+    fuel.D = False
+
+    # cable laydown: SIMpull reels staged for the boiler outage, the SIMpull Truck delivering
+    it = fuel.new_item(L, "Boiler Row cable laydown: SIMpull reels staged for the UB-1 outage", (782, 846, 1560, 1648), (0, 12),
+                       area="D", register=False, basis="typical",
+                       info="Reels staged by circuit for the burner-management and MV work: MV-105, ARMOR-X MC-HL, TC-ER, "
+                            "instrumentation; the SIMpull Truck delivering. Showcase.")
+    on(it)
+    fuel.D = True
+    box(784, 844, 1562, 1626, 0, .3, "gravel")
+    for r_, (cable, D, W, prod) in enumerate((("cable_mv", 8.0, 5.0, "MV-105"), ("cable_armor", 6.5, 4.4, "ARMOR-X MC-HL"),
+                                              ("cable_tc", 6.0, 4.0, "TC-ER"), ("cable_inst", 5.0, 3.6, "PLTC"))):
+        for c in range(4):
+            showcase.reel(791 + c * 13, 1569 + r_ * 14, D, W, "x", cable, prod)
+    decal((814, 1561.6, 2.2), (0, -1, 0), 26, 2.6, [("BOILER ROW CABLE LAYDOWN", .5, True, "#ffffff"),
+                                                     ("SIMPULL REELS  ·  STAGED BY CIRCUIT", .3, True, "#e39a5f")], bg="#15181b")
+    showcase.simpull_truck(815, 1638)
+    mt.person(840, 1590, .3, 3.0)
+    fuel.D = False
+
+    # CEMS shelter at the UB-1 stack
+    it = fuel.new_item(L, "UB-1 CEMS shelter at the stack (Boiler Row)", (1110, 1126, 1584, 1612), (0, 122), area="D", register=False,
+                       basis="typical",
+                       info="Analyzer shelter for the UB-1 stack: NOx / CO / O2 / NH3 slip, heated sample line from the EL 120 "
+                            "platform; power, instrument pairs and fibre to the DCS. Showcase.")
+    on(it)
+    fuel.D = False
+    box(1111, 1123, 1586, 1602, 0, 1, "concrete")
+    box(1111.3, 1122.7, 1586.3, 1601.7, 1, 10.5, "ehouse")
+    box(1111, 1123, 1586, 1602, 10.5, 11.1, "roof")
+    fuel.D = True
+    decal((1111.25, 1594, 8.5), (-1, 0, 0), 10, 1.4, [("UB-1 CEMS", .62, True, "#111111")], bg="#ffffff")
+    box(1118, 1121, 1590, 1594, 11.1, 13, "machine")                                  # HVAC
+    poly([(1123, 1600, 8), (1124.8, 1606, 8), (1124.8, 1612.6, 8), (1124.8, 1612.6, 119.6)], .35, "steel_dark", seg=8)   # heated sample line
+    for k in range(3):
+        poly([(1111, 1588 + k * .5, 6), (1108.6, 1588 + k * .5, 6), (1108.6, 1588 + k * .5, 20.4)], .1, "cable_tc", seg=6)
+    fuel.D = False
+
+
 def mv_feed():
     """The 13.8 kV feeder to EB-1 comes in buried: a marker strip with red posts from the south to the e-house stub-ups."""
     it = fuel.new_item(L, "EB-1 13.8 kV feeder duct bank (marker strip)", (1290, 1298, 1462, 1521), (0, 4), area="D",
@@ -639,6 +729,7 @@ def build():
     hub()
     cooling()
     back_bay()
+    support_yard()
     mv_feed()
     bays()
     sign()
