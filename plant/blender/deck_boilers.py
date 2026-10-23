@@ -72,7 +72,7 @@ def foot(n, short=False):
     left = ("SW-3X1 MODEL &middot; NOT ENGINEERED" if short else
             "SW-3X1 MODEL &middot; CONCEPTUAL ILLUSTRATION, NOT ENGINEERED &middot; QUANTITIES FROM THE MODEL'S CABLE SCHEDULE")
     return f"""<div class="abs foot" style="left:64px;right:64px;bottom:26px;display:flex;justify-content:space-between;
-      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/7</span></div>"""
+      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/8</span></div>"""
 
 
 def slide1():
@@ -160,7 +160,7 @@ def slide2():
     <img src="{img('BB2')}" style="width:100%;height:100%;object-fit:cover"></div>
   <div class="abs cap" style="left:870px;top:712px;width:243px">Cable work at the HRSG e-house</div>
   <div class="abs cap" style="left:1133px;top:712px;width:243px">Old module on the hook</div>
-  {foot(6, short=True).replace("left:64px", "left:870px")}
+  {foot(7, short=True).replace("left:64px", "left:870px")}
 </section>"""
 
 
@@ -259,7 +259,7 @@ def slide3():
   <div class="abs cap" style="left:64px;top:735px;width:1312px">Stock numbers are one catalogue size per product, from
     Southwire's product listings; every size and construction is on the same SPEC. Confirm current stock with Southwire
     customer service before quoting.</div>
-  {foot(7)}
+  {foot(8)}
 </section>"""
 
 
@@ -668,12 +668,80 @@ def slide_diagram():
 </section>"""
 
 
+# ------------------------------------------------------------------------------- what the spec calls for
+# Requirements an owner / EPC cable specification calls up for the HRSG section, per application, and the Southwire
+# answer. Sources: references/boilers/README.md (public one-lines, HRSG package spec, sample Division 26 specs, standards).
+SPEC = [  # (colour, application, where on the HRSG, what the spec calls for, Southwire answer)
+    ("#f05a28", "MV power, 15 kV", "Feed-pump motors; the T-R2A primary",
+     "1/C Cu, EPR insulation, <b>133 % level</b>, 90 °C, tape shield, PVC jacket. ICEA S-93-639, UL 1072 (MV-105). "
+     "Terminations IEEE 48; acceptance test VLF (IEEE 400.2) / NETA ATS",
+     "MV-105 15 kV, 220 mil NL-EPR 133 %, SIMpull &middot; SPEC 46302"),
+    ("#f2c613", "480 V feeders and power", "T-R2A secondary, LC-R2A to MCCs, motors and MOVs",
+     "Cu XHHW-2, 90 °C wet / dry, sized at <b>125 %</b> of full load; voltage drop &le; 3 %. ICEA S-95-658, UL 44 / UL 1277; "
+     "10+ parallel sets: compare with bus duct",
+     "XHHW-2 1/C (SIMpull) &middot; Type TC-ER 3/C + ground &middot; SPEC 45252"),
+    ("#3a8fd9", "Tray cable: power and control", "Every tray between the e-house and the HRSG",
+     "Type TC-ER (UL 1277) so it may leave the tray as an exposed run to the equipment (NEC 336.10); sunlight resistant, "
+     "direct burial; <b>IEEE 1202 / UL 1685</b> 70,000 Btu/h vertical-tray flame test",
+     "Control TC-ER 14 AWG multiconductor &middot; SPEC 45053"),
+    ("#b06ae0", "Hazardous area: gas train, duct burner", "Duct-burner fuel skid, BMS panel to the valves",
+     "Class I Div 2 wiring methods per NEC 501.10(B); MC-HL (UL 1569 + UL 2225) also qualifies for Div 1. Burner "
+     "management per <b>NFPA 85</b>, duct burner UL 295, listed fittings",
+     "ARMOR-X MC-HL, welded armor &middot; SPEC 45352"),
+    ("#e39a5f", "Variable-frequency drives", "SCR dilution-air blowers, FD fans",
+     "VFD-rated: symmetrical three-ground construction, overall shield or continuous armor for the common-mode current, "
+     "XLPE insulation for reflected-wave peaks",
+     "ARMOR-X MC-HL VFD &middot; TC-ER VFD &middot; SPEC 45352"),
+    ("#36c26b", "Instrumentation, 4-20 mA / HART", "Drum level, pressures, flame scanners, analyzers",
+     "<b>Individually shielded</b> twisted pairs + overall shield, drain wires; 300 V PLTC (UL 13, NEC 725) or ITC; "
+     "ICEA S-73-532; segregated from power in tray",
+     "Instrumentation PLTC, SPOS &middot; SPEC 43303"),
+    ("#17a589", "Thermocouple extension", "Gas-path, tube-metal and duct temperatures",
+     "Alloy matched to the thermocouple (type K = KX), ANSI MC96.1 / ASTM E230 colour code; <b>never copper</b>; "
+     "shielded pairs; PLTC; 105 °C near the casing",
+     "Thermocouple extension, PLTC multi-pair &middot; SPEC 42345 / 42350"),
+    ("#ff9f1a", "Fire alarm, fibre, building wire", "F&G loops, CEMS data, e-house lighting",
+     "FPLR / FPLP (NEC 760, NFPA 72); single-mode fibre, armored in tray; THHN / THWN-2 in conduit (UL 83)",
+     "SIMpull THHN / THWN-2 &middot; fire-alarm and fibre cable"),
+]
+
+
+def slide_spec():
+    rows = ""
+    for (col, app, where, req, sw) in SPEC:
+        rows += (f'<tr><td style="border-left:5px solid {col};padding-left:10px"><div style="font:800 15px/1.1 BC;color:{WHITE};'
+                 f'text-transform:uppercase;letter-spacing:.03em">{app}</div><div style="font:400 11px/1.3 B;color:{GREY};'
+                 f'margin-top:3px">{where}</div></td>'
+                 f'<td style="font:400 12px/1.38 B;color:#d4d8dc;text-align:left">{req}</td>'
+                 f'<td style="font:700 13px/1.3 BC;color:{COPPER};text-align:left;letter-spacing:.02em">{sw}</td></tr>')
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:52px">Boiler solutions &nbsp;&middot;&nbsp; the specification</div>
+  <div class="abs h2" style="left:62px;top:80px;font-size:50px">What the spec <em>calls for</em></div>
+  <div class="abs lede" style="left:64px;top:136px;width:1000px;font-size:14px">Every cable application on the HRSG, the
+    requirements an owner's or EPC's cable specification writes for it, and the Southwire product built to meet them.</div>
+  <div class="abs" style="left:64px;top:184px;width:1312px">
+    <table class="m" style="table-layout:fixed"><colgroup><col style="width:270px"><col style="width:700px"><col></colgroup>
+      <tr><th>Application &middot; where</th><th style="text-align:left">What the specification calls for</th>
+          <th style="text-align:left">Southwire</th></tr>{rows}</table></div>
+  <div class="abs" style="left:64px;top:680px;width:1312px;display:flex;gap:28px;border-top:2px solid {COPPER};padding-top:12px">
+    <div style="flex:1.25"><div class="cnum">Checked against a real plant</div><div class="cd" style="font-size:12.5px;margin-top:5px">
+      A recent US utility combined-cycle filing shows the same structure: <b style="color:{WHITE}">HRSG MCCs A / B</b> fed
+      from 480 V switchgear through 2,500 / 3,300 kVA transformers off the auxiliary bus (6.9 kV there, 13.8 kV here).</div></div>
+    <div style="flex:1"><div class="cnum">Design and install</div><div class="cd" style="font-size:12.5px;margin-top:5px">
+      Raceway and cable design for generating stations: IEEE 422. Grounding: IEEE 80 / 665. Area classification:
+      NEC 500, API RP 500. Field acceptance: NETA ATS.</div></div>
+  </div>
+  {foot(6)}
+</section>"""
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     import pymupdf
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS}</style></head><body>"
     out = pymupdf.open()
-    for i, sec in enumerate((slide1(), slide_hero(), slide_elev(), slide_room(), slide_diagram(), slide2(), slide3())):
+    for i, sec in enumerate((slide1(), slide_hero(), slide_elev(), slide_room(), slide_diagram(), slide_spec(), slide2(), slide3())):
         hp = os.path.join(OUT, f"_s{i}.html")
         sec = sec.replace('<section class="page slide">', '<section class="page slide"><div class="s">', 1).replace(
             "</section>", "</div></section>")

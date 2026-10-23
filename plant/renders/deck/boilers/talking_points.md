@@ -1,6 +1,6 @@
 # Boilers: greenfield and brownfield talking points
 
-Notes for the boiler slides (SW-3X1_boilers.pdf). The equipment in the model and on the slides is generic. Company names appear only in these notes.
+Notes for the boiler slides (SW-3X1_boilers.pdf, 8 slides). The equipment in the model and on the slides is generic. Company names appear only in these notes.
 
 ## Who builds what (check the latest before each meeting)
 
@@ -38,6 +38,35 @@ Notes for the boiler slides (SW-3X1_boilers.pdf). The equipment in the model and
   - feeding the room adds **86 cables, about 12,400 ft**: the T-R2A primary and secondary, the transformer fans, controls and monitoring, the DCS fibre, and the room's own lighting, receptacles and fire-alarm wiring.
   - R2A also serves the GT1 unit, so the feed is shown but not counted in the train.
 - The 480 V secondary was missing from the schedule until this pass. It is now in for every unit and load-centre transformer (T-R2A/B/C, T-R3, LCT-A/B). At 10 to 12 parallel sets, it is also a bus-duct candidate; ask the EPC which they carry.
+
+## What the spec calls for (slide 6)
+
+Public sources are listed in `references/boilers/README.md`. Have the standard numbers ready; boiler and EPC engineers
+write their specifications around them.
+
+- **The one-line is real.**
+  - The Mill Creek Unit 6 NGCC filing (LG&E / KU, Kentucky PSC case 2025-00045, Exhibit 2, drawing 6MP-E1101) shows dedicated HRSG MCCs 1A / 1B.
+  - They are fed from 480 V switchgear through 2,500 / 3,300 kVA 6.9 kV / 480 V transformers. This is the same structure as SW-3X1, which uses 13.8 kV.
+  - On the slide this is "a recent US utility filing"; give the name verbally if asked.
+- **MV, 15 kV (feed pumps, transformer primaries).**
+  - The specification: EPR at 133 % insulation level, tape shield, ICEA S-93-639, UL 1072 MV-105, IEEE 48 terminations, VLF acceptance testing (IEEE 400.2 / NETA).
+  - Southwire: MV-105 15 kV, 220 mil NL-EPR 133 %, on SIMpull reels (SPEC 46302).
+- **480 V.**
+  - The specification: XHHW-2, sized at 125 %, voltage drop of 3 % or less.
+  - T-R2A's secondary is 10 parallel sets. Ask whether the EPC carries cable or bus duct; parallel 1/C on SIMpull reels pulls in one pass.
+- **TC-ER is the default tray cable.** The "ER" (exposed run) rating lets the cable leave the tray and run to the motor or valve without conduit (NEC 336.10). The specification also calls for the IEEE 1202 / UL 1685 70,000 Btu/h tray flame test.
+- **Duct burners bring gas into the HRSG.**
+  - The burner skid and valve area is typically Class I Div 2.
+  - ARMOR-X MC-HL (UL 1569 + UL 2225) meets Div 2 and also qualifies for Div 1, so one cable covers any classification change.
+  - Burner management falls under NFPA 85, the boiler and combustion systems hazards code.
+- **VFDs** (SCR blowers, FD fans): a symmetrical three-ground construction plus a shield or continuous armor controls common-mode current and bearing damage. ARMOR-X MC-HL VFD covers this.
+- **Instruments.** Individually shielded twisted pairs, 300 V PLTC (UL 13), ICEA S-73-532, kept apart from power in tray.
+- **Thermocouple extension.** The alloy must match the thermocouple (type K means KX extension), colour-coded to ANSI MC96.1. It is never copper. An HRSG can carry about 80 of these runs per train.
+- **Design guides to name:**
+  - IEEE 422 (cable raceway in generating stations);
+  - IEEE 80 / 665 (grounding);
+  - API RP 500 / NEC 500 (area classification);
+  - NETA ATS (field acceptance).
 
 ## The message for boiler companies
 
