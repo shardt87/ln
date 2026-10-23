@@ -716,16 +716,12 @@ def mv_feed():
 
 
 def bays():
-    """Three bays, each on its own pad with a bay plate painted on the ground in front."""
+    """Bay pads (the painted name plates were removed, owner Oct 23)."""
     it = fuel.new_item(L, "Boiler Row bays: pads and bay plates", (790, 1342, 1490, 1640), (0, .3), area="D", register=False,
                        basis="typical")
     on(it)
     fuel.D = True
-    for (cx, cy, t, sub) in ((1058, 1497, "UTILITY BOILER", "gas · 300 MW class"),
-                             (1250, 1497, "ELECTRIC BOILER", "13.8 kV · no flame"),
-                             (814, 1551, "PACKAGE BOILER", "start-up steam")):
-        decal((cx, cy, .16), (0, 0, 1), 44, 9 if cx < 900 else 11.5, [(t, .44, True, "#e39a5f"), (sub.upper(), .26, True, "#ffffff")],
-              bg="#1d2125", up=(0, 1, 0))
+    # (bay name plates on the ground removed, owner Oct 23)
     box(1003, 1250, 1546, 1636, 0, .14, "concrete")                                   # bay 2 pad (boiler + STG)
     box(1253, 1342, 1520, 1636, 0, .14, "concrete")                                   # bay 3 pad
     fuel.D = False
