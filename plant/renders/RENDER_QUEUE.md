@@ -16,6 +16,7 @@ it where tray congestion is the point of the shot. Process piping stays visible.
 
 | View | Used on | Status | Note |
 |---|---|---|---|
-| RA1 | Boilers slide 6 (main), slide 7 (R2A node) | preview only | trays hidden, Oct 22; the full render with trays was deleted |
+| RA1 | Boilers slide 6 (main), slide 8 (R2A node) | preview only | trays hidden, Oct 22; the full render with trays was deleted |
 | RA2 | Boilers slide 6 (inset) | full done Oct 22 | re-render only if the R2A interior changes |
 | ELV1 | Boilers slide 5 | preview only | HRSG 2/3, all stacks and the outage crane kept in colour, Oct 22; the stale full render was deleted |
+| CM1 / CM2 / CM3 | Boilers slide 7 (CEMS: cutaway main, exterior and stack insets) | preview only | new Oct 23 |

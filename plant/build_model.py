@@ -1808,6 +1808,7 @@ LAYERS = {
     "R1_ROOF": ("R1 roof", "Base plant"), "R1_WALL_E": ("R1 east wall", "Base plant"),
     "R1_INTERIOR": ("R1 interior (SW-3X1-05)", "Base plant"),
     "R2A_ROOF": ("R2A e-house roof, west and south walls (cutaway)", "Base plant"),
+    "CEMS_ROOF": ("CEMS shelter roofs, east and south walls (cutaway)", "Base plant"),
     "R4_ROOF": ("R4 roof", "Base plant"), "R4_WALL_E": ("R4 east wall", "Base plant"),
     "R4_INTERIOR": ("R4 VFD interior", "Base plant"),
     "CR_ROOF": ("Control / admin building roof and ceiling", "Base plant"),
@@ -1847,12 +1848,12 @@ AREAS = {"A": "Power block", "B": "ACC", "C": "Grid interface", "D": "Fuel gas",
          "F": "Controls / service", "G": "Carbon capture", "H": "BESS", "I": "Modular / portable power",
          "J": "GT inlet chilling", "K": "Fuel supply (adjacent market)", "L": "BTM data centre (design option)"}
 # Views from SW-3X1-11 (collections to show), plus two convenience views.
-BASE_SHOW = ["SITE", "BASE_POWER_BLOCK", "HALL_ROOF", "BASE_INLET_AIR", "BASE_ELECTRICAL", "R1_ROOF", "R1_WALL_E", "R2A_ROOF",
+BASE_SHOW = ["SITE", "BASE_POWER_BLOCK", "HALL_ROOF", "BASE_INLET_AIR", "BASE_ELECTRICAL", "R1_ROOF", "R1_WALL_E", "R2A_ROOF", "CEMS_ROOF",
              "R4_ROOF", "R4_WALL_E", "BASE_SWITCHYARD", "BASE_UTILITIES", "BASE_SERVICES", "ROUTES_BASE",
              "PROCESS_PIPING"]
 VIEWS = [
     dict(k="A", n="A Plant overview", show=["SITE", "BASE_POWER_BLOCK", "BASE_ELECTRICAL", "BASE_INLET_AIR",
-         "BASE_SWITCHYARD", "HALL_ROOF", "R1_ROOF", "R1_WALL_E", "R2A_ROOF", "R4_ROOF", "R4_WALL_E", "ROUTES_BASE",
+         "BASE_SWITCHYARD", "HALL_ROOF", "R1_ROOF", "R1_WALL_E", "R2A_ROOF", "CEMS_ROOF", "R4_ROOF", "R4_WALL_E", "ROUTES_BASE",
          "PROCESS_PIPING"], t=[930, 560, 30], c=[-150, -560, 950]),
     dict(k="B", n="B R1 cutaway", show=["SITE", "BASE_ELECTRICAL", "R1_INTERIOR", "ROUTES_BASE"],
          t=[442, 692, 4], c=[560, 560, 120]),
@@ -2346,6 +2347,8 @@ import hrsg_electrical as _hel                    # boiler section: HRSG duct bu
 print('HRSG electrical', _hel.build())
 import r2a_interior as _r2a                       # boiler slide 4: R2A e-house shell, lineups and every cable leg
 print('R2A interior', _r2a.build())
+import cems_lod3 as _cems                       # boiler deck: CEMS shelters at LOD 3 (analyzers, sample line, every cable)
+print('CEMS shelters', _cems.build())
 import brownfield as _bf                          # boiler section: HRSG 3 module-replacement outage (brownfield)
 print('brownfield outage', _bf.build())
 

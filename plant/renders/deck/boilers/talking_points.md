@@ -1,6 +1,6 @@
 # Boilers: greenfield and brownfield talking points
 
-Notes for the boiler slides (SW-3X1_boilers.pdf, 12 slides). The equipment in the model and on the slides is generic. Company names appear only in these notes.
+Notes for the boiler slides (SW-3X1_boilers.pdf, 13 slides). The equipment in the model and on the slides is generic. Company names appear only in these notes.
 
 ## Who builds what (check the latest before each meeting)
 
@@ -89,6 +89,25 @@ The temperatures and pressures below are typical ranges for a three-pressure reh
   - feeding the room adds **86 cables, about 12,400 ft**: the T-R2A primary and secondary, the transformer fans, controls and monitoring, the DCS fibre, and the room's own lighting, receptacles and fire-alarm wiring.
   - R2A also serves the GT1 unit, so the feed is shown but not counted in the train.
 - The 480 V secondary was missing from the schedule until this pass. It is now in for every unit and load-centre transformer (T-R2A/B/C, T-R3, LCT-A/B). At 10 to 12 parallel sets, it is also a bus-duct candidate; ask the EPC which they carry.
+
+## The stack and the CEMS shelter (slide 7)
+
+- **What it is:** a continuous emissions monitoring system (CEMS). Each stack has a walk-in analyzer shelter at its foot that proves the plant's NOx, CO, O2 and ammonia slip to the regulator around the clock.
+- **How it works:**
+  - Probes at the stack sampling platform (EL ~100) draw flue gas.
+  - A heated sample line, kept hot so the moisture doesn't condense, carries the gas down the stack tray and into the shelter.
+  - In the shelter, sample conditioning (chiller, pumps, filters) feeds the analyzer racks.
+  - A data-acquisition PLC on UPS logs the results and sends them over fibre to the control room.
+- **Cable to one shelter** (from the schedule, ~31 cables, ~7,200 ft):
+  - 480 V power (TC-ER) for the HVAC, heated line and analyzers;
+  - control;
+  - instrument pairs through the JB-CEMS junction boxes (PLTC);
+  - fire alarm (FPLR);
+  - the control-room fibre;
+  - building wire for lights and receptacles.
+  Outside it's rigid conduit and explosion-proof fittings, with a strobe and horn.
+- **Why it matters:** if the CEMS goes down, the plant is out of compliance. That makes the instrument pairs and the fibre the most important cable on the site per foot.
+- **Shelter makers:** the photos the owner shared came from a CEMS-shelter manufacturer. Several companies make prefabricated walk-in shelters with factory-wired panels, trays, grounding and fire suppression, which is another pre-wired, plug-and-play cable opportunity. Keep company names off the slides.
 
 ## The electrical system: levels and ratings (slide 6)
 

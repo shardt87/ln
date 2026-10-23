@@ -76,7 +76,7 @@ def foot(n, short=False):
     left = ("SW-3X1 MODEL &middot; NOT ENGINEERED" if short else
             "SW-3X1 MODEL &middot; CONCEPTUAL ILLUSTRATION, NOT ENGINEERED &middot; QUANTITIES FROM THE MODEL'S CABLE SCHEDULE")
     return f"""<div class="abs foot" style="left:64px;right:64px;bottom:26px;display:flex;justify-content:space-between;
-      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/12</span></div>"""
+      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/13</span></div>"""
 
 
 def slide1():
@@ -164,7 +164,7 @@ def slide2():
     <img src="{img('BB2')}" style="width:100%;height:100%;object-fit:cover"></div>
   <div class="abs cap" style="left:870px;top:712px;width:243px">Cable work at the HRSG e-house</div>
   <div class="abs cap" style="left:1133px;top:712px;width:243px">Old module on the hook</div>
-  {foot(11, short=True).replace("left:64px", "left:870px")}
+  {foot(12, short=True).replace("left:64px", "left:870px")}
 </section>"""
 
 
@@ -263,7 +263,7 @@ def slide3():
   <div class="abs cap" style="left:64px;top:735px;width:1312px">Stock numbers are one catalogue size per product, from
     Southwire's product listings; every size and construction is on the same SPEC. Confirm current stock with Southwire
     customer service before quoting.</div>
-  {foot(12)}
+  {foot(13)}
 </section>"""
 
 
@@ -385,13 +385,14 @@ def spot_html(cam, spots, r=17):
 
 
 APPNAME = {"1": "MV-105 15 kV", "2": "TC-ER power", "3": "ARMOR-X MC-HL", "4": "MC-HL VFD", "5": "Control TC-ER",
-           "6": "Instrumentation PLTC", "7": "Thermocouple ext.", "—": "XHHW-2 1/C 500 kcmil"}
+           "6": "Instrumentation PLTC", "7": "Thermocouple ext.", "—": "XHHW-2 1/C 500 kcmil",
+           "FA": "FPLR fire alarm", "FO": "Fibre", "BW": "SIMpull THHN"}
 
 
 def apps(prod):
     """The cable applications behind a spot's product numbers, named (numbers as on the offering slide)."""
     return " &nbsp;".join(f'<span style="color:{COPPER}">{APPNAME[k]}</span>'
-                          + (f'<sup style="font-size:9px;color:{GREY}"> {k}</sup>' if k != "—" else "")
+                          + (f'<sup style="font-size:9px;color:{GREY}"> {k}</sup>' if k.isdigit() else "")
                           for k in prod.split(" · "))
 
 
@@ -563,6 +564,49 @@ def slide_room():
 </section>"""
 
 
+CEMS_SPOTS = [
+    (1, "Cable entry", "conduit stub-ups into an XP junction box", "2 · 5 · 6", (661.4, 805.7, 3.5)),
+    (2, "Overhead ladder tray", "power, control, pairs, fire alarm, fibre", "2 · 5 · 6", (656.0, 807.4, 9.7)),
+    (3, "Analyzer racks", "NOx / O2, CO / CO2, NH3 slip", "2 · 6", (652.3, 818.0, 8.4)),
+    (4, "Data acquisition PLC", "UPS-backed, fibre to the control room", "6 · FO", (662.4, 809.8, 7.9)),
+    (5, "Sample conditioning", "chiller, pumps, filters, line controller", "2", (649.0, 810.0, 6.0)),
+    (6, "Heated sample line", "from the stack probes, through the bulkhead", "2 · 6", (648.8, 811.4, 8.2)),
+    (7, "Transformer and panel", "480 / 208-120 V for HVAC, line, analyzers", "2 · BW", (660.4, 806.8, 5.0)),
+    (8, "Fire alarm, strobe, horn", "loop back to the F&G panel in R2A", "FA", (662.8, 805.4, 10.8)),
+]
+
+
+def slide_cems():
+    import math
+    import openpyxl
+    cam = dict(cams(["CM2"])["CM2"], res=(1440, 810))
+    wb = openpyxl.load_workbook(os.path.join(PLANT, "brochure", "SW-3X1_Cable_Schedule_and_BOM.xlsx"), read_only=True)
+    n = ft = 0
+    for r in list(wb["Cable Schedule"].iter_rows(values_only=True))[1:]:
+        if "CEMS-1" in " ".join(str(r[k]) for k in (4, 5, 6, 7)) or str(r[5]).startswith("CEMS shelter, HRSG 1"):
+            c = r[13] * r[14]
+            n += c
+            ft += math.ceil(((r[19] or 0) + (r[20] or 0) + 20) * 1.1 / 10) * 10 * c
+    ins = lambda k, x, cap: (f'<div class="abs" style="left:{x}px;top:28px;width:300px;height:169px;border:2px solid {COPPER};'
+                             f'border-radius:4px;overflow:hidden"><img src="{img(k)}" style="width:100%;height:100%;object-fit:cover"></div>'
+                             f'<div class="abs cap" style="left:{x}px;top:202px;width:300px;color:#fff;text-shadow:0 1px 3px #000">{cap}</div>')
+    lede = "The analyzer shelter at each stack proves the plant's emissions. Roof and two walls lifted: every cable to it."
+    extra = f"""<div class="abs" style="left:40px;top:632px;display:flex;gap:28px;padding:14px 20px;background:rgba(14,16,18,.82);border-radius:4px">
+      <div><div class="big" style="font-size:30px">{n}</div><div class="bigl">cables / shelter</div></div>
+      <div><div class="big" style="font-size:30px">{ft:,}</div><div class="bigl">ft / shelter</div></div></div>"""
+    return f"""
+<section class="page slide">
+  <img class="abs" src="{img('CM2')}" style="left:0;top:0;width:1440px;height:810px;object-fit:cover">
+  {ins("CM1", 40, "Outside: conduit stub-ups, XP boxes, strobe and horn, HVAC")}
+  {ins("CM3", 356, "Up the stack: probes and junction box at EL 103")}
+  {spot_html(cam, CEMS_SPOTS)}
+  {panel("Boiler solutions &nbsp;&middot;&nbsp; emissions", "The stack and <em>the CEMS shelter</em>", lede,
+         spot_list(CEMS_SPOTS).replace("padding:6px 0 7px 36px", "padding:4px 0 5px 36px"), extra).replace("top:262px", "top:222px").replace("top:168px", "top:166px")}
+  <div class="abs" style="left:0;top:730px;width:1040px;height:80px;background:linear-gradient(180deg,rgba(14,16,18,0),rgba(14,16,18,.95) 55%)"></div>
+  {foot(7).replace("right:64px", "right:420px")}
+</section>"""
+
+
 def slide_diagram():
     epic = lambda k: url(os.path.join(PLANT, "renders", "epic", f"{k}_pro_clean.jpg"))
     X_SW0, X_SW1, Y_SW0, Y_SW1 = 190, 410, 176, 436                    # R1 switchgear room node
@@ -668,7 +712,7 @@ def slide_diagram():
   <div class="abs cap" style="left:64px;top:748px;width:1312px">R2A also serves the GT1 unit loads, so the T-R2A primary and
     secondary, the transformer auxiliaries, the DCS fibre and the room's own wiring are shown here but are not in the train total.
     Schedule rows: {", ".join(L["primary"]["rows"] + L["secondary"]["rows"])} and the rest by tag.</div>
-  {foot(7)}
+  {foot(8)}
 </section>"""
 
 
@@ -912,7 +956,7 @@ def slide_system():
   <div class="abs" style="left:64px;top:636px;width:1312px;display:flex;gap:22px">{tiles}</div>
   <div class="abs cap" style="left:64px;top:744px;width:1312px">Ratings are the model's typical values (Load List and nameplates),
     not engineered. Real plants vary: many put the feed pumps on a 4.16 or 6.9 kV bus.</div>
-  {foot(8)}
+  {foot(9)}
 </section>"""
 
 
@@ -980,7 +1024,7 @@ def slide_spec():
       Raceway and cable design for generating stations: IEEE 422. Grounding: IEEE 80 / 665. Area classification:
       NEC 500, API RP 500. Field acceptance: NETA ATS.</div></div>
   </div>
-  {foot(9)}
+  {foot(10)}
 </section>"""
 
 
@@ -1032,7 +1076,7 @@ def slide_value():
        color:{WHITE};letter-spacing:.01em">"On an HRSG, cable is three-quarters instrumentation and fully on the critical path.
     <em style="font-style:normal;color:{COPPER}">One spec-compliant supply, staged and fast to pull: wired on time, reading right
     the first time."</em></div>
-  {foot(10)}
+  {foot(11)}
 </section>"""
 
 
@@ -1041,7 +1085,7 @@ def main():
     import pymupdf
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS}</style></head><body>"
     out = pymupdf.open()
-    for i, sec in enumerate((slide1(), slide_basics(), slide_cycle(), slide_hero(), slide_elev(), slide_room(), slide_diagram(), slide_system(), slide_spec(), slide_value(), slide2(), slide3())):
+    for i, sec in enumerate((slide1(), slide_basics(), slide_cycle(), slide_hero(), slide_elev(), slide_room(), slide_cems(), slide_diagram(), slide_system(), slide_spec(), slide_value(), slide2(), slide3())):
         hp = os.path.join(OUT, f"_s{i}.html")
         sec = sec.replace('<section class="page slide">', '<section class="page slide"><div class="s">', 1).replace(
             "</section>", "</div></section>")
