@@ -169,6 +169,7 @@ def _build():
     rod((XC, Y1 - 16, 16.25), (XC, Y1 - 16, 19.0), .75, "alu", seg=12)                 # steam outlet nozzle
     box(XC - 1.1, XC + 1.1, Y1 - 17.1, Y1 - 14.9, 19.0, 20.6, "steel")                 # stop valve body
     box(XC - .7, XC + .7, Y1 - 16.7, Y1 - 15.3, 20.6, 23.0, "motor")                  # MOV actuator
+    poly([(XC - .7, Y1 - 16, 21.6), (946.4, Y1 - 16, 21.6), (946.4, 1496.4, 21.6), (946.4, 1496.4, 17.8)], .1, "cable_mc", seg=6)
     # main steam to the aux-steam route (EL 12 at x 995, y 1495), insulated, on two posts
     ys = 1495.0
     poly([(XC, Y1 - 16, 19.8), (XC, ys, 19.8), (990.0, ys, 19.8), (990.0, ys, 12.0), (993.4, ys, 12.0)], .75, "alu",
@@ -257,11 +258,12 @@ def _build():
         box(983.0, 984.2, yp + 1.0, yp + 1.6, 3.0, 4.0, "panel")                      # motor terminal box
         rod((983.6, yp + 1.3, 0.0), (983.6, yp + 1.3, 3.0), .12, "alu", seg=8)       # conduit stub-up
         poly([(976.0, yp, 2.6), (974.0, yp, 2.6), (974.0, DY - 2.4, 2.6), (974.0, DY - 2.4, 11.5)], .3, "pipe", seg=8)
-    poly([(976.0, 1511.5, 4.5), (968.0, 1511.5, 4.5), (968.0, Y1 + 9, 4.5), (X1 - 1, Y1 + 9, 7.5)], .3, "pipe", seg=8)
+    poly([(976.0, 1514.0, 3.7), (976.0, 1511.5, 4.5), (968.0, 1511.5, 4.5), (968.0, Y1 + 9, 4.5), (X1 - 1, Y1 + 9, 7.5)], .3, "pipe", seg=8)
     box(968.0, 978.0, 1530.0, 1537.0, .6, 1.2, "concrete")                            # chemical feed skid
     for xt in (970.5, 975.5):
         rod((xt, 1533.5, 1.2), (xt, 1533.5, 6.5), 1.7, "tank", seg=14)
     box(976.5, 977.8, 1530.4, 1532.0, 1.2, 5.0, "panel")
+    poly([(977.15, 1531.2, 1.2), (977.15, 1531.2, 0.0)], .1, "cable_tc", seg=6)                # buried feed
     BX, BY = 942.0, 1524.0
     rod((BX, BY, .6), (BX, BY, 11.0), 2.6, "tank", seg=18)                            # blowdown tank
     rod((BX, BY, 11.0), (BX, BY, 16.5), .35, "pipe", seg=8)

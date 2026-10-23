@@ -23,7 +23,9 @@ from collections import defaultdict
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 M = json.load(open(os.path.join(HERE, "sw3x1_model.json")))
-ITEMS = [it for it in M["items"] if it.get("area") != "L" and not it["layer"].startswith("OPT_DC")]
+# Boiler Row (OPT_BOILERS) is a showcase with its own typical take-off (tools/boiler_row_numbers.py), not plant scope
+ITEMS = [it for it in M["items"] if it.get("area") != "L" and not it["layer"].startswith("OPT_DC")
+         and it["layer"] not in ("OPT_BOILERS", "BOILER_ROW_ROOF")]
 BY_TAG = {it["tag"]: it for it in ITEMS if it.get("tag")}
 AREA = M["areas"]
 

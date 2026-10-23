@@ -98,7 +98,9 @@ def utility_boiler():
         for k in range(4):
             poly([(X1 - 6.25 + (k - 1.5) * .3, BF - 5.9, zp), (X1 - 6.25 + (k - 1.5) * .3, BF - 5.9, zp - .6),
                   (X1 - 4.4, BF - 5.9, zp - .6)], .08, "cable_armor", seg=6)
-    poly([(X0 + 9, GY, 4.0), (X0 + 9, GY, 6.0), (X0 + 9, BF - 4.6, 6.0), (X0 + 9, BF - 4.6, 66.9)], .55, "fuelgas", seg=10)  # main gas riser
+    poly([(X1 - 9, GY, 4.0), (X1 - 9, GY, 6.0), (X1 - 9, BF - 4.6, 6.0), (X1 - 9, BF - 4.6, 66.9)], .55, "fuelgas", seg=10)  # main gas riser, after the shut-offs
+    for r_ in range(3):
+        rod((X0 + 9, BF - 4.6, 40.9 + r_ * 13), (X0 + 8.7, BF - 4.6, 40.9 + r_ * 13), .7, "steel", seg=10)     # header end caps
     box(X1 - 4.6, X1 - 3.4, BF - 6.4, BF - 5.2, 3, 64, "steel")                         # BMS riser channel, levels A-C to the panel
     for k in range(6):
         rod((X1 - 4.4 + k * .16, BF - 5.0, 3.2), (X1 - 4.4 + k * .16, BF - 5.0, 62.6), .07, "cable_armor", seg=6)
@@ -136,7 +138,10 @@ def utility_boiler():
             box(min(xx, xx + (xb - xa) / n), max(xx, xx + (xb - xa) / n), y_ - 1.8, y_ + 1.8,
                 z0 + (z1 - z0) * t, z0 + (z1 - z0) * t + .25, "grating")
         rod((xa, y_ - 1.9, z0 + 3.4), (xb, y_ - 1.9, z1 + 3.4), .05, "rail", seg=4)
+        for sy in (y_ - 1.95, y_ + 1.95):
+            rod((xa, sy, z0), (xb, sy, z1), .16, "steel", seg=6)                              # stringers
         box(SX1 - 3, SX1, SY0 + .2, SY1 - .2, z1 - .25, z1, "grating")                 # landing
+        box(SX0, SX0 + 1.2, SY0 + .2, SY1 - .2, z1 - .25, z1, "grating")                 # west landing
     rail([(SX0, SY0), (SX0, SY1)], 62)
     decal(((SX0 + SX1) / 2, SY0 - .45, 8), (0, -1, 0), 8, 1.2, [("BURNER LEVELS A-C", .6, True, "#111111")], bg="#ffd200")
     # flame-scanner cooling air: two blowers at grade, a riser and a header per level, a hose to every scanner
@@ -146,11 +151,13 @@ def utility_boiler():
         rod((bx_, Y0 - 13, .6), (bx_, Y0 - 13, 3.2), 1.3, "machine", seg=16)               # blower
         box(bx_ + 1.3, bx_ + 3.3, Y0 - 14, Y0 - 12, .6, 2.4, "motor")                     # motor (480 V)
         poly([(bx_ + 3.3, Y0 - 13, 1.5), (bx_ + 3.3, Y0 - 15.5, 1.5), (bx_ + 3.3, Y0 - 15.5, .1)], .1, "cable_tc", seg=6)
-    poly([(X0 + 31, Y0 - 13, 3.2), (X0 + 31, Y0 - 13, 5), (X0 + 31, BF - .9, 5), (X0 + 31, BF - .9, 66)], .35, "pipe", seg=8)
+    poly([(X0 + 31, Y0 - 13, 3.2), (X0 + 31, Y0 - 13, 5), (X0 + 31, BF - .9, 5), (X0 + 31, BF - .9, 67.7)], .35, "pipe", seg=8)
     decal((X0 + 28, Y0 - 15.1, 2.6), (0, -1, 0), 6, .8, [("SCANNER COOLING AIR", .6, True, "#111111")], bg="#ffffff")
     for r_ in range(3):
         z = 38 + r_ * 13
         poly([(X0 + 10, BF - .9, z + 3.7), (X1 - 9, BF - .9, z + 3.7)], .22, "pipe", seg=8)
+        for xe in (X0 + 9.8, X1 - 8.8):
+            rod((xe, BF - .9, z + 3.7), (xe + (.2 if xe > X0 + 20 else -.2), BF - .9, z + 3.7), .32, "steel", seg=8)
         for c_ in range(4):
             x = X0 + 14 + c_ * 13.3
             poly([(x + 2.1, BF - .9, z + 3.7), (x + 2.1, BF - 4.4, z + 3.7), (x + 2.1, BF - 4.4, z + 2.4)], .08, "pipe", seg=6)
@@ -184,7 +191,7 @@ def utility_boiler():
     # gas train + burner management at the foot of the burner front (Class I Div 2)
     GY = Y0 - 22
     box(X0 + 6, X1 - 6, GY - 3, GY + 3, 0, 1.2, "steel_dark")
-    poly([(926, 1584, 4.0), (X0 - 10, 1584, 4.0), (X0 - 10, GY, 4.0), (X1 - 8, GY, 4.0)], .7, "fuelgas", seg=12)   # gas header up from the buried plant line
+    poly([(929, 1584, 4.0), (929, 1600, 4.0), (X0 - 10, 1600, 4.0), (X0 - 10, GY, 4.0), (X1 - 9, GY, 4.0)], .7, "fuelgas", seg=12)   # gas header up from the buried plant line
     for xv, kind in ((X0 + 14, "ssov"), (X0 + 22, "vent"), (X0 + 30, "ssov"), (X0 + 40, "fcv")):
         rod((xv - .9, GY, 4.0), (xv + .9, GY, 4.0), 1.1, "steel", seg=12)
         if kind == "vent":
@@ -198,7 +205,7 @@ def utility_boiler():
     for dz in (0, .35, .7):
         poly([(BX0, GY - 1.5, 3.2 + dz), (BX0 - 2, GY - 4.2, 3.2 + dz), (X0 + 8, GY - 4.2, 3.2 + dz)], .12, "cable_armor", seg=8)
     for xv in (X0 + 14, X0 + 22, X0 + 30, X0 + 40):
-        poly([(xv, GY - 4.2, 3.4), (xv, GY - 1.2, 3.4), (xv, GY - 1.2, 5.0)], .09, "cable_armor", seg=6)
+        poly([(xv, GY - 4.2, 3.4), (xv, GY - .5, 3.4), (xv, GY - .5, 5.4)], .09, "cable_armor", seg=6)
     decal((X0 + 26, GY - 3.1, 1.6), (0, -1, 0), 10, 1.0, [("DANGER  ·  NATURAL GAS  ·  CLASS I DIV 2", .5, True, "#ffffff")], bg="#b8322a")
     # FD fans with 13.8 kV motors and their MV cable, SE of the boiler
     for k_, fy in enumerate((Y0 + 4, Y0 + 24)):
@@ -254,6 +261,16 @@ def steam_turbine_hall():
     for k in range(3):
         rod((X1 + 10 + k * 3, Y0 + 42, 18), (X1 + 10 + k * 3, Y0 + 42, 25), .5, "insulator", seg=10)
         rod((X1, Y0 + 38 + k * 2.5, 14), (X1 + 7, Y0 + 38 + k * 2.5, 14), .9, "ipb", seg=14)
+    # 230 kV take-off: conductors from the GSU bushings to cable terminations on a gantry, HV cable down into the ground
+    for y in (Y0 + 33, Y0 + 51):
+        box(X1 + 25.6, X1 + 26.4, y - .4, y + .4, 0, 28, "steel")
+    box(X1 + 25.4, X1 + 26.6, Y0 + 32.6, Y0 + 51.4, 27, 28, "steel")
+    for k in range(3):
+        yk = Y0 + 37 + k * 5
+        rod((X1 + 26, yk, 28), (X1 + 26, yk, 31.5), .45, "insulator", seg=10)             # cable termination
+        rod((X1 + 10 + k * 3, Y0 + 42, 25), (X1 + 26, yk, 31.5), .12, "conductor", seg=6)
+        poly([(X1 + 26.6, yk, 27), (X1 + 27.2, yk, 27), (X1 + 27.2, yk, 0)], .35, "cable", seg=10)
+    decal((X1 + 27.6, Y0 + 42, 22), (1, 0, 0), 12, 1.4, [("230 kV TO THE SWITCHYARD", .6, True, "#111111")], bg="#ffd200")
     for (fx, a) in ((X1 + 5.5, 0), (X1 + 20.5, 0)):
         for k in range(4):
             box(fx - .5, fx + .5, Y0 + 34 + k * 4.5, Y0 + 37 + k * 4.5, 3, 15, "radiator")
@@ -300,7 +317,7 @@ def electric_boiler():
         px = VX - 9 + k * 6
         box(px - 2, px + 2, Y0 + 9, Y0 + 14, 1.0, 1.6, "concrete")
         rod((px, Y0 + 11.5, 1.6), (px, Y0 + 11.5, 4.6), 1.3, "motor", seg=14)
-        poly([(px, Y0 + 11.5, 3.0), (px, VY - 6, 3.0)], .5, "pipe", seg=10)
+        poly([(px, Y0 + 11.5, 3.0), (px, VY - 8, 3.0), (VX - 2 + k * 4, VY - 8, 3.0), (VX - 2 + k * 4, VY - 5.6, 3.0)], .5, "pipe", seg=10)
     box(X0 + 1, X0 + 4, Y0 + 6, Y0 + 14, 1, 8, "cabinet")                              # PLC panel
     box(X0 + 1, X0 + 4, Y0 + 16, Y0 + 24, 1, 8, "cabinet")                             # pump starters
     decal((X0 + 4.05, Y0 + 15, 7.2), (1, 0, 0), 15, 1.0, [("EB-1 PLC  ·  PUMP MCC", .55, True, "#111111")], bg="#ffffff")
@@ -419,8 +436,9 @@ def spine():
     fuel.D = True
     # pipes on the top tier: the main run east-west, then the west leg south to AB-1's aux-steam header
     for off, r, c in ((-2.4, 1.15, "pipe"), (0, .55, "pipe"), (2.4, .65, "fuelgas")):
-        end = [(998, SPY + off, 12.0), (998, 1510, 12.0)] if off < 0 else [(998 + off, SPY + off, .5)]
+        end = [(998, SPY + off, 12.0), (998, 1510, 12.0)] if off < 0 else [(998 + off, SPY + off, 0.0)]
         poly([(SPX1, SPY + off, 31.2), (998 + max(off, 0), SPY + off, 31.2)] + end, r, c, seg=12)   # steam into the plant aux header
+        rod((SPX1, SPY + off, 31.2), (SPX1 + .3, SPY + off, 31.2), r + .25, "steel", seg=12)          # blind flange
     decal((1240, SPY - 5.2, 26), (0, -1, 0), 34, 2.2, [("STEAM  ·  CONDENSATE  ·  FUEL GAS  ·  CABLE", .6, True, "#ffffff")], bg="#b8322a")
     # ladder trays on the lower tier: control / instrument (amber) and MV
     ladder_tray([(SPX1 - 4, SPY), (1000, SPY)], 22.2, 4.2, [("cable_tc", .14)] * 10 + [("cable_mv", .2)] * 3)
@@ -563,12 +581,10 @@ def back_bay():
         fuel.D = True
         for j in range(5):
             box(x - 1.2, x, 1569 + j * 4, 1571.5 + j * 4, 2, 12, "radiator")
-        for j in range(3):
-            rod((x + 4 + j * 4, 1578, 14), (x + 4 + j * 4, 1578, 19), .45, "insulator", seg=10)
         box(x + 4, x + 12, 1589, 1592, 4, 11, "steel")                                 # MV cable box
-        decal((x + 8, 1566.9, 11), (0, -1, 0), 8, 1.4, [(f"SST-{'AB'[k]}  ·  13.8 kV", .6, True, "#111111")], bg="#ffd200")
+        decal((x + 8, 1566.9, 11), (0, -1, 0), 8, 1.4, [(f"SST-{'AB'[k]}  ·  13.8 / 4.16 kV", .6, True, "#111111")], bg="#ffd200")
         for j in range(6):                                                           # MV-105 to the switchgear
-            poly([(x + 5.5 + j, 1592, 9), (x + 5.5 + j, 1594, 12.4), (x + 5.5 + j, 1617, 12.4), (x + 5.5 + j, 1619.6, 7)],
+            poly([(x + 5.5 + j, 1590, 9), (x + 5.5 + j, 1594, 12.4), (x + 5.5 + j, 1617, 12.4), (x + 5.5 + j, 1619.6, 7)],
                  .2, "cable_mv", seg=8)
         fuel.D = False
     box(959.5, 961.5, 1563, 1595, .8, 18, "concrete")                                # firewall
@@ -586,6 +602,9 @@ def back_bay():
     for x in (944, 976):
         box(x - 1.6, x + 1.6, EY0 - 4, EY0, 2.5, 3, "grating")                          # landings
     box(EX1 - 6, EX1 - 2, EY0 + 4, EY0 + 12, 15.2, 18, "machine")                     # HVAC
+    for k in range(6):                                                               # incomer from the plant duct bank
+        rod((EX0 + 1 + k * .7, 1617.2, 0), (EX0 + 1 + k * .7, 1617.2, 2.5), .22, "pipe", seg=8)
+        rod((EX0 + 1 + k * .7, 1617.2, 2.5), (EX0 + 1 + k * .7, EY0 + .4, 2.5), .16, "cable_mv", seg=8)
     # MV-105 to the FD fans: out of the e-house roof, a ladder tray behind the boiler, then down to the fan motors
     for j in range(6):
         poly([(981 + j * .6, EY0 + 8, 15.2), (981 + j * .6, EY0 + 8, 20.5), (984, EY0 + 8 + (j - 2.5) * .5, 20.5)],
@@ -614,8 +633,8 @@ def back_bay():
             box(x - .9, x + .9, y - .9, y + .9, 2.4, 5.2, c)
         for x in (888, 922):
             box(x - .6, x + .6, y - 2, y + 2, 0, 2.6, "concrete")
-    poly([(884, 1566, 3.2), (884, 1590, 3.2)], .6, "fuelgas", seg=12)
-    poly([(924, 1578, 3.2), (926, 1578, 3.2), (926, 1584, 3.2), (926, 1584, 4.0)], .7, "fuelgas", seg=12)
+    poly([(887, 1566, 3.2), (884, 1566, 3.2), (884, 1590, 3.2)], .6, "fuelgas", seg=12)
+    poly([(924, 1578, 3.2), (926, 1578, 3.2), (926, 1584, 3.2), (929, 1584, 3.2), (929, 1584, 4.0)], .7, "fuelgas", seg=12)
     poly([(924, 1590, 3.2), (926, 1590, 3.2), (926, 1584, 3.2)], .7, "fuelgas", seg=12)
     rod((905, 1600, .6), (905, 1600, 4.4), .3, "steel", seg=8)                         # meter run
     box(902, 908, 1598, 1602, 2.6, 5, "steel")
@@ -623,8 +642,9 @@ def back_bay():
     decal((918, 1602.95, 6.2), (0, -1, 0), 7, .9, [("GAS METERING RTU", .6, True, "#111111")], bg="#ffffff")
     box(886, 922, 1594.6, 1595, 3, 3.2, "steel")                                      # strut
     for k in range(4):
-        poly([(918, 1603, 3.4 + k * .3), (918, 1595, 3.4 + k * .3), (886 + k * 9, 1595, 3.4 + k * .3),
-              (886 + k * 9, 1591, 4.6)], .09, "cable_armor", seg=6)
+        xk = (896, 904, 912, 918)[k]
+        poly([(918, 1603, 3.4 + k * .3), (918, 1595, 3.4 + k * .3), (xk, 1595, 3.4 + k * .3),
+              (xk, 1590.9, 5.2)], .09, "cable_armor", seg=6)
     decal((904, 1559.5, 1.4), (0, -1, 0), 14, 1.0, [("DANGER  ·  NATURAL GAS  ·  CLASS I DIV 2", .55, True, "#ffffff")], bg="#b8322a")
     fuel.D = False
 
