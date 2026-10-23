@@ -191,8 +191,8 @@ PRODUCTS = [
 ]
 # where each product is circled: view -> [(product no., 3D point in the model)]
 SPOTS = {
-    "BX1": [(2, (795.0, 1601.0, 15.0)), (3, (829.0, 1569.3, 3.0)), (4, (794.5, 1566.7, 9.0)), (5, (816.8, 1580.5, 7.5)),
-            (6, (812.2, 1620.0, 14.2))],
+    "BX1": [(2, (946.0, 1496.0, 15.0)), (3, (980.0, 1464.3, 3.0)), (4, (945.5, 1461.7, 9.0)), (5, (967.8, 1475.5, 7.5)),
+            (6, (963.2, 1515.0, 14.2))],
     "BH2": [(3, (683.0, 692.85, 2.9)), (5, (691.75, 692.75, 6.5)), (6, (680.0, 692.5, 4.6))],
     "BF1": [(1, (684.4, 630.4, 9.3)), (1, (684.4, 643.6, 9.3))],
     "BB3": [(8, (888.5, 692.5, 1.2)), (6, (889.6, 683.0, 5.6)), (5, (895.0, 680.2, 3.0))],
@@ -949,7 +949,7 @@ SECTIONS = [  # (label, sub, gas temperature after the section, colour, drum, ca
 
 
 ROW_SPOTS = [
-    (1, "Shared cooling tower", "UB-1 cells at its west end; CW pumps on 4.16 kV", "1 · 4", (865, 1770, 50)),
+    (1, "Package boiler AB-1", "gas train, BMS, FD fan on a VFD; on the Boiler Row steam header", "2 · 5 · 6", (965, 1495, 35)),
     (2, "Burner front and gas train", "12 burners: scanners, igniters, valves, actuators", "3 · 5", (1042, 1532, 50)),
     (3, "FD fans, 13.8 kV motors", "MV terminations at each fan", "1", (1092, 1556, 9)),
     (4, "The spine rack", "steam, gas and condensate on top; cable trays below", "1 · 5 · 6", (1230, 1516, 32)),

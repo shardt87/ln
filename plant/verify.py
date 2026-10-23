@@ -70,7 +70,7 @@ def plan_match(x0, x1, y0, y1):
 # frames on sheet 01 (their contents are modelled from sheet 02 instead).
 ZONE_FILLS = {"#fbfbf9", "#e7f3f2"}
 # Owner-approved relocations off the drawn position (reported, not matched).
-MOVED = {(935.0, 995.0, 1450.0, 1540.0): "Auxiliary boiler AB-1 -> Boiler Row west x 784-844, y 1555-1645 (owner, Oct 23)"}
+MOVED = {}
 rows, moved = [], []
 for r in ref["sheet01_rects"]:
     if r["fill"] in ZONE_FILLS:

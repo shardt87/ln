@@ -88,9 +88,9 @@ def decal(*a, **k):
     showcase.decal(*a, **k)
 
 
-# Oct 23 (owner): AB-1 moves west into Boiler Row (x 784-844, y 1555-1645, same orientation), so its old place can take the
-# UB-1 cooling tower; its steam ties into the Boiler Row header. It is drawn at its old place and shifted (-151, +105).
-DX, DY = -151.0, 105.0
+# Oct 23 (owner): AB-1 was moved twice and is back on its drawn place (in the Boiler Row aerial); the shift is kept as a
+# hook. DX = DY = 0 leaves it where sheet SW-3X1-01 draws it.
+DX, DY = 0.0, 0.0
 
 
 def _mv(x, y):
@@ -108,14 +108,15 @@ def _relocate(it, p0, d0):
                 p[k][:2] = [round(v, 2) for v in _mv(p[k][0], p[k][1])]
     for d in fuel.G.get("decals", [])[d0:]:
         d["c"][:2] = [round(v, 2) for v in _mv(d["c"][0], d["c"][1])]
-    it["fp"] = [784.0, 844.0, 1555.0, 1645.0]
+    it["fp"] = [it["fp"][0] + DX, it["fp"][1] + DX, it["fp"][2] + DY, it["fp"][3] + DY]
     it["info"] += " Moved Oct 23 west into Boiler Row; its steam ties into the Boiler Row aux-steam header."
 
 
 def build():
     p0, d0 = len(fuel.G["parts"]), len(fuel.G.get("decals", []))
     n = _build()
-    _relocate(find("Auxiliary boiler"), p0, d0)
+    if DX or DY:
+        _relocate(find("Auxiliary boiler"), p0, d0)
     return n
 
 

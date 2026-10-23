@@ -1,13 +1,11 @@
 {
  "footprints": {
-  "checked": 210,
-  "matched": 210,
+  "checked": 211,
+  "matched": 211,
   "missing": [],
   "ok": true,
   "tolerance_ft": 0.6,
-  "relocated": [
-   "Auxiliary boiler AB-1 -> Boiler Row west x 784-844, y 1555-1645 (owner, Oct 23)"
-  ]
+  "relocated": []
  },
  "heights": {
   "rows": [
@@ -226,7 +224,7 @@
   "ok": true
  },
  "clashes": {
-  "pairs_tested": 1457124,
+  "pairs_tested": 1457123,
   "clashes": [],
   "ok": true
  },
@@ -236,8 +234,8 @@
  },
  "summary": {
   "ok": true,
-  "items": 1021,
-  "parts": 155886,
-  "routes": 716
+  "items": 1020,
+  "parts": 155750,
+  "routes": 715
  }
 }

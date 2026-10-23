@@ -28,10 +28,8 @@ def routes(add_route):
     add_route("water", [(520, 1545), (520, 1530)], sheet=sheet)                              # into water treatment
     add_route("water", [(530, 1616), (530, 1626), (720, 1626), (720, 1605)], sheet=sheet)   # fire / service water
     # plant aux-steam header: fed from the Boiler Row spine (UB-1 extraction, EB-1 steam storage) at its west end ...
-    add_route("aux_steam", [(998, 1510), (998, 1495), (1040, 1495), (1040, 852)], sheet=sheet)
-    # ... and from the package boiler AB-1 (moved west into Boiler Row, Oct 23), south of the UB-1 electrical bay
-    add_route("aux_steam", [(842.4, 1600), (852, 1600), (852, 1552), (994, 1552), (994, 1510), (998, 1510)], sheet=sheet)
-    add_route("duct_bank", [(915, 1450), (778, 1450), (778, 1596), (785.5, 1596)], sheet=sheet)  # AB-MCC feeder
+    add_route("aux_steam", [(993.4, 1495), (1040, 1495), (1040, 852)], sheet=sheet)
+    add_route("aux_steam", [(998, 1510), (998, 1495)], sheet=sheet)                                # Boiler Row spine tie-in
     add_route("duct_bank", [(915, 1450), (912, 1450), (912, 1616), (931, 1616)], sheet=sheet)      # UB-1 switchgear incomer
     add_route("duct_bank", [(445, 1868), (210, 1868), (210, 1854)], sheet=sheet)                # UB-1 cooling cells MCC
 

@@ -173,8 +173,8 @@ for k, (p, b) in enumerate(parts):
 # Reviewed and accepted (Oct 23): (check, regex on the finding, reason)
 import re
 ACCEPT = [
-    ("dangling end", r"^Auxiliary boiler  \[pipe\] at \((791\.0, 1629|835\.0, 1630)", "open vent tops (blowdown tank, deaerator)"),
-    ("dangling end", r"^Auxiliary boiler  \[pipe\] at \(799\.4, 1628", "economizer header ends on the casing face"),
+    ("dangling end", r"^Auxiliary boiler  \[pipe\] at \((791\.0, 1629|835\.0, 1630|942\.0, 1524|986\.0, 1525)", "open vent tops (blowdown tank, deaerator)"),
+    ("dangling end", r"^Auxiliary boiler  \[pipe\] at \((799\.4, 1628|950\.4, 1523)", "economizer header ends on the casing face"),
     ("equipment with no cable", r"^Auxiliary boiler  \[lamp\]", "pole-mounted area lights, wired inside the pole"),
     ("floating group", r"^2 parts, lowest EL (38|42)\.0, e\.g\. Auxiliary boiler  \[rail\]", "stack ladder cage hoops, drawn 0.2 ft off the stiles"),
     ("runs through a solid body", r"^Auxiliary boiler  \[pipe\] through Auxiliary boiler", "pipes into the boiler's own casing"),
