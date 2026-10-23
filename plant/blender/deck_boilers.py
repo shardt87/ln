@@ -76,7 +76,7 @@ def foot(n, short=False):
     left = ("SW-3X1 MODEL &middot; NOT ENGINEERED" if short else
             "SW-3X1 MODEL &middot; CONCEPTUAL ILLUSTRATION, NOT ENGINEERED &middot; QUANTITIES FROM THE MODEL'S CABLE SCHEDULE")
     return f"""<div class="abs foot" style="left:64px;right:64px;bottom:26px;display:flex;justify-content:space-between;
-      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/14</span></div>"""
+      border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; BOILERS {n}/15</span></div>"""
 
 
 def slide1():
@@ -164,7 +164,7 @@ def slide2():
     <img src="{img('BB2')}" style="width:100%;height:100%;object-fit:cover"></div>
   <div class="abs cap" style="left:870px;top:712px;width:243px">Cable work at the HRSG e-house</div>
   <div class="abs cap" style="left:1133px;top:712px;width:243px">Old module on the hook</div>
-  {foot(13, short=True).replace("left:64px", "left:870px")}
+  {foot(14, short=True).replace("left:64px", "left:870px")}
 </section>"""
 
 
@@ -263,7 +263,7 @@ def slide3():
   <div class="abs cap" style="left:64px;top:735px;width:1312px">Stock numbers are one catalogue size per product, from
     Southwire's product listings; every size and construction is on the same SPEC. Confirm current stock with Southwire
     customer service before quoting.</div>
-  {foot(14)}
+  {foot(15)}
 </section>"""
 
 
@@ -432,7 +432,7 @@ def slide_hero():
   {spot_html(cam, HERO_SPOTS)}
   {panel("Boiler solutions &nbsp;&middot;&nbsp; HRSG", "The HRSG, <em>every cable</em>", lede, spot_list(HERO_SPOTS).replace("padding:6px 0 7px 36px", "padding:4px 0 5px 36px"), extra).replace("top:262px", "top:222px")}
   <div class="abs" style="left:0;top:730px;width:1040px;height:80px;background:linear-gradient(180deg,rgba(14,16,18,0),rgba(14,16,18,.95) 55%)"></div>
-  {foot(5).replace("right:64px", "right:420px")}
+  {foot(6).replace("right:64px", "right:420px")}
 </section>"""
 
 
@@ -455,7 +455,7 @@ def slide_elev():
   {spot_html(cam, ELEV_SPOTS)}
   {panel("Boiler solutions &nbsp;&middot;&nbsp; elevation", "The train <em>in elevation</em>", lede, spot_list(ELEV_SPOTS))}
   <div class="abs" style="left:0;top:730px;width:1040px;height:80px;background:linear-gradient(180deg,rgba(14,16,18,0),rgba(14,16,18,.95) 55%)"></div>
-  {foot(6).replace("right:64px", "right:420px")}
+  {foot(7).replace("right:64px", "right:420px")}
 </section>"""
 
 
@@ -563,7 +563,7 @@ def slide_room():
   {spot_html(cam, spots)}
   {panel("Boiler solutions &nbsp;&middot;&nbsp; the e-house", "Inside <em>the room</em>", lede, spot_list(spots).replace("padding:6px 0 7px 36px", "padding:4px 0 5px 36px"), extra).replace("top:262px", "top:218px").replace("top:168px", "top:160px")}
   <div class="abs" style="left:0;top:730px;width:1040px;height:80px;background:linear-gradient(180deg,rgba(14,16,18,0),rgba(14,16,18,.95) 55%)"></div>
-  {foot(7).replace("right:64px", "right:420px")}
+  {foot(8).replace("right:64px", "right:420px")}
 </section>"""
 
 
@@ -607,7 +607,7 @@ def slide_cems():
   {panel("Boiler solutions &nbsp;&middot;&nbsp; emissions", "The stack and <em>the CEMS shelter</em>", lede,
          spot_list(CEMS_SPOTS).replace("padding:6px 0 7px 36px", "padding:4px 0 5px 36px"), extra).replace("top:262px", "top:222px").replace("top:168px", "top:166px")}
   <div class="abs" style="left:0;top:730px;width:1040px;height:80px;background:linear-gradient(180deg,rgba(14,16,18,0),rgba(14,16,18,.95) 55%)"></div>
-  {foot(8).replace("right:64px", "right:420px")}
+  {foot(9).replace("right:64px", "right:420px")}
 </section>"""
 
 
@@ -716,7 +716,7 @@ def slide_diagram():
   <div class="abs cap" style="left:64px;top:748px;width:1312px">R2A also serves the GT1 unit loads, so the T-R2A primary and
     secondary, the transformer auxiliaries, the DCS fibre and the room's own wiring are shown here but are not in the train total.
     Schedule rows: {", ".join(L["primary"]["rows"] + L["secondary"]["rows"])} and the rest by tag.</div>
-  {foot(9)}
+  {foot(10)}
 </section>"""
 
 
@@ -846,6 +846,93 @@ def slide_types():
 </section>"""
 
 
+# ------------------------------------------------------------------------------- the newest market: electric boilers
+def slide_eboiler():
+    g = ""
+    st = "#59606a"
+    def rect(x, y, w, h, fill="#2a2f35", stroke=st, sw=1.5, rx=0):
+        return f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{rx}" fill="{fill}" stroke="{stroke}" stroke-width="{sw}"/>'
+    def lab(x, y, t, c=GREY, size=12, anchor="middle", w=700):
+        return (f'<text x="{x}" y="{y}" text-anchor="{anchor}" fill="{c}" font-family="BC" font-weight="{w}" font-size="{size}" '
+                f'letter-spacing=".6">{t}</text>')
+    base = 600
+    MV = "#f05a28"
+    g += f'<line x1="64" y1="{base}" x2="900" y2="{base}" stroke="#3a4048" stroke-width="2"/>'
+    # grid / renewables -> 13.8 kV switchgear
+    g += rect(70, 250, 120, 70, "#211d2a", "#b06ae0", rx=4)
+    g += lab(130, 278, "GRID · WIND · SOLAR", "#b06ae0", 11.5)
+    g += lab(130, 298, "surplus power", GREY, 11, w=400)
+    g += f'<line x1="190" y1="285" x2="236" y2="285" stroke="#b06ae0" stroke-width="4"/>'
+    g += rect(236, 230, 120, base - 230, "#2a2f35", "#9aa3ab", 2)
+    for k in range(4):
+        g += rect(246, 246 + k * 84, 100, 72, "#323840", st)
+        g += f'<rect x="{262}" y="{262 + k * 84}" width="28" height="18" fill="#141a1f"/>'
+        g += f'<circle cx="{322}" cy="{272 + k * 84}" r="5" fill="#36c26b"/>'
+    g += lab(296, 222, "13.8 kV SWITCHGEAR", WHITE, 12)
+    # MV cable run (tray) to the boiler
+    g += f'<polyline points="356,262 420,262 420,214 640,214 640,262" fill="none" stroke="{MV}" stroke-width="9" stroke-linejoin="round"/>'
+    g += f'<polyline points="356,262 420,262 420,214 640,214 640,262" fill="none" stroke="#ffb27a" stroke-width="2" stroke-dasharray="2 9" stroke-linejoin="round"/>'
+    g += lab(530, 204, "MV-105 · PARALLEL SETS", MV, 12)
+    # electrode boiler vessel with three electrodes through the top
+    vx, vw = 560, 160
+    g += f'<rect x="{vx}" y="280" width="{vw}" height="{base - 300}" rx="40" fill="#2e3338" stroke="#cfd5d8" stroke-width="2"/>'
+    for k, dx in enumerate((-46, 0, 46)):
+        x = vx + vw / 2 + dx
+        g += f'<rect x="{x - 9}" y="262" width="18" height="26" rx="3" fill="#8b6a4a" stroke="#e39a5f"/>'          # bushing
+        g += f'<line x1="{x}" y1="288" x2="{x}" y2="430" stroke="#e39a5f" stroke-width="5"/>'                      # electrode
+        g += f'<line x1="{x}" y1="262" x2="{x}" y2="250" stroke="{MV}" stroke-width="5"/>'
+    g += f'<line x1="{vx + 34}" y1="250" x2="{vx + 126}" y2="250" stroke="{MV}" stroke-width="5"/>'
+    g += f'<path d="M{vx + 14},450 Q{vx + 80},420 {vx + vw - 14},450" fill="none" stroke="#4aa3ff" stroke-width="3"/>'
+    g += f'<rect x="{vx + 10}" y="452" width="{vw - 20}" height="{base - 300 - 182}" fill="#1d3550" opacity=".7"/>'
+    g += lab(vx + vw / 2, 515, "WATER CONDUCTS", "#8fd3ff", 12)
+    g += lab(vx + vw / 2, 532, "THE CURRENT", "#8fd3ff", 12)
+    g += f'<rect x="{vx + 18}" y="364" width="{vw - 36}" height="24" fill="#1b1f23" opacity=".92"/>'
+    g += lab(vx + vw / 2, 381, "ELECTRODE BOILER", WHITE, 13)
+    g += f'<polyline points="536,500 {vx + 4},500" fill="none" stroke="#3a8fd9" stroke-width="2.5"/>'           # control to the boiler
+    g += f'<polyline points="470,540 380,540 380,560 356,560" fill="none" stroke="#3a8fd9" stroke-width="2.5"/>'  # control to the breaker
+    g += f'<polyline points="503,562 503,{base - 30} 742,{base - 30}" fill="none" stroke="#3a8fd9" stroke-width="2" stroke-dasharray="4 3"/>' 
+    # steam out, circulation pump, feedwater, ground
+    g += f'<polyline points="{vx + vw},320 790,320 790,262 880,262" fill="none" stroke="#e5484d" stroke-width="5"/>'
+    g += lab(840, 252, "STEAM TO THE PROCESS", "#e5484d", 12)
+    g += f'<circle cx="760" cy="{base - 30}" r="18" fill="#2a2f35" stroke="#3a8fd9" stroke-width="2"/>'
+    g += lab(760, base - 26, "P", "#3a8fd9", 12)
+    g += f'<polyline points="{vx + vw},{base - 30} 742,{base - 30}" fill="none" stroke="#4aa3ff" stroke-width="3"/>'
+    g += f'<polyline points="778,{base - 30} 880,{base - 30}" fill="none" stroke="#4aa3ff" stroke-width="3"/>'
+    g += lab(840, base - 40, "FEEDWATER", "#4aa3ff", 11)
+    g += rect(470, 470, 66, 92, "#2a2f35", "#3a8fd9", rx=2)
+    g += lab(503, 512, "PLC", "#3a8fd9", 11)
+    g += lab(503, 528, "CONTROL", "#3a8fd9", 10)
+    g += f'<polyline points="{vx + vw / 2},{base - 20} {vx + vw / 2},{base + 14} 520,{base + 14}" fill="none" stroke="#c97b3a" stroke-width="3" stroke-dasharray="6 4"/>'
+    g += lab(470, base + 18, "GROUND", "#c97b3a", 11)
+    calls = [(MV, "13.8 kV feeder", "a 30 MW unit draws ~1,250 A: two to three parallel sets of 750 kcmil MV-105"),
+             ("#e39a5f", "MV terminations", "terminations at the boiler bushings and at the breaker"),
+             ("#c97b3a", "Grounding", "bare copper and ground-fault protection, critical on electrode boilers"),
+             ("#3a8fd9", "Control and pumps", "TC-ER power and control to the circulation and feed pumps, often on VFDs"),
+             ("#36c26b", "Instruments", "PLTC pairs: water level, conductivity, pressure, temperature")]
+    calls_html = "".join(
+        f'<div style="display:flex;gap:10px;padding:8px 0 9px;border-top:1px solid #2c3036"><span style="width:10px;height:10px;margin-top:5px;background:{c};flex:none"></span>'
+        f'<div><div style="font:800 16px/1.15 BC;color:{WHITE};text-transform:uppercase;letter-spacing:.03em">{t}</div>'
+        f'<div style="font:400 12.5px/1.35 B;color:#c9ced3;margin-top:2px">{p}</div></div></div>' for c, t, p in calls)
+    facts = [("No stack", "no fuel, no flame, no emissions on site"), ("Minutes", "cold to full load: soaks up surplus wind and solar"),
+             ("~99 %", "of the electricity becomes heat"), ("Small", "a fraction of a gas boiler's footprint")]
+    tiles = "".join(f'<div style="flex:1;border-left:3px solid {COPPER};padding:2px 0 2px 12px"><div class="big" style="font-size:26px">{a}</div>'
+                    f'<div class="cd" style="font-size:11.5px;margin-top:3px">{b}</div></div>' for a, b in facts)
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:52px">Boiler solutions &nbsp;&middot;&nbsp; the newest market</div>
+  <div class="abs h2" style="left:62px;top:80px;font-size:50px">The electric boiler: <em>a straight MV cable sale</em></div>
+  <div class="abs lede" style="left:64px;top:136px;width:900px;font-size:14px">Industry is electrifying steam to cut emissions. An
+    electrode boiler connects directly to medium voltage (typically 6-25 kV, up to tens of MW) and passes current through the water itself.
+    Smaller element boilers run at 480-690 V.</div>
+  <svg class="abs" width="1440" height="810" viewBox="0 0 1440 810" style="left:0;top:0;overflow:visible">{g}</svg>
+  <div class="abs" style="left:940px;top:206px;width:436px"><div class="cnum" style="margin-bottom:6px">The cable</div>{calls_html}</div>
+  <div class="abs" style="left:64px;top:664px;width:1312px;display:flex;gap:22px">{tiles}</div>
+  <div class="abs cap" style="left:64px;top:740px;width:1312px">Typical values for illustration; ratings, voltages and cable sizing
+    vary by project. Check current product and project data before quoting.</div>
+  {foot(3)}
+</section>"""
+
+
 # ------------------------------------------------------------------------------- how an HRSG works (basics)
 # Typical three-pressure reheat HRSG behind a heavy-duty gas turbine; temperatures and pressures are typical ranges.
 SECTIONS = [  # (label, sub, gas temperature after the section, colour, drum, cable at this section)
@@ -935,7 +1022,7 @@ def slide_basics():
   <div class="abs" style="left:64px;top:664px;width:1312px;display:flex;gap:22px">{tiles}</div>
   <div class="abs cap" style="left:64px;top:740px;width:1312px">Typical three-pressure reheat HRSG with SCR behind an H-class
     gas turbine; section order, temperatures and pressures vary by design.</div>
-  {foot(3)}
+  {foot(4)}
 </section>"""
 
 
@@ -1024,7 +1111,7 @@ def slide_cycle():
   <svg class="abs" width="1440" height="810" viewBox="0 0 1440 810" style="left:0;top:0;overflow:visible"><defs>{marks}</defs>{L_}</svg>
   {nodes}
   <div class="abs" style="left:64px;top:674px;width:1312px;display:flex;gap:22px">{tiles}</div>
-  {foot(4)}
+  {foot(5)}
 </section>"""
 
 
@@ -1086,7 +1173,7 @@ def slide_system():
   <div class="abs" style="left:64px;top:636px;width:1312px;display:flex;gap:22px">{tiles}</div>
   <div class="abs cap" style="left:64px;top:744px;width:1312px">Ratings are the model's typical values (Load List and nameplates),
     not engineered. Real plants vary: many put the feed pumps on a 4.16 or 6.9 kV bus.</div>
-  {foot(10)}
+  {foot(11)}
 </section>"""
 
 
@@ -1154,7 +1241,7 @@ def slide_spec():
       Raceway and cable design for generating stations: IEEE 422. Grounding: IEEE 80 / 665. Area classification:
       NEC 500, API RP 500. Field acceptance: NETA ATS.</div></div>
   </div>
-  {foot(11)}
+  {foot(12)}
 </section>"""
 
 
@@ -1206,7 +1293,7 @@ def slide_value():
        color:{WHITE};letter-spacing:.01em">"On an HRSG, cable is three-quarters instrumentation and fully on the critical path.
     <em style="font-style:normal;color:{COPPER}">One spec-compliant supply, staged and fast to pull: wired on time, reading right
     the first time."</em></div>
-  {foot(12)}
+  {foot(13)}
 </section>"""
 
 
@@ -1215,7 +1302,7 @@ def main():
     import pymupdf
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS}</style></head><body>"
     out = pymupdf.open()
-    for i, sec in enumerate((slide1(), slide_types(), slide_basics(), slide_cycle(), slide_hero(), slide_elev(), slide_room(), slide_cems(), slide_diagram(), slide_system(), slide_spec(), slide_value(), slide2(), slide3())):
+    for i, sec in enumerate((slide1(), slide_types(), slide_eboiler(), slide_basics(), slide_cycle(), slide_hero(), slide_elev(), slide_room(), slide_cems(), slide_diagram(), slide_system(), slide_spec(), slide_value(), slide2(), slide3())):
         hp = os.path.join(OUT, f"_s{i}.html")
         sec = sec.replace('<section class="page slide">', '<section class="page slide"><div class="s">', 1).replace(
             "</section>", "</div></section>")
