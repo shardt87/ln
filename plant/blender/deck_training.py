@@ -24,10 +24,24 @@ LOGO = bz.url(os.path.join(HERE, "deck", "southwire_pgs_logo.png"))       # Sout
 
 
 def pic(rel):
-    full = os.path.join(PLANT, "renders", "boilers_full", os.path.basename(rel))
-    path = full if os.path.exists(full) else os.path.join(PLANT, rel)
-    if not os.path.exists(path):
+    """The newest render of a view: the full-quality boilers_full copy, the raw *_pro.png (the Oct 17 full renders the
+    strategy deck and brochure use) or the finished *_pro_clean.jpg, whichever was written last."""
+    d, f = os.path.split(os.path.join(PLANT, rel))
+    k = f.split("_pro")[0] if "_pro" in f else None
+    cands = [os.path.join(PLANT, rel), os.path.join(PLANT, "renders", "boilers_full", f)]
+    if k:
+        cands += [os.path.join(d, f"{k}_pro.png"), os.path.join(d, f"{k}_pro_clean.jpg")]
+    cands = [c for c in cands if os.path.exists(c)]
+    if not cands:
         raise FileNotFoundError(rel)
+    path = max(cands, key=os.path.getmtime)
+    if path.endswith(".png") and os.path.getsize(path) > 1e6:            # raw renders: embed as JPEG to keep the PDF small
+        import tempfile
+        from PIL import Image
+        jpg = os.path.join(tempfile.gettempdir(), "deck_training_" + os.path.basename(path)[:-4] + ".jpg")
+        if not os.path.exists(jpg) or os.path.getmtime(jpg) < os.path.getmtime(path):
+            Image.open(path).convert("RGB").save(jpg, quality=90)
+        path = jpg
     return bz.url(path)
 
 
@@ -135,7 +149,7 @@ STOPS = [
      ["Generator step-up transformers: 21 kV up to 230 kV", "Breakers, disconnects, and a control house with protection relays"],
      ["HV conductor and 230 kV cable", "Control and relay cable from every breaker to the control house", "Fibre; the buried bare-copper ground grid"],
      "Every breaker out here has a bundle of control cable running back to the control house."),
-    ("Turbine hall", "renders/epic/E21_pro_clean.jpg",
+    ("Turbine hall", "renders/cover/HALL9_hero_cable.jpg",
      "Three H-class gas turbines and one steam turbine turn the generators.",
      ["Isolated-phase bus from the generators to the step-up transformers", "Unit auxiliary transformers feed the 13.8 kV switchgear",
       "Static starters spin the gas turbines up"],
@@ -153,7 +167,7 @@ STOPS = [
      ["The R4 e-house: four VFD lineups drive the 80 fan motors", "Water-treatment MCCs"],
      ["VFD-rated cable to every fan (ARMOR-X MC-HL VFD, TC-ER VFD)", "Power and control in the water plant"],
      "Variable-frequency drives mean VFD-rated cable; ordinary cable fails early here."),
-    ("Modular generation", "renders/modular/MP1_pro_clean.jpg",
+    ("Modular generation", "renders/epic/E77_pro.png",
      "Fast-start, flexible power beside the big plant.",
      ["Gas engines in a hall, aeroderivative and industrial gas-turbine packages, containers, trailers, fuel cells, microturbines",
       "Each unit on the 13.8 kV collector; inverters for the battery and fuel cells"],

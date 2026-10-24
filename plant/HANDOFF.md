@@ -534,3 +534,7 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 - Overview (slide 6): K1 campus aerial with the marine terminal and the 7 tour stops listed beside it (replaces slide19_zones).
 - Stop 1 (switchyard): E20, an eye-level view of the switchyard with the ACC and turbine hall behind.
 - Q&A card: logo added.
+
+## Oct 24: training deck, latest renders
+- `pic()` in deck_training.py now picks the newest render of each view: the boilers_full copy, the raw `*_pro.png` (the Oct 17 full renders the strategy deck and brochure use) or `*_pro_clean.jpg`. The Oct 8 preview JPGs were being used before. Large PNGs are embedded as JPEG q90 (the PDF is about 9.5 MB).
+- Stop 2: HALL9_hero_cable (the strategy deck's "Three turbines, one tray stack"). Stop 5: E77 (the "Power that moves" page). Stop 1 now gets E20 at full quality.
