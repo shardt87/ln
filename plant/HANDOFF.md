@@ -577,3 +577,4 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 
 ## Oct 24: training deck candidate slides (A-I), for the author to pick
 - `blender/deck_training_candidates.py` writes renders/deck/training/candidates/: A how a generator works, B the grid journey (generator to light switch), C a day on the grid (illustrative load curve), D front vs behind the meter, E cable 101 (families plus footage shares from the schedule), F what a plant does to a cable, G future fuels (H2, CCS, batteries), H units and scale, I glossary. They are not in the main deck yet; move the picked ones into deck_training.py's plan.
+- Candidate J, "A modern gas plant is more than the power block": six model renders with their cable (private 5G monopole with massive-MIMO, T5G1; EV charging + solar carport, E10; BTM data centre, E47; LNG carrier at the berth, C2; hydrogen tube-trailer bay, E108; carbon capture, E68).

@@ -1,6 +1,6 @@
 """Candidate slides for the Nov 11 training deck (the author picks which ones go in): generator basics, the grid journey,
 a day on the grid, front- vs behind-the-meter, cable 101, what a plant does to a cable, future fuels, units and scale,
-glossary. Same look and helpers as deck_training.py.
+glossary, the modern campus (5G, EV, BTM, LNG by sea, H2, CCS). Same look and helpers as deck_training.py.
 
     python3 blender/deck_training_candidates.py   -> renders/deck/training/candidates/ (PDF, slide JPGs, one contact sheet)
 """
@@ -223,11 +223,40 @@ def c_glossary(n, N):
                 + f'<div class="abs" style="left:64px;top:690px;{SRC}">A handout version can go out with the recording.</div>')
 
 
+MODERN = [("Private 5G / LTE", "renders/nextgen/_src/T5G1_pro_clean.jpg", "A monopole with massive-MIMO antennas: the plant's own wireless network.",
+           "fibre backhaul, tower power, grounding"),
+          ("EV charging + solar carport", "renders/epic/E10_pro_clean.jpg", "Chargers at every bay, a DC fast charger, PV on the carport roof.",
+           "LV feeders, PV wire, a pad-mount transformer"),
+          ("Behind-the-meter data centre", "renders/epic/E47_pro_clean.jpg", "A ~150 MW campus fed straight from the plant and the modular yard.",
+           "34.5 kV collection, cable bus, UPS feeders"),
+          ("LNG by sea", "renders/coastal/C2_pro_clean.jpg", "A marine terminal: the carrier at the berth, unloading arms, the tank onshore.",
+           "hazardous-area cable, long runs to the jetty, MV pumps"),
+          ("Hydrogen", "renders/epic/E108_pro_clean.jpg", "Tube-trailer bay and receiving station; an electrolyzer building beside it.",
+           "Class I Div 2 runs, gas detection, DC cable"),
+          ("Carbon capture", "renders/epic/E68_pro.png", "Absorber, stripper and compressors on the stack exhaust.",
+           "a second plant's motors, drives and instruments")]
+
+
+def c_modern(n, N):
+    html = ""
+    for k, (h, im, what, cab) in enumerate(MODERN):
+        x, y = 64 + (k % 3) * 444, 168 + (k // 3) * 226
+        html += (f'<div class="abs" style="left:{x}px;top:{y}px;width:420px;height:212px;background:#181b1f;border-top:4px solid {COPPER};display:flex">'
+                 f'<img src="{pic(im)}" style="width:170px;height:208px;object-fit:cover;display:block;flex:none">'
+                 f'<div style="padding:14px 16px"><div class="ct" style="font-size:21px">{h}</div>'
+                 f'<div class="cd" style="font-size:14px;color:#f4f1ec;margin-top:8px">{what}</div>'
+                 f'<div class="cnum" style="margin-top:12px;font-size:11px;color:{GREY}">Cable</div>'
+                 f'<div class="cd" style="font-size:14px;color:{COPPER};margin-top:4px">{cab}</div></div></div>')
+    return page(n, N, head("Fundamentals &nbsp;&middot;&nbsp; the modern campus", "A modern gas plant is", "more than the power block") + html
+                + band("<b style='color:#f4f1ec'>All six are in the SW-3X1 model.</b> Each one adds its own network of cable on top of the power block: "
+                       "the campus is the customer, not just the turbines.", 630))
+
+
 def main():
     import pymupdf
     from PIL import Image
     os.makedirs(OUT, exist_ok=True)
-    fns = [c_generator, c_grid, c_day, c_meter, c_cable101, c_stress, c_future, c_units, c_glossary]
+    fns = [c_generator, c_grid, c_day, c_meter, c_cable101, c_stress, c_future, c_units, c_glossary, c_modern]
     N = len(fns)
     head_ = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()
