@@ -1,4 +1,4 @@
-"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 31 slides at 1440 x 810,
+"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 32 slides at 1440 x 810,
 same look as the boiler deck. Reuses the boiler-deck slides for the fundamentals and the cable takeaways (their footers
 re-numbered), the 16-zone overview, and the model renders for the seven tour stops; new: title, agenda, six market slides
 (from the Oct 6 PowerGen channel deck), one slide per tour stop, the whole
@@ -75,8 +75,8 @@ def s_title():
 
 
 AGENDA = [("1:30", "Welcome", "why this matters", "3"),
-          ("1:33", "Market and fundamentals", "the gas build; the machines, voltages, where the cable is, who buys", "22"),
-          ("1:55", "The 3D tour", "seven stops: what it does, its electrical system, its cable", "20"),
+          ("1:33", "Market and fundamentals", "how power is made, the gas build; the machines, voltages, cable, who buys", "23"),
+          ("1:56", "The 3D tour", "seven stops: what it does, its electrical system, its cable", "19"),
           ("2:15", "Wire and cable takeaways", "the whole plant in one number, products, pain points", "8"),
           ("2:23", "Q&amp;A", "questions from the chat", "7")]
 
@@ -145,6 +145,55 @@ def tile(x, y, w, h, kick, big, txt, hot=False, sub=""):
 
 
 
+
+FAMILIES = [("Thermal", "#b4591f", "Heat spins a turbine and a generator.",
+             [("Natural gas", "firm", True), ("Coal", "firm", False), ("Nuclear", "firm", False), ("Biomass and waste", "firm", False),
+              ("Geothermal", "firm", False), ("Oil / diesel", "firm", False)]),
+            ("Water and wind", "#2f63b5", "Moving water or air spins the turbine.",
+             [("Hydro", "firm*", False), ("Wind, onshore and offshore", "variable", False)]),
+            ("Direct", "#c9a227", "No turbine: sunlight or chemistry makes DC.",
+             [("Solar PV", "variable", False), ("Fuel cells", "firm", False)]),
+            ("Storage", "#5d636a", "Shifts power in time; it does not make it.",
+             [("Batteries (BESS)", "hours", False), ("Pumped hydro", "hours", False)])]
+
+
+def s_sources(n, N):
+    cols = ""
+    xs, ws = [64, 456, 784, 1086], [376, 312, 286, 290]
+    for (fam, col, how, techs), x, w in zip(FAMILIES, xs, ws):
+        chips = ""
+        for t, tag, hot in techs:
+            chips += (f'<div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding:8px 14px;'
+                      f'background:{"#2a1d14" if hot else "#1f2328"};border:1px solid {"#b4591f" if hot else "#2c3036"};border-radius:4px">'
+                      f'<span style="font:700 18px/1 BC;color:{COPPER if hot else WHITE};text-transform:uppercase">{t}</span>'
+                      f'<span style="font:700 11px/1 BC;letter-spacing:.12em;color:{GREY};text-transform:uppercase">{tag}</span></div>')
+            if hot:
+                chips += (f'<div style="margin:6px 0 2px 14px;font:400 13.5px/1.4 B;color:{GREY}">simple cycle &middot; combined cycle &middot; engines &middot; aero '
+                          f'<b style="color:{COPPER};font-weight:700">&larr; today</b></div>')
+        cols += (f'<div class="abs" style="left:{x}px;top:170px;width:{w}px">'
+                 f'<div style="display:flex;align-items:center;gap:16px;height:80px;margin-bottom:6px"><div style="width:70px;height:70px;border-radius:50%;background:{col};flex:none"></div>'
+                 f'<div><div style="font:800 26px/1 BC;color:{WHITE};text-transform:uppercase">{fam}</div>'
+                 f'<div class="cd" style="font-size:14px;margin-top:6px">{how}</div></div></div>{chips}</div>')
+    notes = [(456, 312, "Not on our campus; Southwire cables them too: hydro, onshore and offshore wind."),
+             (784, 286, "In SW-3X1: the fuel-cell bank in the modular yard."),
+             (1086, 290, "In SW-3X1: the battery (BESS) yard.")]
+    cols += "".join(f'<div class="abs" style="left:{x}px;top:500px;width:{w}px;border-top:2px solid #2c3036;padding-top:12px">'
+                    f'<div class="cd" style="font-size:14.5px">{t}</div></div>' for x, w, t in notes)
+    cols += (f'<div class="abs" style="left:456px;top:580px;width:920px;font:700 14px/1.3 BC;letter-spacing:.08em;color:{COPPER};text-transform:uppercase">'
+             f'Gas, engines, aeroderivatives and package boilers: all thermal, all on our campus</div>')
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Fundamentals &nbsp;&middot;&nbsp; step back</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:56px">How electricity is made: <em>four families</em></div>
+  {cols}
+  <div class="abs" style="left:64px;top:628px;width:1312px;background:#181b1f;border-left:4px solid {COPPER};padding:12px 22px;box-sizing:border-box">
+    <div class="cd" style="font-size:16px"><b style="color:{WHITE}">Almost all of them spin a magnet inside a coil: a generator.</b> Solar PV, fuel cells and
+      batteries make DC and need inverters. Firm sources run on demand; variable ones follow the weather. <b style="color:{WHITE}">Every one of them ends in cable.</b></div></div>
+  <div class="abs" style="left:64px;top:716px;{SRC}">Firm = can run on demand. *Hydro depends on water and season. Storage runs for hours, then recharges.</div>
+  {foot(n, N)}
+</section>"""
+
+
 # The whole system, before the zoom on gas: EIA 2025 utility-scale generation shares and 2026 planned additions.
 MIX = [("Natural gas", 41, "firm"), ("Nuclear", 18, "firm"), ("Coal", 17, "firm"), ("Wind", 11, "variable"),
        ("Solar", 7, "variable"), ("Hydro", 6, "firm*")]
@@ -177,8 +226,8 @@ def s_system(n, N):
                  for k, (h, t) in enumerate(why))
     return f"""
 <section class="page slide">
-  <div class="abs kicker" style="left:64px;top:56px">Fundamentals &nbsp;&middot;&nbsp; step back</div>
-  <div class="abs h2" style="left:62px;top:84px;font-size:54px;width:1320px">Every way we make electricity, <em>and why we zoom in on gas</em></div>
+  <div class="abs kicker" style="left:64px;top:56px">Fundamentals &nbsp;&middot;&nbsp; the mix</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:54px;width:1320px">The mix today, <em>and why we zoom in on gas</em></div>
   <div class="abs cnum" style="left:64px;top:190px;color:{WHITE}">Share of US electricity, 2025</div>
   {rows}
   <div class="abs cd" style="left:64px;top:566px;width:640px;font-size:13px">Firm = can run on demand. *Hydro depends on water and season.
@@ -913,16 +962,16 @@ def reused(fn, n, N, kicker):
 def main():
     import pymupdf
     os.makedirs(OUT, exist_ok=True)
-    N = 31                                                     # s_q3, s_anatomy and s_corridor are kept, unused
-    plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_system(3, N), lambda: s_glance(4, N), lambda: s_load(5, N),
-            lambda: s_backlog(6, N), lambda: s_prize(7, N), lambda: s_where(8, N), lambda: s_map(9, N),
-            lambda: s_blackbox(10, N), lambda: s_box(11, N), lambda: s_types(12, N),
-            lambda: reused(db.slide_cycle, 13, N, "Fundamentals"), lambda: reused(db.slide_basics, 14, N, "Fundamentals"),
-            lambda: reused(db.slide_system, 15, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
-            lambda: s_follow(16, N), lambda: s_owners(17, N), lambda: s_sites(18, N), lambda: s_buy(19, N), lambda: s_overview(20, N)]
-    plan += [(lambda k=k: s_stop(k, 21 + k, N)) for k in range(7)]
-    plan += [lambda: s_number(28, N), lambda: reused(db.slide_spec, 29, N, "Wire and cable takeaways"),
-             lambda: reused(db.slide_value, 30, N, "Wire and cable takeaways"), lambda: s_close(31, N)]
+    N = 32                                                     # s_q3, s_anatomy and s_corridor are kept, unused
+    plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_sources(3, N), lambda: s_system(4, N), lambda: s_glance(5, N), lambda: s_load(6, N),
+            lambda: s_backlog(7, N), lambda: s_prize(8, N), lambda: s_where(9, N), lambda: s_map(10, N),
+            lambda: s_blackbox(11, N), lambda: s_box(12, N), lambda: s_types(13, N),
+            lambda: reused(db.slide_cycle, 14, N, "Fundamentals"), lambda: reused(db.slide_basics, 15, N, "Fundamentals"),
+            lambda: reused(db.slide_system, 16, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
+            lambda: s_follow(17, N), lambda: s_owners(18, N), lambda: s_sites(19, N), lambda: s_buy(20, N), lambda: s_overview(21, N)]
+    plan += [(lambda k=k: s_stop(k, 22 + k, N)) for k in range(7)]
+    plan += [lambda: s_number(29, N), lambda: reused(db.slide_spec, 30, N, "Wire and cable takeaways"),
+             lambda: reused(db.slide_value, 31, N, "Wire and cable takeaways"), lambda: s_close(32, N)]
     assert len(plan) == N
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()
@@ -953,7 +1002,7 @@ def main():
         ims.append(Image.open(png).convert("RGB"))
         ims[-1].save(os.path.join(jd, f"slide_{i + 1:02d}.jpg"), quality=90)
     w, h = 960, 540
-    for name, rng in (("market_slides_3-9", range(2, 9)), ("fundamentals_10-19", range(9, 19)), ("all_slides", range(len(ims)))):
+    for name, rng in (("step_back_and_market_3-10", range(2, 10)), ("fundamentals_11-20", range(10, 20)), ("all_slides", range(len(ims)))):
         rng = list(rng)
         rows = (len(rng) + 1) // 2
         sheet = Image.new("RGB", (w * 2 + 30, h * rows + 15 * (rows + 1)), (40, 40, 40))

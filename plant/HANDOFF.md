@@ -568,3 +568,6 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 
 ## Oct 24: training deck, black-box intro back (31 slides)
 - `s_blackbox` (the input / black box / output circles) is back as slide 10 and opens the fundamentals; `s_box` is retitled "Open the box: the physical anatomy" (slide 11). Later slides shift by one (stops 21-27, close 31). The run of show is renumbered.
+
+## Oct 24: training deck, "four families" opener (32 slides)
+- New slide 3, `s_sources`: how electricity is made, in four families (thermal with gas highlighted, water and wind, direct, storage), firm/variable tags and what is in SW-3X1. The EIA mix slide is retitled "The mix today, and why we zoom in on gas" (slide 4). Later slides shift by one (market 5-10, fundamentals 11-21, stops 22-28, close 32). Agenda: market and fundamentals 23 min, tour 19 min.

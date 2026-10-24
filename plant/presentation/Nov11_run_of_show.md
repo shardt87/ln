@@ -8,15 +8,15 @@
 
 ---
 
-**Slides:** `renders/deck/training/SW-3X1_Nov11_training.pdf` (31 slides, built by `blender/deck_training.py`; JPG copies in `renders/deck/training/jpg/`): title, agenda; step back 3 (every way we make electricity); market 4-9 (at a glance, load growth since 1996, turbine backlogs, the ~$1.2B cable prize, the project register, the state heat map); fundamentals 10-20 (every thermal project is this, open the box, four ways to burn gas, what goes in and out, how an HRSG works, the voltage ladder, follow the power, same physics different owners, greenfield and brownfield, who buys and when, the campus with the LNG terminal); 7 tour-stop backup slides; the whole plant in one number, what the spec calls for, pain points and the answer, three things to remember + Q&A.
+**Slides:** `renders/deck/training/SW-3X1_Nov11_training.pdf` (32 slides, built by `blender/deck_training.py`; JPG copies in `renders/deck/training/jpg/`): title, agenda; step back 3-4 (four families, the mix today); market 5-10 (at a glance, load growth since 1996, turbine backlogs, the ~$1.2B cable prize, the project register, the state heat map); fundamentals 11-21 (every thermal project is this, open the box, four ways to burn gas, what goes in and out, how an HRSG works, the voltage ladder, follow the power, same physics different owners, greenfield and brownfield, who buys and when, the campus with the LNG terminal); 7 tour-stop backup slides; the whole plant in one number, what the spec calls for, pain points and the answer, three things to remember + Q&A.
 
 ## Rundown (60 min)
 
 | Time | Segment | On screen | Mins |
 |---|---|---|---|
 | 1:30 | 0. Welcome and why this matters | 1 title slide | 3 |
-| 1:33 | 1. Market and fundamentals | 18 slides | 22 |
-| 1:55 | 2. The 3D tour: seven stops | Live viewer, plus one slide per stop if needed | 20 |
+| 1:33 | 1. Market and fundamentals | 19 slides | 23 |
+| 1:56 | 2. The 3D tour: seven stops | Live viewer, plus one slide per stop if needed | 19 |
 | 2:15 | 3. Wire and cable takeaways | 3 slides | 8 |
 | 2:23 | 4. Q&A | Viewer on the overview | 7 |
 
@@ -34,53 +34,55 @@ Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) t
 
 ---
 
-## 1. Market and fundamentals (22 min, 18 slides)
+## 1. Market and fundamentals (23 min, 19 slides)
 
-Market slides 4-9 come from the Oct 6 PowerGen channel deck. **OEM, owner and EPC names are not on the slides; say them here if useful.** Verify the figures against the primary sources (appendix of the Oct 6 deck) before Nov 11.
+Market slides 5-10 come from the Oct 6 PowerGen channel deck. **OEM, owner and EPC names are not on the slides; say them here if useful.** Verify the figures against the primary sources (appendix of the Oct 6 deck) before Nov 11.
 
-**Slide 3: Step back: every way we make electricity (2 min).** US electricity 2025 (EIA): gas 41%, nuclear 18%, coal 17%, wind 11%, solar ~7%, hydro 6%. Planned 2026 additions: 86 GW, mostly solar (43.4) and batteries (24), wind 11.8, gas 6.3. "Southwire cables every one of these. Today we zoom in on gas: it is firm, it is the backbone, and the next wave of data-centre load needs it."
+**Slide 3: How electricity is made: four families (1.5 min).** Thermal (heat spins a turbine: gas, coal, nuclear, biomass, geothermal, oil), water and wind (hydro, wind), direct (solar PV, fuel cells: no turbine, DC) and storage (batteries, pumped hydro: shifts power, does not make it). Firm vs variable. "Almost all of them spin a generator; every one of them ends in cable. Today: gas, inside the thermal family." Our campus has gas, engines, aeros and package boilers, the fuel-cell bank and the battery yard.
 
-**Slide 4: At a glance (1.5 min).** 378 GW in development (52 GW under construction), ~$1.2B core cable 2026-2035, 386 projects tracked, $50M+ booked in Q3. "Today's goal: know the plant, so you can follow the cable through it."
+**Slide 4: The mix today, and why gas (2 min).** US electricity 2025 (EIA): gas 41%, nuclear 18%, coal 17%, wind 11%, solar ~7%, hydro 6%. Planned 2026 additions: 86 GW, mostly solar (43.4) and batteries (24), wind 11.8, gas 6.3. "Southwire cables every one of these. Today we zoom in on gas: it is firm, it is the backbone, and the next wave of data-centre load needs it."
 
-**Slide 5: Load growth (2 min).** 166 GW peak-load growth by 2030 (about 90 GW data centres); 378 GW gas in development (189 GW tied to data centres); 52 GW under construction; turbine lead times up to 7 years. The chart: the 2000-04 merchant boom built 188 GW (peak 57 GW in 2002); 2015-25 averaged 8.1 GW a year. "Today's pipeline needs a boom-scale build again."
+**Slide 5: At a glance (1.5 min).** 378 GW in development (52 GW under construction), ~$1.2B core cable 2026-2035, 386 projects tracked, $50M+ booked in Q3. "Today's goal: know the plant, so you can follow the cable through it."
 
-**Slide 6: Turbine backlogs (1 min).** Turbine OEM 1 = GE Vernova (116 GW, firm backlog plus slot reservations, Q2 2026); OEM 2 = Siemens Energy (~69 GW gas-turbine backlog, Q3 FY26); OEM 3 = Mitsubishi Power (35 GW large-frame, Aug 2026). Tiles: +72% Caterpillar power-generation sales Q2 2026; 2.3 GW VoltaGrid modular fleet for Oracle's Texas AI data centres plus 1 GW for Vantage; 500 MW standard modular SGT-800 plant from Siemens Energy and Eaton.
+**Slide 6: Load growth (2 min).** 166 GW peak-load growth by 2030 (about 90 GW data centres); 378 GW gas in development (189 GW tied to data centres); 52 GW under construction; turbine lead times up to 7 years. The chart: the 2000-04 merchant boom built 188 GW (peak 57 GW in 2002); 2015-25 averaged 8.1 GW a year. "Today's pipeline needs a boom-scale build again."
 
-**Slide 7: The cable prize (2 min).** 378 GW to 93.7 GW modeled additions to ~$180B of plant investment to $0.75-1.2B of wire and cable: under 1% of capex, on the critical path. By PO year: $673M named projects, $501M future allowance; peak 2028-29.
+**Slide 7: Turbine backlogs (1 min).** Turbine OEM 1 = GE Vernova (116 GW, firm backlog plus slot reservations, Q2 2026); OEM 2 = Siemens Energy (~69 GW gas-turbine backlog, Q3 FY26); OEM 3 = Mitsubishi Power (35 GW large-frame, Aug 2026). Tiles: +72% Caterpillar power-generation sales Q2 2026; 2.3 GW VoltaGrid modular fleet for Oracle's Texas AI data centres plus 1 GW for Vantage; 500 MW standard modular SGT-800 plant from Siemens Energy and Eaton.
 
-**Slide 8: The register (1 min).** 205.8 GW eligible; 68% only announced. Top states TX 55.5, LA 16.3, WV 13.4 GW (AZ is 6.1). Example owners if asked: NRG, CPV, Entergy, Homer City Redevelopment. Named EPCs: Kiewit/TIC, Zachry, Gemma, PCL, Burns & McDonnell; 87% of gross capacity has no confirmed constructor yet.
+**Slide 8: The cable prize (2 min).** 378 GW to 93.7 GW modeled additions to ~$180B of plant investment to $0.75-1.2B of wire and cable: under 1% of capex, on the critical path. By PO year: $673M named projects, $501M future allowance; peak 2028-29.
 
-**Slide 9: Where the build is (1 min).** The state heat map: TX 55.5 GW leads, then LA, WV, IN, OH, PA. Owners: IPPs and behind-the-meter developers mostly build new; utilities reuse old sites (coal-site repowers 41.3 GW).
+**Slide 9: The register (1 min).** 205.8 GW eligible; 68% only announced. Top states TX 55.5, LA 16.3, WV 13.4 GW (AZ is 6.1). Example owners if asked: NRG, CPV, Entergy, Homer City Redevelopment. Named EPCs: Kiewit/TIC, Zachry, Gemma, PCL, Burns & McDonnell; 87% of gross capacity has no confirmed constructor yet.
 
-**Slide 10: Every thermal project is this (1 min).** The three circles: input (fuel), the black box (thermal conversion), output (dispatchable power). "The complexity is what's inside the box, and what's around it. Today we open the box."
+**Slide 10: Where the build is (1 min).** The state heat map: TX 55.5 GW leads, then LA, WV, IN, OH, PA. Owners: IPPs and behind-the-meter developers mostly build new; utilities reuse old sites (coal-site repowers 41.3 GW).
 
-**Slide 11: Open the box: the physical anatomy (1.5 min).** The six steps from fuel infrastructure to end use, grouped under input, black box and output. "Same physics on every project; what changes is the machine in the box, and who owns it."
+**Slide 11: Every thermal project is this (1 min).** The three circles: input (fuel), the black box (thermal conversion), output (dispatchable power). "The complexity is what's inside the box, and what's around it. Today we open the box."
 
-**Slide 12: Four ways to burn gas for power (2 min).** Simple cycle (the peaker), combined cycle (the workhorse, our power block), engines (the sprinter) and aeroderivatives (the jet): size, efficiency, start time, how they run. Units: GW, MW, kW; MW is power, MWh is energy.
+**Slide 12: Open the box: the physical anatomy (1.5 min).** The six steps from fuel infrastructure to end use, grouped under input, black box and output. "Same physics on every project; what changes is the machine in the box, and who owns it."
 
-**Slide 13: What goes in, what comes out (2 min).** Reuse boilers slide 6, "What goes in, what comes out".
+**Slide 13: Four ways to burn gas for power (2 min).** Simple cycle (the peaker), combined cycle (the workhorse, our power block), engines (the sprinter) and aeroderivatives (the jet): size, efficiency, start time, how they run. Units: GW, MW, kW; MW is power, MWh is energy.
+
+**Slide 14: What goes in, what comes out (2 min).** Reuse boilers slide 6, "What goes in, what comes out".
 - In: gas, air, a little water. Out: power, stack gas, heat.
 - The gas turbines make about 2/3 of the power; the steam from their exhaust makes about 1/3 more with no extra fuel.
 
-**Slide 14: How an HRSG works (1.5 min).** Reuse boilers slide 5: the "What it is" and "Fun facts" box.
+**Slide 15: How an HRSG works (1.5 min).** Reuse boilers slide 5: the "What it is" and "Fun facts" box.
 
-**Slide 15: The voltage ladder (2 min).** Reused from the boiler deck (slide 9, "Levels, ratings and the cable they drive"): 230 kV to the grid, 21 kV at the generator, 13.8 kV to the big motors, 480 V to the small ones, 120 V AC / 125 V DC for controls, then signals. "Every rung has its own cable family."
+**Slide 16: The voltage ladder (2 min).** Reused from the boiler deck (slide 9, "Levels, ratings and the cable they drive"): 230 kV to the grid, 21 kV at the generator, 13.8 kV to the big motors, 480 V to the small ones, 120 V AC / 125 V DC for controls, then signals. "Every rung has its own cable family."
 
-**Slide 16: Follow the power (1.5 min).** SW-3X1 cable by plant area, from the model's schedule: the black box (turbine hall, HRSGs, cooling, water) holds 44% of the 1,212 miles. The POI is where the plant meets the grid: plant side is owner and EPC scope, past it the utility's. "The grid connection carries the biggest cables; the power block carries the most."
+**Slide 17: Follow the power (1.5 min).** SW-3X1 cable by plant area, from the model's schedule: the black box (turbine hall, HRSGs, cooling, water) holds 44% of the 1,212 miles. The POI is where the plant meets the grid: plant side is owner and EPC scope, past it the utility's. "The grid connection carries the biggest cables; the power block carries the most."
 
-**Slide 17: Same physics, different owners (1.5 min).** IPP = one company per plant + asset + power purchase agreement + customer + investors + market (ERCOT, PJM, MISO). Utilities and co-ops buy like utilities; hybrid IPPs both ways; pure IPPs are our sales focus for competitive thermal power.
+**Slide 18: Same physics, different owners (1.5 min).** IPP = one company per plant + asset + power purchase agreement + customer + investors + market (ERCOT, PJM, MISO). Utilities and co-ops buy like utilities; hybrid IPPs both ways; pure IPPs are our sales focus for competitive thermal power.
 
-**Slide 18: Greenfield and brownfield (1.5 min).** Five kinds of site from the register: greenfield grid-connected 77.0 GW, data-centre / behind-the-meter campus 54.5, coal-site repower 41.3, expansion at an operating plant 21.4, industrial captive and site reuse 11.6. New sites take the whole cable scope; existing sites mean tie-ins, live equipment and outage windows. Plus work on running plants (HRSG module replacement: the boiler deck's outage story). Utilities mostly reuse old sites; IPPs and BTM developers mostly build new.
+**Slide 19: Greenfield and brownfield (1.5 min).** Five kinds of site from the register: greenfield grid-connected 77.0 GW, data-centre / behind-the-meter campus 54.5, coal-site repower 41.3, expansion at an operating plant 21.4, industrial captive and site reuse 11.6. New sites take the whole cable scope; existing sites mean tie-ins, live equipment and outage windows. Plus work on running plants (HRSG module replacement: the boiler deck's outage story). Utilities mostly reuse old sites; IPPs and BTM developers mostly build new.
 
-**Slide 19: Who buys, and when (1.5 min).** Develop → finance → engineer (the owner's engineer specifies the cable) → procure (the EPC or package builder buys it) → build (cable pulls on the critical path) → operate. "Be in the spec early; be ready when the EPC buys."
+**Slide 20: Who buys, and when (1.5 min).** Develop → finance → engineer (the owner's engineer specifies the cable) → procure (the EPC or package builder buys it) → build (cable pulls on the critical path) → operate. "Be in the spec early; be ready when the EPC buys."
 
-**Slide 20: The campus at a glance (2 min).** The campus aerial with the LNG terminal and the seven stops.
+**Slide 21: The campus at a glance (2 min).** The campus aerial with the LNG terminal and the seven stops.
 - "This is SW-3X1, a 3x1 combined-cycle plant: three gas turbines, three HRSGs and one steam turbine, with a modular generation yard, a battery yard, a behind-the-meter data centre, LNG supply, and options for carbon capture and hydrogen."
 - "Conceptual and not engineered, but sized like real plants."
 
 ---
 
-## 2. The 3D tour: seven stops (20 min, about 3 min each; stop 7 is 1 min)
+## 2. The 3D tour: seven stops (19 min, about 3 min each; stop 7 is 1 min)
 
 **How to run it:** open the viewer and press **▶ Nov 11** (top left of the 3D window). It goes full screen with captions (Equipment / System / Cable). Use **→ / space** for the next view, **←** to go back, keys **1-7** (or the chapter bar at the top) to jump to a stop, and **Esc** to leave. The tour has 22 views: an opening, 20 across the seven stops, and a closing cable X-ray. Use the same three beats at every stop:
 
