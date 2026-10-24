@@ -125,92 +125,6 @@ def package(name, tag, info, X0, Y0, cfg):
     return it
 
 
-def large_unit():
-    """IG-2, an industrial gas-turbine unit of the larger class (SGT-800 class, ~60 MW, simple cycle) on the open
-    corner east of the 230 kV switchyard (owner, Oct 24: "larger unit ... this side"): enclosure with the generator at
-    the west end, filter house on top, exhaust diffuser, SCR + CO catalyst with its ammonia skid, 100 ft stack and CEMS
-    shelter, control module, lube cooler, fuel-gas module; too big for the 13.8 kV collector, so its own generator
-    step-up (13.8 / 230 kV, isolated-phase bus) and a take-off gantry into switchyard bay D6."""
-    it = fuel.new_item(L, "IG-2: industrial gas-turbine unit, SGT-800 class (~60 MW), GSU into switchyard bay D6", (2070, 2345, 135, 225),
-                       (0, 101), area="I", register=False, basis="typical", sheet="typical (modular expansion)",
-                       info="Larger industrial GT in simple cycle: enclosure with generator, filter house, SCR + CO catalyst, "
-                            "100 ft stack, CEMS shelter; 13.8 kV generator on isolated-phase bus to a 13.8 / 230 kV GSU and a "
-                            "take-off into the D6 bay of the 230 kV switchyard; MV-105 / TC-ER / MC-HL / instrumentation.")
-    fuel.on(it)
-    YC = 172.0
-    fuel.D = False
-    box(2088, 2345, 140, 222, 0, .8, "concrete")                                       # pad
-    box(2130, 2250, YC - 14, YC + 14, .8, 22, "machine")                                # enclosure, generator west
-    fuel.D = True
-    for x in range(2136, 2248, 7):
-        box(x - .12, x + .12, YC - 14.15, YC - 14, .8, 22, "steel")                      # panel seams
-    box(2134, 2138, YC - 14.25, YC - 14, .8, 8, "steel_dark")                            # door
-    louvre_box(2195, 2235, YC - 24, YC + 24, 22, 50)                                     # filter house
-    box(2196, 2234, YC - 23, YC + 23, 50, 50.6, "roof")
-    box(2250, 2270, YC - 10, YC + 10, .8, 22, "duct")                                    # exhaust diffuser
-    box(2270, 2302, YC - 16, YC + 16, .8, 40, "hrsg_b")                                  # SCR + CO catalyst
-    box(2302, 2306, YC - 8, YC + 8, 30, 38, "duct")
-    rod((2313, YC, 0), (2313, YC, 100), 7.0, "stack", seg=32)
-    rod((2313, YC, 97), (2313, YC, 98.2), 7.3, "hero_accent", seg=32)
-    rod((2313, YC, 60), (2313, YC, 66), 7.4, "steel", seg=32)                           # silencer band
-    box(2306, 2320, YC - 9, YC + 9, 79.6, 80, "grating")                                 # CEMS / test-port platform
-    decal((2190, YC - 14.3, 13), (0, -1, 0), 34, 3.6, [("IG-2  ·  INDUSTRIAL GAS TURBINE", .48, True, "#111111"),
-                                                      ("~60 MW  ·  SIMPLE CYCLE  ·  13.8 / 230 kV", .3, False, "#333333")], bg="#ffffff")
-    # ammonia skid for the SCR
-    box(2278, 2296, YC + 26, YC + 36, 0, 1, "concrete")
-    rod((2280, YC + 31, 4), (2294, YC + 31, 4), 3.0, "tank", seg=20)
-    poly([(2287, YC + 26, 4), (2287, YC + 16, 4), (2287, YC + 16, 30)], .25, "pipe", seg=8)
-    # control module, lube cooler, fuel-gas module (north side)
-    box(2140, 2165, YC + 26, YC + 36, .8, 10.5, "ehouse")
-    box(2140, 2165, YC + 26, YC + 36, 10.5, 11, "roof")
-    decal((2152.5, YC + 36.05, 8.8), (0, 1, 0), 16, 1.2, [("IG-2  CONTROL / MCC MODULE", .6, True, "#111111")], bg="#ffffff")
-    for k in range(6):
-        x = 2146 + k * .5
-        poly([(x, YC + 26, 7), (x, YC + 20, 7), (x, YC + 14, 7)], .1, "cable_tc", seg=6)
-    fin_fan(2172, 2192, YC + 24, YC + 34, h=9)
-    poly([(2182, YC + 24, 4), (2182, YC + 14, 4)], .45, "pipe", seg=10)
-    poly([(2191.6, YC + 24.2, 7.6), (2191.6, YC + 14.2, 7.6)], .08, "cable_tc", seg=6)
-    gas_module(2236, 2254, YC + 24, YC + 32, "FUEL GAS  ·  CLASS I DIV 2")
-    poly([(2245, YC + 28, 2.6), (2245, YC + 14, 2.6)], .4, "fuelgas", seg=10)
-    # generator terminal end, isolated-phase bus to the GSU, GSU with radiators, 230 kV bushings
-    box(2124, 2130, YC - 6, YC + 6, 6, 18, "motor")                                      # generator terminal enclosure
-    for k in range(3):
-        y = YC - 4 + k * 4
-        rod((2124, y, 14), (2117, y, 14), 1.0, "ipb", seg=14)
-    box(2093, 2117, YC - 13, YC + 13, .8, 24, "xfmr")                                    # GSU 13.8 / 230 kV
-    for x in (2092.2, 2117.8):
-        for k in range(5):
-            box(x - .5, x + .5, YC - 11 + k * 5, YC - 8 + k * 5, 4, 20, "radiator")
-    for k in range(3):
-        rod((2099 + k * 6, YC, 24), (2099 + k * 6, YC, 33), .6, "insulator", seg=12)     # 230 kV bushings
-    decal((2105, YC - 13.1, 20), (0, -1, 0), 14, 1.6, [("GSU-IG2  ·  13.8 / 230 kV", .6, True, "#111111")], bg="#ffd200")
-    # take-off gantry and 230 kV conductors into the D6 bay (breaker 2 at x 2002-2018, y 142-158)
-    for y in (YC - 14, YC + 14):
-        box(2074.6, 2075.4, y - .4, y + .4, 0, 42, "steel")
-    box(2074.4, 2075.6, YC - 14.4, YC + 14.4, 41, 42, "steel")
-    for k in range(3):
-        y = YC - 8 + k * 8
-        rod((2075, y, 41), (2075, y, 37.5), .35, "insulator", seg=10)                  # strain insulators
-        rod((2099 + k * 6, YC, 33), (2075, y, 37.5), .12, "conductor", seg=6)
-        rod((2075, y, 37.5), (2017 - k * 7, 154, 26.1), .12, "conductor", seg=6)       # onto the D6 breaker 2 bushings
-    # CEMS shelter at the stack base, sample line up to the platform
-    box(2322, 2338, YC + 12, YC + 24, 0, .8, "concrete")
-    box(2322.3, 2337.7, YC + 12.3, YC + 23.7, .8, 10, "ehouse")
-    box(2322, 2338, YC + 12, YC + 24, 10, 10.6, "roof")
-    decal((2330, YC + 24.05, 8.2), (0, 1, 0), 10, 1.3, [("IG-2 CEMS", .62, True, "#111111")], bg="#ffffff")
-    poly([(2324, YC + 12.3, 8), (2318, YC + 6, 8), (2318, YC + 6, 79.6)], .3, "steel_dark", seg=8)
-    for k in range(3):
-        rod((2338.4, YC + 15 + k * .7, 0), (2338.4, YC + 15 + k * .7, 3.5), .2, "alu", seg=8)
-        rod((2338.4, YC + 15 + k * .7, 3.5), (2337.7, YC + 15 + k * .7, 3.5), .2, "alu", seg=8)
-    # generator MV / control conduits up into the terminal enclosure, auxiliary feed to the control module
-    for k in range(4):
-        rod((2127 + k * .6, YC + 6.6, 0), (2127 + k * .6, YC + 6.6, 6), .22, "alu", seg=8)
-    import maintenance as mt
-    mt.person(2150, YC + 20, .8, 0.0)
-    fuel.D = False
-    return it
-
-
 def build():
     n0 = len(fuel.G["parts"])
     package("AX-1: factory-modular aeroderivative package, LM2500XPRESS class (~35 MW)", "AX-1",
@@ -225,5 +139,4 @@ def build():
             "gas module, TC-ER control.",
             2152.0, 1008.0, dict(EL=46, EH=13, IX=26, IW=14, IH=11, SR=3.8, SH=50, modular=False, mw=23,
                                  kind="INDUSTRIAL GAS TURBINE"))
-    large_unit()
     return len(fuel.G["parts"]) - n0
