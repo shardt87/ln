@@ -538,3 +538,7 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 ## Oct 24: training deck, latest renders
 - `pic()` in deck_training.py now picks the newest render of each view: the boilers_full copy, the raw `*_pro.png` (the Oct 17 full renders the strategy deck and brochure use) or `*_pro_clean.jpg`. The Oct 8 preview JPGs were being used before. Large PNGs are embedded as JPEG q90 (the PDF is about 9.5 MB).
 - Stop 2: HALL9_hero_cable (the strategy deck's "Three turbines, one tray stack"). Stop 5: E77 (the "Power that moves" page). Stop 1 now gets E20 at full quality.
+
+## Oct 24: training deck, market section (22 slides)
+- The "why gas now" placeholder is replaced by six market slides rebuilt from the Oct 6 PowerGen channel deck (pages 3, 5-10, 14) in the training-deck style: at a glance; load growth plus US gas capacity added 1996-2026 (bar values read from the PDF geometry); turbine backlogs (OEMs anonymised as OEM 1-3); the ~$1.2B cable prize by PO year (named vs allowance split from the PDF geometry); the project register by status and top states; Q3 progress.
+- Names (OEMs, owners, EPCs, the channel partner) are kept in the run of show, not on the slides. Agenda: market and fundamentals 15 min, tour 25 min. The run of show and its PDF are updated.

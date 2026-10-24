@@ -8,15 +8,15 @@
 
 ---
 
-**Slides:** `renders/deck/training/SW-3X1_Nov11_training.pdf` (17 slides, built by `blender/deck_training.py`): title, agenda, why gas now (3 market placeholders to fill), simple vs combined cycle, how an HRSG works, the 16-zone campus, 7 tour-stop backup slides, the whole plant in one number, what the spec calls for, pain points and the answer, three things to remember + Q&A.
+**Slides:** `renders/deck/training/SW-3X1_Nov11_training.pdf` (22 slides, built by `blender/deck_training.py`): title, agenda, six market slides (from the Oct 6 PowerGen channel deck: at a glance, load growth and capacity added since 1996, turbine backlogs, the ~$1.2B cable prize, the project register, Q3 progress), simple vs combined cycle, how an HRSG works, the campus with the LNG terminal, 7 tour-stop backup slides, the whole plant in one number, what the spec calls for, pain points and the answer, three things to remember + Q&A.
 
 ## Rundown (60 min)
 
 | Time | Segment | On screen | Mins |
 |---|---|---|---|
 | 1:30 | 0. Welcome and why this matters | 1 title slide | 3 |
-| 1:33 | 1. Fundamentals and market | 4 slides | 10 |
-| 1:43 | 2. The 3D tour: seven stops | Live viewer, plus one slide per stop if needed | 30 |
+| 1:33 | 1. Market and fundamentals | 9 slides | 15 |
+| 1:48 | 2. The 3D tour: seven stops | Live viewer, plus one slide per stop if needed | 25 |
 | 2:13 | 3. Wire and cable takeaways | 3 slides | 9 |
 | 2:22 | 4. Q&A | Viewer on the overview | 8 |
 
@@ -34,27 +34,35 @@ Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) t
 
 ---
 
-## 1. Fundamentals and market (10 min, 4 slides)
+## 1. Market and fundamentals (15 min, 9 slides)
 
-**Slide 1: Why gas, why now (3 min)**
-- Demand is growing again: data centres, manufacturing and electrification.
-- Gas plants are firm, dispatchable power that complements wind and solar.
-- Message: new gas build, modular and behind-the-meter (BTM) generation, and upgrades to the existing fleet all need cable.
-- **Check the market numbers you quote against current Southwire market intelligence.**
+Market slides 3-8 come from the Oct 6 PowerGen channel deck. **OEM, owner and EPC names are not on the slides; say them here if useful.** Verify the figures against the primary sources (appendix of the Oct 6 deck) before Nov 11.
 
-**Slide 2: Simple cycle vs combined cycle (3 min).** Reuse boilers slide 6, "What goes in, what comes out".
+**Slide 3: At a glance (1 min).** 378 GW in development (52 GW under construction), ~$1.2B core cable 2026-2035, 386 projects tracked, $50M+ booked in Q3. "Today's goal: know the plant, so you can follow the cable through it."
+
+**Slide 4: Load growth (2 min).** 166 GW peak-load growth by 2030 (about 90 GW data centres); 378 GW gas in development (189 GW tied to data centres); 52 GW under construction; turbine lead times up to 7 years. The chart: the 2000-04 merchant boom built 188 GW (peak 57 GW in 2002); 2015-25 averaged 8.1 GW a year. "Today's pipeline needs a boom-scale build again."
+
+**Slide 5: Turbine backlogs (1 min).** Turbine OEM 1 = GE Vernova (116 GW, firm backlog plus slot reservations, Q2 2026); OEM 2 = Siemens Energy (~69 GW gas-turbine backlog, Q3 FY26); OEM 3 = Mitsubishi Power (35 GW large-frame, Aug 2026). Tiles: +72% Caterpillar power-generation sales Q2 2026; 2.3 GW VoltaGrid modular fleet for Oracle's Texas AI data centres plus 1 GW for Vantage; 500 MW standard modular SGT-800 plant from Siemens Energy and Eaton.
+
+**Slide 6: The cable prize (2 min).** 378 GW to 93.7 GW modeled additions to ~$180B of plant investment to $0.75-1.2B of wire and cable: under 1% of capex, on the critical path. By PO year: $673M named projects, $501M future allowance; peak 2028-29.
+
+**Slide 7: The register (1 min).** 205.8 GW eligible; 68% only announced. Top states TX 55.5, LA 16.3, WV 13.4 GW. Example owners if asked: NRG, CPV, Entergy, Homer City Redevelopment. Named EPCs: Kiewit/TIC, Zachry, Gemma, PCL, Burns & McDonnell; 87% of gross capacity has no confirmed constructor yet.
+
+**Slide 8: Q3 progress (1 min).** 386 projects, 17 priority pursuits (~$200M cable potential), $50M+ booked in Q3, $30M in September; $5M of it through Anixter Power Solutions. Cable is bought through EPCs and package builders, which is why the tour shows what they build.
+
+**Slide 9: Simple cycle vs combined cycle (3 min).** Reuse boilers slide 6, "What goes in, what comes out".
 - In: gas, air, a little water. Out: power, stack gas, heat.
 - The gas turbines make about 2/3 of the power; the steam from their exhaust makes about 1/3 more with no extra fuel.
 
-**Slide 3: How an HRSG works (2 min).** Reuse boilers slide 5: the "What it is" and "Fun facts" box.
+**Slide 10: How an HRSG works (2 min).** Reuse boilers slide 5: the "What it is" and "Fun facts" box.
 
-**Slide 4: The campus at a glance (2 min).** Use the 16-zone overview slide.
+**Slide 11: The campus at a glance (2 min).** The campus aerial with the LNG terminal and the seven stops.
 - "This is SW-3X1, a 3x1 combined-cycle plant: three gas turbines, three HRSGs and one steam turbine, with a modular generation yard, a battery yard, a behind-the-meter data centre, LNG supply, and options for carbon capture and hydrogen."
 - "Conceptual and not engineered, but sized like real plants."
 
 ---
 
-## 2. The 3D tour: seven stops (30 min, about 4 min each)
+## 2. The 3D tour: seven stops (25 min, about 3.5 min each)
 
 **How to run it:** open the viewer and press **▶ Nov 11** (top left of the 3D window). It goes full screen with captions (Equipment / System / Cable). Use **→ / space** for the next view, **←** to go back, keys **1-7** (or the chapter bar at the top) to jump to a stop, and **Esc** to leave. The tour has 22 views: an opening, 20 across the seven stops, and a closing cable X-ray. Use the same three beats at every stop:
 

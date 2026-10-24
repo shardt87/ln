@@ -1,7 +1,7 @@
-"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 17 slides at 1440 x 810,
+"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 22 slides at 1440 x 810,
 same look as the boiler deck. Reuses the boiler-deck slides for the fundamentals and the cable takeaways (their footers
-re-numbered), the 16-zone overview, and the model renders for the seven tour stops; new: title, agenda, why gas now
-(market figures left as marked placeholders for Southwire market intelligence), one slide per tour stop, the whole
+re-numbered), the 16-zone overview, and the model renders for the seven tour stops; new: title, agenda, six market slides
+(from the Oct 6 PowerGen channel deck), one slide per tour stop, the whole
 plant in one number (from the cable schedule), three things to remember.
 
     python3 blender/deck_training.py      -> renders/deck/training/SW-3X1_Nov11_training.pdf (+ PNG per slide)
@@ -75,8 +75,8 @@ def s_title():
 
 
 AGENDA = [("1:30", "Welcome", "why this matters", "3"),
-          ("1:33", "Fundamentals and market", "why gas, how a combined cycle works, the campus", "10"),
-          ("1:43", "The 3D tour", "seven stops: what it does, its electrical system, its cable", "30"),
+          ("1:33", "Market and fundamentals", "the gas build, the cable prize, Q3; how a combined cycle works", "15"),
+          ("1:48", "The 3D tour", "seven stops: what it does, its electrical system, its cable", "25"),
           ("2:13", "Wire and cable takeaways", "the whole plant in one number, products, pain points", "9"),
           ("2:22", "Q&amp;A", "questions from the chat", "8")]
 
@@ -121,6 +121,183 @@ def s_why(n, N):
   <div class="abs lede" style="left:64px;top:162px;width:1100px;font-size:17px">Message: new gas build, modular and behind-the-meter
     generation, and upgrades to the existing fleet all need cable.</div>
   {html}
+  {foot(n, N)}
+</section>"""
+
+
+# Market section: from the Oct 6 PowerGen channel deck (pages 3, 5-10, 14), restyled; OEM, owner and EPC names stay in
+# the talking points (presentation/Nov11_run_of_show.md), not on the slides.
+SRC = "font:400 12px/1.4 B;color:#80868c"
+ADDED = [1.9, 3.0, 5.0, 8.9, 21.9, 40.0, 57.0, 48.9, 20.0, 15.0, 8.9, 8.9, 8.9, 8.9, 7.0, 8.9, 8.9, 7.0, 6.1, 6.4, 8.6,
+         11.1, 19.2, 8.3, 7.0, 6.4, 5.6, 8.6, 3.9, 3.6, 6.3]               # US gas GW added per year, 1996-2026 (provisional)
+POS = [(2026, 98, 0, 13.2), (2027, 133, 0, 17.0), (2028, 165, 4, 20.7), (2029, 157, 13, 21.2), (2030, 83, 31, 14.7),
+       (2031, 21, 53, 9.5), (2032, 10, 78, 11.1), (2033, 5, 97, 13.2), (2034, 1, 109, 14.3), (2035, 0, 115, 14.9)]
+
+
+def tile(x, y, w, h, kick, big, txt, hot=False, sub=""):
+    bg = "#b4591f" if hot else "#181b1f"
+    return (f'<div class="abs" style="left:{x}px;top:{y}px;width:{w}px;height:{h}px;background:{bg};border-top:4px solid '
+            f'{"#e39a5e" if hot else COPPER};padding:22px 24px;box-sizing:border-box">'
+            f'<div class="cnum" style="color:{WHITE if hot else GREY}">{kick}</div>'
+            f'<div style="font:800 64px/1 BC;color:{WHITE if hot else COPPER};margin:14px 0 10px">{big}</div>'
+            f'<div class="cd" style="font-size:17px;color:{WHITE if hot else GREY}">{txt}</div>'
+            f'{f"<div class=cd style=margin-top:8px;font-size:14px>{sub}</div>" if sub else ""}</div>')
+
+
+def s_glance(n, N):
+    t = [("The market", "378 GW", "US gas power in development; 52 GW already under construction"),
+         ("The cable", "~$1.2B", "core wire &amp; cable, 2026&ndash;2035, at $8&ndash;13M per GW"),
+         ("The pipeline", "386", "gas projects we track in 40 states, every owner type"),
+         ("The traction", "$50M+", "booked in Q3; $30M in September alone")]
+    html = "".join(tile(64 + k * 334, 250, 310, 270, *v, hot=(k == 1)) for k, v in enumerate(t))
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Fundamentals and market &nbsp;&middot;&nbsp; at a glance</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:58px;width:1300px">A boom-scale gas build, and <em>cable is on the critical path</em></div>
+  {html}
+  <div class="abs" style="left:64px;top:566px;font:800 26px/1.2 BC;color:{WHITE};text-transform:uppercase;width:1300px">Today's goal:
+    <span style="color:{COPPER}">know the plant, so you can follow the cable through it</span></div>
+  <div class="abs" style="left:64px;top:700px;{SRC}">Global Energy Monitor, Aug 2026; Southwire PowerGen planning model and internal figures, 2026.</div>
+  {foot(n, N)}
+</section>"""
+
+
+def s_load(n, N):
+    stats = [("166 GW", "US peak load growth forecast by 2030", "about 90 GW of it from data centres"),
+             ("378 GW", "US gas power in development, mid-2026", "189 GW tied to data centres"),
+             ("52 GW", "under construction, up 76% in H1 2026", "the largest gas build in the world"),
+             ("Up to 7 yrs", "quoted lead time for some large gas turbines", "procurement decisions are being made now")]
+    st = "".join(f'<div class="abs" style="left:{64 + k * 334}px;top:176px;width:310px;border-top:4px solid {COPPER};padding-top:14px">'
+                 f'<div style="font:800 54px/1 BC;color:{COPPER}">{a}</div><div class="cd" style="font-size:16px;color:{WHITE};margin-top:8px">{b}</div>'
+                 f'<div class="cd" style="font-size:14px;margin-top:4px">{c}</div></div>' for k, (a, b, c) in enumerate(stats))
+    x0, base, bw, step, sc = 70, 690, 30, 40.6, 2.6
+    bars = ""
+    for k, v in enumerate(ADDED):
+        y = 1996 + k
+        col = "#b4591f" if 2000 <= y <= 2004 else ("#e39a5e" if y == 2026 else "#5d636a")
+        bars += f'<div class="abs" style="left:{x0 + k * step:.0f}px;top:{base - v * sc:.0f}px;width:{bw}px;height:{v * sc:.0f}px;background:{col};border-radius:3px 3px 0 0"></div>'
+        if y % 5 == 0 or y in (1996, 2026):
+            bars += f'<div class="abs" style="left:{x0 + k * step - 10:.0f}px;top:{base + 8}px;width:50px;text-align:center;{SRC};font-size:13px">{y}</div>'
+    bars += (f'<div class="abs" style="left:{x0 + 6 * step - 4:.0f}px;top:{base - 57 * sc - 22:.0f}px;font:800 17px/1 BC;color:{WHITE}">57</div>'
+             f'<div class="abs" style="left:{x0 + 30 * step - 1:.0f}px;top:{base - 6.3 * sc - 22:.0f}px;font:800 17px/1 BC;color:{WHITE}">6.3</div>'
+             f'<div class="abs" style="left:{x0}px;top:{base + 1}px;width:{30 * step + bw:.0f}px;height:1px;background:#3a3f45"></div>')
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Market context</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:52px">Load growth is pulling <em>gas power forward</em></div>
+  {st}
+  <div class="abs cnum" style="left:64px;top:420px;color:{WHITE}">US gas capacity added per year, GW &middot; provisional</div>
+  {bars}
+  <div class="abs" style="left:420px;top:470px;font:800 22px/1 BC;color:{COPPER};text-transform:uppercase">2000&ndash;04 merchant boom</div>
+  <div class="abs cd" style="left:420px;top:498px;font-size:15px">188 GW built &middot; 37.6 GW a year &middot; peak 57 GW in 2002</div>
+  <div class="abs" style="left:900px;top:540px;font:800 22px/1 BC;color:{WHITE};text-transform:uppercase">2015&ndash;25 run-rate: 8.1 GW a year</div>
+  <div class="abs cd" style="left:900px;top:568px;font-size:15px">Today's pipeline needs a boom-scale build again</div>
+  <div class="abs" style="left:64px;top:728px;{SRC}">Grid Strategies, 2025; Global Energy Monitor, Aug 2026; S&amp;P Global, May 2025. History: EIA and Southwire provisional series, to be verified.</div>
+  {foot(n, N)}
+</section>"""
+
+
+def s_backlog(n, N):
+    oems = [("Turbine OEM 1", 116, "116 GW"), ("Turbine OEM 2", 69, "~69 GW"), ("Turbine OEM 3", 35, "35 GW")]
+    rows = "".join(f'<div class="abs" style="left:64px;top:{196 + k * 66}px;width:220px;font:700 22px/48px BC;color:{WHITE};text-transform:uppercase">{a}</div>'
+                   f'<div class="abs" style="left:300px;top:{196 + k * 66}px;width:{v * 6.2:.0f}px;height:48px;background:#b4591f;border-radius:0 3px 3px 0"></div>'
+                   f'<div class="abs" style="left:{316 + v * 6.2:.0f}px;top:{196 + k * 66}px;font:800 30px/48px BC;color:{WHITE}">{t}</div>'
+                   for k, (a, v, t) in enumerate(oems))
+    t = [("Modular", "+72%", "power-generation sales at the largest engine-generator maker, Q2 2026"),
+         ("Behind the meter", "2.3 GW", "modular gas fleet for Texas AI data centres, plus 1 GW for another campus"),
+         ("Packaged", "500 MW", "standard modular gas-turbine plant, offered as a product")]
+    html = "".join(tile(64 + k * 444, 440, 420, 220, *v) for k, v in enumerate(t))
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">OEM order books</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:58px">Turbine backlogs <em>are full</em></div>
+  <div class="abs" style="left:1130px;top:200px;width:250px" ><div class="cd" style="font-size:15px">The three large-frame turbine OEMs
+    together hold <b style="color:{WHITE}">about 220 GW</b> of gas turbines in backlog and slot reservations. Modular and packaged gas
+    power is growing beside them.</div></div>
+  {rows}
+  {html}
+  <div class="abs" style="left:64px;top:700px;{SRC}">OEM releases, Q2&ndash;Q3 2026 (firm backlog plus slot reservations; gas-turbine backlog; large-frame backlog); Utility Dive, Aug 2026; POWER, Oct 2025 and Feb 2026.</div>
+  {foot(n, N)}
+</section>"""
+
+
+def s_prize(n, N):
+    steps = [("Capacity", "93.7 GW", "modeled additions through 2036, from the 378 GW pipeline: 90% of the 52 GW building, 13.5% of the rest"),
+             ("Plant investment", "~$180B", "93.7 GW &times; $1,923/kW blended (combined cycle, peakers, engines)"),
+             ("Wire &amp; cable", "$0.75&ndash;1.2B", "$8&ndash;13M per GW: under 1% of plant capex, on the critical path to first power")]
+    html = "".join(tile(64, 168 + k * 172, 400, 156, *v, hot=(k == 2)).replace("font:800 64px", "font:800 46px").replace(
+        "margin:14px 0 10px", "margin:8px 0 6px").replace("font-size:17px", "font-size:14px") for k, v in enumerate(steps))
+    x0, base, sc, bw, step = 560, 640, 2.3, 54, 82
+    bars = ""
+    for k, (y, nm, al, gw) in enumerate(POS):
+        x = x0 + k * step
+        bars += (f'<div class="abs" style="left:{x}px;top:{base - nm * sc:.0f}px;width:{bw}px;height:{nm * sc:.0f}px;background:#b4591f"></div>'
+                 f'<div class="abs" style="left:{x}px;top:{base - (nm + al) * sc:.0f}px;width:{bw}px;height:{al * sc:.0f}px;background:#5d636a;border-radius:3px 3px 0 0"></div>'
+                 f'<div class="abs" style="left:{x - 10}px;top:{base - (nm + al) * sc - 24:.0f}px;width:{bw + 20}px;text-align:center;font:800 16px/1 BC;color:{WHITE}">${nm + al}M</div>'
+                 f'<div class="abs" style="left:{x - 10}px;top:{base + 8}px;width:{bw + 20}px;text-align:center;font:700 15px/1 BC;color:{WHITE}">{y}</div>'
+                 f'<div class="abs" style="left:{x - 10}px;top:{base + 28}px;width:{bw + 20}px;text-align:center;{SRC}">{gw} GW</div>')
+    key = (f'<div class="abs" style="left:560px;top:176px;font:700 14px/1 BC;letter-spacing:.1em;color:{GREY};text-transform:uppercase">'
+           f'<span style="display:inline-block;width:12px;height:12px;background:#b4591f;margin-right:8px"></span>Named projects $673M'
+           f'<span style="display:inline-block;width:12px;height:12px;background:#5d636a;margin:0 8px 0 26px"></span>Future-project allowance $501M</div>')
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Sizing the opportunity &nbsp;&middot;&nbsp; conservative planning case</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:52px">~$1.2B of core gas cable, <em>2026&ndash;2035</em></div>
+  {html}
+  {key}
+  {bars}
+  <div class="abs" style="left:560px;top:{base + 1}px;width:{9 * step + bw}px;height:1px;background:#3a3f45"></div>
+  <div class="abs" style="left:560px;top:690px;width:820px;{SRC}">Core cable by purchase-order year; below each year, modeled PO-year GW (not installed GW).
+    GW &times; $/kW &times; addressable share &times; win probability. OEM internal wiring and HV excluded.</div>
+  <div class="abs" style="left:64px;top:728px;{SRC}">Global Energy Monitor, Aug 2026; completion rates, blended cost and cable rates are Southwire planning assumptions.</div>
+  {foot(n, N)}
+</section>"""
+
+
+def s_where(n, N):
+    reg = [("Announced", 140.6), ("Under construction", 45.6), ("Approved &middot; NTP", 9.4), ("Permit application", 7.3), ("Operating", 3.0)]
+    r = "".join(f'<div class="abs" style="left:64px;top:{230 + k * 50}px;width:200px;font:700 17px/34px BC;color:{WHITE};text-transform:uppercase">{a}</div>'
+                f'<div class="abs" style="left:270px;top:{230 + k * 50}px;width:{v * 2.1:.0f}px;height:34px;background:{"#b4591f" if k == 0 else "#5d636a"}"></div>'
+                f'<div class="abs" style="left:{280 + v * 2.1:.0f}px;top:{230 + k * 50}px;font:800 20px/34px BC;color:{WHITE}">{v}</div>'
+                for k, (a, v) in enumerate(reg))
+    states = [("TX", 55.5), ("LA", 16.3), ("WV", 13.4), ("IN", 10.3), ("OH", 10.3), ("PA", 10.0), ("NC", 9.4), ("AZ", 8.1), ("GA", 7.9)]
+    s_ = "".join(f'<div class="abs" style="left:780px;top:{230 + k * 38}px;width:40px;font:800 18px/28px BC;color:{WHITE}">{a}</div>'
+                 f'<div class="abs" style="left:830px;top:{230 + k * 38}px;width:{v * 7:.0f}px;height:28px;background:#b4591f"></div>'
+                 f'<div class="abs" style="left:{840 + v * 7:.0f}px;top:{230 + k * 38}px;font:800 18px/28px BC;color:{WHITE}">{v}</div>'
+                 for k, (a, v) in enumerate(states))
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">The project register</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:52px">205.8 GW eligible, <em>most of it still early</em></div>
+  <div class="abs cnum" style="left:64px;top:196px;color:{WHITE}">By status &middot; gross GW, COD 2026&ndash;2035</div>
+  {r}
+  <div class="abs" style="left:64px;top:500px;font:800 64px/1 BC;color:{COPPER}">68%</div>
+  <div class="abs cd" style="left:220px;top:508px;width:440px;font-size:16px"><b style="color:{WHITE}">of eligible capacity is only announced.</b>
+    Being on the register does not mean a cable package is open; it means a conversation to start.</div>
+  <div class="abs cnum" style="left:780px;top:196px;color:{WHITE}">Top states &middot; gross GW, 386 projects</div>
+  {s_}
+  <div class="abs cd" style="left:780px;top:590px;width:600px;font-size:15px">Greenfield 137 GW, brownfield 69 GW. Utilities reuse old
+    sites (coal-site repowers, expansions); independent and behind-the-meter developers mostly build new, often on data-centre campuses.</div>
+  <div class="abs" style="left:64px;top:728px;{SRC}">Southwire PowerGen register, Sep 11, 2026: 386 records across 305 site groups; gross GW, unweighted.</div>
+  {foot(n, N)}
+</section>"""
+
+
+def s_q3(n, N):
+    t = [("Projects tracked", "386", "new gas generation in 40 states, all owner types"),
+         ("Priority pursuits", "17", "validated, about $200M of cable potential"),
+         ("Booked in Q3", "$50M+", "gas power cable orders, July to September", ),
+         ("September", "$30M", "booked in one month")]
+    html = "".join(tile(64 + k * 334, 186, 310, 270, *v, hot=(k == 2)) for k, v in enumerate(t))
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Southwire progress &nbsp;&middot;&nbsp; Q3 2026</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:58px">From discovery to execution <em>in six months</em></div>
+  {html}
+  <div class="abs lede" style="left:64px;top:500px;width:1100px;font-size:19px">Power Generation became its own Southwire vertical in early
+    2026. Owner conversations showed that cable is <b style="color:{WHITE}">specified and bought through EPCs and package builders</b>,
+    so the pursuit model now follows that path. What you see in the next 40 minutes is what those buyers build.</div>
+  <div class="abs" style="left:64px;top:728px;{SRC}">Southwire internal figures, 2026.</div>
   {foot(n, N)}
 </section>"""
 
@@ -294,13 +471,14 @@ def reused(fn, n, N, kicker):
 def main():
     import pymupdf
     os.makedirs(OUT, exist_ok=True)
-    N = 17
-    plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_why(3, N),
-            lambda: reused(db.slide_cycle, 4, N, "Fundamentals"), lambda: reused(db.slide_basics, 5, N, "Fundamentals"),
-            lambda: s_overview(6, N)]
-    plan += [(lambda k=k: s_stop(k, 7 + k, N)) for k in range(7)]
-    plan += [lambda: s_number(14, N), lambda: reused(db.slide_spec, 15, N, "Wire and cable takeaways"),
-             lambda: reused(db.slide_value, 16, N, "Wire and cable takeaways"), lambda: s_close(17, N)]
+    N = 22
+    plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_glance(3, N), lambda: s_load(4, N), lambda: s_backlog(5, N),
+            lambda: s_prize(6, N), lambda: s_where(7, N), lambda: s_q3(8, N),
+            lambda: reused(db.slide_cycle, 9, N, "Fundamentals"), lambda: reused(db.slide_basics, 10, N, "Fundamentals"),
+            lambda: s_overview(11, N)]
+    plan += [(lambda k=k: s_stop(k, 12 + k, N)) for k in range(7)]
+    plan += [lambda: s_number(19, N), lambda: reused(db.slide_spec, 20, N, "Wire and cable takeaways"),
+             lambda: reused(db.slide_value, 21, N, "Wire and cable takeaways"), lambda: s_close(22, N)]
     assert len(plan) == N
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()
