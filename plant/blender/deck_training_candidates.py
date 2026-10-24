@@ -147,7 +147,7 @@ def c_cable101(n, N):
     g = sorted(groups.items(), key=lambda kv: -kv[1])
     share = " &middot; ".join(f"{k} {100 * v / total:.0f}%" for k, v in g)
     return page(n, N, head("Fundamentals &nbsp;&middot;&nbsp; cable 101", "The cable families", "in a power plant",
-                           f"From the biggest to the smallest. In SW-3X1's schedule: {cables:,} cables, {total / 5280:,.0f} miles.") + html
+                           f"From the biggest to the smallest. The whole SW-3X1 campus: {cables:,} cables, {total / 5280:,.0f} miles.") + html
                 + band(f"<b style='color:#f4f1ec'>By length:</b> {share}. The big cables get the attention; the small ones make up most of the miles.", 548)
                 + f'<div class="abs" style="left:64px;top:640px;{SRC}">Shares by footage from the SW-3X1 model cable schedule; voltage ratings typical.</div>')
 
@@ -406,7 +406,7 @@ def c_cc(step, n, N):
                 f'<div class="abs" style="left:56px;top:650px;display:flex;gap:46px;align-items:flex-end">'
                 f'<div><div style="font:800 56px/1 BC;color:{COPPER}">~60%</div><div class="cd" style="font-size:15px;margin-top:4px">of the fuel becomes power, vs ~40% for a gas turbine alone</div></div>'
                 f'<div><div style="font:800 56px/1 BC;color:{WHITE}">3 + 1</div><div class="cd" style="font-size:15px;margin-top:4px">three gas turbines, three HRSGs, one steam turbine: a "3x1"</div></div>'
-                f'<div><div style="font:800 56px/1 BC;color:{WHITE}">9,266</div><div class="cd" style="font-size:15px;margin-top:4px">cables in this power block, in our model</div></div></div>')
+                f'<div><div style="font:800 56px/1 BC;color:{WHITE}">8,234</div><div class="cd" style="font-size:15px;margin-top:4px">cables in this power block and its condenser, in our model</div></div></div>')
     keys = {"0": [("air", "air"), ("gtpow", "power")], "1": [("exhaust", "hot exhaust"), ("stack", "to the stack")],
             "2": [("steam", "steam"), ("water", "water"), ("stpow", "power")],
             "3": [("exhaust", "exhaust"), ("steam", "steam"), ("water", "water"), ("gtpow", "power")]}[str(step)]
@@ -431,6 +431,9 @@ XR_GROUPS = [("MV / HV power", "#f05a28", ("HV 230 kV", "MV 35 kV", "MV 25 kV", 
              ("Fibre and fire alarm", "#c58cff", ("Fibre / data", "Fire alarm"), "The control network, protection and life safety.")]
 
 
+XR_ZONES = "AB"     # what the picture shows: the power block (zone A) and its air-cooled condenser (zone B)
+
+
 def c_xray(n, N):
     import json, math
     d = json.load(open(os.path.join(PLANT, "brochure", "cables_xray.json")))
@@ -440,7 +443,7 @@ def c_xray(n, N):
     per = {}
     for r in d["cables"]:
         g = gi.get(cls[r[1]])
-        if g is None:
+        if g is None or r[0][0] not in XR_ZONES:
             continue
         tot[g][0] += r[5]
         tot[g][1] += r[5] * r[6]
@@ -483,10 +486,10 @@ def c_xray(n, N):
                 + f'<div class="abs h2" style="left:54px;top:66px;font-size:52px">Take the plant away: <em>the cable stays</em></div>'
                 + f'<div class="abs" style="left:56px;top:690px;width:820px;font:400 18px/1.45 B;color:#e6e3dd">Every line is a route from the model\'s cable schedule, '
                   f'in trays, conduit and duct banks; thicker lines carry more cables. <b style="color:#fff">The power block is a web of copper.</b></div>'
-                + f'<div class="abs" style="left:1060px;top:70px;width:330px"><div class="cnum" style="color:{WHITE}">The cable types &middot; whole plant</div>'
-                  f'<div style="font:800 40px/1 BC;color:{COPPER};margin-top:10px">{allc:,} <span style="font-size:18px;color:{GREY}">cables</span></div>{rows}'
-                  f'<div class="cd" style="font-size:12px;margin-top:14px">Counts and miles from the SW-3X1 model cable schedule (trays, conduit, duct banks; '
-                  f'building wire, grounding and overhead not shown).</div></div>')
+                + f'<div class="abs" style="left:1060px;top:70px;width:330px"><div class="cnum" style="color:{WHITE}">The cable in this picture</div>'
+                  f'<div style="font:800 40px/1 BC;color:{COPPER};margin-top:10px">{allc:,} <span style="font-size:18px;color:{GREY}">cables &middot; ~{sum(f for _, f in tot) / 5280:,.0f} miles</span></div>{rows}'
+                  f'<div class="cd" style="font-size:12px;margin-top:14px">The power block and its air-cooled condenser only, from the SW-3X1 model cable schedule '
+                  f'(building wire, grounding and overhead not counted). Conceptual estimate, not engineered.</div></div>')
 
 
 def main():

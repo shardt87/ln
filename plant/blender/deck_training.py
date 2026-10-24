@@ -709,7 +709,7 @@ def s_follow(n, N):
 <section class="page slide">
   <div class="abs kicker" style="left:64px;top:56px">Fundamentals &nbsp;&middot;&nbsp; where the cable is</div>
   <div class="abs h2" style="left:62px;top:84px;font-size:56px">Follow the power: <em>the cable is everywhere</em></div>
-  <div class="abs cnum" style="left:64px;top:166px;color:{WHITE}">SW-3X1 cable by plant area, from the model's cable schedule ({all_ft / 5280:,.0f} miles)</div>
+  <div class="abs cnum" style="left:64px;top:166px;color:{WHITE}">The whole SW-3X1 campus by plant area, from the model's cable schedule ({all_ft / 5280:,.0f} miles)</div>
   {rows}
   <div class="abs" style="left:1150px;top:196px;width:226px;background:#181b1f;border-top:4px solid {COPPER};padding:18px 20px;box-sizing:border-box">
     <div class="ct" style="font-size:22px">The POI</div>
@@ -913,7 +913,7 @@ def s_number(n, N):
     return f"""
 <section class="page slide">
   <div class="abs kicker" style="left:64px;top:56px">Wire and cable takeaways</div>
-  <div class="abs h2" style="left:62px;top:84px;font-size:58px">The whole plant in <em>one number</em></div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:58px">The whole campus in <em>one number</em></div>
   <div class="abs" style="left:64px;top:200px">
     <div style="font:800 128px/1 BC;color:{COPPER}">{total / 1e6:.1f}M</div>
     <div style="font:700 18px/1.2 BC;letter-spacing:.16em;color:{GREY};text-transform:uppercase;margin-top:6px">feet of cable

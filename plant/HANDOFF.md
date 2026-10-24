@@ -590,3 +590,6 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 
 ## Oct 24: cable X-ray slide (41 slides)
 - `c_xray` (candidate P, deck slide 23 after Cable 101): the CC2 aerial, near-black, with every cable route from brochure/cables_xray.json projected through the CC2 camera and glowing by type. Each path takes the colour of the group with the most cables on it; width scales with the log of the count; it is clipped to the image area. The side panel describes the five types with whole-plant counts and miles (21,138 cables). The run of show is updated.
+
+## Oct 24: one scope per number
+- Cable X-ray (slide 23) now counts and draws only what the picture shows: the power block plus the ACC (zones A and B, `XR_ZONES`): 8,234 cables, about 440 mi. The combined-cycle payoff (slide 18) uses the same 8,234. The whole-campus totals (~21,000 cables, ~1,200 mi) appear only on slides labelled "whole campus" (Cable 101, Follow the power, The whole campus in one number). The run of show has the method answer for Q&A.
