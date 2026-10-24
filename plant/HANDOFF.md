@@ -574,3 +574,6 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 
 ## Oct 24: training deck, definitions slide first (32 slides)
 - `s_blackbox` is generalised to "Every power plant is this" (source / input → black box / conversion → power / output, with definitions) and moved to slide 3, ahead of the four families (4) and the mix (5). Market 6-11; "Open the box" (12) picks the black box back up for gas. The run of show is updated.
+
+## Oct 24: training deck candidate slides (A-I), for the author to pick
+- `blender/deck_training_candidates.py` writes renders/deck/training/candidates/: A how a generator works, B the grid journey (generator to light switch), C a day on the grid (illustrative load curve), D front vs behind the meter, E cable 101 (families plus footage shares from the schedule), F what a plant does to a cable, G future fuels (H2, CCS, batteries), H units and scale, I glossary. They are not in the main deck yet; move the picked ones into deck_training.py's plan.
