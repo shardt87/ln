@@ -546,3 +546,6 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 ## Oct 24: training deck, state heat map (23 slides) and JPG export
 - New slide 8, `s_map`: the state tile heat map from page 10 of the Oct 6 deck (values and grid read from the PDF text layer), plus owner × site bars and site classes. The register slide's top states are corrected: AZ is 6.1 GW, not 8.1.
 - JPG copies for phones: renders/deck/training/jpg/slide_NN.jpg, plus contact sheets market_slides_3-9.jpg and all_slides.jpg (written by hand this time, not by deck_training.py).
+
+## Oct 24: training deck, Q3 progress slide out (22 slides)
+- The "From discovery to execution" slide was removed at the author's request. `s_q3` is kept in deck_training.py, unused. The deck now writes the JPG copies itself: jpg/slide_NN.jpg, market_slides_3-8.jpg and all_slides.jpg. The run of show is renumbered.

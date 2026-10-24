@@ -1,6 +1,6 @@
-"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 23 slides at 1440 x 810,
+"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 22 slides at 1440 x 810,
 same look as the boiler deck. Reuses the boiler-deck slides for the fundamentals and the cable takeaways (their footers
-re-numbered), the 16-zone overview, and the model renders for the seven tour stops; new: title, agenda, seven market slides
+re-numbered), the 16-zone overview, and the model renders for the seven tour stops; new: title, agenda, six market slides
 (from the Oct 6 PowerGen channel deck), one slide per tour stop, the whole
 plant in one number (from the cable schedule), three things to remember.
 
@@ -533,14 +533,14 @@ def reused(fn, n, N, kicker):
 def main():
     import pymupdf
     os.makedirs(OUT, exist_ok=True)
-    N = 23
+    N = 22                                                     # s_q3 (Q3 progress) taken out on Oct 24; kept for later use
     plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_glance(3, N), lambda: s_load(4, N), lambda: s_backlog(5, N),
-            lambda: s_prize(6, N), lambda: s_where(7, N), lambda: s_map(8, N), lambda: s_q3(9, N),
-            lambda: reused(db.slide_cycle, 10, N, "Fundamentals"), lambda: reused(db.slide_basics, 11, N, "Fundamentals"),
-            lambda: s_overview(12, N)]
-    plan += [(lambda k=k: s_stop(k, 13 + k, N)) for k in range(7)]
-    plan += [lambda: s_number(20, N), lambda: reused(db.slide_spec, 21, N, "Wire and cable takeaways"),
-             lambda: reused(db.slide_value, 22, N, "Wire and cable takeaways"), lambda: s_close(23, N)]
+            lambda: s_prize(6, N), lambda: s_where(7, N), lambda: s_map(8, N),
+            lambda: reused(db.slide_cycle, 9, N, "Fundamentals"), lambda: reused(db.slide_basics, 10, N, "Fundamentals"),
+            lambda: s_overview(11, N)]
+    plan += [(lambda k=k: s_stop(k, 12 + k, N)) for k in range(7)]
+    plan += [lambda: s_number(19, N), lambda: reused(db.slide_spec, 20, N, "Wire and cable takeaways"),
+             lambda: reused(db.slide_value, 21, N, "Wire and cable takeaways"), lambda: s_close(22, N)]
     assert len(plan) == N
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()
@@ -558,8 +558,26 @@ def main():
         os.remove(hp)
     p = os.path.join(OUT, "SW-3X1_Nov11_training.pdf")
     out.save(p, garbage=3, deflate=True)
+    from PIL import Image
+    jd = os.path.join(OUT, "jpg")                              # JPG copies for phones (the PDF does not load fully on some)
+    os.makedirs(jd, exist_ok=True)
+    for f in os.listdir(OUT) + os.listdir(jd):
+        if re.match(r"(training|slide)_\d+\.(png|jpg)$", f):
+            os.remove(os.path.join(jd if f.endswith(".jpg") else OUT, f))
+    ims = []
     for i, pg in enumerate(out):
-        pg.get_pixmap(dpi=96).save(os.path.join(OUT, f"training_{i + 1:02d}.png"))
+        png = os.path.join(OUT, f"training_{i + 1:02d}.png")
+        pg.get_pixmap(dpi=96).save(png)
+        ims.append(Image.open(png).convert("RGB"))
+        ims[-1].save(os.path.join(jd, f"slide_{i + 1:02d}.jpg"), quality=90)
+    w, h = 960, 540
+    for name, rng in (("market_slides_3-8", range(2, 8)), ("all_slides", range(len(ims)))):
+        rng = list(rng)
+        rows = (len(rng) + 1) // 2
+        sheet = Image.new("RGB", (w * 2 + 30, h * rows + 15 * (rows + 1)), (40, 40, 40))
+        for k, i in enumerate(rng):
+            sheet.paste(ims[i].resize((w, h)), (10 + (k % 2) * (w + 10), 15 + (k // 2) * (h + 15)))
+        sheet.save(os.path.join(jd, f"{name}.jpg"), quality=88)
     print("wrote", p, len(out), "slides")
 
 

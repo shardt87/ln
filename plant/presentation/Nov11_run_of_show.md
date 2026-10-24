@@ -8,14 +8,14 @@
 
 ---
 
-**Slides:** `renders/deck/training/SW-3X1_Nov11_training.pdf` (23 slides, built by `blender/deck_training.py`): title, agenda, six market slides (from the Oct 6 PowerGen channel deck: at a glance, load growth and capacity added since 1996, turbine backlogs, the ~$1.2B cable prize, the project register, the state heat map, Q3 progress), simple vs combined cycle, how an HRSG works, the campus with the LNG terminal, 7 tour-stop backup slides, the whole plant in one number, what the spec calls for, pain points and the answer, three things to remember + Q&A.
+**Slides:** `renders/deck/training/SW-3X1_Nov11_training.pdf` (22 slides, built by `blender/deck_training.py`): title, agenda, six market slides (from the Oct 6 PowerGen channel deck: at a glance, load growth and capacity added since 1996, turbine backlogs, the ~$1.2B cable prize, the project register, the state heat map), simple vs combined cycle, how an HRSG works, the campus with the LNG terminal, 7 tour-stop backup slides, the whole plant in one number, what the spec calls for, pain points and the answer, three things to remember + Q&A.
 
 ## Rundown (60 min)
 
 | Time | Segment | On screen | Mins |
 |---|---|---|---|
 | 1:30 | 0. Welcome and why this matters | 1 title slide | 3 |
-| 1:33 | 1. Market and fundamentals | 10 slides | 15 |
+| 1:33 | 1. Market and fundamentals | 9 slides | 15 |
 | 1:48 | 2. The 3D tour: seven stops | Live viewer, plus one slide per stop if needed | 25 |
 | 2:13 | 3. Wire and cable takeaways | 3 slides | 9 |
 | 2:22 | 4. Q&A | Viewer on the overview | 8 |
@@ -34,11 +34,11 @@ Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) t
 
 ---
 
-## 1. Market and fundamentals (15 min, 10 slides)
+## 1. Market and fundamentals (15 min, 9 slides)
 
-Market slides 3-9 come from the Oct 6 PowerGen channel deck. **OEM, owner and EPC names are not on the slides; say them here if useful.** Verify the figures against the primary sources (appendix of the Oct 6 deck) before Nov 11.
+Market slides 3-8 come from the Oct 6 PowerGen channel deck. **OEM, owner and EPC names are not on the slides; say them here if useful.** Verify the figures against the primary sources (appendix of the Oct 6 deck) before Nov 11.
 
-**Slide 3: At a glance (1 min).** 378 GW in development (52 GW under construction), ~$1.2B core cable 2026-2035, 386 projects tracked, $50M+ booked in Q3. "Today's goal: know the plant, so you can follow the cable through it."
+**Slide 3: At a glance (2 min).** 378 GW in development (52 GW under construction), ~$1.2B core cable 2026-2035, 386 projects tracked, $50M+ booked in Q3. "Today's goal: know the plant, so you can follow the cable through it."
 
 **Slide 4: Load growth (2 min).** 166 GW peak-load growth by 2030 (about 90 GW data centres); 378 GW gas in development (189 GW tied to data centres); 52 GW under construction; turbine lead times up to 7 years. The chart: the 2000-04 merchant boom built 188 GW (peak 57 GW in 2002); 2015-25 averaged 8.1 GW a year. "Today's pipeline needs a boom-scale build again."
 
@@ -50,15 +50,13 @@ Market slides 3-9 come from the Oct 6 PowerGen channel deck. **OEM, owner and EP
 
 **Slide 8: Where the build is (1 min).** The state heat map: TX 55.5 GW leads, then LA, WV, IN, OH, PA. Owners: IPPs and behind-the-meter developers mostly build new; utilities reuse old sites (coal-site repowers 41.3 GW).
 
-**Slide 9: Q3 progress (1 min).** 386 projects, 17 priority pursuits (~$200M cable potential), $50M+ booked in Q3, $30M in September; $5M of it through Anixter Power Solutions. Cable is bought through EPCs and package builders, which is why the tour shows what they build.
-
-**Slide 10: Simple cycle vs combined cycle (3 min).** Reuse boilers slide 6, "What goes in, what comes out".
+**Slide 9: Simple cycle vs combined cycle (3 min).** Reuse boilers slide 6, "What goes in, what comes out".
 - In: gas, air, a little water. Out: power, stack gas, heat.
 - The gas turbines make about 2/3 of the power; the steam from their exhaust makes about 1/3 more with no extra fuel.
 
-**Slide 11: How an HRSG works (2 min).** Reuse boilers slide 5: the "What it is" and "Fun facts" box.
+**Slide 10: How an HRSG works (2 min).** Reuse boilers slide 5: the "What it is" and "Fun facts" box.
 
-**Slide 12: The campus at a glance (2 min).** The campus aerial with the LNG terminal and the seven stops.
+**Slide 11: The campus at a glance (2 min).** The campus aerial with the LNG terminal and the seven stops.
 - "This is SW-3X1, a 3x1 combined-cycle plant: three gas turbines, three HRSGs and one steam turbine, with a modular generation yard, a battery yard, a behind-the-meter data centre, LNG supply, and options for carbon capture and hydrogen."
 - "Conceptual and not engineered, but sized like real plants."
 
