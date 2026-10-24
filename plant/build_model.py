@@ -1726,6 +1726,8 @@ add_route("mvlv_cable", [(2310, 795), (2310, 809), (2249, 809), (2249, 504), (21
 add_route("mvlv_cable", [(2014, 350), (2014, 345), (2146, 345), (2146, 352)], MX)         # FC-5..12 -> inverter
 add_route("mvlv_cable", [(2146, 376), (2146, 420), (2165, 420), (2165, 430)], MX)         # inverter -> PAD-LV
 add_route("mvlv_cable", [(2198, 377), (2198, 415), (2175, 415), (2175, 430)], MX)         # MT-4..6 -> PAD-LV
+add_route("mvlv_cable", [(2018.5, 1032), (2018.5, 996), (1990, 996), (1990, 900)], MX)     # AX-1 gen leads -> MOD-EH
+add_route("mvlv_cable", [(2155.5, 1032), (2155.5, 990), (1986, 990), (1986, 900)], MX)     # IG-1 gen leads -> MOD-EH
 add_route("mvlv_cable", [(2258.5, 1252), (2266, 1252), (2266, 1324), (2240, 1324)], "OPT_MOD_ROUTES")  # SC-2 PCM (mirrored
                                                                           # to x 2218.5-2258.5 by sc2_mirror) -> ammonia skid
 add_route("fuel_gas", [(2340, 440), (2340, 452), (1985, 452), (1985, 536), (2130, 536)], MX)   # pad skid -> TM / CONT
@@ -2299,6 +2301,8 @@ import prefab as _pf
 _pf.build()                # prefab staging bay on the laydown pad, cable spine going in at the modular yard
 import skid_prewire as _skp
 _skp.build()               # skid pre-assembly / pre-wire workstation beside the spine
+import modular_packages as _mpk
+print("modular GT packages", _mpk.build())   # AX-1 aero modules, IG-1 industrial GT (Oct 24)
 print("tray legends", _show.tray_legends())
 print("CCS rack tray legends", _show.tray_legends(x0=726, x1=856, y0=1131, y1=1135.5, z0=26, z1=29))
 for _p in parts:                    # tray cables round, not faceted (they are seen close up in the tray shots)

@@ -274,7 +274,7 @@
   {
    "sec": "5 · Modular generation",
    "title": "The modular power yard",
-   "eq": "RICE engine hall, simple-cycle units, aeroderivatives, fuel cells, microturbines, the PCM and MOD-EH",
+   "eq": "RICE engine hall, simple-cycle units, aeroderivatives, a factory-modular aero package and an industrial GT package, fuel cells, microturbines, the PCM and MOD-EH",
    "sys": "Fast-start capacity on its own 13.8 kV collector, beside the combined cycle",
    "cab": "MV-105 15 kV collector feeders in tray and duct bank to MOD-EH",
    "c": [
