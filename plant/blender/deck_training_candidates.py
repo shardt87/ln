@@ -459,6 +459,19 @@ def c_xray_intro(n, N):
                 f'photographs. <b style="color:#fff">Next: take all of it away, and look at what is left.</b></div>')
 
 
+
+def c_xray_copper(n, N):
+    """The CC2 shot as the viewer's copper cable X-ray (tools/xray_capture, cams_cc.json + electrify.py): the reveal."""
+    img = pic("renders/training/XR_CC2_copper.jpg")
+    return page(n, N, f'<img class="abs" src="{img}" style="left:0;top:0;width:1440px;height:810px">'
+                f'<div class="abs" style="left:0;top:0;width:1440px;height:810px;background:linear-gradient(180deg,rgba(14,16,18,.85) 0%,rgba(14,16,18,0) 22%,'
+                f'rgba(14,16,18,0) 78%,rgba(14,16,18,.9) 100%)"></div>'
+                f'<div class="abs kicker" style="left:56px;top:40px">Wire and cable &nbsp;&middot;&nbsp; X-ray</div>'
+                f'<div class="abs h2" style="left:54px;top:66px;font-size:52px">Take the plant away: <em>the cable stays</em></div>'
+                f'<div class="abs" style="left:56px;top:700px;width:1330px;font:400 19px/1.45 B;color:#e6e3dd">The same view, with the steel made glass. '
+                f'<b style="color:#fff">About 8,200 cables and 440 miles</b> in the power block and its condenser, every one routed in our model.</div>')
+
+
 XR_ZONES = "AB"     # what the picture shows: the power block (zone A) and its air-cooled condenser (zone B)
 
 
@@ -510,8 +523,8 @@ def c_xray(n, N):
                  f'<div class="cd" style="font-size:13px;margin-top:5px">{t}</div></div>')
     allc = sum(c for c, _ in tot)
     return page(n, N, base + svg
-                + f'<div class="abs kicker" style="left:56px;top:40px">Wire and cable &nbsp;&middot;&nbsp; X-ray</div>'
-                + f'<div class="abs h2" style="left:54px;top:66px;font-size:52px">Take the plant away: <em>the cable stays</em></div>'
+                + f'<div class="abs kicker" style="left:56px;top:40px">Wire and cable &nbsp;&middot;&nbsp; X-ray by type</div>'
+                + f'<div class="abs h2" style="left:54px;top:66px;font-size:52px">Now sort it by job: <em>five kinds of cable</em></div>'
                 + f'<div class="abs" style="left:56px;top:690px;width:820px;font:400 18px/1.45 B;color:#e6e3dd">Every line is a route from the model\'s cable schedule, '
                   f'in trays, conduit and duct banks; thicker lines carry more cables. <b style="color:#fff">The power block is a web of copper.</b></div>'
                 + f'<div class="abs" style="left:1060px;top:70px;width:330px"><div class="cnum" style="color:{WHITE}">The cable in this picture</div>'
@@ -524,7 +537,7 @@ def main():
     import pymupdf
     from PIL import Image
     os.makedirs(OUT, exist_ok=True)
-    fns = [c_generator, c_grid, c_day, c_meter, c_cable101, c_stress, c_future, c_units, c_glossary, c_modern, c_combined, c_cc1, c_cc2, c_cc3, c_cc4, c_xray_intro, c_xray]
+    fns = [c_generator, c_grid, c_day, c_meter, c_cable101, c_stress, c_future, c_units, c_glossary, c_modern, c_combined, c_cc1, c_cc2, c_cc3, c_cc4, c_xray_intro, c_xray_copper, c_xray]
     N = len(fns)
     head_ = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()

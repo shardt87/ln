@@ -1,4 +1,4 @@
-"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 42 slides at 1440 x 810,
+"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 43 slides at 1440 x 810,
 same look as the boiler deck. Reuses the boiler-deck slides for the fundamentals and the cable takeaways (their footers
 re-numbered), the 16-zone overview, and the model renders for the seven tour stops; new: title, agenda, six market slides
 (from the Oct 6 PowerGen channel deck), one slide per tour stop, the whole
@@ -970,17 +970,17 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     import deck_training_candidates as cand                   # picked candidates (Oct 24): B, C, E, F, J; the combined-cycle build (c_cc1-4) replaces the cycle diagram
     cand.FOOT_LEFT = "SW-3X1 MODEL &middot; CONCEPTUAL ILLUSTRATION, NOT ENGINEERED &middot; INTERNAL TRAINING"
-    N = 42                                                     # s_q3, s_anatomy and s_corridor are kept, unused
+    N = 43                                                     # s_q3, s_anatomy and s_corridor are kept, unused
     plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_blackbox(3, N), lambda: s_sources(4, N), lambda: s_system(5, N),
             lambda: s_glance(6, N), lambda: s_load(7, N), lambda: s_backlog(8, N), lambda: s_prize(9, N), lambda: s_where(10, N),
             lambda: s_map(11, N), lambda: s_box(12, N), lambda: s_types(13, N), lambda: cand.c_day(14, N),
             lambda: cand.c_cc1(15, N), lambda: cand.c_cc2(16, N), lambda: cand.c_cc3(17, N), lambda: cand.c_cc4(18, N), lambda: reused(db.slide_basics, 19, N, "Fundamentals"),
             lambda: cand.c_grid(20, N), lambda: reused(db.slide_system, 21, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
-            lambda: cand.c_cable101(22, N), lambda: cand.c_xray_intro(23, N), lambda: cand.c_xray(24, N), lambda: cand.c_stress(25, N), lambda: s_follow(26, N), lambda: s_owners(27, N),
-            lambda: s_sites(28, N), lambda: s_buy(29, N), lambda: cand.c_modern(30, N), lambda: s_overview(31, N)]
-    plan += [(lambda k=k: s_stop(k, 32 + k, N)) for k in range(7)]
-    plan += [lambda: s_number(39, N), lambda: reused(db.slide_spec, 40, N, "Wire and cable takeaways"),
-             lambda: reused(db.slide_value, 41, N, "Wire and cable takeaways"), lambda: s_close(42, N)]
+            lambda: cand.c_cable101(22, N), lambda: cand.c_xray_intro(23, N), lambda: cand.c_xray_copper(24, N), lambda: cand.c_xray(25, N), lambda: cand.c_stress(26, N), lambda: s_follow(27, N), lambda: s_owners(28, N),
+            lambda: s_sites(29, N), lambda: s_buy(30, N), lambda: cand.c_modern(31, N), lambda: s_overview(32, N)]
+    plan += [(lambda k=k: s_stop(k, 33 + k, N)) for k in range(7)]
+    plan += [lambda: s_number(40, N), lambda: reused(db.slide_spec, 41, N, "Wire and cable takeaways"),
+             lambda: reused(db.slide_value, 42, N, "Wire and cable takeaways"), lambda: s_close(43, N)]
     assert len(plan) == N
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()
@@ -1011,7 +1011,7 @@ def main():
         ims.append(Image.open(png).convert("RGB"))
         ims[-1].save(os.path.join(jd, f"slide_{i + 1:02d}.jpg"), quality=90)
     w, h = 960, 540
-    for name, rng in (("step_back_and_market_3-11", range(2, 11)), ("fundamentals_12-21", range(11, 21)), ("fundamentals_22-31", range(21, 31)), ("all_slides", range(len(ims)))):
+    for name, rng in (("step_back_and_market_3-11", range(2, 11)), ("fundamentals_12-21", range(11, 21)), ("fundamentals_22-32", range(21, 32)), ("all_slides", range(len(ims)))):
         rng = list(rng)
         rows = (len(rng) + 1) // 2
         sheet = Image.new("RGB", (w * 2 + 30, h * rows + 15 * (rows + 1)), (40, 40, 40))

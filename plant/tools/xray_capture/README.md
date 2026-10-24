@@ -19,3 +19,9 @@ Camera fields (cams_*.json): `c` / `t` camera and target (ft), `lens`, `xcol` cl
 the viewer renders line colours linear + ACES), `other` opacity of non-power classes, `xop` overall cable opacity,
 `ids` items to light (zone locators), `idcol` / `idop` their colour and opacity, `accent` regex of items to tint.
 `cams_loc01.json` is the grid-zone locator with the switchyard pad included.
+
+Training deck slide 24 (copper X-ray of the CC2 view, the same camera as the Blender CC2 render):
+```
+PAGE=$PWD/capture.html CAMSF=cams_cc.json VW=1440 VH=810 DSF=2 SP=<scratch> node covcam_w.js
+python3 ../../blender/electrify.py <scratch>/xw_cc2.jpg ../../renders/training/XR_CC2_copper.jpg 3
+```

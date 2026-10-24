@@ -596,3 +596,6 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 
 ## Oct 24: X-ray "before" slide (42 slides)
 - New `c_xray_intro` (deck slide 23): the CC2 aerial in full colour with six projected leader-line tags (gas turbines, HRSGs, stacks, steam turbine, ACC, step-up transformers) and the line "Next: take all of it away". The X-ray reveal follows as slide 24. The run of show is renumbered.
+
+## Oct 24: copper X-ray of the CC2 view (43 slides)
+- tools/xray_capture/cams_cc.json captures the CC2 camera in the viewer's copper X-ray, then electrify.py: renders/training/XR_CC2_copper.jpg (the README has the commands). New `c_xray_copper` (slide 24) is the reveal; the coloured X-ray (slide 25) is retitled "Now sort it by job: five kinds of cable". Three clicks on one view: 23 normal → 24 copper → 25 by type. The run of show is updated.
