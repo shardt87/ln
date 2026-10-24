@@ -20,6 +20,7 @@ PLANT = os.path.dirname(HERE)
 OUT = os.path.join(PLANT, "renders", "deck", "training")
 COPPER, INK, WHITE, GREY = bz.COPPER, bz.INK, bz.WHITE, bz.GREY
 TITLE = "INSIDE POWER GENERATION"
+LOGO = bz.url(os.path.join(HERE, "deck", "southwire_pgs_logo.png"))       # Southwire Power Generation Solutions (white type)
 
 
 def pic(rel):
@@ -46,14 +47,15 @@ def placeholder(w, h, text):
 def s_title():
     return f"""
 <section class="page slide">
-  <img class="abs" src="{pic('renders/nextgen/_src/E123_pro_clean.jpg')}" style="left:0;top:0;width:1440px;height:810px;object-fit:cover">
-  <div class="abs" style="left:0;top:0;width:1440px;height:810px;background:linear-gradient(90deg,rgba(14,16,18,.94) 0%,
-       rgba(14,16,18,.78) 38%,rgba(14,16,18,0) 70%)"></div>
-  <div class="abs kicker" style="left:72px;top:150px;font-size:14px">Southwire internal training &nbsp;&middot;&nbsp; November 11, 2026</div>
-  <div class="abs h2" style="left:70px;top:186px;font-size:92px;width:760px">Inside power <em>generation</em></div>
-  <div class="abs lede" style="left:72px;top:396px;width:560px;font-size:21px">A guided tour of a gas power campus: how it works,
+  <img class="abs" src="{pic('renders/brochure_epc/_img/K15_pro.jpg')}" style="left:0;top:0;width:1440px;height:810px;object-fit:cover;object-position:50% 62%">
+  <div class="abs" style="left:0;top:0;width:1440px;height:810px;background:linear-gradient(90deg,rgba(14,16,18,.95) 0%,
+       rgba(14,16,18,.82) 34%,rgba(14,16,18,0) 62%)"></div>
+  <img class="abs" src="{LOGO}" style="left:72px;top:58px;width:300px">
+  <div class="abs kicker" style="left:72px;top:170px;font-size:14px">Southwire internal training &nbsp;&middot;&nbsp; November 11, 2026</div>
+  <div class="abs h2" style="left:70px;top:204px;font-size:92px;width:760px">Inside power <em>generation</em></div>
+  <div class="abs lede" style="left:72px;top:414px;width:520px;font-size:21px">A guided tour of a gas power campus: how it works,
     the equipment and electrical systems, and where wire and cable go.</div>
-  <div class="abs" style="left:72px;top:540px;font:700 15px/1.5 BC;letter-spacing:.14em;color:{WHITE};text-transform:uppercase">
+  <div class="abs" style="left:72px;top:556px;font:700 15px/1.5 BC;letter-spacing:.14em;color:{WHITE};text-transform:uppercase">
     1:30 &ndash; 2:30 PM &nbsp;&middot;&nbsp; Zoom<br><span style="color:{GREY}">Hosted by Stephan Hardt</span></div>
 </section>"""
 
@@ -110,15 +112,25 @@ def s_why(n, N):
 
 
 def s_overview(n, N):
+    route = "".join(f'<div style="display:flex;gap:18px;align-items:baseline;padding:10px 0;border-top:1px solid #2c3036">'
+                    f'<div style="width:24px;font:800 22px/1 BC;color:{COPPER}">{k + 1}</div>'
+                    f'<div style="font:700 19px/1.2 BC;color:{WHITE};text-transform:uppercase;letter-spacing:.03em">{st[0]}</div></div>'
+                    for k, st in enumerate(STOPS))
     return f"""
 <section class="page slide">
-  <img class="abs" src="{pic('renders/deck/slide19_zones.png')}" style="left:0;top:0;width:1440px;height:765px;object-fit:contain;background:#0e1012">
+  <img class="abs" src="{pic('renders/cover/K1_pro.png')}" style="left:0;top:0;width:960px;height:765px;object-fit:cover;object-position:50% 70%">
+  <div class="abs" style="left:640px;top:0;width:320px;height:765px;background:linear-gradient(90deg,rgba(14,16,18,0),#0e1012)"></div>
+  <div class="abs kicker" style="left:990px;top:64px">The campus &nbsp;&middot;&nbsp; from the sea to the grid</div>
+  <div class="abs h2" style="left:988px;top:92px;font-size:52px;width:420px">One site, <em>seven stops</em></div>
+  <div class="abs" style="left:990px;top:250px;width:400px">{route}</div>
+  <div class="abs lede" style="left:990px;top:650px;width:400px;font-size:15px">LNG arrives by ship at the marine terminal; the
+    power leaves on 230 kV lines. Everything in between runs on cable.</div>
   {foot(n, N)}
 </section>"""
 
 
 STOPS = [
-    ("Grid connection and switchyard", "renders/epic/E19_pro_clean.jpg",
+    ("Grid connection and switchyard", "renders/epic/E20_pro_clean.jpg",
      "Sends the plant's power to the 230 kV grid.",
      ["Generator step-up transformers: 21 kV up to 230 kV", "Breakers, disconnects, and a control house with protection relays"],
      ["HV conductor and 230 kV cable", "Control and relay cable from every breaker to the control house", "Fibre; the buried bare-copper ground grid"],
@@ -248,6 +260,7 @@ def s_close(n, N):
   <div class="abs h2" style="left:62px;top:84px;font-size:58px">Take <em>away</em></div>
   <div class="abs" style="left:64px;top:176px;width:860px">{html}</div>
   <div class="abs" style="left:990px;top:190px;width:390px;height:440px;background:#181b1f;border-top:3px solid {COPPER};padding:30px;box-sizing:border-box">
+    <img src="{LOGO}" style="width:300px;margin-bottom:26px">
     <div class="h2" style="font-size:72px">Q&amp;A</div>
     <div class="lede" style="font-size:16px;margin-top:18px">Questions from the chat. The recording and the 3D viewer link will be
       shared after the session.</div>
