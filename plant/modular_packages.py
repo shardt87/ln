@@ -125,18 +125,44 @@ def package(name, tag, info, X0, Y0, cfg):
     return it
 
 
+def mirror_x(p0, d0, m, it):
+    """Mirror everything built since (p0, d0) about the plane x = m (the SC-2 way: a mirrored twin of the west unit)."""
+    f = lambda x: round(2 * m - x, 3)
+    for p in fuel.G["parts"][p0:]:
+        if "min" in p:
+            p["min"][0], p["max"][0] = f(p["max"][0]), f(p["min"][0])
+        for key in ("a", "b"):
+            if key in p:
+                p[key][0] = f(p[key][0])
+        for v in p.get("v", ()):
+            v[0] = f(v[0])
+    for d in fuel.G.get("decals", [])[d0:]:
+        d["c"][0] = f(d["c"][0])
+        for key in ("n", "up"):
+            if key in d:
+                d[key][0] = -d[key][0]
+    it["fp"] = [f(it["fp"][1]), f(it["fp"][0]), it["fp"][2], it["fp"][3]]
+
+
+# Oct 24 (owner): a mirrored pair like SC-1 / SC-2, stacks facing each other and on the SC stack lines (x 2052, 2116.5)
+SX_W, SX_E = 2052.0, 2116.5
+
+
 def build():
     n0 = len(fuel.G["parts"])
     package("AX-1: factory-modular aeroderivative package, LM2500XPRESS class (~35 MW)", "AX-1",
             "Aeroderivative package delivered as a few factory modules (enclosure with turbine and generator, inlet filter "
             "house on top, exhaust and stack, control module, lube-oil cooler, fuel-gas module); module joints with "
             "pre-terminated plug-in interconnects; 13.8 kV MV-105 to MOD-EH, MC-HL at the gas module, TC-ER control.",
-            2015.0, 1008.0, dict(EL=58, EH=15, IX=34, IW=18, IH=14, SR=4.4, SH=60, modular=True, mw=35,
-                                 kind="AERODERIVATIVE  ·  FACTORY MODULES"))
-    package("IG-1: industrial gas-turbine package, Titan 250 class (~23 MW)", "IG-1",
-            "Single-lift industrial gas-turbine generator package in its enclosure, radial inlet with the filter house on "
-            "top, exhaust stack, control module, lube-oil cooler, fuel-gas module; 13.8 kV MV-105 to MOD-EH, MC-HL at the "
-            "gas module, TC-ER control.",
-            2152.0, 1008.0, dict(EL=46, EH=13, IX=26, IW=14, IH=11, SR=3.8, SH=50, modular=False, mw=23,
-                                 kind="INDUSTRIAL GAS TURBINE"))
+            SX_W - 68, 1008.0, dict(EL=46, EH=15, IX=26, IW=18, IH=14, SR=4.4, SH=60, modular=True, mw=35,
+                                    kind="AERODERIVATIVE  ·  FACTORY MODULES"))
+    p0, d0 = len(fuel.G["parts"]), len(fuel.G.get("decals", []))
+    X0 = 2152.0
+    it = package("IG-1: industrial gas-turbine package, Titan 250 class (~23 MW)", "IG-1",
+                 "Single-lift industrial gas-turbine generator package in its enclosure, radial inlet with the filter house on "
+                 "top, exhaust stack, control module, lube-oil cooler, fuel-gas module; 13.8 kV MV-105 to MOD-EH, MC-HL at the "
+                 "gas module, TC-ER control. Mirrored twin layout of AX-1 (stacks facing).",
+                 X0, 1008.0, dict(EL=46, EH=13, IX=26, IW=14, IH=11, SR=3.8, SH=50, modular=False, mw=23,
+                                  kind="INDUSTRIAL GAS TURBINE"))
+    mirror_x(p0, d0, ((X0 + 8 + 46 + 14) + SX_E) / 2, it)                            # stack (X0 + 68) onto x = SX_E
     return len(fuel.G["parts"]) - n0
