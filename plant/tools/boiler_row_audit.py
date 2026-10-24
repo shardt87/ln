@@ -22,7 +22,7 @@ WIRING = CABLE | {"alu", "ipb"}              # a conduit stub-up or isolated-pha
 PIPE = {"pipe", "fuelgas", "waterline", "alu", "steel_dark_pipe"}
 EQUIP = {"motor", "cabinet", "xfmr", "ehouse", "panel", "lamp"}
 SOLID = {"building", "ehouse", "xfmr", "tank", "hrsg_b", "machine", "tower", "cabinet", "motor"}
-REGION = (190, 2300, 880, 1880)
+REGION = (190, 2420, 0, 1880)
 TOL = .35
 
 
@@ -38,7 +38,7 @@ def bbox(p):
 def mine(p):
     it = ITEMS[p["item"]]
     return (it["layer"] in ("OPT_BOILERS", "BOILER_ROW_ROOF") or it["name"] in ("Auxiliary boiler", "CEMS shelter, AB-1")
-            or it["name"].startswith(("AX-1:", "IG-1:")))
+            or it["name"].startswith(("AX-1:", "IG-1:", "IG-2:")))
 
 
 parts = []

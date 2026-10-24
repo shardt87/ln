@@ -110,6 +110,7 @@ Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) t
   - reciprocating engine gensets in halls;
   - aeroderivative simple-cycle units;
   - two package types side by side: a factory-modular aeroderivative (AX-1, LM2500XPRESS class, ~35 MW, shipped as pre-built modules with plug-in interconnects) and an industrial gas-turbine package (IG-1, Titan 250 class, ~23 MW, one skid);
+  - a larger industrial gas turbine (IG-2, SGT-800 class, ~60 MW) beside the switchyard: big enough to need its own step-up transformer straight into a 230 kV bay, with an SCR, a 100 ft stack and its CEMS shelter;
   - fuel-cell and microturbine modules;
   - the battery storage yard next door.
 - **Electrical:** each unit has its own generator step-up and MV e-house; inverters and power-conversion skids for the battery and fuel cells.
@@ -203,4 +204,4 @@ Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) t
 - More switchgear-room detail.
 - Blender fly-through animation.
 - Zone 07 parts 3-4 (construction compound, deck slide).
-- Modular gas-turbine packages: done Oct 24 (AX-1 LM2500XPRESS class, IG-1 Titan 250 class). Still open: a larger industrial unit (SGT-800 / H-25 class).
+- Modular gas-turbine packages: done Oct 24 (AX-1 LM2500XPRESS class, IG-1 Titan 250 class, IG-2 SGT-800 class).
