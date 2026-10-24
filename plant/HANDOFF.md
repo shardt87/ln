@@ -587,3 +587,6 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 
 ## Oct 24: combined cycle, take 2 (40 slides)
 - The single annotated slide was rejected. It is replaced by a four-slide build, `c_cc(step)` in deck_training_candidates.py (slides 15-18): the CC2 render is darkened; each step lights its equipment (model footprints projected through the CC2 camera, convex hulls, the clip shows the photo inside) and draws glowing flows along the real routes (air, exhaust, stack, steam, water, power). Steps: gas turbine, HRSG, steam turbine, then all with the payoff numbers. There is a step tracker under the title. The run of show and render queue are updated.
+
+## Oct 24: cable X-ray slide (41 slides)
+- `c_xray` (candidate P, deck slide 23 after Cable 101): the CC2 aerial, near-black, with every cable route from brochure/cables_xray.json projected through the CC2 camera and glowing by type. Each path takes the colour of the group with the most cables on it; width scales with the log of the count; it is clipped to the image area. The side panel describes the five types with whole-plant counts and miles (21,138 cables). The run of show is updated.

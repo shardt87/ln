@@ -422,11 +422,78 @@ def c_cc3(n, N): return c_cc(2, n, N)
 def c_cc4(n, N): return c_cc(3, n, N)
 
 
+XR_GROUPS = [("MV / HV power", "#f05a28", ("HV 230 kV", "MV 35 kV", "MV 25 kV", "MV 15 kV", "MV 5 kV", "Portable MV"),
+              "The big feeders: generators, transformers, the largest motors. MV-105, HV XLPE."),
+             ("LV power", "#f2c613", ("LV 600 V", "DC 2 kV", "Portable LV"),
+              "600 V to motors, valves, drives, lighting. TC-ER, ARMOR-X MC-HL, VFD cable."),
+             ("Control", "#3a8fd9", ("Control",), "Starts, stops and trips: breakers, interlocks, MCC starters. Multi-conductor TC-ER."),
+             ("Instrumentation", "#3ac46a", ("Instrumentation",), "The plant's nerves: pressure, flow, temperature. Shielded pairs, thermocouple extension."),
+             ("Fibre and fire alarm", "#c58cff", ("Fibre / data", "Fire alarm"), "The control network, protection and life safety.")]
+
+
+def c_xray(n, N):
+    import json, math
+    d = json.load(open(os.path.join(PLANT, "brochure", "cables_xray.json")))
+    cls = d["classes"]
+    gi = {c: k for k, g in enumerate(XR_GROUPS) for c in g[2]}
+    tot = [[0, 0] for _ in XR_GROUPS]
+    per = {}
+    for r in d["cables"]:
+        g = gi.get(cls[r[1]])
+        if g is None:
+            continue
+        tot[g][0] += r[5]
+        tot[g][1] += r[5] * r[6]
+        if r[12] >= 0:
+            a = per.setdefault(r[12], [0] * len(XR_GROUPS))
+            a[g] += r[5]
+    img = pic("renders/training/CC2_pro_clean.jpg")
+    lines = {k: "" for k in range(len(XR_GROUPS))}
+    for pi, cnts in per.items():
+        g = max(range(len(cnts)), key=lambda k: cnts[k])          # the type with the most cables on the route
+        cnt = sum(cnts)
+        q = d["paths"][pi]
+        pts = [(q[i], q[i + 1], max(q[i + 2], 0)) for i in range(0, len(q), 3)]
+        if not any(470 < x < 1470 and 290 < y < 840 for x, y, z in pts):
+            continue
+        xy = [cc_project(p) for p in pts]
+        if not any(-50 < x < 1490 and -50 < y < 860 for x, y in xy):
+            continue
+        w = min(1.0 + 0.9 * math.log(1 + cnt), 6.5)
+        lines[g] += f'<polyline points="{" ".join(f"{x:.1f},{y:.1f}" for x, y in xy)}" stroke-width="{w:.1f}"/>'
+    svg = (f'<svg class="abs" style="left:0;top:0" width="1440" height="810"><defs>'
+           f'<filter id="xg" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2.4" result="b"/>'
+           f'<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+           f'<clipPath id="xc"><rect x="0" y="168" width="1030" height="500"/></clipPath></defs><g clip-path="url(#xc)">'
+           + "".join(f'<g fill="none" stroke="{XR_GROUPS[k][1]}" stroke-linecap="round" stroke-linejoin="round" opacity=".9" filter="url(#xg)">{lines[k]}</g>'
+                     for k in (1, 2, 0, 4, 3)) + '</g></svg>')
+    base = (f'<img class="abs" src="{img}" style="left:0;top:0;width:1440px;height:810px;filter:brightness(.26) saturate(.2)">'
+            f'<div class="abs" style="left:0;top:0;width:1440px;height:810px;background:linear-gradient(90deg,rgba(14,16,18,0) 60%,rgba(14,16,18,.96) 75%),'
+            f'linear-gradient(180deg,rgba(14,16,18,.85) 0%,rgba(14,16,18,0) 20%,rgba(14,16,18,0) 82%,rgba(14,16,18,.9) 100%)"></div>')
+    rows = ""
+    for k, (h, col, _, t) in enumerate(XR_GROUPS):
+        c, ft = tot[k]
+        rows += (f'<div style="margin-top:16px;border-left:4px solid {col};padding-left:12px">'
+                 f'<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:800 19px/1 BC;color:{WHITE};text-transform:uppercase">{h}</span>'
+                 f'<span style="font:800 17px/1 BC;color:{col}">{c:,} &middot; {ft / 5280:,.0f} mi</span></div>'
+                 f'<div class="cd" style="font-size:13px;margin-top:5px">{t}</div></div>')
+    allc = sum(c for c, _ in tot)
+    return page(n, N, base + svg
+                + f'<div class="abs kicker" style="left:56px;top:40px">Wire and cable &nbsp;&middot;&nbsp; X-ray</div>'
+                + f'<div class="abs h2" style="left:54px;top:66px;font-size:52px">Take the plant away: <em>the cable stays</em></div>'
+                + f'<div class="abs" style="left:56px;top:690px;width:820px;font:400 18px/1.45 B;color:#e6e3dd">Every line is a route from the model\'s cable schedule, '
+                  f'in trays, conduit and duct banks; thicker lines carry more cables. <b style="color:#fff">The power block is a web of copper.</b></div>'
+                + f'<div class="abs" style="left:1060px;top:70px;width:330px"><div class="cnum" style="color:{WHITE}">The cable types &middot; whole plant</div>'
+                  f'<div style="font:800 40px/1 BC;color:{COPPER};margin-top:10px">{allc:,} <span style="font-size:18px;color:{GREY}">cables</span></div>{rows}'
+                  f'<div class="cd" style="font-size:12px;margin-top:14px">Counts and miles from the SW-3X1 model cable schedule (trays, conduit, duct banks; '
+                  f'building wire, grounding and overhead not shown).</div></div>')
+
+
 def main():
     import pymupdf
     from PIL import Image
     os.makedirs(OUT, exist_ok=True)
-    fns = [c_generator, c_grid, c_day, c_meter, c_cable101, c_stress, c_future, c_units, c_glossary, c_modern, c_combined, c_cc1, c_cc2, c_cc3, c_cc4]
+    fns = [c_generator, c_grid, c_day, c_meter, c_cable101, c_stress, c_future, c_units, c_glossary, c_modern, c_combined, c_cc1, c_cc2, c_cc3, c_cc4, c_xray]
     N = len(fns)
     head_ = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()
