@@ -29,3 +29,4 @@ it where tray congestion is the point of the shot. Process piping stays visible.
 | BR9 | UB-1 CEMS shelter at the stack (north side, by the road) | preview only | new Oct 23 |
 | E95 / E96 | EPC brochure (skid pre-wire workstation) | full render stale | Oct 23: workstation moved beside the inlet chillers; renders/epic E95 / E96 still show the old spot; re-render at full quality, then rebuild the EPC brochure |
 | MP1 / MP2 | Nov 11 stop 5 (modular yard), marketing: AX-1 + IG-1 packages; AX-1 module joint with plug-in interconnects | preview only | new Oct 24 |
+| E43 / E89 | Zone slides 12 (chillers) and 3 (reel staging & prefab) | check + full render | Oct 24: the skid pre-wire workstation now sits between the reel yard and the chillers and may be in both shots |

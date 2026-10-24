@@ -198,6 +198,9 @@ Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) t
 
 ## Parking lot (after Nov 11)
 
+- Modular yard and Boiler Row are **closed for Nov 11** (Oct 24): no more equipment, fixes only.
+- Possible later plant types: a CHP / cogeneration unit (gas turbine + HRSG selling steam to an industrial host), linear generators.
+
 - Wastewater-treatment and cooling-tower refinements.
 - Turbine close-ups at HRSG depth.
 - More switchgear-room detail.
