@@ -8,23 +8,23 @@
 
 ---
 
-**Slides:** `renders/deck/training/SW-3X1_Nov11_training.pdf` (32 slides, built by `blender/deck_training.py`; JPG copies in `renders/deck/training/jpg/`): title, agenda; definitions and step back 3-5 (every power plant is this, four families, the mix today); market 6-11 (at a glance, load growth since 1996, turbine backlogs, the ~$1.2B cable prize, the project register, the state heat map); fundamentals 12-21 (open the box, four ways to burn gas, what goes in and out, how an HRSG works, the voltage ladder, follow the power, same physics different owners, greenfield and brownfield, who buys and when, the campus with the LNG terminal); 7 tour-stop backup slides; the whole plant in one number, what the spec calls for, pain points and the answer, three things to remember + Q&A.
+**Slides:** `renders/deck/training/SW-3X1_Nov11_training.pdf` (37 slides, built by `blender/deck_training.py`; JPG copies in `renders/deck/training/jpg/`): title, agenda; definitions and step back 3-5 (every power plant is this, four families, the mix today); market 6-11 (at a glance, load growth since 1996, turbine backlogs, the ~$1.2B cable prize, the project register, the state heat map); fundamentals 12-26 (open the box, a day on the grid, generator to light switch, cable 101, what a plant does to a cable, a modern gas plant, four ways to burn gas, what goes in and out, how an HRSG works, the voltage ladder, follow the power, same physics different owners, greenfield and brownfield, who buys and when, the campus with the LNG terminal); 7 tour-stop backup slides; the whole plant in one number, what the spec calls for, pain points and the answer, three things to remember + Q&A.
 
 ## Rundown (60 min)
 
 | Time | Segment | On screen | Mins |
 |---|---|---|---|
-| 1:30 | 0. Welcome and why this matters | 1 title slide | 3 |
-| 1:33 | 1. Market and fundamentals | 19 slides | 23 |
-| 1:56 | 2. The 3D tour: seven stops | Live viewer, plus one slide per stop if needed | 19 |
-| 2:15 | 3. Wire and cable takeaways | 3 slides | 8 |
-| 2:23 | 4. Q&A | Viewer on the overview | 7 |
+| 1:30 | 0. Welcome and why this matters | 1 title slide | 2 |
+| 1:32 | 1. Market and fundamentals | 24 slides | 28 |
+| 2:00 | 2. The 3D tour: seven stops | Live viewer, plus one slide per stop if needed | 18 |
+| 2:18 | 3. Wire and cable takeaways | 3 slides | 6 |
+| 2:24 | 4. Q&A | Viewer on the overview | 6 |
 
 Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) to one minute.
 
 ---
 
-## 0. Welcome (3 min)
+## 0. Welcome (2 min)
 
 **Say:**
 - "Every power plant runs on cable. Today we walk through a complete gas power campus, built as a 3D model with a full cable schedule, and look at what each part does and where our products go."
@@ -34,7 +34,7 @@ Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) t
 
 ---
 
-## 1. Market and fundamentals (23 min, 19 slides)
+## 1. Market and fundamentals (28 min, 24 slides)
 
 Market slides 6-11 come from the Oct 6 PowerGen channel deck. **OEM, owner and EPC names are not on the slides; say them here if useful.** Verify the figures against the primary sources (appendix of the Oct 6 deck) before Nov 11.
 
@@ -60,29 +60,39 @@ Market slides 6-11 come from the Oct 6 PowerGen channel deck. **OEM, owner and E
 
 **Slide 13: Four ways to burn gas for power (2 min).** Simple cycle (the peaker), combined cycle (the workhorse, our power block), engines (the sprinter) and aeroderivatives (the jet): size, efficiency, start time, how they run. Units: GW, MW, kW; MW is power, MWh is energy.
 
-**Slide 14: What goes in, what comes out (2 min).** Reuse boilers slide 6, "What goes in, what comes out".
+**Slide 14: A day on the grid (1.5 min).** Illustrative 24-hour demand: baseload all day, solar at midday, combined cycle in the middle, peakers and batteries on the evening peak. "Every start cycles the plant and its cable."
+
+**Slide 15: What goes in, what comes out (2 min).** Reuse boilers slide 6, "What goes in, what comes out".
 - In: gas, air, a little water. Out: power, stack gas, heat.
 - The gas turbines make about 2/3 of the power; the steam from their exhaust makes about 1/3 more with no extra fuel.
 
-**Slide 15: How an HRSG works (1.5 min).** Reuse boilers slide 5: the "What it is" and "Fun facts" box.
+**Slide 16: How an HRSG works (1.5 min).** Reuse boilers slide 5: the "What it is" and "Fun facts" box.
 
-**Slide 16: The voltage ladder (2 min).** Reused from the boiler deck (slide 9, "Levels, ratings and the cable they drive"): 230 kV to the grid, 21 kV at the generator, 13.8 kV to the big motors, 480 V to the small ones, 120 V AC / 125 V DC for controls, then signals. "Every rung has its own cable family."
+**Slide 17: From the generator to the light switch (1.5 min).** Generator 13.8-25 kV → step-up to 115-765 kV → transmission → substation → 4-35 kV distribution → 480/240/120 V at the customer, with the cable family at each step. "Southwire has a product at every step."
 
-**Slide 17: Follow the power (1.5 min).** SW-3X1 cable by plant area, from the model's schedule: the black box (turbine hall, HRSGs, cooling, water) holds 44% of the 1,212 miles. The POI is where the plant meets the grid: plant side is owner and EPC scope, past it the utility's. "The grid connection carries the biggest cables; the power block carries the most."
+**Slide 18: The voltage ladder (2 min).** Reused from the boiler deck (slide 9, "Levels, ratings and the cable they drive"): 230 kV to the grid, 21 kV at the generator, 13.8 kV to the big motors, 480 V to the small ones, 120 V AC / 125 V DC for controls, then signals. "Every rung has its own cable family."
 
-**Slide 18: Same physics, different owners (1.5 min).** IPP = one company per plant + asset + power purchase agreement + customer + investors + market (ERCOT, PJM, MISO). Utilities and co-ops buy like utilities; hybrid IPPs both ways; pure IPPs are our sales focus for competitive thermal power.
+**Slide 19: Cable 101 (1.5 min).** The eight families: HV, MV, LV power, VFD, control, instrumentation, fibre, grounding. By length in SW-3X1: instrumentation 44%, LV power 20%, control 18%, MV/HV 7%.
 
-**Slide 19: Greenfield and brownfield (1.5 min).** Five kinds of site from the register: greenfield grid-connected 77.0 GW, data-centre / behind-the-meter campus 54.5, coal-site repower 41.3, expansion at an operating plant 21.4, industrial captive and site reuse 11.6. New sites take the whole cable scope; existing sites mean tie-ins, live equipment and outage windows. Plus work on running plants (HRSG module replacement: the boiler deck's outage story). Utilities mostly reuse old sites; IPPs and BTM developers mostly build new.
+**Slide 20: What a power plant does to a cable (1.5 min).** Heat, cycling, electrical noise, hazardous areas, fire and smoke, outdoors, schedule, each with the answer (VFD-rated cable, ARMOR-X MC-HL, SIMpull, pre-terminated). "The wrong cable fails early, and a cable failure can trip a unit."
 
-**Slide 20: Who buys, and when (1.5 min).** Develop → finance → engineer (the owner's engineer specifies the cable) → procure (the EPC or package builder buys it) → build (cable pulls on the critical path) → operate. "Be in the spec early; be ready when the EPC buys."
+**Slide 21: Follow the power (1.5 min).** SW-3X1 cable by plant area, from the model's schedule: the black box (turbine hall, HRSGs, cooling, water) holds 44% of the 1,212 miles. The POI is where the plant meets the grid: plant side is owner and EPC scope, past it the utility's. "The grid connection carries the biggest cables; the power block carries the most."
 
-**Slide 21: The campus at a glance (2 min).** The campus aerial with the LNG terminal and the seven stops.
+**Slide 22: Same physics, different owners (1.5 min).** IPP = one company per plant + asset + power purchase agreement + customer + investors + market (ERCOT, PJM, MISO). Utilities and co-ops buy like utilities; hybrid IPPs both ways; pure IPPs are our sales focus for competitive thermal power.
+
+**Slide 23: Greenfield and brownfield (1.5 min).** Five kinds of site from the register: greenfield grid-connected 77.0 GW, data-centre / behind-the-meter campus 54.5, coal-site repower 41.3, expansion at an operating plant 21.4, industrial captive and site reuse 11.6. New sites take the whole cable scope; existing sites mean tie-ins, live equipment and outage windows. Plus work on running plants (HRSG module replacement: the boiler deck's outage story). Utilities mostly reuse old sites; IPPs and BTM developers mostly build new.
+
+**Slide 24: Who buys, and when (1.5 min).** Develop → finance → engineer (the owner's engineer specifies the cable) → procure (the EPC or package builder buys it) → build (cable pulls on the critical path) → operate. "Be in the spec early; be ready when the EPC buys."
+
+**Slide 25: A modern gas plant (1 min).** Six things beyond the power block, all in the model: private 5G monopole (massive-MIMO), EV charging and solar carport, the BTM data centre, LNG by sea, hydrogen, carbon capture, each with its own cable.
+
+**Slide 26: The campus at a glance (2 min).** The campus aerial with the LNG terminal and the seven stops.
 - "This is SW-3X1, a 3x1 combined-cycle plant: three gas turbines, three HRSGs and one steam turbine, with a modular generation yard, a battery yard, a behind-the-meter data centre, LNG supply, and options for carbon capture and hydrogen."
 - "Conceptual and not engineered, but sized like real plants."
 
 ---
 
-## 2. The 3D tour: seven stops (19 min, about 3 min each; stop 7 is 1 min)
+## 2. The 3D tour: seven stops (18 min, about 3 min each; stop 7 is 1 min)
 
 **How to run it:** open the viewer and press **▶ Nov 11** (top left of the 3D window). It goes full screen with captions (Equipment / System / Cable). Use **→ / space** for the next view, **←** to go back, keys **1-7** (or the chapter bar at the top) to jump to a stop, and **Esc** to leave. The tour has 22 views: an opening, 20 across the seven stops, and a closing cable X-ray. Use the same three beats at every stop:
 
@@ -171,7 +181,7 @@ Market slides 6-11 come from the Oct 6 PowerGen channel deck. **OEM, owner and E
 
 ---
 
-## 3. Wire and cable takeaways (8 min, 3 slides)
+## 3. Wire and cable takeaways (6 min, 3 slides)
 
 **Slide A: The whole plant in one number (3 min)**
 - The model's cable schedule: **6,011 runs, 21,217 cables, about 6.4 million ft (~1,200 miles).**
@@ -199,7 +209,7 @@ Market slides 6-11 come from the Oct 6 PowerGen channel deck. **OEM, owner and E
 
 ---
 
-## 4. Q&A (7 min)
+## 4. Q&A (6 min)
 
 **Questions to prepare for:**
 - "How long does a plant take to build?" 3-4 years for a combined-cycle plant; modular units are much faster.

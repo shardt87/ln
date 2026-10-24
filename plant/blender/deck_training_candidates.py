@@ -27,8 +27,11 @@ def head(kick, title, em, lede=""):
             + (f'<div class="abs lede" style="left:64px;top:158px;width:1250px;font-size:17px">{lede}</div>' if lede else ""))
 
 
+FOOT_LEFT = "CANDIDATE SLIDE &middot; INSIDE POWER GENERATION &middot; INTERNAL TRAINING"   # deck_training.py sets the deck's own
+
+
 def page(n, N, body):
-    return f'<section class="page slide">{body}{foot(n, N, "CANDIDATE SLIDE &middot; INSIDE POWER GENERATION &middot; INTERNAL TRAINING")}</section>'
+    return f'<section class="page slide">{body}{foot(n, N, FOOT_LEFT)}</section>'
 
 
 def c_generator(n, N):
