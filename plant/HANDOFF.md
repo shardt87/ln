@@ -584,3 +584,6 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 
 ## Oct 24: combined cycle on the model (slide 15)
 - New camera CC1 (power block from above, hall roof off; preview at renders/training/CC1_pro_clean.jpg, queued for the full batch). New candidate K, `c_combined`: seven numbered steps on the render with gas, steam, water and power arrows, a step list with the cable for each step, and "burn the gas once, use the heat twice". It replaces the boiler-deck flow diagram as slide 15 (the diagram is the backup). The run of show is updated.
+
+## Oct 24: combined cycle, take 2 (40 slides)
+- The single annotated slide was rejected. It is replaced by a four-slide build, `c_cc(step)` in deck_training_candidates.py (slides 15-18): the CC2 render is darkened; each step lights its equipment (model footprints projected through the CC2 camera, convex hulls, the clip shows the photo inside) and draws glowing flows along the real routes (air, exhaust, stack, steam, water, power). Steps: gas turbine, HRSG, steam turbine, then all with the payoff numbers. There is a step tracker under the title. The run of show and render queue are updated.

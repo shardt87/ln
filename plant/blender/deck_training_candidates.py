@@ -305,11 +305,128 @@ def c_combined(n, N):
                   f'~2/3 of the power from the gas turbines, ~1/3 from the steam: <span style="color:{COPPER}">same fuel</span></div></div>')
 
 
+# Combined cycle as a four-step build on the CC1 render: model coordinates are projected into the image, so the highlights
+# sit on the real equipment and the flows follow the real routes.
+CC_CAM = dict(eye=(965, -60, 1250), target=(965, 585, 0), lens=30)   # camera CC2
+TRAINS = (630, 790, 950)
+
+
+def cc_project(p, W=1440, H=810):
+    import numpy as np
+    eye, tgt = np.array(CC_CAM["eye"], float), np.array(CC_CAM["target"], float)
+    f = (tgt - eye) / np.linalg.norm(tgt - eye)
+    r = np.cross(f, [0, 0, 1]); r /= np.linalg.norm(r)
+    u = np.cross(r, f)
+    d = np.array(p, float) - eye
+    z = d @ f
+    k = CC_CAM["lens"] / 36 * W
+    return W / 2 + (d @ r) / z * k, H / 2 - (d @ u) / z * k
+
+
+def cc_hull(x0, x1, y0, y1, z0, z1):
+    pts = sorted(cc_project((x, y, z)) for x in (x0, x1) for y in (y0, y1) for z in (z0, z1))
+    def half(ps):
+        h = []
+        for q in ps:
+            while len(h) > 1 and (h[-1][0] - h[-2][0]) * (q[1] - h[-2][1]) - (h[-1][1] - h[-2][1]) * (q[0] - h[-2][0]) <= 0:
+                h.pop()
+            h.append(q)
+        return h
+    lo, hi = half(pts), half(pts[::-1])
+    return " ".join(f"{x:.1f},{y:.1f}" for x, y in lo[:-1] + hi[:-1])
+
+
+CC_BOXES = {"gt": [(x - 13, x + 13, 455, 540, 20, 38) for x in TRAINS], "gsu": [(x - 20, x + 20, 325, 365, 0, 45) for x in TRAINS],
+            "hrsg": [(x - 35, x + 35, 600, 760, 0, 100) for x in TRAINS], "stk": [(x - 11, x + 11, 779, 801, 0, 180) for x in TRAINS],
+            "st": [(1020, 1080, 460, 552, 20, 46)], "gsust": [(1030, 1072, 320, 370, 0, 45)], "acc": [(1130, 1450, 380, 780, 0, 125)]}
+CC_FLOWS = {"air": [[(x - 7, 385, 60), (x - 7, 452, 34)] for x in TRAINS],
+            "gtpow": [[(x + 7, 452, 30), (x + 7, 368, 30)] for x in TRAINS],
+            "exhaust": [[(x, 545, 30), (x, 600, 45), (x, 760, 60), (x, 790, 80)] for x in TRAINS],
+            "stack": [[(x, 790, 110), (x, 790, 190)] for x in TRAINS],
+            "steam": [[(x, 680, 100), (x, 575, 72)] for x in TRAINS] + [[(TRAINS[0], 575, 72), (1050, 575, 72), (1050, 555, 48)]],
+            "toacc": [[(1082, 506, 40), (1160, 506, 60)]],
+            "water": [[(1150, 640, 8), (1000, 640, 8), (985, 700, 30)]],
+            "stpow": [[(1051, 458, 30), (1051, 372, 30)]]}
+CC_COL = {"air": "#7fe0d0", "gtpow": "#c58cff", "stpow": "#c58cff", "exhaust": "#ff8a3d", "stack": "#9aa3ab", "steam": "#ff5a4a",
+          "toacc": "#ff5a4a", "water": "#4aa8ff"}
+CC_STAGE = [("gt", "gsu"), ("hrsg", "stk"), ("st", "gsust", "acc")]
+CC_STAGE_FLOWS = [("air", "gtpow"), ("exhaust", "stack"), ("steam", "toacc", "water", "stpow")]
+CC_TEXT = [("1", "The gas turbine", "a jet engine on the ground",
+            "It burns gas in compressed air; the hot gas spins the turbine and its generator. That makes <b>about two-thirds</b> of the plant's power, "
+            "and leaves exhaust at about 1,100 &deg;F."),
+           ("2", "The HRSG", "catch the heat",
+            "Instead of going up the stack, the hot exhaust runs through a heat-recovery steam generator and boils water into steam. <b>No extra fuel.</b>"),
+           ("3", "The steam turbine", "power from the leftovers",
+            "Steam from all three HRSGs spins one more turbine and generator: <b>about one-third more power.</b> The air-cooled condenser turns it back "
+            "into water, and round it goes.")]
+
+
+def c_cc(step, n, N):
+    """step 0, 1, 2: one stage lit; step 3: the whole cycle."""
+    img = pic("renders/training/CC2_pro_clean.jpg")
+    lit = range(3) if step == 3 else [step]
+    boxes = [b for i in lit for key in CC_STAGE[i] for b in CC_BOXES[key]]
+    flows = [(key, pts) for i in lit for key in CC_STAGE_FLOWS[i] for pts in CC_FLOWS[key]]
+    clip = "".join(f'<polygon points="{cc_hull(*b)}"/>' for b in boxes)
+    outl = "".join(f'<polygon points="{cc_hull(*b)}" fill="none" stroke="{COPPER}" stroke-width="2.5" opacity=".95"/>' for b in boxes)
+    def path(pts):
+        return " ".join(f"{x:.1f},{y:.1f}" for x, y in (cc_project(p) for p in pts))
+    fl = ""
+    for key, pts in flows:
+        c = CC_COL[key]
+        dash = 'stroke-dasharray="14 10"' if key == "water" else ""
+        fl += (f'<polyline points="{path(pts)}" fill="none" stroke="{c}" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" opacity=".35" filter="url(#glow)"/>'
+               f'<polyline points="{path(pts)}" fill="none" stroke="{c}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" {dash} marker-end="url(#a{key})"/>')
+    marks = "".join(f'<marker id="a{k}" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto"><path d="M0,0 L4,2 L0,4 z" fill="{c}"/></marker>'
+                    for k, c in CC_COL.items())
+    svg = (f'<svg class="abs" style="left:0;top:0" width="1440" height="810"><defs><clipPath id="lit">{clip}</clipPath>'
+           f'<filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>{marks}</defs>'
+           f'<image href="{img}" x="0" y="0" width="1440" height="810" clip-path="url(#lit)" style="filter:brightness(1.12) saturate(1.1)"/>'
+           f'{outl}{fl}</svg>')
+    base = (f'<img class="abs" src="{img}" style="left:0;top:0;width:1440px;height:810px;filter:brightness(.38) saturate(.35)">'
+            f'<div class="abs" style="left:0;top:0;width:1440px;height:810px;background:linear-gradient(180deg,rgba(14,16,18,.85) 0%,rgba(14,16,18,0) 22%,'
+            f'rgba(14,16,18,0) 70%,rgba(14,16,18,.92) 100%)"></div>')
+    prog = ""
+    labels = ["Gas turbine", "Heat recovery", "Steam turbine", "Combined cycle"]
+    for k, t in enumerate(labels):
+        on = k == step or (step == 3)
+        prog += (f'<div style="display:flex;align-items:center;gap:10px;opacity:{1 if on else .4}">'
+                 f'{circ("=" if k == 3 else k + 1, 30, COPPER if on else "#3a3f45", "#121417" if on else WHITE, 15)}'
+                 f'<span style="font:700 15px/1 BC;letter-spacing:.1em;color:{WHITE};text-transform:uppercase">{t}</span></div>')
+        if k < 3:
+            prog += f'<div style="width:40px;height:2px;background:{"#b4591f" if step == 3 or k < step else "#3a3f45"}"></div>'
+    if step < 3:
+        num, h, em, body = CC_TEXT[step]
+        text = (f'<div class="abs kicker" style="left:56px;top:40px">Combined cycle &nbsp;&middot;&nbsp; step {num} of 3</div>'
+                f'<div class="abs h2" style="left:54px;top:66px;font-size:54px">{h}: <em>{em}</em></div>'
+                f'<div class="abs" style="left:56px;top:664px;width:900px;font:400 19px/1.45 B;color:#e6e3dd">{body.replace("<b>", "<b style=color:#fff>")}</div>')
+    else:
+        text = (f'<div class="abs kicker" style="left:56px;top:40px">Combined cycle</div>'
+                f'<div class="abs h2" style="left:54px;top:66px;font-size:54px">Burn the gas once, <em>use the heat twice</em></div>'
+                f'<div class="abs" style="left:56px;top:650px;display:flex;gap:46px;align-items:flex-end">'
+                f'<div><div style="font:800 56px/1 BC;color:{COPPER}">~60%</div><div class="cd" style="font-size:15px;margin-top:4px">of the fuel becomes power, vs ~40% for a gas turbine alone</div></div>'
+                f'<div><div style="font:800 56px/1 BC;color:{WHITE}">3 + 1</div><div class="cd" style="font-size:15px;margin-top:4px">three gas turbines, three HRSGs, one steam turbine: a "3x1"</div></div>'
+                f'<div><div style="font:800 56px/1 BC;color:{WHITE}">9,266</div><div class="cd" style="font-size:15px;margin-top:4px">cables in this power block, in our model</div></div></div>')
+    keys = {"0": [("air", "air"), ("gtpow", "power")], "1": [("exhaust", "hot exhaust"), ("stack", "to the stack")],
+            "2": [("steam", "steam"), ("water", "water"), ("stpow", "power")],
+            "3": [("exhaust", "exhaust"), ("steam", "steam"), ("water", "water"), ("gtpow", "power")]}[str(step)]
+    key = "".join(f'<span style="display:inline-block;width:22px;height:5px;background:{CC_COL[k]};margin:0 7px 3px 16px;vertical-align:middle"></span>{t}' for k, t in keys)
+    return page(n, N, base + svg + text
+                + f'<div class="abs" style="left:56px;top:136px;display:flex;align-items:center;gap:10px">{prog}</div>'
+                + f'<div class="abs" style="right:56px;top:46px;font:700 12px/1 BC;letter-spacing:.1em;color:#cfd3d6;text-transform:uppercase">{key}</div>')
+
+
+def c_cc1(n, N): return c_cc(0, n, N)
+def c_cc2(n, N): return c_cc(1, n, N)
+def c_cc3(n, N): return c_cc(2, n, N)
+def c_cc4(n, N): return c_cc(3, n, N)
+
+
 def main():
     import pymupdf
     from PIL import Image
     os.makedirs(OUT, exist_ok=True)
-    fns = [c_generator, c_grid, c_day, c_meter, c_cable101, c_stress, c_future, c_units, c_glossary, c_modern, c_combined]
+    fns = [c_generator, c_grid, c_day, c_meter, c_cable101, c_stress, c_future, c_units, c_glossary, c_modern, c_combined, c_cc1, c_cc2, c_cc3, c_cc4]
     N = len(fns)
     head_ = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()
