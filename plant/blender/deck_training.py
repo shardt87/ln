@@ -1,4 +1,4 @@
-"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 29 slides at 1440 x 810,
+"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 30 slides at 1440 x 810,
 same look as the boiler deck. Reuses the boiler-deck slides for the fundamentals and the cable takeaways (their footers
 re-numbered), the 16-zone overview, and the model renders for the seven tour stops; new: title, agenda, six market slides
 (from the Oct 6 PowerGen channel deck), one slide per tour stop, the whole
@@ -142,6 +142,56 @@ def tile(x, y, w, h, kick, big, txt, hot=False, sub=""):
             f'<div style="font:800 64px/1 BC;color:{WHITE if hot else COPPER};margin:14px 0 10px">{big}</div>'
             f'<div class="cd" style="font-size:17px;color:{WHITE if hot else GREY}">{txt}</div>'
             f'{f"<div class=cd style=margin-top:8px;font-size:14px>{sub}</div>" if sub else ""}</div>')
+
+
+
+# The whole system, before the zoom on gas: EIA 2025 utility-scale generation shares and 2026 planned additions.
+MIX = [("Natural gas", 41, "firm"), ("Nuclear", 18, "firm"), ("Coal", 17, "firm"), ("Wind", 11, "variable"),
+       ("Solar", 7, "variable"), ("Hydro", 6, "firm*")]
+ADDS = [("Solar", 43.4, "#e8a874"), ("Batteries", 24.0, "#8e98a3"), ("Wind", 11.8, "#5d636a"), ("Gas", 6.3, "#b4591f")]
+
+
+def s_system(n, N):
+    rows = ""
+    for k, (src, v, tag) in enumerate(MIX):
+        y = 222 + k * 56
+        hot = k == 0
+        rows += (f'<div class="abs" style="left:64px;top:{y}px;width:150px;font:700 20px/36px BC;color:{COPPER if hot else WHITE};text-transform:uppercase">{src}</div>'
+                 f'<div class="abs" style="left:214px;top:{y + 8}px;width:72px;height:20px;border:1px solid {"#b4591f" if tag == "firm" else "#5d636a"};'
+                 f'border-radius:10px;font:700 11px/20px BC;letter-spacing:.12em;text-align:center;color:{GREY};text-transform:uppercase">{tag}</div>'
+                 f'<div class="abs" style="left:300px;top:{y + 2}px;width:{v * 8:.0f}px;height:32px;background:{"#b4591f" if hot else "#5d636a"};border-radius:0 3px 3px 0"></div>'
+                 f'<div class="abs" style="left:{310 + v * 8:.0f}px;top:{y}px;font:800 22px/36px BC;color:{WHITE}">{v}%</div>')
+    tot = sum(v for _, v, _ in ADDS)
+    seg, x = "", 760
+    for src, v, col in ADDS:
+        w = 616 * v / tot
+        seg += (f'<div class="abs" style="left:{x:.0f}px;top:256px;width:{w - 3:.0f}px;height:58px;background:{col}"></div>'
+                f'<div class="abs" style="left:{x:.0f}px;top:326px;width:{max(w, 70):.0f}px;font:800 22px/1 BC;color:{COPPER if src == "Gas" else WHITE}">{v:g}</div>'
+                f'<div class="abs" style="left:{x:.0f}px;top:352px;width:{max(w, 70):.0f}px;font:700 13px/1 BC;letter-spacing:.08em;color:{GREY};text-transform:uppercase">{src}</div>')
+        x += w
+    why = [("Firm", "Gas runs when it is called: day or night, any weather. Wind and solar follow the weather; batteries cover hours, not days."),
+           ("The backbone", "41% of US electricity today, and the backup that lets more wind and solar onto the grid."),
+           ("The next wave", "Data centres need firm power around the clock: 378 GW of gas is in development, much of it built later this decade.")]
+    w3 = "".join(f'<div class="abs" style="left:{760 + k * 210}px;top:420px;width:196px;border-top:3px solid {COPPER};padding-top:10px">'
+                 f'<div class="ct" style="font-size:20px">{h}</div><div class="cd" style="font-size:13.5px;margin-top:6px">{t}</div></div>'
+                 for k, (h, t) in enumerate(why))
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Fundamentals &nbsp;&middot;&nbsp; step back</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:54px;width:1320px">Every way we make electricity, <em>and why we zoom in on gas</em></div>
+  <div class="abs cnum" style="left:64px;top:190px;color:{WHITE}">Share of US electricity, 2025</div>
+  {rows}
+  <div class="abs cd" style="left:64px;top:566px;width:640px;font-size:13px">Firm = can run on demand. *Hydro depends on water and season.
+    Batteries store power; they do not make it.</div>
+  <div class="abs cnum" style="left:760px;top:190px;color:{WHITE}">New capacity planned for 2026 &middot; {tot:.0f} GW</div>
+  <div class="abs cd" style="left:760px;top:212px;width:616px;font-size:14px">Most of what gets added is solar and batteries. Gas is a small share of the GW, and the one that runs on demand.</div>
+  {seg}{w3}
+  <div class="abs" style="left:64px;top:620px;width:1312px;background:#2a1d14;border-left:4px solid {COPPER};padding:13px 22px;box-sizing:border-box">
+    <div class="cd" style="font-size:17px"><b style="color:{WHITE}">Southwire cables every one of these:</b> solar, wind, storage, transmission and distribution.
+      <b style="color:{WHITE}">Today we focus on gas</b>: firm power, a boom-scale build, and some of the most cable-dense plants on the grid.</div></div>
+  <div class="abs" style="left:64px;top:732px;{SRC}">EIA, Electricity explained (2025 utility-scale generation, rounded) and Today in Energy, Feb 2026 (planned 2026 additions; developers' plans, not all will be built).</div>
+  {foot(n, N)}
+</section>"""
 
 
 def s_glance(n, N):
@@ -863,16 +913,16 @@ def reused(fn, n, N, kicker):
 def main():
     import pymupdf
     os.makedirs(OUT, exist_ok=True)
-    N = 29                                                     # s_q3, s_blackbox, s_anatomy and s_corridor are kept, unused
-    plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_glance(3, N), lambda: s_load(4, N), lambda: s_backlog(5, N),
-            lambda: s_prize(6, N), lambda: s_where(7, N), lambda: s_map(8, N),
-            lambda: s_box(9, N), lambda: s_types(10, N),
-            lambda: reused(db.slide_cycle, 11, N, "Fundamentals"), lambda: reused(db.slide_basics, 12, N, "Fundamentals"),
-            lambda: reused(db.slide_system, 13, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
-            lambda: s_follow(14, N), lambda: s_owners(15, N), lambda: s_sites(16, N), lambda: s_buy(17, N), lambda: s_overview(18, N)]
-    plan += [(lambda k=k: s_stop(k, 19 + k, N)) for k in range(7)]
-    plan += [lambda: s_number(26, N), lambda: reused(db.slide_spec, 27, N, "Wire and cable takeaways"),
-             lambda: reused(db.slide_value, 28, N, "Wire and cable takeaways"), lambda: s_close(29, N)]
+    N = 30                                                     # s_q3, s_blackbox, s_anatomy and s_corridor are kept, unused
+    plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_system(3, N), lambda: s_glance(4, N), lambda: s_load(5, N),
+            lambda: s_backlog(6, N), lambda: s_prize(7, N), lambda: s_where(8, N), lambda: s_map(9, N),
+            lambda: s_box(10, N), lambda: s_types(11, N),
+            lambda: reused(db.slide_cycle, 12, N, "Fundamentals"), lambda: reused(db.slide_basics, 13, N, "Fundamentals"),
+            lambda: reused(db.slide_system, 14, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
+            lambda: s_follow(15, N), lambda: s_owners(16, N), lambda: s_sites(17, N), lambda: s_buy(18, N), lambda: s_overview(19, N)]
+    plan += [(lambda k=k: s_stop(k, 20 + k, N)) for k in range(7)]
+    plan += [lambda: s_number(27, N), lambda: reused(db.slide_spec, 28, N, "Wire and cable takeaways"),
+             lambda: reused(db.slide_value, 29, N, "Wire and cable takeaways"), lambda: s_close(30, N)]
     assert len(plan) == N
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()
@@ -903,7 +953,7 @@ def main():
         ims.append(Image.open(png).convert("RGB"))
         ims[-1].save(os.path.join(jd, f"slide_{i + 1:02d}.jpg"), quality=90)
     w, h = 960, 540
-    for name, rng in (("market_slides_3-8", range(2, 8)), ("fundamentals_9-17", range(8, 17)), ("all_slides", range(len(ims)))):
+    for name, rng in (("market_slides_3-9", range(2, 9)), ("fundamentals_10-18", range(9, 18)), ("all_slides", range(len(ims)))):
         rng = list(rng)
         rows = (len(rng) + 1) // 2
         sheet = Image.new("RGB", (w * 2 + 30, h * rows + 15 * (rows + 1)), (40, 40, 40))
