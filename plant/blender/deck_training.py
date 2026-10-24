@@ -1,4 +1,4 @@
-"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 26 slides at 1440 x 810,
+"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 28 slides at 1440 x 810,
 same look as the boiler deck. Reuses the boiler-deck slides for the fundamentals and the cable takeaways (their footers
 re-numbered), the 16-zone overview, and the model renders for the seven tour stops; new: title, agenda, six market slides
 (from the Oct 6 PowerGen channel deck), one slide per tour stop, the whole
@@ -75,10 +75,10 @@ def s_title():
 
 
 AGENDA = [("1:30", "Welcome", "why this matters", "3"),
-          ("1:33", "Market and fundamentals", "the gas build and the cable prize; the black box, owners, the POI corridor", "18"),
-          ("1:51", "The 3D tour", "seven stops: what it does, its electrical system, its cable", "22"),
-          ("2:13", "Wire and cable takeaways", "the whole plant in one number, products, pain points", "9"),
-          ("2:22", "Q&amp;A", "questions from the chat", "8")]
+          ("1:33", "Market and fundamentals", "the gas build; the machines, voltages, where the cable is, who buys", "22"),
+          ("1:55", "The 3D tour", "seven stops: what it does, its electrical system, its cable", "20"),
+          ("2:15", "Wire and cable takeaways", "the whole plant in one number, products, pain points", "8"),
+          ("2:23", "Q&amp;A", "questions from the chat", "7")]
 
 
 def s_agenda(n, N):
@@ -426,34 +426,35 @@ def s_anatomy(n, N):
 
 
 def s_owners(n, N):
-    eq = [("ProjectCo", "SPV / LLC"), ("Asset", "conversion plant"), ("Contract", "PPA / off-take"), ("Customer", "off-taker / load"),
-          ("Capital", "PE / tax equity"), ("Market", "ERCOT, PJM, MISO")]
+    eq = [("ProjectCo", "one company per plant"), ("Asset", "conversion plant"), ("Contract", "power purchase agreement"), ("Customer", "off-taker / load"),
+          ("Capital", "investors, tax equity"), ("Market", "ERCOT, PJM, MISO")]
     e = "".join(f'<div style="display:inline-block;vertical-align:top;width:150px;text-align:center">'
                 f'<div style="font:800 24px/1 BC;color:{WHITE};text-transform:uppercase">{a}</div><div class="cd" style="font-size:14px;margin-top:6px">{b}</div></div>'
                 + (f'<div style="display:inline-block;vertical-align:top;width:22px;font:800 24px/1 BC;color:{COPPER}">+</div>' if k < 5 else "")
                 for k, (a, b) in enumerate(eq))
     arch = [("IOUs / co-ops", "Regulated", ["Utility-led, rate-based ownership", "Own and operate generation", "Buy like utilities: standards, cycles"]),
             ("Hybrid IPPs", "Mixed model", ["Utility-affiliated IPP subsidiaries", "Bridge regulated and competitive", "Two buying behaviours"]),
-            ("Pure IPPs", "Competitive", ["Privately owned, PE-backed projects", "A direct fit with the project equation", "Speed and cost drive decisions"])]
+            ("Pure IPPs", "Competitive", ["Privately owned, investor-backed projects", "A direct fit with the project equation", "Speed and cost drive decisions"])]
     cards = ""
     for k, (h, tag, items) in enumerate(arch):
         hot = k == 2
         li = "".join(f'<div class="cd" style="font-size:16px;margin-top:10px;padding-left:14px;position:relative">'
                      f'<span style="position:absolute;left:0;top:8px;width:6px;height:6px;background:{COPPER}"></span>{t}</div>' for t in items)
-        cards += (f'<div class="abs" style="left:{64 + k * 444}px;top:420px;width:420px;height:220px;background:{"#2a1d14" if hot else "#181b1f"};'
+        cards += (f'<div class="abs" style="left:{64 + k * 444}px;top:428px;width:420px;height:212px;background:{"#2a1d14" if hot else "#181b1f"};'
                   f'border-top:4px solid {COPPER if hot else "#5d636a"};{"border:1px solid #b4591f;border-top:4px solid " + COPPER + ";" if hot else ""}padding:22px 26px;box-sizing:border-box">'
                   f'<div class="ct" style="font-size:28px">{h} <span style="font:700 14px/1 BC;letter-spacing:.14em;color:{COPPER};margin-left:10px">{tag}</span></div>{li}</div>')
     return f"""
 <section class="page slide">
   <div class="abs kicker" style="left:64px;top:56px">Fundamentals &nbsp;&middot;&nbsp; who buys</div>
   <div class="abs h2" style="left:62px;top:84px;font-size:58px">Same physics, <em>different owners</em></div>
-  <div class="abs lede" style="left:64px;top:156px;width:1200px;font-size:17px">The owner decides how the project is structured, and how it gets bought.</div>
-  <div class="abs" style="left:64px;top:206px;width:1312px;height:160px;background:#181b1f;border-top:4px solid {COPPER};padding:22px 26px;box-sizing:border-box">
+  <div class="abs lede" style="left:64px;top:156px;width:1300px;font-size:17px">The owner decides how the project is structured, and how it gets bought.
+    An independent power producer (IPP) builds each plant as its own company, sells the power on contract or into a market, and funds it with investors.</div>
+  <div class="abs" style="left:64px;top:226px;width:1312px;height:150px;background:#181b1f;border-top:4px solid {COPPER};padding:20px 26px;box-sizing:border-box">
     <div class="cnum">The structural equation</div>
     <div style="margin-top:26px;white-space:nowrap"><div style="display:inline-block;vertical-align:top;width:170px;font:800 28px/1 BC;color:{COPPER};text-transform:uppercase">Thermal IPP =</div>{e}</div></div>
-  <div class="abs cnum" style="left:64px;top:392px;color:{WHITE}">Power owner archetypes</div>
+  <div class="abs cnum" style="left:64px;top:400px;color:{WHITE}">Power owner archetypes</div>
   {cards}
-  <div class="abs" style="left:952px;top:652px;font:700 14px/1 BC;letter-spacing:.1em;color:{COPPER};text-transform:uppercase">Primary focus for competitive thermal power</div>
+  <div class="abs" style="left:952px;top:652px;font:700 14px/1 BC;letter-spacing:.1em;color:{COPPER};text-transform:uppercase">Our sales focus for competitive thermal power</div>
   {foot(n, N)}
 </section>"""
 
@@ -494,6 +495,157 @@ def s_corridor(n, N):
   <div class="abs" style="left:64px;top:600px;width:1332px;background:#2a1d14;border-left:4px solid {COPPER};padding:16px 22px;box-sizing:border-box">
     <div class="cd" style="font-size:17px"><b style="color:{WHITE}">Every MW that leaves the black box crosses this corridor.</b> Cable intensity
       concentrates at 3 &rarr; 4A &rarr; 4B, the same span where the POI boundary blurs scope, and where we help EPCs and IPPs.</div></div>
+  {foot(n, N)}
+</section>"""
+
+
+
+def s_box(n, N):
+    """Every thermal project is a black box, opened: input / conversion / output over the six anatomy steps."""
+    bands = [(0, 2, "Input", "fuel / energy source", "#3b7a4a"), (2, 1, "Black box", "thermal conversion", "#0b0c0e"),
+             (3, 3, "Output", "dispatchable power, delivered", "#2f63b5")]
+    b = ""
+    for k0, w, lab, sub, bg in bands:
+        x = 64 + k0 * 220
+        bord = f"border:3px solid {COPPER};" if lab == "Black box" else ""
+        b += (f'<div class="abs" style="left:{x}px;top:176px;width:{w * 220 - 16}px;height:72px;background:{bg};{bord}border-radius:4px;'
+              f'box-sizing:border-box;text-align:center;padding-top:12px"><div style="font:800 26px/1 BC;color:{WHITE};text-transform:uppercase">{lab}</div>'
+              f'<div style="font:400 14px/1 B;color:#d6d9dc;margin-top:7px">{sub}</div></div>')
+    cards = ""
+    for k, (h, items) in enumerate(ANATOMY):
+        x = 64 + k * 220
+        li = "".join(f'<div class="cd" style="font-size:15px;margin-top:9px;padding-left:14px;position:relative">'
+                     f'<span style="position:absolute;left:0;top:7px;width:6px;height:6px;background:{COPPER}"></span>{t}</div>' for t in items)
+        cards += (f'<div class="abs" style="left:{x}px;top:264px;width:204px;height:330px;background:#181b1f;border-top:4px solid {COPPER};'
+                  f'padding:20px 18px;box-sizing:border-box">{circ(k, 40, COPPER, "#121417", 18)}'
+                  f'<div class="ct" style="font-size:22px;margin:14px 0 4px;min-height:44px">{h}</div>{li}</div>')
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Fundamentals</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:56px">Every thermal project is this: <em>a black box, opened</em></div>
+  {b}{cards}
+  <div class="abs lede" style="left:64px;top:620px;width:1300px;font-size:18px">Input &rarr; conversion &rarr; output. Gas turbine, combined cycle or
+    engines: <b style="color:{WHITE}">the same physics on every project.</b> What changes is the machine in the box, and who owns it.</div>
+  {foot(n, N)}
+</section>"""
+
+
+TYPES = [("Simple cycle", "the peaker", "50&ndash;400 MW per gas turbine", "~35&ndash;40%", "10&ndash;30 min", "Peaking, mid-merit",
+          "A gas turbine alone: exhaust goes straight up the stack"),
+         ("Combined cycle", "the workhorse", "300&ndash;1,500+ MW per block", "~55&ndash;64%", "about 1&ndash;3 hours", "Baseload, mid-merit",
+          "Gas turbines + HRSGs + steam turbine: the SW-3X1 power block"),
+         ("Engines (RICE)", "the sprinter", "2&ndash;20 MW per engine, in banks", "~40&ndash;50%", "about 5 min", "Peaking, data-centre firming",
+          "Big gas engines in a hall: the modular yard"),
+         ("Aeroderivative", "the jet", "30&ndash;60 MW per unit", "~38&ndash;42%", "5&ndash;10 min", "Peaking, fast backup",
+          "A jet engine on the ground: the modular yard")]
+
+
+def s_types(n, N):
+    labels = ["Unit size", "Efficiency", "Start to full load", "Runs as", "In the model"]
+    head = "".join(f'<div class="abs" style="left:{300 + k * 272}px;top:172px;width:256px;border-top:4px solid {COPPER if k == 1 else "#5d636a"};'
+                   f'padding-top:12px"><div style="font:800 28px/1 BC;color:{COPPER if k == 1 else WHITE};text-transform:uppercase">{t[0]}</div>'
+                   f'<div class="cnum" style="margin-top:6px;color:{GREY}">{t[1]}</div></div>' for k, t in enumerate(TYPES))
+    rows = ""
+    for r, lab in enumerate(labels):
+        y = 262 + r * 70
+        rows += (f'<div class="abs" style="left:64px;top:{y}px;width:1312px;height:1px;background:#2c3036"></div>'
+                 f'<div class="abs" style="left:64px;top:{y + 14}px;width:220px;font:700 15px/1.2 BC;letter-spacing:.12em;color:{GREY};text-transform:uppercase">{lab}</div>')
+        for k, t in enumerate(TYPES):
+            big = r < 3
+            rows += (f'<div class="abs" style="left:{300 + k * 272}px;top:{y + 12}px;width:256px;'
+                     f'{"font:800 22px/1.15 BC;color:" + WHITE if big else "font:400 15px/1.35 B;color:" + GREY}">{t[2 + r]}</div>')
+    units = (f'<div class="abs" style="left:64px;top:612px;width:1312px;background:#181b1f;border-left:4px solid {COPPER};padding:12px 22px;box-sizing:border-box">'
+             f'<div class="cd" style="font-size:16px"><b style="color:{WHITE}">Units that stick:</b> 1 GW = 1,000 MW = 1,000,000 kW. '
+             f'<b style="color:{WHITE}">MW</b> is power (how hard it runs right now); <b style="color:{WHITE}">MWh</b> is energy (power &times; hours). '
+             f'Efficiency is how much of the fuel\'s energy leaves as electricity; the rest goes up the stack as heat.</div></div>')
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Fundamentals &nbsp;&middot;&nbsp; the machines in the box</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:56px">Four ways to <em>burn gas for power</em></div>
+  {head}{rows}{units}
+  <div class="abs" style="left:64px;top:714px;{SRC}">Typical ranges for new US units; efficiency on a lower-heating-value basis. Starts vary with design and how hot the unit is.</div>
+  {foot(n, N)}
+</section>"""
+
+
+def follow_numbers():
+    """Cable footage of the SW-3X1 schedule by plant area, grouped along the black-box flow."""
+    import openpyxl
+    rows = list(openpyxl.load_workbook(os.path.join(PLANT, "brochure", "SW-3X1_Cable_Schedule_and_BOM.xlsx"),
+                                       read_only=True)["Cable Schedule"].iter_rows(values_only=True))[1:]
+    ft = lambda r: math.ceil(((r[19] or 0) + (r[20] or 0) + 20) * 1.1 / 10) * 10 * r[13] * r[14]
+    groups = [("Fuel in", "gas yard, metering, LNG and fuel supply", "DK"),
+              ("The black box", "turbine hall, HRSGs, cooling, water, inlet chilling", "ABEJ"),
+              ("Out to the grid", "GSUs, switchyard, gen-tie to the POI", "C"),
+              ("On-site delivery", "battery yard, modular and behind-the-meter power", "HI"),
+              ("Around it all", "control and service buildings, carbon capture", "FG")]
+    tot = {g: [0, 0] for g, _, _ in groups}
+    for r in rows:
+        g = next(g for g, _, zs in groups if str(r[1]) in zs)
+        tot[g][0] += ft(r)
+        tot[g][1] += r[13] * r[14]
+    return [(g, d, tot[g][0], tot[g][1]) for g, d, _ in groups]
+
+
+def s_follow(n, N):
+    data = follow_numbers()
+    all_ft = sum(v for _, _, v, _ in data)
+    mx = max(v for _, _, v, _ in data)
+    rows = ""
+    for k, (g, d, v, c) in enumerate(data):
+        y = 196 + k * 84
+        hot = g == "The black box"
+        rows += (f'<div class="abs" style="left:64px;top:{y}px;width:300px"><div style="font:800 24px/1 BC;color:{COPPER if hot else WHITE};text-transform:uppercase">{g}</div>'
+                 f'<div class="cd" style="font-size:14px;margin-top:6px">{d}</div></div>'
+                 f'<div class="abs" style="left:380px;top:{y + 4}px;width:{480 * v / mx:.0f}px;height:40px;background:{"#b4591f" if hot else "#5d636a"};border-radius:0 4px 4px 0"></div>'
+                 f'<div class="abs" style="left:{392 + 480 * v / mx:.0f}px;top:{y + 4}px;font:800 24px/40px BC;color:{WHITE}">{v / 5280:,.0f} mi'
+                 f'<span style="font:400 14px/1 B;color:{GREY};margin-left:12px">{100 * v / all_ft:.0f}% &middot; {c:,} cables</span></div>')
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Fundamentals &nbsp;&middot;&nbsp; where the cable is</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:56px">Follow the power: <em>the cable is everywhere</em></div>
+  <div class="abs cnum" style="left:64px;top:166px;color:{WHITE}">SW-3X1 cable by plant area, from the model's cable schedule ({all_ft / 5280:,.0f} miles)</div>
+  {rows}
+  <div class="abs" style="left:1150px;top:196px;width:226px;background:#181b1f;border-top:4px solid {COPPER};padding:18px 20px;box-sizing:border-box">
+    <div class="ct" style="font-size:22px">The POI</div>
+    <div class="cd" style="font-size:14px;margin-top:8px"><b style="color:{WHITE}">Point of interconnection:</b> where the plant meets the grid.
+      The plant side is the owner's and EPC's scope; past it, the utility or transmission owner builds and buys.</div>
+    <div class="cd" style="font-size:14px;margin-top:10px">The gen-tie (often HV underground) runs from the switchyard to the POI, and the scope line
+      there is often blurred: a place we help.</div></div>
+  <div class="abs" style="left:64px;top:630px;width:1312px;background:#2a1d14;border-left:4px solid {COPPER};padding:14px 22px;box-sizing:border-box">
+    <div class="cd" style="font-size:17px"><b style="color:{WHITE}">Most of the cable is inside the box</b>: thousands of instrument, control and
+      motor circuits in the turbine hall and HRSGs. The grid connection carries the biggest cables; the power block carries the most.</div></div>
+  {foot(n, N)}
+</section>"""
+
+
+PHASES = [("Develop", "site, permits, interconnection request, fuel and water", "Owner / developer", "years: the interconnection queue is often the long pole"),
+          ("Finance", "PPA or rate case, turbine slot, financing decision (FID)", "Owner, lenders, OEM", "turbines are reserved years ahead"),
+          ("Engineer", "owner's engineer writes the specs; the EPC does detailed design", "Owner's engineer, EPC", "cable is specified here"),
+          ("Procure", "EPC and package builders buy equipment and bulk materials", "EPC, OEMs, package builders", "cable is bought here"),
+          ("Build", "civil, mechanical, then electrical: trays, pulls, terminations", "EPC and electrical contractor", "cable pulls sit on the critical path"),
+          ("Operate", "commercial operation (COD), outages, upgrades, repowering", "Owner / operator", "replacement and brownfield work")]
+
+
+def s_buy(n, N):
+    html = ""
+    for k, (h, what, who, note) in enumerate(PHASES):
+        x = 64 + k * 220
+        hot = k in (2, 3)
+        html += (f'<div class="abs" style="left:{x}px;top:190px;width:204px;height:62px;background:{"#b4591f" if hot else "#2a2e33"};'
+                 f'clip-path:polygon(0 0,92% 0,100% 50%,92% 100%,0 100%,{"0" if k == 0 else "8%"} 50%);padding:0 0 0 {16 if k == 0 else 26}px;box-sizing:border-box;'
+                 f'font:800 21px/62px BC;color:{WHITE};text-transform:uppercase">{h}</div>'
+                 f'<div class="abs" style="left:{x}px;top:272px;width:200px"><div class="cd" style="font-size:15px;color:{WHITE}">{what}</div>'
+                 f'<div class="cnum" style="margin-top:16px;font-size:12px;color:{GREY}">Who</div><div class="cd" style="font-size:15px;margin-top:4px">{who}</div>'
+                 f'<div style="margin-top:16px;font:700 16px/1.25 BC;color:{COPPER if hot else GREY};text-transform:uppercase">{note}</div></div>')
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Fundamentals &nbsp;&middot;&nbsp; who buys, and when</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:56px">One company specifies the cable, <em>another one buys it</em></div>
+  {html}
+  <div class="abs" style="left:64px;top:600px;width:1312px;background:#181b1f;border-left:4px solid {COPPER};padding:16px 22px;box-sizing:border-box">
+    <div class="cd" style="font-size:17px"><b style="color:{WHITE}">The owner pays, the owner's engineer writes the spec, the EPC or package builder places
+      the order.</b> Be in the spec early, and be ready when the EPC buys: by then the schedule is tight and cable is on the critical path.</div></div>
   {foot(n, N)}
 </section>"""
 
@@ -667,15 +819,16 @@ def reused(fn, n, N, kicker):
 def main():
     import pymupdf
     os.makedirs(OUT, exist_ok=True)
-    N = 26                                                     # s_q3 (Q3 progress) taken out on Oct 24; kept for later use
+    N = 28                                                     # s_q3, s_blackbox, s_anatomy and s_corridor are kept, unused
     plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_glance(3, N), lambda: s_load(4, N), lambda: s_backlog(5, N),
             lambda: s_prize(6, N), lambda: s_where(7, N), lambda: s_map(8, N),
-            lambda: s_blackbox(9, N), lambda: s_anatomy(10, N),
+            lambda: s_box(9, N), lambda: s_types(10, N),
             lambda: reused(db.slide_cycle, 11, N, "Fundamentals"), lambda: reused(db.slide_basics, 12, N, "Fundamentals"),
-            lambda: s_owners(13, N), lambda: s_corridor(14, N), lambda: s_overview(15, N)]
-    plan += [(lambda k=k: s_stop(k, 16 + k, N)) for k in range(7)]
-    plan += [lambda: s_number(23, N), lambda: reused(db.slide_spec, 24, N, "Wire and cable takeaways"),
-             lambda: reused(db.slide_value, 25, N, "Wire and cable takeaways"), lambda: s_close(26, N)]
+            lambda: reused(db.slide_system, 13, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
+            lambda: s_follow(14, N), lambda: s_owners(15, N), lambda: s_buy(16, N), lambda: s_overview(17, N)]
+    plan += [(lambda k=k: s_stop(k, 18 + k, N)) for k in range(7)]
+    plan += [lambda: s_number(25, N), lambda: reused(db.slide_spec, 26, N, "Wire and cable takeaways"),
+             lambda: reused(db.slide_value, 27, N, "Wire and cable takeaways"), lambda: s_close(28, N)]
     assert len(plan) == N
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()
@@ -706,7 +859,7 @@ def main():
         ims.append(Image.open(png).convert("RGB"))
         ims[-1].save(os.path.join(jd, f"slide_{i + 1:02d}.jpg"), quality=90)
     w, h = 960, 540
-    for name, rng in (("market_slides_3-8", range(2, 8)), ("fundamentals_9-14", range(8, 14)), ("all_slides", range(len(ims)))):
+    for name, rng in (("market_slides_3-8", range(2, 8)), ("fundamentals_9-16", range(8, 16)), ("all_slides", range(len(ims)))):
         rng = list(rng)
         rows = (len(rng) + 1) // 2
         sheet = Image.new("RGB", (w * 2 + 30, h * rows + 15 * (rows + 1)), (40, 40, 40))

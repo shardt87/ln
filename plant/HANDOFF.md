@@ -553,3 +553,9 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 ## Oct 24: training deck, fundamentals from the thermal narrative (26 slides)
 - Four new slides from the PowerGen thermal narrative (pages 1-4), restyled: s_blackbox (9), s_anatomy (10), s_owners (13) and s_corridor (14). They sit around the cycle and HRSG slides (11, 12), and the corridor leads into the campus overview (15). Page 5's pipeline figures ($470M, 17 projects) are a different basis from the market slides' $1.2B and 386, so they are left out.
 - Agenda: market and fundamentals 18 min, tour 22 min. The run of show is updated. A fundamentals_9-14.jpg contact sheet is added.
+
+## Oct 24: training deck, fundamentals rework (28 slides)
+- Slides 9 and 10 merged into `s_box` (the black box, opened). The POI corridor slide is replaced by `s_follow`: cable by plant area from the cable schedule (zones A-K grouped along the flow; the black box holds 44% of 1,212 mi) plus a plain definition of the POI. It no longer calls upstream "not our fight".
+- New: `s_types` (simple cycle, combined cycle, engines, aeroderivative, plus a units strip), the voltage ladder (`db.slide_system`, reused) and `s_buy` (who buys, and when). Owners slide: plain-English IPP gloss, "our sales focus".
+- Order: market 3-8; fundamentals 9-17; tour stops 18-24; takeaways 25-27; close 28. Agenda: 22 / 20 / 8 / 7 min. The run of show is rewritten for 9-17.
+- s_q3, s_blackbox, s_anatomy and s_corridor are kept in the script, unused.

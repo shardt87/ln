@@ -8,17 +8,17 @@
 
 ---
 
-**Slides:** `renders/deck/training/SW-3X1_Nov11_training.pdf` (26 slides, built by `blender/deck_training.py`): title, agenda, six market slides (from the Oct 6 PowerGen channel deck: at a glance, load growth and capacity added since 1996, turbine backlogs, the ~$1.2B cable prize, the project register, the state heat map), six fundamentals (every thermal project is a black box, open the box, simple vs combined cycle, how an HRSG works, same physics different owners, the POI corridor; from the PowerGen thermal narrative), simple vs combined cycle, how an HRSG works, the campus with the LNG terminal, 7 tour-stop backup slides, the whole plant in one number, what the spec calls for, pain points and the answer, three things to remember + Q&A.
+**Slides:** `renders/deck/training/SW-3X1_Nov11_training.pdf` (28 slides, built by `blender/deck_training.py`; JPG copies in `renders/deck/training/jpg/`): title, agenda; market 3-8 (at a glance, load growth since 1996, turbine backlogs, the ~$1.2B cable prize, the project register, the state heat map); fundamentals 9-17 (the black box opened, four ways to burn gas, what goes in and out, how an HRSG works, the voltage ladder, follow the power, same physics different owners, who buys and when, the campus with the LNG terminal); 7 tour-stop backup slides; the whole plant in one number, what the spec calls for, pain points and the answer, three things to remember + Q&A.
 
 ## Rundown (60 min)
 
 | Time | Segment | On screen | Mins |
 |---|---|---|---|
 | 1:30 | 0. Welcome and why this matters | 1 title slide | 3 |
-| 1:33 | 1. Market and fundamentals | 13 slides | 18 |
-| 1:51 | 2. The 3D tour: seven stops | Live viewer, plus one slide per stop if needed | 22 |
-| 2:13 | 3. Wire and cable takeaways | 3 slides | 9 |
-| 2:22 | 4. Q&A | Viewer on the overview | 8 |
+| 1:33 | 1. Market and fundamentals | 15 slides | 22 |
+| 1:55 | 2. The 3D tour: seven stops | Live viewer, plus one slide per stop if needed | 20 |
+| 2:15 | 3. Wire and cable takeaways | 3 slides | 8 |
+| 2:23 | 4. Q&A | Viewer on the overview | 7 |
 
 Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) to one minute.
 
@@ -34,7 +34,7 @@ Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) t
 
 ---
 
-## 1. Market and fundamentals (18 min, 13 slides)
+## 1. Market and fundamentals (22 min, 15 slides)
 
 Market slides 3-8 come from the Oct 6 PowerGen channel deck. **OEM, owner and EPC names are not on the slides; say them here if useful.** Verify the figures against the primary sources (appendix of the Oct 6 deck) before Nov 11.
 
@@ -50,27 +50,31 @@ Market slides 3-8 come from the Oct 6 PowerGen channel deck. **OEM, owner and EP
 
 **Slide 8: Where the build is (1 min).** The state heat map: TX 55.5 GW leads, then LA, WV, IN, OH, PA. Owners: IPPs and behind-the-meter developers mostly build new; utilities reuse old sites (coal-site repowers 41.3 GW).
 
-**Slide 9: Every thermal project is this (1 min).** Input (fuel), the black box (thermal conversion), output (dispatchable power). "The complexity is what's inside the box, and what's around it. Today we open the box."
+**Slide 9: The black box, opened (2 min).** Input (fuel) → black box (thermal conversion) → output (dispatchable power), over the six steps from fuel infrastructure to end use. "Same physics on every project; what changes is the machine in the box, and who owns it."
 
-**Slide 10: Open the box (2 min).** Six steps: 0 fuel infrastructure, 1 fuel input, 2 thermal conversion, 3 electricity output, 4 delivery and flexibility, 5 end use. "Same physics on every project; what changes is who owns it."
+**Slide 10: Four ways to burn gas for power (2 min).** Simple cycle (the peaker), combined cycle (the workhorse, our power block), engines (the sprinter) and aeroderivatives (the jet): size, efficiency, start time, how they run. Units: GW, MW, kW; MW is power, MWh is energy.
 
-**Slide 11: Simple cycle vs combined cycle (3 min).** Reuse boilers slide 6, "What goes in, what comes out".
+**Slide 11: What goes in, what comes out (2 min).** Reuse boilers slide 6, "What goes in, what comes out".
 - In: gas, air, a little water. Out: power, stack gas, heat.
 - The gas turbines make about 2/3 of the power; the steam from their exhaust makes about 1/3 more with no extra fuel.
 
-**Slide 12: How an HRSG works (2 min).** Reuse boilers slide 5: the "What it is" and "Fun facts" box.
+**Slide 12: How an HRSG works (1.5 min).** Reuse boilers slide 5: the "What it is" and "Fun facts" box.
 
-**Slide 13: Same physics, different owners (1.5 min).** Thermal IPP = ProjectCo + asset + contract (PPA) + customer + capital + market. Utilities and co-ops buy like utilities (standards, cycles); hybrid IPPs show both behaviours; pure IPPs are PE-backed, and speed and cost drive them: the primary focus for competitive thermal power.
+**Slide 13: The voltage ladder (2 min).** Reused from the boiler deck (slide 9, "Levels, ratings and the cable they drive"): 230 kV to the grid, 21 kV at the generator, 13.8 kV to the big motors, 480 V to the small ones, 120 V AC / 125 V DC for controls, then signals. "Every rung has its own cable family."
 
-**Slide 14: The POI corridor (1.5 min).** Steps 0-2 are upstream, not our fight. Our corridor is 3 (generator leads, collection, grounding), 4A (GSU, switchyard, MV/HV cable and tray, e-houses, BESS tie-ins) and 4B (gen-tie to the POI, T&D cable, substations). HV underground runs the gen-tie and plant-to-POI. "Every MW that leaves the black box crosses this corridor": the bridge into the tour.
+**Slide 14: Follow the power (1.5 min).** SW-3X1 cable by plant area, from the model's schedule: the black box (turbine hall, HRSGs, cooling, water) holds 44% of the 1,212 miles. The POI is where the plant meets the grid: plant side is owner and EPC scope, past it the utility's. "The grid connection carries the biggest cables; the power block carries the most."
 
-**Slide 15: The campus at a glance (2 min).** The campus aerial with the LNG terminal and the seven stops.
+**Slide 15: Same physics, different owners (1.5 min).** IPP = one company per plant + asset + power purchase agreement + customer + investors + market (ERCOT, PJM, MISO). Utilities and co-ops buy like utilities; hybrid IPPs both ways; pure IPPs are our sales focus for competitive thermal power.
+
+**Slide 16: Who buys, and when (2 min).** Develop → finance → engineer (the owner's engineer specifies the cable) → procure (the EPC or package builder buys it) → build (cable pulls on the critical path) → operate. "Be in the spec early; be ready when the EPC buys."
+
+**Slide 17: The campus at a glance (2 min).** The campus aerial with the LNG terminal and the seven stops.
 - "This is SW-3X1, a 3x1 combined-cycle plant: three gas turbines, three HRSGs and one steam turbine, with a modular generation yard, a battery yard, a behind-the-meter data centre, LNG supply, and options for carbon capture and hydrogen."
 - "Conceptual and not engineered, but sized like real plants."
 
 ---
 
-## 2. The 3D tour: seven stops (22 min, about 3 min each)
+## 2. The 3D tour: seven stops (20 min, about 3 min each; stop 7 is 1 min)
 
 **How to run it:** open the viewer and press **▶ Nov 11** (top left of the 3D window). It goes full screen with captions (Equipment / System / Cable). Use **→ / space** for the next view, **←** to go back, keys **1-7** (or the chapter bar at the top) to jump to a stop, and **Esc** to leave. The tour has 22 views: an opening, 20 across the seven stops, and a closing cable X-ray. Use the same three beats at every stop:
 
@@ -159,7 +163,7 @@ Market slides 3-8 come from the Oct 6 PowerGen channel deck. **OEM, owner and EP
 
 ---
 
-## 3. Wire and cable takeaways (9 min, 3 slides)
+## 3. Wire and cable takeaways (8 min, 3 slides)
 
 **Slide A: The whole plant in one number (3 min)**
 - The model's cable schedule: **6,011 runs, 21,217 cables, about 6.4 million ft (~1,200 miles).**
@@ -187,7 +191,7 @@ Market slides 3-8 come from the Oct 6 PowerGen channel deck. **OEM, owner and EP
 
 ---
 
-## 4. Q&A (8 min)
+## 4. Q&A (7 min)
 
 **Questions to prepare for:**
 - "How long does a plant take to build?" 3-4 years for a combined-cycle plant; modular units are much faster.
