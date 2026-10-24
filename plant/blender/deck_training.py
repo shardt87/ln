@@ -1,6 +1,6 @@
-"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 22 slides at 1440 x 810,
+"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 23 slides at 1440 x 810,
 same look as the boiler deck. Reuses the boiler-deck slides for the fundamentals and the cable takeaways (their footers
-re-numbered), the 16-zone overview, and the model renders for the seven tour stops; new: title, agenda, six market slides
+re-numbered), the 16-zone overview, and the model renders for the seven tour stops; new: title, agenda, seven market slides
 (from the Oct 6 PowerGen channel deck), one slide per tour stop, the whole
 plant in one number (from the cable schedule), three things to remember.
 
@@ -260,7 +260,7 @@ def s_where(n, N):
                 f'<div class="abs" style="left:270px;top:{230 + k * 50}px;width:{v * 2.1:.0f}px;height:34px;background:{"#b4591f" if k == 0 else "#5d636a"}"></div>'
                 f'<div class="abs" style="left:{280 + v * 2.1:.0f}px;top:{230 + k * 50}px;font:800 20px/34px BC;color:{WHITE}">{v}</div>'
                 for k, (a, v) in enumerate(reg))
-    states = [("TX", 55.5), ("LA", 16.3), ("WV", 13.4), ("IN", 10.3), ("OH", 10.3), ("PA", 10.0), ("NC", 9.4), ("AZ", 8.1), ("GA", 7.9)]
+    states = [("TX", 55.5), ("LA", 16.3), ("WV", 13.4), ("IN", 10.3), ("OH", 10.3), ("PA", 10.0), ("NC", 9.4), ("GA", 7.9), ("AZ", 6.1)]
     s_ = "".join(f'<div class="abs" style="left:780px;top:{230 + k * 38}px;width:40px;font:800 18px/28px BC;color:{WHITE}">{a}</div>'
                  f'<div class="abs" style="left:830px;top:{230 + k * 38}px;width:{v * 7:.0f}px;height:28px;background:#b4591f"></div>'
                  f'<div class="abs" style="left:{840 + v * 7:.0f}px;top:{230 + k * 38}px;font:800 18px/28px BC;color:{WHITE}">{v}</div>'
@@ -279,6 +279,68 @@ def s_where(n, N):
   <div class="abs cd" style="left:780px;top:590px;width:600px;font-size:15px">Greenfield 137 GW, brownfield 69 GW. Utilities reuse old
     sites (coal-site repowers, expansions); independent and behind-the-meter developers mostly build new, often on data-centre campuses.</div>
   <div class="abs" style="left:64px;top:728px;{SRC}">Southwire PowerGen register, Sep 11, 2026: 386 records across 305 site groups; gross GW, unweighted.</div>
+  {foot(n, N)}
+</section>"""
+
+
+# Tile map from the Oct 6 deck, page 10: (state, column, row, gross GW or None)
+TILES = [("WI", 6, 0, 4.4), ("VT", 10, 0, None), ("ME", 11, 0, None),
+         ("WA", 1, 1, None), ("ID", 2, 1, 1.6), ("MT", 3, 1, None), ("ND", 4, 1, 2.2), ("MN", 5, 1, None), ("IL", 6, 1, 1.4),
+         ("MI", 7, 1, 1.1), ("NY", 9, 1, None), ("MA", 10, 1, None), ("NH", 11, 1, None),
+         ("OR", 1, 2, None), ("NV", 2, 2, 1.9), ("WY", 3, 2, 3.5), ("SD", 4, 2, None), ("IA", 5, 2, 3.0), ("IN", 6, 2, 10.3),
+         ("OH", 7, 2, 10.3), ("PA", 8, 2, 10.0), ("NJ", 9, 2, None), ("CT", 10, 2, None), ("RI", 11, 2, None),
+         ("CA", 1, 3, None), ("UT", 2, 3, 4.4), ("CO", 3, 3, 1.6), ("NE", 4, 3, 1.7), ("MO", 5, 3, 4.0), ("KY", 6, 3, 2.9),
+         ("WV", 7, 3, 13.4), ("VA", 8, 3, 5.2), ("MD", 9, 3, None), ("DE", 10, 3, None),
+         ("AZ", 2, 4, 6.1), ("NM", 3, 4, 2.8), ("KS", 4, 4, 1.4), ("AR", 5, 4, 1.8), ("TN", 6, 4, 3.2), ("NC", 7, 4, 9.4),
+         ("SC", 8, 4, 4.6), ("DC", 9, 4, None),
+         ("OK", 4, 5, 4.2), ("LA", 5, 5, 16.3), ("MS", 6, 5, 3.7), ("AL", 7, 5, None), ("GA", 8, 5, 7.9),
+         ("AK", 0, 6, 2.7), ("HI", 1, 6, None), ("TX", 4, 6, 55.5), ("FL", 9, 6, 1.2)]
+HEAT = [(20, "#7a2e0c", "&gt; 20 GW"), (10, "#b4591f", "10&ndash;20"), (5, "#d97b3a", "5&ndash;10"), (2, "#e8a874", "2&ndash;5"),
+        (0, "#f1cfb0", "&lt; 2"), (None, "#2a2e33", "None")]
+
+
+def heat(v):
+    if v is None:
+        return HEAT[-1][1]
+    return next(c for t, c, _ in HEAT if t is not None and v > t or t == 0)
+
+
+def s_map(n, N):
+    x0, y0, c = 64, 196, 62
+    tiles = ""
+    for st, col, row, v in TILES:
+        bg = heat(v)
+        ink = WHITE if v is None or v > 5 else "#1a1c1f"
+        tiles += (f'<div class="abs" style="left:{x0 + col * c}px;top:{y0 + row * c}px;width:{c - 4}px;height:{c - 4}px;background:{bg};'
+                  f'border-radius:3px;text-align:center"><div style="font:700 13px/1 BC;color:{ink if v is not None else "#80868c"};margin-top:12px">{st}</div>'
+                  + (f"<div style='font:800 17px/1 BC;color:{ink};margin-top:5px'>{v}</div>" if v is not None else "") + '</div>')
+    leg = "".join(f'<span style="display:inline-block;width:13px;height:13px;background:{col};margin:0 6px 0 16px;vertical-align:-2px"></span>{t}'
+                  for _, col, t in HEAT)
+    owners = [("IPP", 51, 15), ("Behind the meter", 55, 8), ("Utility (IOU)", 23, 36), ("Co-op / public", 8, 9)]
+    ob = "".join(f'<div class="abs" style="left:880px;top:{226 + k * 52}px;font:700 16px/1 BC;color:{WHITE};text-transform:uppercase">{a}'
+                 f'<span style="float:right;font:400 13px/1 B;color:{GREY};text-transform:none;margin-left:20px">{g} new &middot; {r} reuse</span></div>'
+                 f'<div class="abs" style="left:880px;top:{246 + k * 52}px;width:{g * 6.4:.0f}px;height:14px;background:#b4591f"></div>'
+                 f'<div class="abs" style="left:{880 + g * 6.4:.0f}px;top:{246 + k * 52}px;width:{r * 6.4:.0f}px;height:14px;background:#5d636a"></div>'
+                 for k, (a, g, r) in enumerate(owners))
+    sites = [("Greenfield, grid-connected", 77.0), ("Data-centre / BTM campus", 54.5), ("Coal-site repower", 41.3),
+             ("Expansion at an operating plant", 21.4), ("Industrial captive and site reuse", 11.6)]
+    sb = "".join(f'<div class="abs" style="left:880px;top:{474 + k * 34}px;width:330px;font:400 15px/24px B;color:{GREY}">'
+                 f'<span style="display:inline-block;width:10px;height:10px;background:{"#b4591f" if k < 2 else "#5d636a"};margin-right:10px"></span>{a}</div>'
+                 f'<div class="abs" style="left:1230px;top:{474 + k * 34}px;width:150px;text-align:right;font:800 20px/24px BC;color:{WHITE}">{v}</div>'
+                 for k, (a, v) in enumerate(sites))
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Project concentration</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:52px">Where the build is, <em>who owns it, what kind of site</em></div>
+  <div class="abs cnum" style="left:64px;top:166px;color:{WHITE}">Gross GW by state &middot; 386 projects, COD 2026&ndash;2035</div>
+  {tiles}
+  <div class="abs" style="left:48px;top:{y0 + 7 * c + 8}px;font:700 13px/1 BC;letter-spacing:.06em;color:{GREY}">{leg}</div>
+  <div class="abs cnum" style="left:880px;top:196px;color:{WHITE}">Owner &times; site &middot; gross GW
+    <span style="color:{GREY};letter-spacing:.06em">&nbsp; <span style="color:#d97b3a">&#9632;</span> greenfield 137 &nbsp;<span style="color:#80868c">&#9632;</span> brownfield 69</span></div>
+  {ob}
+  <div class="abs" style="left:880px;top:444px;font:800 16px/1 BC;color:{COPPER};text-transform:uppercase">Utilities reuse old sites; IPPs and BTM build new</div>
+  {sb}
+  <div class="abs" style="left:64px;top:728px;{SRC}">Southwire PowerGen register, Sep 11, 2026. Gross GW, unweighted. Site classes provisional (Rev01).</div>
   {foot(n, N)}
 </section>"""
 
@@ -471,14 +533,14 @@ def reused(fn, n, N, kicker):
 def main():
     import pymupdf
     os.makedirs(OUT, exist_ok=True)
-    N = 22
+    N = 23
     plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_glance(3, N), lambda: s_load(4, N), lambda: s_backlog(5, N),
-            lambda: s_prize(6, N), lambda: s_where(7, N), lambda: s_q3(8, N),
-            lambda: reused(db.slide_cycle, 9, N, "Fundamentals"), lambda: reused(db.slide_basics, 10, N, "Fundamentals"),
-            lambda: s_overview(11, N)]
-    plan += [(lambda k=k: s_stop(k, 12 + k, N)) for k in range(7)]
-    plan += [lambda: s_number(19, N), lambda: reused(db.slide_spec, 20, N, "Wire and cable takeaways"),
-             lambda: reused(db.slide_value, 21, N, "Wire and cable takeaways"), lambda: s_close(22, N)]
+            lambda: s_prize(6, N), lambda: s_where(7, N), lambda: s_map(8, N), lambda: s_q3(9, N),
+            lambda: reused(db.slide_cycle, 10, N, "Fundamentals"), lambda: reused(db.slide_basics, 11, N, "Fundamentals"),
+            lambda: s_overview(12, N)]
+    plan += [(lambda k=k: s_stop(k, 13 + k, N)) for k in range(7)]
+    plan += [lambda: s_number(20, N), lambda: reused(db.slide_spec, 21, N, "Wire and cable takeaways"),
+             lambda: reused(db.slide_value, 22, N, "Wire and cable takeaways"), lambda: s_close(23, N)]
     assert len(plan) == N
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()

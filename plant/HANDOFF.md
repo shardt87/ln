@@ -542,3 +542,7 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 ## Oct 24: training deck, market section (22 slides)
 - The "why gas now" placeholder is replaced by six market slides rebuilt from the Oct 6 PowerGen channel deck (pages 3, 5-10, 14) in the training-deck style: at a glance; load growth plus US gas capacity added 1996-2026 (bar values read from the PDF geometry); turbine backlogs (OEMs anonymised as OEM 1-3); the ~$1.2B cable prize by PO year (named vs allowance split from the PDF geometry); the project register by status and top states; Q3 progress.
 - Names (OEMs, owners, EPCs, the channel partner) are kept in the run of show, not on the slides. Agenda: market and fundamentals 15 min, tour 25 min. The run of show and its PDF are updated.
+
+## Oct 24: training deck, state heat map (23 slides) and JPG export
+- New slide 8, `s_map`: the state tile heat map from page 10 of the Oct 6 deck (values and grid read from the PDF text layer), plus owner × site bars and site classes. The register slide's top states are corrected: AZ is 6.1 GW, not 8.1.
+- JPG copies for phones: renders/deck/training/jpg/slide_NN.jpg, plus contact sheets market_slides_3-9.jpg and all_slides.jpg (written by hand this time, not by deck_training.py).
