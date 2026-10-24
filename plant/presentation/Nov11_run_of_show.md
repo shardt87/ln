@@ -8,6 +8,8 @@
 
 ---
 
+**Slides:** `renders/deck/training/SW-3X1_Nov11_training.pdf` (17 slides, built by `blender/deck_training.py`): title, agenda, why gas now (3 market placeholders to fill), simple vs combined cycle, how an HRSG works, the 16-zone campus, 7 tour-stop backup slides, the whole plant in one number, what the spec calls for, pain points and the answer, three things to remember + Q&A.
+
 ## Rundown (60 min)
 
 | Time | Segment | On screen | Mins |
