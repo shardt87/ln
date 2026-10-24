@@ -968,13 +968,13 @@ def reused(fn, n, N, kicker):
 def main():
     import pymupdf
     os.makedirs(OUT, exist_ok=True)
-    import deck_training_candidates as cand                   # picked candidates (Oct 24): B, C, E, F, J
+    import deck_training_candidates as cand                   # picked candidates (Oct 24): B, C, E, F, J; K replaces the cycle diagram
     cand.FOOT_LEFT = "SW-3X1 MODEL &middot; CONCEPTUAL ILLUSTRATION, NOT ENGINEERED &middot; INTERNAL TRAINING"
     N = 37                                                     # s_q3, s_anatomy and s_corridor are kept, unused
     plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_blackbox(3, N), lambda: s_sources(4, N), lambda: s_system(5, N),
             lambda: s_glance(6, N), lambda: s_load(7, N), lambda: s_backlog(8, N), lambda: s_prize(9, N), lambda: s_where(10, N),
             lambda: s_map(11, N), lambda: s_box(12, N), lambda: s_types(13, N), lambda: cand.c_day(14, N),
-            lambda: reused(db.slide_cycle, 15, N, "Fundamentals"), lambda: reused(db.slide_basics, 16, N, "Fundamentals"),
+            lambda: cand.c_combined(15, N), lambda: reused(db.slide_basics, 16, N, "Fundamentals"),
             lambda: cand.c_grid(17, N), lambda: reused(db.slide_system, 18, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
             lambda: cand.c_cable101(19, N), lambda: cand.c_stress(20, N), lambda: s_follow(21, N), lambda: s_owners(22, N),
             lambda: s_sites(23, N), lambda: s_buy(24, N), lambda: cand.c_modern(25, N), lambda: s_overview(26, N)]

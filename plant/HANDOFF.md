@@ -581,3 +581,6 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 
 ## Oct 24: training deck, picked candidates in (37 slides)
 - B, C, E, F and J are in the main deck, built from deck_training_candidates.py (the footer is switched to the deck's own): C day on the grid (14), B generator to light switch (17), E cable 101 (19), F what a plant does to a cable (20), J the modern campus (25). Agenda: welcome 2 / market and fundamentals 28 / tour 18 / takeaways 6 / Q&A 6. The run of show is updated.
+
+## Oct 24: combined cycle on the model (slide 15)
+- New camera CC1 (power block from above, hall roof off; preview at renders/training/CC1_pro_clean.jpg, queued for the full batch). New candidate K, `c_combined`: seven numbered steps on the render with gas, steam, water and power arrows, a step list with the cable for each step, and "burn the gas once, use the heat twice". It replaces the boiler-deck flow diagram as slide 15 (the diagram is the backup). The run of show is updated.

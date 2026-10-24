@@ -62,9 +62,7 @@ Market slides 6-11 come from the Oct 6 PowerGen channel deck. **OEM, owner and E
 
 **Slide 14: A day on the grid (1.5 min).** Illustrative 24-hour demand: baseload all day, solar at midday, combined cycle in the middle, peakers and batteries on the evening peak. "Every start cycles the plant and its cable."
 
-**Slide 15: What goes in, what comes out (2 min).** Reuse boilers slide 6, "What goes in, what comes out".
-- In: gas, air, a little water. Out: power, stack gas, heat.
-- The gas turbines make about 2/3 of the power; the steam from their exhaust makes about 1/3 more with no extra fuel.
+**Slide 15: Combined cycle on the model (2 min).** Our own power block from above, roof off, with seven numbered steps: 1 air and gas in, 2 gas turbine and generator, 3 HRSG (the exhaust boils water, no extra fuel), 4 steam turbine, 5 condenser (water back to the HRSGs), 6 GSU step-up to 230 kV, 7 stack. Colours: gas, steam, water, power. "Burn the gas once, use the heat twice: about 2/3 of the power from the gas turbines, 1/3 from the steam, same fuel." Each step names its cable. (The old flow diagram, boilers slide 6, is the backup.)
 
 **Slide 16: How an HRSG works (1.5 min).** Reuse boilers slide 5: the "What it is" and "Fun facts" box.
 

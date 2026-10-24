@@ -30,3 +30,6 @@ it where tray congestion is the point of the shot. Process piping stays visible.
 | E95 / E96 | EPC brochure (skid pre-wire workstation) | full render stale | Oct 23: workstation moved beside the inlet chillers; renders/epic E95 / E96 still show the old spot; re-render at full quality, then rebuild the EPC brochure |
 | MP1 / MP2 | Nov 11 stop 5 (modular yard), marketing: AX-1 + IG-1 packages; AX-1 module joint with plug-in interconnects | preview only | new Oct 24 |
 | E43 / E89 | Zone slides 12 (chillers) and 3 (reel staging & prefab) | check + full render | Oct 24: the skid pre-wire workstation now sits between the reel yard and the chillers and may be in both shots |
+
+## Oct 24: training deck, combined cycle
+- **CC1** (blender/pro_look.py): the power block from above with the hall roof off. It is the base of the training deck's combined-cycle slide (slide 15, `c_combined`; the markers are placed for this framing, so do not move the camera). The deck uses the preview at renders/training/CC1_pro_clean.jpg; replace it with the full render.

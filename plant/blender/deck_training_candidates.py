@@ -255,11 +255,61 @@ def c_modern(n, N):
                        "the campus is the customer, not just the turbines.", 630))
 
 
+CC_STEPS = [("Air and gas in", "Filters pull in air; gas comes from the gas yard.", "instrumentation, fan and heater power"),
+            ("Gas turbine", "Burns the gas in compressed air; the hot gas spins the turbine and its generator.", "MV-105, iso-phase bus, TC-ER to the skids"),
+            ("HRSG", "The ~1,100 &deg;F exhaust boils water into steam: no extra fuel.", "thermocouples, MOVs, feed-pump MV"),
+            ("Steam turbine", "Steam from all three HRSGs spins a fourth generator.", "MV-105, lube-oil and control cable"),
+            ("Condenser", "80 fans cool the spent steam back into water; pumps send it back to the HRSGs.", "VFD cable to every fan"),
+            ("Step-up to the grid", "Each generator's 21 kV goes up to 230 kV in its GSU, then out through the switchyard.", "HV XLPE, control and relay cable"),
+            ("Stack", "What is left of the exhaust leaves, cleaned by the SCR.", "CEMS instrument cable")]
+# marker positions on the slide (the CC1 render, 1360 px wide, shown left-aligned at 765 px high)
+CC_PTS = [(425, 566), (462, 450), (470, 250), (800, 470), (955, 330), (452, 655), (470, 72)]
+
+
+def c_combined(n, N):
+    img = (f'<img class="abs" src="{pic("renders/training/CC1_pro_clean.jpg")}" style="left:0;top:0;width:1000px;height:765px;object-fit:cover;object-position:0 0">'
+           f'<div class="abs" style="left:880px;top:0;width:130px;height:765px;background:linear-gradient(90deg,rgba(14,16,18,0),#0e1012)"></div>')
+    P = CC_PTS
+    def arrow(pts, col, dash=""):
+        d = " ".join(f"{x},{y}" for x, y in pts)
+        return (f'<polyline points="{d}" fill="none" stroke="{col}" stroke-width="5" stroke-linejoin="round" {dash} marker-end="url(#h{col[1:]})"/>')
+    cols = {"#e8a874": "gas", "#e04b3c": "steam", "#3a8fd9": "water", "#b06ae0": "power"}
+    defs = "".join(f'<marker id="h{c[1:]}" markerWidth="4" markerHeight="4" refX="2.2" refY="2" orient="auto"><path d="M0,0 L4,2 L0,4 z" fill="{c}"/></marker>' for c in cols)
+    svg = (f'<svg class="abs" style="left:0;top:0" width="1000" height="765"><defs>{defs}</defs>'
+           + arrow([(P[0][0], P[0][1] - 22), (P[1][0] - 4, P[1][1] + 24)], "#e8a874")
+           + arrow([(P[1][0] + 2, P[1][1] - 24), (P[2][0], P[2][1] + 26)], "#e8a874")
+           + arrow([(P[2][0], P[2][1] - 26), (P[6][0], P[6][1] + 26)], "#e8a874")
+           + arrow([(P[2][0] + 24, P[2][1]), (760, P[2][1]), (P[3][0], P[3][1] - 26)], "#e04b3c")
+           + arrow([(P[3][0] + 24, P[3][1] - 10), (P[4][0] - 18, P[4][1] + 20)], "#e04b3c")
+           + arrow([(P[4][0] - 8, P[4][1] - 26), (P[4][0] - 8, 190), (P[2][0] + 30, 190), (P[2][0] + 30, P[2][1] - 30)], "#3a8fd9", 'stroke-dasharray="12 8"')
+           + arrow([(P[1][0] - 2, P[1][1] + 26), (P[5][0] + 2, P[5][1] - 26)], "#b06ae0")
+           + arrow([(P[3][0], P[3][1] + 26), (P[3][0], P[5][1]), (P[5][0] + 28, P[5][1])], "#b06ae0")
+           + '</svg>')
+    marks = "".join(f'<div class="abs" style="left:{x - 22}px;top:{y - 22}px;width:44px;height:44px;border-radius:50%;background:{COPPER};'
+                    f'border:3px solid #121417;box-sizing:border-box;font:800 21px/38px BC;color:#121417;text-align:center">{k + 1}</div>'
+                    for k, (x, y) in enumerate(P))
+    key = "".join(f'<span style="display:inline-block;width:22px;height:5px;background:{c};margin:0 6px 3px {0 if i == 0 else 14}px;vertical-align:middle"></span>{t}'
+                  for i, (c, t) in enumerate(cols.items()))
+    steps = "".join(f'<div style="display:flex;gap:12px;margin-top:11px">{circ(k + 1, 28, COPPER, "#121417", 14)}'
+                    f'<div><div style="font:800 17px/1.05 BC;color:{WHITE};text-transform:uppercase">{h}</div>'
+                    f'<div class="cd" style="font-size:13px;margin-top:3px">{t}</div>'
+                    f'<div style="font:400 12px/1.3 B;color:{COPPER};margin-top:2px">{c}</div></div></div>' for k, (h, t, c) in enumerate(CC_STEPS))
+    return page(n, N, img + svg + marks
+                + f'<div class="abs" style="left:24px;top:722px;font:700 12px/1 BC;letter-spacing:.08em;color:#d6d9dc;text-transform:uppercase;'
+                  f'background:rgba(14,16,18,.75);padding:7px 10px;border-radius:3px">{key}</div>'
+                + f'<div class="abs" style="left:1010px;top:40px;width:400px">'
+                  f'<div class="kicker">Fundamentals &nbsp;&middot;&nbsp; combined cycle</div>'
+                  f'<div class="h2" style="font-size:40px;margin-top:8px">Burn the gas once, <em>use the heat twice</em></div>'
+                  f'{steps}'
+                  f'<div style="margin-top:14px;border-top:3px solid {COPPER};padding-top:8px;font:800 19px/1.15 BC;color:{WHITE};text-transform:uppercase">'
+                  f'~2/3 of the power from the gas turbines, ~1/3 from the steam: <span style="color:{COPPER}">same fuel</span></div></div>')
+
+
 def main():
     import pymupdf
     from PIL import Image
     os.makedirs(OUT, exist_ok=True)
-    fns = [c_generator, c_grid, c_day, c_meter, c_cable101, c_stress, c_future, c_units, c_glossary, c_modern]
+    fns = [c_generator, c_grid, c_day, c_meter, c_cable101, c_stress, c_future, c_units, c_glossary, c_modern, c_combined]
     N = len(fns)
     head_ = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()
