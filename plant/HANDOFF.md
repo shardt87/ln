@@ -565,3 +565,6 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 
 ## Oct 24: training deck, step-back slide (30 slides)
 - New slide 3, `s_system`: every way we make electricity (EIA 2025 shares: gas 41, nuclear 18, coal 17, wind 11, solar ~7, hydro 6; firm vs variable tags) and the 2026 planned additions (86 GW: solar 43.4, batteries 24, wind 11.8, gas 6.3; the 6.3 matches the 2026 bar on the capacity chart). Three "why gas" points; "Southwire cables every one of these; today we focus on gas". Everything after it shifts by one (market 4-9, fundamentals 10-19, stops 20-26, close 30). The run of show is renumbered.
+
+## Oct 24: training deck, black-box intro back (31 slides)
+- `s_blackbox` (the input / black box / output circles) is back as slide 10 and opens the fundamentals; `s_box` is retitled "Open the box: the physical anatomy" (slide 11). Later slides shift by one (stops 21-27, close 31). The run of show is renumbered.

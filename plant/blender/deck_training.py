@@ -1,4 +1,4 @@
-"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 30 slides at 1440 x 810,
+"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 31 slides at 1440 x 810,
 same look as the boiler deck. Reuses the boiler-deck slides for the fundamentals and the cable takeaways (their footers
 re-numbered), the 16-zone overview, and the model renders for the seven tour stops; new: title, agenda, six market slides
 (from the Oct 6 PowerGen channel deck), one slide per tour stop, the whole
@@ -436,7 +436,7 @@ def s_blackbox(n, N):
   <div class="abs kicker" style="left:64px;top:56px">Fundamentals</div>
   <div class="abs h2" style="left:62px;top:84px;font-size:58px">Every thermal project <em>is this</em></div>
   <div class="abs lede" style="left:64px;top:160px;width:1100px">Input &rarr; conversion &rarr; output. The complexity is what's inside the box, and what's around it.</div>
-  {node(230, "Fuel", "Input", "fuel / energy source", "#3b7a4a")}{arrow(465)}{box}{arrow(865)}{node(950, "Power", "Output", "dispatchable power", "#2f63b5")}
+  {node(230, "Fuel", "Input", "fuel / energy source", "#3b7a4a")}{arrow(465)}{box}{arrow(842)}{node(950, "Power", "Output", "dispatchable power", "#2f63b5")}
   <div class="abs lede" style="left:64px;top:620px;width:1300px;font-size:18px">Gas turbine, combined cycle or engines: <b style="color:{WHITE}">the same physics on every project.</b>
     Today we open the box and follow the power out of it.</div>
   {foot(n, N)}
@@ -572,7 +572,7 @@ def s_box(n, N):
     return f"""
 <section class="page slide">
   <div class="abs kicker" style="left:64px;top:56px">Fundamentals</div>
-  <div class="abs h2" style="left:62px;top:84px;font-size:56px">Every thermal project is this: <em>a black box, opened</em></div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:56px">Open the box: <em>the physical anatomy</em></div>
   {b}{cards}
   <div class="abs lede" style="left:64px;top:620px;width:1300px;font-size:18px">Input &rarr; conversion &rarr; output. Gas turbine, combined cycle or
     engines: <b style="color:{WHITE}">the same physics on every project.</b> What changes is the machine in the box, and who owns it.</div>
@@ -913,16 +913,16 @@ def reused(fn, n, N, kicker):
 def main():
     import pymupdf
     os.makedirs(OUT, exist_ok=True)
-    N = 30                                                     # s_q3, s_blackbox, s_anatomy and s_corridor are kept, unused
+    N = 31                                                     # s_q3, s_anatomy and s_corridor are kept, unused
     plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_system(3, N), lambda: s_glance(4, N), lambda: s_load(5, N),
             lambda: s_backlog(6, N), lambda: s_prize(7, N), lambda: s_where(8, N), lambda: s_map(9, N),
-            lambda: s_box(10, N), lambda: s_types(11, N),
-            lambda: reused(db.slide_cycle, 12, N, "Fundamentals"), lambda: reused(db.slide_basics, 13, N, "Fundamentals"),
-            lambda: reused(db.slide_system, 14, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
-            lambda: s_follow(15, N), lambda: s_owners(16, N), lambda: s_sites(17, N), lambda: s_buy(18, N), lambda: s_overview(19, N)]
-    plan += [(lambda k=k: s_stop(k, 20 + k, N)) for k in range(7)]
-    plan += [lambda: s_number(27, N), lambda: reused(db.slide_spec, 28, N, "Wire and cable takeaways"),
-             lambda: reused(db.slide_value, 29, N, "Wire and cable takeaways"), lambda: s_close(30, N)]
+            lambda: s_blackbox(10, N), lambda: s_box(11, N), lambda: s_types(12, N),
+            lambda: reused(db.slide_cycle, 13, N, "Fundamentals"), lambda: reused(db.slide_basics, 14, N, "Fundamentals"),
+            lambda: reused(db.slide_system, 15, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
+            lambda: s_follow(16, N), lambda: s_owners(17, N), lambda: s_sites(18, N), lambda: s_buy(19, N), lambda: s_overview(20, N)]
+    plan += [(lambda k=k: s_stop(k, 21 + k, N)) for k in range(7)]
+    plan += [lambda: s_number(28, N), lambda: reused(db.slide_spec, 29, N, "Wire and cable takeaways"),
+             lambda: reused(db.slide_value, 30, N, "Wire and cable takeaways"), lambda: s_close(31, N)]
     assert len(plan) == N
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()
@@ -953,7 +953,7 @@ def main():
         ims.append(Image.open(png).convert("RGB"))
         ims[-1].save(os.path.join(jd, f"slide_{i + 1:02d}.jpg"), quality=90)
     w, h = 960, 540
-    for name, rng in (("market_slides_3-9", range(2, 9)), ("fundamentals_10-18", range(9, 18)), ("all_slides", range(len(ims)))):
+    for name, rng in (("market_slides_3-9", range(2, 9)), ("fundamentals_10-19", range(9, 19)), ("all_slides", range(len(ims)))):
         rng = list(rng)
         rows = (len(rng) + 1) // 2
         sheet = Image.new("RGB", (w * 2 + 30, h * rows + 15 * (rows + 1)), (40, 40, 40))
