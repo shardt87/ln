@@ -593,3 +593,6 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 
 ## Oct 24: one scope per number
 - Cable X-ray (slide 23) now counts and draws only what the picture shows: the power block plus the ACC (zones A and B, `XR_ZONES`): 8,234 cables, about 440 mi. The combined-cycle payoff (slide 18) uses the same 8,234. The whole-campus totals (~21,000 cables, ~1,200 mi) appear only on slides labelled "whole campus" (Cable 101, Follow the power, The whole campus in one number). The run of show has the method answer for Q&A.
+
+## Oct 24: X-ray "before" slide (42 slides)
+- New `c_xray_intro` (deck slide 23): the CC2 aerial in full colour with six projected leader-line tags (gas turbines, HRSGs, stacks, steam turbine, ACC, step-up transformers) and the line "Next: take all of it away". The X-ray reveal follows as slide 24. The run of show is renumbered.

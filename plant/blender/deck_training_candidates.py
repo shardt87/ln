@@ -431,6 +431,34 @@ XR_GROUPS = [("MV / HV power", "#f05a28", ("HV 230 kV", "MV 35 kV", "MV 25 kV", 
              ("Fibre and fire alarm", "#c58cff", ("Fibre / data", "Fire alarm"), "The control network, protection and life safety.")]
 
 
+INTRO_TAGS = [("Gas turbines", "inside the hall", (790, 497, 40), (-160, 70)), ("HRSGs", "heat-recovery boilers", (790, 690, 100), (-170, -40)),
+              ("Stacks", "", (630, 790, 180), (-150, -20)), ("Steam turbine", "", (1050, 506, 46), (40, 120)),
+              ("Air-cooled condenser", "80 fans", (1290, 600, 125), (-20, -150)), ("Step-up transformers", "21 to 230 kV", (950, 345, 45), (120, 70))]
+
+
+def c_xray_intro(n, N):
+    """The normal view of the CC2 aerial, lightly labelled: the 'before' for the cable X-ray."""
+    img = pic("renders/training/CC2_pro_clean.jpg")
+    svg, tags = "", ""
+    for h, sub, p, (dx, dy) in INTRO_TAGS:
+        x, y = cc_project(p)
+        tx, ty = x + dx, y + dy
+        svg += (f'<line x1="{x:.0f}" y1="{y:.0f}" x2="{tx:.0f}" y2="{ty:.0f}" stroke="#f4f1ec" stroke-width="1.5" opacity=".85"/>'
+                f'<circle cx="{x:.0f}" cy="{y:.0f}" r="6" fill="{COPPER}" stroke="#121417" stroke-width="2"/>')
+        tags += (f'<div class="abs" style="left:{tx:.0f}px;top:{ty:.0f}px;transform:translate(-50%,-50%);background:rgba(14,16,18,.82);'
+                 f'border-left:3px solid {COPPER};padding:7px 12px;white-space:nowrap">'
+                 f'<div style="font:800 17px/1 BC;color:{WHITE};text-transform:uppercase">{h}</div>'
+                 + (f'<div style="font:400 12px/1 B;color:#c9cdd0;margin-top:4px">{sub}</div>' if sub else "") + '</div>')
+    return page(n, N, f'<img class="abs" src="{img}" style="left:0;top:0;width:1440px;height:810px">'
+                f'<div class="abs" style="left:0;top:0;width:1440px;height:810px;background:linear-gradient(180deg,rgba(14,16,18,.82) 0%,rgba(14,16,18,0) 20%,'
+                f'rgba(14,16,18,0) 80%,rgba(14,16,18,.88) 100%)"></div>'
+                f'<svg class="abs" style="left:0;top:0" width="1440" height="810">{svg}</svg>{tags}'
+                f'<div class="abs kicker" style="left:56px;top:40px">Wire and cable &nbsp;&middot;&nbsp; before the X-ray</div>'
+                f'<div class="abs h2" style="left:54px;top:66px;font-size:52px">The power block, <em>as you would see it</em></div>'
+                f'<div class="abs" style="left:56px;top:700px;width:1000px;font:400 19px/1.45 B;color:#e6e3dd">Steel, concrete and machines: the part everyone '
+                f'photographs. <b style="color:#fff">Next: take all of it away, and look at what is left.</b></div>')
+
+
 XR_ZONES = "AB"     # what the picture shows: the power block (zone A) and its air-cooled condenser (zone B)
 
 
@@ -496,7 +524,7 @@ def main():
     import pymupdf
     from PIL import Image
     os.makedirs(OUT, exist_ok=True)
-    fns = [c_generator, c_grid, c_day, c_meter, c_cable101, c_stress, c_future, c_units, c_glossary, c_modern, c_combined, c_cc1, c_cc2, c_cc3, c_cc4, c_xray]
+    fns = [c_generator, c_grid, c_day, c_meter, c_cable101, c_stress, c_future, c_units, c_glossary, c_modern, c_combined, c_cc1, c_cc2, c_cc3, c_cc4, c_xray_intro, c_xray]
     N = len(fns)
     head_ = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()
