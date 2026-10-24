@@ -1,4 +1,4 @@
-"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 22 slides at 1440 x 810,
+"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 26 slides at 1440 x 810,
 same look as the boiler deck. Reuses the boiler-deck slides for the fundamentals and the cable takeaways (their footers
 re-numbered), the 16-zone overview, and the model renders for the seven tour stops; new: title, agenda, six market slides
 (from the Oct 6 PowerGen channel deck), one slide per tour stop, the whole
@@ -75,8 +75,8 @@ def s_title():
 
 
 AGENDA = [("1:30", "Welcome", "why this matters", "3"),
-          ("1:33", "Market and fundamentals", "the gas build, the cable prize, Q3; how a combined cycle works", "15"),
-          ("1:48", "The 3D tour", "seven stops: what it does, its electrical system, its cable", "25"),
+          ("1:33", "Market and fundamentals", "the gas build and the cable prize; the black box, owners, the POI corridor", "18"),
+          ("1:51", "The 3D tour", "seven stops: what it does, its electrical system, its cable", "22"),
           ("2:13", "Wire and cable takeaways", "the whole plant in one number, products, pain points", "9"),
           ("2:22", "Q&amp;A", "questions from the chat", "8")]
 
@@ -364,6 +364,140 @@ def s_q3(n, N):
 </section>"""
 
 
+# Fundamentals from the PowerGen thermal narrative (Oct 2026, pages 1-4), restyled.
+def circ(t, d=46, bg=COPPER, ink="#121417", fs=20):
+    return (f'<div style="width:{d}px;height:{d}px;border-radius:50%;background:{bg};color:{ink};font:800 {fs}px/{d}px BC;'
+            f'text-align:center;display:inline-block">{t}</div>')
+
+
+def s_blackbox(n, N):
+    def node(x, big, lab, sub, bg):
+        return (f'<div class="abs" style="left:{x}px;top:250px;width:260px;text-align:center">'
+                f'<div style="margin:0 auto;width:200px;height:200px;border-radius:50%;background:{bg};display:flex;align-items:center;'
+                f'justify-content:center;font:800 34px/1 BC;color:{WHITE};text-transform:uppercase">{big}</div>'
+                f'<div style="font:800 26px/1 BC;color:{WHITE};text-transform:uppercase;margin-top:26px">{lab}</div>'
+                f'<div class="cd" style="font-size:16px;margin-top:8px">{sub}</div></div>')
+    arrow = lambda x: f'<div class="abs" style="left:{x}px;top:342px;width:120px;height:3px;background:{COPPER}"></div><div class="abs" style="left:{x + 112}px;top:334px;width:0;height:0;border-left:16px solid {COPPER};border-top:9px solid transparent;border-bottom:9px solid transparent"></div>'
+    box = (f'<div class="abs" style="left:590px;top:250px;width:260px;height:200px;background:#0b0c0e;border:3px solid {COPPER};'
+           f'border-radius:6px;display:flex;align-items:center;justify-content:center;font:800 44px/1 BC;color:{WHITE};text-align:center">BLACK<br>BOX</div>'
+           f'<div class="abs cd" style="left:590px;top:476px;width:260px;text-align:center;font-size:16px">Thermal conversion</div>')
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Fundamentals</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:58px">Every thermal project <em>is this</em></div>
+  <div class="abs lede" style="left:64px;top:160px;width:1100px">Input &rarr; conversion &rarr; output. The complexity is what's inside the box, and what's around it.</div>
+  {node(230, "Fuel", "Input", "fuel / energy source", "#3b7a4a")}{arrow(465)}{box}{arrow(865)}{node(950, "Power", "Output", "dispatchable power", "#2f63b5")}
+  <div class="abs lede" style="left:64px;top:620px;width:1300px;font-size:18px">Gas turbine, combined cycle or engines: <b style="color:{WHITE}">the same physics on every project.</b>
+    Today we open the box and follow the power out of it.</div>
+  {foot(n, N)}
+</section>"""
+
+
+ANATOMY = [("Fuel infrastructure", ["Gas production, pipelines, compression", "Storage and LNG logistics", "Plant-gate fuel delivery"]),
+           ("Fuel input", ["Natural gas, coal, oil / diesel", "Hydrogen blends", "Biomass where it applies"]),
+           ("Thermal conversion", ["Frame and aero gas turbines, engines (RICE)", "Combined cycle: GT + HRSG + ST", "Modular and H2-ready packages"]),
+           ("Electricity output", ["Dispatchable AC power", "Stable, reliable load", "Baseload, mid-merit or peaking"]),
+           ("Delivery &amp; flexibility", ["Transmission and distribution", "MV / LV delivery, behind-the-meter on site", "Storage and flexibility support"]),
+           ("End use / off-take", ["Utilities, IPPs, industrial loads", "Data centres and other off-takers", "Critical infrastructure"])]
+
+
+def s_anatomy(n, N):
+    cards = ""
+    for k, (h, items) in enumerate(ANATOMY):
+        x = 64 + k * 220
+        hot = k in (3, 4)
+        li = "".join(f'<div class="cd" style="font-size:15px;margin-top:10px;padding-left:14px;position:relative">'
+                     f'<span style="position:absolute;left:0;top:7px;width:6px;height:6px;background:{COPPER}"></span>{t}</div>' for t in items)
+        cards += (f'<div class="abs" style="left:{x}px;top:200px;width:204px;height:400px;background:#181b1f;border-top:4px solid '
+                  f'{COPPER if hot else "#5d636a"};padding:22px 18px;box-sizing:border-box">{circ(k, bg=COPPER if hot else "#5d636a", ink=WHITE if not hot else "#121417")}'
+                  f'<div class="ct" style="font-size:23px;margin:18px 0 6px;min-height:46px">{h}</div>{li}</div>')
+        if k < 5:
+            cards += f'<div class="abs" style="left:{x + 206}px;top:388px;font:800 18px/1 BC;color:{COPPER}">&rsaquo;</div>'
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Fundamentals</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:58px">Open the box: <em>the physical anatomy</em></div>
+  <div class="abs lede" style="left:64px;top:156px;width:1200px;font-size:17px">From fuel infrastructure to dispatchable electricity and end-use demand.</div>
+  {cards}
+  <div class="abs lede" style="left:64px;top:632px;width:1300px;font-size:18px">Same physics on every project: gas turbine, combined cycle or engines.
+    <b style="color:{WHITE}">What changes is who owns it.</b></div>
+  {foot(n, N)}
+</section>"""
+
+
+def s_owners(n, N):
+    eq = [("ProjectCo", "SPV / LLC"), ("Asset", "conversion plant"), ("Contract", "PPA / off-take"), ("Customer", "off-taker / load"),
+          ("Capital", "PE / tax equity"), ("Market", "ERCOT, PJM, MISO")]
+    e = "".join(f'<div style="display:inline-block;vertical-align:top;width:150px;text-align:center">'
+                f'<div style="font:800 24px/1 BC;color:{WHITE};text-transform:uppercase">{a}</div><div class="cd" style="font-size:14px;margin-top:6px">{b}</div></div>'
+                + (f'<div style="display:inline-block;vertical-align:top;width:22px;font:800 24px/1 BC;color:{COPPER}">+</div>' if k < 5 else "")
+                for k, (a, b) in enumerate(eq))
+    arch = [("IOUs / co-ops", "Regulated", ["Utility-led, rate-based ownership", "Own and operate generation", "Buy like utilities: standards, cycles"]),
+            ("Hybrid IPPs", "Mixed model", ["Utility-affiliated IPP subsidiaries", "Bridge regulated and competitive", "Two buying behaviours"]),
+            ("Pure IPPs", "Competitive", ["Privately owned, PE-backed projects", "A direct fit with the project equation", "Speed and cost drive decisions"])]
+    cards = ""
+    for k, (h, tag, items) in enumerate(arch):
+        hot = k == 2
+        li = "".join(f'<div class="cd" style="font-size:16px;margin-top:10px;padding-left:14px;position:relative">'
+                     f'<span style="position:absolute;left:0;top:8px;width:6px;height:6px;background:{COPPER}"></span>{t}</div>' for t in items)
+        cards += (f'<div class="abs" style="left:{64 + k * 444}px;top:420px;width:420px;height:220px;background:{"#2a1d14" if hot else "#181b1f"};'
+                  f'border-top:4px solid {COPPER if hot else "#5d636a"};{"border:1px solid #b4591f;border-top:4px solid " + COPPER + ";" if hot else ""}padding:22px 26px;box-sizing:border-box">'
+                  f'<div class="ct" style="font-size:28px">{h} <span style="font:700 14px/1 BC;letter-spacing:.14em;color:{COPPER};margin-left:10px">{tag}</span></div>{li}</div>')
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Fundamentals &nbsp;&middot;&nbsp; who buys</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:58px">Same physics, <em>different owners</em></div>
+  <div class="abs lede" style="left:64px;top:156px;width:1200px;font-size:17px">The owner decides how the project is structured, and how it gets bought.</div>
+  <div class="abs" style="left:64px;top:206px;width:1312px;height:160px;background:#181b1f;border-top:4px solid {COPPER};padding:22px 26px;box-sizing:border-box">
+    <div class="cnum">The structural equation</div>
+    <div style="margin-top:26px;white-space:nowrap"><div style="display:inline-block;vertical-align:top;width:170px;font:800 28px/1 BC;color:{COPPER};text-transform:uppercase">Thermal IPP =</div>{e}</div></div>
+  <div class="abs cnum" style="left:64px;top:392px;color:{WHITE}">Power owner archetypes</div>
+  {cards}
+  <div class="abs" style="left:952px;top:652px;font:700 14px/1 BC;letter-spacing:.1em;color:{COPPER};text-transform:uppercase">Primary focus for competitive thermal power</div>
+  {foot(n, N)}
+</section>"""
+
+
+def s_corridor(n, N):
+    up = "".join(f'<div class="abs" style="left:{64 + k * 104}px;top:206px;width:94px;height:330px;background:#15171a;border-top:4px solid #3a3f45;'
+                 f'text-align:center;padding-top:20px;box-sizing:border-box">{circ(k, 38, "#3a3f45", "#80868c", 17)}'
+                 f'<div style="font:700 15px/1.2 BC;color:#80868c;text-transform:uppercase;margin-top:14px">{t}</div></div>'
+                 for k, t in enumerate(["Fuel infra", "Fuel input", "Thermal conversion"]))
+    zones = [("3", "Electricity output", ["Generator leads", "Power collection and busbar", "Grounding systems"]),
+             ("4A", "Plant electrical &amp; interconnection", ["GSU transformer, switchyard", "MV / HV cable and tray", "E-houses, controls, BESS tie-ins"]),
+             ("4B", "Utility / grid delivery", ["Gen-tie to the POI", "Transmission and distribution cable", "Substation solutions"])]
+    z = ""
+    for k, (num, h, items) in enumerate(zones):
+        x = 440 + k * 318
+        li = "".join(f'<div class="cd" style="font-size:15px;margin-top:9px;padding-left:14px;position:relative">'
+                     f'<span style="position:absolute;left:0;top:7px;width:6px;height:6px;background:{COPPER}"></span>{t}</div>' for t in items)
+        z += (f'<div class="abs" style="left:{x}px;top:250px;width:296px;height:200px;background:#1f2328;padding:18px 20px;box-sizing:border-box">'
+              f'{circ(num, 44, COPPER, "#121417", 18)}<div class="ct" style="font-size:22px;margin-top:12px">{h}</div>{li}</div>')
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Fundamentals &nbsp;&middot;&nbsp; where the cable is</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:58px">Where Southwire wins: <em>the POI corridor</em></div>
+  <div class="abs lede" style="left:64px;top:156px;width:1250px;font-size:17px">The cable story lives between electricity output and the grid:
+    plant electrical, gen-tie and utility delivery.</div>
+  {up}
+  <div class="abs" style="left:64px;top:548px;font:italic 400 14px/1 B;color:#80868c">Upstream: not our fight</div>
+  <div class="abs" style="left:372px;top:362px;font:800 30px/1 BC;color:{COPPER}">&rarr;</div>
+  <div class="abs" style="left:420px;top:198px;width:976px;height:350px;background:#181b1f;border-top:4px solid {COPPER}"></div>
+  <div class="abs cnum" style="left:440px;top:218px">The Southwire corridor</div>
+  {z}
+  <div class="abs" style="left:1072px;top:240px;width:0;height:290px;border-left:2px dashed {COPPER}"></div>
+  <div class="abs" style="left:440px;top:470px;width:610px;height:54px;background:#b4591f;padding:0 18px;box-sizing:border-box;
+       font:800 19px/54px BC;color:{WHITE};text-transform:uppercase">HV underground: gen-tie and plant-to-POI</div>
+  <div class="abs" style="left:1050px;top:470px;width:44px;height:54px;background:{WHITE};font:800 17px/54px BC;color:#121417;text-align:center">POI</div>
+  <div class="abs cd" style="left:440px;top:530px;font-size:13px">Plant / EPC scope</div>
+  <div class="abs cd" style="left:1104px;top:530px;font-size:13px">Utility / transmission-owner scope</div>
+  <div class="abs" style="left:64px;top:600px;width:1332px;background:#2a1d14;border-left:4px solid {COPPER};padding:16px 22px;box-sizing:border-box">
+    <div class="cd" style="font-size:17px"><b style="color:{WHITE}">Every MW that leaves the black box crosses this corridor.</b> Cable intensity
+      concentrates at 3 &rarr; 4A &rarr; 4B, the same span where the POI boundary blurs scope, and where we help EPCs and IPPs.</div></div>
+  {foot(n, N)}
+</section>"""
+
+
 def s_overview(n, N):
     route = "".join(f'<div style="display:flex;gap:18px;align-items:baseline;padding:10px 0;border-top:1px solid #2c3036">'
                     f'<div style="width:24px;font:800 22px/1 BC;color:{COPPER}">{k + 1}</div>'
@@ -533,14 +667,15 @@ def reused(fn, n, N, kicker):
 def main():
     import pymupdf
     os.makedirs(OUT, exist_ok=True)
-    N = 22                                                     # s_q3 (Q3 progress) taken out on Oct 24; kept for later use
+    N = 26                                                     # s_q3 (Q3 progress) taken out on Oct 24; kept for later use
     plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_glance(3, N), lambda: s_load(4, N), lambda: s_backlog(5, N),
             lambda: s_prize(6, N), lambda: s_where(7, N), lambda: s_map(8, N),
-            lambda: reused(db.slide_cycle, 9, N, "Fundamentals"), lambda: reused(db.slide_basics, 10, N, "Fundamentals"),
-            lambda: s_overview(11, N)]
-    plan += [(lambda k=k: s_stop(k, 12 + k, N)) for k in range(7)]
-    plan += [lambda: s_number(19, N), lambda: reused(db.slide_spec, 20, N, "Wire and cable takeaways"),
-             lambda: reused(db.slide_value, 21, N, "Wire and cable takeaways"), lambda: s_close(22, N)]
+            lambda: s_blackbox(9, N), lambda: s_anatomy(10, N),
+            lambda: reused(db.slide_cycle, 11, N, "Fundamentals"), lambda: reused(db.slide_basics, 12, N, "Fundamentals"),
+            lambda: s_owners(13, N), lambda: s_corridor(14, N), lambda: s_overview(15, N)]
+    plan += [(lambda k=k: s_stop(k, 16 + k, N)) for k in range(7)]
+    plan += [lambda: s_number(23, N), lambda: reused(db.slide_spec, 24, N, "Wire and cable takeaways"),
+             lambda: reused(db.slide_value, 25, N, "Wire and cable takeaways"), lambda: s_close(26, N)]
     assert len(plan) == N
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()
@@ -571,7 +706,7 @@ def main():
         ims.append(Image.open(png).convert("RGB"))
         ims[-1].save(os.path.join(jd, f"slide_{i + 1:02d}.jpg"), quality=90)
     w, h = 960, 540
-    for name, rng in (("market_slides_3-8", range(2, 8)), ("all_slides", range(len(ims)))):
+    for name, rng in (("market_slides_3-8", range(2, 8)), ("fundamentals_9-14", range(8, 14)), ("all_slides", range(len(ims)))):
         rng = list(rng)
         rows = (len(rng) + 1) // 2
         sheet = Image.new("RGB", (w * 2 + 30, h * rows + 15 * (rows + 1)), (40, 40, 40))

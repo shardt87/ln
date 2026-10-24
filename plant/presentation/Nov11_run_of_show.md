@@ -8,15 +8,15 @@
 
 ---
 
-**Slides:** `renders/deck/training/SW-3X1_Nov11_training.pdf` (22 slides, built by `blender/deck_training.py`): title, agenda, six market slides (from the Oct 6 PowerGen channel deck: at a glance, load growth and capacity added since 1996, turbine backlogs, the ~$1.2B cable prize, the project register, the state heat map), simple vs combined cycle, how an HRSG works, the campus with the LNG terminal, 7 tour-stop backup slides, the whole plant in one number, what the spec calls for, pain points and the answer, three things to remember + Q&A.
+**Slides:** `renders/deck/training/SW-3X1_Nov11_training.pdf` (26 slides, built by `blender/deck_training.py`): title, agenda, six market slides (from the Oct 6 PowerGen channel deck: at a glance, load growth and capacity added since 1996, turbine backlogs, the ~$1.2B cable prize, the project register, the state heat map), six fundamentals (every thermal project is a black box, open the box, simple vs combined cycle, how an HRSG works, same physics different owners, the POI corridor; from the PowerGen thermal narrative), simple vs combined cycle, how an HRSG works, the campus with the LNG terminal, 7 tour-stop backup slides, the whole plant in one number, what the spec calls for, pain points and the answer, three things to remember + Q&A.
 
 ## Rundown (60 min)
 
 | Time | Segment | On screen | Mins |
 |---|---|---|---|
 | 1:30 | 0. Welcome and why this matters | 1 title slide | 3 |
-| 1:33 | 1. Market and fundamentals | 9 slides | 15 |
-| 1:48 | 2. The 3D tour: seven stops | Live viewer, plus one slide per stop if needed | 25 |
+| 1:33 | 1. Market and fundamentals | 13 slides | 18 |
+| 1:51 | 2. The 3D tour: seven stops | Live viewer, plus one slide per stop if needed | 22 |
 | 2:13 | 3. Wire and cable takeaways | 3 slides | 9 |
 | 2:22 | 4. Q&A | Viewer on the overview | 8 |
 
@@ -34,7 +34,7 @@ Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) t
 
 ---
 
-## 1. Market and fundamentals (15 min, 9 slides)
+## 1. Market and fundamentals (18 min, 13 slides)
 
 Market slides 3-8 come from the Oct 6 PowerGen channel deck. **OEM, owner and EPC names are not on the slides; say them here if useful.** Verify the figures against the primary sources (appendix of the Oct 6 deck) before Nov 11.
 
@@ -50,19 +50,27 @@ Market slides 3-8 come from the Oct 6 PowerGen channel deck. **OEM, owner and EP
 
 **Slide 8: Where the build is (1 min).** The state heat map: TX 55.5 GW leads, then LA, WV, IN, OH, PA. Owners: IPPs and behind-the-meter developers mostly build new; utilities reuse old sites (coal-site repowers 41.3 GW).
 
-**Slide 9: Simple cycle vs combined cycle (3 min).** Reuse boilers slide 6, "What goes in, what comes out".
+**Slide 9: Every thermal project is this (1 min).** Input (fuel), the black box (thermal conversion), output (dispatchable power). "The complexity is what's inside the box, and what's around it. Today we open the box."
+
+**Slide 10: Open the box (2 min).** Six steps: 0 fuel infrastructure, 1 fuel input, 2 thermal conversion, 3 electricity output, 4 delivery and flexibility, 5 end use. "Same physics on every project; what changes is who owns it."
+
+**Slide 11: Simple cycle vs combined cycle (3 min).** Reuse boilers slide 6, "What goes in, what comes out".
 - In: gas, air, a little water. Out: power, stack gas, heat.
 - The gas turbines make about 2/3 of the power; the steam from their exhaust makes about 1/3 more with no extra fuel.
 
-**Slide 10: How an HRSG works (2 min).** Reuse boilers slide 5: the "What it is" and "Fun facts" box.
+**Slide 12: How an HRSG works (2 min).** Reuse boilers slide 5: the "What it is" and "Fun facts" box.
 
-**Slide 11: The campus at a glance (2 min).** The campus aerial with the LNG terminal and the seven stops.
+**Slide 13: Same physics, different owners (1.5 min).** Thermal IPP = ProjectCo + asset + contract (PPA) + customer + capital + market. Utilities and co-ops buy like utilities (standards, cycles); hybrid IPPs show both behaviours; pure IPPs are PE-backed, and speed and cost drive them: the primary focus for competitive thermal power.
+
+**Slide 14: The POI corridor (1.5 min).** Steps 0-2 are upstream, not our fight. Our corridor is 3 (generator leads, collection, grounding), 4A (GSU, switchyard, MV/HV cable and tray, e-houses, BESS tie-ins) and 4B (gen-tie to the POI, T&D cable, substations). HV underground runs the gen-tie and plant-to-POI. "Every MW that leaves the black box crosses this corridor": the bridge into the tour.
+
+**Slide 15: The campus at a glance (2 min).** The campus aerial with the LNG terminal and the seven stops.
 - "This is SW-3X1, a 3x1 combined-cycle plant: three gas turbines, three HRSGs and one steam turbine, with a modular generation yard, a battery yard, a behind-the-meter data centre, LNG supply, and options for carbon capture and hydrogen."
 - "Conceptual and not engineered, but sized like real plants."
 
 ---
 
-## 2. The 3D tour: seven stops (25 min, about 3.5 min each)
+## 2. The 3D tour: seven stops (22 min, about 3 min each)
 
 **How to run it:** open the viewer and press **▶ Nov 11** (top left of the 3D window). It goes full screen with captions (Equipment / System / Cable). Use **→ / space** for the next view, **←** to go back, keys **1-7** (or the chapter bar at the top) to jump to a stop, and **Esc** to leave. The tour has 22 views: an opening, 20 across the seven stops, and a closing cable X-ray. Use the same three beats at every stop:
 

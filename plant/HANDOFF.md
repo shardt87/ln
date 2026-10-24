@@ -549,3 +549,7 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 
 ## Oct 24: training deck, Q3 progress slide out (22 slides)
 - The "From discovery to execution" slide was removed at the author's request. `s_q3` is kept in deck_training.py, unused. The deck now writes the JPG copies itself: jpg/slide_NN.jpg, market_slides_3-8.jpg and all_slides.jpg. The run of show is renumbered.
+
+## Oct 24: training deck, fundamentals from the thermal narrative (26 slides)
+- Four new slides from the PowerGen thermal narrative (pages 1-4), restyled: s_blackbox (9), s_anatomy (10), s_owners (13) and s_corridor (14). They sit around the cycle and HRSG slides (11, 12), and the corridor leads into the campus overview (15). Page 5's pipeline figures ($470M, 17 projects) are a different basis from the market slides' $1.2B and 386, so they are left out.
+- Agenda: market and fundamentals 18 min, tour 22 min. The run of show is updated. A fundamentals_9-14.jpg contact sheet is added.
