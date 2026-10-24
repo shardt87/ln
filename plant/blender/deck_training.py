@@ -1,4 +1,4 @@
-"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 28 slides at 1440 x 810,
+"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 29 slides at 1440 x 810,
 same look as the boiler deck. Reuses the boiler-deck slides for the fundamentals and the cable takeaways (their footers
 re-numbered), the 16-zone overview, and the model renders for the seven tour stops; new: title, agenda, six market slides
 (from the Oct 6 PowerGen channel deck), one slide per tour stop, the whole
@@ -650,6 +650,50 @@ def s_buy(n, N):
 </section>"""
 
 
+
+SITES = [("New site", "Greenfield, grid-connected", 77.0, "renders/cover/K1_pro.png",
+          "A new plant on open land, tied to the grid.", "Everything is new: the full cable schedule, the switchyard and an HV gen-tie to the POI."),
+         ("New site", "Data-centre / behind-the-meter campus", 54.5, "renders/epic/E47_pro_clean.jpg",
+          "Power built next to the load it serves.", "Modular engines, turbines and batteries; MV collection to the campus; fast schedules, bought by package builders."),
+         ("Existing site", "Coal-site repower", 41.3, "renders/boilers/BR1_pro_clean.jpg",
+          "New gas units on a retired coal or boiler site.", "Reuses the land, water and grid connection; new plant cable tied into an old switchyard."),
+         ("Existing site", "Expansion at an operating plant", 21.4, "renders/modular/MP1_pro_clean.jpg",
+          "New units beside ones that keep running.", "Work around live equipment; tie-ins wait for outages; shared switchyard and controls."),
+         ("Existing site", "Industrial captive and site reuse", 11.6, "renders/boilers/BX1_pro_clean.jpg",
+          "Power, often with steam, for a factory or refinery.", "Hazardous areas (MC-HL), tight routes, the host plant's own standards.")]
+
+
+def s_sites(n, N):
+    html = ""
+    for k, (grp, h, gw, im, what, cab) in enumerate(SITES):
+        x = 64 + k * 266
+        new_site = grp == "New site"
+        html += (f'<div class="abs" style="left:{x}px;top:214px;width:250px;height:420px;background:#181b1f;border-top:4px solid '
+                 f'{COPPER if new_site else "#8e98a3"}">'
+                 f'<img src="{pic(im)}" style="width:250px;height:120px;object-fit:cover;display:block">'
+                 f'<div style="padding:14px 16px">'
+                 f'<div style="font:800 40px/1 BC;color:{COPPER if new_site else WHITE}">{gw} <span style="font-size:18px;color:{GREY}">GW</span></div>'
+                 f'<div class="ct" style="font-size:20px;margin-top:8px;min-height:40px">{h}</div>'
+                 f'<div class="cd" style="font-size:14px;color:{WHITE};margin-top:8px">{what}</div>'
+                 f'<div class="cd" style="font-size:13.5px;margin-top:8px">{cab}</div></div></div>')
+    grp = (f'<div class="abs" style="left:64px;top:180px;width:516px;font:800 20px/1 BC;color:{COPPER};text-transform:uppercase;letter-spacing:.04em">'
+           f'Greenfield &middot; new sites <span style="font:400 14px/1 B;color:{GREY};text-transform:none;letter-spacing:0">&nbsp; 137 GW in the register</span></div>'
+           f'<div class="abs" style="left:596px;top:180px;width:780px;font:800 20px/1 BC;color:#c4cbd2;text-transform:uppercase;letter-spacing:.04em">'
+           f'Brownfield &middot; existing sites <span style="font:400 14px/1 B;color:{GREY};text-transform:none;letter-spacing:0">&nbsp; 69 GW in the register</span></div>')
+    band = (f'<div class="abs" style="left:64px;top:648px;width:1312px;background:#2a1d14;border-left:4px solid {COPPER};padding:12px 22px;box-sizing:border-box">'
+            f'<div class="cd" style="font-size:16px"><b style="color:{WHITE}">And on plants already running:</b> outages, HRSG module replacements, upgrades and '
+            f'conversions. There the outage clock is the cost, so cable is staged, pre-terminated and pulled fast. Utilities mostly reuse old sites; '
+            f'IPPs and behind-the-meter developers mostly build new.</div></div>')
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Fundamentals &nbsp;&middot;&nbsp; kinds of project</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:56px">Greenfield and brownfield: <em>five kinds of site</em></div>
+  {grp}{html}{band}
+  <div class="abs" style="left:64px;top:732px;{SRC}">Gross GW by site class, Southwire PowerGen register, Sep 11, 2026 (205.8 GW eligible, COD 2026&ndash;2035). Site classes provisional (Rev01).</div>
+  {foot(n, N)}
+</section>"""
+
+
 def s_overview(n, N):
     route = "".join(f'<div style="display:flex;gap:18px;align-items:baseline;padding:10px 0;border-top:1px solid #2c3036">'
                     f'<div style="width:24px;font:800 22px/1 BC;color:{COPPER}">{k + 1}</div>'
@@ -819,16 +863,16 @@ def reused(fn, n, N, kicker):
 def main():
     import pymupdf
     os.makedirs(OUT, exist_ok=True)
-    N = 28                                                     # s_q3, s_blackbox, s_anatomy and s_corridor are kept, unused
+    N = 29                                                     # s_q3, s_blackbox, s_anatomy and s_corridor are kept, unused
     plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_glance(3, N), lambda: s_load(4, N), lambda: s_backlog(5, N),
             lambda: s_prize(6, N), lambda: s_where(7, N), lambda: s_map(8, N),
             lambda: s_box(9, N), lambda: s_types(10, N),
             lambda: reused(db.slide_cycle, 11, N, "Fundamentals"), lambda: reused(db.slide_basics, 12, N, "Fundamentals"),
             lambda: reused(db.slide_system, 13, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
-            lambda: s_follow(14, N), lambda: s_owners(15, N), lambda: s_buy(16, N), lambda: s_overview(17, N)]
-    plan += [(lambda k=k: s_stop(k, 18 + k, N)) for k in range(7)]
-    plan += [lambda: s_number(25, N), lambda: reused(db.slide_spec, 26, N, "Wire and cable takeaways"),
-             lambda: reused(db.slide_value, 27, N, "Wire and cable takeaways"), lambda: s_close(28, N)]
+            lambda: s_follow(14, N), lambda: s_owners(15, N), lambda: s_sites(16, N), lambda: s_buy(17, N), lambda: s_overview(18, N)]
+    plan += [(lambda k=k: s_stop(k, 19 + k, N)) for k in range(7)]
+    plan += [lambda: s_number(26, N), lambda: reused(db.slide_spec, 27, N, "Wire and cable takeaways"),
+             lambda: reused(db.slide_value, 28, N, "Wire and cable takeaways"), lambda: s_close(29, N)]
     assert len(plan) == N
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()
@@ -859,7 +903,7 @@ def main():
         ims.append(Image.open(png).convert("RGB"))
         ims[-1].save(os.path.join(jd, f"slide_{i + 1:02d}.jpg"), quality=90)
     w, h = 960, 540
-    for name, rng in (("market_slides_3-8", range(2, 8)), ("fundamentals_9-16", range(8, 16)), ("all_slides", range(len(ims)))):
+    for name, rng in (("market_slides_3-8", range(2, 8)), ("fundamentals_9-17", range(8, 17)), ("all_slides", range(len(ims)))):
         rng = list(rng)
         rows = (len(rng) + 1) // 2
         sheet = Image.new("RGB", (w * 2 + 30, h * rows + 15 * (rows + 1)), (40, 40, 40))

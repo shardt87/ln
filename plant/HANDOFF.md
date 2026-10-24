@@ -559,3 +559,6 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 - New: `s_types` (simple cycle, combined cycle, engines, aeroderivative, plus a units strip), the voltage ladder (`db.slide_system`, reused) and `s_buy` (who buys, and when). Owners slide: plain-English IPP gloss, "our sales focus".
 - Order: market 3-8; fundamentals 9-17; tour stops 18-24; takeaways 25-27; close 28. Agenda: 22 / 20 / 8 / 7 min. The run of show is rewritten for 9-17.
 - s_q3, s_blackbox, s_anatomy and s_corridor are kept in the script, unused.
+
+## Oct 24: training deck, greenfield and brownfield (29 slides)
+- New slide 16, `s_sites`: the register's five site classes (greenfield grid-connected 77.0 GW, data-centre / BTM 54.5, coal-site repower 41.3, expansion 21.4, industrial captive 11.6), each with a model render and its cable implications, plus a band on running-plant work (outages, HRSG module replacement). Who buys moves to 17, the campus to 18, tour stops to 19-25, close to 29. The run of show is updated.

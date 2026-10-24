@@ -8,14 +8,14 @@
 
 ---
 
-**Slides:** `renders/deck/training/SW-3X1_Nov11_training.pdf` (28 slides, built by `blender/deck_training.py`; JPG copies in `renders/deck/training/jpg/`): title, agenda; market 3-8 (at a glance, load growth since 1996, turbine backlogs, the ~$1.2B cable prize, the project register, the state heat map); fundamentals 9-17 (the black box opened, four ways to burn gas, what goes in and out, how an HRSG works, the voltage ladder, follow the power, same physics different owners, who buys and when, the campus with the LNG terminal); 7 tour-stop backup slides; the whole plant in one number, what the spec calls for, pain points and the answer, three things to remember + Q&A.
+**Slides:** `renders/deck/training/SW-3X1_Nov11_training.pdf` (29 slides, built by `blender/deck_training.py`; JPG copies in `renders/deck/training/jpg/`): title, agenda; market 3-8 (at a glance, load growth since 1996, turbine backlogs, the ~$1.2B cable prize, the project register, the state heat map); fundamentals 9-18 (the black box opened, four ways to burn gas, what goes in and out, how an HRSG works, the voltage ladder, follow the power, same physics different owners, greenfield and brownfield, who buys and when, the campus with the LNG terminal); 7 tour-stop backup slides; the whole plant in one number, what the spec calls for, pain points and the answer, three things to remember + Q&A.
 
 ## Rundown (60 min)
 
 | Time | Segment | On screen | Mins |
 |---|---|---|---|
 | 1:30 | 0. Welcome and why this matters | 1 title slide | 3 |
-| 1:33 | 1. Market and fundamentals | 15 slides | 22 |
+| 1:33 | 1. Market and fundamentals | 16 slides | 22 |
 | 1:55 | 2. The 3D tour: seven stops | Live viewer, plus one slide per stop if needed | 20 |
 | 2:15 | 3. Wire and cable takeaways | 3 slides | 8 |
 | 2:23 | 4. Q&A | Viewer on the overview | 7 |
@@ -34,7 +34,7 @@ Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) t
 
 ---
 
-## 1. Market and fundamentals (22 min, 15 slides)
+## 1. Market and fundamentals (22 min, 16 slides)
 
 Market slides 3-8 come from the Oct 6 PowerGen channel deck. **OEM, owner and EPC names are not on the slides; say them here if useful.** Verify the figures against the primary sources (appendix of the Oct 6 deck) before Nov 11.
 
@@ -66,9 +66,11 @@ Market slides 3-8 come from the Oct 6 PowerGen channel deck. **OEM, owner and EP
 
 **Slide 15: Same physics, different owners (1.5 min).** IPP = one company per plant + asset + power purchase agreement + customer + investors + market (ERCOT, PJM, MISO). Utilities and co-ops buy like utilities; hybrid IPPs both ways; pure IPPs are our sales focus for competitive thermal power.
 
-**Slide 16: Who buys, and when (2 min).** Develop → finance → engineer (the owner's engineer specifies the cable) → procure (the EPC or package builder buys it) → build (cable pulls on the critical path) → operate. "Be in the spec early; be ready when the EPC buys."
+**Slide 16: Greenfield and brownfield (1.5 min).** Five kinds of site from the register: greenfield grid-connected 77.0 GW, data-centre / behind-the-meter campus 54.5, coal-site repower 41.3, expansion at an operating plant 21.4, industrial captive and site reuse 11.6. New sites take the whole cable scope; existing sites mean tie-ins, live equipment and outage windows. Plus work on running plants (HRSG module replacement: the boiler deck's outage story). Utilities mostly reuse old sites; IPPs and BTM developers mostly build new.
 
-**Slide 17: The campus at a glance (2 min).** The campus aerial with the LNG terminal and the seven stops.
+**Slide 17: Who buys, and when (1.5 min).** Develop → finance → engineer (the owner's engineer specifies the cable) → procure (the EPC or package builder buys it) → build (cable pulls on the critical path) → operate. "Be in the spec early; be ready when the EPC buys."
+
+**Slide 18: The campus at a glance (2 min).** The campus aerial with the LNG terminal and the seven stops.
 - "This is SW-3X1, a 3x1 combined-cycle plant: three gas turbines, three HRSGs and one steam turbine, with a modular generation yard, a battery yard, a behind-the-meter data centre, LNG supply, and options for carbon capture and hydrogen."
 - "Conceptual and not engineered, but sized like real plants."
 
