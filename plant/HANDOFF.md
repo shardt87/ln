@@ -571,3 +571,6 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 
 ## Oct 24: training deck, "four families" opener (32 slides)
 - New slide 3, `s_sources`: how electricity is made, in four families (thermal with gas highlighted, water and wind, direct, storage), firm/variable tags and what is in SW-3X1. The EIA mix slide is retitled "The mix today, and why we zoom in on gas" (slide 4). Later slides shift by one (market 5-10, fundamentals 11-21, stops 22-28, close 32). Agenda: market and fundamentals 23 min, tour 19 min.
+
+## Oct 24: training deck, definitions slide first (32 slides)
+- `s_blackbox` is generalised to "Every power plant is this" (source / input → black box / conversion → power / output, with definitions) and moved to slide 3, ahead of the four families (4) and the mix (5). Market 6-11; "Open the box" (12) picks the black box back up for gas. The run of show is updated.

@@ -470,24 +470,30 @@ def circ(t, d=46, bg=COPPER, ink="#121417", fs=20):
 
 
 def s_blackbox(n, N):
+    """Definitions: every power plant is source -> conversion (the black box) -> power. Opens the fundamentals."""
     def node(x, big, lab, sub, bg):
-        return (f'<div class="abs" style="left:{x}px;top:250px;width:260px;text-align:center">'
-                f'<div style="margin:0 auto;width:200px;height:200px;border-radius:50%;background:{bg};display:flex;align-items:center;'
-                f'justify-content:center;font:800 34px/1 BC;color:{WHITE};text-transform:uppercase">{big}</div>'
-                f'<div style="font:800 26px/1 BC;color:{WHITE};text-transform:uppercase;margin-top:26px">{lab}</div>'
-                f'<div class="cd" style="font-size:16px;margin-top:8px">{sub}</div></div>')
-    arrow = lambda x: f'<div class="abs" style="left:{x}px;top:342px;width:120px;height:3px;background:{COPPER}"></div><div class="abs" style="left:{x + 112}px;top:334px;width:0;height:0;border-left:16px solid {COPPER};border-top:9px solid transparent;border-bottom:9px solid transparent"></div>'
-    box = (f'<div class="abs" style="left:590px;top:250px;width:260px;height:200px;background:#0b0c0e;border:3px solid {COPPER};'
+        return (f'<div class="abs" style="left:{x}px;top:214px;width:300px;text-align:center">'
+                f'<div style="margin:0 auto;width:190px;height:190px;border-radius:50%;background:{bg};display:flex;align-items:center;'
+                f'justify-content:center;font:800 32px/1 BC;color:{WHITE};text-transform:uppercase">{big}</div>'
+                f'<div style="font:800 26px/1 BC;color:{WHITE};text-transform:uppercase;margin-top:24px">{lab}</div>'
+                f'<div class="cd" style="font-size:16px;margin-top:10px">{sub}</div></div>')
+    arrow = lambda x: f'<div class="abs" style="left:{x}px;top:307px;width:110px;height:3px;background:{COPPER}"></div><div class="abs" style="left:{x + 102}px;top:299px;width:0;height:0;border-left:16px solid {COPPER};border-top:9px solid transparent;border-bottom:9px solid transparent"></div>'
+    box = (f'<div class="abs" style="left:590px;top:214px;width:260px;height:190px;background:#0b0c0e;border:3px solid {COPPER};'
            f'border-radius:6px;display:flex;align-items:center;justify-content:center;font:800 44px/1 BC;color:{WHITE};text-align:center">BLACK<br>BOX</div>'
-           f'<div class="abs cd" style="left:590px;top:476px;width:260px;text-align:center;font-size:16px">Thermal conversion</div>')
+           f'<div class="abs" style="left:570px;top:428px;width:300px;text-align:center"><div style="font:800 26px/1 BC;color:{WHITE};text-transform:uppercase">Conversion</div>'
+           f'<div class="cd" style="font-size:16px;margin-top:10px">The machine that turns the source into electricity: a turbine and generator, '
+           f'an engine, a solar panel, a fuel cell.</div></div>')
     return f"""
 <section class="page slide">
-  <div class="abs kicker" style="left:64px;top:56px">Fundamentals</div>
-  <div class="abs h2" style="left:62px;top:84px;font-size:58px">Every thermal project <em>is this</em></div>
-  <div class="abs lede" style="left:64px;top:160px;width:1100px">Input &rarr; conversion &rarr; output. The complexity is what's inside the box, and what's around it.</div>
-  {node(230, "Fuel", "Input", "fuel / energy source", "#3b7a4a")}{arrow(465)}{box}{arrow(842)}{node(950, "Power", "Output", "dispatchable power", "#2f63b5")}
-  <div class="abs lede" style="left:64px;top:620px;width:1300px;font-size:18px">Gas turbine, combined cycle or engines: <b style="color:{WHITE}">the same physics on every project.</b>
-    Today we open the box and follow the power out of it.</div>
+  <div class="abs kicker" style="left:64px;top:56px">Fundamentals &nbsp;&middot;&nbsp; definitions</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:58px">Every power plant <em>is this</em></div>
+  <div class="abs lede" style="left:64px;top:160px;width:1200px">Input &rarr; conversion &rarr; output. The complexity is what's inside the box, and what's around it.</div>
+  {node(190, "Source", "Input", "The energy that goes in: fuel (gas, coal, uranium, biomass) or nature (sun, wind, water).", "#3b7a4a")}
+  {arrow(470)}{box}{arrow(862)}
+  {node(950, "Power", "Output", "Electricity out: to the grid through a switchyard, or straight to a load behind the meter.", "#2f63b5")}
+  <div class="abs" style="left:64px;top:628px;width:1312px;background:#181b1f;border-left:4px solid {COPPER};padding:13px 22px;box-sizing:border-box">
+    <div class="cd" style="font-size:17px">Every plant, from a gas turbine to a solar farm, fits this picture. <b style="color:{WHITE}">What changes is the source and the machine in the box.</b>
+      Next: the four families of power generation, then we open the box of a gas plant.</div></div>
   {foot(n, N)}
 </section>"""
 
@@ -623,8 +629,8 @@ def s_box(n, N):
   <div class="abs kicker" style="left:64px;top:56px">Fundamentals</div>
   <div class="abs h2" style="left:62px;top:84px;font-size:56px">Open the box: <em>the physical anatomy</em></div>
   {b}{cards}
-  <div class="abs lede" style="left:64px;top:620px;width:1300px;font-size:18px">Input &rarr; conversion &rarr; output. Gas turbine, combined cycle or
-    engines: <b style="color:{WHITE}">the same physics on every project.</b> What changes is the machine in the box, and who owns it.</div>
+  <div class="abs lede" style="left:64px;top:620px;width:1300px;font-size:18px">Back to the black box, now for gas. Gas turbine, combined cycle or engines: <b style="color:{WHITE}">the same physics on every project.</b>
+    What changes is the machine in the box, and who owns it.</div>
   {foot(n, N)}
 </section>"""
 
@@ -963,9 +969,9 @@ def main():
     import pymupdf
     os.makedirs(OUT, exist_ok=True)
     N = 32                                                     # s_q3, s_anatomy and s_corridor are kept, unused
-    plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_sources(3, N), lambda: s_system(4, N), lambda: s_glance(5, N), lambda: s_load(6, N),
-            lambda: s_backlog(7, N), lambda: s_prize(8, N), lambda: s_where(9, N), lambda: s_map(10, N),
-            lambda: s_blackbox(11, N), lambda: s_box(12, N), lambda: s_types(13, N),
+    plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_blackbox(3, N), lambda: s_sources(4, N), lambda: s_system(5, N), lambda: s_glance(6, N), lambda: s_load(7, N),
+            lambda: s_backlog(8, N), lambda: s_prize(9, N), lambda: s_where(10, N), lambda: s_map(11, N),
+            lambda: s_box(12, N), lambda: s_types(13, N),
             lambda: reused(db.slide_cycle, 14, N, "Fundamentals"), lambda: reused(db.slide_basics, 15, N, "Fundamentals"),
             lambda: reused(db.slide_system, 16, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
             lambda: s_follow(17, N), lambda: s_owners(18, N), lambda: s_sites(19, N), lambda: s_buy(20, N), lambda: s_overview(21, N)]
@@ -1002,7 +1008,7 @@ def main():
         ims.append(Image.open(png).convert("RGB"))
         ims[-1].save(os.path.join(jd, f"slide_{i + 1:02d}.jpg"), quality=90)
     w, h = 960, 540
-    for name, rng in (("step_back_and_market_3-10", range(2, 10)), ("fundamentals_11-20", range(10, 20)), ("all_slides", range(len(ims)))):
+    for name, rng in (("step_back_and_market_3-11", range(2, 11)), ("fundamentals_12-21", range(11, 21)), ("all_slides", range(len(ims)))):
         rng = list(rng)
         rows = (len(rng) + 1) // 2
         sheet = Image.new("RGB", (w * 2 + 30, h * rows + 15 * (rows + 1)), (40, 40, 40))

@@ -8,7 +8,7 @@
 
 ---
 
-**Slides:** `renders/deck/training/SW-3X1_Nov11_training.pdf` (32 slides, built by `blender/deck_training.py`; JPG copies in `renders/deck/training/jpg/`): title, agenda; step back 3-4 (four families, the mix today); market 5-10 (at a glance, load growth since 1996, turbine backlogs, the ~$1.2B cable prize, the project register, the state heat map); fundamentals 11-21 (every thermal project is this, open the box, four ways to burn gas, what goes in and out, how an HRSG works, the voltage ladder, follow the power, same physics different owners, greenfield and brownfield, who buys and when, the campus with the LNG terminal); 7 tour-stop backup slides; the whole plant in one number, what the spec calls for, pain points and the answer, three things to remember + Q&A.
+**Slides:** `renders/deck/training/SW-3X1_Nov11_training.pdf` (32 slides, built by `blender/deck_training.py`; JPG copies in `renders/deck/training/jpg/`): title, agenda; definitions and step back 3-5 (every power plant is this, four families, the mix today); market 6-11 (at a glance, load growth since 1996, turbine backlogs, the ~$1.2B cable prize, the project register, the state heat map); fundamentals 12-21 (open the box, four ways to burn gas, what goes in and out, how an HRSG works, the voltage ladder, follow the power, same physics different owners, greenfield and brownfield, who buys and when, the campus with the LNG terminal); 7 tour-stop backup slides; the whole plant in one number, what the spec calls for, pain points and the answer, three things to remember + Q&A.
 
 ## Rundown (60 min)
 
@@ -36,27 +36,27 @@ Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) t
 
 ## 1. Market and fundamentals (23 min, 19 slides)
 
-Market slides 5-10 come from the Oct 6 PowerGen channel deck. **OEM, owner and EPC names are not on the slides; say them here if useful.** Verify the figures against the primary sources (appendix of the Oct 6 deck) before Nov 11.
+Market slides 6-11 come from the Oct 6 PowerGen channel deck. **OEM, owner and EPC names are not on the slides; say them here if useful.** Verify the figures against the primary sources (appendix of the Oct 6 deck) before Nov 11.
 
-**Slide 3: How electricity is made: four families (1.5 min).** Thermal (heat spins a turbine: gas, coal, nuclear, biomass, geothermal, oil), water and wind (hydro, wind), direct (solar PV, fuel cells: no turbine, DC) and storage (batteries, pumped hydro: shifts power, does not make it). Firm vs variable. "Almost all of them spin a generator; every one of them ends in cable. Today: gas, inside the thermal family." Our campus has gas, engines, aeros and package boilers, the fuel-cell bank and the battery yard.
+**Slide 3: Every power plant is this (1.5 min).** The definitions: source (input: fuel or nature) → conversion (the black box: turbine and generator, engine, panel, fuel cell) → power (output: to the grid through a switchyard, or behind the meter). "Every plant fits this picture; what changes is the source and the machine in the box."
 
-**Slide 4: The mix today, and why gas (2 min).** US electricity 2025 (EIA): gas 41%, nuclear 18%, coal 17%, wind 11%, solar ~7%, hydro 6%. Planned 2026 additions: 86 GW, mostly solar (43.4) and batteries (24), wind 11.8, gas 6.3. "Southwire cables every one of these. Today we zoom in on gas: it is firm, it is the backbone, and the next wave of data-centre load needs it."
+**Slide 4: How electricity is made: four families (1.5 min).** Thermal (heat spins a turbine: gas, coal, nuclear, biomass, geothermal, oil), water and wind (hydro, wind), direct (solar PV, fuel cells: no turbine, DC) and storage (batteries, pumped hydro: shifts power, does not make it). Firm vs variable. "Almost all of them spin a generator; every one of them ends in cable. Today: gas, inside the thermal family." Our campus has gas, engines, aeros and package boilers, the fuel-cell bank and the battery yard.
 
-**Slide 5: At a glance (1.5 min).** 378 GW in development (52 GW under construction), ~$1.2B core cable 2026-2035, 386 projects tracked, $50M+ booked in Q3. "Today's goal: know the plant, so you can follow the cable through it."
+**Slide 5: The mix today, and why gas (2 min).** US electricity 2025 (EIA): gas 41%, nuclear 18%, coal 17%, wind 11%, solar ~7%, hydro 6%. Planned 2026 additions: 86 GW, mostly solar (43.4) and batteries (24), wind 11.8, gas 6.3. "Southwire cables every one of these. Today we zoom in on gas: it is firm, it is the backbone, and the next wave of data-centre load needs it."
 
-**Slide 6: Load growth (2 min).** 166 GW peak-load growth by 2030 (about 90 GW data centres); 378 GW gas in development (189 GW tied to data centres); 52 GW under construction; turbine lead times up to 7 years. The chart: the 2000-04 merchant boom built 188 GW (peak 57 GW in 2002); 2015-25 averaged 8.1 GW a year. "Today's pipeline needs a boom-scale build again."
+**Slide 6: At a glance (1.5 min).** 378 GW in development (52 GW under construction), ~$1.2B core cable 2026-2035, 386 projects tracked, $50M+ booked in Q3. "Today's goal: know the plant, so you can follow the cable through it."
 
-**Slide 7: Turbine backlogs (1 min).** Turbine OEM 1 = GE Vernova (116 GW, firm backlog plus slot reservations, Q2 2026); OEM 2 = Siemens Energy (~69 GW gas-turbine backlog, Q3 FY26); OEM 3 = Mitsubishi Power (35 GW large-frame, Aug 2026). Tiles: +72% Caterpillar power-generation sales Q2 2026; 2.3 GW VoltaGrid modular fleet for Oracle's Texas AI data centres plus 1 GW for Vantage; 500 MW standard modular SGT-800 plant from Siemens Energy and Eaton.
+**Slide 7: Load growth (2 min).** 166 GW peak-load growth by 2030 (about 90 GW data centres); 378 GW gas in development (189 GW tied to data centres); 52 GW under construction; turbine lead times up to 7 years. The chart: the 2000-04 merchant boom built 188 GW (peak 57 GW in 2002); 2015-25 averaged 8.1 GW a year. "Today's pipeline needs a boom-scale build again."
 
-**Slide 8: The cable prize (2 min).** 378 GW to 93.7 GW modeled additions to ~$180B of plant investment to $0.75-1.2B of wire and cable: under 1% of capex, on the critical path. By PO year: $673M named projects, $501M future allowance; peak 2028-29.
+**Slide 8: Turbine backlogs (1 min).** Turbine OEM 1 = GE Vernova (116 GW, firm backlog plus slot reservations, Q2 2026); OEM 2 = Siemens Energy (~69 GW gas-turbine backlog, Q3 FY26); OEM 3 = Mitsubishi Power (35 GW large-frame, Aug 2026). Tiles: +72% Caterpillar power-generation sales Q2 2026; 2.3 GW VoltaGrid modular fleet for Oracle's Texas AI data centres plus 1 GW for Vantage; 500 MW standard modular SGT-800 plant from Siemens Energy and Eaton.
 
-**Slide 9: The register (1 min).** 205.8 GW eligible; 68% only announced. Top states TX 55.5, LA 16.3, WV 13.4 GW (AZ is 6.1). Example owners if asked: NRG, CPV, Entergy, Homer City Redevelopment. Named EPCs: Kiewit/TIC, Zachry, Gemma, PCL, Burns & McDonnell; 87% of gross capacity has no confirmed constructor yet.
+**Slide 9: The cable prize (2 min).** 378 GW to 93.7 GW modeled additions to ~$180B of plant investment to $0.75-1.2B of wire and cable: under 1% of capex, on the critical path. By PO year: $673M named projects, $501M future allowance; peak 2028-29.
 
-**Slide 10: Where the build is (1 min).** The state heat map: TX 55.5 GW leads, then LA, WV, IN, OH, PA. Owners: IPPs and behind-the-meter developers mostly build new; utilities reuse old sites (coal-site repowers 41.3 GW).
+**Slide 10: The register (1 min).** 205.8 GW eligible; 68% only announced. Top states TX 55.5, LA 16.3, WV 13.4 GW (AZ is 6.1). Example owners if asked: NRG, CPV, Entergy, Homer City Redevelopment. Named EPCs: Kiewit/TIC, Zachry, Gemma, PCL, Burns & McDonnell; 87% of gross capacity has no confirmed constructor yet.
 
-**Slide 11: Every thermal project is this (1 min).** The three circles: input (fuel), the black box (thermal conversion), output (dispatchable power). "The complexity is what's inside the box, and what's around it. Today we open the box."
+**Slide 11: Where the build is (1 min).** The state heat map: TX 55.5 GW leads, then LA, WV, IN, OH, PA. Owners: IPPs and behind-the-meter developers mostly build new; utilities reuse old sites (coal-site repowers 41.3 GW).
 
-**Slide 12: Open the box: the physical anatomy (1.5 min).** The six steps from fuel infrastructure to end use, grouped under input, black box and output. "Same physics on every project; what changes is the machine in the box, and who owns it."
+**Slide 12: Open the box: the physical anatomy (1.5 min).** Back to the black box, now for gas: the six steps from fuel infrastructure to end use, grouped under input, black box and output. "Same physics on every project; what changes is the machine in the box, and who owns it."
 
 **Slide 13: Four ways to burn gas for power (2 min).** Simple cycle (the peaker), combined cycle (the workhorse, our power block), engines (the sprinter) and aeroderivatives (the jet): size, efficiency, start time, how they run. Units: GW, MW, kW; MW is power, MWh is energy.
 
