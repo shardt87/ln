@@ -626,3 +626,6 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 - V1 also takes the turbine-hall and HRSG-trains images (2 x 2); V0 is the two colour sketches.
 - Split into two slides (author: "find a better way than cramming"): `s_story1` (4: V0 first sketches + V1 branded concept) and `s_story2` (5: V2 3D studies, the author's spring-summer renders in history/v2_1..8; V3 drawing set + first 3D + today). Each version is a hero image, a row of three, then one line. 59 slides: main 1-52, backup 53-59.
 - V3 hero is now K1 (the cover render: whole campus, LNG carrier and terminal, CCS, modular yard, data centre) instead of E123; a fresh V3A aerial was tried and dropped as weaker.
+
+## Oct 25: how we built it (60 slides)
+- New `s_how` (slide 6): research (700+ pages of real combined-cycle drawings, per the author; source not yet stated) → the 16-sheet drawing set (sheet 03 image in history/) → the model (items, parts and routes from verify_report.json) → checks (footprints, heights, clash pairs) → the cable schedule → one model behind everything. Main deck 1-53, backup 54-60. The run of show flags: confirm what the 700+ pages were and whether to name them.
