@@ -1241,8 +1241,9 @@ def s_story(n, N):
     H = "renders/training/history/"
     cols = [("V0", "March", "First concept", [(H + "v0_branded.jpg", "50% 50%"), (H + "v0_ghost.jpg", "50% 50%")],
              "A Southwire-branded picture of a plant: good for a cover, but generic and invented, with nothing to measure.", "#4a4f55"),
-            ("V1", "March", "The cable story, sketched", [(H + "v0_concept_electrical.jpg", "45% 35%"), (H + "v1_concept_cables.jpg", "50% 50%")],
-             "Power and cable routes colour-coded, but still generic: non-US voltages (11 kV, 138 kV), no cable counts.", "#5d636a"),
+            ("V1", "March", "The cable story, sketched", [(H + "v0_concept_electrical.jpg", "45% 35%"), (H + "v1_concept_cables.jpg", "50% 50%"),
+             (H + "v1_turbine_hall.jpg", "50% 50%"), (H + "v1_hrsg_trains.jpg", "50% 55%")],
+             "Cable routes colour-coded, the hall and HRSGs drawn in detail, but still generic: non-US voltages (11 kV, 138 kV), no cable counts.", "#5d636a"),
             ("V2", "September", "A real layout, then 3D", [(H + "v2_drawing_set.jpg", "20% 30%"), (H + "v2_first_3d.jpg", "50% 50%")],
              "The SK-3X1 drawing set: a 3x1 combined cycle at 230 / 13.8 / 4.16 kV and 480 V, 16 sheets. Then the first 3D model, built from it.", "#8e98a3"),
             ("V3", "October &ndash; today", "A plant you can measure", [("renders/nextgen/_src/E123_pro_clean.jpg", "50% 50%"), ("renders/training/XR_CC2_copper.jpg", "50% 50%")],
@@ -1251,9 +1252,10 @@ def s_story(n, N):
     for k, (v, when, h, imgs, t, col) in enumerate(cols):
         x = 64 + k * 332
         w = (316 - 4) // 2
-        strip = "".join(f'<img src="{pic(p)}" style="width:{w}px;height:200px;object-fit:cover;object-position:{pos};display:block">' for p, pos in imgs)
+        ih = 200 if len(imgs) <= 2 else 98                               # four images: a 2 x 2 grid in the same space
+        strip = "".join(f'<img src="{pic(p)}" style="width:{w}px;height:{ih}px;object-fit:cover;object-position:{pos};display:block;background:#fff">' for p, pos in imgs)
         html += (f'<div class="abs" style="left:{x}px;top:176px;width:316px;height:420px;background:{"#2a1d14" if k == 3 else "#181b1f"};border-top:4px solid {col}">'
-                 f'<div style="display:flex;gap:4px">{strip}</div><div style="padding:14px 18px">'
+                 f'<div style="display:flex;flex-wrap:wrap;gap:4px;height:200px;overflow:hidden">{strip}</div><div style="padding:14px 18px">'
                  f'<div style="display:flex;align-items:baseline;gap:10px"><span style="font:800 38px/1 BC;color:{col if k else "#8e98a3"}">{v}</span>'
                  f'<span class="cnum" style="color:{GREY}">{when}</span></div>'
                  f'<div class="ct" style="font-size:22px;margin-top:8px">{h}</div><div class="cd" style="font-size:14px;margin-top:6px">{t}</div></div></div>')
