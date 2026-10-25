@@ -622,3 +622,4 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 - New `s_story` (slide 4): V0-V1 March concept images (the author's three AI-style illustrations, stored in renders/training/history/v0_*, v1_*: unmeasurable, 11/138 kV), then V2 September (SK-3X1 drawing set sheet 01 and the Sep 26 first 3D render, blender/A_photo), then V3 today (E123 and the copper X-ray), plus four "why we built it" points. Main deck 1-51, backup 52-58; the run of show is renumbered.
 - Then four steps: V0 March (the author's Southwire-branded concept pair, history/v0_branded.jpg, v0_ghost.jpg), V1 March (the colour-coded cable concepts), V2 September, V3 today.
 - V1 now shows four images as a 2 x 2 grid (adds history/v1_turbine_hall.jpg and v1_hrsg_trains.jpg).
+- Corrected (author): V0 = the four colour sketches, V1 = the Southwire-branded pair (file names in history/ are historical).
