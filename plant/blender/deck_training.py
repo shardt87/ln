@@ -1,4 +1,4 @@
-"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 57 slides at 1440 x 810 (main 1-50, backup 51-57),
+"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 58 slides at 1440 x 810 (main 1-51, backup 52-58),
 same look as the boiler deck. Reuses the boiler-deck slides for the fundamentals and the cable takeaways (their footers
 re-numbered), the 16-zone overview, and the model renders for the seven tour stops; new: title, agenda, six market slides
 (from the Oct 6 PowerGen channel deck), one slide per tour stop, the whole
@@ -1235,6 +1235,45 @@ def s_hub(n, N):
 </section>"""
 
 
+
+def s_story(n, N):
+    """Why we built the 3D model: V0-V1 concept images (March) -> V2 drawing set and first 3D (Sep) -> V3 today."""
+    H = "renders/training/history/"
+    cols = [("V0&ndash;V1", "March", "Concept images", [(H + "v0_concept_electrical.jpg", "50% 40%"), (H + "v0_concept_iso.jpg", "50% 50%"),
+             (H + "v1_concept_cables.jpg", "50% 50%")],
+             "They looked like a plant, but nothing could be measured: a generic layout, non-US voltages (11 kV, 138 kV), no cable counts.", "#5d636a"),
+            ("V2", "September", "A real layout, then 3D", [(H + "v2_drawing_set.jpg", "20% 30%"), (H + "v2_first_3d.jpg", "50% 50%")],
+             "The SK-3X1 drawing set: a 3x1 combined cycle at 230 kV, 13.8 kV, 4.16 kV and 480 V, 16 sheets. Then the first 3D model, built from it.", "#8e98a3"),
+            ("V3", "October &ndash; today", "A plant you can measure", [("renders/nextgen/_src/E123_pro_clean.jpg", "50% 50%"), ("renders/training/XR_CC2_copper.jpg", "50% 50%")],
+             "Every building, tray and route at LOD 3; a cable schedule of 6,011 runs; the X-ray; the guided tour; every render in our brochures and decks.", COPPER)]
+    html = ""
+    for k, (v, when, h, imgs, t, col) in enumerate(cols):
+        x = 64 + k * 444
+        n_i = len(imgs)
+        w = (420 - 6 * (n_i - 1)) // n_i
+        strip = "".join(f'<img src="{pic(p)}" style="width:{w}px;height:230px;object-fit:cover;object-position:{pos};display:block">' for p, pos in imgs)
+        html += (f'<div class="abs" style="left:{x}px;top:176px;width:420px;height:420px;background:{"#2a1d14" if k == 2 else "#181b1f"};border-top:4px solid {col}">'
+                 f'<div style="display:flex;gap:6px">{strip}</div><div style="padding:16px 20px">'
+                 f'<div style="display:flex;align-items:baseline;gap:12px"><span style="font:800 40px/1 BC;color:{col}">{v}</span>'
+                 f'<span class="cnum" style="color:{GREY}">{when}</span></div>'
+                 f'<div class="ct" style="font-size:24px;margin-top:10px">{h}</div><div class="cd" style="font-size:15px;margin-top:8px">{t}</div></div></div>')
+        if k < 2:
+            html += f'<div class="abs" style="left:{x + 424}px;top:370px;font:800 26px/1 BC;color:{COPPER}">&rsaquo;</div>'
+    why = [("See the whole plant", "end to end, not one product at a time"), ("Measure, don't guess", "cable from a real layout, not rules of thumb"),
+           ("One source", "the brochures, decks, viewer, schedule and this training"), ("Speak the buyer's language", "zones, packages and e-houses, the way EPCs and OEMs think")]
+    w4 = "".join(f'<div style="flex:1;border-left:3px solid {COPPER};padding-left:12px"><div style="font:800 17px/1.1 BC;color:{WHITE};text-transform:uppercase">{a}</div>'
+                 f'<div class="cd" style="font-size:13.5px;margin-top:4px">{b}</div></div>' for a, b in why)
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Welcome &nbsp;&middot;&nbsp; why a 3D model</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:54px">From pictures <em>to a plant you can measure</em></div>
+  {html}
+  <div class="abs cnum" style="left:64px;top:614px;color:{WHITE}">Why we built it</div>
+  <div class="abs" style="left:64px;top:640px;width:1312px;display:flex;gap:22px">{w4}</div>
+  {foot(n, N)}
+</section>"""
+
+
 def reused(fn, n, N, kicker):
     sec = fn()
     sec = re.sub(r"BOILERS \d+/16", f"{TITLE} {n}/{N}", sec)
@@ -1247,28 +1286,28 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     import deck_training_candidates as cand                   # picked candidates (Oct 24): B, C, E, F, J; the combined-cycle build (c_cc1-4) replaces the cycle diagram
     cand.FOOT_LEFT = "SW-3X1 MODEL &middot; CONCEPTUAL ILLUSTRATION, NOT ENGINEERED &middot; INTERNAL TRAINING"
-    N = 57                                                     # main deck 1-50, backup 51-57 (Oct 25)
+    N = 58                                                     # main deck 1-51, backup 52-58 (Oct 25)
     D = lambda n, *a: (lambda: s_div(n, N, *a))
-    plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_why_you(3, N),
-            D(4, "01", "How power", "is made", "Every plant is a black box: what goes in, what comes out, and why we zoom in on gas.", "renders/cover/K5_pro.png"),
-            lambda: s_blackbox(5, N), lambda: s_sources(6, N), lambda: s_system(7, N),
-            D(8, "02", "The", "market", "A boom-scale gas build, and cable is on the critical path.", "renders/cover/K11_pro.png"),
-            lambda: s_glance(9, N), lambda: s_load(10, N), lambda: s_backlog(11, N), lambda: s_prize(12, N), lambda: s_where(13, N), lambda: s_map(14, N),
-            D(15, "03", "Inside a", "gas plant", "The machines, the grid, and the cable that ties them together.", "renders/training/CC2_pro_clean.jpg"),
-            lambda: s_box(16, N), lambda: cand.c_day(17, N),
-            lambda: cand.c_xray_intro(18, N), lambda: cand.c_cc1(19, N), lambda: cand.c_cc2(20, N), lambda: cand.c_cc3(21, N), lambda: cand.c_cc4(22, N), lambda: cand.c_xray_copper(23, N), lambda: cand.c_xray(24, N),
-            lambda: cand.c_grid(25, N), lambda: reused(db.slide_system, 26, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
-            lambda: cand.c_cable101(27, N),
-            lambda: cand.c_stress(28, N), lambda: s_owners(29, N), lambda: s_sites(30, N), lambda: s_buy(31, N), lambda: s_buckets(32, N), lambda: s_hub(33, N), lambda: cand.c_modern(34, N),
-            D(35, "04", "The", "tour", "Seven stops on the SW-3X1 campus: what it does, its electrical system, its cable.", "renders/cover/K1_pro.png", "50% 70%"),
-            lambda: s_overview(36, N)]
-    plan += [(lambda k=k: s_stop(k, 37 + k, N)) for k in range(7)]
-    plan += [D(44, "05", "Wire and", "cable", "One supplier from the grid to the thermocouple, installed faster.", "renders/training/XR_CC2_copper.jpg"),
-             lambda: s_number(45, N), lambda: s_offer(46, N), lambda: s_simpull(47, N), lambda: s_quiz(48, N),
-             lambda: s_close(49, N), lambda: s_resources(50, N),
-             D(51, "B", "Backup", "slides", "Extra detail if questions go there, and the sources.", "renders/epic/E66_pro.png"),
-             lambda: s_quiz(52, N, answers=True), lambda: s_types(53, N), lambda: reused(db.slide_basics, 54, N, "Backup &nbsp;&middot;&nbsp; fundamentals"),
-             lambda: s_follow(55, N), lambda: reused(db.slide_spec, 56, N, "Backup &nbsp;&middot;&nbsp; the HRSG spec"), lambda: s_sources_app(57, N)]
+    plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_why_you(3, N), lambda: s_story(4, N),
+            D(5, "01", "How power", "is made", "Every plant is a black box: what goes in, what comes out, and why we zoom in on gas.", "renders/cover/K5_pro.png"),
+            lambda: s_blackbox(6, N), lambda: s_sources(7, N), lambda: s_system(8, N),
+            D(9, "02", "The", "market", "A boom-scale gas build, and cable is on the critical path.", "renders/cover/K11_pro.png"),
+            lambda: s_glance(10, N), lambda: s_load(11, N), lambda: s_backlog(12, N), lambda: s_prize(13, N), lambda: s_where(14, N), lambda: s_map(15, N),
+            D(16, "03", "Inside a", "gas plant", "The machines, the grid, and the cable that ties them together.", "renders/training/CC2_pro_clean.jpg"),
+            lambda: s_box(17, N), lambda: cand.c_day(18, N),
+            lambda: cand.c_xray_intro(19, N), lambda: cand.c_cc1(20, N), lambda: cand.c_cc2(21, N), lambda: cand.c_cc3(22, N), lambda: cand.c_cc4(23, N), lambda: cand.c_xray_copper(24, N), lambda: cand.c_xray(25, N),
+            lambda: cand.c_grid(26, N), lambda: reused(db.slide_system, 27, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
+            lambda: cand.c_cable101(28, N),
+            lambda: cand.c_stress(29, N), lambda: s_owners(30, N), lambda: s_sites(31, N), lambda: s_buy(32, N), lambda: s_buckets(33, N), lambda: s_hub(34, N), lambda: cand.c_modern(35, N),
+            D(36, "04", "The", "tour", "Seven stops on the SW-3X1 campus: what it does, its electrical system, its cable.", "renders/cover/K1_pro.png", "50% 70%"),
+            lambda: s_overview(37, N)]
+    plan += [(lambda k=k: s_stop(k, 38 + k, N)) for k in range(7)]
+    plan += [D(45, "05", "Wire and", "cable", "One supplier from the grid to the thermocouple, installed faster.", "renders/training/XR_CC2_copper.jpg"),
+             lambda: s_number(46, N), lambda: s_offer(47, N), lambda: s_simpull(48, N), lambda: s_quiz(49, N),
+             lambda: s_close(50, N), lambda: s_resources(51, N),
+             D(52, "B", "Backup", "slides", "Extra detail if questions go there, and the sources.", "renders/epic/E66_pro.png"),
+             lambda: s_quiz(53, N, answers=True), lambda: s_types(54, N), lambda: reused(db.slide_basics, 55, N, "Backup &nbsp;&middot;&nbsp; fundamentals"),
+             lambda: s_follow(56, N), lambda: reused(db.slide_spec, 57, N, "Backup &nbsp;&middot;&nbsp; the HRSG spec"), lambda: s_sources_app(58, N)]
     assert len(plan) == N
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()
@@ -1299,7 +1338,7 @@ def main():
         ims.append(Image.open(png).convert("RGB"))
         ims[-1].save(os.path.join(jd, f"slide_{i + 1:02d}.jpg"), quality=90)
     w, h = 960, 540
-    for name, rng in (("opening_and_market_1-14", range(0, 14)), ("inside_a_gas_plant_15-34", range(14, 34)), ("tour_and_close_35-50", range(34, 50)), ("backup_51-57", range(50, 57)), ("all_slides", range(len(ims)))):
+    for name, rng in (("opening_and_market_1-15", range(0, 15)), ("inside_a_gas_plant_16-35", range(15, 35)), ("tour_and_close_36-51", range(35, 51)), ("backup_52-58", range(51, 58)), ("all_slides", range(len(ims)))):
         rng = list(rng)
         rows = (len(rng) + 1) // 2
         sheet = Image.new("RGB", (w * 2 + 30, h * rows + 15 * (rows + 1)), (40, 40, 40))
