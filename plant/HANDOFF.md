@@ -629,3 +629,4 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 
 ## Oct 25: how we built it (60 slides)
 - New `s_how` (slide 6): research (700+ pages of real combined-cycle drawings, per the author; source not yet stated) → the 16-sheet drawing set (sheet 03 image in history/) → the model (items, parts and routes from verify_report.json) → checks (footprints, heights, clash pairs) → the cable schedule → one model behind everything. Main deck 1-53, backup 54-60. The run of show flags: confirm what the 700+ pages were and whether to name them.
+- New `s_rigor` (slide 7, "Iterated, audited, reworked"): iteration counts read live from git (commits since Sep 1, working days, fix/audit/rework commits), the clash-pair count from verify_report.json, five check layers, and eight real findings that were fixed. 61 slides: main 1-54, backup 55-61.
