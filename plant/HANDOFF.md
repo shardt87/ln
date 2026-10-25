@@ -624,3 +624,4 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 - V1 now shows four images as a 2 x 2 grid (adds history/v1_turbine_hall.jpg and v1_hrsg_trains.jpg).
 - Corrected (author): V0 = the four colour sketches, V1 = the Southwire-branded pair (file names in history/ are historical).
 - V1 also takes the turbine-hall and HRSG-trains images (2 x 2); V0 is the two colour sketches.
+- Split into two slides (author: "find a better way than cramming"): `s_story1` (4: V0 first sketches + V1 branded concept) and `s_story2` (5: V2 3D studies, the author's spring-summer renders in history/v2_1..8; V3 drawing set + first 3D + today). Each version is a hero image, a row of three, then one line. 59 slides: main 1-52, backup 53-59.
