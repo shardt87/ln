@@ -14,7 +14,7 @@
 
 | Slides | Section |
 |---|---|
-| 1-4 | Title, agenda, **what you will take from this hour** (by role), **why a 3D model** (V0-V1 to V3) |
+| 1-4 | Title, agenda, **what you will take from this hour** (by role), **why a 3D model** (V0 to V3) |
 | 5-8 | Divider 01 *How power is made*; every power plant is this; four families; the mix today and why gas |
 | 9-15 | Divider 02 *The market*; at a glance, load growth, backlogs, the cable prize, register, state heat map |
 | 16-35 | Divider 03 *Inside a gas plant*; open the box, a day on the grid, the power block snapshot (19), the combined-cycle build (20-23), the X-ray (24 copper, 25 by type), generator to light switch, voltage ladder, cable 101, what a plant does to a cable, owners, greenfield/brownfield, who buys, **three buckets of cable (34)**, **where every cable starts (35)**, the modern campus |
@@ -23,7 +23,7 @@
 | 52-58 | Backup: divider, quiz answers, four ways to burn gas, how an HRSG works, follow the power, the HRSG spec, sources and qualifiers |
 
 **New slides, talking points**
-- **Slide 4, why a 3D model (1 min):** V0-V1 (March): concept images that looked like a plant but could not be measured (generic, 11 kV / 138 kV, no cable counts). V2 (September): the SK-3X1 drawing set, then the first 3D model. V3 (today): LOD 3, the cable schedule, the X-ray, the tour, every render. Why: see the whole plant, measure instead of guess, one source for everything, speak the buyer's language.
+- **Slide 4, why a 3D model (1 min):** V0 (March): a Southwire-branded concept picture, generic and invented. V1 (March): the cable story sketched in colour, still generic (11 kV / 138 kV, no cable counts). V2 (September): the SK-3X1 drawing set, then the first 3D model. V3 (today): LOD 3, the cable schedule, the X-ray, the tour, every render. Why: see the whole plant, measure instead of guess, one source for everything, speak the buyer's language.
 - **Slide 3, what you will take (1 min):** one line per audience: sales, customer service, supply chain and plants, marketing and leadership. "No engineering background needed."
 - **Dividers 5, 9, 16, 36, 45 (5 s each):** say the section name and move on.
 - **Slide 34, three buckets of cable (1.5 min):** follow the cable, not the building. 1 inside the packages: OEMs, e-house and package builders buy it, every month, not in our 440 miles. 2 between the packages: the EPC or its electrical contractor, once per plant, most of the miles. 3 to the grid: the HV contractor or utility, early, few cables, high value. "Starting in the e-house is not the same as being bought by the e-house builder. Cover both."

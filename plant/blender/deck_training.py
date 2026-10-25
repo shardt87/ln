@@ -1237,28 +1237,28 @@ def s_hub(n, N):
 
 
 def s_story(n, N):
-    """Why we built the 3D model: V0-V1 concept images (March) -> V2 drawing set and first 3D (Sep) -> V3 today."""
+    """Why we built the 3D model: V0 and V1 concept images (March) -> V2 drawing set and first 3D (Sep) -> V3 today."""
     H = "renders/training/history/"
-    cols = [("V0&ndash;V1", "March", "Concept images", [(H + "v0_concept_electrical.jpg", "50% 40%"), (H + "v0_concept_iso.jpg", "50% 50%"),
-             (H + "v1_concept_cables.jpg", "50% 50%")],
-             "They looked like a plant, but nothing could be measured: a generic layout, non-US voltages (11 kV, 138 kV), no cable counts.", "#5d636a"),
+    cols = [("V0", "March", "First concept", [(H + "v0_branded.jpg", "50% 50%"), (H + "v0_ghost.jpg", "50% 50%")],
+             "A Southwire-branded picture of a plant: good for a cover, but generic and invented, with nothing to measure.", "#4a4f55"),
+            ("V1", "March", "The cable story, sketched", [(H + "v0_concept_electrical.jpg", "45% 35%"), (H + "v1_concept_cables.jpg", "50% 50%")],
+             "Power and cable routes colour-coded, but still generic: non-US voltages (11 kV, 138 kV), no cable counts.", "#5d636a"),
             ("V2", "September", "A real layout, then 3D", [(H + "v2_drawing_set.jpg", "20% 30%"), (H + "v2_first_3d.jpg", "50% 50%")],
-             "The SK-3X1 drawing set: a 3x1 combined cycle at 230 kV, 13.8 kV, 4.16 kV and 480 V, 16 sheets. Then the first 3D model, built from it.", "#8e98a3"),
+             "The SK-3X1 drawing set: a 3x1 combined cycle at 230 / 13.8 / 4.16 kV and 480 V, 16 sheets. Then the first 3D model, built from it.", "#8e98a3"),
             ("V3", "October &ndash; today", "A plant you can measure", [("renders/nextgen/_src/E123_pro_clean.jpg", "50% 50%"), ("renders/training/XR_CC2_copper.jpg", "50% 50%")],
-             "Every building, tray and route at LOD 3; a cable schedule of 6,011 runs; the X-ray; the guided tour; every render in our brochures and decks.", COPPER)]
+             "Every building, tray and route at LOD 3; a 6,011-run cable schedule; the X-ray; the guided tour; every render in our brochures and decks.", COPPER)]
     html = ""
     for k, (v, when, h, imgs, t, col) in enumerate(cols):
-        x = 64 + k * 444
-        n_i = len(imgs)
-        w = (420 - 6 * (n_i - 1)) // n_i
-        strip = "".join(f'<img src="{pic(p)}" style="width:{w}px;height:230px;object-fit:cover;object-position:{pos};display:block">' for p, pos in imgs)
-        html += (f'<div class="abs" style="left:{x}px;top:176px;width:420px;height:420px;background:{"#2a1d14" if k == 2 else "#181b1f"};border-top:4px solid {col}">'
-                 f'<div style="display:flex;gap:6px">{strip}</div><div style="padding:16px 20px">'
-                 f'<div style="display:flex;align-items:baseline;gap:12px"><span style="font:800 40px/1 BC;color:{col}">{v}</span>'
+        x = 64 + k * 332
+        w = (316 - 4) // 2
+        strip = "".join(f'<img src="{pic(p)}" style="width:{w}px;height:200px;object-fit:cover;object-position:{pos};display:block">' for p, pos in imgs)
+        html += (f'<div class="abs" style="left:{x}px;top:176px;width:316px;height:420px;background:{"#2a1d14" if k == 3 else "#181b1f"};border-top:4px solid {col}">'
+                 f'<div style="display:flex;gap:4px">{strip}</div><div style="padding:14px 18px">'
+                 f'<div style="display:flex;align-items:baseline;gap:10px"><span style="font:800 38px/1 BC;color:{col if k else "#8e98a3"}">{v}</span>'
                  f'<span class="cnum" style="color:{GREY}">{when}</span></div>'
-                 f'<div class="ct" style="font-size:24px;margin-top:10px">{h}</div><div class="cd" style="font-size:15px;margin-top:8px">{t}</div></div></div>')
-        if k < 2:
-            html += f'<div class="abs" style="left:{x + 424}px;top:370px;font:800 26px/1 BC;color:{COPPER}">&rsaquo;</div>'
+                 f'<div class="ct" style="font-size:22px;margin-top:8px">{h}</div><div class="cd" style="font-size:14px;margin-top:6px">{t}</div></div></div>')
+        if k < 3:
+            html += f'<div class="abs" style="left:{x + 318}px;top:370px;font:800 22px/1 BC;color:{COPPER}">&rsaquo;</div>'
     why = [("See the whole plant", "end to end, not one product at a time"), ("Measure, don't guess", "cable from a real layout, not rules of thumb"),
            ("One source", "the brochures, decks, viewer, schedule and this training"), ("Speak the buyer's language", "zones, packages and e-houses, the way EPCs and OEMs think")]
     w4 = "".join(f'<div style="flex:1;border-left:3px solid {COPPER};padding-left:12px"><div style="font:800 17px/1.1 BC;color:{WHITE};text-transform:uppercase">{a}</div>'
