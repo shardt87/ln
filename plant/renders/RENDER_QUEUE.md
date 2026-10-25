@@ -37,3 +37,6 @@ it where tray congestion is the point of the shot. Process piping stays visible.
 
 ## Oct 25: training deck picture pass (re-render at full quality so the deck is sharp)
 Views now on training slides that only exist as Oct 8-13 previews: E10, E16, E41, E47, E82, E83, E84, E85, E86, E88, E89, E92, E108, E109, E110, E123 (nextgen). E19-E24, E26, E31, E48 and E7 already have Oct 17 full renders.
+
+## Oct 25: K1 re-render (current plant)
+- **K1** (cover/K1_pro.png, Oct 17) is out of date: it predates Boiler Row, AX-1 / IG-1, the CEMS shelters and the latest power-block detail. Re-render it at full quality on the same camera; it is the V3 hero on training slide 5 (crop 50% 50%), the campus overview, the brochure cover and the deck dividers. Check the crop still shows the LNG carrier, jetty and terminal.
