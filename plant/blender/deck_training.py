@@ -1313,7 +1313,7 @@ def s_story2(n, N):
     a = story_half(64, "V2", "Spring &ndash; summer", "3D studies", ("v2_4.jpg", "50% 45%"),
                    [("v2_1.jpg", "50% 50%"), ("v2_6.jpg", "50% 40%"), ("v2_7.jpg", "50% 55%")],
                    "Real plant elements in 3D: the hall, gas turbines, HRSGs, engines, the plant zones. Closer, but not to scale and not routed: still no cable to count.", "#c4cbd2")
-    b = story_half(728, "V3", "September &ndash; today", "A plant you can measure", ("renders/nextgen/_src/E123_pro_clean.jpg", "50% 50%"),
+    b = story_half(728, "V3", "September &ndash; today", "A plant you can measure", ("renders/cover/K1_pro.png", "50% 62%"),
                    [("v2_drawing_set.jpg", "20% 30%"), ("v2_first_3d.jpg", "50% 50%"), ("renders/training/XR_CC2_copper.jpg", "50% 50%")],
                    "Drafted first: the SK-3X1 drawing set (16 sheets, 230 / 13.8 / 4.16 kV, 480 V), then the model built from it. LOD 3, a 6,011-run cable schedule, the X-ray, the tour.", COPPER, True)
     why = " &nbsp;&middot;&nbsp; ".join(["See the whole plant", "Measure, don't guess", "One source for brochures, decks, viewer and schedule", "Speak the buyer's language"])
