@@ -49,6 +49,14 @@ def pic(rel):
     return bz.url(path)
 
 
+def capimg(src, w, h, cap, pos="50% 50%", extra=""):
+    """A picture with its name on it: small renders are only readable with a caption."""
+    return (f'<div style="position:relative;width:{w}px;height:{h}px;{extra}"><img src="{pic(src)}" style="width:{w}px;height:{h}px;object-fit:cover;'
+            f'object-position:{pos};display:block"><div style="position:absolute;left:0;right:0;bottom:0;padding:16px 10px 6px;'
+            f'background:linear-gradient(180deg,rgba(14,16,18,0),rgba(14,16,18,.88));font:700 13px/1 BC;letter-spacing:.08em;color:#f4f1ec;'
+            f'text-transform:uppercase">{cap}</div></div>')
+
+
 def foot(n, N, left="SW-3X1 MODEL &middot; CONCEPTUAL ILLUSTRATION, NOT ENGINEERED &middot; INTERNAL TRAINING"):
     return (f'<div class="abs foot" style="left:64px;right:64px;bottom:26px;display:flex;justify-content:space-between;'
             f'border-top:1px solid #2c3036;padding-top:11px"><span>{left}</span><span>{credit.EMAIL} &nbsp;&middot;&nbsp; '
@@ -177,8 +185,7 @@ def s_sources(n, N):
                           f'<b style="color:{COPPER};font-weight:700">&larr; today</b></div>')
         cols += (f'<div class="abs" style="left:{x}px;top:170px;width:{w}px">'
                  f'<div style="display:flex;align-items:center;gap:16px;height:80px;margin-bottom:6px">'
-                 + (f'<img src="{pic(fimg[fam])}" style="width:74px;height:74px;border-radius:50%;object-fit:cover;border:4px solid {col};flex:none">' if fam in fimg
-                    else f'<div style="width:70px;height:70px;border-radius:50%;background:{col};flex:none"></div>')
+                 + f'<div style="width:70px;height:70px;border-radius:50%;background:{col};flex:none"></div>'
                  + f'<div><div style="font:800 26px/1 BC;color:{WHITE};text-transform:uppercase">{fam}</div>'
                  f'<div class="cd" style="font-size:14px;margin-top:6px">{how}</div></div></div>{chips}</div>')
     notes = [(456, 312, "Not on our campus; Southwire cables them too: hydro, onshore and offshore wind."),
@@ -629,22 +636,23 @@ def s_box(n, N):
               f'box-sizing:border-box;text-align:center;padding-top:12px"><div style="font:800 26px/1 BC;color:{WHITE};text-transform:uppercase">{lab}</div>'
               f'<div style="font:400 14px/1 B;color:#d6d9dc;margin-top:7px">{sub}</div></div>')
     cards = ""
+    BCAP = ["M&amp;R station", "Plant gas yard", "Turbine hall", "Generator bus", "230 kV switchyard", "Data centre"]
     bimg = ["renders/epic/E109_pro_clean.jpg", "renders/epic/E108_pro_clean.jpg", "renders/epic/E21_pro.png", "renders/epic/E24_pro.png",
             "renders/epic/E20_pro.png", "renders/epic/E47_pro_clean.jpg"]
     for k, (h, items) in enumerate(ANATOMY):
         x = 64 + k * 220
         li = "".join(f'<div class="cd" style="font-size:15px;margin-top:9px;padding-left:14px;position:relative">'
                      f'<span style="position:absolute;left:0;top:7px;width:6px;height:6px;background:{COPPER}"></span>{t}</div>' for t in items)
-        cards += (f'<div class="abs" style="left:{x}px;top:264px;width:204px;height:356px;background:#181b1f;border-top:4px solid {COPPER};box-sizing:border-box">'
-                  f'<img src="{pic(bimg[k])}" style="width:204px;height:92px;object-fit:cover;display:block">'
-                  f'<div style="padding:10px 16px;position:relative"><div style="position:absolute;top:-26px;left:14px">{circ(k, 38, COPPER, "#121417", 17)}</div>'
-                  f'<div class="ct" style="font-size:20px;margin:16px 0 2px;min-height:40px">{h}</div>{li}</div></div>')
+        cards += (f'<div class="abs" style="left:{x}px;top:264px;width:204px;height:384px;background:#181b1f;border-top:4px solid {COPPER};box-sizing:border-box">'
+                  f'{capimg(bimg[k], 204, 124, BCAP[k])}'
+                  f'<div style="padding:10px 16px;position:relative"><div style="position:absolute;top:-22px;right:12px">{circ(k, 38, COPPER, "#121417", 17)}</div>'
+                  f'<div class="ct" style="font-size:20px;margin:8px 0 2px;min-height:40px">{h}</div>{li}</div></div>')
     return f"""
 <section class="page slide">
   <div class="abs kicker" style="left:64px;top:56px">Fundamentals</div>
   <div class="abs h2" style="left:62px;top:84px;font-size:56px">Open the box: <em>the physical anatomy</em></div>
   {b}{cards}
-  <div class="abs lede" style="left:64px;top:640px;width:1300px;font-size:17px">Back to the black box, now for gas. Gas turbine, combined cycle or engines: <b style="color:{WHITE}">the same physics on every project.</b>
+  <div class="abs lede" style="left:64px;top:664px;width:1300px;font-size:16px">Back to the black box, now for gas. Gas turbine, combined cycle or engines: <b style="color:{WHITE}">the same physics on every project.</b>
     What changes is the machine in the box, and who owns it.</div>
   {foot(n, N)}
 </section>"""
@@ -751,14 +759,15 @@ def s_buy(n, N):
     html = ""
     pimg = ["renders/nextgen/_src/E123_pro_clean.jpg", "renders/epic/E22_pro.png", "renders/epic/E88_pro_clean.jpg", "renders/epic/E89_pro_clean.jpg",
             "renders/epic/E92_pro_clean.jpg", "renders/epic/E86_pro_clean.jpg"]
+    PCAP = ["The site", "The turbine order", "Engineering", "The reel yard", "Cable spine going in", "Control room"]
     for k, (h, what, who, note) in enumerate(PHASES):
         x = 64 + k * 220
         hot = k in (2, 3)
-        html += f'<img class="abs" src="{pic(pimg[k])}" style="left:{x}px;top:262px;width:204px;height:96px;object-fit:cover;border-bottom:3px solid {COPPER if hot else "#3a3f45"}">'
+        html += f'<div class="abs" style="left:{x}px;top:262px;border-bottom:3px solid {COPPER if hot else "#3a3f45"}">{capimg(pimg[k], 204, 122, PCAP[k])}</div>'
         html += (f'<div class="abs" style="left:{x}px;top:190px;width:204px;height:62px;background:{"#b4591f" if hot else "#2a2e33"};'
                  f'clip-path:polygon(0 0,92% 0,100% 50%,92% 100%,0 100%,{"0" if k == 0 else "8%"} 50%);padding:0 0 0 {16 if k == 0 else 26}px;box-sizing:border-box;'
                  f'font:800 21px/62px BC;color:{WHITE};text-transform:uppercase">{h}</div>'
-                 f'<div class="abs" style="left:{x}px;top:372px;width:200px"><div class="cd" style="font-size:14px;color:{WHITE}">{what}</div>'
+                 f'<div class="abs" style="left:{x}px;top:398px;width:200px"><div class="cd" style="font-size:14px;color:{WHITE}">{what}</div>'
                  f'<div class="cnum" style="margin-top:10px;font-size:12px;color:{GREY}">Who</div><div class="cd" style="font-size:14px;margin-top:3px">{who}</div>'
                  f'<div style="margin-top:10px;font:700 15px/1.25 BC;color:{COPPER if hot else GREY};text-transform:uppercase">{note}</div></div>')
     return f"""
