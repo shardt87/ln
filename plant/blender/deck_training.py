@@ -1,4 +1,4 @@
-"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 43 slides at 1440 x 810,
+"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 55 slides at 1440 x 810 (main 1-48, backup 49-55),
 same look as the boiler deck. Reuses the boiler-deck slides for the fundamentals and the cable takeaways (their footers
 re-numbered), the 16-zone overview, and the model renders for the seven tour stops; new: title, agenda, six market slides
 (from the Oct 6 PowerGen channel deck), one slide per tour stop, the whole
@@ -958,6 +958,180 @@ def s_close(n, N):
 </section>"""
 
 
+
+# ---------------------------------------------------------------- framing slides (Oct 25): why you, dividers, offer, install, quiz, resources, sources
+def s_why_you(n, N):
+    roles = [("Sales and account managers", "Talk plant: name the zones, the buyers and the cable in each. Ask who the EPC is and when the cable package releases."),
+             ("Customer service and inside sales", "Recognise a power-generation order: MV-105, ARMOR-X, TC-ER, instrumentation by the mile, reels per pull."),
+             ("Supply chain and plants", "Long runs, many reels, schedule-critical: cut-to-length, SIMpull and on-time delivery decide the job."),
+             ("Marketing, product and leadership", "Where the growth is: a boom-scale gas build, behind-the-meter power, and the fleet that needs upgrades.")]
+    html = "".join(f'<div class="abs" style="left:{64 + (k % 2) * 664}px;top:{196 + (k // 2) * 200}px;width:648px;height:184px;background:#181b1f;'
+                   f'border-top:4px solid {COPPER};padding:22px 26px;box-sizing:border-box">{db_circ(k + 1)}'
+                   f'<div class="ct" style="font-size:26px;margin-top:12px">{h}</div><div class="cd" style="font-size:16px;margin-top:8px">{t}</div></div>'
+                   for k, (h, t) in enumerate(roles))
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Welcome &nbsp;&middot;&nbsp; why this matters</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:56px">What you will take <em>from this hour</em></div>
+  {html}
+  <div class="abs" style="left:64px;top:620px;width:1312px;background:#2a1d14;border-left:4px solid {COPPER};padding:14px 22px;box-sizing:border-box">
+    <div class="cd" style="font-size:18px"><b style="color:{WHITE}">No engineering background needed.</b> By the end you can walk a customer through a gas plant,
+      point to where the cable goes, and know who buys it.</div></div>
+  {foot(n, N)}
+</section>"""
+
+
+def db_circ(t):
+    return (f'<div style="width:36px;height:36px;border-radius:50%;background:{COPPER};color:#121417;font:800 17px/36px BC;text-align:center">{t}</div>')
+
+
+def s_div(n, N, num, title, em, sub, img, pos="50% 50%"):
+    return f"""
+<section class="page slide">
+  <img class="abs" src="{pic(img)}" style="left:0;top:0;width:1440px;height:810px;object-fit:cover;object-position:{pos}">
+  <div class="abs" style="left:0;top:0;width:1440px;height:810px;background:linear-gradient(90deg,rgba(14,16,18,.94) 0%,rgba(14,16,18,.75) 40%,rgba(14,16,18,.1) 75%)"></div>
+  <div class="abs" style="left:72px;top:250px;font:800 150px/1 BC;color:{COPPER};opacity:.9">{num}</div>
+  <div class="abs h2" style="left:70px;top:420px;font-size:80px;width:900px">{title} <em>{em}</em></div>
+  <div class="abs lede" style="left:72px;top:530px;width:620px;font-size:20px">{sub}</div>
+  {foot(n, N)}
+</section>"""
+
+
+OFFER = [("Grid connection", "HV XLPE transmission cable (230 kV) &middot; bare copper grounding", "C"),
+         ("Power island: MV", "MV-105 EPR 133% (5&ndash;35 kV) &middot; ARMOR-X MC-HL 15 kV", "A"),
+         ("Power island: LV and drives", "Type TC-ER power &middot; ARMOR-X MC-HL 600 V &middot; VFD-rated cable", "A"),
+         ("Control and instrumentation", "TC-ER control &middot; PLTC / ITC shielded pairs &middot; thermocouple extension", "A"),
+         ("Hazardous areas", "ARMOR-X MC-HL, Class I Div 2: gas skids, fuel yards, burner fronts", "D"),
+         ("Battery storage", "PV / RHW-2 DC conductor (2 kV) &middot; MV-105 collection (35 kV)", "H"),
+         ("Modular and temporary power", "Type SHD-GC portable MV &middot; Type W &middot; cam-lock sets", "I"),
+         ("Installation", "SIMpull reels and SIMpull truck &middot; cut-to-length &middot; pre-terminated harness kits", "")]
+
+
+def s_offer(n, N):
+    rows = ""
+    for k, (area, prod, _) in enumerate(OFFER):
+        y = 186 + k * 58
+        rows += (f'<div class="abs" style="left:64px;top:{y}px;width:1312px;height:1px;background:#2c3036"></div>'
+                 f'<div class="abs" style="left:64px;top:{y + 15}px;width:360px;font:800 21px/1 BC;color:{COPPER if k == 7 else WHITE};text-transform:uppercase">{area}</div>'
+                 f'<div class="abs cd" style="left:440px;top:{y + 15}px;width:936px;font-size:17px;color:#e6e3dd">{prod}</div>')
+    svc = ["Spec support: sizing, derating, spec reviews", "Cut-to-length against the cable schedule", "Harness kits, pre-terminated and labelled",
+           "Project logistics: reel tracking, sequenced deliveries", "Field support: pulling calcs, terminations, tests"]
+    sv = " &nbsp;&middot;&nbsp; ".join(svc)
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Wire and cable &nbsp;&middot;&nbsp; the offer</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:56px">One supplier, <em>grid to thermocouple</em></div>
+  {rows}
+  <div class="abs" style="left:64px;top:660px;width:1312px;background:#181b1f;border-left:4px solid {COPPER};padding:12px 22px;box-sizing:border-box">
+    <div class="cd" style="font-size:15px"><b style="color:{WHITE}">Plus the services:</b> {sv}.</div></div>
+  <div class="abs" style="left:64px;top:736px;{cand_src()}">Typical Southwire families for each application; confirm constructions, sizes and listings against current Southwire specifications.</div>
+  {foot(n, N)}
+</section>"""
+
+
+def cand_src():
+    return "font:400 12px/1.4 B;color:#80868c"
+
+
+def s_simpull(n, N):
+    pts = [("SIMpull reels", "Several conductors paralleled on one reel: one pull per feeder instead of one per conductor."),
+           ("SIMpull truck", "Delivery, payoff and reel return in one vehicle."),
+           ("Cut-to-length", "Reels cut and labelled to the cable schedule, pull by pull: less waste, no field measuring."),
+           ("Pre-terminated", "Factory-made, tested harnesses for skids and panels: on the critical path you test instead of terminate.")]
+    li = "".join(f'<div style="margin-top:16px;border-left:4px solid {COPPER};padding-left:14px"><div class="ct" style="font-size:22px">{h}</div>'
+                 f'<div class="cd" style="font-size:15px;margin-top:5px">{t}</div></div>' for h, t in pts)
+    return f"""
+<section class="page slide">
+  <img class="abs" src="{pic('renders/epic/E64_pro.png')}" style="left:0;top:0;width:820px;height:765px;object-fit:cover">
+  <div class="abs" style="left:620px;top:0;width:220px;height:765px;background:linear-gradient(90deg,rgba(14,16,18,0),#0e1012)"></div>
+  <img class="abs" src="{pic('renders/epic/E58_pro.png')}" style="left:40px;top:520px;width:360px;height:200px;object-fit:cover;border:3px solid #0e1012">
+  <div class="abs" style="left:40px;top:724px;font:700 12px/1 BC;letter-spacing:.08em;color:#d6d9dc;text-transform:uppercase">The reel yard: SIMpull reels staged for the pulls</div>
+  <div class="abs" style="left:880px;top:56px;width:500px">
+    <div class="kicker">Wire and cable &nbsp;&middot;&nbsp; installed faster</div>
+    <div class="h2" style="font-size:50px;margin-top:10px">Accelerating <em>time to power</em></div>
+    <div class="lede" style="font-size:16px;margin-top:12px">Cable is decided in the field, on the critical path. Every reel set-up and every termination saved is schedule saved.</div>
+    {li}
+  </div>
+  {foot(n, N)}
+</section>"""
+
+
+QUIZ = [("Which cable type has the most miles in the power block?", ["MV / HV power", "LV power", "Instrumentation", "Fibre"], 2,
+         "Instrumentation: about 200 of the 440 miles. The big cables get the attention; the small ones are most of the miles."),
+        ("Who usually places the cable order?", ["The owner", "The owner's engineer", "The EPC or package builder", "The utility"], 2,
+         "The EPC or package builder buys it; the owner's engineer specifies it. Be in the spec early, be ready when the EPC buys."),
+        ("In a combined cycle, the steam turbine adds about how much more power, with no extra fuel?", ["5%", "One-third", "Double", "None"], 1,
+         "About one-third: the HRSGs turn the gas turbines' hot exhaust into steam. Burn the gas once, use the heat twice.")]
+
+
+def s_quiz(n, N, answers=False):
+    html = ""
+    for k, (q, opts, a, why) in enumerate(QUIZ):
+        y = 186 + k * 168
+        o = ""
+        for i, t in enumerate(opts):
+            on = answers and i == a
+            o += (f'<div style="flex:1;padding:10px 14px;background:{"#b4591f" if on else "#1f2328"};border-radius:4px;font:700 17px/1.1 BC;'
+                  f'color:{WHITE};text-transform:uppercase"><span style="color:{WHITE if on else COPPER};margin-right:8px">{"ABCD"[i]}</span>{t}</div>')
+        html += (f'<div class="abs" style="left:64px;top:{y}px;width:1312px"><div style="display:flex;gap:14px;align-items:baseline">'
+                 f'<span style="font:800 30px/1 BC;color:{COPPER}">{k + 1}</span><span style="font:800 24px/1.1 BC;color:{WHITE};text-transform:uppercase">{q}</span></div>'
+                 f'<div style="display:flex;gap:12px;margin-top:14px">{o}</div>'
+                 + (f'<div class="cd" style="font-size:15px;margin-top:10px;color:#e6e3dd">{why}</div>' if answers else "") + '</div>')
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Knowledge check &nbsp;&middot;&nbsp; {"the answers" if answers else "Zoom poll"}</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:56px">{"The answers" if answers else "Three questions,"} <em>{"and why" if answers else "one minute"}</em></div>
+  {html}
+  {foot(n, N)}
+</section>"""
+
+
+def s_resources(n, N):
+    res = [("The 3D plant model", "The interactive viewer you saw today, with the Nov 11 tour and the cable X-ray. Link sent with the recording."),
+           ("The brochures", "Wire &amp; cable for gas power &middot; EPC solutions &middot; boiler solutions."),
+           ("The recording and these slides", "Shared after the session, with a glossary of the terms used today.")]
+    team = [("Stephan Hardt", "PowerGen strategy, the plant model, owners and OEMs"), ("Patrick Ritchie", "EPC accounts"),
+            ("Greyson", "EPC outreach to more gas-plant builders"), ("Phil Metz &middot; Bob Benish", "OEMs and package builders: e-houses, switchgear, modular power")]
+    r = "".join(f'<div style="margin-top:18px;border-left:4px solid {COPPER};padding-left:14px"><div class="ct" style="font-size:22px">{h}</div>'
+                f'<div class="cd" style="font-size:15px;margin-top:5px">{t}</div></div>' for h, t in res)
+    t = "".join(f'<div style="margin-top:14px;display:flex;gap:16px;align-items:baseline;border-top:1px solid #2c3036;padding-top:12px">'
+                f'<div style="width:230px;font:800 19px/1.1 BC;color:{WHITE};text-transform:uppercase">{a}</div><div class="cd" style="font-size:15px">{b}</div></div>' for a, b in team)
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">After today</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:56px">Resources and <em>who to call</em></div>
+  <div class="abs" style="left:64px;top:180px;width:600px"><div class="cnum" style="color:{WHITE}">Resources</div>{r}</div>
+  <div class="abs" style="left:730px;top:180px;width:646px"><div class="cnum" style="color:{WHITE}">Power Generation Solutions team</div>{t}
+    <div style="margin-top:26px;font:700 16px/1.5 BC;letter-spacing:.06em;color:{COPPER}">{credit.EMAIL}</div></div>
+  {foot(n, N)}
+</section>"""
+
+
+SOURCES = [("Electricity mix 2025; planned 2026 additions", "EIA, Electricity explained (2025 utility-scale generation); EIA Today in Energy, Feb 2026"),
+           ("Load growth, data centres", "Grid Strategies, National Load Growth Report, 2025 (forecast)"),
+           ("378 GW pipeline, 52 GW building", "Global Energy Monitor, Aug 2026; early-stage proposals will not all be built"),
+           ("Turbine lead times", "S&amp;P Global Commodity Insights, May 2025"),
+           ("OEM backlogs and modular orders", "OEM releases, Q2-Q3 2026; Utility Dive, Aug 2026; POWER, Oct 2025 and Feb 2026"),
+           ("Capacity added per year, 1996-2026", "EIA and Southwire provisional series, to be verified"),
+           ("Cable opportunity, register, states, site classes", "Southwire PowerGen planning model and register, Sep 11, 2026: assumed rates and probabilities"),
+           ("Plant types, grid voltages, units", "Typical industry ranges; vary by design"),
+           ("Cable counts and miles", "SW-3X1 model cable schedule: conceptual, not engineered"),
+           ("Plant and yard renders", "SW-3X1 plant model: conceptual and illustrative, not engineering data")]
+
+
+def s_sources_app(n, N):
+    rows = "".join(f'<div style="display:flex;gap:20px;border-top:1px solid #2c3036;padding:10px 0"><div style="width:420px;font:700 15px/1.3 BC;color:{WHITE};'
+                   f'text-transform:uppercase;letter-spacing:.03em">{a}</div><div class="cd" style="font-size:14px;flex:1">{b}</div></div>' for a, b in SOURCES)
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Appendix</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:52px">Sources <em>and qualifiers</em></div>
+  <div class="abs" style="left:64px;top:170px;width:1312px">{rows}</div>
+  <div class="abs" style="left:64px;top:720px;font:700 13px/1 BC;letter-spacing:.12em;color:{COPPER};text-transform:uppercase">Verify all figures against primary sources before external use</div>
+  {foot(n, N)}
+</section>"""
+
+
 def reused(fn, n, N, kicker):
     sec = fn()
     sec = re.sub(r"BOILERS \d+/16", f"{TITLE} {n}/{N}", sec)
@@ -970,17 +1144,28 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     import deck_training_candidates as cand                   # picked candidates (Oct 24): B, C, E, F, J; the combined-cycle build (c_cc1-4) replaces the cycle diagram
     cand.FOOT_LEFT = "SW-3X1 MODEL &middot; CONCEPTUAL ILLUSTRATION, NOT ENGINEERED &middot; INTERNAL TRAINING"
-    N = 43                                                     # s_q3, s_anatomy and s_corridor are kept, unused
-    plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_blackbox(3, N), lambda: s_sources(4, N), lambda: s_system(5, N),
-            lambda: s_glance(6, N), lambda: s_load(7, N), lambda: s_backlog(8, N), lambda: s_prize(9, N), lambda: s_where(10, N),
-            lambda: s_map(11, N), lambda: s_box(12, N), lambda: s_types(13, N), lambda: cand.c_day(14, N),
-            lambda: cand.c_cc1(15, N), lambda: cand.c_cc2(16, N), lambda: cand.c_cc3(17, N), lambda: cand.c_cc4(18, N), lambda: reused(db.slide_basics, 19, N, "Fundamentals"),
-            lambda: cand.c_grid(20, N), lambda: reused(db.slide_system, 21, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
-            lambda: cand.c_cable101(22, N), lambda: cand.c_xray_intro(23, N), lambda: cand.c_xray_copper(24, N), lambda: cand.c_xray(25, N), lambda: cand.c_stress(26, N), lambda: s_follow(27, N), lambda: s_owners(28, N),
-            lambda: s_sites(29, N), lambda: s_buy(30, N), lambda: cand.c_modern(31, N), lambda: s_overview(32, N)]
-    plan += [(lambda k=k: s_stop(k, 33 + k, N)) for k in range(7)]
-    plan += [lambda: s_number(40, N), lambda: reused(db.slide_spec, 41, N, "Wire and cable takeaways"),
-             lambda: reused(db.slide_value, 42, N, "Wire and cable takeaways"), lambda: s_close(43, N)]
+    N = 55                                                     # main deck 1-48, backup 49-55 (Oct 25)
+    D = lambda n, *a: (lambda: s_div(n, N, *a))
+    plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_why_you(3, N),
+            D(4, "01", "How power", "is made", "Every plant is a black box: what goes in, what comes out, and why we zoom in on gas.", "renders/cover/K5_pro.png"),
+            lambda: s_blackbox(5, N), lambda: s_sources(6, N), lambda: s_system(7, N),
+            D(8, "02", "The", "market", "A boom-scale gas build, and cable is on the critical path.", "renders/cover/K11_pro.png"),
+            lambda: s_glance(9, N), lambda: s_load(10, N), lambda: s_backlog(11, N), lambda: s_prize(12, N), lambda: s_where(13, N), lambda: s_map(14, N),
+            D(15, "03", "Inside a", "gas plant", "The machines, the grid, and the cable that ties them together.", "renders/training/CC2_pro_clean.jpg"),
+            lambda: s_box(16, N), lambda: cand.c_day(17, N),
+            lambda: cand.c_cc1(18, N), lambda: cand.c_cc2(19, N), lambda: cand.c_cc3(20, N), lambda: cand.c_cc4(21, N),
+            lambda: cand.c_grid(22, N), lambda: reused(db.slide_system, 23, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
+            lambda: cand.c_cable101(24, N), lambda: cand.c_xray_intro(25, N), lambda: cand.c_xray_copper(26, N), lambda: cand.c_xray(27, N),
+            lambda: cand.c_stress(28, N), lambda: s_owners(29, N), lambda: s_sites(30, N), lambda: s_buy(31, N), lambda: cand.c_modern(32, N),
+            D(33, "04", "The", "tour", "Seven stops on the SW-3X1 campus: what it does, its electrical system, its cable.", "renders/cover/K1_pro.png", "50% 70%"),
+            lambda: s_overview(34, N)]
+    plan += [(lambda k=k: s_stop(k, 35 + k, N)) for k in range(7)]
+    plan += [D(42, "05", "Wire and", "cable", "One supplier from the grid to the thermocouple, installed faster.", "renders/training/XR_CC2_copper.jpg"),
+             lambda: s_number(43, N), lambda: s_offer(44, N), lambda: s_simpull(45, N), lambda: s_quiz(46, N),
+             lambda: s_close(47, N), lambda: s_resources(48, N),
+             D(49, "B", "Backup", "slides", "Extra detail if questions go there, and the sources.", "renders/epic/E66_pro.png"),
+             lambda: s_quiz(50, N, answers=True), lambda: s_types(51, N), lambda: reused(db.slide_basics, 52, N, "Backup &nbsp;&middot;&nbsp; fundamentals"),
+             lambda: s_follow(53, N), lambda: reused(db.slide_spec, 54, N, "Backup &nbsp;&middot;&nbsp; the HRSG spec"), lambda: s_sources_app(55, N)]
     assert len(plan) == N
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()
@@ -1011,7 +1196,7 @@ def main():
         ims.append(Image.open(png).convert("RGB"))
         ims[-1].save(os.path.join(jd, f"slide_{i + 1:02d}.jpg"), quality=90)
     w, h = 960, 540
-    for name, rng in (("step_back_and_market_3-11", range(2, 11)), ("fundamentals_12-21", range(11, 21)), ("fundamentals_22-32", range(21, 32)), ("all_slides", range(len(ims)))):
+    for name, rng in (("opening_and_market_1-14", range(0, 14)), ("inside_a_gas_plant_15-32", range(14, 32)), ("tour_and_close_33-48", range(32, 48)), ("backup_49-55", range(48, 55)), ("all_slides", range(len(ims)))):
         rng = list(rng)
         rows = (len(rng) + 1) // 2
         sheet = Image.new("RGB", (w * 2 + 30, h * rows + 15 * (rows + 1)), (40, 40, 40))

@@ -599,3 +599,8 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 
 ## Oct 24: copper X-ray of the CC2 view (43 slides)
 - tools/xray_capture/cams_cc.json captures the CC2 camera in the viewer's copper X-ray, then electrify.py: renders/training/XR_CC2_copper.jpg (the README has the commands). New `c_xray_copper` (slide 24) is the reveal; the coloured X-ray (slide 25) is retitled "Now sort it by job: five kinds of cable". Three clicks on one view: 23 normal → 24 copper → 25 by type. The run of show is updated.
+
+## Oct 25: training deck framing (55 slides: main 1-48, backup 49-55)
+- New in deck_training.py: `s_why_you` (3), section dividers `s_div` (4, 8, 15, 33, 42; backup 49), `s_offer` (44, the whole-plant offer replacing the HRSG spec slide), `s_simpull` (45), `s_quiz` (46; the answers in backup 50), `s_resources` (48, with the PGS team), `s_sources_app` (55).
+- Moved to backup: four ways to burn gas (51), how an HRSG works (52), follow the power (53), the HRSG spec (54). Boilers slide_value (pain points) is out.
+- The JPG export writes section sheets (opening_and_market, inside_a_gas_plant, tour_and_close, backup) plus all_slides. The run of show has a slide map and talking points for the new slides; presentation/customer_story_form.md is for the one customer-story slide still to come.
