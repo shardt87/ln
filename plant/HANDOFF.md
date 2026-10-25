@@ -607,3 +607,4 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 
 ## Oct 25: power-block snapshot moved
 - The labelled full-colour power block (`c_xray_intro`) now opens the combined-cycle build as slide 18 (kicker "Combined cycle · the power block", caption "Next: how it makes power, one stage at a time"); the build is 19-22. The X-ray now runs Cable 101 (25) → copper (26) → by type (27). Still 55 slides.
+- Then the X-ray pair moved up to follow the build on the same view: 18 snapshot → 19-22 cycle → 23 copper X-ray → 24 by type → 25 generator to light switch → 26 voltage ladder → 27 Cable 101.

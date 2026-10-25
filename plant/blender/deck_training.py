@@ -1153,9 +1153,9 @@ def main():
             lambda: s_glance(9, N), lambda: s_load(10, N), lambda: s_backlog(11, N), lambda: s_prize(12, N), lambda: s_where(13, N), lambda: s_map(14, N),
             D(15, "03", "Inside a", "gas plant", "The machines, the grid, and the cable that ties them together.", "renders/training/CC2_pro_clean.jpg"),
             lambda: s_box(16, N), lambda: cand.c_day(17, N),
-            lambda: cand.c_xray_intro(18, N), lambda: cand.c_cc1(19, N), lambda: cand.c_cc2(20, N), lambda: cand.c_cc3(21, N), lambda: cand.c_cc4(22, N),
-            lambda: cand.c_grid(23, N), lambda: reused(db.slide_system, 24, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
-            lambda: cand.c_cable101(25, N), lambda: cand.c_xray_copper(26, N), lambda: cand.c_xray(27, N),
+            lambda: cand.c_xray_intro(18, N), lambda: cand.c_cc1(19, N), lambda: cand.c_cc2(20, N), lambda: cand.c_cc3(21, N), lambda: cand.c_cc4(22, N), lambda: cand.c_xray_copper(23, N), lambda: cand.c_xray(24, N),
+            lambda: cand.c_grid(25, N), lambda: reused(db.slide_system, 26, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
+            lambda: cand.c_cable101(27, N),
             lambda: cand.c_stress(28, N), lambda: s_owners(29, N), lambda: s_sites(30, N), lambda: s_buy(31, N), lambda: cand.c_modern(32, N),
             D(33, "04", "The", "tour", "Seven stops on the SW-3X1 campus: what it does, its electrical system, its cable.", "renders/cover/K1_pro.png", "50% 70%"),
             lambda: s_overview(34, N)]
