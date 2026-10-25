@@ -453,10 +453,10 @@ def c_xray_intro(n, N):
                 f'<div class="abs" style="left:0;top:0;width:1440px;height:810px;background:linear-gradient(180deg,rgba(14,16,18,.82) 0%,rgba(14,16,18,0) 20%,'
                 f'rgba(14,16,18,0) 80%,rgba(14,16,18,.88) 100%)"></div>'
                 f'<svg class="abs" style="left:0;top:0" width="1440" height="810">{svg}</svg>{tags}'
-                f'<div class="abs kicker" style="left:56px;top:40px">Wire and cable &nbsp;&middot;&nbsp; before the X-ray</div>'
+                f'<div class="abs kicker" style="left:56px;top:40px">Combined cycle &nbsp;&middot;&nbsp; the power block</div>'
                 f'<div class="abs h2" style="left:54px;top:66px;font-size:52px">The power block, <em>as you would see it</em></div>'
                 f'<div class="abs" style="left:56px;top:700px;width:1000px;font:400 19px/1.45 B;color:#e6e3dd">Steel, concrete and machines: the part everyone '
-                f'photographs. <b style="color:#fff">Next: take all of it away, and look at what is left.</b></div>')
+                f'photographs. <b style="color:#fff">Next: how it makes power, one stage at a time.</b></div>')
 
 
 

@@ -604,3 +604,6 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 - New in deck_training.py: `s_why_you` (3), section dividers `s_div` (4, 8, 15, 33, 42; backup 49), `s_offer` (44, the whole-plant offer replacing the HRSG spec slide), `s_simpull` (45), `s_quiz` (46; the answers in backup 50), `s_resources` (48, with the PGS team), `s_sources_app` (55).
 - Moved to backup: four ways to burn gas (51), how an HRSG works (52), follow the power (53), the HRSG spec (54). Boilers slide_value (pain points) is out.
 - The JPG export writes section sheets (opening_and_market, inside_a_gas_plant, tour_and_close, backup) plus all_slides. The run of show has a slide map and talking points for the new slides; presentation/customer_story_form.md is for the one customer-story slide still to come.
+
+## Oct 25: power-block snapshot moved
+- The labelled full-colour power block (`c_xray_intro`) now opens the combined-cycle build as slide 18 (kicker "Combined cycle · the power block", caption "Next: how it makes power, one stage at a time"); the build is 19-22. The X-ray now runs Cable 101 (25) → copper (26) → by type (27). Still 55 slides.

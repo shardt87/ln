@@ -17,7 +17,7 @@
 | 1-3 | Title, agenda, **what you will take from this hour** (by role) |
 | 4-7 | Divider 01 *How power is made*; every power plant is this; four families; the mix today and why gas |
 | 8-14 | Divider 02 *The market*; at a glance, load growth, backlogs, the cable prize, register, state heat map |
-| 15-32 | Divider 03 *Inside a gas plant*; open the box, a day on the grid, the combined-cycle build (18-21), generator to light switch, voltage ladder, cable 101, X-ray (25 normal, 26 copper, 27 by type), what a plant does to a cable, owners, greenfield/brownfield, who buys, the modern campus |
+| 15-32 | Divider 03 *Inside a gas plant*; open the box, a day on the grid, the power block snapshot (18), the combined-cycle build (19-22), generator to light switch, voltage ladder, cable 101, X-ray (26 copper, 27 by type), what a plant does to a cable, owners, greenfield/brownfield, who buys, the modern campus |
 | 33-41 | Divider 04 *The tour*; campus overview; the seven stops |
 | 42-48 | Divider 05 *Wire and cable*; the whole campus in one number; **the offer** (one supplier, grid to thermocouple); **installed faster (SIMpull)**; **knowledge check (Zoom poll)**; take-aways and Q&A; **resources and who to call** |
 | 49-55 | Backup: divider, quiz answers, four ways to burn gas, how an HRSG works, follow the power, the HRSG spec, sources and qualifiers |
@@ -83,19 +83,19 @@ Market slides 6-11 come from the Oct 6 PowerGen channel deck. **OEM, owner and E
 
 **Slide 17: A day on the grid (1.5 min).** Illustrative 24-hour demand: baseload all day, solar at midday, combined cycle in the middle, peakers and batteries on the evening peak. "Every start cycles the plant and its cable."
 
-**Slides 18-21: Combined cycle, a four-click build (2.5 min).** The same aerial of our power block, darkened; each click lights one stage on the real equipment, and the flows follow the real routes. 15: the gas turbine (air in, power out to the step-up transformers, about 2/3 of the power). 16: the HRSG catches the ~1,100 °F exhaust and makes steam, no extra fuel. 17: the steam turbine makes about 1/3 more; the condenser returns the water. 18: all lit: "Burn the gas once, use the heat twice": ~60% vs ~40%, 3 + 1, 8,234 cables in the power block and its condenser. (The old flow diagram, boilers slide 6, is the backup.)
+**Slide 18: The power block, as you would see it (30 s).** The aerial in full colour, labelled: gas turbines in the hall, HRSGs, stacks, steam turbine, air-cooled condenser, step-up transformers. "This is the power block. Now watch how it makes power, one stage at a time." Click.
+
+**Slides 19-22: Combined cycle, a four-click build (2.5 min).** The same aerial of our power block, darkened; each click lights one stage on the real equipment, and the flows follow the real routes. 15: the gas turbine (air in, power out to the step-up transformers, about 2/3 of the power). 16: the HRSG catches the ~1,100 °F exhaust and makes steam, no extra fuel. 17: the steam turbine makes about 1/3 more; the condenser returns the water. 18: all lit: "Burn the gas once, use the heat twice": ~60% vs ~40%, 3 + 1, 8,234 cables in the power block and its condenser. (The old flow diagram, boilers slide 6, is the backup.)
 
 **Slide 52: How an HRSG works (1.5 min).** Reuse boilers slide 5: the "What it is" and "Fun facts" box.
 
-**Slide 22: From the generator to the light switch (1.5 min).** Generator 13.8-25 kV → step-up to 115-765 kV → transmission → substation → 4-35 kV distribution → 480/240/120 V at the customer, with the cable family at each step. "Southwire has a product at every step."
+**Slide 23: From the generator to the light switch (1.5 min).** Generator 13.8-25 kV → step-up to 115-765 kV → transmission → substation → 4-35 kV distribution → 480/240/120 V at the customer, with the cable family at each step. "Southwire has a product at every step."
 
-**Slide 23: The voltage ladder (2 min).** Reused from the boiler deck (slide 9, "Levels, ratings and the cable they drive"): 230 kV to the grid, 21 kV at the generator, 13.8 kV to the big motors, 480 V to the small ones, 120 V AC / 125 V DC for controls, then signals. "Every rung has its own cable family."
+**Slide 24: The voltage ladder (2 min).** Reused from the boiler deck (slide 9, "Levels, ratings and the cable they drive"): 230 kV to the grid, 21 kV at the generator, 13.8 kV to the big motors, 480 V to the small ones, 120 V AC / 125 V DC for controls, then signals. "Every rung has its own cable family."
 
-**Slide 24: Cable 101 (1.5 min).** The eight families: HV, MV, LV power, VFD, control, instrumentation, fibre, grounding. By length in SW-3X1: instrumentation 44%, LV power 20%, control 18%, MV/HV 7%.
+**Slide 25: Cable 101 (1.5 min).** The eight families: HV, MV, LV power, VFD, control, instrumentation, fibre, grounding. By length in SW-3X1: instrumentation 44%, LV power 20%, control 18%, MV/HV 7%.
 
-**Slide 25: The power block, as you would see it (30 s).** (Three clicks on one view: 23 normal, 24 copper X-ray, 25 by type.) The same aerial in full colour, labelled: gas turbines in the hall, HRSGs, stacks, steam turbine, air-cooled condenser, step-up transformers. "Steel, concrete and machines: the part everyone photographs. Now take all of it away." Click.
-
-**Slide 26: Copper X-ray (30 s).** Click from slide 23: the same view with the steel made glass and every cable glowing copper. "Take the plant away: the cable stays. About 8,200 cables and 440 miles in the power block and its condenser." Let it land; say nothing for a beat.
+**Slide 26: Copper X-ray (30 s).** Back to the power-block view from slide 18 with the steel made glass and every cable glowing copper. "Take the plant away: the cable stays. About 8,200 cables and 440 miles in the power block and its condenser." Let it land; say nothing for a beat.
 
 **Slide 27: X-ray by type (1.5 min).** "Now sort it by job: five kinds of cable." Only what is in the picture: the power block and its air-cooled condenser, 8,234 cables, about 440 miles. Every route glows by type (each route takes the colour of the type with the most cables on it): green instrumentation dominates. MV/HV 232 cables (28 mi), LV power 1,160 (95 mi), control 1,255 (94 mi), instrumentation 5,484 (202 mi), fibre and fire alarm 103 (21 mi). "The big cables get the attention; the small ones are most of the miles." If asked how: every device in the model gets its own cable, routed on the modelled trays: (route + drops + 20 ft) x 1.1. A conceptual estimate, not an engineered take-off. The whole campus (modular yard, BESS, CCS, LNG) is about 21,000 cables and 1,200 miles: slides 22, 27 and 39 (the whole campus in one number) say "whole campus".
 
