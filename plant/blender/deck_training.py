@@ -1,4 +1,4 @@
-"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 55 slides at 1440 x 810 (main 1-48, backup 49-55),
+"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 56 slides at 1440 x 810 (main 1-49, backup 50-56),
 same look as the boiler deck. Reuses the boiler-deck slides for the fundamentals and the cable takeaways (their footers
 re-numbered), the 16-zone overview, and the model renders for the seven tour stops; new: title, agenda, six market slides
 (from the Oct 6 PowerGen channel deck), one slide per tour stop, the whole
@@ -1132,6 +1132,49 @@ def s_sources_app(n, N):
 </section>"""
 
 
+
+BUCKETS = [("1", "Inside the packages", "renders/boilers_full/RA2_pro_clean.jpg", "OEMs, e-house and package builders",
+            "E-house internals (switchgear and MCC interconnections, control and panel wire, short ties), turbine skids, modular gensets",
+            "Every month, across many projects, months before site", "MV-105 ties, TC-ER, control and panel wire, pre-terminated harness kits",
+            "Not in our 440 miles: a separate market on top"),
+           ("2", "Between the packages", "renders/training/XR_CC2_copper.jpg", "The EPC or its electrical contractor",
+            "Field cable from the e-houses out to every motor, valve, instrument and transformer: the X-ray",
+            "Once per plant, when detailed design fixes the cable schedule", "MV-105, TC-ER, ARMOR-X MC-HL, VFD, PLTC / ITC, thermocouple; SIMpull, cut-to-length",
+            "Most of the miles: ~440 in the power block"),
+           ("3", "To the grid", "renders/epic/E20_pro.png", "The EPC's HV contractor or the utility",
+            "GSU to switchyard, the gen-tie to the POI, grounding",
+            "Early: HV cable has the longest lead time", "HV XLPE (69-345 kV), bare copper grounding",
+            "Few cables, high value")]
+
+
+def s_buckets(n, N):
+    html = ""
+    for k, (num, h, img, who, what, when, prod, size) in enumerate(BUCKETS):
+        x = 64 + k * 444
+        hot = k == 1
+        html += (f'<div class="abs" style="left:{x}px;top:176px;width:420px;height:470px;background:{"#2a1d14" if hot else "#181b1f"};'
+                 f'border-top:4px solid {COPPER if hot else "#5d636a"}">'
+                 f'<img src="{pic(img)}" style="width:420px;height:110px;object-fit:cover;display:block">'
+                 f'<div style="padding:12px 18px"><div style="display:flex;gap:10px;align-items:center">{db_circ(num)}'
+                 f'<div class="ct" style="font-size:24px">{h}</div></div>'
+                 f'<div class="cnum" style="margin-top:12px;font-size:11px;color:{GREY}">Who buys</div>'
+                 f'<div style="font:800 18px/1.15 BC;color:{COPPER};text-transform:uppercase;margin-top:3px">{who}</div>'
+                 f'<div class="cd" style="font-size:13.5px;margin-top:8px;color:#e6e3dd">{what}</div>'
+                 f'<div class="cnum" style="margin-top:10px;font-size:11px;color:{GREY}">When</div><div class="cd" style="font-size:13.5px;margin-top:3px">{when}</div>'
+                 f'<div class="cnum" style="margin-top:10px;font-size:11px;color:{GREY}">Our products</div><div class="cd" style="font-size:13.5px;margin-top:3px">{prod}</div>'
+                 f'<div style="margin-top:12px;font:800 16px/1.2 BC;color:{WHITE};text-transform:uppercase">{size}</div></div></div>')
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Who buys &nbsp;&middot;&nbsp; follow the cable, not the building</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:54px">Three buckets of cable, <em>three different buyers</em></div>
+  {html}
+  <div class="abs" style="left:64px;top:662px;width:1312px;background:#181b1f;border-left:4px solid {COPPER};padding:12px 22px;box-sizing:border-box">
+    <div class="cd" style="font-size:16px"><b style="color:{WHITE}">Starting in the e-house is not the same as being bought by the e-house builder.</b> Cover both:
+      EPCs for the field cable; package and e-house builders for the cable inside. The builders buy every month and shape the spec at the terminations.</div></div>
+  {foot(n, N)}
+</section>"""
+
+
 def reused(fn, n, N, kicker):
     sec = fn()
     sec = re.sub(r"BOILERS \d+/16", f"{TITLE} {n}/{N}", sec)
@@ -1144,7 +1187,7 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     import deck_training_candidates as cand                   # picked candidates (Oct 24): B, C, E, F, J; the combined-cycle build (c_cc1-4) replaces the cycle diagram
     cand.FOOT_LEFT = "SW-3X1 MODEL &middot; CONCEPTUAL ILLUSTRATION, NOT ENGINEERED &middot; INTERNAL TRAINING"
-    N = 55                                                     # main deck 1-48, backup 49-55 (Oct 25)
+    N = 56                                                     # main deck 1-49, backup 50-56 (Oct 25)
     D = lambda n, *a: (lambda: s_div(n, N, *a))
     plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_why_you(3, N),
             D(4, "01", "How power", "is made", "Every plant is a black box: what goes in, what comes out, and why we zoom in on gas.", "renders/cover/K5_pro.png"),
@@ -1156,16 +1199,16 @@ def main():
             lambda: cand.c_xray_intro(18, N), lambda: cand.c_cc1(19, N), lambda: cand.c_cc2(20, N), lambda: cand.c_cc3(21, N), lambda: cand.c_cc4(22, N), lambda: cand.c_xray_copper(23, N), lambda: cand.c_xray(24, N),
             lambda: cand.c_grid(25, N), lambda: reused(db.slide_system, 26, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
             lambda: cand.c_cable101(27, N),
-            lambda: cand.c_stress(28, N), lambda: s_owners(29, N), lambda: s_sites(30, N), lambda: s_buy(31, N), lambda: cand.c_modern(32, N),
-            D(33, "04", "The", "tour", "Seven stops on the SW-3X1 campus: what it does, its electrical system, its cable.", "renders/cover/K1_pro.png", "50% 70%"),
-            lambda: s_overview(34, N)]
-    plan += [(lambda k=k: s_stop(k, 35 + k, N)) for k in range(7)]
-    plan += [D(42, "05", "Wire and", "cable", "One supplier from the grid to the thermocouple, installed faster.", "renders/training/XR_CC2_copper.jpg"),
-             lambda: s_number(43, N), lambda: s_offer(44, N), lambda: s_simpull(45, N), lambda: s_quiz(46, N),
-             lambda: s_close(47, N), lambda: s_resources(48, N),
-             D(49, "B", "Backup", "slides", "Extra detail if questions go there, and the sources.", "renders/epic/E66_pro.png"),
-             lambda: s_quiz(50, N, answers=True), lambda: s_types(51, N), lambda: reused(db.slide_basics, 52, N, "Backup &nbsp;&middot;&nbsp; fundamentals"),
-             lambda: s_follow(53, N), lambda: reused(db.slide_spec, 54, N, "Backup &nbsp;&middot;&nbsp; the HRSG spec"), lambda: s_sources_app(55, N)]
+            lambda: cand.c_stress(28, N), lambda: s_owners(29, N), lambda: s_sites(30, N), lambda: s_buy(31, N), lambda: s_buckets(32, N), lambda: cand.c_modern(33, N),
+            D(34, "04", "The", "tour", "Seven stops on the SW-3X1 campus: what it does, its electrical system, its cable.", "renders/cover/K1_pro.png", "50% 70%"),
+            lambda: s_overview(35, N)]
+    plan += [(lambda k=k: s_stop(k, 36 + k, N)) for k in range(7)]
+    plan += [D(43, "05", "Wire and", "cable", "One supplier from the grid to the thermocouple, installed faster.", "renders/training/XR_CC2_copper.jpg"),
+             lambda: s_number(44, N), lambda: s_offer(45, N), lambda: s_simpull(46, N), lambda: s_quiz(47, N),
+             lambda: s_close(48, N), lambda: s_resources(49, N),
+             D(50, "B", "Backup", "slides", "Extra detail if questions go there, and the sources.", "renders/epic/E66_pro.png"),
+             lambda: s_quiz(51, N, answers=True), lambda: s_types(52, N), lambda: reused(db.slide_basics, 53, N, "Backup &nbsp;&middot;&nbsp; fundamentals"),
+             lambda: s_follow(54, N), lambda: reused(db.slide_spec, 55, N, "Backup &nbsp;&middot;&nbsp; the HRSG spec"), lambda: s_sources_app(56, N)]
     assert len(plan) == N
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()
@@ -1196,7 +1239,7 @@ def main():
         ims.append(Image.open(png).convert("RGB"))
         ims[-1].save(os.path.join(jd, f"slide_{i + 1:02d}.jpg"), quality=90)
     w, h = 960, 540
-    for name, rng in (("opening_and_market_1-14", range(0, 14)), ("inside_a_gas_plant_15-32", range(14, 32)), ("tour_and_close_33-48", range(32, 48)), ("backup_49-55", range(48, 55)), ("all_slides", range(len(ims)))):
+    for name, rng in (("opening_and_market_1-14", range(0, 14)), ("inside_a_gas_plant_15-33", range(14, 33)), ("tour_and_close_34-49", range(33, 49)), ("backup_50-56", range(49, 56)), ("all_slides", range(len(ims)))):
         rng = list(rng)
         rows = (len(rng) + 1) // 2
         sheet = Image.new("RGB", (w * 2 + 30, h * rows + 15 * (rows + 1)), (40, 40, 40))
