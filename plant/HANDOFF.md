@@ -611,3 +611,7 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 
 ## Oct 25: three buckets of cable (56 slides)
 - New `s_buckets` (slide 32, after Who buys): 1 inside the packages (OEMs, e-house and package builders; not in the 440 mi), 2 between the packages (EPC or electrical contractor; most of the miles), 3 to the grid (HV contractor or utility). "Starting in the e-house is not the same as being bought by the e-house builder. Cover both." Main deck 1-49, backup 50-56; the run of show slide map is rewritten.
+
+## Oct 25: training deck picture pass (57 slides)
+- Pictures from the existing library on: four families (6: photo circles plus the solar carport and battery yard), open the box (16: one render per step), generator to light switch (25), Cable 101 (27: the cable cross-section icons), what a plant does to a cable (28: a thumbnail per row), who buys (31: one render per phase), the offer (46: icons per row), the whole campus in one number (45: campus behind), take-aways (49: E7 hero), resources (50: viewer and brochure covers).
+- New `s_hub` "Where every cable starts" (33): the R1 cutaway (E85) plus switchgear (E82), MCC/VFD (E84) and control room (E86). Main deck 1-50, backup 51-57. The render queue lists the preview-only views to re-render.

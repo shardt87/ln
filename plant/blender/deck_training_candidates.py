@@ -64,22 +64,25 @@ def c_grid(n, N):
             ("Distribution", "4&ndash;35 kV", "feeders along the streets", "MV URD, overhead distribution"),
             ("Customer", "480 / 240 / 120 V", "factory, office, home", "building wire, MC, service entrance")]
     html = ""
+    gimg = ["renders/epic/E24_pro.png", "renders/epic/E19_pro.png", "renders/brochure_epc/_img/K15_pro.jpg", "renders/epic/E48_pro.png",
+            "renders/epic/E10_pro_clean.jpg", "renders/epic/E47_pro_clean.jpg"]
     for k, (h, v, note, cab) in enumerate(legs):
         x = 64 + k * 220
         hot = k < 2
-        html += (f'<div class="abs" style="left:{x}px;top:200px;width:204px;height:330px;background:#181b1f;border-top:4px solid {COPPER if hot else "#5d636a"};'
-                 f'padding:18px 16px;box-sizing:border-box">{circ(k + 1, 38, COPPER if hot else "#5d636a", "#121417" if hot else WHITE, 17)}'
-                 f'<div class="ct" style="font-size:22px;margin-top:14px">{h}</div>'
-                 f'<div style="font:800 24px/1.1 BC;color:{COPPER};margin-top:10px">{v}</div>'
-                 f'<div class="cd" style="font-size:14px;margin-top:8px">{note}</div>'
-                 f'<div class="cnum" style="margin-top:18px;font-size:11px;color:{GREY}">Cable</div><div class="cd" style="font-size:14px;color:{WHITE};margin-top:4px">{cab}</div></div>')
+        html += (f'<div class="abs" style="left:{x}px;top:200px;width:204px;height:340px;background:#181b1f;border-top:4px solid {COPPER if hot else "#5d636a"};box-sizing:border-box">'
+                 f'<img src="{pic(gimg[k])}" style="width:204px;height:90px;object-fit:cover;display:block">'
+                 f'<div style="padding:10px 16px">{circ(k + 1, 32, COPPER if hot else "#5d636a", "#121417" if hot else WHITE, 15)}'
+                 f'<div class="ct" style="font-size:21px;margin-top:8px">{h}</div>'
+                 f'<div style="font:800 21px/1.1 BC;color:{COPPER};margin-top:6px">{v}</div>'
+                 f'<div class="cd" style="font-size:13px;margin-top:5px">{note}</div>'
+                 f'<div class="cnum" style="margin-top:10px;font-size:11px;color:{GREY}">Cable</div><div class="cd" style="font-size:13px;color:{WHITE};margin-top:3px">{cab}</div></div></div>')
         if k < 5:
             html += f'<div class="abs" style="left:{x + 206}px;top:356px;font:800 18px/1 BC;color:{COPPER}">&rsaquo;</div>'
     return page(n, N, head("Fundamentals &nbsp;&middot;&nbsp; beyond the fence", "From the generator", "to the light switch",
                            "Power is made at medium voltage, raised to high voltage to travel, then stepped down again near the customer.")
-                + html + f'<div class="abs" style="left:64px;top:548px;width:424px;font:700 14px/1.3 BC;letter-spacing:.08em;color:{COPPER};text-transform:uppercase">&larr; inside the plant: today</div>'
+                + html + f'<div class="abs" style="left:64px;top:556px;width:424px;font:700 14px/1.3 BC;letter-spacing:.08em;color:{COPPER};text-transform:uppercase">&larr; inside the plant: today</div>'
                 + band("<b style='color:#f4f1ec'>Higher voltage, lower current, smaller losses:</b> that is why transmission runs at hundreds of kV. "
-                       "Southwire has a product family at every step, from the generator to the outlet."))
+                       "Southwire has a product family at every step, from the generator to the outlet.", 640))
 
 
 def c_day(n, N):
@@ -139,11 +142,14 @@ def c_cable101(n, N):
            ("Control", "600 V", "TC-ER multi-conductor: breakers, valves, interlocks"), ("Instrumentation", "300 V", "PLTC / ITC shielded pairs, thermocouple extension"),
            ("Fibre", "&mdash;", "controls network, protection"), ("Grounding", "bare Cu", "the ground grid under everything")]
     html = ""
+    icons = ["hv_xlpe", "mv105", "tc_er", "vfd", "armorx600", "pltc", None, "bare_cu"]
     for k, (h, v, t) in enumerate(fam):
         x, y = 64 + (k % 4) * 334, 196 + (k // 4) * 170
+        if icons[k]:
+            html += f'<img class="abs" src="{pic("renders/icons/" + icons[k] + ".png")}" style="left:{x + 196}px;top:{y + 44}px;width:104px;height:104px;object-fit:contain;z-index:2">'
         html += (f'<div class="abs" style="left:{x}px;top:{y}px;width:310px;height:150px;background:#181b1f;border-top:4px solid {COPPER if k < 2 else "#5d636a"};padding:16px 18px;box-sizing:border-box">'
                  f'<div style="display:flex;justify-content:space-between;align-items:baseline"><div class="ct" style="font-size:26px">{h}</div>'
-                 f'<div style="font:800 18px/1 BC;color:{COPPER}">{v}</div></div><div class="cd" style="font-size:15px;margin-top:10px">{t}</div></div>')
+                 f'<div style="font:800 18px/1 BC;color:{COPPER}">{v}</div></div><div class="cd" style="font-size:15px;margin-top:10px;width:{176 if icons[k] else 270}px">{t}</div></div>')
     g = sorted(groups.items(), key=lambda kv: -kv[1])
     share = " &middot; ".join(f"{k} {100 * v / total:.0f}%" for k, v in g)
     return page(n, N, head("Fundamentals &nbsp;&middot;&nbsp; cable 101", "The cable families", "in a power plant",
@@ -160,13 +166,16 @@ def c_stress(n, N):
             ("Fire and smoke", "halls, control rooms, cable spreading rooms", "flame-retardant, low-smoke, circuit integrity"),
             ("Outdoors", "sun, oil, water, burial", "sunlight- and oil-resistant jackets, direct-burial ratings"),
             ("Schedule", "long pulls on the critical path", "SIMpull reels, cut-to-length, pre-terminated")]
-    html = (f'<div class="abs cnum" style="left:64px;top:192px;width:240px;color:{GREY}">Stress</div>'
-            f'<div class="abs cnum" style="left:320px;top:192px;color:{GREY}">Where</div><div class="abs cnum" style="left:820px;top:192px;color:{GREY}">The answer</div>')
+    html = (f'<div class="abs cnum" style="left:150px;top:192px;width:240px;color:{GREY}">Stress</div>'
+            f'<div class="abs cnum" style="left:360px;top:192px;color:{GREY}">Where</div><div class="abs cnum" style="left:820px;top:192px;color:{GREY}">The answer</div>')
+    simg = ["renders/epic/E26_pro.png", "renders/epic/E22_pro.png", "renders/epic/E84_pro_clean.jpg", "renders/epic/E110_pro_clean.jpg",
+            "renders/epic/E83_pro_clean.jpg", "renders/epic/E31_pro.png", "renders/epic/E89_pro_clean.jpg"]
     for k, (a, b, c) in enumerate(rows):
         y = 220 + k * 54
+        html += f'<img class="abs" src="{pic(simg[k])}" style="left:64px;top:{y + 5}px;width:70px;height:44px;object-fit:cover;border-radius:3px">'
         html += (f'<div class="abs" style="left:64px;top:{y}px;width:1312px;height:1px;background:#2c3036"></div>'
-                 f'<div class="abs" style="left:64px;top:{y + 14}px;font:800 22px/1 BC;color:{WHITE};text-transform:uppercase">{a}</div>'
-                 f'<div class="abs cd" style="left:320px;top:{y + 14}px;width:480px;font-size:16px">{b}</div>'
+                 f'<div class="abs" style="left:150px;top:{y + 14}px;font:800 21px/1 BC;color:{WHITE};text-transform:uppercase">{a}</div>'
+                 f'<div class="abs cd" style="left:360px;top:{y + 14}px;width:450px;font-size:15px">{b}</div>'
                  f'<div class="abs" style="left:820px;top:{y + 14}px;width:556px;font:400 16px/1.3 B;color:{COPPER}">{c}</div>')
     return page(n, N, head("Fundamentals &nbsp;&middot;&nbsp; why the spec matters", "What a power plant", "does to a cable") + html
                 + band("<b style='color:#f4f1ec'>The wrong cable fails early, and a cable failure can trip a unit.</b> That is why the spec is strict, and why it is written for each area of the plant.", 618))

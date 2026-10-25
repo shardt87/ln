@@ -1,4 +1,4 @@
-"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 56 slides at 1440 x 810 (main 1-49, backup 50-56),
+"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 57 slides at 1440 x 810 (main 1-50, backup 51-57),
 same look as the boiler deck. Reuses the boiler-deck slides for the fundamentals and the cable takeaways (their footers
 re-numbered), the 16-zone overview, and the model renders for the seven tour stops; new: title, agenda, six market slides
 (from the Oct 6 PowerGen channel deck), one slide per tour stop, the whole
@@ -160,6 +160,7 @@ FAMILIES = [("Thermal", "#b4591f", "Heat spins a turbine and a generator.",
 def s_sources(n, N):
     cols = ""
     xs, ws = [64, 456, 784, 1086], [376, 312, 286, 290]
+    fimg = {"Thermal": "renders/epic/E21_pro_clean.jpg", "Direct": "renders/epic/E16_pro_clean.jpg", "Storage": "renders/epic/E41_pro_clean.jpg"}
     for (fam, col, how, techs), x, w in zip(FAMILIES, xs, ws):
         chips = ""
         for t, tag, hot in techs:
@@ -171,15 +172,20 @@ def s_sources(n, N):
                 chips += (f'<div style="margin:6px 0 2px 14px;font:400 13.5px/1.4 B;color:{GREY}">simple cycle &middot; combined cycle &middot; engines &middot; aero '
                           f'<b style="color:{COPPER};font-weight:700">&larr; today</b></div>')
         cols += (f'<div class="abs" style="left:{x}px;top:170px;width:{w}px">'
-                 f'<div style="display:flex;align-items:center;gap:16px;height:80px;margin-bottom:6px"><div style="width:70px;height:70px;border-radius:50%;background:{col};flex:none"></div>'
-                 f'<div><div style="font:800 26px/1 BC;color:{WHITE};text-transform:uppercase">{fam}</div>'
+                 f'<div style="display:flex;align-items:center;gap:16px;height:80px;margin-bottom:6px">'
+                 + (f'<img src="{pic(fimg[fam])}" style="width:74px;height:74px;border-radius:50%;object-fit:cover;border:4px solid {col};flex:none">' if fam in fimg
+                    else f'<div style="width:70px;height:70px;border-radius:50%;background:{col};flex:none"></div>')
+                 + f'<div><div style="font:800 26px/1 BC;color:{WHITE};text-transform:uppercase">{fam}</div>'
                  f'<div class="cd" style="font-size:14px;margin-top:6px">{how}</div></div></div>{chips}</div>')
     notes = [(456, 312, "Not on our campus; Southwire cables them too: hydro, onshore and offshore wind."),
              (784, 286, "In SW-3X1: the fuel-cell bank in the modular yard."),
              (1086, 290, "In SW-3X1: the battery (BESS) yard.")]
-    cols += "".join(f'<div class="abs" style="left:{x}px;top:500px;width:{w}px;border-top:2px solid #2c3036;padding-top:12px">'
-                    f'<div class="cd" style="font-size:14.5px">{t}</div></div>' for x, w, t in notes)
-    cols += (f'<div class="abs" style="left:456px;top:580px;width:920px;font:700 14px/1.3 BC;letter-spacing:.08em;color:{COPPER};text-transform:uppercase">'
+    cols += "".join(f'<div class="abs" style="left:{x}px;top:346px;width:{w}px"><img src="{pic(p)}" style="width:{w}px;height:136px;object-fit:cover;display:block">'
+                    f'<div style="font:700 11px/1.2 BC;letter-spacing:.1em;color:{GREY};text-transform:uppercase;margin-top:6px">{t}</div></div>'
+                    for x, w, p, t in [(784, 286, "renders/epic/E10_pro_clean.jpg", "Solar carport and EV chargers"), (1086, 290, "renders/epic/E41_pro.png", "The battery yard")])
+    cols += "".join(f'<div class="abs" style="left:{x}px;top:516px;width:{w}px;border-top:2px solid #2c3036;padding-top:10px">'
+                    f'<div class="cd" style="font-size:13.5px">{t}</div></div>' for x, w, t in notes)
+    cols += (f'<div class="abs" style="left:456px;top:592px;width:920px;font:700 14px/1.3 BC;letter-spacing:.08em;color:{COPPER};text-transform:uppercase">'
              f'Gas, engines, aeroderivatives and package boilers: all thermal, all on our campus</div>')
     return f"""
 <section class="page slide">
@@ -508,6 +514,8 @@ ANATOMY = [("Fuel infrastructure", ["Gas production, pipelines, compression", "S
 
 def s_anatomy(n, N):
     cards = ""
+    bimg = ["renders/epic/E109_pro_clean.jpg", "renders/epic/E108_pro_clean.jpg", "renders/epic/E21_pro.png", "renders/epic/E24_pro.png",
+            "renders/epic/E20_pro.png", "renders/epic/E47_pro_clean.jpg"]
     for k, (h, items) in enumerate(ANATOMY):
         x = 64 + k * 220
         hot = k in (3, 4)
@@ -617,19 +625,22 @@ def s_box(n, N):
               f'box-sizing:border-box;text-align:center;padding-top:12px"><div style="font:800 26px/1 BC;color:{WHITE};text-transform:uppercase">{lab}</div>'
               f'<div style="font:400 14px/1 B;color:#d6d9dc;margin-top:7px">{sub}</div></div>')
     cards = ""
+    bimg = ["renders/epic/E109_pro_clean.jpg", "renders/epic/E108_pro_clean.jpg", "renders/epic/E21_pro.png", "renders/epic/E24_pro.png",
+            "renders/epic/E20_pro.png", "renders/epic/E47_pro_clean.jpg"]
     for k, (h, items) in enumerate(ANATOMY):
         x = 64 + k * 220
         li = "".join(f'<div class="cd" style="font-size:15px;margin-top:9px;padding-left:14px;position:relative">'
                      f'<span style="position:absolute;left:0;top:7px;width:6px;height:6px;background:{COPPER}"></span>{t}</div>' for t in items)
-        cards += (f'<div class="abs" style="left:{x}px;top:264px;width:204px;height:330px;background:#181b1f;border-top:4px solid {COPPER};'
-                  f'padding:20px 18px;box-sizing:border-box">{circ(k, 40, COPPER, "#121417", 18)}'
-                  f'<div class="ct" style="font-size:22px;margin:14px 0 4px;min-height:44px">{h}</div>{li}</div>')
+        cards += (f'<div class="abs" style="left:{x}px;top:264px;width:204px;height:356px;background:#181b1f;border-top:4px solid {COPPER};box-sizing:border-box">'
+                  f'<img src="{pic(bimg[k])}" style="width:204px;height:92px;object-fit:cover;display:block">'
+                  f'<div style="padding:10px 16px;position:relative"><div style="position:absolute;top:-26px;left:14px">{circ(k, 38, COPPER, "#121417", 17)}</div>'
+                  f'<div class="ct" style="font-size:20px;margin:16px 0 2px;min-height:40px">{h}</div>{li}</div></div>')
     return f"""
 <section class="page slide">
   <div class="abs kicker" style="left:64px;top:56px">Fundamentals</div>
   <div class="abs h2" style="left:62px;top:84px;font-size:56px">Open the box: <em>the physical anatomy</em></div>
   {b}{cards}
-  <div class="abs lede" style="left:64px;top:620px;width:1300px;font-size:18px">Back to the black box, now for gas. Gas turbine, combined cycle or engines: <b style="color:{WHITE}">the same physics on every project.</b>
+  <div class="abs lede" style="left:64px;top:640px;width:1300px;font-size:17px">Back to the black box, now for gas. Gas turbine, combined cycle or engines: <b style="color:{WHITE}">the same physics on every project.</b>
     What changes is the machine in the box, and who owns it.</div>
   {foot(n, N)}
 </section>"""
@@ -734,22 +745,25 @@ PHASES = [("Develop", "site, permits, interconnection request, fuel and water", 
 
 def s_buy(n, N):
     html = ""
+    pimg = ["renders/nextgen/_src/E123_pro_clean.jpg", "renders/epic/E22_pro.png", "renders/epic/E88_pro_clean.jpg", "renders/epic/E89_pro_clean.jpg",
+            "renders/epic/E92_pro_clean.jpg", "renders/epic/E86_pro_clean.jpg"]
     for k, (h, what, who, note) in enumerate(PHASES):
         x = 64 + k * 220
         hot = k in (2, 3)
+        html += f'<img class="abs" src="{pic(pimg[k])}" style="left:{x}px;top:262px;width:204px;height:96px;object-fit:cover;border-bottom:3px solid {COPPER if hot else "#3a3f45"}">'
         html += (f'<div class="abs" style="left:{x}px;top:190px;width:204px;height:62px;background:{"#b4591f" if hot else "#2a2e33"};'
                  f'clip-path:polygon(0 0,92% 0,100% 50%,92% 100%,0 100%,{"0" if k == 0 else "8%"} 50%);padding:0 0 0 {16 if k == 0 else 26}px;box-sizing:border-box;'
                  f'font:800 21px/62px BC;color:{WHITE};text-transform:uppercase">{h}</div>'
-                 f'<div class="abs" style="left:{x}px;top:272px;width:200px"><div class="cd" style="font-size:15px;color:{WHITE}">{what}</div>'
-                 f'<div class="cnum" style="margin-top:16px;font-size:12px;color:{GREY}">Who</div><div class="cd" style="font-size:15px;margin-top:4px">{who}</div>'
-                 f'<div style="margin-top:16px;font:700 16px/1.25 BC;color:{COPPER if hot else GREY};text-transform:uppercase">{note}</div></div>')
+                 f'<div class="abs" style="left:{x}px;top:372px;width:200px"><div class="cd" style="font-size:14px;color:{WHITE}">{what}</div>'
+                 f'<div class="cnum" style="margin-top:10px;font-size:12px;color:{GREY}">Who</div><div class="cd" style="font-size:14px;margin-top:3px">{who}</div>'
+                 f'<div style="margin-top:10px;font:700 15px/1.25 BC;color:{COPPER if hot else GREY};text-transform:uppercase">{note}</div></div>')
     return f"""
 <section class="page slide">
   <div class="abs kicker" style="left:64px;top:56px">Fundamentals &nbsp;&middot;&nbsp; who buys, and when</div>
   <div class="abs h2" style="left:62px;top:84px;font-size:56px">One company specifies the cable, <em>another one buys it</em></div>
   {html}
-  <div class="abs" style="left:64px;top:600px;width:1312px;background:#181b1f;border-left:4px solid {COPPER};padding:16px 22px;box-sizing:border-box">
-    <div class="cd" style="font-size:17px"><b style="color:{WHITE}">The owner pays, the owner's engineer writes the spec, the EPC or package builder places
+  <div class="abs" style="left:64px;top:630px;width:1312px;background:#181b1f;border-left:4px solid {COPPER};padding:14px 22px;box-sizing:border-box">
+    <div class="cd" style="font-size:16px"><b style="color:{WHITE}">The owner pays, the owner's engineer writes the spec, the EPC or package builder places
       the order.</b> Be in the spec early, and be ready when the EPC buys: by then the schedule is tight and cable is on the critical path.</div></div>
   {foot(n, N)}
 </section>"""
@@ -912,6 +926,7 @@ def s_number(n, N):
                  f'<div style="font:800 20px/1 BC;color:{WHITE}">{v / 1e6:.1f} M ft</div></div>')
     return f"""
 <section class="page slide">
+  <img class="abs" src="{pic('renders/nextgen/_src/E123_pro_clean.jpg')}" style="left:0;top:0;width:1440px;height:810px;object-fit:cover;filter:brightness(.22) saturate(.4)">
   <div class="abs kicker" style="left:64px;top:56px">Wire and cable takeaways</div>
   <div class="abs h2" style="left:62px;top:84px;font-size:58px">The whole campus in <em>one number</em></div>
   <div class="abs" style="left:64px;top:200px">
@@ -944,10 +959,12 @@ def s_close(n, N):
                    for k, (h, t) in enumerate(three))
     return f"""
 <section class="page slide">
+  <img class="abs" src="{pic('renders/epic/E7_pro.png')}" style="left:0;top:0;width:1440px;height:810px;object-fit:cover">
+  <div class="abs" style="left:0;top:0;width:1440px;height:810px;background:linear-gradient(90deg,rgba(14,16,18,.96) 0%,rgba(14,16,18,.9) 55%,rgba(14,16,18,.55) 100%)"></div>
   <div class="abs kicker" style="left:64px;top:56px">Three things to remember</div>
   <div class="abs h2" style="left:62px;top:84px;font-size:58px">Take <em>away</em></div>
   <div class="abs" style="left:64px;top:176px;width:860px">{html}</div>
-  <div class="abs" style="left:990px;top:190px;width:390px;height:440px;background:#181b1f;border-top:3px solid {COPPER};padding:30px;box-sizing:border-box">
+  <div class="abs" style="left:990px;top:190px;width:390px;height:440px;background:rgba(24,27,31,.92);border-top:3px solid {COPPER};padding:30px;box-sizing:border-box">
     <img src="{LOGO}" style="width:300px;margin-bottom:26px">
     <div class="h2" style="font-size:72px">Q&amp;A</div>
     <div class="lede" style="font-size:16px;margin-top:18px">Questions from the chat. The recording and the 3D viewer link will be
@@ -997,6 +1014,7 @@ def s_div(n, N, num, title, em, sub, img, pos="50% 50%"):
 </section>"""
 
 
+OFFER_ICON = ["hv_xlpe", "mv105", "tc_er", "pltc", "armorx600", "pv", "shdgc", None]
 OFFER = [("Grid connection", "HV XLPE transmission cable (230 kV) &middot; bare copper grounding", "C"),
          ("Power island: MV", "MV-105 EPR 133% (5&ndash;35 kV) &middot; ARMOR-X MC-HL 15 kV", "A"),
          ("Power island: LV and drives", "Type TC-ER power &middot; ARMOR-X MC-HL 600 V &middot; VFD-rated cable", "A"),
@@ -1012,7 +1030,8 @@ def s_offer(n, N):
     for k, (area, prod, _) in enumerate(OFFER):
         y = 186 + k * 58
         rows += (f'<div class="abs" style="left:64px;top:{y}px;width:1312px;height:1px;background:#2c3036"></div>'
-                 f'<div class="abs" style="left:64px;top:{y + 15}px;width:360px;font:800 21px/1 BC;color:{COPPER if k == 7 else WHITE};text-transform:uppercase">{area}</div>'
+                 + (f'<img class="abs" src="{pic("renders/icons/" + OFFER_ICON[k] + ".png")}" style="left:58px;top:{y + 3}px;width:52px;height:52px;object-fit:contain">' if OFFER_ICON[k] else "")
+                 + f'<div class="abs" style="left:124px;top:{y + 15}px;width:310px;font:800 21px/1 BC;color:{COPPER if k == 7 else WHITE};text-transform:uppercase">{area}</div>'
                  f'<div class="abs cd" style="left:440px;top:{y + 15}px;width:936px;font-size:17px;color:#e6e3dd">{prod}</div>')
     svc = ["Spec support: sizing, derating, spec reviews", "Cut-to-length against the cable schedule", "Harness kits, pre-terminated and labelled",
            "Project logistics: reel tracking, sequenced deliveries", "Field support: pulling calcs, terminations, tests"]
@@ -1092,6 +1111,10 @@ def s_resources(n, N):
            ("The recording and these slides", "Shared after the session, with a glossary of the terms used today.")]
     team = [("Stephan Hardt", "PowerGen strategy, the plant model, owners and OEMs"), ("Patrick Ritchie", "EPC accounts"),
             ("Greyson", "EPC outreach to more gas-plant builders"), ("Phil Metz &middot; Bob Benish", "OEMs and package builders: e-houses, switchgear, modular power")]
+    covers = "".join(f'<div style="flex:1"><img src="{pic(p)}" style="width:100%;height:150px;object-fit:cover;object-position:{pos};border:1px solid #2c3036">'
+                     f'<div style="font:700 11px/1.2 BC;letter-spacing:.1em;color:{GREY};text-transform:uppercase;margin-top:6px">{t}</div></div>'
+                     for p, pos, t in [("renders/cover/viewer_campus.jpg", "50% 50%", "3D viewer"), ("renders/brochure/page_01.jpg", "50% 0%", "Wire &amp; cable brochure"),
+                                       ("renders/brochure_epc/prev_01.png", "50% 0%", "EPC solutions"), ("renders/deck/boilers/SW-3X1_boilers_1.png", "0% 0%", "Boiler solutions")])
     r = "".join(f'<div style="margin-top:18px;border-left:4px solid {COPPER};padding-left:14px"><div class="ct" style="font-size:22px">{h}</div>'
                 f'<div class="cd" style="font-size:15px;margin-top:5px">{t}</div></div>' for h, t in res)
     t = "".join(f'<div style="margin-top:14px;display:flex;gap:16px;align-items:baseline;border-top:1px solid #2c3036;padding-top:12px">'
@@ -1101,6 +1124,7 @@ def s_resources(n, N):
   <div class="abs kicker" style="left:64px;top:56px">After today</div>
   <div class="abs h2" style="left:62px;top:84px;font-size:56px">Resources and <em>who to call</em></div>
   <div class="abs" style="left:64px;top:180px;width:600px"><div class="cnum" style="color:{WHITE}">Resources</div>{r}</div>
+  <div class="abs" style="left:64px;top:500px;width:620px;display:flex;gap:14px">{covers}</div>
   <div class="abs" style="left:730px;top:180px;width:646px"><div class="cnum" style="color:{WHITE}">Power Generation Solutions team</div>{t}
     <div style="margin-top:26px;font:700 16px/1.5 BC;letter-spacing:.06em;color:{COPPER}">{credit.EMAIL}</div></div>
   {foot(n, N)}
@@ -1175,6 +1199,29 @@ def s_buckets(n, N):
 </section>"""
 
 
+
+def s_hub(n, N):
+    """Where every cable starts: the switchgear room, the VFD e-house and the control room (existing renders E85, E82, E84, E86)."""
+    tiles = [("renders/epic/E82_pro_clean.jpg", "Switchgear", "13.8 and 4.16 kV lineups: every MV feeder starts here"),
+             ("renders/epic/E84_pro_clean.jpg", "MCCs and drives", "480 V starters and VFDs: motors, fans and pumps"),
+             ("renders/epic/E86_pro_clean.jpg", "Control room", "where the instrument and control cable comes home")]
+    t = "".join(f'<div class="abs" style="left:880px;top:{150 + k * 196}px;width:500px;height:182px;background:#181b1f;display:flex">'
+                f'<img src="{pic(p)}" style="width:230px;height:182px;object-fit:cover;flex:none"><div style="padding:16px 18px">'
+                f'<div class="ct" style="font-size:22px">{h}</div><div class="cd" style="font-size:14px;margin-top:8px">{d}</div></div></div>'
+                for k, (p, h, d) in enumerate(tiles))
+    return f"""
+<section class="page slide">
+  <img class="abs" src="{pic('renders/epic/E85_pro_clean.jpg')}" style="left:0;top:0;width:860px;height:765px;object-fit:cover">
+  <div class="abs" style="left:0;top:0;width:860px;height:765px;background:linear-gradient(180deg,rgba(14,16,18,.88) 0%,rgba(14,16,18,0) 26%,rgba(14,16,18,0) 74%,rgba(14,16,18,.9) 100%)"></div>
+  <div class="abs kicker" style="left:56px;top:40px">Inside a gas plant &nbsp;&middot;&nbsp; the hub</div>
+  <div class="abs h2" style="left:54px;top:66px;font-size:50px;width:780px">Where every <em>cable starts</em></div>
+  <div class="abs" style="left:56px;top:676px;width:780px;font:400 17px/1.45 B;color:#e6e3dd">The R1 switchgear room from above, roof off. <b style="color:#fff">Power leaves
+    the switchgear and MCCs; signals come home to the control room.</b> Every device in between is wired.</div>
+  {t}
+  {foot(n, N)}
+</section>"""
+
+
 def reused(fn, n, N, kicker):
     sec = fn()
     sec = re.sub(r"BOILERS \d+/16", f"{TITLE} {n}/{N}", sec)
@@ -1187,7 +1234,7 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     import deck_training_candidates as cand                   # picked candidates (Oct 24): B, C, E, F, J; the combined-cycle build (c_cc1-4) replaces the cycle diagram
     cand.FOOT_LEFT = "SW-3X1 MODEL &middot; CONCEPTUAL ILLUSTRATION, NOT ENGINEERED &middot; INTERNAL TRAINING"
-    N = 56                                                     # main deck 1-49, backup 50-56 (Oct 25)
+    N = 57                                                     # main deck 1-50, backup 51-57 (Oct 25)
     D = lambda n, *a: (lambda: s_div(n, N, *a))
     plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_why_you(3, N),
             D(4, "01", "How power", "is made", "Every plant is a black box: what goes in, what comes out, and why we zoom in on gas.", "renders/cover/K5_pro.png"),
@@ -1199,16 +1246,16 @@ def main():
             lambda: cand.c_xray_intro(18, N), lambda: cand.c_cc1(19, N), lambda: cand.c_cc2(20, N), lambda: cand.c_cc3(21, N), lambda: cand.c_cc4(22, N), lambda: cand.c_xray_copper(23, N), lambda: cand.c_xray(24, N),
             lambda: cand.c_grid(25, N), lambda: reused(db.slide_system, 26, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
             lambda: cand.c_cable101(27, N),
-            lambda: cand.c_stress(28, N), lambda: s_owners(29, N), lambda: s_sites(30, N), lambda: s_buy(31, N), lambda: s_buckets(32, N), lambda: cand.c_modern(33, N),
-            D(34, "04", "The", "tour", "Seven stops on the SW-3X1 campus: what it does, its electrical system, its cable.", "renders/cover/K1_pro.png", "50% 70%"),
-            lambda: s_overview(35, N)]
-    plan += [(lambda k=k: s_stop(k, 36 + k, N)) for k in range(7)]
-    plan += [D(43, "05", "Wire and", "cable", "One supplier from the grid to the thermocouple, installed faster.", "renders/training/XR_CC2_copper.jpg"),
-             lambda: s_number(44, N), lambda: s_offer(45, N), lambda: s_simpull(46, N), lambda: s_quiz(47, N),
-             lambda: s_close(48, N), lambda: s_resources(49, N),
-             D(50, "B", "Backup", "slides", "Extra detail if questions go there, and the sources.", "renders/epic/E66_pro.png"),
-             lambda: s_quiz(51, N, answers=True), lambda: s_types(52, N), lambda: reused(db.slide_basics, 53, N, "Backup &nbsp;&middot;&nbsp; fundamentals"),
-             lambda: s_follow(54, N), lambda: reused(db.slide_spec, 55, N, "Backup &nbsp;&middot;&nbsp; the HRSG spec"), lambda: s_sources_app(56, N)]
+            lambda: cand.c_stress(28, N), lambda: s_owners(29, N), lambda: s_sites(30, N), lambda: s_buy(31, N), lambda: s_buckets(32, N), lambda: s_hub(33, N), lambda: cand.c_modern(34, N),
+            D(35, "04", "The", "tour", "Seven stops on the SW-3X1 campus: what it does, its electrical system, its cable.", "renders/cover/K1_pro.png", "50% 70%"),
+            lambda: s_overview(36, N)]
+    plan += [(lambda k=k: s_stop(k, 37 + k, N)) for k in range(7)]
+    plan += [D(44, "05", "Wire and", "cable", "One supplier from the grid to the thermocouple, installed faster.", "renders/training/XR_CC2_copper.jpg"),
+             lambda: s_number(45, N), lambda: s_offer(46, N), lambda: s_simpull(47, N), lambda: s_quiz(48, N),
+             lambda: s_close(49, N), lambda: s_resources(50, N),
+             D(51, "B", "Backup", "slides", "Extra detail if questions go there, and the sources.", "renders/epic/E66_pro.png"),
+             lambda: s_quiz(52, N, answers=True), lambda: s_types(53, N), lambda: reused(db.slide_basics, 54, N, "Backup &nbsp;&middot;&nbsp; fundamentals"),
+             lambda: s_follow(55, N), lambda: reused(db.slide_spec, 56, N, "Backup &nbsp;&middot;&nbsp; the HRSG spec"), lambda: s_sources_app(57, N)]
     assert len(plan) == N
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()
@@ -1239,7 +1286,7 @@ def main():
         ims.append(Image.open(png).convert("RGB"))
         ims[-1].save(os.path.join(jd, f"slide_{i + 1:02d}.jpg"), quality=90)
     w, h = 960, 540
-    for name, rng in (("opening_and_market_1-14", range(0, 14)), ("inside_a_gas_plant_15-33", range(14, 33)), ("tour_and_close_34-49", range(33, 49)), ("backup_50-56", range(49, 56)), ("all_slides", range(len(ims)))):
+    for name, rng in (("opening_and_market_1-14", range(0, 14)), ("inside_a_gas_plant_15-34", range(14, 34)), ("tour_and_close_35-50", range(34, 50)), ("backup_51-57", range(50, 57)), ("all_slides", range(len(ims)))):
         rng = list(rng)
         rows = (len(rng) + 1) // 2
         sheet = Image.new("RGB", (w * 2 + 30, h * rows + 15 * (rows + 1)), (40, 40, 40))

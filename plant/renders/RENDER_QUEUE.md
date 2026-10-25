@@ -34,3 +34,6 @@ it where tray congestion is the point of the shot. Process piping stays visible.
 ## Oct 24: training deck, combined cycle
 - **CC1** (blender/pro_look.py): the power block from above with the hall roof off. It is the base of the training deck's combined-cycle slide (slide 15, `c_combined`; the markers are placed for this framing, so do not move the camera). The deck uses the preview at renders/training/CC1_pro_clean.jpg; replace it with the full render.
 - **CC2** replaces CC1 as the deck's base: the same view pulled back, used by the four-slide combined-cycle build (slides 15-18, `c_cc`). The overlays come from projecting model coordinates with CC2's eye, target and lens, so keep the camera exactly as it is. Preview at renders/training/CC2_pro_clean.jpg. CC1 is no longer used.
+
+## Oct 25: training deck picture pass (re-render at full quality so the deck is sharp)
+Views now on training slides that only exist as Oct 8-13 previews: E10, E16, E41, E47, E82, E83, E84, E85, E86, E88, E89, E92, E108, E109, E110, E123 (nextgen). E19-E24, E26, E31, E48 and E7 already have Oct 17 full renders.
