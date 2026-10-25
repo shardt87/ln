@@ -35,13 +35,17 @@ def pic(rel):
     if not cands:
         raise FileNotFoundError(rel)
     path = max(cands, key=os.path.getmtime)
-    if path.endswith(".png") and os.path.getsize(path) > 1e6:            # raw renders: embed as JPEG to keep the PDF small
+    if os.path.getsize(path) > 250e3:                                  # embed at slide resolution to keep the PDF small
         import tempfile
         from PIL import Image
-        jpg = os.path.join(tempfile.gettempdir(), "deck_training_" + os.path.basename(path)[:-4] + ".jpg")
-        if not os.path.exists(jpg) or os.path.getmtime(jpg) < os.path.getmtime(path):
-            Image.open(path).convert("RGB").save(jpg, quality=90)
-        path = jpg
+        im = Image.open(path)
+        icon = "/icons/" in path                                        # cable icons keep their transparency
+        out = os.path.join(tempfile.gettempdir(), "deck_training_" + os.path.basename(os.path.dirname(path)) + "_"
+                           + os.path.splitext(os.path.basename(path))[0] + (".png" if icon else ".jpg"))
+        if not os.path.exists(out) or os.path.getmtime(out) < os.path.getmtime(path):
+            im.thumbnail((360, 360) if icon else (1920, 1920))
+            (im.save(out) if icon else im.convert("RGB").save(out, quality=84))
+        path = out
     return bz.url(path)
 
 
@@ -1272,7 +1276,7 @@ def main():
         os.remove(pdf)
         os.remove(hp)
     p = os.path.join(OUT, "SW-3X1_Nov11_training.pdf")
-    out.save(p, garbage=3, deflate=True)
+    out.save(p, garbage=4, deflate=True)                     # garbage=4 merges the images repeated across slides
     from PIL import Image
     jd = os.path.join(OUT, "jpg")                              # JPG copies for phones (the PDF does not load fully on some)
     os.makedirs(jd, exist_ok=True)
