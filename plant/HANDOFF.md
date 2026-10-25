@@ -623,3 +623,4 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 - Then four steps: V0 March (the author's Southwire-branded concept pair, history/v0_branded.jpg, v0_ghost.jpg), V1 March (the colour-coded cable concepts), V2 September, V3 today.
 - V1 now shows four images as a 2 x 2 grid (adds history/v1_turbine_hall.jpg and v1_hrsg_trains.jpg).
 - Corrected (author): V0 = the four colour sketches, V1 = the Southwire-branded pair (file names in history/ are historical).
+- V1 also takes the turbine-hall and HRSG-trains images (2 x 2); V0 is the two colour sketches.
