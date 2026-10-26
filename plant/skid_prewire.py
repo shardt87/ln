@@ -8,7 +8,8 @@ length, coiled and tagged, and continuity / insulation-resistance (megger) tests
 - an open concrete work pad as the workstation (no shelter), with a fuel-gas
   conditioning skid and a pump skid on cribbing being pre-wired, workbenches, a wire wagon, test gear, JB and
   tray-fitting kits, temporary power and lights, and the crew;
-- a ready-to-set row outside: a second fuel-gas skid, finished and tagged TESTED - READY TO SET, and a bare lube-oil
+- a ready-to-set row outside: an HRSG chemical-feed skid (phosphate / amine dosing), finished and tagged TESTED - READY
+  TO SET, and a bare lube-oil
   skid getting kit 1 (the plug-in GT auxiliary harness): trunk in the tray, branches plugged into the devices;
 - a PDC e-house delivered in two shipping splits on cribbing, the split faces wrapped, with pre-terminated
   interconnect cables coiled at the split ready to reconnect once set.
@@ -137,6 +138,31 @@ def fuel_gas_skid(x0, x1, y0, y1, z):
     box(x0 + .8, x0 + 2.6, y1 - 3.5, y1 - 1.2, zb, zb + 5.5, "panel")                # skid control panel
 
 
+def chem_feed_skid(x0, x1, y0, y1, z):
+    """HRSG chemical-feed skid (phosphate / amine): two dosing tanks with level gauges and agitator drives, four
+    diaphragm metering pumps with motors on a drip tray, discharge manifold with calibration columns, local control
+    panel and an eyewash station."""
+    skid_base(x0, x1, y0, y1, z)
+    zb = z + 1.1
+    cx = (x0 + x1) / 2 - 1.0
+    for k, yy in enumerate((y0 + 4.5, y0 + 11.5)):                                   # dosing tanks
+        rod((cx, yy, zb), (cx, yy, zb + 6.5), 2.4, "tank", seg=24)
+        rod((cx, yy, zb + 6.5), (cx, yy, zb + 6.8), 2.4, "steel", seg=24)
+        rod((cx, yy, zb + 6.8), (cx, yy, zb + 7.8), .4, "motor", seg=12)               # agitator drive
+        rod((cx + 2.45, yy, zb + .5), (cx + 2.45, yy, zb + 6.0), .08, "glass", seg=6)  # level gauge
+    box(cx - 2.2, cx + 1.6, y0 + 16.5, y1 - 7.0, zb, zb + .25, "steel_dark")           # drip tray
+    for k in range(4):                                                               # metering pumps
+        yy = y0 + 17.5 + k * 1.9
+        box(cx - 1.6, cx - .2, yy - .5, yy + .5, zb + .25, zb + 1.3, "pump")
+        rod((cx - .2, yy, zb + .8), (cx + 1.2, yy, zb + .8), .38, "motor", seg=12)
+        rod((cx - .9, yy, zb + 1.3), (cx - .9, yy, zb + 3.2), .08, "steel", seg=6)
+    rod((cx - .9, y0 + 17.5, zb + 3.2), (cx - .9, y1 - 7.5, zb + 3.2), .12, "steel", seg=8)   # discharge manifold
+    for k in range(2):
+        rod((cx - 2.0, y0 + 18 + k * 3, zb + .3), (cx - 2.0, y0 + 18 + k * 3, zb + 3.0), .2, "glass", seg=10)   # cal columns
+    box(x0 + .8, x0 + 2.6, y1 - 4.5, y1 - 1.2, zb, zb + 5.5, "panel")                # local control panel
+    box(x1 - 2.4, x1 - 1.6, y1 - 3.0, y1 - 2.2, zb, zb + 3.6, "safety")              # eyewash
+
+
 def pump_skid(x0, x1, y0, y1, z):
     skid_base(x0, x1, y0, y1, z)
     zb = z + 1.1
@@ -187,8 +213,8 @@ def _build():
                        register=False, area="I", sheet="typical (prefab cable installation)",
                        info="Skids wired at waist height on a concrete work pad before setting: JBs, skid-edge tray and conduit mounted, "
                             "skid wiring pulled and terminated, field tails cut to length, coiled and tagged, continuity and "
-                            "insulation-resistance tests recorded. Fuel-gas and pump skids in progress; lube-oil and a second "
-                            "fuel-gas skid tested and ready to set; a PDC e-house in two shipping splits with pre-terminated "
+                            "insulation-resistance tests recorded. Fuel-gas and pump skids in progress; lube-oil skid getting kit 1 and an "
+                            "HRSG chemical-feed skid tested and ready to set; a PDC e-house in two shipping splits with pre-terminated "
                             "interconnects coiled at the split. Transformers and large e-houses are set directly (factory-"
                             "integrated) and are not pre-wired on site.")
     fuel.on(it)
@@ -227,9 +253,9 @@ def _build():
     lube_skid(2062, 2074, 958, 986, 1.0)
     kit_fitup(2062, 2074, 958, 986, 1.0)                                            # kit 1 going on (owner, Oct 26)
     cribbing(2084, 2096, 958, 990)
-    fuel_gas_skid(2084, 2096, 958, 990, 1.0)
-    prewire(2084, 2096, 958, 990, 1.0, done=True, side=1, label="FG-COND SKID FGS-4")
-    decal((2080, 955.8, 4), (0, -1, 0), 10, 2.2, [("READY TO SET", .4, 1, "#ffffff"), ("FGS-4 TESTED  ·  LOS-2 KIT 1 FIT-UP", .2, 0, "#e6e6e6")],
+    chem_feed_skid(2084, 2096, 958, 990, 1.0)                                       # a different skid in the ready row
+    prewire(2084, 2096, 958, 990, 1.0, done=True, side=1, label="HRSG CHEM FEED SKID CFS-2")
+    decal((2080, 955.8, 4), (0, -1, 0), 10, 2.2, [("READY TO SET", .4, 1, "#ffffff"), ("CFS-2 TESTED  ·  LOS-2 KIT 1 FIT-UP", .2, 0, "#e6e6e6")],
           bg="#2f7a3c")
     rod((2075.5, 956, 0), (2075.5, 956, 5.2), .1, "steel", seg=6)
     rod((2084.5, 956, 0), (2084.5, 956, 5.2), .1, "steel", seg=6)

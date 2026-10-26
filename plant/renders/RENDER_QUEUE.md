@@ -46,3 +46,4 @@ Views now on training slides that only exist as Oct 8-13 previews: E10, E16, E41
 - **E132 / E133** (skid_prewire.kits): standardized kits on the pre-wire pad; preview only.
 - **E134 / E135** (standard_kits.py): kits 4 and 5; preview only.
 - **E136** (skid_prewire.kit_fitup): kit 1 fit-up on LOS-2; preview only. E95 / E96 now show LOS-2 bare with the kit going on.
+- **E137** (skid_prewire ready row: CFS-2 + LOS-2 kit 1): preview only.
