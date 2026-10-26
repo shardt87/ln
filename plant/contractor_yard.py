@@ -2,8 +2,12 @@
 prefab staging bay and the SIMpull staging (x 196-318, y 694-792), set up the way an electrical contractor runs a
 cable job today:
 - conduit material handling: two cantilever racks of 10 ft rigid (RMC) and PVC sticks, banded PVC bundles stacked on
-  timber dunnage, HDPE innerduct reels, pallets of fittings;
-- a conduit bending and threading station on a work mat (hydraulic bender, threading machine, cut-off saw);
+  timber dunnage, Cable-in-Conduit reels (conductors factory-installed in HDPE duct; one length paid out with a
+  cutaway end), pallets of fittings;
+- a conduit bending and threading station on a work mat (hydraulic bender, threading machine, cut-off saw), a rack of
+  hand conduit benders and a pallet of finished bends;
+- a rough-in mock-up wall (wood studs with SIMpull NM-B to plastic boxes; metal studs on block with MC cable to steel
+  boxes and rings), as on the supplier's trade-show install wall;
 - a SIMpull paralleled feeder pull: three SIMpull Reels on Cradles, twelve colour-coded conductors gathered into
   one pulling grip and swivel, the rope to a Maxis XD10 with a tension monitor; a line of ground rollers carrying an
   MV pull from a reel roller toward the trench; a reel-return station; pallets of armored MC coils;
@@ -89,14 +93,30 @@ def pvc_bundles(x0, y0, nx, layers):
     return layers
 
 
-def innerduct_reel(x, y):
-    """HDPE innerduct reel (orange) on a reel stand, axis along x."""
+def cic_reel(x, y, tail=None):
+    """Southwire Cable-in-Conduit reel on a reel stand (axis along x): HDPE duct with the conductors factory-installed,
+    wound on a wooden reel. tail: plan points of a length paid out on the ground, ending in a cutaway that shows the
+    three conductors and ground inside the duct."""
     rod((x - 2.2, y, 0), (x - 2.2, y, 4.2), .15, "steel", seg=6)
     rod((x + 2.2, y, 0), (x + 2.2, y, 4.2), .15, "steel", seg=6)
     rod((x - 2.4, y, 4.0), (x + 2.4, y, 4.0), .12, "steel", seg=8)
-    for s in (-1.7, 1.7):
-        rod((x + s - .1, y, 4.0), (x + s + .1, y, 4.0), 3.8, "timber", seg=24)
+    for s_ in (-1.7, 1.7):
+        rod((x + s_ - .1, y, 4.0), (x + s_ + .1, y, 4.0), 3.8, "timber", seg=24)
     rod((x - 1.6, y, 4.0), (x + 1.6, y, 4.0), 3.2, "pvc_orange", seg=24)
+    for sg in (-1, 1):
+        decal((x + sg * 1.85, y, 4.0 + Z), (sg, 0, 0), 3.0, 1.1, [(BRAND, .3, 1, "#b4591f", 1), ("CABLE-IN-CONDUIT", .26, 1, "#111111")],
+              bg="#ffffff", brand=True)
+        decal((x + sg * 1.85, y, 4.0 + Z), (sg, 0, 0), 3.0, 1.1, [("CABLE-IN-CONDUIT", .4, 1, "#111111")], bg="#ffffff", generic_only=True)
+    if tail:
+        pts = [(x, y - 3.2, 1.0)] + [(px, py, .22) for px, py in tail]
+        poly(pts, .22, "pvc_orange", seg=10)
+        ex, ey = tail[-1]
+        px_, py_ = tail[-2]
+        L = math.hypot(ex - px_, ey - py_)
+        ux, uy = (ex - px_) / L, (ey - py_) / L
+        for k, (c, ox) in enumerate((("cable", -.08), ("red", .0), ("pvc_blue", .08), ("pvc_green", 0))):
+            oz = .2 if k < 3 else .3
+            rod((ex - uy * ox * 1.6, ey + ux * ox * 1.6, oz + .02), (ex + ux * 1.6 - uy * ox * 1.6, ey + uy * 1.6 + ux * ox * 1.6, oz + .02), .08, c, seg=8)
     return 1
 
 
@@ -120,6 +140,68 @@ def bend_thread_station(x, y):
     rod((x - .1, y + 2.6, 3.0), (x - .1, y + 3.6, 3.0), .7, "sp_black", seg=16)
     person(x - 3.2, y - 2.6, math.pi / 2)
     person(x + 2.6, y + 2.4, -math.pi / 2, vest="hivis_o")
+    return 1
+
+
+def bender_rack(x, y):
+    """Southwire hand conduit benders (EMT / rigid shoes on long handles) leaning in a rack, and a pallet of finished
+    bends: 90s, offsets and saddles."""
+    box(x - 2.2, x + 2.2, y - .4, y + .4, 0, .3, "steel_dark")
+    rod((x - 2.2, y + .3, .3), (x - 2.2, y + .3, 4.2), .06, "steel_dark", seg=6)
+    rod((x + 2.2, y + .3, .3), (x + 2.2, y + .3, 4.2), .06, "steel_dark", seg=6)
+    rod((x - 2.2, y + .3, 4.0), (x + 2.2, y + .3, 4.0), .06, "steel_dark", seg=6)
+    for k in range(5):
+        bx = x - 1.6 + k * .8
+        rod((bx, y - .1, .55), (bx, y + .25, 4.3), .07, "steel", seg=6)                  # handle
+        rod((bx - .25, y - .15, .55), (bx + .25, y - .15, .55), .38, "red", seg=14)      # shoe
+    rows = [(BRAND, .34, 1, "#b4591f", 1), ("CONDUIT BENDERS", .3, 1, "#ffffff")]
+    decal((x, y + .45, 3.4 + Z), (0, 1, 0), 3.6, .9, rows, bg="#14171a", brand=True)
+    decal((x, y + .45, 3.4 + Z), (0, 1, 0), 3.6, .9, [("CONDUIT BENDERS", .4, 1, "#ffffff")], bg="#14171a", generic_only=True)
+    px, py = x + 4.5, y
+    box(px - 2, px + 2, py - 2, py + 2, 0, .45, "timber")
+    for k in range(3):                                                                    # 90-degree bends
+        o = -1.2 + k * .9
+        pts = [(px - 1.6, py + o, .7)] + [(px - 1.6 + 1.6 * math.sin(t * math.pi / 12), py + o, .7 + 1.6 * (1 - math.cos(t * math.pi / 12)))
+                                          for t in range(1, 7)] + [(px, py + o, 3.2)]
+        poly(pts, .1, "steel", seg=8)
+    for k in range(2):                                                                    # offsets
+        o = 1.0 + k * .5
+        poly([(px - 1.8, py + o, .6), (px - .5, py + o, .6), (px + .3, py + o, 1.2), (px + 1.8, py + o, 1.2)], .09, "steel", seg=8)
+    return 1
+
+
+def mockup_wall(x0, y):
+    """Rough-in mock-up wall (training / apprentice check-out): a wood-stud panel with Romex SIMpull NM-B to plastic
+    boxes, and a metal-stud panel on block with MC cable, steel boxes and mud rings; a sign on the top plate."""
+    L, H = 9.0, 9.0
+    box(x0 - .5, x0 + 2 * L + .5, y - 1.2, y + 1.2, 0, .3, "timber")                         # sill skid
+    # wood panel: plywood back, studs 16 in, plates
+    box(x0, x0 + L, y + .25, y + .4, .3, H, "timber")
+    for k in range(7):
+        sx = x0 + .1 + k * 1.33
+        box(sx, sx + .15, y - .1, y + .25, .3, H, "timber")
+    box(x0, x0 + L, y - .1, y + .25, H - .15, H, "timber")
+    for k, (bx, bz, c) in enumerate(((x0 + 1.0, 6.5, "sp_yellow"), (x0 + 3.6, 6.2, "pvc_blue"), (x0 + 6.4, 4.4, "red"), (x0 + 1.4, 3.2, "sp_yellow"))):
+        box(bx, bx + .6, y - .05, y + .1, bz, bz + .9, "pvc_grey")                             # plastic box
+        poly([(bx + .3, y + .02, bz + .9), (bx + .3, y + .05, bz + 1.6), (bx + 1.0, y + .05, H - .4)], .05, c, seg=6)
+    # metal panel: block back, steel studs, MC cable and steel boxes
+    m0 = x0 + L
+    box(m0, m0 + L, y + .25, y + .45, .3, H, "concrete")
+    for k in range(5):
+        sx = m0 + .2 + k * 2.1
+        box(sx, sx + .12, y - .1, y + .25, .3, H, "alu")
+    box(m0, m0 + L, y - .1, y + .25, H - .15, H, "alu")
+    for k, (bx, bz) in enumerate(((m0 + .8, 6.6), (m0 + 3.0, 5.0), (m0 + 5.2, 6.6), (m0 + 7.2, 3.8))):
+        box(bx, bx + .7, y - .05, y + .1, bz, bz + .7, "steel")                                # 4 in square box + ring
+        box(bx + .1, bx + .6, y - .08, y - .05, bz + .1, bz + .6, "steel_dark")
+        poly([(bx + .35, y + .02, bz + .7), (bx + .7, y + .05, bz + 1.6), (bx + 1.4, y + .05, H - .4)], .06, "cable_mc", seg=6)
+    for k in range(3):                                                                      # MC coil at the foot
+        pts = [(m0 + 6.5 + .9 * math.cos(2 * math.pi * i / 20), y - .9, .5 + k * .12 + .9 + .9 * math.sin(2 * math.pi * i / 20)) for i in range(21)]
+        poly(pts, .05, "cable_mc", seg=6)
+    rows = [("ROUGH-IN MOCK-UP", .3, 1, "#ffffff"), ("SIMpull NM-B · MC · boxes and rings", .2, 0, "#e6b089")]
+    decal((x0 + L, y - .25, H - 1.0 + Z), (0, -1, 0), 7.0, 1.4, [(BRAND, .22, 1, "#e6b089", 1)] + rows, bg="#14171a", brand=True)
+    decal((x0 + L, y - .25, H - 1.0 + Z), (0, -1, 0), 7.0, 1.4, rows, bg="#14171a", generic_only=True)
+    person(x0 + 6.0, y - 3.0, math.pi / 2, vest="hivis_o")
     return 1
 
 
@@ -331,7 +413,7 @@ def build():
                        (194, 320, 692, 796), (0, 26), basis="typical", register=False, area="F",
                        sheet="typical (cable installation)",
                        info="Electrical contractor's set-up on the laydown pad: cantilever racks of RMC and PVC conduit, banded "
-                            "PVC bundles on dunnage, HDPE innerduct reels and fittings pallets; a bending and "
+                            "PVC bundles on dunnage, Cable-in-Conduit reels and fittings pallets; a bending station with hand benders; a rough-in mock-up wall; "
                             "threading station; a SIMpull paralleled feeder pull (three reels, one grip, Maxis XD10), an MV pull on ground rollers, reel return, MC coils; a "
                             "cut-to-length bench with tagged coils; the cable supplier's job-site services office (reels and "
                             "cradles, pullers, cut-to-length, reel management, pull planning, prefab assemblies); "
@@ -344,10 +426,11 @@ def build():
     n += cantilever_rack(217.0, 750.0, 40.0, face=-1)
     n += pvc_bundles(224.0, 700.0, 4, 3)
     for k in range(3):
-        n += innerduct_reel(200.0 + k * 6.5, 704.0)
+        n += cic_reel(199.0 + k * 9.0, 704.0, tail=[(219.0, 697.0), (232.0, 696.0)] if k == 2 else None)
     for k in range(3):
         n += fittings_pallet(202.0 + k * 5.0, 718.0)
     n += bend_thread_station(232.0, 776.0)
+    n += bender_rack(237.0, 786.5)
     # cable laid out on the ground (east part)
     n += paralleled_pull()
     n += reel_return(296.0, 697.5)
@@ -359,6 +442,7 @@ def build():
     n += cut_to_length(264.0, 756.0)
     # job-site services point on the east edge
     n += services_point(312.0, 776.0)
+    n += mockup_wall(297.0, 745.5)
     # temporary power and lighting, all Southwire: a 480 V feed in Type W from the staging area's 480 V cart, a 100 A
     # power distribution box, 50 A boxes at each work area, cord reels on the ground paying out to LED stand lights and
     # LED string lights

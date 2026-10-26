@@ -1763,6 +1763,10 @@ EPIC = [
          eye=(334, 672, 72), target=(250, 752, 2), lens=24, show="all"),
     dict(k="E127", n="SIMpull paralleled feeder pull: three reels, one grip, Maxis XD10; reel return; MV pull on rollers; LED stand lights",
          eye=(318, 726, 13), target=(270, 708, 2), lens=24, show="all"),
+    dict(k="E128", n="Rough-in mock-up wall at the job-site services office: SIMpull NM-B on wood studs, MC cable on metal studs",
+         eye=(317, 721, 10), target=(306, 746, 4.5), lens=24, show="all"),
+    dict(k="E129", n="Cable-in-Conduit reels with a cutaway length on the ground; conduit racks, bundles and the bending station",
+         eye=(214, 680, 10), target=(214, 704, 2.5), lens=24, show="all"),
 ]
 
 
