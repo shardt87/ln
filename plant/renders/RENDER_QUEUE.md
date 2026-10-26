@@ -40,3 +40,6 @@ Views now on training slides that only exist as Oct 8-13 previews: E10, E16, E41
 
 ## Oct 25: K1 re-render (current plant)
 - **K1** (cover/K1_pro.png, Oct 17) is out of date: it predates Boiler Row, AX-1 / IG-1, the CEMS shelters and the latest power-block detail. Re-render it at full quality on the same camera; it is the V3 hero on training slide 5 (crop 50% 50%), the campus overview, the brochure cover and the deck dividers. Check the crop still shows the LNG carrier, jetty and terminal.
+
+## Oct 26: contractor area on the laydown pad
+- **E126 / E127** (contractor_yard.py): preview only (16 spp, 60 %); render at full quality in the batch.

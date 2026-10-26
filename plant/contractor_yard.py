@@ -10,14 +10,24 @@ cable job today:
   and tagged by circuit;
 - the supplier's job-site services point: a container office with the contractor solutions on its board (reels and
   cradles, pullers, cut-to-length, reel management and returns, pull planning, prefab assemblies);
-- contemporary lighting: solar-hybrid LED light towers and LED balloon lights, on the area's spider box.
+- temporary power and lighting from the supplier's own range: a 480 V Type W feed from the staging area's 480 V cart to a
+  100 A power distribution box, 50 A boxes at each work area, extension-cord reels on the ground paying out to LED stand
+  lights, and LED string lights on posts over the bench, the bending station and the figure-eight.
 Typical, not engineered."""
 import math
 
 import fuel
-from fuel import box, rod
 
 BRAND = "SOUTHWIRE"
+Z = 0.3                                    # the laydown pad top: everything here stands on it
+
+
+def box(x0, x1, y0, y1, z0, z1, c):
+    fuel.box(x0, x1, y0, y1, z0 + Z, z1 + Z, c)
+
+
+def rod(a, b, r, c, r2=None, seg=12):
+    fuel.rod((a[0], a[1], a[2] + Z), (b[0], b[1], b[2] + Z), r, c, r2=r2, seg=seg)
 
 
 def decal(*a, **k):
@@ -27,7 +37,7 @@ def decal(*a, **k):
 
 def person(x, y, a=0.0, vest="hivis", z=0.0):
     import maintenance
-    maintenance.person(x, y, z, a, vest=vest)
+    maintenance.person(x, y, z + Z, a, vest=vest)
 
 
 def poly(pts, r, c, seg=8):
@@ -133,7 +143,7 @@ def bend_thread_station(x, y):
 # ------------------------------------------------------------------------------------------ cable on the ground
 def figure_eight(cx, cy, R=9.0, turns=3, r=.32, c="cable_mv"):
     """Cable laid in a figure-eight on a tarp (the way a long pull is staged so it pays out without twist)."""
-    box(cx - 2.3 * R, cx + 2.3 * R, cy - 1.25 * R, cy + 1.25 * R, 0, .04, "flag_blue")
+    box(cx - 2.3 * R, cx + 2.3 * R, cy - 1.25 * R, cy + 1.25 * R, 0, .12, "flag_blue")
     for t in range(turns):
         rr = R * (1 - .07 * t)
         pts = []
@@ -141,7 +151,7 @@ def figure_eight(cx, cy, R=9.0, turns=3, r=.32, c="cable_mv"):
             u = 2 * math.pi * k / 96
             x = cx + 2 * rr * math.sin(u)
             y = cy + rr * math.sin(2 * u)
-            pts.append((x, y, .05 + r + t * 2 * r))
+            pts.append((x, y, .13 + r + t * 2 * r))
         poly(pts, r, c, seg=8)
     # the cable end tagged and capped, the tail leading to the pull
     rod((cx + 2 * R, cy, .05 + r), (cx + 2 * R + 6, cy + 1.5, .05 + r), r, c, seg=8)
@@ -214,28 +224,76 @@ def services_point(x, y):
     return 1
 
 
-def led_tower(x, y, face=0.0):
-    """Solar-hybrid LED light tower: trailer with battery box, tilted solar array, mast with four LED panels."""
-    box(x - 3, x + 3, y - 2.2, y + 2.2, 1.4, 4.2, "sp_black")
-    rod((x - 1.2, y - 2.3, 1.2), (x - 1.2, y - 2.6, 1.2), 1.1, "tyre", seg=14)
-    rod((x - 1.2, y + 2.3, 1.2), (x - 1.2, y + 2.6, 1.2), 1.1, "tyre", seg=14)
-    rod((x + 3, y, 1.6), (x + 6, y, 1.6), .12, "steel", seg=6)                            # tongue
-    box(x - 3.4, x + 1.8, y - 3.2, y + 3.2, 5.0, 5.2, "glass")                            # solar array (flat-ish)
-    box(x - 3.4, x + 1.8, y - 3.2, y + 3.2, 4.9, 5.0, "steel")
-    rod((x + 2.3, y, 4.2), (x + 2.3, y, 24.0), .22, "steel", seg=8)
-    box(x + 2.0, x + 2.6, y - 2.6, y + 2.6, 23.6, 24.0, "steel")
-    for s in (-1.9, -.65, .65, 1.9):
-        box(x + 2.65, x + 2.95, y + s - .5, y + s + .5, 23.0, 24.6, "sp_black")
-        box(x + 2.95, x + 3.0, y + s - .45, y + s + .45, 23.1, 24.5, "lamp")
+def sw_power_box(x, y, label="TEMPORARY POWER", big=False):
+    """Southwire temporary power distribution box (yellow, on skids): 50 A (or 100 A) input, GFCI 120 V and 240 V
+    outlets on the faces; branded label with its generic twin."""
+    w, d, h = (2.6, 1.8, 2.6) if big else (1.9, 1.3, 2.0)
+    for sy in (-d / 2 + .15, d / 2 - .15):
+        box(x - w / 2 - .2, x + w / 2 + .2, y + sy - .12, y + sy + .12, 0, .3, "steel_dark")      # skids
+    box(x - w / 2, x + w / 2, y - d / 2, y + d / 2, .3, .3 + h, "sp_yellow")
+    box(x - w / 2 + .1, x + w / 2 - .1, y - d / 2 + .1, y + d / 2 - .1, .3 + h, .45 + h, "sp_yellow")
+    for k in range(4 if big else 3):                                                     # outlets
+        ox = x - w / 2 + .45 + k * (w - .9) / max(1, (3 if big else 2))
+        box(ox - .17, ox + .17, y - d / 2 - .04, y - d / 2, .9, 1.4, "sp_black")
+        box(ox - .17, ox + .17, y + d / 2, y + d / 2 + .04, .9, 1.4, "sp_black")
+    rod((x - w / 2 - .3, y, .3 + h * .8), (x + w / 2 + .3, y, .3 + h * .8), .06, "sp_black", seg=6)   # lift handle
+    zc = Z + .3 + h * .62
+    decal((x, y - d / 2 - .06, zc), (0, -1, 0), w * .9, .7, [(BRAND, .4, 1, "#111111", 1), (label, .26, 1, "#111111")],
+          bg="#f2c21b", brand=True)
+    decal((x, y - d / 2 - .06, zc), (0, -1, 0), w * .9, .7, [(label, .4, 1, "#111111")], bg="#f2c21b", generic_only=True)
+    return (x, y + d / 2)
+
+
+def cord_reel(x, y, out_pts, col="sp_yellow", axis="x"):
+    """Extension-cord reel standing on the ground (steel frame, drum with the cord wound on it), its cord paid out on
+    the ground through out_pts to the load."""
+    ax = (1, 0) if axis == "x" else (0, 1)
+    for s_ in (-.7, .7):
+        px, py = x + ax[0] * s_, y + ax[1] * s_
+        rod((px - ax[1] * .9, py - ax[0] * .9, 0), (px, py, 1.9), .05, "steel_dark", seg=6)
+        rod((px + ax[1] * .9, py + ax[0] * .9, 0), (px, py, 1.9), .05, "steel_dark", seg=6)
+    rod((x - ax[0] * .8, y - ax[1] * .8, 1.3), (x + ax[0] * .8, y + ax[1] * .8, 1.3), .9, "sp_black", seg=18)   # flanges
+    rod((x - ax[0] * .6, y - ax[1] * .6, 1.3), (x + ax[0] * .6, y + ax[1] * .6, 1.3), .78, col, seg=18)        # wound cord
+    rod((x, y, 2.2), (x + ax[0] * .1, y + ax[1] * .1, 2.9), .05, "steel_dark", seg=6)                          # handle
+    pts = [(x, y, 1.3 - .78)] + [(p[0], p[1], .06) for p in out_pts]
+    poly([(a, b, c + 0) for a, b, c in pts], .07, col, seg=6)
     return 1
 
 
-def balloon_light(x, y, h=11.0):
+def led_stand_light(x, y, h=10.0, heads=2):
+    """Southwire LED stand light: tripod, telescoping mast, one or two LED panel heads, cord down the mast."""
     for k in range(3):
-        t = k * 2 * math.pi / 3
-        rod((x + 1.5 * math.cos(t), y + 1.5 * math.sin(t), 0), (x, y, 3.0), .05, "steel", seg=6)
-    rod((x, y, 3.0), (x, y, h), .07, "steel", seg=6)
-    rod((x, y, h + .2), (x, y, h + 2.6), 1.3, "lamp_in", r2=1.1, seg=20)
+        t = k * 2 * math.pi / 3 + .3
+        rod((x + 1.7 * math.cos(t), y + 1.7 * math.sin(t), 0), (x, y, 2.8), .05, "sp_black", seg=6)
+    rod((x, y, 2.8), (x, y, h - .4), .08, "sp_black", seg=6)
+    rod((x, y, h - .4), (x, y, h), .05, "steel", seg=6)
+    for k in range(heads):
+        hx = x + (k - (heads - 1) / 2) * 1.4
+        rod((x, y, h), (hx, y, h), .05, "sp_black", seg=6)
+        box(hx - .55, hx + .55, y - .18, y + .18, h - .2, h + .75, "sp_yellow")
+        box(hx - .5, hx + .5, y - .2, y - .18, h - .15, h + .7, "lamp")
+    return (x, y)
+
+
+def string_lights(pts, h=9.0, step=6.0):
+    """Southwire LED string lights hung between posts over a work area: timber posts, the string sagging between them,
+    LED bulbs every few feet in cages."""
+    for (x, y) in pts:
+        box(x - .2, x + .2, y - .2, y + .2, 0, h + .4, "timber")
+        box(x - .7, x + .7, y - .7, y + .7, 0, .25, "concrete")                    # weighted base
+    for (ax, ay), (bx, by) in zip(pts, pts[1:]):
+        L = math.hypot(bx - ax, by - ay)
+        n = max(2, int(L // step))
+        prev = None
+        for i in range(n + 1):
+            t = i / n
+            z = h - 1.2 * 4 * t * (1 - t)                                            # sag
+            p = (ax + (bx - ax) * t, ay + (by - ay) * t, z)
+            if prev:
+                rod(prev, p, .03, "sp_black", seg=4)
+            if 0 < i < n:
+                rod((p[0], p[1], z - .1), (p[0], p[1], z - .55), .2, "lamp", r2=.12, seg=10)
+            prev = p
     return 1
 
 
@@ -248,8 +306,8 @@ def build():
                             "PVC bundles on dunnage, HDPE innerduct reels and fittings pallets with a telehandler; a bending and "
                             "threading station; MV cable laid in a figure-eight on a tarp and a pull on ground rollers; a "
                             "cut-to-length bench with tagged coils; the cable supplier's job-site services office (reels and "
-                            "cradles, pullers, cut-to-length, reel management, pull planning, prefab assemblies); solar-hybrid "
-                            "LED light towers and LED balloon lights on a spider box. Typical, not engineered.")
+                            "cradles, pullers, cut-to-length, reel management, pull planning, prefab assemblies); "
+                            "temporary power: power distribution boxes, cord reels on the ground, LED stand lights and LED string lights. Typical, not engineered.")
     fuel.on(it)
     fuel.D = True
     n = 0
@@ -273,13 +331,30 @@ def build():
     n += cut_to_length(264.0, 756.0)
     # job-site services point on the east edge
     n += services_point(312.0, 776.0)
-    # lighting and its power: spider box, cords on grade, LED towers and balloon lights
-    simpull.spider_box(258.0, 748.0)
-    for p in ((259.0, 748.6, .9), (262.0, 750.0, .05), (262.0, 760.0, .05)), ((258.0, 747.4, .9), (258.0, 744.0, .05), (268.0, 744.0, .05)):
-        poly(list(p), .08, "cable", seg=6)
-    for x, y in ((196.5, 728.0), (312.0, 700.0), (250.0, 793.0)):
-        n += led_tower(x, y)
-    n += balloon_light(270.0, 768.0)
-    n += balloon_light(268.0, 722.0)
+    # temporary power and lighting, all Southwire: a 480 V feed in Type W from the staging area's 480 V cart, a 100 A
+    # power distribution box, 50 A boxes at each work area, cord reels on the ground paying out to LED stand lights and
+    # LED string lights
+    poly([(242.0, 882.1, .1), (246.0, 878.0, .1), (246.0, 803.0, .1), (252.0, 797.0, .1), (252.0, 768.0, .1), (251.6, 767.0, .1)],
+         .2, "cable_shd", seg=8)
+    BX, BY = 250.5, 766.0
+    sw_power_box(BX, BY, "TEMPORARY POWER 480 V / 100 A", big=True)
+    boxes = {"cut": (266.0, 767.6), "rollers": (258.0, 728.0), "bend": (244.0, 768.0), "office": (300.0, 768.0)}
+    for k, (bx, by) in boxes.items():
+        sw_power_box(bx, by, "TEMPORARY POWER")
+    # 6 AWG cords from the big box to each small box, on the ground
+    for (bx, by) in boxes.values():
+        poly([(BX, BY - .9, .1), (BX, (BY + by) / 2, .08), (bx, (BY + by) / 2, .08), (bx, by - .7, .1)], .1, "cable", seg=6)
+    # cord reels on the ground from the boxes to the lights
+    lights = [((272.0, 772.0), "cut"), ((288.0, 772.0), "cut"), ((270.0, 726.0), "rollers"), ((300.0, 740.0), "rollers"),
+              ((236.0, 782.0), "bend"), ((228.0, 770.0), "bend"), ((306.0, 762.0), "office")]
+    for k, ((lx, ly), src) in enumerate(lights):
+        bx, by = boxes[src]
+        rx, ry = bx + (lx - bx) * .35, by + (ly - by) * .35 + .9
+        cord_reel(rx, ry, [(lx, ly)], col=("sp_yellow", "pvc_orange")[k % 2])
+        poly([(bx, by + .7, .9), (rx, ry - .6, .1), (rx, ry, .5)], .06, "sp_yellow", seg=6)
+        led_stand_light(lx, ly, heads=2 if k % 3 else 1)
+    string_lights([(262.0, 752.0), (277.0, 752.0), (292.0, 752.0)])                  # over the cut-to-length bench
+    string_lights([(224.0, 771.0), (232.0, 785.0), (240.0, 771.0)])                   # over the bending station
+    string_lights([(262.0, 700.0), (282.0, 698.0), (302.0, 700.0)])                   # over the figure-eight
     fuel.D = False
     return n
