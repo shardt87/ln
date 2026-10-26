@@ -43,3 +43,4 @@ Views now on training slides that only exist as Oct 8-13 previews: E10, E16, E41
 
 ## Oct 26: contractor area on the laydown pad
 - **E126 / E127 / E129** (contractor_yard.py) and **E128 / E130** (fitout_products.py, admin fit-out): preview only (16 spp, 60 %); render at full quality in the batch.
+- **E132 / E133** (skid_prewire.kits): standardized kits on the pre-wire pad; preview only.

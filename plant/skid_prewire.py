@@ -11,6 +11,9 @@ length, coiled and tagged, and continuity / insulation-resistance (megger) tests
 - a ready-to-set row outside: a lube-oil skid and a second fuel-gas skid, finished and tagged TESTED - READY TO SET;
 - a PDC e-house delivered in two shipping splits on cribbing, the split faces wrapped, with pre-terminated
   interconnect cables coiled at the split ready to reconnect once set.
+- three standardized pre-wired kits staged beside the skids they serve, with a board (owner, Oct 26): kit 1 GT
+  auxiliary skid harness (lube oil), kit 2 pump-skid motor leads plus instrument harness, kit 3 e-house split
+  interconnects.
 Transformers and large e-houses are not pre-wired on site (set directly; factory-integrated), so they are not here.
 Typical arrangement, generic labels.
 """
@@ -212,8 +215,97 @@ def _build():
     decal((2044, 921.4, 4.5), (0, -1, 0), 4.6, 1.4, [("INTERCONNECTS", .3, 1, "#111111"), ("PRE-TERMINATED  ·  SPLIT A → B", .2, 0, "#333333")],
           bg="#f2c200")
     person(2045, 919, 0, 1.4)
+    kits()                                                                           # the three standardized kits
     fuel.D = False
     return 1
+
+
+# ------------------------------------------------------------------------------- standardized pre-wired kits
+def _kit_label(c, n, lines, w=4.2, h=1.6):
+    decal(c, n, w, h, [("SOUTHWIRE", .2, 1, "#b4591f", 1)] + lines, bg="#ffffff", brand=True)
+    decal(c, n, w, h, lines, bg="#ffffff", generic_only=True)
+
+
+def harness_cart(x, y):
+    """Kit 1, GT auxiliary skid harness (lube oil): two-tier cart of pre-made, pre-tested harness bundles, each a
+    trunk with tagged branches and connectors, laid out in the order they go on the skid."""
+    box(x - 3, x + 3, y - 1.5, y + 1.5, .6, .75, "steel")
+    box(x - 3, x + 3, y - 1.5, y + 1.5, 2.4, 2.55, "steel")
+    for (sx, sy) in ((-2.9, -1.4), (2.9, -1.4), (-2.9, 1.4), (2.9, 1.4)):
+        rod((x + sx, y + sy, 0), (x + sx, y + sy, 2.55), .06, "steel", seg=6)
+    cols = ("cable_inst", "cable_tc", "cable_armor", "cable_inst", "cable_tc", "cable_inst")
+    for k, c in enumerate(cols):
+        tz = .75 if k < 3 else 2.55
+        cx = x - 2.0 + (k % 3) * 2.0
+        rod((cx - .6, y, tz + .35), (cx + .6, y, tz + .35), .35, c, seg=14)                  # coiled trunk
+        for j in range(3):                                                                    # branches with connectors
+            bx = cx - .5 + j * .5
+            rod((bx, y - .3, tz + .35), (bx, y - 1.3, tz + .1), .04, c, seg=4)
+            box(bx - .07, bx + .07, y - 1.45, y - 1.25, tz + .02, tz + .18, "alu")
+        box(cx + .55, cx + .75, y + .2, y + .4, tz + .5, tz + .8, "white_truck")             # test tag
+    _kit_label((x, y - 1.55, 3.6), (0, -1, 0), [("KIT 1  ·  GT AUX SKID HARNESS", .2, 1, "#111111"),
+                                               ("lube oil · PLTC / TC-ER / MC-HL", .14, 0, "#333333"),
+                                               ("pre-made · pre-tested · tagged by skid point", .13, 0, "#2f7a3c")])
+    rod((x - 2.1, y - 1.55, 0), (x - 2.1, y - 1.55, 4.4), .06, "steel", seg=6)
+    rod((x + 2.1, y - 1.55, 0), (x + 2.1, y - 1.55, 4.4), .06, "steel", seg=6)
+
+
+def motor_lead_crate(x, y):
+    """Kit 2, pump-skid motor leads: an open crate of pre-terminated MV-105 motor leads (lugs and stress cones on,
+    capped) and the instrument harness, sized for one horsepower / voltage band."""
+    box(x - 2.4, x + 2.4, y - 1.8, y + 1.8, 0, .4, "timber")
+    for (a0, a1, b0, b1) in ((-2.4, 2.4, -1.8, -1.6), (-2.4, 2.4, 1.6, 1.8), (-2.4, -2.2, -1.8, 1.8), (2.2, 2.4, -1.8, 1.8)):
+        box(x + a0, x + a1, y + b0, y + b1, .4, 2.0, "timber")
+    for k in range(3):                                                                         # three leads, A / B / C
+        cx = x - 1.3 + k * 1.3
+        rod((cx, y - .6, .9), (cx, y + .6, .9), .55, "cable_mv", seg=16)
+        rod((cx, y + .7, 1.4), (cx, y + .7, 2.6), .12, "cable_mv", seg=8)                       # tail up
+        rod((cx, y + .7, 2.6), (cx, y + .7, 3.0), .2, "tent", r2=.1, seg=10)                    # stress cone
+        box(cx - .1, cx + .1, y + .62, y + .78, 3.0, 3.35, "copper")                            # lug
+        box(cx - .25, cx + .25, y + .45, y + .55, 2.2, 2.5, ("red", "sp_yellow", "pvc_blue")[k])   # phase tape
+    rod((x + 1.6, y - 1.0, 1.0), (x + 1.6, y + 1.0, 1.0), .35, "cable_inst", seg=12)            # instrument harness
+    _kit_label((x, y - 1.85, 3.0), (0, -1, 0), [("KIT 2  ·  PUMP-SKID MOTOR LEADS", .2, 1, "#111111"),
+                                               ("MV-105 terminated · instrument harness", .14, 0, "#333333"),
+                                               ("one kit per hp / voltage band", .13, 0, "#2f7a3c")])
+    for sx in (-2.1, 2.1):
+        rod((x + sx, y - 1.85, .4), (x + sx, y - 1.85, 3.8), .06, "steel", seg=6)
+
+
+def split_kit_reel(x, y):
+    """Kit 3, e-house split interconnects: cut-to-length, terminated and tagged sets on a small reel stand, with the
+    termination ends bagged, for one standard e-house size."""
+    for s_ in (-1.4, 1.4):
+        rod((x + s_, y - 1.2, 0), (x + s_, y, 3.2), .07, "steel", seg=6)
+        rod((x + s_, y + 1.2, 0), (x + s_, y, 3.2), .07, "steel", seg=6)
+    rod((x - 1.7, y, 3.2), (x + 1.7, y, 3.2), .08, "steel", seg=8)
+    import simpull
+    for sg in (-1, 1):
+        simpull.logo_flange((x + sg * 1.1, y, 3.2), (sg, 0), 2.4, .15, spokes=8, gap=.1)
+    for k, c in enumerate(("cable_mv", "cable_tc", "cable_tc", "cable_inst")):
+        rod((x - 1.0 + k * .5, y, 3.2), (x - .55 + k * .5, y, 3.2), 1.9, c, seg=20)
+    for k in range(4):                                                                         # bagged ends hanging
+        ex = x - .9 + k * .6
+        rod((ex, y - 1.9, 3.0), (ex, y - 2.1, 1.0), .08, ("cable_mv", "cable_tc", "cable_tc", "cable_inst")[k], seg=6)
+        rod((ex, y - 2.1, 1.0), (ex, y - 2.1, .4), .2, "tent", seg=8)
+    _kit_label((x, y - 2.6, 3.4), (0, -1, 0), [("KIT 3  ·  E-HOUSE SPLIT INTERCONNECTS", .2, 1, "#111111"),
+                                              ("cut to length · terminated · tagged", .14, 0, "#333333"),
+                                              ("one kit per standard e-house size", .13, 0, "#2f7a3c")], w=4.6)
+    for sx in (-2.3, 2.3):
+        rod((x + sx, y - 2.6, 0), (x + sx, y - 2.6, 4.2), .06, "steel", seg=6)
+
+
+def kits():
+    harness_cart(2068.0, 996.0)                     # beside the tested lube-oil skid
+    motor_lead_crate(2030.5, 996.5)                 # beside the pump skid being pre-wired
+    split_kit_reel(2056.0, 920.0)                   # beside the PDC shipping splits
+    rows = [("STANDARDIZED PRE-WIRED KITS", .16, 1, "#ffffff"), ("1  GT auxiliary skid harness", .11, 0, "#e6e6e6"),
+            ("2  pump-skid motor leads + instrument harness", .11, 0, "#e6e6e6"),
+            ("3  e-house split interconnects", .11, 0, "#e6e6e6"),
+            ("same kit, every unit · tested before it ships", .1, 1, "#f2c200")]
+    decal((2086.0, 995.9, 4.2), (0, -1, 0), 7.0, 3.6, [("SOUTHWIRE", .12, 1, "#e6b089", 1)] + rows, bg="#22303a", brand=True)
+    decal((2086.0, 995.9, 4.2), (0, -1, 0), 7.0, 3.6, rows, bg="#22303a", generic_only=True)
+    for sx in (-3.2, 3.2):
+        rod((2086.0 + sx, 996.0, 0), (2086.0 + sx, 996.0, 6.2), .1, "steel", seg=6)
 
 
 # laid out at the modular yard first; moved (Oct 23, owner) from the maintenance laydown, where the shared cooling-tower
