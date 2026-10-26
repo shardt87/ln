@@ -2299,6 +2299,8 @@ import simpull as _sp
 _sp.build()                # SIMpull / Maxis staging in the reel yard, feeder pull at the workshop
 import prefab as _pf
 _pf.build()                # prefab staging bay on the laydown pad, cable spine going in at the modular yard
+import contractor_yard as _cy
+print('contractor area', _cy.build())   # conduit handling, cable laid out, cut-to-length, job-site services, LED lighting
 import skid_prewire as _skp
 _skp.build()               # skid pre-assembly / pre-wire workstation beside the spine
 import modular_packages as _mpk
