@@ -1771,6 +1771,8 @@ EPIC = [
          eye=(161.0, 960.0, 13.0), target=(137.0, 980.0, 4.0), lens=24, show="all"),
     dict(k="E137", n="Pre-wire pad ready row: HRSG chemical-feed skid tested and ready to set, lube-oil skid getting kit 1",
          eye=(178.0, 944.0, 24.0), target=(148.0, 980.0, 3.0), lens=24, show="all"),
+    dict(k="E138", n="Pre-wire pad east: power skid with its pre-terminated tails going on, instrument-air skid being wired, CEMS shelter ready to set",
+         eye=(222.0, 940.0, 26.0), target=(188.0, 980.0, 3.0), lens=24, show="all"),
     dict(k="E134", n="Kit 4, BESS block kit in the BESS yard: DC home runs, 35 kV elbow jumpers, aux / BMS / FA harness, grounding",
          eye=(1648.0, 384.0, 14.0), target=(1646.0, 420.0, 2.5), lens=24, show="all"),
     dict(k="E135", n="Kit 5, modular generator kit staged on the reserved SC-3 pad: 13.8 kV leads, plug-in control / comms harness, cam-lock sets",

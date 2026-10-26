@@ -16,6 +16,8 @@ length, coiled and tagged, and continuity / insulation-resistance (megger) tests
 - three standardized pre-wired kits staged beside the skids they serve, with a board (owner, Oct 26): kit 1 GT
   auxiliary skid harness (lube oil), kit 2 pump-skid motor leads plus instrument harness, kit 3 e-house split
   interconnects.
+- three more skid types east of the ready row: a power skid (transformer + LV switchboard + MCC) with its
+  pre-terminated tails going on, an instrument-air skid being pre-wired, a factory-wired CEMS shelter ready to set.
 Transformers and large e-houses are not pre-wired on site (set directly; factory-integrated), so they are not here.
 Typical arrangement, generic labels.
 """
@@ -163,6 +165,81 @@ def chem_feed_skid(x0, x1, y0, y1, z):
     box(x1 - 2.4, x1 - 1.6, y1 - 3.0, y1 - 2.2, zb, zb + 3.6, "safety")              # eyewash
 
 
+def power_skid(x0, x1, y0, y1, z):
+    """Power skid (modular electrical): 13.8 kV / 480 V transformer, close-coupled LV switchboard and an MCC on one
+    base, MV termination box at the transformer, bus link to the switchboard; pre-terminated MV-in and 600 V
+    feeder tails being landed from a kit crate at the skid edge (stage: kit going on)."""
+    skid_base(x0, x1, y0, y1, z)
+    zb = z + 1.1
+    box(x0 + 1.5, x1 - 1.5, y0 + 1.5, y0 + 9.5, zb, zb + 7.0, "xfmr")                 # transformer tank
+    for k in range(5):
+        xx = x0 + 2.2 + k * (x1 - x0 - 4.4) / 4
+        box(xx - .2, xx + .2, y0 + .6, y0 + 1.5, zb + .8, zb + 6.2, "radiator")         # radiator fins
+    box(x0 + 2.5, x1 - 2.5, y0 + 9.5, y0 + 11.0, zb + 3.0, zb + 6.8, "steel_dark")      # throat / bus link
+    box(x1 - 4.0, x1 - 1.0, y0 + 3.0, y0 + 7.0, zb + 7.0, zb + 8.6, "steel")             # MV termination box (roof)
+    box(x0 + 1.2, x1 - 1.2, y0 + 11.0, y0 + 20.0, zb, zb + 7.6, "swgr")                 # LV switchboard
+    for k in range(4):
+        yy = y0 + 11.3 + k * 2.2
+        box(x0 + 1.15, x0 + 1.2, yy, yy + 2.0, zb + .4, zb + 7.2, "door")
+    box(x0 + 1.2, x1 - 1.2, y0 + 21.0, y1 - 1.5, zb, zb + 7.6, "panel")                  # MCC
+    for k in range(3):
+        yy = y0 + 21.3 + k * 2.2
+        box(x0 + 1.15, x0 + 1.2, yy, yy + 2.0, zb + .4, zb + 7.2, "door")
+    # pre-terminated tails being landed: MV in from the crate up to the termination box, 600 V tails out of the MCC
+    cx, cy = x1 + 3.2, y0 + 5.0
+    box(cx - 1.6, cx + 1.6, cy - 2.2, cy + 2.2, 0, .4, "timber")
+    for (a0, a1, b0, b1) in ((-1.6, 1.6, -2.2, -2.0), (-1.6, 1.6, 2.0, 2.2), (-1.6, -1.4, -2.2, 2.2), (1.4, 1.6, -2.2, 2.2)):
+        box(cx + a0, cx + a1, cy + b0, cy + b1, .4, 1.8, "timber")
+    for k in range(3):
+        yy = cy - 1.2 + k * 1.2
+        rod((cx - .5, yy, .9), (cx + .5, yy, .9), .5, "cable_mv", seg=14)
+        rod((cx - .9, yy, 1.4), (x1 - 2.5, y0 + 4.2 + k * 1.2, zb + 8.0), .12, "cable_mv", seg=8)   # landed on the box
+    for k in range(4):                                                                  # 600 V tails coiled, tagged
+        yy = y0 + 22.0 + k * 1.6
+        rod((x1 + .8, yy, zb + .9), (x1 + 1.4, yy, zb + .9), .5, "cable_tc", seg=14)
+        box(x1 + 1.5, x1 + 1.7, yy - .15, yy + .15, zb + 1.3, zb + 1.7, "white_truck")
+    decal((x1 + .1, (y0 + y1) / 2, zb + 6.0), (1, 0, 0), 3.0, 1.9,
+          [("KIT GOING ON", .24, 1, "#111111", 0, "#f2c200"), ("POWER SKID PS-1", .17, 1, "#111111"),
+           ("13.8 kV / 480 V · MCC", .14, 0, "#333333"), ("pre-terminated tails", .14, 1, "#2f7a3c")], bg="#ffffff")
+
+
+def ia_skid(x0, x1, y0, y1, z):
+    """Instrument-air skid: rotary-screw compressor package, twin-tower desiccant dryer, vertical receiver, filters."""
+    skid_base(x0, x1, y0, y1, z)
+    zb = z + 1.1
+    box(x0 + 1.2, x1 - 1.2, y0 + 1.2, y0 + 8.5, zb, zb + 6.0, "equip")                 # compressor package
+    for k in range(3):
+        box(x0 + 1.15, x0 + 1.2, y0 + 1.8 + k * 2.2, y0 + 3.6 + k * 2.2, zb + 3.0, zb + 5.4, "louvre")
+    for k in range(2):                                                                  # desiccant towers
+        rod((x0 + 3.2 + k * 2.6, y0 + 11.0, zb), (x0 + 3.2 + k * 2.6, y0 + 11.0, zb + 7.0), .8, "tank", seg=16)
+    rod(((x0 + x1) / 2, y1 - 3.5, zb), ((x0 + x1) / 2, y1 - 3.5, zb + 8.0), 1.6, "tank", seg=20)   # receiver
+    rod(((x0 + x1) / 2, y1 - 3.5, zb + 8.0), ((x0 + x1) / 2, y1 - 3.5, zb + 8.6), 1.6, "tank", r2=.5, seg=20)
+    for k in range(2):
+        rod((x1 - 2.0, y0 + 13.5 + k * 1.4, zb + 1.0), (x1 - 2.0, y0 + 13.5 + k * 1.4, zb + 3.2), .3, "fueloil", seg=10)   # filters
+    rod((x0 + 2, y0 + 8.6, zb + 4.6), (x0 + 2, y1 - 3.5, zb + 4.6), .2, "steel", seg=8)   # air header
+
+
+def cems_shelter(x0, x1, y0, y1, z):
+    """CEMS analyzer shelter, factory-wired: insulated shell on a skid, door, HVAC unit, cal-gas cylinder rack, the
+    heat-traced sample-line umbilical and the probe cable coiled on the roof for shipping, tagged tested."""
+    box(x0, x1, y0, y1, z, z + .6, "steel_dark")
+    box(x0 + .2, x1 - .2, y0 + .2, y1 - .2, z + .6, z + 10.0, "white_truck")
+    box(x0, x1, y0, y1, z + 10.0, z + 10.4, "roof")
+    box(x0 + .15, x0 + .2, (y0 + y1) / 2 - 1.5, (y0 + y1) / 2 + 1.5, z + .8, z + 7.6, "door")
+    box(x1 - .2, x1 + 1.0, y0 + 2.0, y0 + 5.0, z + 5.0, z + 7.6, "equip")              # wall HVAC
+    for k in range(4):                                                                # cal-gas cylinders
+        rod((x0 - 1.0, y0 + 1.5 + k * 1.1, z + .6), (x0 - 1.0, y0 + 1.5 + k * 1.1, z + 5.2), .4, ("safety", "hivis", "steel", "safety")[k], seg=12)
+    box(x0 - 1.6, x0 - .4, y0 + .8, y0 + 5.6, z + 3.8, z + 4.0, "steel")
+    cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+    for l in range(3):                                                                # umbilical coil on the roof
+        pts = [(cx + 2.4 * math.cos(2 * math.pi * i / 28), cy + 2.4 * math.sin(2 * math.pi * i / 28), z + 10.7 + l * .22) for i in range(29)]
+        for a, b in zip(pts, pts[1:]):
+            rod(a, b, .18, "pvc_orange" if l < 2 else "cable_inst", seg=8)
+    decal((x0 + .05, cy + 3.0, z + 7.0), (-1, 0, 0), 2.8, 1.8,
+          [("TESTED", .26, 1, "#ffffff", 0, "#2f7a3c"), ("READY TO SET", .2, 1, "#111111"), ("CEMS SHELTER CEMS-4", .16, 0, "#333333"),
+           ("factory-wired · heat-traced umbilical", .13, 0, "#333333")], bg="#ffffff")
+
+
 def pump_skid(x0, x1, y0, y1, z):
     skid_base(x0, x1, y0, y1, z)
     zb = z + 1.1
@@ -272,6 +349,16 @@ def _build():
           bg="#f2c200")
     person(2045, 919, 0, 1.4)
     kits()                                                                           # the three standardized kits
+    # three more skid types in the open strip east of the ready row (owner, Oct 26): power skid (kit going on),
+    # instrument-air skid (being pre-wired), CEMS shelter (factory-wired, ready to set)
+    cribbing(2105, 2117, 954, 984)
+    power_skid(2105, 2117, 954, 984, 1.0)
+    cribbing(2125, 2135, 954, 974)
+    ia_skid(2125, 2135, 954, 974, 1.0)
+    prewire(2125, 2135, 954, 974, 1.0, done=False, side=1, label="INSTRUMENT AIR SKID IA-2")
+    cems_shelter(2126, 2136, 980, 994, 0.0)
+    person(2121.5, 962, 0, math.pi, vest="hivis_o")                                 # landing the MV tails
+    person(2131, 970, 1.0 + 1.1, math.pi)                                           # on the IA skid
     fuel.D = False
     return 1
 
@@ -385,7 +472,7 @@ def build():
     for d in Dc[m:]:
         d["c"][0] = round(d["c"][0] + DX, 3)
         d["c"][1] = round(d["c"][1] + DY, 3)
-    it["fp"] = [66.0, 206.0, 918.0, 1030.0]
+    it["fp"] = [66.0, 208.0, 918.0, 1030.0]
     it["name"] = it["name"].replace("(modular-yard expansion)", "beside the inlet chillers, next to the cable reel yard (modular-yard expansion)")
     it["info"] += (" Set up on the open strip between the cable reel yard and the inlet chillers (away from energised "
                    "plant, contractor access from the west spine road, next to the prefab staging bay and the reels); "
