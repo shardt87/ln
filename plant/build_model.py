@@ -1357,6 +1357,42 @@ for k in range(3):
 # modular gas genset blocks (owner, Oct 26: bridge-power story in the modular yard): six identical blocks of four
 # ~450 kW natural-gas gensets on the portable pad's free ground, each with a 480 V paralleling switchgear and a
 # 2,500 kVA 480 V : 13.8 kV pad-mount; the blocks collect at 13.8 kV into PAD-EH. Generic (not a vendor's product)
+def genset_dress(gx, y0):
+    """Containerised genset look (owner photo, Oct 26): white enclosure with louvred ventilation end, roof platform
+    with handrails, a V-type cooler with two rows of fans, an exhaust duct to a tall silver stack with silencer."""
+    B(gx - .05, gx + 8.05, y0 - .05, y0 + 22.05, 0, 9.05, "white_truck")                                # enclosure skin
+    for k in range(7):                                                                 # louvred vent end (north)
+        z = 1.2 + k * 1.1
+        B(gx + .4, gx + 7.6, y0 + 22, y0 + 22.25, z, z + .55, "louvre")
+        for xs in (gx - .2, gx + 8):
+            B(xs, xs + .2, y0 + 16.5, y0 + 21.5, z, z + .55, "louvre")
+    B(gx - .1, gx + 8.1, y0 - .1, y0 + 22.1, 9, 9.3, "grating")                       # roof platform
+    for (xa, ya), (xb, yb) in (((gx, y0), (gx + 8, y0)), ((gx + 8, y0), (gx + 8, y0 + 22)),
+                               ((gx + 8, y0 + 22), (gx, y0 + 22)), ((gx, y0 + 22), (gx, y0))):
+        for zr in (10.8, 12.6):
+            R((xa, ya, zr), (xb, yb, zr), .08, "rail", seg=6)
+    for xp in (gx, gx + 8):
+        for yp in (y0, y0 + 7.3, y0 + 14.6, y0 + 22):
+            R((xp, yp, 9.3), (xp, yp, 12.6), .08, "rail", seg=6)
+    for k in range(4):                                                                 # V-cooler, flaring upward
+        w = 2.4 + k * .45
+        B(gx + 4 - w, gx + 4 + w, y0 + 1.5, y0 + 15.5, 9.3 + k * 1.3, 10.6 + k * 1.3, "radiator")
+    B(gx + .3, gx + 7.7, y0 + 1.3, y0 + 15.7, 14.5, 14.8, "steel")                    # fan deck
+    for i in range(2):
+        for j in range(4):
+            cx, cy = gx + 2.1 + 3.8 * i, y0 + 3.2 + 3.5 * j
+            V(cx, cy, 1.55, 14.8, 15.6, "sp_black", seg=14)                            # fan shroud
+            V(cx, cy, .35, 15.6, 15.8, "fanhub", seg=8)
+    sx, sy = gx + 4, y0 + 19.5                                                         # stack over the vent end
+    R((gx + 4, y0 + 15.8, 11.0), (sx, sy, 11.0), .8, "reflect", seg=12)               # exhaust duct
+    V(sx, sy, 1.0, 9.3, 13.0, "reflect", seg=16)
+    V(sx, sy, 1.0, 13.0, 14.0, "reflect", r2=1.5, seg=16)
+    V(sx, sy, 1.5, 14.0, 22.0, "reflect", seg=16)                                       # silencer
+    V(sx, sy, 1.5, 22.0, 23.0, "reflect", r2=.95, seg=16)
+    V(sx, sy, .95, 23.0, 37.0, "reflect", seg=16)                                        # flue
+    V(sx, sy, 1.05, 36.4, 37.0, "stack", seg=16)                                         # lip
+
+
 GB_BLOCKS = [(2254, 458), (2300, 458), (2254, 504), (2300, 504), (2254, 648), (2300, 648)]
 for n, (bx, by) in enumerate(GB_BLOCKS, 1):
     for m in range(4):
@@ -1365,9 +1401,7 @@ for n, (bx, by) in enumerate(GB_BLOCKS, 1):
               "machine", tag=f"GB-{n}.{m + 1}", info="Natural-gas reciprocating genset in a weatherproof enclosure, "
               "~450 kW at 480 V; generator terminal box at the south end, radiator and exhaust at the north end. "
               "One of 24 identical units in six blocks.", **DC)
-        B(gx + .5, gx + 7.5, by + 27, by + 33.5, 9, 10.2, "radiator")
-        V(gx + 4, by + 30, 1.6, 10.2, 10.8, "fan", seg=10)
-        R((gx + 6.5, by + 25, 9), (gx + 6.5, by + 25, 13.5), .5, "stack", seg=8)
+        genset_dress(gx, by + 12)
         B(gx + 1.5, gx + 6.5, by + 11.4, by + 12, 2.5, 6.0, "panel")                  # generator terminal box
     ehouse(L, f"GBS-{n}: block {n} 480 V paralleling switchgear (4 gensets)", bx + 2, bx + 20, by, by + 6, 9,
            tag=f"GBS-{n}", **DC)
