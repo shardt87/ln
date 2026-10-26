@@ -1354,6 +1354,26 @@ for k in range(3):
     solid(L, f"MT-{k + 4}: microturbine 1 MW (Capstone C1000 class)", x, x + 8, 349, 377, 0, 9.5, "machine",
           tag=f"MT-{k + 4}", **DC)
 
+# modular gas genset blocks (owner, Oct 26: bridge-power story in the modular yard): six identical blocks of four
+# ~450 kW natural-gas gensets on the portable pad's free ground, each with a 480 V paralleling switchgear and a
+# 2,500 kVA 480 V : 13.8 kV pad-mount; the blocks collect at 13.8 kV into PAD-EH. Generic (not a vendor's product)
+GB_BLOCKS = [(2254, 458), (2300, 458), (2254, 504), (2300, 504), (2254, 648), (2300, 648)]
+for n, (bx, by) in enumerate(GB_BLOCKS, 1):
+    for m in range(4):
+        gx = bx + 1 + 11 * m
+        solid(L, f"GB-{n}.{m + 1}: modular gas genset ~450 kW, 480 V (block {n})", gx, gx + 8, by + 12, by + 34, 0, 9,
+              "machine", tag=f"GB-{n}.{m + 1}", info="Natural-gas reciprocating genset in a weatherproof enclosure, "
+              "~450 kW at 480 V; generator terminal box at the south end, radiator and exhaust at the north end. "
+              "One of 24 identical units in six blocks.", **DC)
+        B(gx + .5, gx + 7.5, by + 27, by + 33.5, 9, 10.2, "radiator")
+        V(gx + 4, by + 30, 1.6, 10.2, 10.8, "fan", seg=10)
+        R((gx + 6.5, by + 25, 9), (gx + 6.5, by + 25, 13.5), .5, "stack", seg=8)
+        B(gx + 1.5, gx + 6.5, by + 11.4, by + 12, 2.5, 6.0, "panel")                  # generator terminal box
+    ehouse(L, f"GBS-{n}: block {n} 480 V paralleling switchgear (4 gensets)", bx + 2, bx + 20, by, by + 6, 9,
+           tag=f"GBS-{n}", **DC)
+    xfmr(L, f"GBT-{n}: block {n} 480 V : 13.8 kV 2,500 kVA pad-mount step-up", bx + 26, bx + 36, by, by + 8, 8,
+         tag=f"GBT-{n}", **DC)
+
 # ---------------------------------------------------------------------------
 # J GT INLET CHILLING (SW-3X1-02), optional
 # ---------------------------------------------------------------------------
@@ -1732,6 +1752,23 @@ add_route("mvlv_cable", [(2258.5, 1252), (2266, 1252), (2266, 1324), (2240, 1324
                                                                           # to x 2218.5-2258.5 by sc2_mirror) -> ammonia skid
 add_route("fuel_gas", [(2340, 440), (2340, 452), (1985, 452), (1985, 536), (2130, 536)], MX)   # pad skid -> TM / CONT
 add_route("fuel_gas", [(2049.5, 452), (2049.5, 377)], MX)                                # header -> FC-5..12
+# genset blocks: lead trench genset -> block switchgear, switchgear -> pad-mount, 13.8 kV collection to PAD-EH in a
+# shared buried corridor (x 2236), gas branches from the pad header
+for n, (bx, by) in enumerate(GB_BLOCKS, 1):
+    for m in range(4):
+        add_route("mvlv_cable", [(bx + 5 + 11 * m, by + 12), (bx + 5 + 11 * m, by + 9), (bx + 11, by + 9), (bx + 11, by + 6)], MX,
+                  sheet="typical (genset blocks)")
+    add_route("mvlv_cable", [(bx + 20, by + 3), (bx + 26, by + 3)], MX, sheet="typical (genset blocks)")
+    yc = by - 3
+    add_route("mvlv_cable", [(bx + 31, by), (bx + 31, yc), (2236, yc)], MX, sheet="typical (genset blocks)")
+add_route("mvlv_cable", [(2236, 645), (2236, 455)], MX, sheet="typical (genset blocks)")      # shared corridor
+add_route("mvlv_cable", [(2236, 488), (2194, 488), (2194, 484)], MX, sheet="typical (genset blocks)")   # into PAD-EH
+# gas: a riser in the 4 ft gap between the paired blocks, a header along the north end of each block in rows 1-2
+# (row 3, north of the pad lane, is fed from the north: not modelled, so no pipe crosses the lane)
+add_route("fuel_gas", [(2298, 452), (2298, 540)], MX, sheet="typical (genset blocks)")
+for (bx, by) in GB_BLOCKS[:4]:
+    xe = bx + 3 if bx < 2298 else bx + 41
+    add_route("fuel_gas", [(2298, by + 36), (xe, by + 36)], MX, sheet="typical (genset blocks)")
 add_route("fuel_gas", [(2205, 452), (2205, 378)], MX)                                     # header -> MT-4..6
 for x in (2010, 2070, 2130):
     add_route("fuel_gas", [(x, 536), (x, 513)], MX)
@@ -2305,6 +2342,8 @@ import skid_prewire as _skp
 _skp.build()               # skid pre-assembly / pre-wire workstation beside the spine
 import prefab_electrical as _pel
 print('prefab electrical yard', _pel.build())   # switchgear / VFD / UPS lineups opened, panel shop
+import genset_blocks as _gbk
+print('genset block 1 detail', _gbk.build())   # open lead trench, terminal box, ground ring, sign (Oct 26)
 import modular_packages as _mpk
 print("modular GT packages", _mpk.build())   # AX-1 aero modules, IG-1 industrial GT (Oct 24)
 print("tray legends", _show.tray_legends())

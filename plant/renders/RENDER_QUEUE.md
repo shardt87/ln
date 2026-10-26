@@ -50,3 +50,4 @@ Views now on training slides that only exist as Oct 8-13 previews: E10, E16, E41
 - **E138** (pre-wire pad east: power skid, IA skid, CEMS shelter): preview only.
 - **E139** (bfp_kit: BFP-1B terminal box with kit 2): preview only; fill lights in the camera.
 - **E140 / E141 / E142** (prefab_electrical: lineups, panel shop, open enclosure): preview only.
+- **E143 / E144** (modular gas genset blocks; genset_blocks block 1 trench): preview only. E144 is a tight corridor shot between GBS-1 / GBT-1 and the gensets.

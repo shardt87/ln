@@ -563,6 +563,22 @@ for t, kw in (("GEN-E", 2000), ("GEN-O", 1000)):
         round(I), "4 x 1/C per set incl. ground")
 add(BY_TAG["PAD-LV"], BY_TAG["PAD-TX"] if "PAD-TX" in BY_TAG else one(r"^PAD-TX"), "PAD-LV to PAD-TX", "LV1C", "1/C", "500",
     12, 4, 3000, 480, 3600, "12 sets of 4 x 1/C (or bus duct)")
+# modular gas genset blocks GB-1..6 (owner, Oct 26): per genset the 480 V leads (2 sets), control / sync, instrumentation
+# and aux power; per block the secondary to the pad-mount, the 13.8 kV collection feeder and a fibre to the controller
+for n in range(1, 7):
+    gbs, gbt = BY_TAG.get(f"GBS-{n}"), BY_TAG.get(f"GBT-{n}")
+    if not gbs:
+        continue
+    for m in range(1, 5):
+        g = BY_TAG[f"GB-{n}.{m}"]
+        add(g, gbs, f"GB-{n}.{m} 480 V generator leads to GBS-{n}", "LV1C", "1/C", "500", 2, 4, 450, 480, 677,
+            "2 sets of 3 x 500 kcmil + ground")
+        add(gbs, g, f"GB-{n}.{m} control / sync / protection", "CTAX", "12/C", "14")
+        add(g, gbs, f"GB-{n}.{m} instrumentation: gas pressure, temperatures", "ITC", "4 pr", "18")
+        lv_feeder(gbs, g, 15, f"GB-{n}.{m} aux power: jacket-water heater, battery charger, enclosure", motor=False)
+    add(gbs, gbt, f"GBS-{n} to GBT-{n} 480 V secondary", "LV1C", "1/C", "600", 8, 4, 2250, 480, 2706, "8 sets of 4 x 1/C")
+    mv_feeder(gbt, pad_eh, 2250, 13.8, f"Block {n} 13.8 kV collection to PAD-EH", motor=False)
+    add(gbs, pad_eh, f"GBS-{n} block controller fibre to the yard controller", "FO", "12 SM", "-")
 fc_inv = [one(r"^FC-5..12 inverter")]                     # FC-1..4 / MT-1..3 taken out Oct 20 (one set, in the yard)
 for k in range(5, 13):
     fc = one(rf"^FC-{k}: SOFC")
