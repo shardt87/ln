@@ -53,3 +53,4 @@ Views now on training slides that only exist as Oct 8-13 previews: E10, E16, E41
 - **E143 / E144** (modular gas genset blocks; genset_blocks block 1 trench): preview only. E144 is a tight corridor shot between GBS-1 / GBT-1 and the gensets.
 - **E145** (genset row, photo angle): preview only.
 - **E143 / E144 / E145** re-aimed Oct 26 for the reworked modular gas blocks (5 x 500 kW per block, 35 kV loop to SWG-MY): previews only.
+- **E146** (golden hour from the south-east over the modular gas blocks; Oct 26): preview at 24 spp, scale 70.
