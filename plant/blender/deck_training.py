@@ -1,4 +1,4 @@
-"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 66 slides at 1440 x 810 (main 1-59, backup 60-66),
+"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 67 slides at 1440 x 810 (main 1-60, backup 61-67),
 same look as the boiler deck. Reuses the boiler-deck slides for the fundamentals and the cable takeaways (their footers
 re-numbered), the 16-zone overview, and the model renders for the seven tour stops; new: title, agenda, six market slides
 (from the Oct 6 PowerGen channel deck), one slide per tour stop, the whole
@@ -1594,6 +1594,160 @@ def s_oneline(n, N):
 </section>"""
 
 
+def s_oneline_full(n, N):
+    """Full single-line of the model (drawing-sheet style): every bus, transformer, generator group, motor group and tie."""
+    K, OP, DCH, G = "#23282d", "#b4591f", "#1f8f73", "#7a8288"
+    o = []
+    def ln(x1, y1, x2, y2, c=K, w=1.4, d=""):
+        o.append(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{c}" stroke-width="{w}" {d}/>')
+    def tx(x, y, t, c=K, sz=9.5, a="middle", wt=400, rot=0):
+        tr = f' transform="rotate({rot} {x} {y})"' if rot else ""
+        o.append(f'<text x="{x}" y="{y}" fill="{c}" font-size="{sz}" font-weight="{wt}" text-anchor="{a}" font-family="B"{tr}>{t}</text>')
+    def brk(x, y, c=K, open_=False, r=4):
+        o.append(f'<rect x="{x - r}" y="{y - r}" width="{2 * r}" height="{2 * r}" fill="{"#fff" if open_ else c}" stroke="{c}" stroke-width="1.2"/>')
+    def xf(x, y, c=K, r=7):
+        o.append(f'<circle cx="{x}" cy="{y - r * .7}" r="{r}" fill="none" stroke="{c}" stroke-width="1.3"/><circle cx="{x}" cy="{y + r * .7}" r="{r}" fill="none" stroke="{c}" stroke-width="1.3"/>')
+    def gen(x, y, c=K, r=10, t="G"):
+        o.append(f'<circle cx="{x}" cy="{y}" r="{r}" fill="#fff" stroke="{c}" stroke-width="1.4"/>'); tx(x, y + 3.5, t, c, 9 if r < 9 else 10, wt=700)
+    def mot(x, y, c=K):
+        gen(x, y, c, 6.5, "M")
+    def box(x, y, w, h, t, c=K, sub="", fill="#fff"):
+        o.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{fill}" stroke="{c}" stroke-width="1.2"/>')
+        tx(x + w / 2, y + (h / 2 + 3.5 if not sub else 12), t, c, 9.5, wt=700)
+        if sub:
+            tx(x + w / 2, y + 24, sub, G, 8.5)
+    def bus(x1, x2, y, t, c=K, w=3, la="start"):
+        ln(x1, y, x2, y, c, w); tx(x1 if la == "start" else x2, y - 5, t, c, 9, la, 700)
+    def drop(x, y1, y2, c=K, d=""):
+        ln(x, y1, x2 := x, y2, c, 1.2, d); brk(x, y1 + 9, c)
+    dsh = 'stroke-dasharray="5 3"'
+    # ---------------- 230 kV yard
+    B1, B2 = 40, 70
+    ln(10, B1, 1380, B1, K, 3); tx(470, B1 - 6, "230 kV BUS 1  ·  breaker-and-a-half, D1-D6", K, 9, "start", 700); ln(10, B2, 1380, B2, K, 3); tx(470, B2 + 13, "230 kV BUS 2", K, 9, "start", 700)
+    for x, d, c in ((60, "D1", K), (190, "D2", K), (330, "D3", K), (640, "D4", OP), (930, "D5", OP), (1060, "D6", OP)):
+        ln(x, B1, x, B2, c, 1.2); [brk(x, y, c, r=3) for y in (B1 + 7, B1 + 15, B2 - 7)]; tx(x, B1 - 8, d, c, 9, wt=700)
+    for x, t in ((30, "LINE 1"), (160, "LINE 2")):
+        ln(x, B1, x, 18, K, 1.4); o.append(f'<path d="M{x - 4},22 L{x},14 L{x + 4},22" fill="none" stroke="{K}" stroke-width="1.4"/>'); tx(x + 6, 14, t, K, 8.5, "start", 700)
+    # ---------------- power block: generators, GSUs, UATs
+    MV = 235
+    gens = [(60, "GTG-1", 1), (190, "GTG-2", 2), (320, "GTG-3", 3)]
+    for x, g, k in gens:
+        ln(x, B2, x, 90, K, 1.4); xf(x, 98); tx(x + 10, 101, f"GSU-{k}", K, 8.5, "start"); tx(x + 10, 110, "21/230 kV", G, 8, "start")
+        ln(x, 105, x, 162, "#8a4b1f", 3.5); brk(x, 140, "#8a4b1f"); tx(x - 7, 143, f"GCB-{k}", G, 8, "end"); gen(x, 172); tx(x, 192, g, K, 9, wt=700)
+        ln(x, 125, x + 34, 125, "#8a4b1f", 2.5); ln(x + 34, 125, x + 34, 196, K, 1.3); xf(x + 34, 204); tx(x + 44, 207, f"UAT-{k}", K, 8.5, "start")
+        ln(x + 34, 211, x + 34, MV, K, 1.3); brk(x + 34, MV - 9)
+        box(x - 50, 160, 30, 16, f"LCI-{k}", K); ln(x - 20, 168, x - 10, 168, K, 1)
+    x = 430; ln(x, B2, x, 90, K, 1.4); xf(x, 98); tx(x + 10, 101, "GSU-ST", K, 8.5, "start"); ln(x, 105, x, 162, "#8a4b1f", 3.5); brk(x, 140, "#8a4b1f"); gen(x, 172); tx(x, 192, "STG", K, 9, wt=700)
+    # 13.8 kV buses with normally-open ties
+    for k, (a, b) in enumerate(((14, 148), (156, 290), (298, 470))):
+        ln(a, MV, b, MV, K, 3); tx(a + 2 if k else a, MV - 5, ("13.8 kV " if k == 0 else "") + f"BUS {k + 1}", K, 9, "start", 700)
+    for x in (152, 294):
+        brk(x, MV, K, True)
+    loads = {0: ["BFP-1A", "BFP-1B", "T-R2A", "T4-A", "T-R4-1", "T-R4-2"], 1: ["BFP-2A", "BFP-2B", "T-R2B", "T-R3", "T-WT", "EB-1"],
+             2: ["BFP-3A", "BFP-3B", "T-R2C", "T4-B", "T-R4-3", "T-R4-4"]}
+    x0s = (24, 166, 308)
+    pos = {}
+    for k, names in loads.items():
+        for i, nm in enumerate(names):
+            x = x0s[k] + i * 22
+            c = DCH if nm == "EB-1" else K
+            ln(x, MV, x, MV + 26, c, 1.2, dsh if nm == "EB-1" else ""); brk(x, MV + 8, c)
+            if nm.startswith("BFP"):
+                mot(x, MV + 33, c)
+            else:
+                xf(x, MV + 34, c, 6)
+            tx(x + 3, MV + 50, nm, c, 8.2, "end", 400, -90)
+            pos[nm] = x
+    # 4.16 kV and 480 V tier
+    L4 = 345
+    ln(pos["T4-A"], MV + 41, pos["T4-A"], L4, K, 1.2); ln(pos["T4-B"], MV + 41, pos["T4-B"], L4, K, 1.2)
+    bus(30, 190, L4, "4.16 kV BUS A (R1)"); bus(250, 410, L4, "4.16 kV BUS B (R1)", la="end"); brk(220, L4, K, True); ln(190, L4, 250, L4, K, 1.2, dsh)
+    for i, nm in enumerate(["CP-A", "CP-C", "CCW-A"]):
+        x = 50 + i * 40; drop(x, L4, L4 + 22); mot(x, L4 + 29); tx(x, L4 + 46, nm, K, 8.2)
+    for i, nm in enumerate(["CP-B", "CCW-B"]):
+        x = 330 + i * 40; drop(x, L4, L4 + 22); mot(x, L4 + 29); tx(x, L4 + 46, nm, K, 8.2)
+    # 480 V rooms
+    LV = 425
+    rooms = [("T-R2A", "R2A 480 V", "SCR blowers, MOVs"), ("T-R2B", "R2B 480 V", "HRSG 2 aux"), ("T-R2C", "R2C 480 V", "HRSG 3 aux"),
+             ("T-R3", "R3 480 V", "ST aux, air comp."), ("T-WT", "R-WT 480 V", "water treatment")]
+    for i, (t, nm, sub) in enumerate(rooms):
+        x = 20 + i * 92
+        box(x, LV, 84, 30, nm, K, sub)
+    box(20, LV + 42, 176, 30, "R4  4 x 480 V  ·  92 VFDs", K, "80 ACC fans, 12 aux coolers")
+    box(206, LV + 42, 270, 30, "LC-480-A/B  ·  MCC-GT1..3, MCC-C1/C2", K, "GT aux, lube oil, hydraulics, enclosure fans")
+    box(20, LV + 84, 120, 30, "EDG-1 / EDG-2", "#9a3412", "480 V emergency, ATS")
+    ln(140, LV + 99, 160, LV + 99, "#9a3412", 1.3, dsh)
+    box(160, LV + 84, 70, 30, "EMCC", "#9a3412")
+    box(240, LV + 84, 236, 30, "125 V DC-1/2  ·  BAT-1/2  ·  UPS-A/B", "#1d4ed8", "breaker trip, DCS, control room, relays")
+    tx(20, LV + 135, "POWER BLOCK (Rev 14 base)", K, 9, "start", 700)
+    # ---------------- D4: modular yard + BESS
+    ln(640, B2, 640, 92, OP, 1.3, dsh); xf(640, 100, OP); tx(650, 103, "T-MOD-1/2", OP, 8.5, "start"); tx(650, 112, "13.8/230 kV", G, 8, "start")
+    ln(640, 107, 640, 135, OP, 2.5); tx(634, 124, "bus duct 6,300 A", G, 8, "end")
+    ln(520, 135, 860, 135, OP, 3); tx(700, 130, "MOD-EH 13.8 kV COLLECTOR", OP, 9, "start", 700)
+    mods = [("RICE G1-8", "8 engines"), ("SC-1", "simple cycle"), ("SC-2", "simple cycle"), ("PAD-EH", "portable pad"), ("T-FC", "fuel cells, MT")]
+    for i, (nm, sub) in enumerate(mods):
+        x = (530, 578, 626, 722, 770)[i]
+        drop(x, 135, 162, OP, dsh); gen(x, 172, OP) if i < 3 else xf(x, 170, OP, 6); tx(x, 192, nm, OP, 8.5, wt=700); tx(x, 202, sub, G, 7.8)
+    for i, nm in enumerate(["AX-1", "IG-1"]):
+        x = 805 + i * 32
+        drop(x, 135, 162, DCH, dsh); gen(x, 172, DCH, 9); tx(x, 192, nm, DCH, 8.5, wt=700)
+    tx(821, 212, "design change", G, 7.8)
+    # BESS on D4 upper position
+    ln(680, B2, 680, 230, OP, 1.3, dsh); xf(680, 240, OP); tx(690, 243, "BESS MPT 230/34.5 kV", OP, 8.5, "start")
+    bus(560, 860, 270, "34.5 kV BESS COLLECTOR (e-house)", OP)
+    for i in range(3):
+        x = 590 + i * 95
+        drop(x, 270, 300, OP, dsh); box(x - 38, 300, 76, 30, f"Feeder {i + 1}", OP, "5 PCS / MV skids")
+        ln(x, 330, x, 345, OP, 1, dsh); box(x - 38, 345, 76, 26, "10 containers", OP, "1,500 V DC")
+    tx(560, 392, "MODULAR YARD + BESS (Rev 14 options)", OP, 9, "start", 700)
+    # ---------------- D5 CCS, D6 H2
+    ln(930, B2, 930, 92, OP, 1.3, dsh); xf(930, 100, OP); tx(940, 103, "CCS T-1/T-2", OP, 8.5, "start"); tx(940, 112, "230/13.8 kV", G, 8, "start")
+    ln(930, 107, 930, 135, OP, 1.3, dsh); ln(880, 135, 1010, 135, OP, 3); tx(940, 130, "CCS 13.8 kV", OP, 9, "start", 700)
+    for i, (nm, sub) in enumerate([("FAN-A..C", "booster fans"), ("CO2-C", "compressors"), ("CWP", "CW pumps"), ("MCC", "480 V")]):
+        x = 893 + i * 36; drop(x, 135, 160, OP, dsh); mot(x, 167, OP) if i < 3 else xf(x, 166, OP, 6); tx(x, 186, nm, OP, 8.2, wt=700)
+    tx(880, 200, "booster fans · CO2 compressors · CW pumps · 480 V", G, 7.8, "start")
+    ln(1060, B2, 1060, 230, OP, 1.3, dsh); xf(1060, 240, OP); tx(1070, 243, "T-H2", OP, 8.5, "start")
+    bus(900, 1080, 270, "H2 MV bus", OP)
+    for i in range(5):
+        x = 915 + i * 36; drop(x, 270, 292, OP, dsh); xf(x, 300, OP, 6); box(x - 15, 312, 30, 20, f"R{i + 1}", OP); ln(x, 332, x, 345, OP, 1); box(x - 15, 345, 30, 20, f"EL{i + 1}", OP)
+    tx(900, 380, "rectifier transformers, rectifiers, PEM electrolyzers (DC)", G, 8, "start")
+    tx(880, 392, "CCS + GREEN H2 (Rev 14 options)", OP, 9, "start", 700)
+    # ---------------- D6 BTM tie + data-centre campus
+    ln(1110, B2, 1110, 92, DCH, 1.3, dsh); brk(1110, 80, DCH, True); xf(1110, 100, DCH); tx(1120, 103, "BTM-TIE 230/34.5 kV", DCH, 8.5, "start"); tx(1120, 112, "180 MVA, normally open", G, 8, "start")
+    ln(1110, 107, 1110, 150, DCH, 1.3, dsh)
+    ln(1100, 150, 1235, 150, DCH, 3); tx(1118, 145, "34.5 kV BUS A", DCH, 9, "start", 700); bus(1255, 1380, 150, "BUS B", DCH, la="end"); brk(1245, 150, DCH, True)
+    for i, (nm, sub) in enumerate([("BTM-T1", "90 MVA"), ("BTM-T2", "90 MVA"), ("BTM-T3", "N+1")]):
+        x = 1150 + i * 85; ln(x, 150, x, 175, DCH, 1.2, dsh); xf(x, 183, DCH, 6); tx(x + 9, 186, nm, DCH, 8.2, "start", 700); tx(x + 9, 195, sub, G, 7.5, "start")
+    tx(1150, 214, "T1-T3 fed from MOD-EH by cable bus", G, 8, "start")
+    for i, (nm, sub) in enumerate([("Gensets", "36 x 3.6 MW"), ("2 x 75 MVA", "genset GSUs"), ("BTM BESS", "PCS skids"), ("Data halls", "34.5 kV ring")]):
+        x = 1105 + i * 70; ln(x + 30, 150, x + 30, 228, DCH, .9, dsh); box(x, 228, 64, 32, nm, DCH, sub)
+    tx(1100, 280, "DATA-CENTRE CAMPUS (beyond Rev 14)", DCH, 9, "start", 700)
+    # ---------------- Boiler Row
+    ln(1380, B1, 1395, B1, DCH, 1.3, dsh); ln(1395, B1, 1395, 300, DCH, 1.3, dsh)
+    xf(1360, 308, DCH); ln(1395, 300, 1360, 300, DCH, 1.3, dsh); tx(1350, 311, "UB-1 GSU", DCH, 8.5, "end", 700)
+    ln(1360, 315, 1360, 335, "#8a4b1f", 3); gen(1360, 345, DCH); tx(1345, 348, "UB-1 STG", DCH, 8.5, "end", 700)
+    bus(1110, 1300, 330, "UB-1 SST-A/B 13.8/4.16 kV", DCH)
+    for i, (nm, sub) in enumerate([("FD fans", "13.8 kV"), ("BFP-A/B", "13.8 kV"), ("CP-A/B", "4.16 kV"), ("CWP-A/B", "4.16 kV")]):
+        x = 1125 + i * 46; drop(x, 330, 352, DCH, dsh); mot(x, 359, DCH); tx(x, 377, nm, DCH, 8.2, wt=700); tx(x, 387, sub, G, 7.5)
+    tx(1100, 404, "EB-1 electrode boiler: 13.8 kV feeder from SWGR-13.8-2 (R1)", DCH, 8.2, "start")
+    tx(1100, 420, "BOILER ROW (beyond Rev 14)", DCH, 9, "start", 700)
+    # title block
+    o.append(f'<rect x="1100" y="470" width="290" height="120" fill="#fff" stroke="{K}" stroke-width="1.2"/>')
+    tx(1112, 490, "SW-3X1  ·  MODEL SINGLE-LINE", K, 11, "start", 700); tx(1112, 506, "as built in the 3D model, Oct 2026", G, 8.5, "start")
+    for i, (c, d, t) in enumerate(((K, "", "Rev 14 base plant"), (OP, dsh, "Rev 14 options"), (DCH, dsh, "design changes beyond Rev 14"), ("#8a4b1f", "", "generator isolated-phase bus"))):
+        y = 524 + i * 14; ln(1112, y - 3, 1140, y - 3, c, 2, d); tx(1148, y, t, K, 8.5, "start")
+    tx(1112, 584, "Conceptual. Typical ratings. Not for construction.", G, 8, "start")
+    svg = (f'<svg class="abs" style="left:24px;top:150px" width="1400" height="600" viewBox="0 0 1400 600">'
+           f'<rect x="0" y="0" width="1400" height="600" fill="#ffffff"/>{"".join(o)}</svg>')
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Welcome &nbsp;&middot;&nbsp; the model today</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:52px">The full single-line, <em>every bus and every load</em></div>
+  {svg}
+  {foot(n, N)}
+</section>"""
+
+
 def reused(fn, n, N, kicker):
     sec = fn()
     sec = re.sub(r"BOILERS \d+/16", f"{TITLE} {n}/{N}", sec)
@@ -1606,28 +1760,28 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     import deck_training_candidates as cand                   # picked candidates (Oct 24): B, C, E, F, J; the combined-cycle build (c_cc1-4) replaces the cycle diagram
     cand.FOOT_LEFT = "SW-3X1 MODEL &middot; CONCEPTUAL ILLUSTRATION, NOT ENGINEERED &middot; INTERNAL TRAINING"
-    N = 66                                                     # main deck 1-59, backup 60-66 (Oct 25)
+    N = 67                                                     # main deck 1-60, backup 61-67 (Oct 25)
     D = lambda n, *a: (lambda: s_div(n, N, *a))
-    plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_why_you(3, N), lambda: s_story1(4, N), lambda: s_story2(5, N), lambda: s_how(6, N), lambda: s_refs(7, N), lambda: s_zoom(8, N), lambda: s_zoom2(9, N), lambda: s_zoom3(10, N), lambda: s_oneline(11, N), lambda: s_rigor(12, N),
-            D(13, "01", "How power", "is made", "Every plant is a black box: what goes in, what comes out, and why we zoom in on gas.", "renders/cover/K5_pro.png"),
-            lambda: s_blackbox(14, N), lambda: s_sources(15, N), lambda: s_system(16, N),
-            D(17, "02", "The", "market", "A boom-scale gas build, and cable is on the critical path.", "renders/cover/K11_pro.png"),
-            lambda: s_glance(18, N), lambda: s_load(19, N), lambda: s_backlog(20, N), lambda: s_prize(21, N), lambda: s_where(22, N), lambda: s_map(23, N),
-            D(24, "03", "Inside a", "gas plant", "The machines, the grid, and the cable that ties them together.", "renders/training/CC2_pro_clean.jpg"),
-            lambda: s_box(25, N), lambda: cand.c_day(26, N),
-            lambda: cand.c_xray_intro(27, N), lambda: cand.c_cc1(28, N), lambda: cand.c_cc2(29, N), lambda: cand.c_cc3(30, N), lambda: cand.c_cc4(31, N), lambda: cand.c_xray_copper(32, N), lambda: cand.c_xray(33, N),
-            lambda: cand.c_grid(34, N), lambda: reused(db.slide_system, 35, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
-            lambda: cand.c_cable101(36, N),
-            lambda: cand.c_stress(37, N), lambda: s_owners(38, N), lambda: s_sites(39, N), lambda: s_buy(40, N), lambda: s_buckets(41, N), lambda: s_hub(42, N), lambda: cand.c_modern(43, N),
-            D(44, "04", "The", "tour", "Seven stops on the SW-3X1 campus: what it does, its electrical system, its cable.", "renders/cover/K1_pro.png", "50% 70%"),
-            lambda: s_overview(45, N)]
-    plan += [(lambda k=k: s_stop(k, 46 + k, N)) for k in range(7)]
-    plan += [D(53, "05", "Wire and", "cable", "One supplier from the grid to the thermocouple, installed faster.", "renders/training/XR_CC2_copper.jpg"),
-             lambda: s_number(54, N), lambda: s_offer(55, N), lambda: s_simpull(56, N), lambda: s_quiz(57, N),
-             lambda: s_close(58, N), lambda: s_resources(59, N),
-             D(60, "B", "Backup", "slides", "Extra detail if questions go there, and the sources.", "renders/epic/E66_pro.png"),
-             lambda: s_quiz(61, N, answers=True), lambda: s_types(62, N), lambda: reused(db.slide_basics, 63, N, "Backup &nbsp;&middot;&nbsp; fundamentals"),
-             lambda: s_follow(64, N), lambda: reused(db.slide_spec, 65, N, "Backup &nbsp;&middot;&nbsp; the HRSG spec"), lambda: s_sources_app(66, N)]
+    plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_why_you(3, N), lambda: s_story1(4, N), lambda: s_story2(5, N), lambda: s_how(6, N), lambda: s_refs(7, N), lambda: s_zoom(8, N), lambda: s_zoom2(9, N), lambda: s_zoom3(10, N), lambda: s_oneline(11, N), lambda: s_oneline_full(12, N), lambda: s_rigor(13, N),
+            D(14, "01", "How power", "is made", "Every plant is a black box: what goes in, what comes out, and why we zoom in on gas.", "renders/cover/K5_pro.png"),
+            lambda: s_blackbox(15, N), lambda: s_sources(16, N), lambda: s_system(17, N),
+            D(18, "02", "The", "market", "A boom-scale gas build, and cable is on the critical path.", "renders/cover/K11_pro.png"),
+            lambda: s_glance(19, N), lambda: s_load(20, N), lambda: s_backlog(21, N), lambda: s_prize(22, N), lambda: s_where(23, N), lambda: s_map(24, N),
+            D(25, "03", "Inside a", "gas plant", "The machines, the grid, and the cable that ties them together.", "renders/training/CC2_pro_clean.jpg"),
+            lambda: s_box(26, N), lambda: cand.c_day(27, N),
+            lambda: cand.c_xray_intro(28, N), lambda: cand.c_cc1(29, N), lambda: cand.c_cc2(30, N), lambda: cand.c_cc3(31, N), lambda: cand.c_cc4(32, N), lambda: cand.c_xray_copper(33, N), lambda: cand.c_xray(34, N),
+            lambda: cand.c_grid(35, N), lambda: reused(db.slide_system, 36, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
+            lambda: cand.c_cable101(37, N),
+            lambda: cand.c_stress(38, N), lambda: s_owners(39, N), lambda: s_sites(40, N), lambda: s_buy(41, N), lambda: s_buckets(42, N), lambda: s_hub(43, N), lambda: cand.c_modern(44, N),
+            D(45, "04", "The", "tour", "Seven stops on the SW-3X1 campus: what it does, its electrical system, its cable.", "renders/cover/K1_pro.png", "50% 70%"),
+            lambda: s_overview(46, N)]
+    plan += [(lambda k=k: s_stop(k, 47 + k, N)) for k in range(7)]
+    plan += [D(54, "05", "Wire and", "cable", "One supplier from the grid to the thermocouple, installed faster.", "renders/training/XR_CC2_copper.jpg"),
+             lambda: s_number(55, N), lambda: s_offer(56, N), lambda: s_simpull(57, N), lambda: s_quiz(58, N),
+             lambda: s_close(59, N), lambda: s_resources(60, N),
+             D(61, "B", "Backup", "slides", "Extra detail if questions go there, and the sources.", "renders/epic/E66_pro.png"),
+             lambda: s_quiz(62, N, answers=True), lambda: s_types(63, N), lambda: reused(db.slide_basics, 64, N, "Backup &nbsp;&middot;&nbsp; fundamentals"),
+             lambda: s_follow(65, N), lambda: reused(db.slide_spec, 66, N, "Backup &nbsp;&middot;&nbsp; the HRSG spec"), lambda: s_sources_app(67, N)]
     assert len(plan) == N
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()
@@ -1658,7 +1812,7 @@ def main():
         ims.append(Image.open(png).convert("RGB"))
         ims[-1].save(os.path.join(jd, f"slide_{i + 1:02d}.jpg"), quality=90)
     w, h = 960, 540
-    for name, rng in (("opening_and_market_1-23", range(0, 23)), ("inside_a_gas_plant_24-43", range(23, 43)), ("tour_and_close_44-59", range(43, 59)), ("backup_60-66", range(59, 66)), ("all_slides", range(len(ims)))):
+    for name, rng in (("opening_and_market_1-24", range(0, 24)), ("inside_a_gas_plant_25-44", range(24, 44)), ("tour_and_close_45-60", range(44, 60)), ("backup_61-67", range(60, 67)), ("all_slides", range(len(ims)))):
         rng = list(rng)
         rows = (len(rng) + 1) // 2
         sheet = Image.new("RGB", (w * 2 + 30, h * rows + 15 * (rows + 1)), (40, 40, 40))
