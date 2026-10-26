@@ -1767,7 +1767,7 @@ EPIC = [
          eye=(133.5, 376.0, 6.5), target=(92.0, 354.0, 1.8), lens=20, show="all", add_layers=("CR_INTERIOR",),
          lamps=180, lamp_z=10, lamp_box=(83, 320, 345, 396), clip=.03),
     dict(k="E130", n="Admin building fit-out: the new metal-stud partition, steel boxes with mud rings, MC drops from the J-hooks",
-         eye=(124.0, 357.0, 5.5), target=(136.0, 366.0, 4.0), lens=22, show="all", add_layers=("CR_INTERIOR",),
+         eye=(129.5, 361.0, 4.0), target=(136.0, 364.0, 2.6), lens=22, show="all", add_layers=("CR_INTERIOR",),
          lamps=180, lamp_z=10, lamp_box=(83, 320, 345, 396), clip=.03),
     dict(k="E129", n="Cable-in-Conduit reels with a cutaway length on the ground; conduit racks, bundles and the bending station",
          eye=(214, 680, 10), target=(214, 704, 2.5), lens=24, show="all"),
