@@ -1017,4 +1017,4 @@ User: check the rest of the plant for discrepancies like the cable that stopped 
 - Result: GLB 94.8-101.1 MB, USDZ 88.9-93.4 MB (now with the decal textures); raw files committed again,
   `model/current/` zips removed. glTF validator 0 errors; renders of old vs new match (<= 0.02% pixels differ).
 
-- **Zone 07 part 3: construction compound and temporary power** (Oct 26). See HANDOFF for the contents; cameras E51, E52. The temporary-power story runs utility riser pole → pad-mount → 480 V temp switchboard + standby genset → Type W cords → GFCI spider boxes → SOOW to every load.
+- **Zone 07 part 3 (construction compound): dropped** (Oct 26, owner): redundant with the reel yard, prefab staging bay and SIMpull laydown.

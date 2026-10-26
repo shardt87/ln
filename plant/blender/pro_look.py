@@ -1759,10 +1759,6 @@ EPIC = [
          eye=(345, 1395, 95), target=(160, 1560, -6), lens=24, show="all"),
     dict(k="E50", n="Wastewater treatment: equalization basin, neutralization, clarifier, sludge tank, press building",
          eye=(800, 1405, 78), target=(680, 1490, 4), lens=24, show="all"),
-    dict(k="E51", n="Construction compound (phase 2): field offices, crew parking, conex, fab tent, reel yard, temporary power",
-         eye=(2125, 300, 105), target=(2250, 130, 2), lens=24, show="all"),
-    dict(k="E52", n="Temporary power: riser pole, 750 kVA pad-mount, 480 V temp switchboard, standby generator, Type W cords",
-         eye=(2172, 118, 30), target=(2120, 58, 8), lens=28, show="all"),
 ]
 
 
