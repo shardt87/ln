@@ -1,4 +1,4 @@
-"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 65 slides at 1440 x 810 (main 1-58, backup 59-65),
+"""Nov 11 internal training "Inside Power Generation" (presentation/Nov11_run_of_show.md): 66 slides at 1440 x 810 (main 1-59, backup 60-66),
 same look as the boiler deck. Reuses the boiler-deck slides for the fundamentals and the cable takeaways (their footers
 re-numbered), the 16-zone overview, and the model renders for the seven tour stops; new: title, agenda, six market slides
 (from the Oct 6 PowerGen channel deck), one slide per tour stop, the whole
@@ -1504,6 +1504,96 @@ def s_zoom3(n, N):
 </section>"""
 
 
+
+def s_oneline(n, N):
+    """Single-line of the model as built today (beyond Rev 14 sheet 04): base plant, Rev 14 options, design changes."""
+    W, CU, GR, DC = "#f4f1ec", "#e39a5e", "#8e98a3", "#5fc3a8"     # base, option, label grey, design change
+    o = []
+    def ln(x1, y1, x2, y2, c=W, w=2, dash=""):
+        o.append(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{c}" stroke-width="{w}" {dash}/>')
+    def tx(x, y, t, c=W, sz=13, a="middle", wt=400):
+        o.append(f'<text x="{x}" y="{y}" fill="{c}" font-size="{sz}" font-weight="{wt}" text-anchor="{a}" font-family="B">{t}</text>')
+    def brk(x, y, c=W):
+        o.append(f'<rect x="{x - 6}" y="{y - 6}" width="12" height="12" fill="{c}"/>')
+    def xf(x, y, c=W):
+        o.append(f'<circle cx="{x}" cy="{y - 9}" r="11" fill="none" stroke="{c}" stroke-width="2"/><circle cx="{x}" cy="{y + 9}" r="11" fill="none" stroke="{c}" stroke-width="2"/>')
+    def gen(x, y, c=W):
+        o.append(f'<circle cx="{x}" cy="{y}" r="17" fill="none" stroke="{c}" stroke-width="2"/>')
+        tx(x, y + 5, "G", c, 14, wt=700)
+    def box(x, y, w, h, t, c=W, sub=""):
+        o.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="#181b1f" stroke="{c}" stroke-width="1.5" rx="3"/>')
+        tx(x + w / 2, y + (h / 2 + 4 if not sub else 17), t, c, 13, wt=700)
+        if sub:
+            tx(x + w / 2, y + 33, sub, GR, 11.5)
+    dsh = 'stroke-dasharray="7 5"'
+    # 230 kV breaker-and-a-half yard
+    B1, B2 = 150, 205
+    ln(70, B1, 1250, B1, W, 4); ln(70, B2, 1250, B2, W, 4)
+    tx(72, B1 + 22, "230 kV BUS 1", GR, 12, "start", 700); tx(70, B2 + 22, "230 kV BUS 2", GR, 12, "start", 700)
+    dia = [(150, "D1", W), (330, "D2", W), (510, "D3", W), (720, "D4", CU), (900, "D5", CU), (1080, "D6", CU)]
+    for x, d, c in dia:
+        ln(x, B1, x, B2, c, 2); [brk(x, y, c) for y in (B1 + 10, B1 + 27, B2 - 10)]
+        tx(x, B1 - 22, d, c, 13, wt=700)
+    # grid lines
+    for x, t in ((110, "Line 1"), (290, "Line 2")):
+        ln(x, B1, x, 100, W, 2); o.append(f'<path d="M{x - 6},106 L{x},94 L{x + 6},106" fill="none" stroke="{W}" stroke-width="2"/>'); tx(x, 88, t, GR, 12)
+    # generators: GT1-3 on D1-D3, STG on D3
+    for x, gt, ux in ((150, "GTG-1", 150), (330, "GTG-2", 330), (480, "GTG-3", 480)):
+        ln(x, B2, x, 268, W, 3); xf(x, 278); tx(x + 16, 283, "GSU", GR, 11, "start")
+        ln(x, 298, x, 358, "#c86b2f", 5); gen(x, 375); tx(x, 410, gt, W, 12, wt=700); tx(x, 424, "21 kV", GR, 11)
+        ln(x, 330, x + 34, 330, W, 2); ln(x + 34, 330, x + 34, 448, W, 2); xf(x + 34, 458); tx(x + 50, 462, "UAT", GR, 11, "start")
+    ln(560, B2, 560, 268, W, 3); xf(560, 278); ln(560, 298, 560, 358, "#c86b2f", 5); gen(560, 375); tx(560, 410, "STG", W, 12, wt=700); tx(560, 424, "21 kV", GR, 11)
+    # 13.8 kV buses (R1) and auxiliaries
+    MV = 500
+    ln(110, MV, 640, MV, W, 3); tx(110, MV - 10, "13.8 kV BUSES 1-3 (R1)", GR, 12, "start", 700)
+    for x in (184, 364, 514):
+        ln(x, 478, x, MV, W, 2)
+    loads = [(125, "BFP", "6 x 13.8 kV"), (205, "LCI", "GT start"), (285, "4.16 kV", "CP, CCW"), (365, "R2A-C", "480 V, HRSG"),
+             (445, "R3", "480 V, ST"), (525, "R4", "92 VFDs, ACC"), (605, "R-WT", "480 V")]
+    for x, t, sub in loads:
+        ln(x, MV, x, 540, W, 2); brk(x, 520)
+        box(x - 38, 540, 76, 44, t, W, sub)
+    box(110, 610, 250, 40, "EDG-1/2  ·  125 V DC  ·  UPS", GR)
+    tx(380, 636, "emergency and control power", GR, 12, "start")
+    # D4: modular yard + BESS
+    ln(700, B2, 700, 268, CU, 2, dsh); xf(700, 278, CU); tx(684, 318, "T-MOD-1/2", CU, 11, "end")
+    ln(700, 298, 700, 340, CU, 2, dsh); box(640, 340, 120, 40, "MOD-EH 13.8 kV", CU)
+    ln(700, 380, 700, 404, CU, 2, dsh)
+    box(640, 404, 120, 86, "Modular yard", CU, " ")
+    for k, t in enumerate(["8 RICE · SC-1/2", "fuel cells · MT", "portable pad"]):
+        tx(700, 440 + k * 15, t, GR, 11.5)
+    ln(745, B2, 745, 268, CU, 2, dsh); xf(745, 278, CU); tx(790, 283, "BESS MPT", CU, 11, "start")
+    ln(745, 298, 790, 298, CU, 2, dsh); ln(790, 298, 790, 340, CU, 2, dsh); box(770, 340, 110, 40, "34.5 kV · BESS", CU)
+    # D5: CCS
+    ln(900, B2, 900, 268, CU, 2, dsh); xf(900, 278, CU); tx(918, 283, "CCS T-1/T-2", CU, 11, "start")
+    ln(900, 298, 900, 404, CU, 2, dsh); box(840, 404, 120, 44, "CCS MV bldg", CU, "13.8 kV")
+    # D6: H2 + BTM tie
+    ln(1060, B2, 1060, 268, CU, 2, dsh); xf(1060, 278, CU); tx(1044, 318, "T-H2", CU, 11, "end")
+    ln(1060, 298, 1060, 404, CU, 2, dsh); box(990, 404, 106, 44, "Electrolyzers", CU, "rectifiers, DC")
+    ln(1110, B2, 1110, 268, DC, 2, dsh); xf(1110, 278, DC); tx(1128, 283, "BTM-TIE (N.O.)", DC, 11, "start")
+    # design changes beyond Rev 14
+    ln(1110, 298, 1110, 520, DC, 2, dsh)
+    box(1040, 520, 190, 64, "Data-centre campus", DC, "34.5 kV ring · ~150 MW")
+    ln(760, 475, 1000, 475, DC, 2, dsh); ln(1000, 475, 1000, 552, DC, 2, dsh); ln(1000, 552, 1040, 552, DC, 2, dsh)
+    tx(880, 469, "BTM-T1..3 13.8/34.5 kV", DC, 11)
+    box(665, 520, 140, 44, "AX-1 · IG-1", DC, "modular GT packages")
+    ln(700, 490, 700, 520, DC, 2, dsh)
+    box(825, 520, 160, 64, "Boiler Row", DC, "UB-1 STG · EB-1 13.8 kV")
+    ln(1250, B1, 1290, B1, DC, 2, dsh); ln(1290, B1, 1290, 270, DC, 2, dsh); xf(1290, 280, DC); tx(1290, 318, "UB-1 GSU", DC, 11)
+    svg = f'<svg class="abs" style="left:0;top:0" width="1440" height="810"><g transform="translate(0,60)">{"".join(o)}</g></svg>'
+    key = "".join(f'<span style="display:inline-block;width:26px;height:0;border-top:3px {st} {c};margin:0 8px 4px 22px;vertical-align:middle"></span>{t}'
+                  for c, st, t in ((W, "solid", "Rev 14 base plant"), ("#c86b2f", "solid", "generator bus (IPB)"), (CU, "dashed", "Rev 14 options"), (DC, "dashed", "design changes beyond Rev 14")))
+    return f"""
+<section class="page slide">
+  <div class="abs kicker" style="left:64px;top:56px">Welcome &nbsp;&middot;&nbsp; the model today</div>
+  <div class="abs h2" style="left:62px;top:84px;font-size:52px">One line, <em>the whole campus</em></div>
+  {svg}
+  <div class="abs" style="left:1250px;top:590px;width:150px;font:400 12px/1.4 B;color:{GR}">Simplified: one breaker per bay shown on the taps; ratings typical, not engineered.</div>
+  <div class="abs" style="left:700px;top:118px;font:700 12px/1 BC;letter-spacing:.06em;color:#cfd3d6;text-transform:uppercase">{key}</div>
+  {foot(n, N)}
+</section>"""
+
+
 def reused(fn, n, N, kicker):
     sec = fn()
     sec = re.sub(r"BOILERS \d+/16", f"{TITLE} {n}/{N}", sec)
@@ -1516,28 +1606,28 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     import deck_training_candidates as cand                   # picked candidates (Oct 24): B, C, E, F, J; the combined-cycle build (c_cc1-4) replaces the cycle diagram
     cand.FOOT_LEFT = "SW-3X1 MODEL &middot; CONCEPTUAL ILLUSTRATION, NOT ENGINEERED &middot; INTERNAL TRAINING"
-    N = 65                                                     # main deck 1-58, backup 59-65 (Oct 25)
+    N = 66                                                     # main deck 1-59, backup 60-66 (Oct 25)
     D = lambda n, *a: (lambda: s_div(n, N, *a))
-    plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_why_you(3, N), lambda: s_story1(4, N), lambda: s_story2(5, N), lambda: s_how(6, N), lambda: s_refs(7, N), lambda: s_zoom(8, N), lambda: s_zoom2(9, N), lambda: s_zoom3(10, N), lambda: s_rigor(11, N),
-            D(12, "01", "How power", "is made", "Every plant is a black box: what goes in, what comes out, and why we zoom in on gas.", "renders/cover/K5_pro.png"),
-            lambda: s_blackbox(13, N), lambda: s_sources(14, N), lambda: s_system(15, N),
-            D(16, "02", "The", "market", "A boom-scale gas build, and cable is on the critical path.", "renders/cover/K11_pro.png"),
-            lambda: s_glance(17, N), lambda: s_load(18, N), lambda: s_backlog(19, N), lambda: s_prize(20, N), lambda: s_where(21, N), lambda: s_map(22, N),
-            D(23, "03", "Inside a", "gas plant", "The machines, the grid, and the cable that ties them together.", "renders/training/CC2_pro_clean.jpg"),
-            lambda: s_box(24, N), lambda: cand.c_day(25, N),
-            lambda: cand.c_xray_intro(26, N), lambda: cand.c_cc1(27, N), lambda: cand.c_cc2(28, N), lambda: cand.c_cc3(29, N), lambda: cand.c_cc4(30, N), lambda: cand.c_xray_copper(31, N), lambda: cand.c_xray(32, N),
-            lambda: cand.c_grid(33, N), lambda: reused(db.slide_system, 34, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
-            lambda: cand.c_cable101(35, N),
-            lambda: cand.c_stress(36, N), lambda: s_owners(37, N), lambda: s_sites(38, N), lambda: s_buy(39, N), lambda: s_buckets(40, N), lambda: s_hub(41, N), lambda: cand.c_modern(42, N),
-            D(43, "04", "The", "tour", "Seven stops on the SW-3X1 campus: what it does, its electrical system, its cable.", "renders/cover/K1_pro.png", "50% 70%"),
-            lambda: s_overview(44, N)]
-    plan += [(lambda k=k: s_stop(k, 45 + k, N)) for k in range(7)]
-    plan += [D(52, "05", "Wire and", "cable", "One supplier from the grid to the thermocouple, installed faster.", "renders/training/XR_CC2_copper.jpg"),
-             lambda: s_number(53, N), lambda: s_offer(54, N), lambda: s_simpull(55, N), lambda: s_quiz(56, N),
-             lambda: s_close(57, N), lambda: s_resources(58, N),
-             D(59, "B", "Backup", "slides", "Extra detail if questions go there, and the sources.", "renders/epic/E66_pro.png"),
-             lambda: s_quiz(60, N, answers=True), lambda: s_types(61, N), lambda: reused(db.slide_basics, 62, N, "Backup &nbsp;&middot;&nbsp; fundamentals"),
-             lambda: s_follow(63, N), lambda: reused(db.slide_spec, 64, N, "Backup &nbsp;&middot;&nbsp; the HRSG spec"), lambda: s_sources_app(65, N)]
+    plan = [lambda: s_title(), lambda: s_agenda(2, N), lambda: s_why_you(3, N), lambda: s_story1(4, N), lambda: s_story2(5, N), lambda: s_how(6, N), lambda: s_refs(7, N), lambda: s_zoom(8, N), lambda: s_zoom2(9, N), lambda: s_zoom3(10, N), lambda: s_oneline(11, N), lambda: s_rigor(12, N),
+            D(13, "01", "How power", "is made", "Every plant is a black box: what goes in, what comes out, and why we zoom in on gas.", "renders/cover/K5_pro.png"),
+            lambda: s_blackbox(14, N), lambda: s_sources(15, N), lambda: s_system(16, N),
+            D(17, "02", "The", "market", "A boom-scale gas build, and cable is on the critical path.", "renders/cover/K11_pro.png"),
+            lambda: s_glance(18, N), lambda: s_load(19, N), lambda: s_backlog(20, N), lambda: s_prize(21, N), lambda: s_where(22, N), lambda: s_map(23, N),
+            D(24, "03", "Inside a", "gas plant", "The machines, the grid, and the cable that ties them together.", "renders/training/CC2_pro_clean.jpg"),
+            lambda: s_box(25, N), lambda: cand.c_day(26, N),
+            lambda: cand.c_xray_intro(27, N), lambda: cand.c_cc1(28, N), lambda: cand.c_cc2(29, N), lambda: cand.c_cc3(30, N), lambda: cand.c_cc4(31, N), lambda: cand.c_xray_copper(32, N), lambda: cand.c_xray(33, N),
+            lambda: cand.c_grid(34, N), lambda: reused(db.slide_system, 35, N, "Fundamentals &nbsp;&middot;&nbsp; the voltage ladder"),
+            lambda: cand.c_cable101(36, N),
+            lambda: cand.c_stress(37, N), lambda: s_owners(38, N), lambda: s_sites(39, N), lambda: s_buy(40, N), lambda: s_buckets(41, N), lambda: s_hub(42, N), lambda: cand.c_modern(43, N),
+            D(44, "04", "The", "tour", "Seven stops on the SW-3X1 campus: what it does, its electrical system, its cable.", "renders/cover/K1_pro.png", "50% 70%"),
+            lambda: s_overview(45, N)]
+    plan += [(lambda k=k: s_stop(k, 46 + k, N)) for k in range(7)]
+    plan += [D(53, "05", "Wire and", "cable", "One supplier from the grid to the thermocouple, installed faster.", "renders/training/XR_CC2_copper.jpg"),
+             lambda: s_number(54, N), lambda: s_offer(55, N), lambda: s_simpull(56, N), lambda: s_quiz(57, N),
+             lambda: s_close(58, N), lambda: s_resources(59, N),
+             D(60, "B", "Backup", "slides", "Extra detail if questions go there, and the sources.", "renders/epic/E66_pro.png"),
+             lambda: s_quiz(61, N, answers=True), lambda: s_types(62, N), lambda: reused(db.slide_basics, 63, N, "Backup &nbsp;&middot;&nbsp; fundamentals"),
+             lambda: s_follow(64, N), lambda: reused(db.slide_spec, 65, N, "Backup &nbsp;&middot;&nbsp; the HRSG spec"), lambda: s_sources_app(66, N)]
     assert len(plan) == N
     head = f"<!doctype html><html><head><meta charset='utf-8'><style>{db.CSS}</style></head><body>"
     out = pymupdf.open()
@@ -1568,7 +1658,7 @@ def main():
         ims.append(Image.open(png).convert("RGB"))
         ims[-1].save(os.path.join(jd, f"slide_{i + 1:02d}.jpg"), quality=90)
     w, h = 960, 540
-    for name, rng in (("opening_and_market_1-22", range(0, 22)), ("inside_a_gas_plant_23-42", range(22, 42)), ("tour_and_close_43-58", range(42, 58)), ("backup_59-65", range(58, 65)), ("all_slides", range(len(ims)))):
+    for name, rng in (("opening_and_market_1-23", range(0, 23)), ("inside_a_gas_plant_24-43", range(23, 43)), ("tour_and_close_44-59", range(43, 59)), ("backup_60-66", range(59, 66)), ("all_slides", range(len(ims)))):
         rng = list(rng)
         rows = (len(rng) + 1) // 2
         sheet = Image.new("RGB", (w * 2 + 30, h * rows + 15 * (rows + 1)), (40, 40, 40))
