@@ -8,7 +8,8 @@ length, coiled and tagged, and continuity / insulation-resistance (megger) tests
 - an open concrete work pad as the workstation (no shelter), with a fuel-gas
   conditioning skid and a pump skid on cribbing being pre-wired, workbenches, a wire wagon, test gear, JB and
   tray-fitting kits, temporary power and lights, and the crew;
-- a ready-to-set row outside: a lube-oil skid and a second fuel-gas skid, finished and tagged TESTED - READY TO SET;
+- a ready-to-set row outside: a second fuel-gas skid, finished and tagged TESTED - READY TO SET, and a bare lube-oil
+  skid getting kit 1 (the plug-in GT auxiliary harness): trunk in the tray, branches plugged into the devices;
 - a PDC e-house delivered in two shipping splits on cribbing, the split faces wrapped, with pre-terminated
   interconnect cables coiled at the split ready to reconnect once set.
 - three standardized pre-wired kits staged beside the skids they serve, with a board (owner, Oct 26): kit 1 GT
@@ -87,6 +88,35 @@ def prewire(x0, x1, y0, y1, z, done=False, side=1, label="FG SKID"):
            [("PRE-WIRE", .26, 1, "#111111", 0, "#f2c200"), ("IN PROGRESS", .2, 1, "#111111"), (label, .16, 0, "#333333"),
             ("DO NOT LIFT", .14, 1, "#c41f27")])
     decal((xe + side * .95, (y0 + y1) / 2 + 3, zt - 1.2), (side, 0, 0), 2.6, 1.8, tag, bg="#ffffff")
+
+
+def kit_fitup(x0, x1, y0, y1, z):
+    """Kit 1 being fitted to a bare lube-oil skid: the pre-made harness trunk laid in the skid-edge tray, its branches
+    plugged into the pump motors, filter DP switches and reservoir instruments with connectors (no field terminations),
+    two branches still coiled on the deck; a fitter on the skid."""
+    xe, zt = x1 - .5, z + 4.2
+    for yy in [y0 + 1 + k * 6 for k in range(int((y1 - y0 - 2) / 6) + 1)]:
+        box(xe - .15, xe + .15, yy - .15, yy + .15, z + 1.1, zt, "steel")
+    box(xe - .9, xe + .9, y0 + .8, y1 - .8, zt, zt + .35, "pipe")
+    rod((xe, y0 + 1.2, zt + .5), (xe, y1 - 1.2, zt + .5), .3, "cable_inst", seg=12)                # harness trunk
+    zb = z + 1.1
+    targets = [(x0 + 3.0, y0 + 15.0, zb + 2.0), (x0 + 3.0, y0 + 19.0, zb + 2.0),                 # pump motors
+               (x0 + 5.0, y1 - 6.0, zb + 3.8), (x0 + 5.0, y1 - 3.8, zb + 3.8),                   # filter DP switches
+               (x1 - 3.4, y0 + 4.0, zb + 5.2), (x1 - 3.4, y0 + 9.0, zb + 5.2)]                   # reservoir level / temp
+    for k, (tx, ty, tz) in enumerate(targets):
+        c = ("cable_tc", "cable_tc", "cable_inst", "cable_inst", "cable_inst", "cable_tc")[k]
+        rod((xe, ty, zt + .5), (xe - .6, ty, zt + .5), .06, c, seg=6)
+        rod((xe - .6, ty, zt + .5), (tx + .4, ty, tz + .3), .06, c, seg=6)
+        rod((tx + .4, ty, tz + .3), (tx + .1, ty, tz + .3), .13, "sp_black", seg=10)              # connector, plugged
+        box(tx + .3, tx + .5, ty - .15, ty + .15, tz + .45, tz + .7, "white_truck")              # branch tag
+    for k in range(2):                                                                            # not yet plugged
+        cy = y1 - 9 - k * 2.4
+        rod((xe - 1.2, cy - .4, zb + .5), (xe - 1.2, cy + .4, zb + .5), .45, "cable_inst", seg=14)
+        rod((xe - 1.2, cy - .55, zb + .5), (xe - 1.2, cy - .75, zb + .5), .13, "sp_black", seg=10)
+    decal((xe + .95, (y0 + y1) / 2 + 3, zt - 1.2), (1, 0, 0), 2.8, 1.9,
+          [("KIT 1 FIT-UP", .24, 1, "#111111", 0, "#f2c200"), ("plug-in harness · pre-tested", .16, 1, "#111111"),
+           ("LUBE OIL SKID LOS-2", .15, 0, "#333333"), ("no field terminations", .14, 1, "#2f7a3c")], bg="#ffffff")
+    person(x0 + 6.5, y0 + 17.0, z + 1.1, 0.0, vest="hivis_o")
 
 
 def fuel_gas_skid(x0, x1, y0, y1, z):
@@ -195,11 +225,11 @@ def _build():
     # ready-to-set row beside the pad
     cribbing(2062, 2074, 958, 986)
     lube_skid(2062, 2074, 958, 986, 1.0)
-    prewire(2062, 2074, 958, 986, 1.0, done=True, side=1, label="LUBE OIL SKID LOS-2")
+    kit_fitup(2062, 2074, 958, 986, 1.0)                                            # kit 1 going on (owner, Oct 26)
     cribbing(2084, 2096, 958, 990)
     fuel_gas_skid(2084, 2096, 958, 990, 1.0)
     prewire(2084, 2096, 958, 990, 1.0, done=True, side=1, label="FG-COND SKID FGS-4")
-    decal((2080, 955.8, 4), (0, -1, 0), 10, 2.2, [("READY TO SET", .4, 1, "#ffffff"), ("SKIDS TESTED  ·  CRANE PICK ORDER 1-2", .2, 0, "#e6e6e6")],
+    decal((2080, 955.8, 4), (0, -1, 0), 10, 2.2, [("READY TO SET", .4, 1, "#ffffff"), ("FGS-4 TESTED  ·  LOS-2 KIT 1 FIT-UP", .2, 0, "#e6e6e6")],
           bg="#2f7a3c")
     rod((2075.5, 956, 0), (2075.5, 956, 5.2), .1, "steel", seg=6)
     rod((2084.5, 956, 0), (2084.5, 956, 5.2), .1, "steel", seg=6)

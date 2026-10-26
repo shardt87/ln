@@ -5,8 +5,8 @@ used, next to the three skid kits on the pre-wire pad (skid_prewire.kits):
   by rack string; a crate of 35 kV MV-105 collection jumpers with separable elbow connectors; a harness cart for the
   auxiliary, BMS and fire-alarm circuits; and a coil of bare copper grounding with compression lugs. The board notes
   15 identical blocks plus 5 at the BTM BESS.
-- KIT 5, modular generator kit, in the modular yard beside the engine-spares laydown (x 2218-2286, y 1072-1120): one
-  kit per engine or package. It holds a crate of 13.8 kV MV-105 generator leads with lugs; a cart of plug-in control
+- KIT 5, modular generator kit, on the reserved phase-2 pad beside the SC-3 PCM pad (x 1952-2026, y 1299-1333),
+  waiting for the next unit (the modular yard is already built): one kit per engine or package. It holds a crate of 13.8 kV MV-105 generator leads with lugs; a cart of plug-in control
   and comms harnesses with multi-pin connectors; and a cam-lock set of Type W / SHD-GC for the portable and bridge-power
   units (colour-coded cam-locks).
 Branded labels have generic twins. Typical, not engineered."""
@@ -121,7 +121,7 @@ def bess_kit():
 
 # ------------------------------------------------------------------------------------------------ KIT 5: modular gen
 def modular_kit():
-    x0, y0 = 2222.0, 1076.0
+    x0, y0 = 1958.0, 1305.0                                  # on the reserved phase-2 pad, beside the SC-3 PCM pad
     # 13.8 kV generator leads, terminated
     cx, cy = x0 + 3.0, y0 + 2.0
     crate(cx, cy)
@@ -157,11 +157,11 @@ def modular_kit():
         rod((kx - 1.6 + k * 3.2, ky - .6, 3.0), (kx - 1.6 + k * 3.2, ky + .6, 3.0), .42, "cable_shd", seg=14)   # SHD-GC
     label((kx, ky - 1.7, 3.6), (0, -1, 0), [("CAM-LOCK PORTABLE SETS", .2, 1, "#111111"), ("Type W · SHD-GC · bridge power", .15, 0, "#333333")])
     sign_posts(kx, ky - 1.7, 4.4, 4.4)
-    board(x0 + 15.0, y0 + 26.0, [("KIT 5  ·  MODULAR GENERATOR KIT", .16, 1, "#ffffff"),
+    board(x0 + 15.0, y0 + 25.5, [("KIT 5  ·  MODULAR GENERATOR KIT", .16, 1, "#ffffff"),
                                  ("per engine or package", .11, 0, "#e6e6e6"),
                                  ("13.8 kV leads terminated", .11, 0, "#e6e6e6"),
                                  ("plug-in control / comms · cam-lock sets", .11, 0, "#e6e6e6"),
-                                 ("8 engines + 2 packages + the portable pad", .1, 1, "#f2c200")])
+                                 ("staged for the next unit on the phase-2 pad", .1, 1, "#f2c200")])
     person(x0 + 9.0, y0 + 6.0, -math.pi / 2, vest="hivis_o")
     return 1
 
@@ -177,8 +177,9 @@ def build():
     bess_kit()
     fuel.D = False
     b = fuel.new_item("OPT_MOD", "Kit 5, modular generator kit: 13.8 kV leads, plug-in control / comms harness, cam-lock sets",
-                      (2216, 2290, 1070, 1110), (0, 8), area="I", register=False, basis="typical",
-                      info="Standardized pre-wired kit per engine or package, staged by the engine-spares laydown: 13.8 kV "
+                      (1952, 2026, 1299, 1333), (0, 8), area="I", register=False, basis="typical",
+                      info="Standardized pre-wired kit per engine or package, staged on the reserved phase-2 pad for the next "
+                           "unit: 13.8 kV "
                            "MV-105 generator leads terminated, plug-in control and comms harnesses with multi-pin connectors, "
                            "cam-lock Type W / SHD-GC sets for the portable and bridge-power units. Typical.")
     fuel.on(b)
