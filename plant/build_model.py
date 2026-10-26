@@ -2357,6 +2357,8 @@ import aux_boiler as _ab                         # boiler section (Oct 22): AB-1
 print('aux boiler', _ab.build())
 import hrsg_electrical as _hel                    # boiler section: HRSG duct burners, BFP MV terminations
 print('HRSG electrical', _hel.build())
+import bfp_kit as _bk                             # BFP-1B at LOD 3: terminal box opened on kit 2's pre-terminated leads
+print('BFP-1B kit 2', _bk.build())
 import r2a_interior as _r2a                       # boiler slide 4: R2A e-house shell, lineups and every cable leg
 print('R2A interior', _r2a.build())
 import cems_lod3 as _cems                       # boiler deck: CEMS shelters at LOD 3 (analyzers, sample line, every cable)

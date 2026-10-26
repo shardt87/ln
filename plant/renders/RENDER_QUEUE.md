@@ -48,3 +48,4 @@ Views now on training slides that only exist as Oct 8-13 previews: E10, E16, E41
 - **E136** (skid_prewire.kit_fitup): kit 1 fit-up on LOS-2; preview only. E95 / E96 now show LOS-2 bare with the kit going on.
 - **E137** (skid_prewire ready row: CFS-2 + LOS-2 kit 1): preview only.
 - **E138** (pre-wire pad east: power skid, IA skid, CEMS shelter): preview only.
+- **E139** (bfp_kit: BFP-1B terminal box with kit 2): preview only; fill lights in the camera.
