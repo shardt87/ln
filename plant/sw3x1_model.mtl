@@ -253,6 +253,11 @@ Kd 0.420 0.604 0.769
 Ka 0 0 0
 d 1
 
+newmtl deck
+Kd 0.455 0.314 0.247
+Ka 0 0 0
+d 1
+
 newmtl deck_epoxy
 Kd 0.373 0.416 0.404
 Ka 0 0 0
@@ -892,6 +897,11 @@ newmtl xlpe
 Kd 0.902 0.886 0.827
 Ka 0 0 0
 d 1
+
+newmtl xray
+Kd 0.624 0.769 0.847
+Ka 0 0 0
+d 0.22
 
 newmtl yellow
 Kd 0.886 0.714 0.133

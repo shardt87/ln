@@ -38,7 +38,9 @@ def box(f, lo, hi):
 
 def rod(f, a, b, r1, r2, n):
     ax = [b[i] - a[i] for i in range(3)]
-    L = math.sqrt(sum(c * c for c in ax)) or 1
+    L = math.sqrt(sum(c * c for c in ax))
+    if L < 1e-6:                                   # zero-length rod: nothing to draw
+        return
     ax = [c / L for c in ax]
     ref = (1, 0, 0) if abs(ax[0]) < 0.9 else (0, 1, 0)
     u = [ax[1] * ref[2] - ax[2] * ref[1], ax[2] * ref[0] - ax[0] * ref[2], ax[0] * ref[1] - ax[1] * ref[0]]
