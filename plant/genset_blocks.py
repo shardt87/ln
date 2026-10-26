@@ -93,6 +93,26 @@ def sign():
     return 1
 
 
+def ownership_sign():
+    """Where the SWG-MY feeder (L5) crosses the fence to the data centre: the ownership line, scope TO VERIFY."""
+    it = fuel.new_item("OPT_MODX", "Ownership-line sign: SWG-MY feeder crosses the fence (ER scope / customer scope, to verify)",
+                       (2406, 2414, 896, 904), (0, 7), area="I", register=False, basis="typical",
+                       info="Marks where the L5 feeder from SWG-MY to the data centre's 34.5 kV switchgear crosses the fence. "
+                            "Whether the feeder is the generator owner's cable or the data centre's is TO VERIFY.")
+    fuel.on(it)
+    fuel.D = True
+    x, y = 2410.0, 900.0
+    for s in (-1.8, 1.8):
+        rod((x, y + s, 0), (x, y + s, 6.6), .08, "steel", seg=6)
+    for nx in (1, -1):
+        decal((x + .1 * nx, y, 4.8), (nx, 0, 0), 4.4, 2.6, [("OWNERSHIP LINE", .18, 1, "#ffffff"),
+                                                           ("35 kV feeder SWG-MY > data centre", .12, 0, "#e6e6e6"),
+                                                           ("generator scope | customer scope", .12, 0, "#e6e6e6"),
+                                                           ("TO VERIFY", .14, 1, "#ef6a5a")], bg="#3a1f1c")
+    fuel.D = False
+    return 1
+
+
 def build():
     it = fuel.new_item("OPT_MODX", "Genset block 1 detail: open lead trench, terminal box open, ground ring, sign",
                        (BX - 6, BX + 74, BY - 2, BY + 23), (-.2, 7), area="I", register=False, basis="typical",
@@ -103,4 +123,4 @@ def build():
     fuel.D = True
     n = trench() + terminal_box_open() + ground_ring() + sign()
     fuel.D = False
-    return n
+    return n + ownership_sign()
