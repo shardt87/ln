@@ -1759,10 +1759,10 @@ EPIC = [
          eye=(345, 1395, 95), target=(160, 1560, -6), lens=24, show="all"),
     dict(k="E50", n="Wastewater treatment: equalization basin, neutralization, clarifier, sludge tank, press building",
          eye=(800, 1405, 78), target=(680, 1490, 4), lens=24, show="all"),
-    dict(k="E126", n="Contractor area on the laydown pad: conduit racks and bundles, telehandler, cable laid out, cut-to-length, job-site services",
+    dict(k="E126", n="Contractor area on the laydown pad: conduit racks and bundles, telehandler, SIMpull paralleled pull, cut-to-length, job-site services",
          eye=(334, 672, 72), target=(250, 752, 2), lens=24, show="all"),
-    dict(k="E127", n="Cable laid out on the ground: figure-eight on a tarp, pull on ground rollers, cut-to-length bench, LED lighting",
-         eye=(318, 690, 15), target=(276, 738, 2), lens=24, show="all"),
+    dict(k="E127", n="SIMpull paralleled feeder pull: three reels, one grip, Maxis XD10; reel return; MV pull on rollers; LED stand lights",
+         eye=(318, 726, 13), target=(270, 708, 2), lens=24, show="all"),
 ]
 
 

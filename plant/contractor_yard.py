@@ -4,15 +4,16 @@ cable job today:
 - conduit material handling: two cantilever racks of 10 ft rigid (RMC) and PVC sticks, banded PVC bundles stacked on
   timber dunnage, HDPE innerduct reels, pallets of fittings, and a telehandler bringing a bundle in on its forks;
 - a conduit bending and threading station on a work mat (hydraulic bender, threading machine, cut-off saw);
-- cable laid out on the ground the way long pulls are prepared: MV cable in a figure-eight on a tarp (so it pays
-  back out without twist), and a line of ground rollers carrying a pull from a reel roller toward the trench;
+- a SIMpull paralleled feeder pull: three SIMpull Reels on Cradles, twelve colour-coded conductors gathered into
+  one pulling grip and swivel, the rope to a Maxis XD10 with a tension monitor; a line of ground rollers carrying an
+  MV pull from a reel roller toward the trench; a reel-return station; pallets of armored MC coils;
 - a cut-to-length station: payoff reel, measuring counter and cutter on a long bench, cut lengths coiled on pallets
   and tagged by circuit;
 - the supplier's job-site services point: a container office with the contractor solutions on its board (reels and
   cradles, pullers, cut-to-length, reel management and returns, pull planning, prefab assemblies);
 - temporary power and lighting from the supplier's own range: a 480 V Type W feed from the staging area's 480 V cart to a
   100 A power distribution box, 50 A boxes at each work area, extension-cord reels on the ground paying out to LED stand
-  lights, and LED string lights on posts over the bench, the bending station and the figure-eight.
+  lights, and LED string lights on posts over the bench and the bending station.
 Typical, not engineered."""
 import math
 
@@ -141,21 +142,66 @@ def bend_thread_station(x, y):
 
 
 # ------------------------------------------------------------------------------------------ cable on the ground
-def figure_eight(cx, cy, R=9.0, turns=3, r=.32, c="cable_mv"):
-    """Cable laid in a figure-eight on a tarp (the way a long pull is staged so it pays out without twist)."""
-    box(cx - 2.3 * R, cx + 2.3 * R, cy - 1.25 * R, cy + 1.25 * R, 0, .12, "flag_blue")
-    for t in range(turns):
-        rr = R * (1 - .07 * t)
-        pts = []
-        for k in range(97):
-            u = 2 * math.pi * k / 96
-            x = cx + 2 * rr * math.sin(u)
-            y = cy + rr * math.sin(2 * u)
-            pts.append((x, y, .13 + r + t * 2 * r))
-        poly(pts, r, c, seg=8)
-    # the cable end tagged and capped, the tail leading to the pull
-    rod((cx + 2 * R, cy, .05 + r), (cx + 2 * R + 6, cy + 1.5, .05 + r), r, c, seg=8)
-    rod((cx + 2 * R + 6, cy + 1.5, .05 + r), (cx + 2 * R + 6.6, cy + 1.6, .05 + r), r + .06, "sp_black", seg=8)
+def paralleled_pull(y0=703.0):
+    """SIMpull paralleled feeder pull: three SIMpull Reels on Cradles (four colour-coded conductors each) paying off
+    side by side, the twelve conductors gathered into one pulling grip and swivel, and the rope to a Maxis XD10."""
+    import simpull
+    ys = [y0 + k * 7.5 for k in range(3)]
+    jx, jy = 286.0, y0 + 7.5
+    for y in ys:
+        simpull.sp_reel(266.0, y, z0=Z, axis="y", cols=simpull.FEEDER[:4], label="SIMpull THHN  4 x 500 KCMIL")
+        for k, c in enumerate(simpull.FEEDER[:4]):
+            o = (k - 1.5) * .22
+            a = (268.0, y + o, 3.1)
+            b = (272.0, y + o, .25)
+            m = (280.0, (y + jy) / 2 + o * .6, .25)
+            e = (jx, jy + o * .4, .45)
+            poly([a, b, m, e], .09, c, seg=6)
+    rod((jx, jy, .45), (jx + 2.2, jy, .45), .42, "alu", r2=.16, seg=14)                 # pulling grip (basket)
+    rod((jx + 2.2, jy, .45), (jx + 2.9, jy, .45), .14, "steel", seg=10)                 # swivel
+    head = (299.2, jy, 5.7 + Z)
+    fuel.rod((jx + 2.9, jy, .45 + Z), head, .06, "sp_yellow", seg=6)                     # pulling rope to the boom sheave
+    fuel.rod(head, (301.5, jy, 2.5 + Z), .06, "sp_yellow", seg=6)                        # down to the capstan
+    simpull.maxis_xd10(302.0, jy, math.pi, boom_deg=48)
+    simpull.tension_monitor(305.0, jy + 3.0)
+    rows = [("PARALLELED FEEDER PULL", .2, 1, "#111111"), ("3 SIMpull reels · 12 conductors · one pull", .14, 0, None),
+            ("tension monitored", .12, 0, None)]
+    sx_, sy_ = 276.0, y0 - 4.0
+    rod((sx_ - 2.4, sy_, 0), (sx_ - 2.4, sy_, 5.0), .08, "steel", seg=6)
+    rod((sx_ + 2.4, sy_, 0), (sx_ + 2.4, sy_, 5.0), .08, "steel", seg=6)
+    decal((sx_, sy_ - .1, 4.0 + Z), (0, -1, 0), 6.0, 2.4, [(BRAND, .16, 1, "#b4591f", 1)] + rows, bg="#ffffff", brand=True)
+    decal((sx_, sy_ - .1, 4.0 + Z), (0, -1, 0), 6.0, 2.4, rows, bg="#ffffff", generic_only=True)
+    person(292.0, jy - 3.0, math.pi / 2)
+    person(304.0, jy - 3.5, math.pi / 2, vest="hivis_o")
+    return 1
+
+
+def reel_return(x, y):
+    """Empty reels laid flat in two stacks for the supplier's reel-return pickup, with the sign."""
+    for k in range(2):
+        cx = x + k * 7.0
+        for l in range(3):
+            z = l * 2.4
+            rod((cx, y, z), (cx, y, z + .25), 2.7, "timber", seg=24)                         # bottom flange
+            rod((cx, y, z + .25), (cx, y, z + 2.0), 1.1, "timber", seg=18)                   # drum
+            rod((cx, y, z + 2.0), (cx, y, z + 2.25), 2.7, "timber", seg=24)                  # top flange
+    rows = [("REEL RETURN", .3, 1, "#111111"), ("empty reels · scheduled pickup", .18, 0, None)]
+    rod((x + 11.0, y - 1.2, 0), (x + 11.0, y - 1.2, 5.0), .08, "steel", seg=6)
+    rod((x + 11.0, y + 1.2, 0), (x + 11.0, y + 1.2, 5.0), .08, "steel", seg=6)
+    decal((x + 11.1, y, 4.2 + Z), (1, 0, 0), 4.0, 1.8, [(BRAND, .22, 1, "#b4591f", 1)] + rows, bg="#ffffff", brand=True)
+    decal((x + 11.1, y, 4.2 + Z), (1, 0, 0), 4.0, 1.8, rows, bg="#ffffff", generic_only=True)
+    return 1
+
+
+def mc_pallets(x, y):
+    """Two pallets of armored MC cable coils, shrink-wrapped, tagged."""
+    for k in range(2):
+        px = x + k * 5.0
+        box(px - 2, px + 2, y - 2, y + 2, 0, .5, "timber")
+        for l in range(3):
+            rod((px, y, .5 + l * .7), (px, y, 1.15 + l * .7), 1.6, "cable_mc", seg=20)
+            rod((px, y, 1.15 + l * .7), (px, y, 1.17 + l * .7), .7, "sp_black", seg=14)
+        box(px + 1.6, px + 2.0, y - .3, y + .3, 1.2, 1.8, "white_truck")                       # tag
     return 1
 
 
@@ -304,7 +350,7 @@ def build():
                        sheet="typical (cable installation)",
                        info="Electrical contractor's set-up on the laydown pad: cantilever racks of RMC and PVC conduit, banded "
                             "PVC bundles on dunnage, HDPE innerduct reels and fittings pallets with a telehandler; a bending and "
-                            "threading station; MV cable laid in a figure-eight on a tarp and a pull on ground rollers; a "
+                            "threading station; a SIMpull paralleled feeder pull (three reels, one grip, Maxis XD10), an MV pull on ground rollers, reel return, MC coils; a "
                             "cut-to-length bench with tagged coils; the cable supplier's job-site services office (reels and "
                             "cradles, pullers, cut-to-length, reel management, pull planning, prefab assemblies); "
                             "temporary power: power distribution boxes, cord reels on the ground, LED stand lights and LED string lights. Typical, not engineered.")
@@ -322,10 +368,11 @@ def build():
     n += telehandler(242.0, 726.0)
     n += bend_thread_station(232.0, 776.0)
     # cable laid out on the ground (east part)
-    n += figure_eight(282.0, 712.0)
+    n += paralleled_pull()
+    n += reel_return(296.0, 697.5)
+    n += mc_pallets(250.0, 698.0)
     n += roller_line(262.0, 312.0, 734.0, 9)
     simpull.reel_roller(256.0, 734.0, 45, 8.4, 5.0, "cable_mv", "MV-105 15 kV 500 KCMIL")
-    person(300.0, 712.0, math.pi)
     person(306.0, 731.0, math.pi / 2, vest="hivis_o")
     # cut-to-length
     n += cut_to_length(264.0, 756.0)
@@ -355,6 +402,5 @@ def build():
         led_stand_light(lx, ly, heads=2 if k % 3 else 1)
     string_lights([(262.0, 752.0), (277.0, 752.0), (292.0, 752.0)])                  # over the cut-to-length bench
     string_lights([(224.0, 771.0), (232.0, 785.0), (240.0, 771.0)])                   # over the bending station
-    string_lights([(262.0, 700.0), (282.0, 698.0), (302.0, 700.0)])                   # over the figure-eight
     fuel.D = False
     return n
