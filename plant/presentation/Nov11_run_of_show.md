@@ -8,19 +8,19 @@
 
 ---
 
-**Slides:** `renders/deck/training/SW-3X1_Nov11_training.pdf` (67 slides, built by `blender/deck_training.py`; JPG copies in `renders/deck/training/jpg/`). See the slide map below.
+**Slides:** `renders/deck/training/SW-3X1_Nov11_training.pdf` (69 slides, built by `blender/deck_training.py`; JPG copies in `renders/deck/training/jpg/`). See the slide map below.
 
-## Slide map (Oct 25: 58 slides; main deck 1-51, backup 62-58)
+## Slide map (Oct 26: 69 slides; main deck 1-61, backup 62-69)
 
 | Slides | Section |
 |---|---|
 | 1-13 | Title, agenda, **what you will take from this hour** (by role), **why a 3D model** (4: V0-V1, 5: V2-V3), **how we built it** (6), **the drawings behind it** (7), **up close** (8-10), **one line of the model today** (11 simple, 12 full), **the work behind it** (13) |
 | 14-17 | Divider 01 *How power is made*; every power plant is this; four families; the mix today and why gas |
 | 18-24 | Divider 02 *The market*; at a glance, load growth, backlogs, the cable prize, register, state heat map |
-| 25-44 | Divider 03 *Inside a gas plant*; open the box, a day on the grid, the power block snapshot (28), the combined-cycle build (29-32), the X-ray (33 copper, 34 by type), generator to light switch, voltage ladder, cable 101, what a plant does to a cable, owners, greenfield/brownfield, who buys, **three buckets of cable (42)**, **where every cable starts (43)**, the modern campus |
-| 45-53 | Divider 04 *The tour*; campus overview; the seven stops |
-| 54-60 | Divider 05 *Wire and cable*; the whole campus in one number; **the offer**; **installed faster (SIMpull)**; **knowledge check (Zoom poll)**; take-aways and Q&A; **resources and who to call** |
-| 61-67 | Backup: divider, quiz answers, four ways to burn gas, how an HRSG works, follow the power, the HRSG spec, sources and qualifiers |
+| 25-45 | Divider 03 *Inside a gas plant*; open the box, a day on the grid, the power block snapshot (28), the combined-cycle build (29-32), the X-ray (33 copper, 34 by type, **35 the whole campus**), generator to light switch, voltage ladder, cable 101, what a plant does to a cable, owners, greenfield/brownfield, who buys, **three buckets of cable (43)**, **where every cable starts (44)**, the modern campus |
+| 46-54 | Divider 04 *The tour*; campus overview; the seven stops |
+| 55-61 | Divider 05 *Wire and cable*; the whole campus in one number; **the offer**; **installed faster (SIMpull)**; **knowledge check (Zoom poll)**; take-aways and Q&A; **resources and who to call** |
+| 62-69 | Backup: divider, **traced to real plants (63)**, quiz answers, four ways to burn gas, how an HRSG works, follow the power, the HRSG spec, sources and qualifiers |
 
 **New slides, talking points**
 - **Slides 4-5, why a 3D model (1.5 min):** 4: V0 (March) the first sketches, cable colour-coded but generic (11 kV / 138 kV, no counts); V1 (March) a Southwire-branded concept, hall and HRSGs in detail, still invented. 5: V2 (spring-summer) 3D studies, real elements but not to scale or routed; V3 (September-today) drafted as the SK-3X1 drawing set, then the model built from it: LOD 3, the cable schedule, the X-ray, the tour. Why: see the whole plant, measure instead of guess, one source, speak the buyer's language.
@@ -32,22 +32,23 @@
 - **Slide 11, one line, the whole campus (1 min):** the model's single-line as it stands today: 230 kV breaker-and-a-half yard D1-D6; GTG-1..3 and the STG through GSUs; UATs to the 13.8 kV buses in R1 and on to BFPs, LCIs, 4.16 kV, R2A-C, R3, R4 (92 VFDs) and R-WT; Rev 14 options on D4 (modular yard, BESS), D5 (CCS), D6 (H2); design changes beyond Rev 14 in green (data-centre campus via BTM-T1..3 and the N.O. BTM-TIE, AX-1 / IG-1, Boiler Row with UB-1's GSU). Simplified, typical ratings.
 - **Slide 12, the full single-line (show, don't read; 30 s):** drawing-sheet style: every bus (230 kV, three 13.8 kV with N.O. ties, 4.16 kV A/B, 480 V rooms, EMCC, DC/UPS), every generator, transformer and motor group, plus the modular collector, BESS feeders, CCS, H2 rectifiers, the BTM 34.5 kV double bus and Boiler Row. "This is what is behind the cable schedule." Slide 11 is the version to explain.
 - **Slide 13, the work behind it (1 min):** Rev 14 of the drawing set; ~620 saved iterations since the first 3D model, about 85 of them fixes, audits and rework; five layers of checks on every change (drawings, geometry, electrical, cable schedule, real-plant logic); what the audits caught and fixed (gas line through two transformers, gas riser upstream of its shut-offs, unwired equipment, tray through the boiler house, floating stairs, a duplicate package, mixed cable totals). "Design, build, audit, review, rework, every day." (Counts update from the project history at each build.)
+- **Slide 63 (backup), traced to real plants:** for "is this real?" questions. Seven systems (grid connection, generator leads, plant MV buses, 480 V and MCCs, big motors, HRSG and burners, cable), what real plants show, the kind of public document that shows it, and where it is in SW-3X1. The documents and links are in presentation/reference_linkage.md (say plant names from there if useful; they stay off the slide). CONFIRM: add the page counts of the author's own set so the 700+ adds up.
 - **Slide 3, what you will take (1 min):** one line per audience: sales, customer service, supply chain and plants, marketing and leadership. "No engineering background needed."
 - **Dividers 14, 18, 25, 45, 54 (5 s each):** say the section name and move on.
-- **Slide 42, three buckets of cable (1.5 min):** follow the cable, not the building. 1 inside the packages: OEMs, e-house and package builders buy it, every month, not in our 440 miles. 2 between the packages: the EPC or its electrical contractor, once per plant, most of the miles. 3 to the grid: the HV contractor or utility, early, few cables, high value. "Starting in the e-house is not the same as being bought by the e-house builder. Cover both."
-- **Slide 43, where every cable starts (1 min):** the R1 switchgear room from above, with the switchgear, MCCs and drives, and the control room. "Power leaves the switchgear and MCCs; signals come home to the control room. Every device in between is wired." Ties the three buckets to a real room.
-- **Slide 56, the offer (1.5 min):** our families by plant area, grid to thermocouple, plus the services (spec support, cut-to-length, harness kits, logistics, field support). It replaces the HRSG-only spec slide (now backup 66).
-- **Slide 57, installed faster (1 min):** SIMpull reels (one pull per feeder), SIMpull truck, cut-to-length, pre-terminated. "Every set-up and termination saved is schedule saved."
-- **Slide 58, knowledge check (2 min):** launch the Zoom poll with the three questions, show results, give the answers by voice (backup 62 has them with the why). Answers: C instrumentation; C the EPC or package builder; B about one-third.
-- **Slide 60, resources (30 s, leave it up during Q&A):** the viewer link, the brochures, the recording; the team: Stephan Hardt, Patrick Ritchie (EPC accounts), Greyson (EPC outreach), Phil Metz and Bob Benish (OEMs and package builders).
-- **Slide 67, sources:** for questions on any number.
+- **Slide 43, three buckets of cable (1.5 min):** follow the cable, not the building. 1 inside the packages: OEMs, e-house and package builders buy it, every month, not in our 440 miles. 2 between the packages: the EPC or its electrical contractor, once per plant, most of the miles. 3 to the grid: the HV contractor or utility, early, few cables, high value. "Starting in the e-house is not the same as being bought by the e-house builder. Cover both."
+- **Slide 44, where every cable starts (1 min):** the R1 switchgear room from above, with the switchgear, MCCs and drives, and the control room. "Power leaves the switchgear and MCCs; signals come home to the control room. Every device in between is wired." Ties the three buckets to a real room.
+- **Slide 57, the offer (1.5 min):** our families by plant area, grid to thermocouple, plus the services (spec support, cut-to-length, harness kits, logistics, field support). It replaces the HRSG-only spec slide (now backup 68).
+- **Slide 58, installed faster (1 min):** SIMpull reels (one pull per feeder), SIMpull truck, cut-to-length, pre-terminated. "Every set-up and termination saved is schedule saved."
+- **Slide 59, knowledge check (2 min):** launch the Zoom poll with the three questions, show results, give the answers by voice (backup 64 has them with the why). Answers: C instrumentation; C the EPC or package builder; B about one-third.
+- **Slide 61, resources (30 s, leave it up during Q&A):** the viewer link, the brochures, the recording; the team: Stephan Hardt, Patrick Ritchie (EPC accounts), Greyson (EPC outreach), Phil Metz and Bob Benish (OEMs and package builders).
+- **Slide 69, sources:** for questions on any number.
 
 ## Rundown (60 min)
 
 | Time | Segment | On screen | Mins |
 |---|---|---|---|
 | 1:30 | 0. Welcome and why this matters | 13 slides (title, agenda, why you, why a 3D model x2, how we built it, the drawings, up close x3, one line x2, the work behind it) | 2 |
-| 1:32 | 1. Market and fundamentals | 30 slides | 28 |
+| 1:32 | 1. Market and fundamentals | 31 slides | 28 |
 | 2:00 | 2. The 3D tour: seven stops | Live viewer, plus one slide per stop if needed | 18 |
 | 2:18 | 3. Wire and cable takeaways | 3 slides | 6 |
 | 2:24 | 4. Q&A | Viewer on the overview | 6 |
@@ -66,7 +67,7 @@ Keep 2 minutes of slack inside the tour. If you run long, shorten stop 7 (LNG) t
 
 ---
 
-## 1. Market and fundamentals (28 min, 30 slides)
+## 1. Market and fundamentals (28 min, 31 slides)
 
 Market slides 6-11 come from the Oct 6 PowerGen channel deck. **OEM, owner and EPC names are not on the slides; say them here if useful.** Verify the figures against the primary sources (appendix of the Oct 6 deck) before Nov 11.
 
@@ -90,7 +91,7 @@ Market slides 6-11 come from the Oct 6 PowerGen channel deck. **OEM, owner and E
 
 **Slide 26: Open the box: the physical anatomy (1.5 min).** Back to the black box, now for gas: the six steps from fuel infrastructure to end use, grouped under input, black box and output. "Same physics on every project; what changes is the machine in the box, and who owns it."
 
-**Slide 63: Four ways to burn gas for power (2 min).** Simple cycle (the peaker), combined cycle (the workhorse, our power block), engines (the sprinter) and aeroderivatives (the jet): size, efficiency, start time, how they run. Units: GW, MW, kW; MW is power, MWh is energy.
+**Slide 65: Four ways to burn gas for power (2 min).** Simple cycle (the peaker), combined cycle (the workhorse, our power block), engines (the sprinter) and aeroderivatives (the jet): size, efficiency, start time, how they run. Units: GW, MW, kW; MW is power, MWh is energy.
 
 **Slide 27: A day on the grid (1.5 min).** Illustrative 24-hour demand: baseload all day, solar at midday, combined cycle in the middle, peakers and batteries on the evening peak. "Every start cycles the plant and its cable."
 
@@ -98,31 +99,33 @@ Market slides 6-11 come from the Oct 6 PowerGen channel deck. **OEM, owner and E
 
 **Slides 29-32: Combined cycle, a four-click build (2.5 min).** The same aerial of our power block, darkened; each click lights one stage on the real equipment, and the flows follow the real routes. 15: the gas turbine (air in, power out to the step-up transformers, about 2/3 of the power). 16: the HRSG catches the ~1,100 °F exhaust and makes steam, no extra fuel. 17: the steam turbine makes about 1/3 more; the condenser returns the water. 18: all lit: "Burn the gas once, use the heat twice": ~60% vs ~40%, 3 + 1, 8,234 cables in the power block and its condenser. (The old flow diagram, boilers slide 6, is the backup.)
 
-**Slide 64: How an HRSG works (1.5 min).** Reuse boilers slide 5: the "What it is" and "Fun facts" box.
+**Slide 66: How an HRSG works (1.5 min).** Reuse boilers slide 5: the "What it is" and "Fun facts" box.
 
 **Slide 33: Copper X-ray (30 s).** Same view, one more click after the cycle with the steel made glass and every cable glowing copper. "Take the plant away: the cable stays. About 8,200 cables and 440 miles in the power block and its condenser." Let it land; say nothing for a beat.
 
-**Slide 34: X-ray by type (1.5 min).** "Now sort it by job: five kinds of cable." Only what is in the picture: the power block and its air-cooled condenser, 8,234 cables, about 440 miles. Every route glows by type (each route takes the colour of the type with the most cables on it): green instrumentation dominates. MV/HV 232 cables (28 mi), LV power 1,160 (95 mi), control 1,255 (94 mi), instrumentation 5,484 (202 mi), fibre and fire alarm 103 (21 mi). "The big cables get the attention; the small ones are most of the miles." If asked how: every device in the model gets its own cable, routed on the modelled trays: (route + drops + 20 ft) x 1.1. A conceptual estimate, not an engineered take-off. The whole campus (modular yard, BESS, CCS, LNG) is about 21,000 cables and 1,200 miles: slides 22, 27 and 39 (the whole campus in one number) say "whole campus".
+**Slide 34: X-ray by type (1.5 min).** "Now sort it by job: five kinds of cable." Only what is in the picture: the power block and its air-cooled condenser, 8,234 cables, about 440 miles. Every route glows by type (each route takes the colour of the type with the most cables on it): green instrumentation dominates. MV/HV 232 cables (28 mi), LV power 1,160 (95 mi), control 1,255 (94 mi), instrumentation 5,484 (202 mi), fibre and fire alarm 103 (21 mi). "The big cables get the attention; the small ones are most of the miles." If asked how: every device in the model gets its own cable, routed on the modelled trays: (route + drops + 20 ft) x 1.1. A conceptual estimate, not an engineered take-off. The whole campus (modular yard, BESS, CCS, LNG) is about 21,000 cables and 1,200 miles: that is the next slide (35).
 
-**Slide 35: From the generator to the light switch (1.5 min).** Generator 13.8-25 kV → step-up to 115-765 kV → transmission → substation → 4-35 kV distribution → 480/240/120 V at the customer, with the cable family at each step. "Southwire has a product at every step."
+**Slide 35: Now pull back, the whole campus (1 min).** One level up from slide 34, same idea as the two one-lines (11 simple, 12 full). The campus X-ray with cable by area: power block 7,353 and ACC 881 (the 8,234 of the last slide, in copper), then the modular yard 5,001, carbon capture 2,753, fuel supply 1,275, grid 1,215, BESS 1,155 and the rest: 21,138 cables, ~1,143 miles (building wire, grounding and overhead not counted; the schedule total with those is 21,217 and 1,212 mi). "The power block is the densest piece; the campus is 2.6 times as much." Instrumentation is 73% of the cable count but most of it is small.
 
-**Slide 36: The voltage ladder (2 min).** Reused from the boiler deck (slide 9, "Levels, ratings and the cable they drive"): 230 kV to the grid, 21 kV at the generator, 13.8 kV to the big motors, 480 V to the small ones, 120 V AC / 125 V DC for controls, then signals. "Every rung has its own cable family."
+**Slide 36: From the generator to the light switch (1.5 min).** Generator 13.8-25 kV → step-up to 115-765 kV → transmission → substation → 4-35 kV distribution → 480/240/120 V at the customer, with the cable family at each step. "Southwire has a product at every step."
 
-**Slide 37: Cable 101 (1.5 min).** The eight families: HV, MV, LV power, VFD, control, instrumentation, fibre, grounding. By length in SW-3X1: instrumentation 44%, LV power 20%, control 18%, MV/HV 7%.
+**Slide 37: The voltage ladder (2 min).** Reused from the boiler deck (slide 9, "Levels, ratings and the cable they drive"): 230 kV to the grid, 21 kV at the generator, 13.8 kV to the big motors, 480 V to the small ones, 120 V AC / 125 V DC for controls, then signals. "Every rung has its own cable family."
 
-**Slide 38: What a power plant does to a cable (1.5 min).** Heat, cycling, electrical noise, hazardous areas, fire and smoke, outdoors, schedule, each with the answer (VFD-rated cable, ARMOR-X MC-HL, SIMpull, pre-terminated). "The wrong cable fails early, and a cable failure can trip a unit."
+**Slide 38: Cable 101 (1.5 min).** The eight families: HV, MV, LV power, VFD, control, instrumentation, fibre, grounding. By length in SW-3X1: instrumentation 44%, LV power 20%, control 18%, MV/HV 7%.
 
-**Slide 65: Follow the power (1.5 min).** SW-3X1 cable by plant area, from the model's schedule: the black box (turbine hall, HRSGs, cooling, water) holds 44% of the campus's 1,212 miles. The POI is where the plant meets the grid: plant side is owner and EPC scope, past it the utility's. "The grid connection carries the biggest cables; the power block carries the most."
+**Slide 39: What a power plant does to a cable (1.5 min).** Heat, cycling, electrical noise, hazardous areas, fire and smoke, outdoors, schedule, each with the answer (VFD-rated cable, ARMOR-X MC-HL, SIMpull, pre-terminated). "The wrong cable fails early, and a cable failure can trip a unit."
 
-**Slide 39: Same physics, different owners (1.5 min).** IPP = one company per plant + asset + power purchase agreement + customer + investors + market (ERCOT, PJM, MISO). Utilities and co-ops buy like utilities; hybrid IPPs both ways; pure IPPs are our sales focus for competitive thermal power.
+**Slide 67: Follow the power (1.5 min).** SW-3X1 cable by plant area, from the model's schedule: the black box (turbine hall, HRSGs, cooling, water) holds 44% of the campus's 1,212 miles. The POI is where the plant meets the grid: plant side is owner and EPC scope, past it the utility's. "The grid connection carries the biggest cables; the power block carries the most."
 
-**Slide 40: Greenfield and brownfield (1.5 min).** Five kinds of site from the register: greenfield grid-connected 77.0 GW, data-centre / behind-the-meter campus 54.5, coal-site repower 41.3, expansion at an operating plant 21.4, industrial captive and site reuse 11.6. New sites take the whole cable scope; existing sites mean tie-ins, live equipment and outage windows. Plus work on running plants (HRSG module replacement: the boiler deck's outage story). Utilities mostly reuse old sites; IPPs and BTM developers mostly build new.
+**Slide 40: Same physics, different owners (1.5 min).** IPP = one company per plant + asset + power purchase agreement + customer + investors + market (ERCOT, PJM, MISO). Utilities and co-ops buy like utilities; hybrid IPPs both ways; pure IPPs are our sales focus for competitive thermal power.
 
-**Slide 41: Who buys, and when (1.5 min).** Develop → finance → engineer (the owner's engineer specifies the cable) → procure (the EPC or package builder buys it) → build (cable pulls on the critical path) → operate. "Be in the spec early; be ready when the EPC buys."
+**Slide 41: Greenfield and brownfield (1.5 min).** Five kinds of site from the register: greenfield grid-connected 77.0 GW, data-centre / behind-the-meter campus 54.5, coal-site repower 41.3, expansion at an operating plant 21.4, industrial captive and site reuse 11.6. New sites take the whole cable scope; existing sites mean tie-ins, live equipment and outage windows. Plus work on running plants (HRSG module replacement: the boiler deck's outage story). Utilities mostly reuse old sites; IPPs and BTM developers mostly build new.
 
-**Slide 44: A modern gas plant (1 min).** Six things beyond the power block, all in the model: private 5G monopole (massive-MIMO), EV charging and solar carport, the BTM data centre, LNG by sea, hydrogen, carbon capture, each with its own cable.
+**Slide 42: Who buys, and when (1.5 min).** Develop → finance → engineer (the owner's engineer specifies the cable) → procure (the EPC or package builder buys it) → build (cable pulls on the critical path) → operate. "Be in the spec early; be ready when the EPC buys."
 
-**Slide 46: The campus at a glance (2 min).** The campus aerial with the LNG terminal and the seven stops.
+**Slide 45: A modern gas plant (1 min).** Six things beyond the power block, all in the model: private 5G monopole (massive-MIMO), EV charging and solar carport, the BTM data centre, LNG by sea, hydrogen, carbon capture, each with its own cable.
+
+**Slide 47: The campus at a glance (2 min).** The campus aerial with the LNG terminal and the seven stops.
 - "This is SW-3X1, a 3x1 combined-cycle plant: three gas turbines, three HRSGs and one steam turbine, with a modular generation yard, a battery yard, a behind-the-meter data centre, LNG supply, and options for carbon capture and hydrogen."
 - "Conceptual and not engineered, but sized like real plants."
 

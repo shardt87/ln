@@ -543,6 +543,55 @@ def c_xray(n, N):
                   f'(building wire, grounding and overhead not counted). Conceptual estimate, not engineered.</div></div>')
 
 
+
+def c_xray_campus(n, N):
+    """One level up from c_xray: the whole campus X-ray (renders/cover/xray_bookend.jpg) with cable counts by area and by type."""
+    import json
+    d = json.load(open(os.path.join(PLANT, "brochure", "cables_xray.json")))
+    areas = json.load(open(os.path.join(PLANT, "sw3x1_model.json")))["areas"]
+    cls = d["classes"]
+    gi = {c: k for k, g in enumerate(XR_GROUPS) for c in g[2]}
+    by_a, by_g = {}, [0] * len(XR_GROUPS)
+    for r in d["cables"]:
+        g = gi.get(cls[r[1]])
+        if g is None:
+            continue
+        a = by_a.setdefault(r[0][0], [0, 0])
+        a[0] += r[5]
+        a[1] += r[5] * r[6]
+        by_g[g] += r[5]
+    allc, allf = sum(v[0] for v in by_a.values()), sum(v[1] for v in by_a.values())
+    pb = sum(by_a[z][0] for z in XR_ZONES)
+    top = max(v[0] for v in by_a.values())
+    rows = ""
+    for z, (c, f) in sorted(by_a.items(), key=lambda t: -t[1][0]):
+        hot = z in XR_ZONES
+        name = areas[z].replace(" (adjacent market)", "")
+        rows += (f'<div style="display:flex;align-items:center;gap:10px;margin-top:7px"><div style="width:150px;font:700 13px/1.1 BC;color:{WHITE if hot else "#c9cdd0"};'
+                 f'text-transform:uppercase">{name}</div><div style="flex:1;height:14px;background:#24282d"><div style="width:{100 * c / top:.1f}%;height:14px;'
+                 f'background:{COPPER if hot else "#6b7178"}"></div></div><div style="width:58px;text-align:right;font:700 13px/1 BC;color:{WHITE if hot else "#c9cdd0"}">{c:,}</div></div>')
+    mix = "".join(f'<div style="width:{100 * c / allc:.2f}%;height:12px;background:{XR_GROUPS[k][1]}"></div>' for k, c in enumerate(by_g))
+    key = "".join(f'<span style="white-space:nowrap;margin-right:12px"><span style="display:inline-block;width:10px;height:10px;background:{g[1]};margin-right:5px"></span>'
+                  f'{g[0]} {100 * by_g[k] / allc:.0f}%</span>' for k, g in enumerate(XR_GROUPS))
+    img = pic("renders/cover/xray_bookend.jpg")
+    return page(n, N, f'<img class="abs" src="{img}" style="left:-120px;top:0;width:1440px;height:810px;object-fit:cover">'
+                f'<div class="abs" style="left:0;top:0;width:1440px;height:810px;background:linear-gradient(90deg,rgba(14,16,18,0) 52%,rgba(14,16,18,.97) 68%),'
+                f'linear-gradient(180deg,rgba(14,16,18,.88) 0%,rgba(14,16,18,0) 22%,rgba(14,16,18,0) 80%,rgba(14,16,18,.92) 100%)"></div>'
+                f'<div class="abs kicker" style="left:56px;top:40px">Wire and cable &nbsp;&middot;&nbsp; X-ray, one level up</div>'
+                f'<div class="abs h2" style="left:54px;top:66px;font-size:52px">Now pull back: <em>the whole campus</em></div>'
+                f'<div class="abs" style="left:56px;top:690px;width:860px;font:400 18px/1.45 B;color:#e6e3dd">The power block and its condenser were the densest piece, '
+                f'<b style="color:#fff">{pb:,} cables</b>. Add the grid, carbon capture, the batteries, the modular yard and the utilities, '
+                f'and <b style="color:#fff">it is {allc / pb:.1f} times as much.</b></div>'
+                f'<div class="abs" style="left:1000px;top:54px;width:390px"><div class="cnum" style="color:{WHITE}">The cable on the whole campus</div>'
+                f'<div style="font:800 44px/1 BC;color:{COPPER};margin-top:10px">{allc:,} <span style="font-size:18px;color:{GREY}">cables &middot; ~{allf / 5280:,.0f} miles</span></div>'
+                f'<div style="font:700 12px/1 BC;letter-spacing:.12em;color:{GREY};text-transform:uppercase;margin-top:22px">By area &nbsp;<span style="color:{COPPER}">'
+                f'&#9632; last slide</span></div>{rows}'
+                f'<div style="font:700 12px/1 BC;letter-spacing:.12em;color:{GREY};text-transform:uppercase;margin-top:20px">By type</div>'
+                f'<div style="display:flex;gap:2px;margin-top:8px">{mix}</div><div class="cd" style="font-size:11.5px;line-height:1.7;margin-top:6px">{key}</div>'
+                f'<div class="cd" style="font-size:11.5px;margin-top:10px">From the SW-3X1 model cable schedule (building wire, grounding and overhead not counted). '
+                f'Conceptual estimate, not engineered.</div></div>')
+
+
 def main():
     import pymupdf
     from PIL import Image
