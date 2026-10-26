@@ -49,3 +49,4 @@ Views now on training slides that only exist as Oct 8-13 previews: E10, E16, E41
 - **E137** (skid_prewire ready row: CFS-2 + LOS-2 kit 1): preview only.
 - **E138** (pre-wire pad east: power skid, IA skid, CEMS shelter): preview only.
 - **E139** (bfp_kit: BFP-1B terminal box with kit 2): preview only; fill lights in the camera.
+- **E140 / E141 / E142** (prefab_electrical: lineups, panel shop, open enclosure): preview only.

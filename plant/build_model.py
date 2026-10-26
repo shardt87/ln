@@ -2303,6 +2303,8 @@ import contractor_yard as _cy
 print('contractor area', _cy.build())   # conduit handling, cable laid out, cut-to-length, job-site services, LED lighting
 import skid_prewire as _skp
 _skp.build()               # skid pre-assembly / pre-wire workstation beside the spine
+import prefab_electrical as _pel
+print('prefab electrical yard', _pel.build())   # switchgear / VFD / UPS lineups opened, panel shop
 import modular_packages as _mpk
 print("modular GT packages", _mpk.build())   # AX-1 aero modules, IG-1 industrial GT (Oct 24)
 print("tray legends", _show.tray_legends())
