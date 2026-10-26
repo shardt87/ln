@@ -1358,39 +1358,30 @@ for k in range(3):
 # ~450 kW natural-gas gensets on the portable pad's free ground, each with a 480 V paralleling switchgear and a
 # 2,500 kVA 480 V : 13.8 kV pad-mount; the blocks collect at 13.8 kV into PAD-EH. Generic (not a vendor's product)
 def genset_dress(gx, y0):
-    """Containerised genset look (owner photo, Oct 26): white enclosure with louvred ventilation end, roof platform
-    with handrails, a V-type cooler with two rows of fans, an exhaust duct to a tall silver stack with silencer."""
-    B(gx - .05, gx + 8.05, y0 - .05, y0 + 22.05, 0, 9.05, "white_truck")                                # enclosure skin
-    for k in range(7):                                                                 # louvred vent end (north)
-        z = 1.2 + k * 1.1
-        B(gx + .4, gx + 7.6, y0 + 22, y0 + 22.25, z, z + .55, "louvre")
-        for xs in (gx - .2, gx + 8):
-            B(xs, xs + .2, y0 + 16.5, y0 + 21.5, z, z + .55, "louvre")
-    B(gx - .1, gx + 8.1, y0 - .1, y0 + 22.1, 9, 9.3, "grating")                       # roof platform
-    for (xa, ya), (xb, yb) in (((gx, y0), (gx + 8, y0)), ((gx + 8, y0), (gx + 8, y0 + 22)),
-                               ((gx + 8, y0 + 22), (gx, y0 + 22)), ((gx, y0 + 22), (gx, y0))):
-        for zr in (10.8, 12.6):
-            R((xa, ya, zr), (xb, yb, zr), .08, "rail", seg=6)
-    for xp in (gx, gx + 8):
-        for yp in (y0, y0 + 7.3, y0 + 14.6, y0 + 22):
-            R((xp, yp, 9.3), (xp, yp, 12.6), .08, "rail", seg=6)
-    for k in range(4):                                                                 # V-cooler, flaring upward
-        w = 2.4 + k * .45
-        B(gx + 4 - w, gx + 4 + w, y0 + 1.5, y0 + 15.5, 9.3 + k * 1.3, 10.6 + k * 1.3, "radiator")
-    B(gx + .3, gx + 7.7, y0 + 1.3, y0 + 15.7, 14.5, 14.8, "steel")                    # fan deck
-    for i in range(2):
-        for j in range(4):
-            cx, cy = gx + 2.1 + 3.8 * i, y0 + 3.2 + 3.5 * j
-            V(cx, cy, 1.55, 14.8, 15.6, "sp_black", seg=14)                            # fan shroud
-            V(cx, cy, .35, 15.6, 15.8, "fanhub", seg=8)
-    sx, sy = gx + 4, y0 + 19.5                                                         # stack over the vent end
-    R((gx + 4, y0 + 15.8, 11.0), (sx, sy, 11.0), .8, "reflect", seg=12)               # exhaust duct
-    V(sx, sy, 1.0, 9.3, 13.0, "reflect", seg=16)
-    V(sx, sy, 1.0, 13.0, 14.0, "reflect", r2=1.5, seg=16)
-    V(sx, sy, 1.5, 14.0, 22.0, "reflect", seg=16)                                       # silencer
-    V(sx, sy, 1.5, 22.0, 23.0, "reflect", r2=.95, seg=16)
-    V(sx, sy, .95, 23.0, 37.0, "reflect", seg=16)                                        # flue
-    V(sx, sy, 1.05, 36.4, 37.0, "stack", seg=16)                                         # lip
+    """Generic modular gas genset (owner, Oct 26: one look for the whole category, not one maker's product): a
+    sound-attenuated walk-around enclosure on a base frame, side access doors, intake louvres, a radiator end with
+    its discharge grille, a roof silencer with a short stack and rain cap, the gas train at the radiator end."""
+    B(gx - .2, gx + 8.2, y0 - .2, y0 + 22.2, 0, .8, "steel_dark")                       # base frame
+    B(gx - .05, gx + 8.05, y0 - .05, y0 + 18.05, .8, 9.05, "white_truck")              # enclosure (engine / generator)
+    for xs in (gx - .12, gx + 8.05):                                                    # side access doors (seams, handles)
+        for k in range(4):
+            yd = y0 + 1.0 + k * 4.2
+            B(xs, xs + .07, yd, yd + .08, 1.2, 8.0, "steel_dark")
+            B(xs, xs + .07, yd + 3.9, yd + 3.98, 1.2, 8.0, "steel_dark")
+            B(xs, xs + .07, yd + 3.2, yd + 3.4, 4.2, 4.8, "steel_dark")
+        for k in range(5):                                                              # intake louvres, upper side
+            B(xs, xs + .07, y0 + 1.6, y0 + 12.4, 6.4 + k * .3, 6.55 + k * .3, "louvre")
+    B(gx - .05, gx + 8.05, y0 + 18.05, y0 + 22.05, .8, 9.05, "white_truck")            # radiator section
+    for k in range(10):                                                                 # radiator discharge grille (north)
+        z = 1.4 + k * .72
+        B(gx + .4, gx + 7.6, y0 + 22.05, y0 + 22.3, z, z + .4, "louvre")
+    B(gx + .6, gx + 7.4, y0 + 5.0, y0 + 16.5, 9.05, 9.5, "steel")                       # silencer saddles / roof curb
+    R((gx + 4, y0 + 5.5, 10.6), (gx + 4, y0 + 15.5, 10.6), 1.1, "steel", seg=14)       # horizontal silencer
+    V(gx + 4, y0 + 15.0, .55, 11.6, 15.0, "reflect", seg=12)                            # short stack
+    V(gx + 4, y0 + 15.0, .75, 15.0, 15.2, "steel", seg=12)                              # rain cap
+    B(gx + 1.0, gx + 2.6, y0 + 22.3, y0 + 23.6, .8, 4.2, "steel")                        # gas train at the radiator end
+    R((gx + 1.8, y0 + 23.6, 2.6), (gx + 1.8, y0 + 24.0, 2.6), .25, "fuelgas", seg=8)
+    B(gx + 5.6, gx + 7.4, y0 - .12, y0 - .05, 3.0, 7.0, "steel_dark")                    # control panel door (south end)
 
 
 GB_BLOCKS = [(2254, 458), (2300, 458), (2254, 504), (2300, 504), (2254, 648), (2300, 648)]
