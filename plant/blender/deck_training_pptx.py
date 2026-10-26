@@ -30,21 +30,25 @@ def notes_by_slide():
     return notes
 
 
-def main():
-    doc = pymupdf.open(PDF)
+def build(pdf, out, notes):
+    """One full-bleed 1920 px picture per PDF page; notes = {slide number: text}."""
+    doc = pymupdf.open(pdf)
     prs = Presentation()
     prs.slide_width, prs.slide_height = Emu(12192000), Emu(6858000)       # 13.333 x 7.5 in, 16:9
     blank = prs.slide_layouts[6]
-    notes = notes_by_slide()
     for i, page in enumerate(doc):
         pix = page.get_pixmap(matrix=pymupdf.Matrix(1920 / page.rect.width, 1920 / page.rect.width))
         buf = io.BytesIO(pix.tobytes("jpeg", jpg_quality=88))
         s = prs.slides.add_slide(blank)
         s.shapes.add_picture(buf, 0, 0, prs.slide_width, prs.slide_height)
-        if i + 1 in notes:
+        if notes.get(i + 1):
             s.notes_slide.notes_text_frame.text = notes[i + 1]
-    prs.save(OUT)
-    print(f"wrote {OUT}: {len(doc)} slides, notes on {sum(1 for k in notes if k <= len(doc))}")
+    prs.save(out)
+    print(f"wrote {out}: {len(doc)} slides, notes on {sum(1 for k in notes if k <= len(doc) and notes[k])}")
+
+
+def main():
+    build(PDF, OUT, notes_by_slide())
 
 
 if __name__ == "__main__":
