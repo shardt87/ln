@@ -1485,7 +1485,7 @@ def s_zoom2(n, N):
 
 
 def s_zoom3(n, N):
-    """Three more Rev 14 sheets: the height comparison large, optional systems and the 3D view plan beside it."""
+    """Three more Rev 14 sheets: optional systems large (author's pick), heights and the 3D view plan beside it."""
     Z = STORY_H + "sheets/"
     def panel(x, y, w, h, img, tag, cap):
         return (f'<div class="abs" style="left:{x}px;top:{y}px;width:{w}px;height:{h}px;background:#fff;border-top:4px solid {COPPER};overflow:hidden">'
@@ -1496,8 +1496,8 @@ def s_zoom3(n, N):
 <section class="page slide">
   <div class="abs kicker" style="left:64px;top:56px">Welcome &nbsp;&middot;&nbsp; the drawings behind it, up close</div>
   <div class="abs h2" style="left:62px;top:84px;font-size:52px">Planned before it was <em>modelled</em></div>
-  {panel(64, 168, 790, 532, "zfull13.jpg", "SK-3X1-13", "Height comparison, to scale: BESS container to the 313 ft absorber stack")}
-  {panel(874, 168, 502, 258, "zfull02.jpg", "SK-3X1-02", "Optional systems, each with its reserved space")}
+  {panel(64, 168, 790, 532, "zfull02.jpg", "SK-3X1-02", "Optional systems: CCS, BESS, modular power, inlet chilling, each with its reserved space")}
+  {panel(874, 168, 502, 258, "zfull13.jpg", "SK-3X1-13", "Heights to scale, checked against real references")}
   {panel(874, 442, 502, 258, "zfull11.jpg", "SK-3X1-11", "3D view plan: every view defined on paper first")}
   <div class="abs" style="left:64px;top:716px;width:1312px;font:400 15px/1.4 B;color:{GREY}"><b style="color:{WHITE}">Checked on every build:</b> the 21 heights on SK-3X1-13 and the 211 footprints on SK-3X1-01 must match the model.</div>
   {foot(n, N)}
