@@ -2343,8 +2343,8 @@ import gate_detail as _gd                         # zone 07 part 2: the gate che
 print('gate checkpoint', _gd.build())
 import admin_wiring as _aw                        # admin / control building wiring; open office mid fit-out
 print('admin building wiring', _aw.build())
-import lobby_display as _ld                       # lobby: the supplier's install wall, cable samples and tools
-print('lobby display', _ld.build())
+import fitout_products as _fp                     # the install products in use in the open-office fit-out
+print('fit-out products', _fp.build())
 import rice_electrical as _rel                      # RICE hall interior electrical (audit, Oct 22)
 print('RICE hall electrical', _rel.build())
 import gallery_electrical as _gel                  # turbine hall south gallery equipment fronts, power, lighting (Oct 22)
