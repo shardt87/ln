@@ -415,8 +415,14 @@ function partGeo(p){
 const layerGroups = {}, itemMeshes = {}, pickables = [], detailObjs = [], surfMeshes = [];
 function grp(l){ if(!layerGroups[l]){ const g=new THREE.Group(); g.name=l; scene.add(g); layerGroups[l]=g; } return layerGroups[l]; }
 const buckets = {}, PARTN = {};
+function tinyPart(p){
+  if(p.kind==='box'){ return Math.max(p.max[0]-p.min[0], p.max[1]-p.min[1], p.max[2]-p.min[2]) < .25; }
+  if(p.kind==='rod'){ const L=Math.hypot(p.b[0]-p.a[0], p.b[1]-p.a[1], p.b[2]-p.a[2]); return Math.max(L, 2*Math.max(p.r,p.r2)) < .25; }
+  return false;
+}
 for(const p of MODEL.parts){
   PARTN[p.item] = (PARTN[p.item]||0) + 1;
+  if(LITE && tinyPart(p)) continue;   // phones: parts under 3 in (terminal blocks, wire ends, bolts) are skipped to stay inside the in-app GPU budget
   let cls = CLASS[p.color] || 'paint';
   if(p.kind==='rod' && ['clad','panel','concrete','fins','grating','louvre'].includes(cls)) cls = 'paint'; // box-projected textures only suit flat faces
   const dd = !!p.d && !p.pipe;   // round pipes are dressing in the model but always shown
