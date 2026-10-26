@@ -2345,6 +2345,8 @@ import admin_wiring as _aw                        # admin / control building wir
 print('admin building wiring', _aw.build())
 import fitout_products as _fp                     # the install products in use in the open-office fit-out
 print('fit-out products', _fp.build())
+import standard_kits as _sk                       # kits 4-5: BESS block kit and modular generator kit, staged in place
+print('standard kits', _sk.build())
 import rice_electrical as _rel                      # RICE hall interior electrical (audit, Oct 22)
 print('RICE hall electrical', _rel.build())
 import gallery_electrical as _gel                  # turbine hall south gallery equipment fronts, power, lighting (Oct 22)
