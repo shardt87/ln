@@ -1,0 +1,13 @@
+INTERNAL ONLY - sanity line (generic; not attached to any named project)
+
+  250 MW: model loops 64,718 cond-ft (+ ties 19,187, + feeders 57,152 ASSUMED) = 141,057; per group 1,659 ft of loop route.
+         1.2M cond-ft = 400,000 ft of 3-conductor loop route = 30,769 ft per group at this group count; ratio to model 8.5x (loops+ties+feeders) -> DOES NOT RECONCILE
+  500 MW: model loops 127,183 cond-ft (+ ties 38,472, + feeders 100,016 ASSUMED) = 265,671; per group 1,696 ft of loop route.
+         1.2M cond-ft = 400,000 ft of 3-conductor loop route = 16,000 ft per group at this group count; ratio to model 4.5x (loops+ties+feeders) -> DOES NOT RECONCILE
+ 1000 MW: model loops 256,644 cond-ft (+ ties 77,042, + feeders 185,744 ASSUMED) = 519,430; per group 1,711 ft of loop route.
+         1.2M cond-ft = 400,000 ft of 3-conductor loop route = 8,000 ft per group at this group count; ratio to model 2.3x (loops+ties+feeders) -> DOES NOT RECONCILE
+
+Reading: at the generic module's density, 1.2M conductor-ft of 750 Al does not reconcile with loops + ties +
+feeders for a 250-500 MW campus. Either the routes are much longer than this compact layout (home runs to a remote
+switchyard, wider block spacing), runs are paralleled, the quantity covers more than the loops (feeders, other
+sites), or it includes margin. Ask ER engineering for loop route length per group; do not quote this line.
