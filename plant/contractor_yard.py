@@ -2,7 +2,7 @@
 prefab staging bay and the SIMpull staging (x 196-318, y 694-792), set up the way an electrical contractor runs a
 cable job today:
 - conduit material handling: two cantilever racks of 10 ft rigid (RMC) and PVC sticks, banded PVC bundles stacked on
-  timber dunnage, HDPE innerduct reels, pallets of fittings, and a telehandler bringing a bundle in on its forks;
+  timber dunnage, HDPE innerduct reels, pallets of fittings;
 - a conduit bending and threading station on a work mat (hydraulic bender, threading machine, cut-off saw);
 - a SIMpull paralleled feeder pull: three SIMpull Reels on Cradles, twelve colour-coded conductors gathered into
   one pulling grip and swivel, the rope to a Maxis XD10 with a tension monitor; a line of ground rollers carrying an
@@ -103,24 +103,6 @@ def innerduct_reel(x, y):
 def fittings_pallet(x, y):
     box(x - 2, x + 2, y - 2, y + 2, 0, .5, "timber")
     box(x - 1.9, x + 1.9, y - 1.9, y + 1.9, .5, 3.6, "cab_in")
-    return 1
-
-
-def telehandler(x, y, a_deg=0.0):
-    """Telehandler driving north (+y) with a PVC bundle on its forks; boom raised at the back of the cab."""
-    box(x - 4, x + 4, y - 9, y + 9, 1.6, 4.4, "yellow")                                # chassis
-    for sx in (-4.3, 3.7):
-        for sy in (-6, 6):
-            rod((x + sx, y + sy, 2.0), (x + sx + .6, y + sy, 2.0), 2.0, "tyre", seg=16)
-    box(x - 4, x - 1, y - 2, y + 4, 4.4, 9.4, "yellow")                                # cab
-    box(x - 4.05, x - .95, y - 1.8, y + 3.8, 5.6, 9.0, "glass")
-    rod((x + 1.4, y - 7, 5.0), (x + 1.4, y + 13, 11.0), .9, "yellow", seg=10)          # boom
-    box(x - 1.6, x + 4.4, y + 13, y + 13.6, 6.5, 12.0, "steel_dark")                   # carriage
-    for s in (-.8, 3.6):
-        box(x + s - .3, x + s + .3, y + 13.6, y + 19.5, 6.6, 6.9, "steel_dark")        # forks
-    box(x - 1.4, x + 4.2, y + 13.8, y + 33.8, 6.9, 8.9, "pvc_grey")                    # 20 ft bundle
-    for yy in (y + 17, y + 24, y + 31):
-        box(x - 1.43, x + 4.23, yy - .08, yy + .08, 6.88, 8.93, "steel_dark")
     return 1
 
 
@@ -349,7 +331,7 @@ def build():
                        (194, 320, 692, 796), (0, 26), basis="typical", register=False, area="F",
                        sheet="typical (cable installation)",
                        info="Electrical contractor's set-up on the laydown pad: cantilever racks of RMC and PVC conduit, banded "
-                            "PVC bundles on dunnage, HDPE innerduct reels and fittings pallets with a telehandler; a bending and "
+                            "PVC bundles on dunnage, HDPE innerduct reels and fittings pallets; a bending and "
                             "threading station; a SIMpull paralleled feeder pull (three reels, one grip, Maxis XD10), an MV pull on ground rollers, reel return, MC coils; a "
                             "cut-to-length bench with tagged coils; the cable supplier's job-site services office (reels and "
                             "cradles, pullers, cut-to-length, reel management, pull planning, prefab assemblies); "
@@ -365,7 +347,6 @@ def build():
         n += innerduct_reel(200.0 + k * 6.5, 704.0)
     for k in range(3):
         n += fittings_pallet(202.0 + k * 5.0, 718.0)
-    n += telehandler(242.0, 726.0)
     n += bend_thread_station(232.0, 776.0)
     # cable laid out on the ground (east part)
     n += paralleled_pull()
