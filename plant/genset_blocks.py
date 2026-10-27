@@ -1,19 +1,33 @@
-"""Detail on modular gas block GB-1 (GB-1.1..1.5, GBC-1, GBT-1), the wire scope made visible on one block; the five other
-blocks stay plain (same geometry, kept light for the phone viewer):
-- the L1 lead trench opened along the south side: precast trench from the five units to the generator collector box, its
-  covers lifted and stacked at the west end, the 480 V lead sets (2 sets of 3 x 500 kcmil + ground per unit) laid in it,
-  the control / instrumentation cables on the far side, the leads rising into GBC-1;
+"""Detail on modular gas block GB-1 (GB-1.1..1.5, GBC-1, GBT-1), the wire scope made visible on one block; the three
+other blocks stay plain (same geometry, kept light for the phone viewer). Drawn in the block's local frame from
+build_model.gb_frame(1): u along the block (south -> north), v across it (0 at the group road, 22 at the back).
+- the L1 lead trench opened along the road side: precast trench from the five units to the generator collector box,
+  covers lifted and stacked at the south end, the 480 V lead sets (2 sets of 3 x 500 kcmil + ground per unit) in it,
+  control / instrumentation on the far side, the leads rising into GBC-1;
 - GB-1.1's generator terminal box open on its two lead sets;
 - the block ground ring (bare copper) with a tap to each unit, the GBC and the transformer;
-- a sign: six blocks x five 500 kW units, 480 V -> 34.5 kV loop -> SWG-MY -> data centre.
-Typical, not engineered (block geometry from build_model GB_BLOCKS)."""
+- a sign at the south end of the group road.
+Typical, not engineered."""
 import fuel
 from fuel import box, rod
 
-BX, BY = 2262.0, 462.0                    # block GB-1 origin (build_model GB_BLOCKS[0])
-TY0, TY1 = BY + 6.3, BY + 8.7              # trench (y), under the lead route at y BY + 7.5
-TX1 = BX + 50.0                            # trench east end, short of GBC-1 (x BX + 51)
+RX, Y0 = 2302.0, 466.0                     # build_model GB_RX, GB_Y[0]
+TV0, TV1 = 6.3, 8.7                        # trench (v), under the lead route at v 7.5
+TU1 = 50.0                                 # trench north end, short of GBC-1 (u 51)
 TAPE = ("red", "amber", "pvc_blue")
+
+
+def T(u, v):                               # GB-1: west of the road
+    return RX - 13.0 - v, Y0 + u
+
+
+def tbox(u0, u1, v0, v1, z0, z1, c):
+    (xa, ya), (xb, yb) = T(u0, v0), T(u1, v1)
+    box(min(xa, xb), max(xa, xb), min(ya, yb), max(ya, yb), z0, z1, c)
+
+
+def trod(a, b, r, c, seg=6):
+    rod((*T(a[0], a[1]), a[2]), (*T(b[0], b[1]), b[2]), r, c, seg=seg)
 
 
 def decal(*a, **k):
@@ -21,72 +35,72 @@ def decal(*a, **k):
     showcase.decal(*a, **k)
 
 
-def ux(m):
-    return BX + 2 + 10.0 * m
+def uu(m):
+    return 2 + 10.0 * m
 
 
 def trench():
-    x0 = BX + 1.0
-    box(x0, TX1, TY0, TY0 + .3, -.1, .35, "concrete")                                 # trench walls (precast, flush)
-    box(x0, TX1, TY1 - .3, TY1, -.1, .35, "concrete")
-    box(x0, TX1, TY0, TY1, -.15, -.05, "concrete")                                     # floor
-    box(x0 - .3, x0, TY0, TY1, -.1, .35, "concrete")
-    for k in range(6):                                                                 # covers lifted, stacked west
-        box(BX - 5.0, BX - 2.0, TY0 - .2, TY1 + .2, k * .22, .2 + k * .22, "concrete")
-    for m in range(5):                                                                 # per unit 2 sets x 4 conductors
-        xt = ux(m) + 6.2
+    u0 = 1.0
+    tbox(u0, TU1, TV0, TV0 + .3, -.1, .35, "concrete")                                  # trench walls (precast, flush)
+    tbox(u0, TU1, TV1 - .3, TV1, -.1, .35, "concrete")
+    tbox(u0, TU1, TV0, TV1, -.15, -.05, "concrete")                                     # floor
+    tbox(u0 - .3, u0, TV0, TV1, -.1, .35, "concrete")
+    for k in range(6):                                                                  # covers lifted, stacked south
+        tbox(-5.0, -2.0, TV0 - .2, TV1 + .2, k * .22, .2 + k * .22, "concrete")
+    for m in range(5):                                                                  # per unit 2 sets x 4 conductors
+        ut = uu(m) + 6.2
         for s in range(2):
             for c in range(4):
                 o = (s * 4 + c) * .15
-                y = TY0 + .45 + o * .9 + (m % 2) * .05
+                v = TV0 + .45 + o * .9 + (m % 2) * .05
                 col = "cable" if c < 3 else "pvc_green"
-                xx = xt - .5 + o * .8
-                rod((xx, BY + 9.55, 1.8), (xx, BY + 9.55, .15), .09, col, seg=6)            # out of the terminal box
-                rod((xx, BY + 9.55, .15), (xx, y, .05), .09, col, seg=6)
-                rod((xx, y, .05), (TX1 - .4, y, .05), .09, col, seg=6)                     # along the trench to GBC-1
-        for j, col in enumerate(("cable_tc", "cable_inst")):                           # control / instrumentation
-            xc = ux(m) + 1.6 + j * .2
-            rod((xc, BY + 9.9, 1.2), (xc, TY1 - .5, .05), .06, col, seg=6)
-            rod((xc, TY1 - .5, .05), (TX1 - .4, TY1 - .5 - j * .1, .05), .06, col, seg=6)
-    for k in range(12):                                                                # the bundle rising into GBC-1
-        y = TY0 + .5 + k * .14
-        rod((TX1 - .4, y, .05), (TX1 - .4, y, 2.6), .09, "cable", seg=6)
-        rod((TX1 - .4, y, 2.6), (BX + 50.95, y, 2.6), .09, "cable", seg=6)
+                ux = ut - .5 + o * .8
+                trod((ux, 9.55, 1.8), (ux, 9.55, .15), .09, col)                        # out of the terminal box
+                trod((ux, 9.55, .15), (ux, v, .05), .09, col)
+                trod((ux, v, .05), (TU1 - .4, v, .05), .09, col)                        # along the trench to GBC-1
+        for j, col in enumerate(("cable_tc", "cable_inst")):                            # control / instrumentation
+            uc = uu(m) + 1.6 + j * .2
+            trod((uc, 9.9, 1.2), (uc, TV1 - .5, .05), .06, col)
+            trod((uc, TV1 - .5, .05), (TU1 - .4, TV1 - .5 - j * .1, .05), .06, col)
+    for k in range(12):                                                                 # the bundle rising into GBC-1
+        v = TV0 + .5 + k * .14
+        trod((TU1 - .4, v, .05), (TU1 - .4, v, 2.6), .09, "cable")
+        trod((TU1 - .4, v, 2.6), (TU1 + .95, v, 2.6), .09, "cable")
     return 1
 
 
 def terminal_box_open():
-    x0 = ux(0) + 5.0
-    box(x0, x0 + 2.4, BY + 9.9, BY + 10.0, 1.6, 4.8, "panel")                          # back of the open box
-    box(x0 - .3, x0, BY + 8.0, BY + 9.9, 1.6, 4.8, "panel")                            # door swung out
-    for k in range(3):                                                                 # generator lugs
-        x = x0 + .5 + k * .7
-        box(x - .15, x + .15, BY + 9.8, BY + 9.9, 3.6, 4.3, "copper")
-        rod((x, BY + 9.85, 3.7), (x, BY + 9.85, 1.8), .08, "cable", seg=6)
-        rod((x + .2, BY + 9.85, 3.7), (x + .2, BY + 9.85, 1.8), .08, "cable", seg=6)
-        rod((x, BY + 9.83, 3.4), (x, BY + 9.83, 3.25), .1, TAPE[k], seg=8)
-    box(x0 + .3, x0 + 2.1, BY + 9.85, BY + 9.9, 2.3, 2.4, "copper")                    # ground bar
+    u0 = uu(0) + 5.0
+    tbox(u0, u0 + 2.4, 9.9, 10.0, 1.6, 4.8, "panel")                                     # back of the open box
+    tbox(u0 - .3, u0, 8.0, 9.9, 1.6, 4.8, "panel")                                       # door swung out
+    for k in range(3):                                                                  # generator lugs
+        u = u0 + .5 + k * .7
+        tbox(u - .15, u + .15, 9.8, 9.9, 3.6, 4.3, "copper")
+        trod((u, 9.85, 3.7), (u, 9.85, 1.8), .08, "cable")
+        trod((u + .2, 9.85, 3.7), (u + .2, 9.85, 1.8), .08, "cable")
+        trod((u, 9.83, 3.4), (u, 9.83, 3.25), .1, TAPE[k], seg=8)
+    tbox(u0 + .3, u0 + 2.1, 9.85, 9.9, 2.3, 2.4, "copper")                               # ground bar
     return 1
 
 
 def ground_ring():
-    x0, x1, y0, y1 = BX - 1.0, BX + 73.0, BY - 1.0, BY + 22.0
-    for a, b in (((x0, y0), (x1, y0)), ((x1, y0), (x1, y1)), ((x1, y1), (x0, y1)), ((x0, y1), (x0, y0))):
-        rod((a[0], a[1], .08), (b[0], b[1], .08), .05, "copper", seg=4)
+    u0, u1, v0, v1 = -1.0, 73.0, -1.0, 22.0
+    for a, b in (((u0, v0), (u1, v0)), ((u1, v0), (u1, v1)), ((u1, v1), (u0, v1)), ((u0, v1), (u0, v0))):
+        trod((a[0], a[1], .08), (b[0], b[1], .08), .05, "copper", seg=4)
     for m in range(5):
-        x = ux(m) + .5
-        rod((x, y1, .08), (x, BY + 20.3, .08), .04, "copper", seg=4)
-        rod((x, BY + 20.3, .08), (x, BY + 20.3, .9), .04, "copper", seg=4)
-    rod((BX + 54.0, y0, .08), (BX + 54.0, BY + 3.5, .08), .04, "copper", seg=4)        # GBC-1
-    rod((BX + 69.5, y0, .08), (BX + 69.5, BY + 1.0, .08), .04, "copper", seg=4)        # GBT-1
+        u = uu(m) + .5
+        trod((u, v1, .08), (u, 20.3, .08), .04, "copper", seg=4)
+        trod((u, 20.3, .08), (u, 20.3, .9), .04, "copper", seg=4)
+    trod((54.0, v0, .08), (54.0, 3.5, .08), .04, "copper", seg=4)                       # GBC-1
+    trod((69.5, v0, .08), (69.5, 1.0, .08), .04, "copper", seg=4)                       # GBT-1
     return 1
 
 
 def sign():
-    x, y = BX - 4.0, BY + 15.0
+    x, y = RX - 13.0, Y0 - 5.0                                                          # south end of the group road
     for s in (-1.6, 1.6):
-        rod((x, y + s, 0), (x, y + s, 6.4), .08, "steel", seg=6)
-    decal((x - .1, y, 4.6), (-1, 0, 0), 4.2, 2.6, [("MODULAR GAS BLOCKS", .17, 1, "#ffffff"),
+        rod((x + s, y, 0), (x + s, y, 6.4), .08, "steel", seg=6)
+    decal((x, y - .1, 4.6), (0, -1, 0), 4.2, 2.6, [("MODULAR GAS BLOCKS", .17, 1, "#ffffff"),
                                                    ("4 blocks x 5 units x 500 kW", .13, 0, "#e6e6e6"),
                                                    ("480 V > 34.5 kV loop > SWG-MY", .13, 0, "#e6e6e6"),
                                                    ("GB-1: lead trench open", .12, 1, "#f2c200")], bg="#22303a")
@@ -114,8 +128,10 @@ def ownership_sign():
 
 
 def build():
+    xs = [T(u, v)[0] for u, v in ((-6, -2), (74, 23))]
+    ys = [T(u, v)[1] for u, v in ((-6, -2), (74, 23))]
     it = fuel.new_item("OPT_MODX", "Genset block 1 detail: open lead trench, terminal box open, ground ring, sign",
-                       (BX - 6, BX + 74, BY - 2, BY + 23), (-.2, 7), area="I", register=False, basis="typical",
+                       (min(xs), max(xs), min(ys) - 2, max(ys)), (-.2, 7), area="I", register=False, basis="typical",
                        info="The wire scope on one block: 480 V lead sets (2 x 3 x 500 kcmil + ground per unit) in an open "
                             "precast trench to the generator collector box GBC-1, control / instrumentation beside them, "
                             "GB-1.1's terminal box open on its leads, the bare-copper ground ring with taps. Typical, not engineered.")
