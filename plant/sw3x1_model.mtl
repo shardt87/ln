@@ -593,6 +593,11 @@ Kd 0.078 0.086 0.094
 Ka 0 0 0
 d 1
 
+newmtl mosscover
+Kd 0.867 0.835 0.765
+Ka 0 0 0
+d 1
+
 newmtl motor
 Kd 0.373 0.451 0.510
 Ka 0 0 0

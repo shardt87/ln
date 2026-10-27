@@ -119,8 +119,18 @@ with open(os.path.join(HERE, name + ".mtl"), "w") as fh:
 with open(os.path.join(HERE, name + ".obj"), "w") as fh:
     fh.write(f"# {model['title']}\n# units: feet; {'Z up' if ZUP else 'Y up'}\n# {model['disclaimer']}\n")
     fh.write(f"mtllib {name}.mtl\n")
-    fh.write("".join(f"v {x:.2f} {y:.2f} {z:.2f}\n" for x, y, z in verts))
-    for (g, c), faces in groups.items():
+    def _n(v):                                         # 0.01 ft, trailing zeros dropped (keeps the file under 100 MB)
+        t = f"{v:.2f}".rstrip("0").rstrip(".")
+        return "0" if t in ("-0", "") else t
+    nv = 0
+    for (g, c), faces in groups.items():              # each group's vertices just before its faces, relative (negative)
+        local = {}                                      # indices: short face lines keep the file under GitHub's 100 MB
+        for q in faces:
+            for i in q:
+                local.setdefault(i, len(local))
         fh.write(f"g {g}\nusemtl {c}\n")
-        fh.write("".join("f " + " ".join(map(str, q)) + "\n" for q in faces))
-print(f"wrote {name}.obj: {len(verts)} vertices, {len(groups)} groups")
+        fh.write("".join(f"v {_n(verts[i - 1][0])} {_n(verts[i - 1][1])} {_n(verts[i - 1][2])}\n" for i in local))
+        m = len(local)
+        fh.write("".join("f " + " ".join(str(local[i] - m) for i in q) + "\n" for q in faces))
+        nv += m
+print(f"wrote {name}.obj: {nv} vertices, {len(groups)} groups")

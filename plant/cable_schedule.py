@@ -627,6 +627,28 @@ for k in range(1, 5):
     add(BY_TAG[f"LGN-{k}"], lgn_inv, f"LGN-{k} DC output to the inverter", "LV1C", "1/C", "500", 1, 2, 250, 800, 320,
         "DC, 2 x 1/C")
 lv_feeder(lgn_inv, BY_TAG["PAD-LV"], 1000, "LGN-INV 480 V AC to PAD-LV", motor=False)
+mtg_swg = BY_TAG["MTG-SWG"]
+for k in (1, 2):
+    m = BY_TAG[f"MTG-{k}"]
+    add(m, mtg_swg, f"MTG-{k} 13.8 kV generator leads to the switchgear e-house", "MV15", "1/C", "500", 2, 3, 16000, 13800,
+        670, "2 sets per phase")
+    add(mtg_swg, m, f"MTG-{k} control / sync / protection", "CTAX", "12/C", "14")
+    add(m, mtg_swg, f"MTG-{k} instrumentation", "ITC", "4 pr", "18")
+    add(BY_TAG["MTG-CB"], m, f"MTG-{k} 480 V auxiliaries (lube-oil pumps, cooler fans, enclosure ventilation)", "LV",
+        "3/C+G", "250", 1, 1, 120, 480, 170)
+    add(BY_TAG["MTG-FG"], m, f"MTG-{k} fuel-gas valves, Class I Div 2", "CTAX", "12/C", "14")
+add(mtg_swg, mod_eh, "MTG-SWG 13.8 kV site feeder to MOD-EH", "MV15", "1/C", "750", 4, 3, 32000, 13800, 1340,
+    "4 sets per phase, duct bank across the reserved corridor")
+add(mtg_swg, BY_TAG["MTG-AUX"], "MTG-AUX 13.8 kV primary", "MV15", "1/C", "2", 1, 3, 750, 13800, 31)
+lv_feeder(BY_TAG["MTG-AUX"], BY_TAG["MTG-CB"], 600, "MTG-CB 480 V MCC from MTG-AUX", motor=False)
+chp_swg = BY_TAG["CHP-SWG"]
+for k in range(1, 5):
+    c = BY_TAG[f"CHP-{k}"]
+    add(c, chp_swg, f"CHP-{k} 13.8 kV generator leads to the switchgear container", "MV15", "1/C", "4/0", 1, 3, 2500,
+        13800, 105)
+    add(chp_swg, c, f"CHP-{k} control / sync / protection", "CTAX", "12/C", "14")
+    add(c, chp_swg, f"CHP-{k} instrumentation (incl. heat-recovery temperatures)", "ITC", "4 pr", "18")
+add(chp_swg, pad_eh, "CHP-SWG 13.8 kV site feeder to PAD-EH", "MV15", "1/C", "500", 1, 3, 10000, 13800, 418)
 fc_inv = [one(r"^FC-5..8 inverter")]                     # FC-1..4 / MT-1..3 taken out Oct 20 (one set, in the yard)
 for k in range(5, 9):
     fc = one(rf"^FC-{k}: SOFC")
@@ -867,7 +889,7 @@ SKIP_LV = re.compile(r"^R1 |SWGR|LC-480|MCC|EMCC|transformer|T-R\d|T-R4|LCT-|T4-
                      r"Fuel-gas compressors 3|Air-cooled condenser|GCB-|NGT-|SPC-|breaker|entrance|terminal tower|"
                      r"cable termination structure|GTG-|STG|230 kV switchyard|BESS yard|INL-|stair tower|Turbine hall exterior")
 done_bld = set()
-GB_OWN = re.compile(r"^(GB-\d|GBC-\d|GBT-\d|SWG-MY|TGF-|CGE-|PGS-|LGN-)")     # modular gas blocks carry their own L1-L7 circuits (above)
+GB_OWN = re.compile(r"^(GB-\d|GBC-\d|GBT-\d|SWG-MY|TGF-|CGE-|PGS-|LGN-|MTG-|CHP-)")     # modular gas blocks carry their own L1-L7 circuits (above)
 for it in ITEMS:
     apps = " ".join(it.get("wiring", []))
     if GB_OWN.match(it.get("tag") or ""):

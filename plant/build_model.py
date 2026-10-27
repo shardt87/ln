@@ -1509,20 +1509,16 @@ for _y in (553.5, 558):
     R((2058.1, _y, 1.6), (2059.1, _y, 1.6), 1.6, "tyre", seg=14); R((2065.9, _y, 1.6), (2066.9, _y, 1.6), 1.6, "tyre", seg=14)
 
 tech_site("Containerized gas engine site", 1945, 2085, 462, 530, "n")
-for k in range(4):
-    x = 1955 + 18 * k
+for k in range(4):                                  # stacked: engine containers on grade, cooling containers above
+    x = 1955 + 18 * k                               # on the steel deck (park_looks.cge_deck)
     item(L, f"CGE-{k + 1}: containerized gas-engine generator ~4.4 MW, 13.8 kV (40 ft engine container {k + 1} of 4)",
-         (x, x + 8, 470, 510), (0, 31), tag=f"CGE-{k + 1}",
-         info="Gas reciprocating engine and generator in a 40 ft container, roof-mounted radiator and exhaust stack, "
-              "~4.4 MW at 13.8 kV, to the site's switchgear container. Class layout, not a vendor's drawing.", **DC)
+         (x, x + 8, 470, 510), (0, 9.6), tag=f"CGE-{k + 1}",
+         info="Gas reciprocating engine and generator in a 40 ft container on grade, its cooling container, radiators "
+              "and exhaust silencer stacked above on a steel deck with walkways; ~4.4 MW at 13.8 kV, to the site's "
+              "switchgear container. Class layout, not a vendor's drawing.", **DC)
     B(x, x + 8, 470, 510, 0, 9.6, "white_truck")                                           # engine container
     for _y in range(472, 509, 4):
         B(x - .08, x, _y, _y + .2, .4, 9.2, "steel"); B(x + 8, x + 8.08, _y, _y + .2, .4, 9.2, "steel")   # ribs
-    B(x - .3, x + 8.3, 474, 498, 9.6, 13.6, "radiator")                                   # roof radiator module
-    for _y in (478, 486, 494):
-        V(x + 4, _y, 3.0, 13.6, 14.0, "fan", seg=14)
-    R((x + 4, 500, 11.5), (x + 4, 508, 11.5), 1.2, "steel", seg=12)                       # exhaust silencer
-    V(x + 4, 506, .8, 12.0, 31.0, "stack", seg=12)
     B(x + 1.5, x + 6.5, 469.6, 470, 2.0, 7.0, "panel")                                    # generator terminal box
 ehouse(L, "CGE-SWG: 13.8 kV switchgear container (engine breakers, site feeder)", 2030, 2038, 470, 510, 10,
        tag="CGE-SWG", **DC)
@@ -1553,6 +1549,41 @@ for k in range(4):
           "white_truck", tag=f"LGN-{k + 1}", **DC)
     B(x + 1, x + 7, 426, 431, 8, 9, "louvre")
 ehouse(L, "LGN-INV: linear generator inverter / AC cabinet (480 V)", 2126, 2144, 414, 428, 8, tag="LGN-INV", **DC)
+
+# (owner, Oct 27, reference pictures) two more classes north of the park: mid-size industrial gas-turbine packages and
+# a gas-engine row with exhaust heat recovery; the detail (filter houses, stacks, rack, heat exchangers) is park_looks.py
+tech_site("Mid-size gas turbine site", 1945, 2085, 652, 775, "n")
+for k, yc in enumerate((690, 742)):
+    y0, y1 = (680, 709) if k == 0 else (723, 752)
+    item(L, f"MTG-{k + 1}: mid-size industrial gas-turbine generator package ~16 MW, 13.8 kV (unit {k + 1} of 2)",
+         (1952, 2036, y0, y1), (0, 50.6), tag=f"MTG-{k + 1}",
+         info="Single-shaft industrial gas turbine and generator in an acoustic enclosure on a skid, the self-cleaning "
+              "inlet filter house raised on legs over the inlet end, the exhaust stack on its own frame, lube-oil "
+              "cooler beside; ~16 MW at 13.8 kV to the site switchgear. Class layout, not a vendor's drawing.", **DC)
+solid(L, "MTG-FG: fuel-gas conditioning skid (scrubber, filter-separator, heater)", 1948, 1968, 711, 721, 0, 12,
+      "steel_dark", tag="MTG-FG", **DC)
+ehouse(L, "MTG-SWG: 13.8 kV switchgear e-house (2 generator breakers, site feeder)", 2045, 2075, 716, 728, 11,
+       tag="MTG-SWG", **DC)
+ehouse(L, "MTG-CB: control and MCC building (unit controls, 480 V MCC)", 2050, 2078, 680, 694, 12, tag="MTG-CB", **DC)
+xfmr(L, "MTG-AUX: 13.8 / 0.48 kV auxiliary transformer", 2066, 2078, 745, 757, 8, tag="MTG-AUX", **DC)
+
+tech_site("Gas engine CHP site", 2095, 2205, 648, 692, "s")
+for k in range(4):
+    x = 2101 + 19 * k
+    item(L, f"CHP-{k + 1}: gas-engine generator ~2.5 MW with exhaust heat recovery, 13.8 kV (unit {k + 1} of 4)",
+         (x, x + 10, 651, 679), (0, 12.8), tag=f"CHP-{k + 1}",
+         info="Gas reciprocating engine and generator in a sound enclosure, ~2.5 MW at 13.8 kV; the exhaust rises to "
+              "its heat exchanger and stack on the rack behind, the jacket and exhaust heat go to the hot-water "
+              "headers. Class layout, not a vendor's drawing.", **DC)
+    B(x - .5, x + 10.5, 651, 679, 0, .3, "concrete")
+    B(x, x + 10, 653, 678, .3, 11.6, "ehouse")                                             # enclosure
+    B(x, x + 10, 653, 678, 11.6, 12, "roof")
+    B(x + 1, x + 9, 662, 672, 12, 12.8, "louvre")                                          # roof ventilation
+    for _y in (656, 664, 672):
+        B(x - .12, x, _y, _y + 4, 1.2, 9, "louvre"); B(x + 10, x + 10.12, _y, _y + 4, 1.2, 9, "louvre")
+    B(x + 2.5, x + 7.5, 652.6, 653, 2.0, 7.0, "panel")                                     # generator terminal box
+ehouse(L, "CHP-SWG: 13.8 kV switchgear container (4 engine breakers, site feeder)", 2178, 2186, 652, 676, 10,
+       tag="CHP-SWG", **DC)
 
 
 # ---------------------------------------------------------------------------
@@ -1971,6 +2002,25 @@ add_route("fuel_gas", [(2092.5, 452), (2092.5, 615.5)], MX)                     
 for k in range(8):
     add_route("fuel_gas", [(2092.5, 524.25 + 13 * k), (2103, 524.25 + 13 * k)], MX)
 add_route("fuel_gas", [(2066, 452), (2066, 422), (2068, 422)], MX)                          # -> linear generators
+for yc in (690, 742):                                                                       # MTG leads -> MTG-SWG
+    add_route("mvlv_cable", [(2032, yc), (2038, yc), (2038, 720 if yc < 720 else 724), (2045, 720 if yc < 720 else 724)], MX)
+add_route("mvlv_cable", [(2060, 728), (2060, 766), (2015, 766), (2015, 780), (2015, 860), (1975, 860), (1975, 880)],
+          MX)                                                                               # MTG-SWG -> MOD-EH (north gate)
+add_route("mvlv_cable", [(2071, 728), (2071, 745)], MX)                                     # MTG-SWG -> MTG-AUX
+add_route("mvlv_cable", [(2078, 751), (2081, 751), (2081, 687), (2078, 687)], MX)          # MTG-AUX 480 V -> MTG-CB
+add_route("mvlv_cable", [(2064, 716), (2064, 694)], MX)                                     # e-house -> MTG-CB (control)
+add_route("mvlv_cable", [(1968, 713), (2040, 713), (2040, 688), (2050, 688)], MX)          # MTG-FG (MC-HL) -> MTG-CB
+add_route("fuel_gas", [(1938, 606), (1938, 716), (1948, 716)], MX)                          # west riser -> MTG-FG
+add_route("fuel_gas", [(1968, 716), (1985, 716), (1985, 696.5)], MX)                        # -> MTG-1
+add_route("fuel_gas", [(1985, 716), (1985, 735.5)], MX)                                     # -> MTG-2
+for k in range(4):                                                                          # CHP units -> CHP-SWG
+    add_route("mvlv_cable", [(2106 + 19 * k, 652.6), (2106 + 19 * k, 651.3)], MX)
+add_route("mvlv_cable", [(2106, 651.3), (2182, 651.3), (2182, 652)], MX)
+add_route("mvlv_cable", [(2184, 652), (2184, 649.5), (2150, 649.5), (2150, 644), (2156.5, 644), (2156.5, 492), (2180, 492),
+                         (2180, 484)], MX)                                                  # CHP-SWG -> PAD-EH (south gate)
+add_route("fuel_gas", [(2092.5, 615.5), (2092.5, 681), (2163, 681)], MX)                   # -> CHP engines
+for k in range(4):
+    add_route("fuel_gas", [(2106 + 19 * k, 681), (2106 + 19 * k, 678)], MX)
 # modular gas blocks: per block the 480 V lead trench (unit drops into one trench along the south side to GBC-n), GBC to
 # the step-up, the step-up's HV tap to the 35 kV loop corridor (x 2256), the corridor into SWG-MY, the SWG-MY feeder to
 # the data centre's 34.5 kV switchgear (joins the yard -> BTM corridor at y 892); gas headers east of the blocks
@@ -2562,6 +2612,8 @@ import tech_bays as _tb
 print('technology bay signs', _tb.build())   # one bay per technology (Oct 27)   # open lead trench, terminal box, ground ring, sign (Oct 26)
 import modular_packages as _mpk
 print("modular GT packages", _mpk.build())   # AX-1 aero modules, IG-1 industrial GT (Oct 24)
+import park_looks as _pl
+print("park looks", _pl.build())            # stacked containers, CHP rack, mid-size GT packages (Oct 27)
 print("tray legends", _show.tray_legends())
 print("CCS rack tray legends", _show.tray_legends(x0=726, x1=856, y0=1131, y1=1135.5, z0=26, z1=29))
 for _p in parts:                    # tray cables round, not faceted (they are seen close up in the tray shots)

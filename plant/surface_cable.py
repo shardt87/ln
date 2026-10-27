@@ -19,7 +19,7 @@ from fuel import box, rod
 REGION = (1935, 2350, 375, 815)        # portable pad + the TM2500 plot north of it
 LANES = [(2130, 2370, 620, 640)]                       # portable pad lanes (cable protectors where crossed)
 RAMP = (2238, 2252, 617, 643)                          # drive-over cable ramp (C-L01), already drawn
-LV_TAGS = ("GEN-O", "PAD-LV", "PGS-SWG", "LGN-INV") + tuple(f"PGS-{k}" for k in range(1, 9))                 # 480 V equipment (Type W sets)
+LV_TAGS = ("GEN-O", "PAD-LV", "PGS-SWG", "LGN-INV", "MTG-CB") + tuple(f"PGS-{k}" for k in range(1, 9))                 # 480 V equipment (Type W sets)
 LEGEND_SHD = "15 kV  3/C 2 AWG CU  TYPE SHD-GC  EPR  CPE JACKET  2/C GROUND + GC  PORTABLE POWER CABLE  -40C"
 LEGEND_W = "2000 V  1/C 4/0 AWG CU  TYPE W  EPR  CPE JACKET  -50C  OIL RES"
 SURF = []
