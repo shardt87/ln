@@ -1269,17 +1269,18 @@ xfmr(L, "T-MOD-1: 13.8/230 kV", 2045, 2085, 870, 905, 24, bushing=13, tag="T-MOD
 xfmr(L, "T-MOD-2: 13.8/230 kV", 2105, 2145, 870, 905, 24, bushing=13, tag="T-MOD-2", area="I", sheet="SW-3X1-08",
      info="~150 MVA ONAN/ONAF (electrical review, Oct 21: the modular yard exports ~255 MW, ~283 MVA at 0.9 pf; two at 150 MVA carry it with margin, one carries ~half the yard). Typical, not engineered.")
 # FC-1..4, their inverter cabinet and MT-1..3 stood here (x 1995-2296, y 1068-1096); taken out Oct 20 (owner: the
-# modular yard already carries a set, FC-5..12 / MT-4..6)
+# modular yard already carries one of each, FC-5 / MT-4)
 ehouse(L, "MOD-LV 480 V board + 480 V : 13.8 kV step-up", 2215, 2267, 970, 982, 10, area="I", sheet="SW-3X1-08")
 L = "OPT_TMP"
 pad(L, "Portable pad lane", 2130, 2370, 620, 640, "road", z1=0.3, area="I")
 pad(L, "Portable pad lane", 2346, 2370, 305, 620, "road", z1=0.3, area="I")
 solid(L, "Drive-over cable ramp (C-L01 crossing)", 2238, 2252, 617, 643, 0, 1, "amber", area="I", sheet="SW-3X1-08")
-for k, y in ((1, 642), (2, 607)):
-    solid(L, f"CONT-{k}: containerized genset 13.8 kV (40 ft)", 2000, 2040, y, y + 8, 0, 9.5, "machine",
-          tag=f"CONT-{k}", area="I", sheet="SW-3X1-08")
-    ehouse(L, f"GSP-{k}: generator breaker / protection", 2042, 2050, y - 2, y + 10, 8, tag=f"GSP-{k}", area="I",
-           sheet="SW-3X1-08")
+# technology row (owner, Oct 27: one modular unit per technology, each in its own bay): container genset, enclosed gas
+# genset, open engine skid, fuel cell + inverter, microturbine, left to right along y 516-544 (tech_bays.py signs them)
+solid(L, "CONT-1: containerized genset 13.8 kV (40 ft)", 1995, 2035, 526, 534, 0, 9.5, "machine",
+      tag="CONT-1", area="I", sheet="SW-3X1-08")
+ehouse(L, "GSP-1: generator breaker / protection", 2037, 2045, 524, 536, 8, tag="GSP-1", area="I",
+       sheet="SW-3X1-08")
 item(L, "MOB-1: trailer genset", (2160, 2213, 695, 704), (0, 13.5), tag="MOB-1", area="I", sheet="SW-3X1-08")
 B(2160, 2213, 695, 704, 3, 13.5, "machine")
 for xx in (2165, 2200, 2206):
@@ -1287,9 +1288,9 @@ for xx in (2165, 2200, 2206):
 ehouse(L, "PIC: portable input cabinet", 2255, 2263, 572, 578, 7, tag="PIC", area="I", sheet="SW-3X1-08")
 solid(L, "LB: commissioning load bank (trailer)", 2185, 2215, 588, 596, 0, 12, "equip", tag="LB", area="I",
       sheet="SW-3X1-08")
-solid(L, "GEN-E: enclosed industrial gas genset 2 MW", 2000, 2046, 460, 470, 0, 15, "machine", tag="GEN-E",
+solid(L, "GEN-E: enclosed industrial gas genset 2 MW", 2057, 2103, 525, 535, 0, 15, "machine", tag="GEN-E",
       area="I", basis="vendor", sheet="SW-3X1-08")
-solid(L, "GEN-O: open engine-generator skid", 2010, 2036, 420, 428, 0, 8, "machine", tag="GEN-O", area="I",
+solid(L, "GEN-O: open engine-generator skid", 2115, 2141, 526, 534, 0, 8, "machine", tag="GEN-O", area="I",
       sheet="SW-3X1-08")
 ehouse(L, "PAD-LV 480 V paralleling switchboard", 2160, 2190, 430, 440, 9, tag="PAD-LV", area="I", sheet="SW-3X1-08")
 xfmr(L, "PAD-TX 480 V : 13.8 kV", 2215, 2227, 429, 441, 10, tag="PAD-TX", area="I", sheet="SW-3X1-08")
@@ -1312,7 +1313,7 @@ pad(L, "Maintenance laydown (gravel)", 45, 405, 1705, 1880, "gravel", z1=0.25, a
     sheet="beyond Rev 14")
 # two trailer-mounted aeroderivatives (TM2500 class) on the open ground north of the portable pad, east of MOB-1
 # (user review; the expansion fuel cells and microturbines took their old row south of the pad)
-for k in range(2):
+for k in range(1):                             # one trailer aeroderivative (owner, Oct 27: one per technology)
     x, y = 2150 + 110 * k, 740
     item(L, f"TM-{k + 1}: trailer-mounted aeroderivative GT (TM2500 class, ~35 MW)", (x, x + 78, y, y + 55),
          (0, 42), tag=f"TM-{k + 1}", info="Design change: gas turbine + generator trailer, control/aux trailer, "
@@ -1327,31 +1328,13 @@ for k in range(2):
                      (x + 54, y + 42), (x + 10, y + 8), (x + 46, y + 8), (x + 10, y + 17), (x + 46, y + 17)):
         R((xx, yy, 1.8), (xx, yy + (1 if yy in (y + 30, y + 8) else -1), 1.8), 1.8, "conductor", seg=12)
     B(x + 66, x + 78, y + 30, y + 42, 0, 9, "cabinet")               # fuel-gas / water skid
-# six more containerized gensets with a paralleling e-house
-for k in range(6):
-    row, i = divmod(k, 3)
-    x, y = 1990 + 60 * i, 505 + 55 * row
-    solid(L, f"CONT-{k + 3}: containerized gas genset 13.8 kV (40 ft)", x, x + 40, y, y + 8, 0, 9.5, "machine",
-          tag=f"CONT-{k + 3}", **DC)
-    B(x + 2, x + 38, y + 0.5, y + 7.5, 9.5, 11, "radiator")
-    V(x + 12, y + 4, 2.2, 11, 12, "fan", seg=12); V(x + 28, y + 4, 2.2, 11, 12, "fan", seg=12)
-    R((x + 36, y + 6, 11), (x + 36, y + 6, 18), 0.8, "stack", seg=10)
-# CONT-3..8 land on the portable pad's own 13.8 kV lineup (one switchgear, not a second paralleling e-house): PAD-EH
-# is extended west by a section carrying their feeder breakers, joined to the drawn PAD-EH as one lineup
-item(L, "PAD-EH extension: CONT-3..8 feeder breakers (same 13.8 kV lineup)", (2124, 2160, 470, 484), (0, 14),
-     tag="PAD-EH-X", **DC)
-B(2124, 2160, 470, 484, 0, 2.5, "concrete")
-B(2124.3, 2160, 470.3, 483.7, 2.5, 13.4, "ehouse")
-B(2124, 2160, 470, 484, 13.4, 14, "roof")
-# eight more fuel-cell modules and three more microturbines south of the portable pad (feeding PAD-LV)
-for k in range(8):
-    x = 2010 + 14 * k
-    solid(L, f"FC-{k + 5}: SOFC module (Bloom ES5 class, 200-300 kW)", x, x + 9, 350, 376, 0, 7, "bess",
-          tag=f"FC-{k + 5}", **DC)
-ehouse(L, "FC-5..12 inverter / AC cabinet / desulfurizer", 2126, 2166, 352, 376, 8, **DC)
-for k in range(3):
-    x = 2180 + 14 * k
-    solid(L, f"MT-{k + 4}: microturbine 1 MW (Capstone C1000 class)", x, x + 8, 349, 377, 0, 9.5, "machine",
+# one fuel-cell module with its inverter and one microturbine south of the portable pad (feeding PAD-LV); owner,
+# Oct 27: one bay per technology (the duplicate containers, fuel cells and microturbines are gone)
+solid(L, "FC-5: SOFC module (Bloom ES5 class, 200-300 kW)", 2153, 2162, 517, 543, 0, 7, "bess", tag="FC-5", **DC)
+ehouse(L, "FC-5 inverter / AC cabinet / desulfurizer", 2165, 2189, 518, 542, 8, **DC)
+for k in range(1):
+    x = 2201
+    solid(L, f"MT-{k + 4}: microturbine 1 MW (Capstone C1000 class)", x, x + 8, 516, 544, 0, 9.5, "machine",
           tag=f"MT-{k + 4}", **DC)
 
 # modular gas blocks (owner, Oct 26), on the modular-gas-campus logic from the ERock call: unit (500 kW, 480 V) ->
@@ -1829,9 +1812,6 @@ for _dx in (0, 160, 320):
     add_route("cw", [(686 + _dx, 1262), (686 + _dx, 1251)], layer="OPT_CCSU_ROUTES", sheet="typical (CCS cooling water)")
 # modular expansion (OPT_MODX): MV cables to the portable-pad and modular collectors, gas stubs
 MX = "OPT_MODX_ROUTES"
-for row, y in ((0, 505), (1, 560)):                       # CONT-3..8 -> the PAD-EH extension (north face)
-    ys, xd = (y - 4, 2135) if row == 0 else (y + 12, 2155)
-    add_route("mvlv_cable", [(2010, y), (2010, ys), (xd, ys), (xd, 484)], MX)
 add_route("mvlv_cable", [(2255, 575), (2228, 575), (2228, 592), (2215, 592)], "OPT_TMP_ROUTES",
           sheet="typical (portable pad)")                                                   # PIC -> load bank
 # TM-1 / TM-2 generator leads leave the trailer's ground tray at the north edge, run in the yard duct bank
@@ -1840,17 +1820,22 @@ add_route("mvlv_cable", [(2255, 575), (2228, 575), (2228, 592), (2215, 592)], "O
 # the MOB-1 feeder, down to the north face of PAD-EH
 add_route("mvlv_cable", [(2200, 795), (2200, 805), (2241, 805), (2241, 500), (2180, 500), (2180, 484)],
           MX)                                                                               # TM-1 -> PAD-EH
-add_route("mvlv_cable", [(2310, 795), (2310, 809), (2249, 809), (2249, 504), (2188, 504), (2188, 484)],
-          MX)                                                                               # TM-2 -> PAD-EH
-add_route("mvlv_cable", [(2014, 350), (2014, 345), (2146, 345), (2146, 352)], MX)         # FC-5..12 -> inverter
-add_route("mvlv_cable", [(2146, 376), (2146, 420), (2165, 420), (2165, 430)], MX)         # inverter -> PAD-LV
-add_route("mvlv_cable", [(2198, 377), (2198, 415), (2175, 415), (2175, 430)], MX)         # MT-4..6 -> PAD-LV
+# technology row: an LV lane (y 506) to PAD-LV, an MV lane (y 503) from GSP-1 to PAD-EH, a gas header behind (y 550)
+add_route("mvlv_cable", [(2035, 530), (2037, 530)], MX)                                     # CONT-1 -> GSP-1
+add_route("mvlv_cable", [(2041, 524), (2041, 503), (2166, 503), (2166, 484)], MX)           # GSP-1 -> PAD-EH
+add_route("mvlv_cable", [(2080, 506), (2205, 506)], MX)                                     # LV lane
+add_route("mvlv_cable", [(2155, 506), (2155, 446), (2170, 446), (2170, 440)], MX)           # LV lane -> PAD-LV
+for _x, _y in ((2080, 525), (2128, 526), (2177, 518), (2205, 516)):                         # GEN-E, GEN-O, inverter, MT-4
+    add_route("mvlv_cable", [(_x, _y), (_x, 506)], MX)
+add_route("mvlv_cable", [(2162, 530), (2165, 530)], MX)                                     # FC-5 -> inverter
 add_route("mvlv_cable", [(1987.5, 1032), (1987.5, 900)], MX)                                # AX-1 gen leads -> MOD-EH
 add_route("mvlv_cable", [(2180.5, 1032), (2180.5, 990), (1992, 990), (1992, 900)], MX)     # IG-1 (mirrored) gen leads -> MOD-EH
 add_route("mvlv_cable", [(2258.5, 1252), (2266, 1252), (2266, 1324), (2240, 1324)], "OPT_MOD_ROUTES")  # SC-2 PCM (mirrored
                                                                           # to x 2218.5-2258.5 by sc2_mirror) -> ammonia skid
-add_route("fuel_gas", [(2340, 440), (2340, 452), (1985, 452), (1985, 536), (2130, 536)], MX)   # pad skid -> TM / CONT
-add_route("fuel_gas", [(2049.5, 452), (2049.5, 377)], MX)                                # header -> FC-5..12
+add_route("fuel_gas", [(2340, 440), (2340, 452), (2005, 452)], MX)                         # pad skid header (west)
+add_route("fuel_gas", [(2005, 452), (1988, 452), (1988, 550), (2210, 550)], MX)            # -> technology row header
+for _x, _y in ((2015, 534), (2080, 535), (2128, 534), (2157, 543), (2205, 544)):
+    add_route("fuel_gas", [(_x, 550), (_x, _y)], MX)
 # modular gas blocks: per block the 480 V lead trench (unit drops into one trench along the south side to GBC-n), GBC to
 # the step-up, the step-up's HV tap to the 35 kV loop corridor (x 2256), the corridor into SWG-MY, the SWG-MY feeder to
 # the data centre's 34.5 kV switchgear (joins the yard -> BTM corridor at y 892); gas headers east of the blocks
@@ -1868,12 +1853,7 @@ add_route("mvlv_cable", [(2234, 493), (2245, 493), (2245, 892)], MX, sheet="typi
 add_route("mvlv_cable", [(2520, 880), (2530, 880)], MX, sheet="typical (modular gas blocks)")                     # into BTM-SWGR
 for xg in (GB_RX - 37.5, GB_RX + 39.0):                                                    # gas headers behind the rows
     add_route("fuel_gas", [(xg, 452), (xg, GB_Y[1] + 70)], MX, sheet="typical (modular gas blocks)")
-add_route("fuel_gas", [(2205, 452), (2205, 378)], MX)                                     # header -> MT-4..6
-for x in (2010, 2070, 2130):
-    add_route("fuel_gas", [(x, 536), (x, 513)], MX)
-    add_route("fuel_gas", [(x, 536), (x, 560)], MX)
 add_route("fuel_gas", [(2340, 452), (2378, 452), (2378, 805), (2222, 805), (2222, 782)], MX)   # pad header -> TM-1 skid
-add_route("fuel_gas", [(2332, 805), (2332, 782)], MX)                                      # -> TM-2 skid
 for k in range(8):                                                                          # FC tails to the DC feeder
     add_route("mvlv_cable", [(2014 + 14 * k, 350), (2014 + 14 * k, 345)], MX)
 # SC-1 / SC-2 fuel gas from the fuel-gas compressor building (not drawn on sheet 07)
@@ -2442,7 +2422,9 @@ _skp.build()               # skid pre-assembly / pre-wire workstation beside the
 import prefab_electrical as _pel
 print('prefab electrical yard', _pel.build())   # switchgear / VFD / UPS lineups opened, panel shop
 import genset_blocks as _gbk
-print('genset block 1 detail', _gbk.build())   # open lead trench, terminal box, ground ring, sign (Oct 26)
+print('genset block 1 detail', _gbk.build())
+import tech_bays as _tb
+print('technology bay signs', _tb.build())   # one bay per technology (Oct 27)   # open lead trench, terminal box, ground ring, sign (Oct 26)
 import modular_packages as _mpk
 print("modular GT packages", _mpk.build())   # AX-1 aero modules, IG-1 industrial GT (Oct 24)
 print("tray legends", _show.tray_legends())

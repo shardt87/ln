@@ -548,7 +548,7 @@ for k in range(1, 9):
         add(dst, pad_eh, f"GSP-{k} to PAD-EH", "SHD", "3/C", "2", 1, 1, 2000, 13800, 93, "portable, on grade")
     else:
         add(g, dst, f"CONT-{k} 13.8 kV to PAD-EH (extension section, ground tray)", "MV15", "1/C", "2", 1, 3, 2000, 13800, 93)
-for k in (1, 2):
+for k in (1,):
     tm = BY_TAG[f"TM-{k}"]
     add(tm, pad_eh, f"TM-{k} (TM2500) generator leads to PAD-EH", "MV15", "1/C", "1000", 3, 3, 35000, 13800, 1464,
         "3 per phase for 125 % (the model shows 2 per phase: update the model)")
@@ -595,14 +595,14 @@ if swg_my:
     add(swg_my, swg_my, "L5 SWG-MY feeder to the data centre 34.5 kV switchgear BTM-SWGR, to the fence (scope owner TO VERIFY)",
         "MV35", "1/C", "750", 1, 3, 10000, 34500, 167, "to the fence 585 ft; + ~120 ft beyond to BTM-SWGR (data-centre scope)",
         length=(585, 20, "Buried"))
-fc_inv = [one(r"^FC-5..12 inverter")]                     # FC-1..4 / MT-1..3 taken out Oct 20 (one set, in the yard)
-for k in range(5, 13):
+fc_inv = [one(r"^FC-5 inverter")]                     # FC-1..4 / MT-1..3 taken out Oct 20 (one set, in the yard)
+for k in range(5, 6):
     fc = one(rf"^FC-{k}: SOFC")
     lv_feeder(fc, fc_inv[0], 250, f"FC-{k} SOFC output to inverter / AC cabinet", motor=False)
 for it in fc_inv:
-    lv_feeder(it, one(r"^MOD-LV 480 V"), 2000 if "5..12" in it["name"] else 1000, "Fuel-cell AC cabinet to MOD-LV",
+    lv_feeder(it, one(r"^MOD-LV 480 V"), 250, "Fuel-cell AC cabinet to MOD-LV",
               motor=False)
-for k in range(4, 7):
+for k in range(4, 5):
     mt = one(rf"^MT-{k}: microturbine")
     lv_feeder(mt, one(r"^MOD-LV 480 V"), 1000, f"MT-{k} microturbine output", motor=False)
 for it in find(r"^Black-start genset"):
@@ -829,7 +829,7 @@ BLD = re.compile(r"building|house|Gatehouse|Warehouse|workshop|e-house|R1:|R2[AB
 SKIP_LV = re.compile(r"^R1 |SWGR|LC-480|MCC|EMCC|transformer|T-R\d|T-R4|LCT-|T4-|UAT|GSU|ET-\d|TX-LCI|VFD lineup|"
                      r"BFP|CP-A/B/C|BF-[ABC]|CO2 compression|export compressor|circulating-water|Rich/lean|CONDITIONAL: fuel-gas|"
                      r"Chillers x6|CW pumps \(inlet|BESS container|BESS PCS|BESS blocks|RICE engine-generator|SC-\d:|CONT-\d|"
-                     r"TM-\d|MOB-1|GEN-[EO]|FC-\d|MT-\d|Black-start genset|Fuel-cell inverter|FC-5\.\.12|^PAD-|^PIC|^GSP|"
+                     r"TM-\d|MOB-1|GEN-[EO]|FC-\d|MT-\d|Black-start genset|Fuel-cell inverter|FC-5 inverter|^PAD-|^PIC|^GSP|"
                      r"Fuel-gas compressors 3|Air-cooled condenser|GCB-|NGT-|SPC-|breaker|entrance|terminal tower|"
                      r"cable termination structure|GTG-|STG|230 kV switchyard|BESS yard|INL-|stair tower|Turbine hall exterior")
 done_bld = set()
