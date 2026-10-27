@@ -1275,12 +1275,30 @@ L = "OPT_TMP"
 pad(L, "Portable pad lane", 2130, 2370, 620, 640, "road", z1=0.3, area="I")
 pad(L, "Portable pad lane", 2346, 2370, 305, 620, "road", z1=0.3, area="I")
 solid(L, "Drive-over cable ramp (C-L01 crossing)", 2238, 2252, 617, 643, 0, 1, "amber", area="I", sheet="SW-3X1-08")
-# technology row (owner, Oct 27: one modular unit per technology, each in its own bay): container genset, enclosed gas
-# genset, open engine skid, fuel cell + inverter, microturbine, left to right along y 516-544 (tech_bays.py signs them)
-solid(L, "CONT-1: containerized genset 13.8 kV (40 ft)", 1995, 2035, 526, 534, 0, 9.5, "machine",
+# technology sites (owner, Oct 27: one technology per site, each a small working installation on its own fenced
+# gravel pad, not a showroom row): fuel cells, microturbines (south band), open engine skid, enclosed genset (middle
+# band), container genset (north band); the pad gas header (y 452) runs between the bands, one LV lane (y 400) to PAD-LV
+def tech_site(name, x0, x1, y0, y1, gate):
+    """Fenced gravel site: pad, 7 ft chain-link on the pad edge with a 16 ft gate gap on the `gate` side (n / s)."""
+    pad(L, f"{name}: gravel pad", x0, x1, y0, y1, "gravel", z1=0.25, area="I", basis="design change", sheet="beyond Rev 14")
+    item(L, f"{name}: chain-link fence (7 ft) and gate", (x0, x1, y0, y1), (0, 7), register=False, area="I",
+         basis="design change", sheet="beyond Rev 14")
+    xm = (x0 + x1) / 2
+    for (yy, side) in ((y0, "s"), (y1 - .4, "n")):
+        if side == gate:
+            B(x0, xm - 8, yy, yy + .4, 0, 7, "fence"); B(xm + 8, x1, yy, yy + .4, 0, 7, "fence")
+            B(xm - 8.4, xm - 7.6, yy - .2, yy + .6, 0, 8, "steel"); B(xm + 7.6, xm + 8.4, yy - .2, yy + .6, 0, 8, "steel")
+        else:
+            B(x0, x1, yy, yy + .4, 0, 7, "fence")
+    B(x0, x0 + .4, y0, y1, 0, 7, "fence"); B(x1 - .4, x1, y0, y1, 0, 7, "fence")
+
+
+tech_site("Container genset site", 1995, 2080, 462, 528, "s")
+solid(L, "CONT-1: containerized genset 13.8 kV (40 ft)", 2005, 2045, 488, 496, 0, 9.5, "machine",
       tag="CONT-1", area="I", sheet="SW-3X1-08")
-ehouse(L, "GSP-1: generator breaker / protection", 2037, 2045, 524, 536, 8, tag="GSP-1", area="I",
+ehouse(L, "GSP-1: generator breaker / protection", 2048, 2056, 486, 498, 8, tag="GSP-1", area="I",
        sheet="SW-3X1-08")
+solid(L, "CONT-1 gas regulator / meter skid", 2008, 2020, 470, 476, 0, 5, "equip", area="I", basis="design change")
 item(L, "MOB-1: trailer genset", (2160, 2213, 695, 704), (0, 13.5), tag="MOB-1", area="I", sheet="SW-3X1-08")
 B(2160, 2213, 695, 704, 3, 13.5, "machine")
 for xx in (2165, 2200, 2206):
@@ -1288,9 +1306,17 @@ for xx in (2165, 2200, 2206):
 ehouse(L, "PIC: portable input cabinet", 2255, 2263, 572, 578, 7, tag="PIC", area="I", sheet="SW-3X1-08")
 solid(L, "LB: commissioning load bank (trailer)", 2185, 2215, 588, 596, 0, 12, "equip", tag="LB", area="I",
       sheet="SW-3X1-08")
-solid(L, "GEN-E: enclosed industrial gas genset 2 MW", 2057, 2103, 525, 535, 0, 15, "machine", tag="GEN-E",
+tech_site("Enclosed gas genset site", 2060, 2150, 404, 444, "s")
+solid(L, "GEN-E: enclosed industrial gas genset 2 MW", 2072, 2118, 419, 429, 0, 15, "machine", tag="GEN-E",
       area="I", basis="vendor", sheet="SW-3X1-08")
-solid(L, "GEN-O: open engine-generator skid", 2115, 2141, 526, 534, 0, 8, "machine", tag="GEN-O", area="I",
+tech_site("Open engine skid site", 1995, 2052, 404, 444, "s")
+item(L, "GEN-O canopy: steel shade roof over the open skid", (2004, 2042, 413, 435), (0, 13.6), area="I",
+     basis="design change", register=False)
+for _cx in (2004.5, 2041.5):
+    for _cy in (413.5, 434.5):
+        B(_cx - .5, _cx + .5, _cy - .5, _cy + .5, 0, 13, "steel")                       # canopy columns
+B(2004, 2042, 413, 435, 13, 13.6, "roof")                                                  # shade roof
+solid(L, "GEN-O: open engine-generator skid", 2010, 2036, 420, 428, 0, 8, "machine", tag="GEN-O", area="I",
       sheet="SW-3X1-08")
 ehouse(L, "PAD-LV 480 V paralleling switchboard", 2160, 2190, 430, 440, 9, tag="PAD-LV", area="I", sheet="SW-3X1-08")
 xfmr(L, "PAD-TX 480 V : 13.8 kV", 2215, 2227, 429, 441, 10, tag="PAD-TX", area="I", sheet="SW-3X1-08")
@@ -1330,11 +1356,16 @@ for k in range(1):                             # one trailer aeroderivative (own
     B(x + 66, x + 78, y + 30, y + 42, 0, 9, "cabinet")               # fuel-gas / water skid
 # one fuel-cell module with its inverter and one microturbine south of the portable pad (feeding PAD-LV); owner,
 # Oct 27: one bay per technology (the duplicate containers, fuel cells and microturbines are gone)
-solid(L, "FC-5: SOFC module (Bloom ES5 class, 200-300 kW)", 2153, 2162, 517, 543, 0, 7, "bess", tag="FC-5", **DC)
-ehouse(L, "FC-5 inverter / AC cabinet / desulfurizer", 2165, 2189, 518, 542, 8, **DC)
-for k in range(1):
-    x = 2201
-    solid(L, f"MT-{k + 4}: microturbine 1 MW (Capstone C1000 class)", x, x + 8, 516, 544, 0, 9.5, "machine",
+tech_site("Fuel-cell site", 1995, 2077, 336, 394, "n")
+for k in range(4):
+    x = 2003 + 12 * k
+    solid(L, f"FC-{k + 5}: SOFC module (200-300 kW class)", x, x + 9, 350, 376, 0, 7, "bess", tag=f"FC-{k + 5}", **DC)
+ehouse(L, "FC-5..8 inverter / AC cabinet / desulfurizer", 2050, 2074, 352, 376, 8, **DC)
+tech_site("Microturbine site", 2085, 2150, 336, 394, "n")
+ehouse(L, "MT-4..6 480 V switchboard", 2129, 2145, 358, 372, 9, **DC)
+for k in range(3):
+    x = 2093 + 12 * k
+    solid(L, f"MT-{k + 4}: microturbine 1 MW (1 MW package class)", x, x + 8, 351, 379, 0, 9.5, "machine",
           tag=f"MT-{k + 4}", **DC)
 
 # modular gas blocks (owner, Oct 26), on the modular-gas-campus logic from the ERock call: unit (500 kW, 480 V) ->
@@ -1820,22 +1851,31 @@ add_route("mvlv_cable", [(2255, 575), (2228, 575), (2228, 592), (2215, 592)], "O
 # the MOB-1 feeder, down to the north face of PAD-EH
 add_route("mvlv_cable", [(2200, 795), (2200, 805), (2241, 805), (2241, 500), (2180, 500), (2180, 484)],
           MX)                                                                               # TM-1 -> PAD-EH
-# technology row: an LV lane (y 506) to PAD-LV, an MV lane (y 503) from GSP-1 to PAD-EH, a gas header behind (y 550)
-add_route("mvlv_cable", [(2035, 530), (2037, 530)], MX)                                     # CONT-1 -> GSP-1
-add_route("mvlv_cable", [(2041, 524), (2041, 503), (2166, 503), (2166, 484)], MX)           # GSP-1 -> PAD-EH
-add_route("mvlv_cable", [(2080, 506), (2205, 506)], MX)                                     # LV lane
-add_route("mvlv_cable", [(2155, 506), (2155, 446), (2170, 446), (2170, 440)], MX)           # LV lane -> PAD-LV
-for _x, _y in ((2080, 525), (2128, 526), (2177, 518), (2205, 516)):                         # GEN-E, GEN-O, inverter, MT-4
-    add_route("mvlv_cable", [(_x, _y), (_x, 506)], MX)
-add_route("mvlv_cable", [(2162, 530), (2165, 530)], MX)                                     # FC-5 -> inverter
+# technology sites: one LV lane (y 400, between the south and middle bands) to PAD-LV; GSP-1 to PAD-EH
+for k in range(4):                                                                          # FC-5..8 -> inverter
+    add_route("mvlv_cable", [(2007.5 + 12 * k, 376), (2007.5 + 12 * k, 381)], MX)
+add_route("mvlv_cable", [(2007.5, 381), (2050, 381), (2050, 376)], MX)
+for k in range(3):                                                                          # MT-4..6 -> switchboard
+    add_route("mvlv_cable", [(2097 + 12 * k, 351), (2097 + 12 * k, 346)], MX)
+add_route("mvlv_cable", [(2097, 346), (2137, 346), (2137, 358)], MX)
+add_route("mvlv_cable", [(2023, 400), (2156, 400), (2156, 435), (2160, 435)], MX)           # LV lane -> PAD-LV
+# every drop to the lane leaves its site through the gate
+add_route("mvlv_cable", [(2023, 420), (2023, 400)], MX)                                     # GEN-O
+add_route("mvlv_cable", [(2095, 419), (2095, 410), (2105, 410), (2105, 400)], MX)           # GEN-E
+add_route("mvlv_cable", [(2062, 376), (2062, 385), (2040, 385), (2040, 400)], MX)           # inverter
+add_route("mvlv_cable", [(2137, 372), (2137, 386), (2117, 386), (2117, 400)], MX)           # MT switchboard
+add_route("mvlv_cable", [(2045, 492), (2048, 492)], MX)                                     # CONT-1 -> GSP-1
+add_route("mvlv_cable", [(2052, 486), (2052, 480), (2040, 480), (2040, 458), (2140, 458), (2140, 477), (2160, 477)], MX)  # GSP-1 -> PAD-EH, out by the gate
 add_route("mvlv_cable", [(1987.5, 1032), (1987.5, 900)], MX)                                # AX-1 gen leads -> MOD-EH
 add_route("mvlv_cable", [(2180.5, 1032), (2180.5, 990), (1992, 990), (1992, 900)], MX)     # IG-1 (mirrored) gen leads -> MOD-EH
 add_route("mvlv_cable", [(2258.5, 1252), (2266, 1252), (2266, 1324), (2240, 1324)], "OPT_MOD_ROUTES")  # SC-2 PCM (mirrored
                                                                           # to x 2218.5-2258.5 by sc2_mirror) -> ammonia skid
 add_route("fuel_gas", [(2340, 440), (2340, 452), (2005, 452)], MX)                         # pad skid header (west)
-add_route("fuel_gas", [(2005, 452), (1988, 452), (1988, 550), (2210, 550)], MX)            # -> technology row header
-for _x, _y in ((2015, 534), (2080, 535), (2128, 534), (2157, 543), (2205, 544)):
-    add_route("fuel_gas", [(_x, 550), (_x, _y)], MX)
+add_route("fuel_gas", [(2005, 452), (1990, 452), (1990, 364), (2003, 364)], MX)            # -> fuel cells (west end)
+add_route("fuel_gas", [(2014, 452), (2014, 476)], MX)                                       # -> CONT-1 regulator skid
+add_route("fuel_gas", [(2023, 452), (2023, 428)], MX)                                       # -> GEN-O
+add_route("fuel_gas", [(2095, 452), (2095, 429)], MX)                                       # -> GEN-E
+add_route("fuel_gas", [(2081, 452), (2081, 389), (2099, 389), (2099, 379)], MX)            # -> microturbines
 # modular gas blocks: per block the 480 V lead trench (unit drops into one trench along the south side to GBC-n), GBC to
 # the step-up, the step-up's HV tap to the 35 kV loop corridor (x 2256), the corridor into SWG-MY, the SWG-MY feeder to
 # the data centre's 34.5 kV switchgear (joins the yard -> BTM corridor at y 892); gas headers east of the blocks

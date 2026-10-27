@@ -92,7 +92,7 @@ class Realism:
     def firewater(self):
         loop = [(410, 310), (1450, 310), (1450, 890), (410, 890), (410, 310)]
         branches = [[(720, 1572), (720, 890)], [(1450, 890), (1450, 1410), (2350, 1410), (2350, 1430)],
-                    [(1450, 310), (2203, 310), (2203, 516)], [(410, 890), (410, 1540), (445, 1540)]]
+                    [(1450, 310), (2081, 310), (2081, 336)], [(410, 890), (410, 1540), (445, 1540)]]
         lab = "Firewater ring main (buried, HDPE / ductile iron)"
         for pl in [loop] + branches:
             self.routes.append(dict(type="firewater", layer="PROCESS_PIPING", label=lab, z=-4, w=1.2, h=1.2,

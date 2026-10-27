@@ -54,7 +54,8 @@ def convert(routes):
 def _solids():
     return [it["fp"] for it in fuel.G["items"] if it["layer"] not in ("SITE",) and it["z"][1] > 2 and it["z"][0] < 1
             and (it["fp"][1] - it["fp"][0]) < 120 and (it["fp"][3] - it["fp"][2]) < 120
-            and not it["name"].startswith(("Pipe", "Cable", "Underground", "Surface", "People", "Vehicles", "Equipment ID"))]
+            and not it["name"].startswith(("Pipe", "Cable", "Underground", "Surface", "People", "Vehicles", "Equipment ID"))
+            and "chain-link" not in it["name"] and "canopy" not in it["name"]]
 
 
 def _trim(P):

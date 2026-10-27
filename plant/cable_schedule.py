@@ -595,16 +595,18 @@ if swg_my:
     add(swg_my, swg_my, "L5 SWG-MY feeder to the data centre 34.5 kV switchgear BTM-SWGR, to the fence (scope owner TO VERIFY)",
         "MV35", "1/C", "750", 1, 3, 10000, 34500, 167, "to the fence 585 ft; + ~120 ft beyond to BTM-SWGR (data-centre scope)",
         length=(585, 20, "Buried"))
-fc_inv = [one(r"^FC-5 inverter")]                     # FC-1..4 / MT-1..3 taken out Oct 20 (one set, in the yard)
-for k in range(5, 6):
+fc_inv = [one(r"^FC-5..8 inverter")]                     # FC-1..4 / MT-1..3 taken out Oct 20 (one set, in the yard)
+for k in range(5, 9):
     fc = one(rf"^FC-{k}: SOFC")
     lv_feeder(fc, fc_inv[0], 250, f"FC-{k} SOFC output to inverter / AC cabinet", motor=False)
 for it in fc_inv:
-    lv_feeder(it, one(r"^MOD-LV 480 V"), 250, "Fuel-cell AC cabinet to MOD-LV",
+    lv_feeder(it, one(r"^MOD-LV 480 V"), 1000, "Fuel-cell AC cabinet to MOD-LV",
               motor=False)
-for k in range(4, 5):
+mt_sb = one(r"^MT-4..6 480 V switchboard")
+for k in range(4, 7):
     mt = one(rf"^MT-{k}: microturbine")
-    lv_feeder(mt, one(r"^MOD-LV 480 V"), 1000, f"MT-{k} microturbine output", motor=False)
+    lv_feeder(mt, mt_sb, 1000, f"MT-{k} microturbine output to the site switchboard", motor=False)
+lv_feeder(mt_sb, one(r"^MOD-LV 480 V"), 3000, "Microturbine site switchboard to MOD-LV", motor=False)
 for it in find(r"^Black-start genset"):
     lv_feeder(it, src_of(r"^BS black-start switchgear"), 2000, "Black-start genset output", motor=False)
 
@@ -829,7 +831,7 @@ BLD = re.compile(r"building|house|Gatehouse|Warehouse|workshop|e-house|R1:|R2[AB
 SKIP_LV = re.compile(r"^R1 |SWGR|LC-480|MCC|EMCC|transformer|T-R\d|T-R4|LCT-|T4-|UAT|GSU|ET-\d|TX-LCI|VFD lineup|"
                      r"BFP|CP-A/B/C|BF-[ABC]|CO2 compression|export compressor|circulating-water|Rich/lean|CONDITIONAL: fuel-gas|"
                      r"Chillers x6|CW pumps \(inlet|BESS container|BESS PCS|BESS blocks|RICE engine-generator|SC-\d:|CONT-\d|"
-                     r"TM-\d|MOB-1|GEN-[EO]|FC-\d|MT-\d|Black-start genset|Fuel-cell inverter|FC-5 inverter|^PAD-|^PIC|^GSP|"
+                     r"TM-\d|MOB-1|GEN-[EO]|FC-\d|MT-\d|Black-start genset|Fuel-cell inverter|FC-5..8 inverter|MT-4..6 480 V switchboard|^PAD-|^PIC|^GSP|"
                      r"Fuel-gas compressors 3|Air-cooled condenser|GCB-|NGT-|SPC-|breaker|entrance|terminal tower|"
                      r"cable termination structure|GTG-|STG|230 kV switchyard|BESS yard|INL-|stair tower|Turbine hall exterior")
 done_bld = set()
