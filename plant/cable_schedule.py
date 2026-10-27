@@ -563,7 +563,7 @@ for t, kw in (("GEN-E", 2000), ("GEN-O", 1000)):
         round(I), "4 x 1/C per set incl. ground")
 add(BY_TAG["PAD-LV"], BY_TAG["PAD-TX"] if "PAD-TX" in BY_TAG else one(r"^PAD-TX"), "PAD-LV to PAD-TX", "LV1C", "1/C", "500",
     12, 4, 3000, 480, 3600, "12 sets of 4 x 1/C (or bus duct)")
-# modular gas blocks GB-1..6 (owner, Oct 26) on the modular-gas-campus logic from the ERock call, by cable layer:
+# modular gas blocks GB-1..4 (owner, Oct 26) on the modular-gas-campus logic from the ERock call, by cable layer:
 # L1 480 V generator leads unit -> GBC (2 sets, count TO VERIFY); L2 GBC -> GBT 480 V block feed (8 sets or bus, TO VERIFY);
 # L3 the 35 kV collector loop SWG-MY G1 -> GBT-1 -> ... -> GBT-6 -> SWG-MY (750 kcmil Al, 133 %, WA); L4 ties: none (one
 # lineup); L5 SWG-MY feeder to the data centre's BTM-SWGR (scope owner TO VERIFY); L6 block ground rings + taps; L7 unit
@@ -571,7 +571,7 @@ add(BY_TAG["PAD-LV"], BY_TAG["PAD-TX"] if "PAD-TX" in BY_TAG else one(r"^PAD-TX"
 swg_my = BY_TAG.get("SWG-MY")
 if swg_my:
     loop = [swg_my]
-    for n in range(1, 7):
+    for n in range(1, 5):
         gbc, gbt = BY_TAG[f"GBC-{n}"], BY_TAG[f"GBT-{n}"]
         for m in range(1, 6):
             g = BY_TAG[f"GB-{n}.{m}"]
@@ -582,19 +582,18 @@ if swg_my:
             lv_feeder(gbc, g, 15, f"GB-{n}.{m} aux power: jacket-water heater, battery charger, enclosure", motor=False)
         add(gbc, gbt, f"L2 GBC-{n} to GBT-{n} 480 V block feed", "LV1C", "1/C", "600", 8, 4, 2500, 480, 3007,
             "8 sets of 4 x 1/C (or bus duct, TO VERIFY)")
-        bx, by = 2262, [458, 489, 520, 648, 679, 710][n - 1]
         add(gbt, gbt, f"L6 GB-{n} block ground ring (4/0 bare Cu) + 7 taps", "BARE", "1/C", "4/0", 1, 1, None, None, None,
             "ring 2 x (74 + 23) ft + 7 taps x 6 ft", length=(2 * (74 + 23) + 7 * 6, 0, "Buried"))
         loop.append(gbt)
     loop.append(swg_my)
     for q, (a_, b_) in enumerate(zip(loop, loop[1:]), 1):
         add(a_, b_, f"L3 35 kV collector loop, segment {q} of {len(loop) - 1} ({a_['tag']} to {b_['tag']})", "MV35", "1/C", "750",
-            1, 3, 15000, 34500, 251, "loop conductor 750 kcmil Al, 133 % (WORKING ASSUMPTION)")
+            1, 3, 10000, 34500, 167, "loop conductor 750 kcmil Al, 133 % (WORKING ASSUMPTION)")
         add(a_, b_, f"L7 fibre ring, segment {q} ({a_['tag']} to {b_['tag']})", "FO", "12 SM", "-")
     # the data-centre option is outside this schedule: the feeder is taken to the fence (the ownership line); the
     # ~120 ft beyond it to BTM-SWGR is data-centre scope until confirmed
     add(swg_my, swg_my, "L5 SWG-MY feeder to the data centre 34.5 kV switchgear BTM-SWGR, to the fence (scope owner TO VERIFY)",
-        "MV35", "1/C", "750", 1, 3, 15000, 34500, 251, "to the fence 585 ft; + ~120 ft beyond to BTM-SWGR (data-centre scope)",
+        "MV35", "1/C", "750", 1, 3, 10000, 34500, 167, "to the fence 585 ft; + ~120 ft beyond to BTM-SWGR (data-centre scope)",
         length=(585, 20, "Buried"))
 fc_inv = [one(r"^FC-5..12 inverter")]                     # FC-1..4 / MT-1..3 taken out Oct 20 (one set, in the yard)
 for k in range(5, 13):

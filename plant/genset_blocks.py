@@ -10,9 +10,9 @@ Typical, not engineered (block geometry from build_model GB_BLOCKS)."""
 import fuel
 from fuel import box, rod
 
-BX, BY = 2262.0, 458.0                    # block GB-1 origin (build_model GB_BLOCKS[0])
+BX, BY = 2262.0, 462.0                    # block GB-1 origin (build_model GB_BLOCKS[0])
 TY0, TY1 = BY + 6.3, BY + 8.7              # trench (y), under the lead route at y BY + 7.5
-TX1 = BX + 46.0                            # trench east end, short of GBC-1 (x BX + 47)
+TX1 = BX + 50.0                            # trench east end, short of GBC-1 (x BX + 51)
 TAPE = ("red", "amber", "pvc_blue")
 
 
@@ -22,7 +22,7 @@ def decal(*a, **k):
 
 
 def ux(m):
-    return BX + 2 + 8.6 * m
+    return BX + 2 + 10.0 * m
 
 
 def trench():
@@ -51,7 +51,7 @@ def trench():
     for k in range(12):                                                                # the bundle rising into GBC-1
         y = TY0 + .5 + k * .14
         rod((TX1 - .4, y, .05), (TX1 - .4, y, 2.6), .09, "cable", seg=6)
-        rod((TX1 - .4, y, 2.6), (BX + 46.95, y, 2.6), .09, "cable", seg=6)
+        rod((TX1 - .4, y, 2.6), (BX + 50.95, y, 2.6), .09, "cable", seg=6)
     return 1
 
 
@@ -77,8 +77,8 @@ def ground_ring():
         x = ux(m) + .5
         rod((x, y1, .08), (x, BY + 20.3, .08), .04, "copper", seg=4)
         rod((x, BY + 20.3, .08), (x, BY + 20.3, .9), .04, "copper", seg=4)
-    rod((BX + 50.0, y0, .08), (BX + 50.0, BY + 5.0, .08), .04, "copper", seg=4)        # GBC-1
-    rod((BX + 63.0, y0, .08), (BX + 63.0, BY + 1.0, .08), .04, "copper", seg=4)        # GBT-1
+    rod((BX + 54.0, y0, .08), (BX + 54.0, BY + 3.5, .08), .04, "copper", seg=4)        # GBC-1
+    rod((BX + 69.5, y0, .08), (BX + 69.5, BY + 1.0, .08), .04, "copper", seg=4)        # GBT-1
     return 1
 
 
@@ -87,7 +87,7 @@ def sign():
     for s in (-1.6, 1.6):
         rod((x, y + s, 0), (x, y + s, 6.4), .08, "steel", seg=6)
     decal((x - .1, y, 4.6), (-1, 0, 0), 4.2, 2.6, [("MODULAR GAS BLOCKS", .17, 1, "#ffffff"),
-                                                   ("6 blocks x 5 units x 500 kW", .13, 0, "#e6e6e6"),
+                                                   ("4 blocks x 5 units x 500 kW", .13, 0, "#e6e6e6"),
                                                    ("480 V > 34.5 kV loop > SWG-MY", .13, 0, "#e6e6e6"),
                                                    ("GB-1: lead trench open", .12, 1, "#f2c200")], bg="#22303a")
     return 1

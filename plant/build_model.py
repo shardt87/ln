@@ -1362,53 +1362,84 @@ for k in range(3):
 # / 450 kW prime and 10 x 8 ft footprint KNOWN; 9 ft height, GBC / GBT / SWG sizes and 34.5 kV TO VERIFY; group size,
 # block spacing, 750 kcmil Al loop WORKING ASSUMPTION.
 GB_X = 2262
-GB_ROWS = [458, 489, 520, 648, 679, 710]
+GB_ROWS = [462, 507, 654, 699]          # four blocks, two each side of the pad lane, 45 ft pitch (owner: not crowded)
 GB_BLOCKS = [(GB_X, by) for by in GB_ROWS]
 GB_LOOP_X = 2253.5                       # buried 35 kV loop corridor, west of the blocks
-U_PITCH = 8.6
+U_PITCH = 10.0                           # 8 ft units, 2 ft apart (access from the ends)
 
 
 def unit_dress(gx, y0):
-    """Generic enclosed 500 kW gas genset, 8 x 10 ft footprint (owner, Oct 26: one look for the category): base frame,
-    enclosure, radiator grille at the north end, access doors on the sides, intake louvres, roof silencer with a short
-    stack and rain cap, the generator terminal box and control door at the south (trench) end."""
+    """Generic enclosed 500 kW gas genset, 8 x 10 ft footprint: units stand 2 ft apart, so access is from the ends
+    (control door and generator terminal box south, service doors north); intake louvres low on the sides; cooling out
+    of the top through a roof radiator with two fans (north half); exhaust catalyst / silencer box and a short stack
+    on the south half of the roof."""
     B(gx - .1, gx + 8.1, y0 - .1, y0 + 10.1, 0, .6, "steel_dark")                        # base frame
-    B(gx - .05, gx + 8.05, y0 - .05, y0 + 10.05, .6, 9.05, "white_truck")              # enclosure
-    for k in range(9):                                                                  # radiator discharge grille (north)
-        z = 1.3 + k * .78
-        B(gx + .4, gx + 7.6, y0 + 10.05, y0 + 10.25, z, z + .42, "louvre")
-    for xs in (gx - .12, gx + 8.05):                                                    # side doors (seams, handles)
-        for yd in (y0 + .8, y0 + 4.6):
-            B(xs, xs + .07, yd, yd + .08, 1.2, 7.6, "steel_dark")
-            B(xs, xs + .07, yd + 3.6, yd + 3.68, 1.2, 7.6, "steel_dark")
-            B(xs, xs + .07, yd + 3.0, yd + 3.2, 4.0, 4.6, "steel_dark")
-        for k in range(4):                                                              # intake louvres
-            B(xs, xs + .07, y0 + 1.0, y0 + 8.4, 7.9 + k * .25, 8.02 + k * .25, "louvre")
-    B(gx + 1.2, gx + 6.8, y0 + 2.0, y0 + 7.5, 9.05, 9.4, "steel")                        # silencer saddles
-    R((gx + 4, y0 + 2.0, 10.4), (gx + 4, y0 + 7.6, 10.4), .9, "steel", seg=14)          # roof silencer
-    V(gx + 4, y0 + 6.6, .45, 11.2, 15.0, "reflect", seg=12)                             # short stack
-    V(gx + 4, y0 + 6.6, .62, 15.0, 15.15, "steel", seg=12)                              # rain cap
-    B(gx + .7, gx + 2.6, y0 - .12, y0 - .05, 2.0, 7.4, "steel_dark")                     # control door (south)
+    B(gx - .05, gx + 8.05, y0 - .05, y0 + 10.05, .6, 8.6, "white_truck")               # enclosure
+    for xs in (gx - .12, gx + 8.05):                                                    # intake louvres, low on the sides
+        for k in range(5):
+            B(xs, xs + .07, y0 + 1.2, y0 + 8.8, 1.4 + k * .32, 1.55 + k * .32, "louvre")
+    B(gx + 1.0, gx + 3.6, y0 + 10.05, y0 + 10.12, 1.0, 7.4, "steel_dark")                # service doors (north end)
+    B(gx + 4.4, gx + 7.0, y0 + 10.05, y0 + 10.12, 1.0, 7.4, "steel_dark")
+    B(gx + .2, gx + 7.8, y0 + 4.6, y0 + 9.8, 8.6, 9.6, "radiator")                       # roof radiator, vertical discharge
+    for xc in (gx + 2.1, gx + 5.9):
+        V(xc, y0 + 7.2, 1.6, 9.6, 9.9, "steel_dark", seg=16)                              # fan rings
+        V(xc, y0 + 7.2, .3, 9.9, 10.0, "fanhub", seg=8)
+    B(gx + 2.4, gx + 5.6, y0 + .8, y0 + 3.8, 8.6, 10.2, "steel")                         # catalyst / silencer box
+    V(gx + 4.0, y0 + 2.3, .38, 10.2, 13.0, "reflect", seg=12)                            # short stack
+    V(gx + 4.0, y0 + 2.3, .52, 13.0, 13.12, "steel", seg=12)                             # rain cap
+    B(gx + .7, gx + 2.6, y0 - .12, y0 - .05, 1.0, 7.2, "steel_dark")                     # control door (south)
     B(gx + 5.0, gx + 7.4, y0 - .45, y0, 1.6, 4.8, "panel")                               # generator terminal box
+
+
+def switchboard(layer, name, x0, x1, y0, y1, h, **meta):
+    """Outdoor (NEMA 3R) switchboard / panelboard on a slab: sections with front doors (south), rain hood."""
+    item(layer, name, (x0 - 1, x1 + 1, y0 - 1.5, y1 + 1), (0, h + .4), **meta)
+    B(x0 - 1, x1 + 1, y0 - 1.5, y1 + 1, 0, .5, "concrete")
+    B(x0, x1, y0, y1, .5, h, "panel")
+    n = max(2, round((x1 - x0) / 2.6))
+    for k in range(n):
+        xa = x0 + (x1 - x0) * k / n
+        B(xa + .1, xa + (x1 - x0) / n - .1, y0 - .06, y0, .9, h - .5, "panel")           # section door
+        B(xa + (x1 - x0) / n - .5, xa + (x1 - x0) / n - .35, y0 - .14, y0 - .06, 3.6, 4.4, "steel_dark")
+    B(x0 - .2, x1 + .2, y0 - .4, y1 + .2, h, h + .4, "steel")                            # rain hood
+
+
+def padmount(layer, name, x0, x1, y0, y1, h, **meta):
+    """Pad-mount transformer: low tank with cooling panels on the back and sides, the HV / LV termination cabinet on
+    the front (south), lifting lugs. No conservator, no bushings in the air."""
+    item(layer, name, (x0 - 1, x1 + 1, y0 - 1, y1 + 1), (0, h + .3), **meta)
+    B(x0 - 1, x1 + 1, y0 - 1, y1 + 1, 0, .5, "concrete")
+    B(x0 + .6, x1 - .6, y0 + 3.0, y1 - .8, .5, h, "padmount")                            # tank
+    B(x0, x1, y0, y0 + 3.0, .5, h - .4, "padmount")                                      # termination cabinet (front)
+    B((x0 + x1) / 2 - .03, (x0 + x1) / 2 + .03, y0 - .06, y0, .8, h - .7, "steel_dark")  # cabinet door split
+    for k in range(6):                                                                   # cooling panels, back
+        xa = x0 + 1.0 + k * (x1 - x0 - 2.0) / 6
+        B(xa, xa + .25, y1 - .8, y1, 1.0, h - .8, "padmount")
+    for xs in (x0 + .3, x1 - .6):                                                         # cooling panels, sides
+        for k in range(3):
+            ya = y0 + 3.6 + k * 1.3
+            B(xs, xs + .3, ya, ya + .25, 1.0, h - .8, "padmount")
+    for x in (x0 + 1.2, x1 - 1.2):
+        B(x - .15, x + .15, y1 - 1.2, y1 - .9, h, h + .3, "steel")                        # lifting lugs
 
 
 for n, (bx, by) in enumerate(GB_BLOCKS, 1):
     for m in range(5):
         gx = bx + 2 + U_PITCH * m
         solid(L, f"GB-{n}.{m + 1}: modular gas genset 500 kW, 480 V (block GB-{n}, unit {m + 1} of 5)", gx, gx + 8,
-              by + 10, by + 20, 0, 9, "machine", tag=f"GB-{n}.{m + 1}",
+              by + 10, by + 20, 0, 8.6, "machine", tag=f"GB-{n}.{m + 1}",
               info="Natural-gas genset unit, 500 kW standby / 450 kW prime, 480 V, 10 x 8 ft footprint (KNOWN, public "
-                   "ERT500-class data); 9 ft height TO VERIFY. Terminal box at the south end on the 480 V lead trench to "
-                   f"GBC-{n}; radiator north. One of 30 units in six 2.5 MW blocks on one 35 kV loop.", **DC)
+                   "ERT500-class data); height, roof radiator and exhaust arrangement TO VERIFY. Terminal box at the south "
+                   f"end on the 480 V lead trench to GBC-{n}. One of 20 units in four 2.5 MW blocks on one 35 kV loop.", **DC)
         unit_dress(gx, by + 10)
-    ehouse(L, f"GBC-{n}: block GB-{n} generator collector box, 480 V panelboard, one breaker per unit (5)", bx + 47, bx + 57,
-           by + 5, by + 9, 7.5, tag=f"GBC-{n}",
-           info="Generator collector box (call, Oct 26): a 480 V panelboard with an individual breaker per generator. "
-                "Rating for 5 x 500 kW and the enclosure size TO VERIFY.", **DC)
-    xfmr(L, f"GBT-{n}: block GB-{n} step-up 480 V : 34.5 kV, ~3 MVA pad-mount (on the 35 kV loop)", bx + 61, bx + 72,
-         by + 1, by + 14, 7.5, tag=f"GBT-{n}",
-         info="One pad-mount step-up per block, 480 V to distribution voltage (KNOWN topology); 34.5 kV and ~3 MVA "
-              "TO VERIFY / WORKING ASSUMPTION. Looped on the group's 35 kV loop, in and out at the HV compartment (south).", **DC)
+    switchboard(L, f"GBC-{n}: block GB-{n} generator collector box, 480 V outdoor switchboard, one breaker per unit (5)",
+                bx + 51, bx + 59, by + 5, by + 8, 7.5, tag=f"GBC-{n}",
+                info="Generator collector box (call, Oct 26): a 480 V panelboard with an individual breaker per generator, "
+                     "outdoor on a slab. Rating for 5 x 500 kW and size TO VERIFY.", **DC)
+    padmount(L, f"GBT-{n}: block GB-{n} step-up 480 V : 34.5 kV, ~3 MVA pad-mount (on the 35 kV loop)", bx + 63, bx + 71,
+             by + 2, by + 11, 6.5, tag=f"GBT-{n}",
+             info="One pad-mount step-up per block, 480 V to distribution voltage (KNOWN topology); 34.5 kV and ~3 MVA "
+                  "TO VERIFY / WORKING ASSUMPTION. Loop in and out at the front (south) HV cabinet.", **DC)
 ehouse(L, "SWG-MY: 35 kV switchgear lineup for the modular blocks (group breaker G1, spares G2-G4, feeder FDR)", 2206, 2234,
        482, 496, 14, tag="SWG-MY",
        info="Lineup on the call's logic: about four generator-group breakers per lineup (one used here: G1 takes the "
@@ -1800,17 +1831,17 @@ for n, (bx, by) in enumerate(GB_BLOCKS, 1):
     for m in range(5):
         xt = bx + 2 + U_PITCH * m + 6.2
         add_route("mvlv_cable", [(xt, by + 9.55), (xt, by + 7.5)], MX, sheet="typical (modular gas blocks)")
-    add_route("mvlv_cable", [(bx + 2, by + 7.5), (bx + 47, by + 7.5)], MX, sheet="typical (modular gas blocks)")
-    add_route("mvlv_cable", [(bx + 57, by + 7), (bx + 61, by + 7)], MX, sheet="typical (modular gas blocks)")
-    add_route("mvlv_cable", [(bx + 66.5, by + 1), (bx + 66.5, by - 3), (GB_LOOP_X, by - 3)], MX, sheet="typical (modular gas blocks)")
+    add_route("mvlv_cable", [(bx + 2, by + 7.5), (bx + 51, by + 7.5)], MX, sheet="typical (modular gas blocks)")
+    add_route("mvlv_cable", [(bx + 59, by + 7), (bx + 63, by + 7)], MX, sheet="typical (modular gas blocks)")
+    add_route("mvlv_cable", [(bx + 67, by + 2), (bx + 67, by - 3), (GB_LOOP_X, by - 3)], MX, sheet="typical (modular gas blocks)")
 add_route("mvlv_cable", [(GB_LOOP_X, GB_ROWS[0] - 3), (GB_LOOP_X, GB_ROWS[-1] - 3)], MX, sheet="typical (modular gas blocks)")
-add_route("mvlv_cable", [(2234, 486), (GB_LOOP_X, 486)], MX, sheet="typical (modular gas blocks)")   # into SWG-MY
-add_route("mvlv_cable", [(2234, 493), (2245, 493), (2245, 892)], MX, sheet="typical (modular gas blocks)")  # feeder
+add_route("mvlv_cable", [(2234, 486), (GB_LOOP_X, 486)], MX, sheet="typical (modular gas blocks)")                  # into SWG-MY
+add_route("mvlv_cable", [(2234, 493), (2245, 493), (2245, 892)], MX, sheet="typical (modular gas blocks)")         # feeder
 add_route("mvlv_cable", [(2520, 880), (2530, 880)], MX, sheet="typical (modular gas blocks)")                     # into BTM-SWGR
-add_route("fuel_gas", [(2340, 452), (2340, GB_ROWS[2] + 21.5)], MX, sheet="typical (modular gas blocks)")
-add_route("fuel_gas", [(2342, 805), (2342, GB_ROWS[3] + 21.5)], MX, sheet="typical (modular gas blocks)")
+add_route("fuel_gas", [(2340, 452), (2340, GB_ROWS[1] + 22)], MX, sheet="typical (modular gas blocks)")
+add_route("fuel_gas", [(2342, 805), (2342, GB_ROWS[2] + 22)], MX, sheet="typical (modular gas blocks)")
 for (bx, by) in GB_BLOCKS:
-    add_route("fuel_gas", [(2340 if by < 600 else 2342, by + 21.5), (bx + 4, by + 21.5)], MX, sheet="typical (modular gas blocks)")
+    add_route("fuel_gas", [(2340 if by < 600 else 2342, by + 22), (bx + 4, by + 22)], MX, sheet="typical (modular gas blocks)")
 add_route("fuel_gas", [(2205, 452), (2205, 378)], MX)                                     # header -> MT-4..6
 for x in (2010, 2070, 2130):
     add_route("fuel_gas", [(x, 536), (x, 513)], MX)
