@@ -306,6 +306,16 @@ def build():
     while z < 36:
         box(559.6, 562.4, 677.8, 678.2, z, z + .07, "pipe")
         z += 2.0
+    # the riser's top turns east into the side of the EL 36 MV tray (rails x 563.5 / 566.5): a short ladder branch,
+    # the three cables carried over into the tray (owner, Oct 27: the riser stood beside the tray end, unconnected)
+    for y_ in (676.6, 678.2):
+        box(559.6, 563.5, y_ - .08, y_, 35.9, 36.6, "pipe")
+    for x_ in (560.4, 561.6, 562.8):
+        box(x_, x_ + .12, 676.6, 678.2, 35.9, 36.0, "pipe")
+    for k in (-1, 0, 1):
+        x = 561.0 + k * .7
+        rod((x, 677.4, 36.0), (x, 677.4, 36.25), .2, "cable_mv", seg=8)
+        rod((x, 677.4, 36.25), (564.6 + k * .6, 677.4, 36.25), .2, "cable_mv", seg=8)
 
     # ---- out to the field: the 600 V power / control cables leave through the north-wall transit frame (EL 8.9) for
     # the riser to the EL 30 LV tray; instrumentation, thermocouple extension, fire alarm and fibre go up through the
