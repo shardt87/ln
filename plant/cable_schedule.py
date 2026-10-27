@@ -596,13 +596,6 @@ if swg_my:
         "MV35", "1/C", "750", 1, 3, 10000, 34500, 167, "to the fence 585 ft; + ~120 ft beyond to BTM-SWGR (data-centre scope)",
         length=(585, 20, "Buried"))
 # modular power park (Oct 27): each class from its units to its collector, the collector to the yard switchgear
-mod_eh_ = BY_TAG["MOD-EH"]
-aero, aero_eh = BY_TAG["AERO-1"], BY_TAG["AERO-1-EH"]
-add(aero, aero_eh, "AERO-1 generator leads to the generator breaker", "MV15", "1/C", "1000", 6, 3, 48000, 13800, 2008,
-    "6 sets of 3 x 1/C 1000 kcmil")
-add(aero_eh, mod_eh_, "AERO-1-EH 13.8 kV feeder to MOD-EH", "MV15", "1/C", "1000", 6, 3, 48000, 13800, 2008)
-add(aero_eh, aero, "AERO-1 control / protection / CT-VT", "CTAX", "12/C", "14")
-add(aero, aero_eh, "AERO-1 instrumentation (turbine, generator, filter house)", "ITC", "12 pr", "18")
 tgf_swg = BY_TAG["TGF-SWG"]
 for k in range(1, 7):
     t = BY_TAG[f"TGF-{k}"]
@@ -874,7 +867,7 @@ SKIP_LV = re.compile(r"^R1 |SWGR|LC-480|MCC|EMCC|transformer|T-R\d|T-R4|LCT-|T4-
                      r"Fuel-gas compressors 3|Air-cooled condenser|GCB-|NGT-|SPC-|breaker|entrance|terminal tower|"
                      r"cable termination structure|GTG-|STG|230 kV switchyard|BESS yard|INL-|stair tower|Turbine hall exterior")
 done_bld = set()
-GB_OWN = re.compile(r"^(GB-\d|GBC-\d|GBT-\d|SWG-MY|AERO-1|TGF-|CGE-|PGS-|LGN-)")     # modular gas blocks carry their own L1-L7 circuits (above)
+GB_OWN = re.compile(r"^(GB-\d|GBC-\d|GBT-\d|SWG-MY|TGF-|CGE-|PGS-|LGN-)")     # modular gas blocks carry their own L1-L7 circuits (above)
 for it in ITEMS:
     apps = " ".join(it.get("wiring", []))
     if GB_OWN.match(it.get("tag") or ""):

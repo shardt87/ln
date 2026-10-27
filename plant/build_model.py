@@ -1480,33 +1480,8 @@ ehouse(L, "SWG-MY: 35 kV switchgear lineup for the modular blocks (group breaker
 
 # modular power park (owner, Oct 27): the main modular gas classes, each built as a real deployment block on its own
 # fenced site with its own collection gear and one sign (class names only; the example companies are in HANDOFF):
-# aeroderivative package, trailer gas-engine fleet, containerized gas engines, paralleled gas gensets, linear generators
-tech_site("Aeroderivative package site", 1945, 2085, 652, 776, "n")
-item(L, "AERO-1: aeroderivative gas-turbine generator package, ~48 MW, 13.8 kV (turbine + generator enclosure)",
-     (1955, 2035, 698, 716), (0, 24), tag="AERO-1",
-     info="Aeroderivative gas turbine and generator on one skid in an acoustic enclosure, ~48 MW at 13.8 kV; inlet "
-          "filter house above, exhaust collector and stack at the west end. Class layout, not a vendor's drawing.", **DC)
-B(1955, 2035, 698, 716, 0, 3, "steel_dark")                                                # base skid
-B(1965, 2015, 700, 714, 3, 22, "ehouse")                                                   # turbine enclosure
-B(2015, 2035, 700, 714, 3, 18, "machine")                                                  # generator enclosure
-B(1955, 1965, 701, 713, 0, 20, "steel")                                                    # exhaust collector
-B(2035, 2036, 703, 711, 5, 13, "panel")                                                    # generator terminal box
-item(L, "AERO-1 inlet filter house (elevated) and inlet duct", (1983, 2007, 714, 742), (0, 46), **DC)
-for _x in (1984, 2005):
-    for _y in (722, 740):
-        B(_x, _x + 1.2, _y, _y + 1.2, 0, 30, "steel")                                      # filter-house legs
-B(1983, 2007, 718, 742, 30, 46, "filter")                                                  # filter house
-B(1990, 2000, 714, 720, 22, 34, "duct")                                                    # inlet duct into the package
-item(L, "AERO-1 exhaust stack", (1952, 1968, 699, 715), (0, 90), **DC)
-V(1959.5, 707, 5.0, 20, 90, "stack", seg=20)
-ehouse(L, "AERO-1-EH: generator breaker, protection and auxiliaries e-house (13.8 kV)", 2045, 2077, 694, 708, 13,
-       tag="AERO-1-EH", **DC)
-solid(L, "AERO-1 lube-oil fin-fan cooler", 2040, 2058, 718, 732, 0, 10, "radiator", **DC)
-for _x in (2045, 2053):
-    V(_x, 725, 3.2, 10, 10.6, "fan", seg=14)
-solid(L, "AERO-1 fuel-gas skid", 1950, 1962, 728, 738, 0, 7, "equip", **DC)
-xfmr(L, "AERO-1 UAT: 13.8 / 0.48 kV unit auxiliary transformer", 2050, 2064, 664, 678, 9, **DC)
-
+# trailer gas-engine fleet, containerized gas engines, paralleled gas gensets, linear generators (the aeroderivative and
+# industrial turbine classes are AX-1 / IG-1 by the T-MOD transformers, modular_packages.py)
 tech_site("Trailer gas-engine fleet site", 1945, 2085, 540, 642, "n")
 for k in range(6):
     x = 1953 + 14 * k
@@ -1965,9 +1940,6 @@ add_route("fuel_gas", [(2005, 452), (1990, 452), (1990, 364), (2003, 364)], MX) 
 add_route("fuel_gas", [(2023, 452), (2023, 428)], MX)                                       # -> GEN-O
 add_route("fuel_gas", [(2081, 452), (2081, 389), (2099, 389), (2099, 379)], MX)            # -> microturbines
 # modular power park: each site's units to its collector, the collectors to MOD-EH / PAD-EH / PAD-LV out by the gates
-add_route("mvlv_cable", [(2036, 707), (2045, 707)], MX)                                     # AERO-1 -> AERO-1-EH
-add_route("mvlv_cable", [(2057, 678), (2057, 694)], MX)                                     # AERO-1-EH -> UAT
-add_route("mvlv_cable", [(2050, 708), (2050, 748), (2015, 748), (2015, 790), (1990, 790), (1990, 880)], MX)  # -> MOD-EH
 for k in range(6):                                                                          # TGF trailers -> TGF-SWG
     add_route("mvlv_cable", [(1957.25 + 14 * k, 548), (1957.25 + 14 * k, 544)], MX)
 add_route("mvlv_cable", [(1957.25, 544), (2045.5, 544), (2045.5, 548)], MX)
@@ -1988,7 +1960,7 @@ for k in range(4):                                                              
     add_route("mvlv_cable", [(2072 + 14 * k, 432), (2072 + 14 * k, 436)], MX)
 add_route("mvlv_cable", [(2072, 436), (2135, 436), (2135, 428)], MX)
 add_route("mvlv_cable", [(2135, 414), (2135, 408), (2105, 408), (2105, 400)], MX)          # LGN-INV -> LV lane
-add_route("fuel_gas", [(1990, 452), (1938, 452), (1938, 734), (1950, 734)], MX)             # west riser -> AERO-1 gas skid
+add_route("fuel_gas", [(1990, 452), (1938, 452), (1938, 606)], MX)                         # west riser
 add_route("fuel_gas", [(1938, 606), (2032, 606)], MX)                                       # -> trailer fleet
 for k in range(6):
     add_route("fuel_gas", [(1957.25 + 14 * k, 606), (1957.25 + 14 * k, 601)], MX)

@@ -7,7 +7,6 @@ from fuel import rod
 
 # site signs at each gate: (x, y), title, rating, cable story
 SITES = [
-    ((1962.0, 648.0), "AERODERIVATIVE GAS-TURBINE PACKAGE", "~48 MW · 13.8 kV", "15 kV 1000 kcmil leads, 6 sets > MOD-EH"),
     ((1962.0, 536.0), "TRAILER GAS-ENGINE FLEET", "6 x ~2.5 MW trailers · 13.8 kV", "SHD-GC on grade > switchgear trailer"),
     ((1962.0, 458.5), "CONTAINERIZED GAS ENGINES", "4 x ~4.4 MW · 40 ft containers", "15 kV leads > switchgear container"),
     ((2105.0, 632.0), "PARALLELED GAS GENSETS", "8 x 1 MW · 480 V paralleled", "480 V leads > switchgear > 2 pad-mounts"),
