@@ -7,11 +7,14 @@ from fuel import rod
 
 # site signs at each gate: (x, y), title, rating, cable story
 SITES = [
-    ((2050.0, 459.0), "CONTAINER GENSET SITE", "~2 MW · 13.8 kV · 40 ft container", "SHD-GC leads to GSP-1 > PAD-EH"),
-    ((2120.0, 401.5), "ENCLOSED GAS GENSET SITE", "2 MW · 480 V", "480 V leads to PAD-LV · control"),
-    ((2005.0, 401.5), "OPEN ENGINE SKID SITE", "1 MW · 480 V · under a canopy", "480 V leads to PAD-LV · control"),
-    ((2020.0, 397.0), "FUEL-CELL SITE", "4 x ~250 kW solid-oxide + inverter", "DC to the inverter · 480 V AC"),
-    ((2100.0, 397.0), "MICROTURBINE SITE", "3 x 1 MW + 480 V switchboard", "480 V leads to the switchboard"),
+    ((1962.0, 648.0), "AERODERIVATIVE GAS-TURBINE PACKAGE", "~48 MW · 13.8 kV", "15 kV 1000 kcmil leads, 6 sets > MOD-EH"),
+    ((1962.0, 536.0), "TRAILER GAS-ENGINE FLEET", "6 x ~2.5 MW trailers · 13.8 kV", "SHD-GC on grade > switchgear trailer"),
+    ((1962.0, 458.5), "CONTAINERIZED GAS ENGINES", "4 x ~4.4 MW · 40 ft containers", "15 kV leads > switchgear container"),
+    ((2105.0, 632.0), "PARALLELED GAS GENSETS", "8 x 1 MW · 480 V paralleled", "480 V leads > switchgear > 2 pad-mounts"),
+    ((2140.0, 401.5), "LINEAR GENERATORS", "4 x ~250 kW · gas, DC out", "DC to the inverter · 480 V AC"),
+    ((2005.0, 401.5), "OPEN ENGINE SKID", "1 MW · 480 V · under a canopy", "480 V leads to PAD-LV · control"),
+    ((2020.0, 397.0), "FUEL CELLS", "4 x ~250 kW solid-oxide + inverter", "DC to the inverter · 480 V AC"),
+    ((2100.0, 397.0), "MICROTURBINES", "3 x 1 MW + 480 V switchboard", "480 V leads to the switchboard"),
 ]
 TRAILERS = [
     (2154.0, 690.0, "TRAILER GENSET", "13.8 kV · on wheels", "SHD-GC through the cable ramp"),

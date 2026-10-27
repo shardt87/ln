@@ -555,7 +555,7 @@ for k in (1,):
 mob = BY_TAG["MOB-1"]
 add(mob, BY_TAG["PIC"], "MOB-1 13.8 kV to PIC through the C-L01 ramp", "SHD", "3/C", "2", 1, 1, 2000, 13800, 93, "portable")
 add(BY_TAG["PIC"], BY_TAG["LB"], "PIC to commissioning load bank", "SHD", "3/C", "2", 1, 1, 2000, 13800, 93, "portable")
-for t, kw in (("GEN-E", 2000), ("GEN-O", 1000)):
+for t, kw in (("GEN-O", 1000),):
     g = BY_TAG[t]
     I = kw / (1.732 * .48)
     sets = math.ceil(I * 1.25 / 405)
@@ -595,6 +595,45 @@ if swg_my:
     add(swg_my, swg_my, "L5 SWG-MY feeder to the data centre 34.5 kV switchgear BTM-SWGR, to the fence (scope owner TO VERIFY)",
         "MV35", "1/C", "750", 1, 3, 10000, 34500, 167, "to the fence 585 ft; + ~120 ft beyond to BTM-SWGR (data-centre scope)",
         length=(585, 20, "Buried"))
+# modular power park (Oct 27): each class from its units to its collector, the collector to the yard switchgear
+mod_eh_ = BY_TAG["MOD-EH"]
+aero, aero_eh = BY_TAG["AERO-1"], BY_TAG["AERO-1-EH"]
+add(aero, aero_eh, "AERO-1 generator leads to the generator breaker", "MV15", "1/C", "1000", 6, 3, 48000, 13800, 2008,
+    "6 sets of 3 x 1/C 1000 kcmil")
+add(aero_eh, mod_eh_, "AERO-1-EH 13.8 kV feeder to MOD-EH", "MV15", "1/C", "1000", 6, 3, 48000, 13800, 2008)
+add(aero_eh, aero, "AERO-1 control / protection / CT-VT", "CTAX", "12/C", "14")
+add(aero, aero_eh, "AERO-1 instrumentation (turbine, generator, filter house)", "ITC", "12 pr", "18")
+tgf_swg = BY_TAG["TGF-SWG"]
+for k in range(1, 7):
+    t = BY_TAG[f"TGF-{k}"]
+    add(t, tgf_swg, f"TGF-{k} 13.8 kV leads to the switchgear trailer", "SHD", "3/C", "2", 1, 1, 2500, 13800, 105,
+        "portable, on grade, cam-lock")
+    add(tgf_swg, t, f"TGF-{k} control / sync", "CTAX", "12/C", "14")
+add(tgf_swg, pad_eh, "TGF-SWG 13.8 kV fleet feeder to PAD-EH", "MV15", "1/C", "500", 2, 3, 15000, 13800, 628)
+cge_swg = BY_TAG["CGE-SWG"]
+for k in range(1, 5):
+    c = BY_TAG[f"CGE-{k}"]
+    add(c, cge_swg, f"CGE-{k} 13.8 kV generator leads to the switchgear container", "MV15", "1/C", "4/0", 1, 3, 4400,
+        13800, 184)
+    add(cge_swg, c, f"CGE-{k} control / sync / protection", "CTAX", "12/C", "14")
+    add(c, cge_swg, f"CGE-{k} instrumentation", "ITC", "4 pr", "18")
+add(cge_swg, pad_eh, "CGE-SWG 13.8 kV site feeder to PAD-EH", "MV15", "1/C", "500", 2, 3, 17600, 13800, 736)
+pgs_swg = BY_TAG["PGS-SWG"]
+for k in range(1, 9):
+    g = BY_TAG[f"PGS-{k}"]
+    add(g, pgs_swg, f"PGS-{k} 480 V generator leads to the paralleling switchgear", "LV1C", "1/C", "500", 4, 4, 1000, 480,
+        1203, "4 sets of 4 x 1/C")
+    add(pgs_swg, g, f"PGS-{k} control / sync", "CTAX", "12/C", "14")
+for n in (1, 2):
+    tx = BY_TAG[f"PGS-TX{n}"]
+    add(pgs_swg, tx, f"PGS-SWG main {n} to PGS-TX{n} 480 V secondary", "LV1C", "1/C", "600", 12, 4, 4000, 480, 4811,
+        "12 sets of 4 x 1/C")
+    add(tx, pad_eh, f"PGS-TX{n} 13.8 kV to PAD-EH", "MV15", "1/C", "4/0", 1, 3, 4000, 13800, 167)
+lgn_inv = BY_TAG["LGN-INV"]
+for k in range(1, 5):
+    add(BY_TAG[f"LGN-{k}"], lgn_inv, f"LGN-{k} DC output to the inverter", "LV1C", "1/C", "500", 1, 2, 250, 800, 320,
+        "DC, 2 x 1/C")
+lv_feeder(lgn_inv, BY_TAG["PAD-LV"], 1000, "LGN-INV 480 V AC to PAD-LV", motor=False)
 fc_inv = [one(r"^FC-5..8 inverter")]                     # FC-1..4 / MT-1..3 taken out Oct 20 (one set, in the yard)
 for k in range(5, 9):
     fc = one(rf"^FC-{k}: SOFC")
@@ -835,7 +874,7 @@ SKIP_LV = re.compile(r"^R1 |SWGR|LC-480|MCC|EMCC|transformer|T-R\d|T-R4|LCT-|T4-
                      r"Fuel-gas compressors 3|Air-cooled condenser|GCB-|NGT-|SPC-|breaker|entrance|terminal tower|"
                      r"cable termination structure|GTG-|STG|230 kV switchyard|BESS yard|INL-|stair tower|Turbine hall exterior")
 done_bld = set()
-GB_OWN = re.compile(r"^(GB-\d|GBC-\d|GBT-\d|SWG-MY)")     # modular gas blocks carry their own L1-L7 circuits (above)
+GB_OWN = re.compile(r"^(GB-\d|GBC-\d|GBT-\d|SWG-MY|AERO-1|TGF-|CGE-|PGS-|LGN-)")     # modular gas blocks carry their own L1-L7 circuits (above)
 for it in ITEMS:
     apps = " ".join(it.get("wiring", []))
     if GB_OWN.match(it.get("tag") or ""):

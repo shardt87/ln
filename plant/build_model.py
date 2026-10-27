@@ -1293,12 +1293,6 @@ def tech_site(name, x0, x1, y0, y1, gate):
     B(x0, x0 + .4, y0, y1, 0, 7, "fence"); B(x1 - .4, x1, y0, y1, 0, 7, "fence")
 
 
-tech_site("Container genset site", 1995, 2080, 462, 528, "s")
-solid(L, "CONT-1: containerized genset 13.8 kV (40 ft)", 2005, 2045, 488, 496, 0, 9.5, "machine",
-      tag="CONT-1", area="I", sheet="SW-3X1-08")
-ehouse(L, "GSP-1: generator breaker / protection", 2048, 2056, 486, 498, 8, tag="GSP-1", area="I",
-       sheet="SW-3X1-08")
-solid(L, "CONT-1 gas regulator / meter skid", 2008, 2020, 470, 476, 0, 5, "equip", area="I", basis="design change")
 item(L, "MOB-1: trailer genset", (2160, 2213, 695, 704), (0, 13.5), tag="MOB-1", area="I", sheet="SW-3X1-08")
 B(2160, 2213, 695, 704, 3, 13.5, "machine")
 for xx in (2165, 2200, 2206):
@@ -1306,9 +1300,6 @@ for xx in (2165, 2200, 2206):
 ehouse(L, "PIC: portable input cabinet", 2255, 2263, 572, 578, 7, tag="PIC", area="I", sheet="SW-3X1-08")
 solid(L, "LB: commissioning load bank (trailer)", 2185, 2215, 588, 596, 0, 12, "equip", tag="LB", area="I",
       sheet="SW-3X1-08")
-tech_site("Enclosed gas genset site", 2060, 2150, 404, 444, "s")
-solid(L, "GEN-E: enclosed industrial gas genset 2 MW", 2072, 2118, 419, 429, 0, 15, "machine", tag="GEN-E",
-      area="I", basis="vendor", sheet="SW-3X1-08")
 tech_site("Open engine skid site", 1995, 2052, 404, 444, "s")
 item(L, "GEN-O canopy: steel shade roof over the open skid", (2004, 2042, 413, 435), (0, 13.6), area="I",
      basis="design change", register=False)
@@ -1486,6 +1477,108 @@ ehouse(L, "SWG-MY: 35 kV switchgear lineup for the modular blocks (group breaker
        info="Lineup on the call's logic: about four generator-group breakers per lineup (one used here: G1 takes the "
             "six-block loop out and back), a feeder breaker to the data centre's 34.5 kV switchgear BTM-SWGR. Whether "
             "the feeder is the generator owner's cable or the data centre's is TO VERIFY. Size is a placeholder.", **DC)
+
+# modular power park (owner, Oct 27): the main modular gas classes, each built as a real deployment block on its own
+# fenced site with its own collection gear and one sign (class names only; the example companies are in HANDOFF):
+# aeroderivative package, trailer gas-engine fleet, containerized gas engines, paralleled gas gensets, linear generators
+tech_site("Aeroderivative package site", 1945, 2085, 652, 776, "n")
+item(L, "AERO-1: aeroderivative gas-turbine generator package, ~48 MW, 13.8 kV (turbine + generator enclosure)",
+     (1955, 2035, 698, 716), (0, 24), tag="AERO-1",
+     info="Aeroderivative gas turbine and generator on one skid in an acoustic enclosure, ~48 MW at 13.8 kV; inlet "
+          "filter house above, exhaust collector and stack at the west end. Class layout, not a vendor's drawing.", **DC)
+B(1955, 2035, 698, 716, 0, 3, "steel_dark")                                                # base skid
+B(1965, 2015, 700, 714, 3, 22, "ehouse")                                                   # turbine enclosure
+B(2015, 2035, 700, 714, 3, 18, "machine")                                                  # generator enclosure
+B(1955, 1965, 701, 713, 0, 20, "steel")                                                    # exhaust collector
+B(2035, 2036, 703, 711, 5, 13, "panel")                                                    # generator terminal box
+item(L, "AERO-1 inlet filter house (elevated) and inlet duct", (1983, 2007, 714, 742), (0, 46), **DC)
+for _x in (1984, 2005):
+    for _y in (722, 740):
+        B(_x, _x + 1.2, _y, _y + 1.2, 0, 30, "steel")                                      # filter-house legs
+B(1983, 2007, 718, 742, 30, 46, "filter")                                                  # filter house
+B(1990, 2000, 714, 720, 22, 34, "duct")                                                    # inlet duct into the package
+item(L, "AERO-1 exhaust stack", (1952, 1968, 699, 715), (0, 90), **DC)
+V(1959.5, 707, 5.0, 20, 90, "stack", seg=20)
+ehouse(L, "AERO-1-EH: generator breaker, protection and auxiliaries e-house (13.8 kV)", 2045, 2077, 694, 708, 13,
+       tag="AERO-1-EH", **DC)
+solid(L, "AERO-1 lube-oil fin-fan cooler", 2040, 2058, 718, 732, 0, 10, "radiator", **DC)
+for _x in (2045, 2053):
+    V(_x, 725, 3.2, 10, 10.6, "fan", seg=14)
+solid(L, "AERO-1 fuel-gas skid", 1950, 1962, 728, 738, 0, 7, "equip", **DC)
+xfmr(L, "AERO-1 UAT: 13.8 / 0.48 kV unit auxiliary transformer", 2050, 2064, 664, 678, 9, **DC)
+
+tech_site("Trailer gas-engine fleet site", 1945, 2085, 540, 642, "n")
+for k in range(6):
+    x = 1953 + 14 * k
+    item(L, f"TGF-{k + 1}: trailer-mounted gas-engine generator ~2.5 MW, 13.8 kV (trailer {k + 1} of 6)",
+         (x, x + 8.5, 548, 601), (0, 15), tag=f"TGF-{k + 1}",
+         info="Gas reciprocating engine and generator in an enclosure on a road trailer, ~2.5 MW at 13.8 kV, cabled on "
+              "grade to the fleet's mobile switchgear trailer. Class layout, not a vendor's drawing.", **DC)
+    B(x, x + 8.5, 548, 601, 3.4, 4.2, "steel_dark")                                        # trailer deck
+    B(x + .2, x + 8.3, 551, 590, 4.2, 13.2, "white_truck")                                 # genset enclosure
+    B(x + .4, x + 8.1, 584, 590, 13.2, 14.4, "radiator")                                   # roof radiator
+    V(x + 4.25, 556, .55, 13.2, 15.0, "stack", seg=10)
+    B(x + 1, x + 7.5, 548, 551, 2.0, 7.0, "panel")                                         # terminal box (rear)
+    B(x + 1.5, x + 7, 594, 601, 3.4, 5.5, "steel")                                         # gooseneck
+    B(x + 1.6, x + 2.2, 596, 597, 0, 3.4, "steel"); B(x + 6.3, x + 6.9, 596, 597, 0, 3.4, "steel")   # landing gear
+    for _y in (553.5, 558):
+        R((x + .1, _y, 1.6), (x + 1.1, _y, 1.6), 1.6, "tyre", seg=14)
+        R((x + 7.4, _y, 1.6), (x + 8.4, _y, 1.6), 1.6, "tyre", seg=14)
+item(L, "TGF-SWG: mobile 13.8 kV switchgear trailer (fleet collector)", (2041, 2050, 548, 590), (0, 13), tag="TGF-SWG", **DC)
+B(2041, 2050, 548, 590, 3.4, 4.2, "steel_dark"); B(2041.3, 2049.7, 550, 584, 4.2, 12.5, "ehouse")
+for _y in (553.5, 558):
+    R((2041.1, _y, 1.6), (2042.1, _y, 1.6), 1.6, "tyre", seg=14); R((2048.9, _y, 1.6), (2049.9, _y, 1.6), 1.6, "tyre", seg=14)
+item(L, "TGF-CT: fleet control and gas-conditioning trailer", (2058, 2067, 548, 590), (0, 13), **DC)
+B(2058, 2067, 548, 590, 3.4, 4.2, "steel_dark"); B(2058.3, 2066.7, 552, 588, 4.2, 12.0, "machine")
+for _y in (553.5, 558):
+    R((2058.1, _y, 1.6), (2059.1, _y, 1.6), 1.6, "tyre", seg=14); R((2065.9, _y, 1.6), (2066.9, _y, 1.6), 1.6, "tyre", seg=14)
+
+tech_site("Containerized gas engine site", 1945, 2085, 462, 530, "n")
+for k in range(4):
+    x = 1955 + 18 * k
+    item(L, f"CGE-{k + 1}: containerized gas-engine generator ~4.4 MW, 13.8 kV (40 ft engine container {k + 1} of 4)",
+         (x, x + 8, 470, 510), (0, 31), tag=f"CGE-{k + 1}",
+         info="Gas reciprocating engine and generator in a 40 ft container, roof-mounted radiator and exhaust stack, "
+              "~4.4 MW at 13.8 kV, to the site's switchgear container. Class layout, not a vendor's drawing.", **DC)
+    B(x, x + 8, 470, 510, 0, 9.6, "white_truck")                                           # engine container
+    for _y in range(472, 509, 4):
+        B(x - .08, x, _y, _y + .2, .4, 9.2, "steel"); B(x + 8, x + 8.08, _y, _y + .2, .4, 9.2, "steel")   # ribs
+    B(x - .3, x + 8.3, 474, 498, 9.6, 13.6, "radiator")                                   # roof radiator module
+    for _y in (478, 486, 494):
+        V(x + 4, _y, 3.0, 13.6, 14.0, "fan", seg=14)
+    R((x + 4, 500, 11.5), (x + 4, 508, 11.5), 1.2, "steel", seg=12)                       # exhaust silencer
+    V(x + 4, 506, .8, 12.0, 31.0, "stack", seg=12)
+    B(x + 1.5, x + 6.5, 469.6, 470, 2.0, 7.0, "panel")                                    # generator terminal box
+ehouse(L, "CGE-SWG: 13.8 kV switchgear container (engine breakers, site feeder)", 2030, 2038, 470, 510, 10,
+       tag="CGE-SWG", **DC)
+xfmr(L, "CGE-AUX: 13.8 / 0.48 kV auxiliary transformer", 2050, 2062, 474, 486, 8, **DC)
+
+tech_site("Paralleled gas genset site", 2095, 2150, 462, 640, "s")
+for k in range(8):
+    y = 520 + 13 * k
+    item(L, f"PGS-{k + 1}: enclosed gas genset 1 MW, 480 V (paralleled, unit {k + 1} of 8)", (2103, 2131, y, y + 8.5),
+         (0, 12.5), tag=f"PGS-{k + 1}",
+         info="Sound-attenuated gas genset, 1 MW at 480 V, paralleled on the site's 480 V switchgear and stepped up "
+              "in two pad-mounts. Class layout, not a vendor's drawing.", **DC)
+    B(2103, 2131, y, y + 8.5, 0, .8, "steel_dark")
+    B(2103.2, 2126, y + .1, y + 8.4, .8, 11, "white_truck")                               # enclosure
+    B(2126, 2130.8, y + .1, y + 8.4, .8, 11, "louvre")                                   # radiator end (east)
+    V(2108, y + 4.25, .45, 11, 12.5, "stack", seg=10)
+ehouse(L, "PGS-SWG: 480 V paralleling switchgear (8 generator breakers, 2 transformer mains)", 2135, 2147, 520, 620, 10,
+       tag="PGS-SWG", **DC)
+padmount(L, "PGS-TX1: 480 V : 13.8 kV, ~5 MVA pad-mount (gensets 1-4)", lambda u, v: (u, v), 2099, 2111, 470, 482, 6.5,
+         tag="PGS-TX1", **DC)
+padmount(L, "PGS-TX2: 480 V : 13.8 kV, ~5 MVA pad-mount (gensets 5-8)", lambda u, v: (u, v), 2134, 2146, 470, 482, 6.5,
+         tag="PGS-TX2", **DC)
+
+tech_site("Linear generator site", 2060, 2150, 404, 444, "s")
+for k in range(4):
+    x = 2068 + 14 * k
+    solid(L, f"LGN-{k + 1}: linear generator ~250 kW (gas, no combustion engine), DC out", x, x + 8, 412, 432, 0, 8,
+          "white_truck", tag=f"LGN-{k + 1}", **DC)
+    B(x + 1, x + 7, 426, 431, 8, 9, "louvre")
+ehouse(L, "LGN-INV: linear generator inverter / AC cabinet (480 V)", 2126, 2144, 414, 428, 8, tag="LGN-INV", **DC)
+
 
 # ---------------------------------------------------------------------------
 # J GT INLET CHILLING (SW-3X1-02), optional
@@ -1861,21 +1954,51 @@ add_route("mvlv_cable", [(2097, 346), (2137, 346), (2137, 358)], MX)
 add_route("mvlv_cable", [(2023, 400), (2156, 400), (2156, 435), (2160, 435)], MX)           # LV lane -> PAD-LV
 # every drop to the lane leaves its site through the gate
 add_route("mvlv_cable", [(2023, 420), (2023, 400)], MX)                                     # GEN-O
-add_route("mvlv_cable", [(2095, 419), (2095, 410), (2105, 410), (2105, 400)], MX)           # GEN-E
 add_route("mvlv_cable", [(2062, 376), (2062, 385), (2040, 385), (2040, 400)], MX)           # inverter
 add_route("mvlv_cable", [(2137, 372), (2137, 386), (2117, 386), (2117, 400)], MX)           # MT switchboard
-add_route("mvlv_cable", [(2045, 492), (2048, 492)], MX)                                     # CONT-1 -> GSP-1
-add_route("mvlv_cable", [(2052, 486), (2052, 480), (2040, 480), (2040, 458), (2140, 458), (2140, 477), (2160, 477)], MX)  # GSP-1 -> PAD-EH, out by the gate
 add_route("mvlv_cable", [(1987.5, 1032), (1987.5, 900)], MX)                                # AX-1 gen leads -> MOD-EH
 add_route("mvlv_cable", [(2180.5, 1032), (2180.5, 990), (1992, 990), (1992, 900)], MX)     # IG-1 (mirrored) gen leads -> MOD-EH
 add_route("mvlv_cable", [(2258.5, 1252), (2266, 1252), (2266, 1324), (2240, 1324)], "OPT_MOD_ROUTES")  # SC-2 PCM (mirrored
                                                                           # to x 2218.5-2258.5 by sc2_mirror) -> ammonia skid
 add_route("fuel_gas", [(2340, 440), (2340, 452), (2005, 452)], MX)                         # pad skid header (west)
 add_route("fuel_gas", [(2005, 452), (1990, 452), (1990, 364), (2003, 364)], MX)            # -> fuel cells (west end)
-add_route("fuel_gas", [(2014, 452), (2014, 476)], MX)                                       # -> CONT-1 regulator skid
 add_route("fuel_gas", [(2023, 452), (2023, 428)], MX)                                       # -> GEN-O
-add_route("fuel_gas", [(2095, 452), (2095, 429)], MX)                                       # -> GEN-E
 add_route("fuel_gas", [(2081, 452), (2081, 389), (2099, 389), (2099, 379)], MX)            # -> microturbines
+# modular power park: each site's units to its collector, the collectors to MOD-EH / PAD-EH / PAD-LV out by the gates
+add_route("mvlv_cable", [(2036, 707), (2045, 707)], MX)                                     # AERO-1 -> AERO-1-EH
+add_route("mvlv_cable", [(2057, 678), (2057, 694)], MX)                                     # AERO-1-EH -> UAT
+add_route("mvlv_cable", [(2050, 708), (2050, 748), (2015, 748), (2015, 790), (1990, 790), (1990, 880)], MX)  # -> MOD-EH
+for k in range(6):                                                                          # TGF trailers -> TGF-SWG
+    add_route("mvlv_cable", [(1957.25 + 14 * k, 548), (1957.25 + 14 * k, 544)], MX)
+add_route("mvlv_cable", [(1957.25, 544), (2045.5, 544), (2045.5, 548)], MX)
+add_route("mvlv_cable", [(2045.5, 590), (2045.5, 620), (2015, 620), (2015, 646), (2153, 646), (2153, 490), (2170, 490),
+                         (2170, 484)], MX)                                                  # TGF-SWG -> PAD-EH
+for k in range(4):                                                                          # CGE containers -> CGE-SWG
+    add_route("mvlv_cable", [(1959 + 18 * k, 469.6), (1959 + 18 * k, 466)], MX)
+add_route("mvlv_cable", [(1959, 466), (2034, 466), (2034, 470)], MX)
+add_route("mvlv_cable", [(2034, 510), (2034, 520), (2015, 520), (2015, 535), (2088, 535), (2088, 458), (2156, 458),
+                         (2156, 477), (2160, 477)], MX)                                     # CGE-SWG -> PAD-EH
+for k in range(8):                                                                          # PGS gensets -> PGS-SWG
+    add_route("mvlv_cable", [(2131, 524.25 + 13 * k), (2135, 524.25 + 13 * k)], MX)
+add_route("mvlv_cable", [(2137, 520), (2137, 505), (2105, 505), (2105, 482)], MX)          # PGS-SWG -> TX1
+add_route("mvlv_cable", [(2140, 520), (2140, 482)], MX)                                     # PGS-SWG -> TX2
+add_route("mvlv_cable", [(2105, 470), (2105, 466), (2118, 466), (2118, 458)], MX)          # TX1 -> line, out by the gate
+add_route("mvlv_cable", [(2140, 470), (2140, 466), (2122, 466), (2122, 458)], MX)          # TX2 -> line
+for k in range(4):                                                                          # LGN skids -> inverter
+    add_route("mvlv_cable", [(2072 + 14 * k, 432), (2072 + 14 * k, 436)], MX)
+add_route("mvlv_cable", [(2072, 436), (2135, 436), (2135, 428)], MX)
+add_route("mvlv_cable", [(2135, 414), (2135, 408), (2105, 408), (2105, 400)], MX)          # LGN-INV -> LV lane
+add_route("fuel_gas", [(1990, 452), (1938, 452), (1938, 734), (1950, 734)], MX)             # west riser -> AERO-1 gas skid
+add_route("fuel_gas", [(1938, 606), (2032, 606)], MX)                                       # -> trailer fleet
+for k in range(6):
+    add_route("fuel_gas", [(1957.25 + 14 * k, 606), (1957.25 + 14 * k, 601)], MX)
+add_route("fuel_gas", [(1938, 533), (2013, 533)], MX)                                       # -> engine containers
+for k in range(4):
+    add_route("fuel_gas", [(1959 + 18 * k, 533), (1959 + 18 * k, 510)], MX)
+add_route("fuel_gas", [(2092.5, 452), (2092.5, 615.5)], MX)                                 # -> paralleled gensets
+for k in range(8):
+    add_route("fuel_gas", [(2092.5, 524.25 + 13 * k), (2103, 524.25 + 13 * k)], MX)
+add_route("fuel_gas", [(2066, 452), (2066, 422), (2068, 422)], MX)                          # -> linear generators
 # modular gas blocks: per block the 480 V lead trench (unit drops into one trench along the south side to GBC-n), GBC to
 # the step-up, the step-up's HV tap to the 35 kV loop corridor (x 2256), the corridor into SWG-MY, the SWG-MY feeder to
 # the data centre's 34.5 kV switchgear (joins the yard -> BTM corridor at y 892); gas headers east of the blocks
