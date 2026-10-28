@@ -7,11 +7,11 @@ from fuel import rod
 
 # site signs at each gate: (x, y), title, rating, cable story
 SITES = [
-    ((1962.0, 536.0), "TRAILER GAS-ENGINE FLEET", "6 x ~2.5 MW trailers · 13.8 kV", "SHD-GC on grade > switchgear trailer"),
-    ((1962.0, 458.5), "CONTAINERIZED GAS ENGINES", "4 x ~4.4 MW · stacked: engines below, cooling above", "15 kV leads > switchgear container"),
-    ((1962.0, 648.5), "MID-SIZE GAS TURBINES", "2 x ~16 MW packages · 13.8 kV", "15 kV leads > switchgear > MOD-EH"),
-    ((2120.0, 644.0), "GAS ENGINES + HEAT RECOVERY", "4 x ~2.5 MW · exhaust heat to hot water", "15 kV leads > switchgear container"),
-    ((2105.0, 632.0), "PARALLELED GAS GENSETS", "8 x 1 MW · 480 V paralleled", "480 V leads > switchgear > 2 pad-mounts"),
+    ((1962.0, 536.0), "TRAILER GAS-ENGINE FLEET", "6 x ~2.5 MW trailers · 13.8 kV", "SHD-GC > switchgear trailer > 35 kV step-up"),
+    ((1962.0, 458.5), "CONTAINERIZED GAS ENGINES", "4 x ~4.4 MW · stacked: engines below, cooling above", "15 kV leads > switchgear > 35 kV step-up"),
+    ((1962.0, 648.5), "MID-SIZE GAS TURBINES", "2 x ~16 MW packages · 13.8 kV", "15 kV leads > step-up > 35 kV collector"),
+    ((2120.0, 644.0), "GAS ENGINES + HEAT RECOVERY", "4 x ~2.5 MW · exhaust heat to hot water", "15 kV leads > switchgear > PAD-EH"),
+    ((2105.0, 632.0), "PARALLELED GAS GENSETS", "8 x 1 MW · 480 V paralleled", "480 V leads > switchgear > 2 pad-mounts to 35 kV"),
     ((2140.0, 401.5), "LINEAR GENERATORS", "4 x ~250 kW · gas, DC out", "DC to the inverter · 480 V AC"),
     ((2005.0, 401.5), "OPEN ENGINE SKID", "1 MW · 480 V · under a canopy", "480 V leads to PAD-LV · control"),
     ((2020.0, 397.0), "FUEL CELLS", "4 x ~250 kW solid-oxide + inverter", "DC to the inverter · 480 V AC"),

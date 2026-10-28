@@ -11,7 +11,8 @@ modular yard ... different modular ones"), in the open block between the collect
   the exhaust diffuser out of the end wall into a tall stack, generator air coolers and ventilation on the roof with a
   railed roof walkway, the electrical and control module, the lube-oil cooler, the fuel-gas module.
 
-Both: 13.8 kV generator leads in MV-105 down into the yard duct bank to MOD-EH (routes in build_model), ARMOR-X MC-HL
+Both: 13.8 kV generator leads in MV-105 to the unit step-up AX-GSU / IG-GSU (13.8 / 34.5 kV) and on to the park
+collector SWG-PK (routes in build_model, electrical review Oct 28), ARMOR-X MC-HL
 at the fuel-gas modules (Class I Div 2), TC-ER control from the control module. Layer OPT_MODX (design change beyond
 Rev 14), not in the register. Typical, not engineered.
 """
@@ -108,12 +109,12 @@ def ax1():
     module with roof ventilation, inlet filter module with stacked weather hoods."""
     Y0, YC = 1008.0, 1032.0
     it = fuel.new_item(L, "AX-1: compact modular aeroderivative installation, LM2500XPRESS class (~35 MW)",
-                       (1981, 2076, 1004, 1062), (0, 96), area="I", register=False, basis="typical",
+                       (1981, 2076, 1004, 1062), (0, 96), area="I", register=False, basis="typical", tag="AX-1",
                        sheet="typical (modular expansion)",
                        info="Aeroderivative gas-turbine generator delivered as factory modules on a raised steel base: inlet "
                             "filter module with stacked weather hoods, turbine module with roof ventilation, exhaust plenum and "
                             "stack, generator module, auxiliary (lube / fuel) skid and control module; module joints with "
-                            "pre-terminated plug-in interconnects; 13.8 kV MV-105 to MOD-EH, MC-HL at the gas module, TC-ER control.")
+                            "pre-terminated plug-in interconnects; 13.8 kV MV-105 to its unit step-up AX-GSU, MC-HL at the gas module, TC-ER control.")
     fuel.on(it)
     fuel.D = False
     box(1981, 2076, Y0, 1056, 0, .6, "concrete")                                        # pad
@@ -190,12 +191,12 @@ def ig1():
     its steel frame above the compressor end; E&C module south, lube-oil cooler and fuel gas north."""
     YC = 1032.0
     it = fuel.new_item(L, "IG-1: industrial gas-turbine installation, SGT-800 / H-25 class (~50 MW)",
-                       (2092, 2188, 1004, 1062), (0, 80), area="I", register=False, basis="typical",
+                       (2092, 2188, 1004, 1062), (0, 80), area="I", register=False, basis="typical", tag="IG-1",
                        sheet="typical (modular expansion)",
                        info="Industrial gas-turbine generator in its building: combustion-air filter house raised on a steel "
                             "frame with inclined filter faces, exhaust diffuser through the end wall into a tall stack, generator "
                             "air coolers and enclosure ventilation on the roof, electrical and control module, lube-oil cooler, "
-                            "fuel-gas module; 13.8 kV MV-105 to MOD-EH, MC-HL at the gas module, TC-ER control.")
+                            "fuel-gas module; 13.8 kV MV-105 to its unit step-up AX-GSU, MC-HL at the gas module, TC-ER control.")
     fuel.on(it)
     fuel.D = False
     box(2092, 2188, 1006, 1058, 0, .6, "concrete")

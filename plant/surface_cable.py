@@ -19,7 +19,10 @@ from fuel import box, rod
 REGION = (1935, 2350, 375, 815)        # portable pad + the TM2500 plot north of it
 LANES = [(2130, 2370, 620, 640)]                       # portable pad lanes (cable protectors where crossed)
 RAMP = (2238, 2252, 617, 643)                          # drive-over cable ramp (C-L01), already drawn
-LV_TAGS = ("GEN-O", "PAD-LV", "PGS-SWG", "LGN-INV", "MTG-CB") + tuple(f"PGS-{k}" for k in range(1, 9))                 # 480 V equipment (Type W sets)
+PERMANENT = [(1945, 2085, 652, 775), (2095, 2205, 648, 692), (1945, 2085, 462, 530),     # turbine / CHP / container
+             (2140, 2245, 776, 900), (2181, 2192, 501, 532)]          # 34.5 kV collector approach, PAD-GSU
+# engine sites and the 34.5 kV park collection are permanent plant (electrical review, Oct 28): buried duct bank
+LV_TAGS = ("GEN-O", "PAD-LV", "PGS-SWG", "LGN-INV") + tuple(f"PGS-{k}" for k in range(1, 9))                 # 480 V equipment (Type W sets)
 LEGEND_SHD = "15 kV  3/C 2 AWG CU  TYPE SHD-GC  EPR  CPE JACKET  2/C GROUND + GC  PORTABLE POWER CABLE  -40C"
 LEGEND_W = "2000 V  1/C 4/0 AWG CU  TYPE W  EPR  CPE JACKET  -50C  OIL RES"
 SURF = []
@@ -37,6 +40,8 @@ def convert(routes):
         if r["type"] not in ("mvlv_cable", "hv_cable") or r["layer"] not in ("OPT_TMP_ROUTES", "OPT_MODX_ROUTES"):
             continue
         if not all(_inside(p) for p in r["points"]):
+            continue
+        if any(x0 <= p[0] <= x1 and y0 <= p[1] <= y1 for p in r["points"] for (x0, x1, y0, y1) in PERMANENT):
             continue
         P = r["points"]
         if P == [[2213.0, 695.0], [2263.0, 695.0], [2263.0, 575.0]]:       # MOB-1 -> PIC through the C-L01 ramp

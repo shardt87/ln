@@ -1522,7 +1522,8 @@ for k in range(4):                                  # stacked: engine containers
     B(x + 1.5, x + 6.5, 469.6, 470, 2.0, 7.0, "panel")                                    # generator terminal box
 ehouse(L, "CGE-SWG: 13.8 kV switchgear container (engine breakers, site feeder)", 2030, 2038, 470, 510, 10,
        tag="CGE-SWG", **DC)
-xfmr(L, "CGE-AUX: 13.8 / 0.48 kV auxiliary transformer", 2050, 2062, 474, 486, 8, **DC)
+xfmr(L, "CGE-AUX: 13.8 / 0.48 kV auxiliary transformer (cooling containers, radiator fans)", 2050, 2062, 474, 486, 8,
+     tag="CGE-AUX", **DC)
 
 tech_site("Paralleled gas genset site", 2095, 2150, 462, 640, "s")
 for k in range(8):
@@ -1537,9 +1538,9 @@ for k in range(8):
     V(2108, y + 4.25, .45, 11, 12.5, "stack", seg=10)
 ehouse(L, "PGS-SWG: 480 V paralleling switchgear (8 generator breakers, 2 transformer mains)", 2135, 2147, 520, 620, 10,
        tag="PGS-SWG", **DC)
-padmount(L, "PGS-TX1: 480 V : 13.8 kV, ~5 MVA pad-mount (gensets 1-4)", lambda u, v: (u, v), 2099, 2111, 470, 482, 6.5,
+padmount(L, "PGS-TX1: 480 V : 34.5 kV, ~5 MVA loop-feed pad-mount (gensets 1-4)", lambda u, v: (u, v), 2099, 2111, 470, 482, 6.5,
          tag="PGS-TX1", **DC)
-padmount(L, "PGS-TX2: 480 V : 13.8 kV, ~5 MVA pad-mount (gensets 5-8)", lambda u, v: (u, v), 2134, 2146, 470, 482, 6.5,
+padmount(L, "PGS-TX2: 480 V : 34.5 kV, ~5 MVA loop-feed pad-mount (gensets 5-8)", lambda u, v: (u, v), 2134, 2146, 470, 482, 6.5,
          tag="PGS-TX2", **DC)
 
 tech_site("Linear generator site", 2060, 2150, 404, 444, "s")
@@ -1584,6 +1585,31 @@ for k in range(4):
     B(x + 2.5, x + 7.5, 652.6, 653, 2.0, 7.0, "panel")                                     # generator terminal box
 ehouse(L, "CHP-SWG: 13.8 kV switchgear container (4 engine breakers, site feeder)", 2178, 2186, 652, 676, 10,
        tag="CHP-SWG", **DC)
+padmount(L, "CHP-AUX: 13.8 / 0.48 kV, 750 kVA auxiliary pad-mount (engine auxiliaries, heat-recovery pumps, dump cooler)",
+         lambda u, v: (u, v), 2191, 2199, 673, 679, 5.0, tag="CHP-AUX", **DC)
+
+# power park collection (electrical review, Oct 28): the park no longer lands on the 13.8 kV pad / MOD-EH buses. Each
+# site steps up to 34.5 kV at the site (xxx-GSU), the PGS pad-mounts are 480 V : 34.5 kV, AX-1 / IG-1 get unit step-ups;
+# all feed the 34.5 kV park collector SWG-PK (two bus sections) and the third 230 kV transformer T-MOD-3 (three-winding,
+# 230 / 34.5 / 34.5 kV, ~250 MVA) on the T-MOD gantry. MOD-EH keeps RICE + SC-1/2 + MOD-LV (~255 MW, as reviewed Oct 21);
+# PAD-EH keeps TM-1, the CHP site, MT-TX and PAD-TX (~51 MW, ~2,370 A) and steps up through PAD-GSU.
+GSU = "13.8 / 34.5 kV step-up"
+xfmr(L, f"TGF-GSU: {GSU}, ~20 MVA (trailer fleet)", 2025, 2039, 609, 633, 10, fins="y", tag="TGF-GSU", **DC)
+xfmr(L, f"CGE-GSU: {GSU}, ~20 MVA (containerized engines)", 2048, 2064, 492, 514, 10, fins="y", tag="CGE-GSU", **DC)
+xfmr(L, f"MTG-GSU: {GSU}, ~40 MVA (mid-size turbines)", 2044, 2064, 740, 768, 13, fins="y", tag="MTG-GSU", **DC)
+xfmr(L, f"PAD-GSU: {GSU}, ~60 MVA (PAD-EH: TM-1, CHP site, MT-TX, PAD-TX)", 2166, 2192, 506, 532, 14, fins="y", tag="PAD-GSU", **DC)
+xfmr(L, f"AX-GSU: {GSU}, ~45 MVA (AX-1 unit step-up)", 2008, 2030, 950, 976, 13, fins="y", tag="AX-GSU", **DC)
+xfmr(L, f"IG-GSU: {GSU}, ~60 MVA (IG-1 unit step-up)", 2140, 2164, 948, 978, 14, fins="y", tag="IG-GSU", **DC)
+padmount(L, "MT-TX: 480 V : 13.8 kV, ~3.75 MVA pad-mount (microturbine site)", lambda u, v: (u, v), 2132, 2146, 377, 389,
+         6.5, tag="MT-TX", **DC)
+ehouse(L, "SWG-PK: 34.5 kV park collector switchgear (2 bus sections, tie; 8 feeder + 2 main breakers)", 2148, 2196,
+       810, 826, 14, tag="SWG-PK", **DC)
+xfmr(L, "T-MOD-3: 230 / 34.5 / 34.5 kV, ~250 MVA three-winding (power park collector)", 2158, 2200, 858, 890, 24,
+     bushing=13, tag="T-MOD-3",
+     info="Third modular-yard main transformer (electrical review, Oct 28): two 34.5 kV windings, one per SWG-PK bus "
+          "section (~2,100 A each); HV to the T-MOD 230 kV gantry (extended east). The park collects ~205 MW (~228 MVA "
+          "at 0.9 pf): trailer fleet, containerized engines, paralleled gensets, mid-size turbines, PAD-EH, AX-1, IG-1. "
+          "Typical, not engineered.", **DC)
 
 
 # ---------------------------------------------------------------------------
@@ -1961,9 +1987,11 @@ add_route("mvlv_cable", [(2023, 400), (2156, 400), (2156, 435), (2160, 435)], MX
 # every drop to the lane leaves its site through the gate
 add_route("mvlv_cable", [(2023, 420), (2023, 400)], MX)                                     # GEN-O
 add_route("mvlv_cable", [(2062, 376), (2062, 385), (2040, 385), (2040, 400)], MX)           # inverter
-add_route("mvlv_cable", [(2137, 372), (2137, 386), (2117, 386), (2117, 400)], MX)           # MT switchboard
-add_route("mvlv_cable", [(1987.5, 1032), (1987.5, 900)], MX)                                # AX-1 gen leads -> MOD-EH
-add_route("mvlv_cable", [(2180.5, 1032), (2180.5, 990), (1992, 990), (1992, 900)], MX)     # IG-1 (mirrored) gen leads -> MOD-EH
+add_route("mvlv_cable", [(2139, 372), (2139, 377)], MX)                                     # MT switchboard -> MT-TX
+add_route("mvlv_cable", [(2132, 383), (2118, 383), (2118, 397), (2158, 397), (2158, 477), (2160, 477)],
+          MX)                                                                               # MT-TX 13.8 kV -> PAD-EH
+add_route("mvlv_cable", [(1987.5, 1032), (1987.5, 996), (2019, 996), (2019, 976)], MX)    # AX-1 gen leads -> AX-GSU
+add_route("mvlv_cable", [(2180.5, 1032), (2180.5, 990), (2152, 990), (2152, 978)], MX)     # IG-1 gen leads -> IG-GSU
 add_route("mvlv_cable", [(2258.5, 1252), (2266, 1252), (2266, 1324), (2240, 1324)], "OPT_MOD_ROUTES")  # SC-2 PCM (mirrored
                                                                           # to x 2218.5-2258.5 by sc2_mirror) -> ammonia skid
 add_route("fuel_gas", [(2340, 440), (2340, 452), (2005, 452)], MX)                         # pad skid header (west)
@@ -1974,19 +2002,16 @@ add_route("fuel_gas", [(2081, 452), (2081, 389), (2099, 389), (2099, 379)], MX) 
 for k in range(6):                                                                          # TGF trailers -> TGF-SWG
     add_route("mvlv_cable", [(1957.25 + 14 * k, 548), (1957.25 + 14 * k, 544)], MX)
 add_route("mvlv_cable", [(1957.25, 544), (2045.5, 544), (2045.5, 548)], MX)
-add_route("mvlv_cable", [(2045.5, 590), (2045.5, 620), (2015, 620), (2015, 646), (2153, 646), (2153, 490), (2170, 490),
-                         (2170, 484)], MX)                                                  # TGF-SWG -> PAD-EH
+add_route("mvlv_cable", [(2045.5, 590), (2045.5, 621), (2039, 621)], MX)                  # TGF-SWG -> TGF-GSU
 for k in range(4):                                                                          # CGE containers -> CGE-SWG
     add_route("mvlv_cable", [(1959 + 18 * k, 469.6), (1959 + 18 * k, 466)], MX)
 add_route("mvlv_cable", [(1959, 466), (2034, 466), (2034, 470)], MX)
-add_route("mvlv_cable", [(2034, 510), (2034, 520), (2015, 520), (2015, 535), (2088, 535), (2088, 458), (2156, 458),
-                         (2156, 477), (2160, 477)], MX)                                     # CGE-SWG -> PAD-EH
+add_route("mvlv_cable", [(2038, 503), (2048, 503)], MX)                                     # CGE-SWG -> CGE-GSU
 for k in range(8):                                                                          # PGS gensets -> PGS-SWG
     add_route("mvlv_cable", [(2131, 524.25 + 13 * k), (2135, 524.25 + 13 * k)], MX)
 add_route("mvlv_cable", [(2137, 520), (2137, 505), (2105, 505), (2105, 482)], MX)          # PGS-SWG -> TX1
 add_route("mvlv_cable", [(2140, 520), (2140, 482)], MX)                                     # PGS-SWG -> TX2
-add_route("mvlv_cable", [(2105, 470), (2105, 466), (2118, 466), (2118, 458)], MX)          # TX1 -> line, out by the gate
-add_route("mvlv_cable", [(2140, 470), (2140, 466), (2122, 466), (2122, 458)], MX)          # TX2 -> line
+add_route("mvlv_cable", [(2105, 470), (2105, 466), (2140, 466), (2140, 470)], MX)          # TX1 -> TX2 (34.5 kV loop feed)
 for k in range(4):                                                                          # LGN skids -> inverter
     add_route("mvlv_cable", [(2072 + 14 * k, 432), (2072 + 14 * k, 436)], MX)
 add_route("mvlv_cable", [(2072, 436), (2135, 436), (2135, 428)], MX)
@@ -2004,8 +2029,7 @@ for k in range(8):
 add_route("fuel_gas", [(2066, 452), (2066, 422), (2068, 422)], MX)                          # -> linear generators
 for yc in (690, 742):                                                                       # MTG leads -> MTG-SWG
     add_route("mvlv_cable", [(2032, yc), (2038, yc), (2038, 720 if yc < 720 else 724), (2045, 720 if yc < 720 else 724)], MX)
-add_route("mvlv_cable", [(2060, 728), (2060, 766), (2015, 766), (2015, 780), (2015, 860), (1975, 860), (1975, 880)],
-          MX)                                                                               # MTG-SWG -> MOD-EH (north gate)
+add_route("mvlv_cable", [(2054, 728), (2054, 740)], MX)                                     # MTG-SWG -> MTG-GSU
 add_route("mvlv_cable", [(2071, 728), (2071, 745)], MX)                                     # MTG-SWG -> MTG-AUX
 add_route("mvlv_cable", [(2078, 751), (2081, 751), (2081, 687), (2078, 687)], MX)          # MTG-AUX 480 V -> MTG-CB
 add_route("mvlv_cable", [(2064, 716), (2064, 694)], MX)                                     # e-house -> MTG-CB (control)
@@ -2016,8 +2040,29 @@ add_route("fuel_gas", [(1985, 716), (1985, 735.5)], MX)                         
 for k in range(4):                                                                          # CHP units -> CHP-SWG
     add_route("mvlv_cable", [(2106 + 19 * k, 652.6), (2106 + 19 * k, 651.3)], MX)
 add_route("mvlv_cable", [(2106, 651.3), (2182, 651.3), (2182, 652)], MX)
-add_route("mvlv_cable", [(2184, 652), (2184, 649.5), (2150, 649.5), (2150, 644), (2156.5, 644), (2156.5, 492), (2180, 492),
-                         (2180, 484)], MX)                                                  # CHP-SWG -> PAD-EH (south gate)
+add_route("mvlv_cable", [(2184, 652), (2184, 649.5), (2150, 649.5), (2150, 644), (2156.5, 644), (2156.5, 492), (2164, 492),
+                         (2164, 484)], MX)                                                  # CHP-SWG -> PAD-EH (south gate)
+add_route("mvlv_cable", [(2186, 674), (2190, 674)], MX)                                     # CHP-SWG -> CHP-AUX
+add_route("mvlv_cable", [(2195, 672), (2195, 670)], MX)                                     # CHP-AUX -> dump cooler / pumps
+add_route("mvlv_cable", [(2056, 474), (2056, 464), (2021.6, 464), (2021.6, 467.6)], MX)     # CGE-AUX -> cooling deck
+add_route("mvlv_cable", [(2038, 480), (2050, 480)], MX)                                     # CGE-SWG -> CGE-AUX
+# 34.5 kV park collector: each site's step-up to SWG-PK in one buried trunk (x 2088-2091 between the sites, y 776-779 north
+# of the turbine site, x 2141-2144 up to the substation); AX-GSU / IG-GSU from the north, PAD-GSU along x 2243
+PK = [("TGF", [(2032, 633), (2032, 637), (2015, 637), (2015, 646), (2088, 646)]),
+      ("CGE", [(2056, 514), (2056, 520), (2015, 520), (2015, 535), (2089, 535)]),
+      ("PGS", [(2140, 470), (2140, 466), (2122, 466), (2122, 459), (2090, 459)])]             # (out by the south gate)
+for i, (k, pts) in enumerate(PK):
+    xl, yl, xs = 2088 + i, 776 + i, 2141 + i
+    add_route("mvlv_cable", pts + [(xl, yl), (xs, yl), (xs, 806 - i), (2152 + 3 * i, 806 - i), (2152 + 3 * i, 810)],
+              MX)                                                                           # site step-up -> SWG-PK
+add_route("mvlv_cable", [(2054, 768), (2054, 771), (2015, 771), (2015, 779), (2144, 779), (2144, 803), (2161, 803),
+                         (2161, 810)], MX)                                                  # MTG-GSU -> SWG-PK (north gate)
+add_route("mvlv_cable", [(2186, 484), (2186, 506)], MX)                                     # PAD-EH -> PAD-GSU
+add_route("mvlv_cable", [(2182, 532), (2182, 536), (2243, 536), (2243, 818), (2196, 818)], MX)   # PAD-GSU -> SWG-PK
+add_route("mvlv_cable", [(2019, 950), (2019, 842), (2146, 842), (2146, 822), (2148, 822)], MX)   # AX-GSU -> SWG-PK
+add_route("mvlv_cable", [(2152, 948), (2152, 832), (2164, 832), (2164, 826)], MX)          # IG-GSU -> SWG-PK
+for xw in (2176, 2186):                                                                     # SWG-PK -> T-MOD-3 (two windings)
+    add_route("mvlv_cable", [(xw, 826), (xw, 858)], MX)
 add_route("fuel_gas", [(2092.5, 615.5), (2092.5, 681), (2163, 681)], MX)                   # -> CHP engines
 for k in range(4):
     add_route("fuel_gas", [(2106 + 19 * k, 681), (2106 + 19 * k, 678)], MX)

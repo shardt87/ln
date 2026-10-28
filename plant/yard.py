@@ -206,7 +206,7 @@ def tm2500(it):
     - control / auxiliary trailer to the south with HVAC units, door and stair, and the interconnect cables to the GT
       trailer under a cable protector;
     - fuel-gas / water-wash skid at the east end with a flexible gas hose to the trailer;
-    - generator leads: six 15 kV MV-105 cables (two per phase) dropping out of the terminal box into a ground tray
+    - generator leads: nine 15 kV MV-105 cables (three per phase, 125 % of ~1,460 A) dropping out of the terminal box into a ground tray
       that runs north to the yard duct bank (printed jacket legend on the run)."""
     import cable_install
     x, y = it["fp"][0], it["fp"][2]
@@ -309,9 +309,9 @@ def tm2500(it):
     for yy in range(int(T1 + 3), int(y + 55), 4):
         box(xt - 1.6, xt + 1.6, yy, yy + .5, 0, .35, "timber")
     zc = .55
-    leads = [xt - 1.0 + k * .4 for k in range(6)]
+    leads = [xt - 1.05 + k * .26 for k in range(9)]
     for k, xl in enumerate(leads):
-        rod((xl, T1 + 1.0, D + 1), (xl, T1 + 1.0, zc + 1.0), .12, "cable_mv", seg=8)          # drop from the box
+        rod((xl, T1 + 1.0, D + 1), (xl, T1 + 1.0, zc + 1.0), .11, "cable_mv", seg=8)          # drop from the box
         rod((xl, T1 + 1.0, zc + 1.0), (xl, T1 + 2.4, zc), .12, "cable_mv", seg=8)             # bend into the tray
         rod((xl, T1 + 2.4, zc), (xl, y + 55, zc), .12, "cable_mv", seg=8)
     for xl, yl in ((leads[1], T1 + 5.5), (leads[3], T1 + 7.5), (leads[4], T1 + 4.5)):   # printed legends, staggered

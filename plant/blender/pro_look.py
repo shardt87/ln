@@ -1798,6 +1798,8 @@ EPIC = [
          eye=(1925.0, 425.0, 48.0), target=(1990.0, 492.0, 10.0), lens=28, show="all"),
     dict(k="E152", n="Gas engines with heat recovery: the engine row, exhaust heat exchangers and stacks on the rack, hot-water headers",
          eye=(2112.0, 600.0, 46.0), target=(2150.0, 672.0, 12.0), lens=26, show="all"),
+    dict(k="E154", n="Power park collector substation: SWG-PK 34.5 kV switchgear, T-MOD-3 under the extended 230 kV gantry, T-MOD-1/2 beyond",
+         eye=(2262.0, 778.0, 70.0), target=(2160.0, 860.0, 22.0), lens=26, show="all"),
     dict(k="E153", n="Mid-size gas turbine site: two packages with raised barrel filter houses, stacks on their frames, coolers, switchgear",
          eye=(2110.0, 640.0, 85.0), target=(2005.0, 716.0, 18.0), lens=26, show="all"),
     dict(k="E143", n="Modular gas blocks: four blocks of five 500 kW units, collector boxes, 34.5 kV step-ups, the loop to SWG-MY",

@@ -35,7 +35,7 @@ def cge_deck():
     and stack at the north end, handrails round the edge, a stair down to the north gate side."""
     X0, X1, Y0, Y1, Z = 1950.0, 2022.0, 467.6, 512.4, 10.4
     it = fuel.new_item(L, "CGE-1..4 upper deck: stacked cooling containers, radiators, silencers, walkway and stair",
-                       (X0, X1, Y0, 527), (0, 27), area="I", register=False, basis="typical",
+                       (X0, X1, Y0, 527), (0, 27), area="I", register=False, basis="typical", tag="CGE-DECK",
                        info="The containerized engine site stacked two high: the engine containers on grade, the cooling "
                             "containers with their roof radiators and the exhaust silencers on a steel deck above, grating "
                             "walkways with handrails and a stair. Typical, not engineered.")
@@ -79,7 +79,7 @@ def chp_rack():
     headers along the rack to the dump cooler at the east end."""
     C = [2106 + 19 * k for k in range(4)]
     it = fuel.new_item(L, "CHP-HR: exhaust heat-recovery rack (4 exhaust heat exchangers and stacks, hot-water headers, "
-                          "dump cooler)", (2098, 2204, 652, 691.6), (0, 34.6), area="I", register=False, basis="typical",
+                          "dump cooler)", (2098, 2204, 652, 691.6), (0, 34.6), area="I", register=False, basis="typical", tag="CHP-HR",
                        info="The heat-recovery side of the CHP row: exhaust risers to the exhaust-gas heat exchangers and "
                             "stacks on the rack, insulated supply / return hot-water headers to the heat user (off site) and "
                             "the dump cooler for when there is no heat demand. Typical, not engineered.")
@@ -232,8 +232,42 @@ def mtg_fg():
     return it
 
 
+def tmod3_gantry():
+    """The T-MOD 230 kV take-off gantry extended east over T-MOD-3: a new end column (x 2204), the beam continued from
+    the old end column (x 2134), a strain point over T-MOD-3's bushings (x 2179), jumpers down to the three bushings,
+    the bus back to the gantry, surge arresters on stands in front of the tank."""
+    it = fuel.new_item("OPT_MOD", "T-MOD-3 230 kV gantry extension with arresters", (2135, 2206, 846, 857.5), (0, 46),
+                       area="I", register=False, basis="typical",
+                       info="The T-MOD 230 kV take-off gantry extended east over T-MOD-3 (electrical review, Oct 28): end "
+                            "column, beam, strain strings, jumpers to the bushings, surge arresters. Typical, not engineered.")
+    fuel.on(it)
+    fuel.D = False
+    rod((2204, 851, 0), (2204, 851, 46), .8, "steel", r2=.55, seg=8)
+    box(2202.5, 2205.5, 849.5, 852.5, 0, .5, "concrete")
+    box(2135, 2204, 850.2, 851.8, 43, 45, "steel")
+    for k in range(3):
+        x = 2170 + 9 * k
+        box(x - .4, x + .4, 855.6, 856.4, 0, 18, "steel")                              # arrester stands
+        rod((x, 856, 18), (x, 856, 26), .45, "insulator", seg=8)
+    fuel.D = True
+    rod((2179, 851, 43), (2179, 851, 40.3), .3, "insulator", seg=6)
+    for yb in (866.5, 874.56, 882.6):                                                  # jumpers to the bushings, sagging
+        a, b = (2179, yb, 37), (2179, 851, 40.3)
+        m = (2179, (a[1] + b[1]) / 2, 37.5)
+        pts = [tuple((1 - t) ** 2 * a[j] + 2 * (1 - t) * t * m[j] + t * t * b[j] for j in range(3)) for t in [i / 8 for i in range(9)]]
+        for p_, q_ in zip(pts, pts[1:]):
+            rod(p_, q_, .14, "conductor", seg=6)
+    rod((2179, 851, 40.3), (2125, 851, 40.3), .14, "conductor", seg=6)               # bus to the existing gantry
+    for k in range(3):
+        x = 2170 + 9 * k
+        rod((x, 856, 26), (2179, 851, 40.3), .08, "conductor", seg=6)                  # arrester leads
+    fuel.D = False
+    return it
+
+
 def build():
     n0 = len(fuel.G["parts"])
+    tmod3_gantry()
     cge_deck()
     chp_rack()
     chp_labels()

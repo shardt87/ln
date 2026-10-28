@@ -57,3 +57,4 @@ Views now on training slides that only exist as Oct 8-13 previews: E10, E16, E41
 - **E147 / E148** (technology row, Oct 27): preview only.
 - **E149 / E150** (AX-1 / IG-1 rebuilt, Oct 27): preview only.
 - **E151 / E152 / E153** (stacked containers, CHP row with heat recovery, mid-size GT site; Oct 27): preview only. E147 (park overview) also needs a re-render with these sites.
+- **E154** (power park collector substation SWG-PK / T-MOD-3; Oct 28): preview only.
