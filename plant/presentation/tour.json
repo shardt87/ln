@@ -462,6 +462,25 @@
    "near": 0.3
   },
   {
+   "sec": "05 · Cable logistics",
+   "title": "The prefab cable spine going in",
+   "eq": "Spine module 5 on the crane over its bents, modules 1 to 4 already set from MOD-EH, along the 34.5 kV collector lanes",
+   "sys": "Weeks of field pulling replaced by a crane lift and a splice",
+   "cab": "Factory-terminated MV-105 tails spliced at each module joint",
+   "c": [
+    2040,
+    1022,
+    34
+   ],
+   "t": [
+    1970,
+    1072,
+    16
+   ],
+   "lens": 24,
+   "drift": 1.2
+  },
+  {
    "sec": "06 · Controls",
    "title": "HRSG 1: from the e-house to the marshalling box",
    "eq": "HRSG casing, EL 42 control and instrument tray, marshalling box",
