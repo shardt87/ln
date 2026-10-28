@@ -1229,7 +1229,8 @@ for k in range(8):
 building(L, "Lube oil / starting air / oily water building", 1570, 1690, 1235, 1290, 20, area="I", sheet="SW-3X1-07")
 solid(L, "Gas conditioning skid", 1700, 1760, 1250, 1280, 0, 10, "equip", area="I")
 tank(L, "Reagent storage", 1810, 1260, 12, 15, area="I")
-ehouse(L, "PCM: power control module", 1820, 1860, 1140, 1220, 14, area="I", sheet="SW-3X1-07")
+ehouse(L, "PCM: power control module", 1820, 1860, 1140, 1220, 14, area="I", sheet="SW-3X1-07",
+       info="RICE 13.8 kV switchgear (electrical review, Oct 28): four bus sections, two engines each (~37 MW, ~1,710 A), ties normally open, each section to its group step-up RICE-GSU-A..D; ~35 kA per section (50 kA gear). Unit auxiliaries and the engine-hall 480 V board inside.")
 solid(L, "RICE CEMS", 1830, 1846, 1005, 1015, 0, 10, "ehouse", area="I")
 for k, x in enumerate([1910, 2110], 1):
     item(L, f"SC-{k}: aeroderivative simple-cycle unit (LM6000 class)", (x, x + 90, 1190, 1220), (0, 35),
@@ -1262,12 +1263,34 @@ for yy in (870, 888):
 ehouse(L, "BS black-start switchgear", 1625, 1645, 875, 893, 12, area="I", sheet="SW-3X1-07")
 solid(L, "CONDITIONAL: BESS black-start alternative", 1655, 1700, 868, 900, 0, 9.5, "conditional", area="I",
       basis="conditional")
-ehouse(L, "MOD-EH: 13.8 kV modular collector e-house", 1915, 1995, 880, 900, 16, tag="MOD-EH", area="I",
-       sheet="SW-3X1-08")
-xfmr(L, "T-MOD-1: 13.8/230 kV", 2045, 2085, 870, 905, 24, bushing=13, tag="T-MOD-1", area="I", sheet="SW-3X1-08",
-     info="~150 MVA ONAN/ONAF (electrical review, Oct 21: the modular yard exports ~255 MW, ~283 MVA at 0.9 pf; two at 150 MVA carry it with margin, one carries ~half the yard). Typical, not engineered.")
-xfmr(L, "T-MOD-2: 13.8/230 kV", 2105, 2145, 870, 905, 24, bushing=13, tag="T-MOD-2", area="I", sheet="SW-3X1-08",
-     info="~150 MVA ONAN/ONAF (electrical review, Oct 21: the modular yard exports ~255 MW, ~283 MVA at 0.9 pf; two at 150 MVA carry it with margin, one carries ~half the yard). Typical, not engineered.")
+ehouse(L, "MOD-EH: 34.5 kV modular collector e-house (2 bus sections + 13.8 kV station-service section)", 1915, 1995,
+       880, 900, 16, tag="MOD-EH", area="I", sheet="SW-3X1-08",
+       info="34.5 kV collector (electrical review, Oct 28): bus 1 (RICE-GSU-A, B, SC-GSU-1) to T-MOD-1, bus 2 (RICE-GSU-C, D, SC-GSU-2) to T-MOD-2, ~2,300 A and ~31 kA per section, tie normally open (40 kA gear); 13.8 kV station-service section from MOD-SST for the fuel-gas compressors and MOD-LV.")
+xfmr(L, "T-MOD-1: 230 / 34.5 kV", 2045, 2085, 870, 905, 24, bushing=13, tag="T-MOD-1", area="I", sheet="SW-3X1-08",
+     info="~150 MVA ONAN/ONAF, 230 / 34.5 kV (electrical review, Oct 28: was 13.8 / 230 kV off one 13.8 kV hub, ~175 kA). Fed from MOD-EH 34.5 kV bus 1: RICE groups A, B and SC-1, ~124 MW (~137 MVA). Typical, not engineered.")
+xfmr(L, "T-MOD-2: 230 / 34.5 kV", 2105, 2145, 870, 905, 24, bushing=13, tag="T-MOD-2", area="I", sheet="SW-3X1-08",
+     info="~150 MVA ONAN/ONAF, 230 / 34.5 kV (electrical review, Oct 28). Fed from MOD-EH 34.5 kV bus 2: RICE groups C, D and SC-2, ~124 MW (~137 MVA). Typical, not engineered.")
+# modular yard regrouped (electrical review, Oct 28): no 13.8 kV hub. RICE engines in four 2-engine groups on the PCM's
+# bus sections, each with a 13.8 / 34.5 kV group step-up; SC-1 / SC-2 each with a unit step-up at its PCM; all to the
+# 34.5 kV collector MOD-EH (two bus sections, tie open) and on to T-MOD-1 / T-MOD-2. MOD-EH keeps a 13.8 kV station-service
+# section (fuel-gas compressors, MOD-LV) from MOD-SST. Zigzag grounding transformers give each 34.5 kV section its ground.
+DCY = dict(area="I", basis="design change", sheet="beyond Rev 14 (electrical review)")
+for k, (y0, y1) in enumerate(((1110, 1132), (1085, 1107), (1060, 1082), (1035, 1057))):   # SE of the PCM
+    g = "ABCD"[k]
+    xfmr(L, f"RICE-GSU-{g}: 13.8 / 34.5 kV group step-up, ~45 MVA (RICE {2 * k + 1}-{2 * k + 2})", 1866, 1894, y0, y1, 13,
+         fins="y", tag=f"RICE-GSU-{g}", **DCY)
+xfmr(L, "SC-GSU-1: 13.8 / 34.5 kV unit step-up, ~60 MVA (SC-1)", 1999, 2025, 1234, 1262, 14, fins="y", tag="SC-GSU-1",
+     **DCY)
+xfmr(L, "SC-GSU-2: 13.8 / 34.5 kV unit step-up, ~60 MVA (SC-2)", 2150, 2176, 1234, 1262, 14, fins="y", tag="SC-GSU-2",
+     **DCY)
+xfmr(L, "MOD-SST: 34.5 / 13.8 kV station-service transformer, ~10 MVA (yard station service)", 2026, 2042, 904, 920,
+     11, fins="y", tag="MOD-SST", **DCY)
+for k, (y0, y1) in enumerate(((882, 889), (891, 898))):
+    xfmr(L, f"MOD-GT{k + 1}: 34.5 kV zigzag grounding transformer, MOD-EH bus {k + 1}", 1903, 1911, y0, y1, 7,
+         tag=f"MOD-GT{k + 1}", **DCY)
+for k, (y0, y1) in enumerate(((828, 835), (838, 845))):
+    xfmr(L, f"PK-GT{k + 1}: 34.5 kV zigzag grounding transformer, SWG-PK bus {'AB'[k]}", 2200, 2208, y0, y1, 7,
+         tag=f"PK-GT{k + 1}", **DCY)
 # FC-1..4, their inverter cabinet and MT-1..3 stood here (x 1995-2296, y 1068-1096); taken out Oct 20 (owner: the
 # modular yard already carries one of each, FC-5 / MT-4)
 ehouse(L, "MOD-LV 480 V board + 480 V : 13.8 kV step-up", 2215, 2267, 970, 982, 10, area="I", sheet="SW-3X1-08")
@@ -2063,6 +2086,26 @@ add_route("mvlv_cable", [(2019, 950), (2019, 842), (2146, 842), (2146, 822), (21
 add_route("mvlv_cable", [(2152, 948), (2152, 832), (2164, 832), (2164, 826)], MX)          # IG-GSU -> SWG-PK
 for xw in (2176, 2186):                                                                     # SWG-PK -> T-MOD-3 (two windings)
     add_route("mvlv_cable", [(xw, 826), (xw, 858)], MX)
+# modular yard regroup (Oct 28): PCM sections -> RICE group step-ups -> MOD-EH; SC PCMs -> unit step-ups -> MOD-EH;
+# MOD-EH -> T-MOD-1 / -2, MOD-SST, grounding transformers; switchgear station service
+MY = "OPT_MOD_ROUTES"
+for k, yc in enumerate((1121, 1096, 1071, 1046)):
+    add_route("mvlv_cable", [(1860, 1146 + 5 * k), (1861 + k, 1146 + 5 * k), (1861 + k, yc), (1866, yc)], MY)  # PCM -> GSU
+    xl, yl = 1895 + k, 904 - k
+    add_route("mvlv_cable", [(1894, yc), (xl, yc), (xl, yl), (1919 + 4 * k, yl), (1919 + 4 * k, 900)], MY)  # GSU -> MOD-EH
+add_route("mvlv_cable", [(1955, 1250), (1959, 1250), (1959, 1244), (1999, 1244)], MY)     # SC-1 PCM -> SC-GSU-1
+add_route("mvlv_cable", [(2218.5, 1250), (2214, 1250), (2214, 1244), (2176, 1244)], MY)   # SC-2 PCM -> SC-GSU-2
+add_route("mvlv_cable", [(2025, 1248), (2046, 1248), (2046, 1080), (1955, 1080), (1955, 900)], MY)   # SC-GSU-1 -> MOD-EH
+add_route("mvlv_cable", [(2150, 1248), (2120, 1248), (2120, 1083), (1958, 1083), (1958, 900)], MY)   # SC-GSU-2 -> MOD-EH
+add_route("mvlv_cable", [(1995, 884), (2045, 884)], MY)                                   # MOD-EH bus 1 -> T-MOD-1
+add_route("mvlv_cable", [(1995, 881), (2001, 881), (2001, 864), (2125, 864), (2125, 870)], MY)   # bus 2 -> T-MOD-2
+add_route("mvlv_cable", [(1995, 897), (2034, 897), (2034, 904)], MY)                      # MOD-EH -> MOD-SST (34.5 kV)
+add_route("mvlv_cable", [(2030, 904), (2030, 899), (1995, 899)], MY)                      # MOD-SST 13.8 kV -> MOD-EH
+add_route("mvlv_cable", [(1915, 885.5), (1911, 885.5)], MY)                               # MOD-EH -> MOD-GT1
+add_route("mvlv_cable", [(1915, 894.5), (1911, 894.5)], MY)                               # MOD-EH -> MOD-GT2
+add_route("mvlv_cable", [(2196, 824), (2204, 824), (2204, 828)], MX)                      # SWG-PK -> PK-GT1
+add_route("mvlv_cable", [(2196, 825), (2212, 825), (2212, 841.5), (2208, 841.5)], MX)    # SWG-PK -> PK-GT2
+add_route("mvlv_cable", [(2175, 440), (2175, 470)], MX)                                   # PAD-LV -> PAD-EH station service
 add_route("fuel_gas", [(2092.5, 615.5), (2092.5, 681), (2163, 681)], MX)                   # -> CHP engines
 for k in range(4):
     add_route("fuel_gas", [(2106 + 19 * k, 681), (2106 + 19 * k, 678)], MX)

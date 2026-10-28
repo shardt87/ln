@@ -137,8 +137,10 @@ def ehouse_bottom_entry(prefix):
     nx = max(2, round((x1 - x0) / 10))
     xs = [x0 + 1 + k * (x1 - x0 - 2) / nx for k in range(nx + 1)]
     for x in xs:                                               # piers and cross beams, clear of the cable entries
-        while any(abs(x - sx) < 3 for sx in stub_x):
-            x += 1.5 if x < (x0 + x1) / 2 else -1.5
+        for d in [0] + [s_ * k * 1.5 for k in range(1, 21) for s_ in (1, -1)]:     # nearest spot clear of the entries
+            if x0 + 1 <= x + d <= x1 - 1 and not any(abs(x + d - sx) < 3 for sx in stub_x):
+                x += d
+                break
         for y in (y0 + 1, (y0 + y1) / 2, y1 - 1):
             box(x - 1, x + 1, y - 1, y + 1, 0, zb, "concrete")
         box(x - .25, x + .25, y0, y1, zb, zf, "steel")

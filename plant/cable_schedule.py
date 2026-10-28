@@ -488,17 +488,41 @@ for loop in range(3):
         mv_feeder(a, b, 25000, 34.5, f"34.5 kV collection loop {loop + 1}", motor=False)
 mpt = one(r"^BESS main power transformer")
 mv_feeder(coll, mpt, 100000, 34.5, "BESS MPT 34.5 kV side", motor=False, note="100 MVA (typ.)")
+def gen_feeder(src, dst, kw, kv, service, note="", length=None):
+    """Generator / collector circuit at 0.9 pf, sized for 125 % (MV-105 at 13.8 kV, MV-105 35 kV at 34.5 kV)."""
+    I = kw / (1.732 * kv * .9)
+    s_, sets = size_mv(I, AMP_MV35) if kv >= 30 else size_mv(I)
+    add(src, dst, service, "MV35" if kv >= 30 else "MV15", "1/C", s_, sets, 3, kw, kv * 1000, round(I),
+        note or f"{sets} set{'s' if sets > 1 else ''} per phase", length=length)
+
+
+def xf_wiring(swg, tx, name):
+    """Transformer protection (CT / trip) and monitoring (winding / oil temperature, gas relay, level)."""
+    add(swg, tx, f"{name} protection / trip / cooling control", "CT", "12/C", "14")
+    add(swg, tx, f"{name} monitoring: temperatures, gas relay, oil level", "ITC", "4 pr", "18")
+
+
 # modular yard
 mod_eh = BY_TAG["MOD-EH"]
 pad_eh = BY_TAG["PAD-EH"]
 pcm = src_of(r"^PCM: power control")
 for k in range(8):
     eg = one(rf"^RICE engine-generator {k + 1}$")
-    mv_feeder(eg, pcm, 18400, 13.8, f"RICE-{k + 1} generator leads to the PCM", motor=False, note="18V50 class ~18 MW (typ.)")
+    gen_feeder(eg, pcm, 18400, 13.8, f"RICE-{k + 1} generator leads to the PCM", note="18V50 class ~18 MW (typ.), 0.9 pf")
+# regroup (electrical review, Oct 28): PCM bus sections A-D (2 engines each) -> group step-ups -> MOD-EH 34.5 kV
+for k, g in enumerate("ABCD"):
+    gsu = BY_TAG[f"RICE-GSU-{g}"]
+    gen_feeder(pcm, gsu, 36800, 13.8, f"PCM section {g} (RICE {2 * k + 1}-{2 * k + 2}) to RICE-GSU-{g}")
+    xf_wiring(pcm, gsu, f"RICE-GSU-{g}")
+    gen_feeder(gsu, mod_eh, 36800, 34.5, f"RICE-GSU-{g} 34.5 kV to MOD-EH bus {1 if k < 2 else 2}")
 for k in (1, 2):
     sc = one(rf"^SC-{k}: aeroderivative")
-    mv_feeder(sc, one(rf"^SC-{k} PCM"), 50000, 13.8, f"SC-{k} (LM6000 class) generator leads to its PCM / GCB", motor=False)
-    mv_feeder(one(rf"^SC-{k} PCM"), mod_eh, 50000, 13.8, f"SC-{k} PCM to MOD-EH", motor=False)
+    gen_feeder(sc, one(rf"^SC-{k} PCM"), 50000, 13.8, f"SC-{k} (LM6000 class) generator leads to its PCM / GCB")
+    gsu = BY_TAG[f"SC-GSU-{k}"]
+    gen_feeder(one(rf"^SC-{k} PCM"), gsu, 50000, 13.8, f"SC-{k} PCM (GCB) to SC-GSU-{k}")
+    xf_wiring(one(rf"^SC-{k} PCM"), gsu, f"SC-GSU-{k}")
+    gen_feeder(gsu, mod_eh, 50000, 34.5, f"SC-GSU-{k} 34.5 kV to MOD-EH bus {k}",
+               length=((460, 20, "Duct bank"), (540, 20, "Duct bank"))[k - 1])           # as drawn
     # cable audit, Oct 21: what the second detail pass added round the unit
     pcm_k = one(rf"^SC-{k} PCM")
     add(sc, pcm_k, f"SC-{k} generator neutral to the NGR (in the terminal-box enclosure)", "MV15", "1/C", "2", 1, 1, None,
@@ -529,13 +553,28 @@ for k in (1, 2):
         40, 480, None, "internal to the PCM; aux transformer 13.8 kV / 480 V inside", length=((f_[1] - f_[0]) * 2, 10, "Tray"))
     add(CR, pcm_k, f"SC-{k} unit control panel: plant network / DCS fibre", "FO", "12 SM", "-")
     add(CR, pcm_k, f"SC-{k} PCM fire alarm / F&G node to the plant FACP", "FA", "2/C", "14")
-# T-MOD LV bus duct: 6,300 A each (review, Oct 21: the yard can export ~255 MW, ~283 MVA at 0.9 pf: RICE 147 MW,
-# SC-1 / SC-2 100 MW, MOD-LV 7.5 MW; 5,000 A at 13.8 kV is ~120 MVA, the pair ~240 MVA, short of it)
-BUS_DUCT = [("RICE PCM to MOD-EH bus tie", "13.8 kV, ~6,300 A"), ("MOD-EH to T-MOD-1 LV side", "13.8 kV, ~6,300 A"),
-            ("MOD-EH to T-MOD-2 LV side", "13.8 kV, ~6,300 A"),
-            ("Generator terminals to GSU / UAT / ET (isolated-phase bus)", "21 kV, as modelled (IPB routes)"),
+# MOD-EH 34.5 kV (Oct 28 regroup): one main per bus section to T-MOD-1 / -2 (the 13.8 kV, 6,300 A bus ducts are gone)
+for n in (1, 2):
+    tm = BY_TAG[f"T-MOD-{n}"]
+    gen_feeder(mod_eh, tm, 123600, 34.5, f"MOD-EH bus {n} main to T-MOD-{n} 34.5 kV",
+               length=((50, 20, "Duct bank"), (153, 20, "Duct bank"))[n - 1])           # as drawn (the graph detours)
+    xf_wiring(mod_eh, tm, f"T-MOD-{n}")
+    gt = BY_TAG[f"MOD-GT{n}"]
+    mv_feeder(mod_eh, gt, 300, 34.5, f"MOD-GT{n} zigzag grounding transformer, bus {n}", motor=False)
+    xf_wiring(mod_eh, gt, f"MOD-GT{n}")
+sst = BY_TAG["MOD-SST"]
+gen_feeder(mod_eh, sst, 9000, 34.5, "MOD-SST 34.5 kV primary", length=(46, 20, "Duct bank"))
+gen_feeder(sst, mod_eh, 9000, 13.8, "MOD-SST 13.8 kV secondary to the MOD-EH station-service section",
+           length=(40, 20, "Duct bank"))
+xf_wiring(mod_eh, sst, "MOD-SST")
+for n in (1, 2):
+    gt = BY_TAG[f"PK-GT{n}"]
+    mv_feeder(BY_TAG["SWG-PK"], gt, 300, 34.5, f"PK-GT{n} zigzag grounding transformer, SWG-PK bus {'AB'[n - 1]}", motor=False)
+    xf_wiring(BY_TAG["SWG-PK"], gt, f"PK-GT{n}")
+BUS_DUCT = [("Generator terminals to GSU / UAT / ET (isolated-phase bus)", "21 kV, as modelled (IPB routes)"),
             ("T-R4-1..4 secondaries to the ACC VFD lineups", "480 V, ~4,500 A each")]
-mv_feeder(one(r"^MOD-LV 480 V"), mod_eh, 7500, 13.8, "MOD-LV step-up to MOD-EH", motor=False)
+mv_feeder(mod_eh, one(r"^MOD-LV 480 V"), 3000, 13.8, "MOD-LV supply from the MOD-EH 13.8 kV station-service section",
+          motor=False)
 for it in find(r"^Fuel-gas compressors 3 x 100"):
     mv_feeder(mod_eh, it, 1500, 13.8, "Modular-yard fuel-gas compressor", armored=True, n=3)
 for k in range(1, 9):
@@ -596,20 +635,6 @@ if swg_my:
         "MV35", "1/C", "750", 1, 3, 10000, 34500, 167, "to the fence 585 ft; + ~120 ft beyond to BTM-SWGR (data-centre scope)",
         length=(585, 20, "Buried"))
 # modular power park (Oct 27): each class from its units to its collector, the collector to the yard switchgear
-def gen_feeder(src, dst, kw, kv, service, note=""):
-    """Generator / collector circuit at 0.9 pf, sized for 125 % (MV-105 at 13.8 kV, MV-105 35 kV at 34.5 kV)."""
-    I = kw / (1.732 * kv * .9)
-    s_, sets = size_mv(I, AMP_MV35) if kv >= 30 else size_mv(I)
-    add(src, dst, service, "MV35" if kv >= 30 else "MV15", "1/C", s_, sets, 3, kw, kv * 1000, round(I),
-        note or f"{sets} set{'s' if sets > 1 else ''} per phase")
-
-
-def xf_wiring(swg, tx, name):
-    """Transformer protection (CT / trip) and monitoring (winding / oil temperature, gas relay, level)."""
-    add(swg, tx, f"{name} protection / trip / cooling control", "CT", "12/C", "14")
-    add(swg, tx, f"{name} monitoring: temperatures, gas relay, oil level", "ITC", "4 pr", "18")
-
-
 # power park (Oct 27 classes; electrical review Oct 28): units -> site collector -> site step-up 13.8 / 34.5 kV ->
 # SWG-PK (bus A: TGF, CGE, PGS, PAD-EH; bus B: MTG, AX-1, IG-1) -> T-MOD-3 (230 / 34.5 / 34.5 kV) -> T-MOD gantry.
 swg_pk, tmod3 = BY_TAG["SWG-PK"], BY_TAG["T-MOD-3"]
@@ -707,6 +732,20 @@ xf_wiring(swg_pk, tmod3, "T-MOD-3")
 add(swg_pk, swg_pk, "SWG-PK station service, HVAC, lighting, DC charger (station-service transformer inside)", "LV",
     "3/C+G", "2", 1, 1, 60, 480, 85, "internal to the e-house", length=(100, 10, "Tray"))
 add(CR, swg_pk, "SWG-PK SCADA / protection: plant network fibre", "FO", "12 SM", "-")
+# switchgear station service (charger, heaters, HVAC, lighting) and generator neutral grounding (review, Oct 28)
+lv_feeder(cge_aux, cge_swg, 45, "CGE-SWG station service: DC charger, heaters, HVAC, lighting", motor=False)
+lv_feeder(chp_aux, chp_swg, 45, "CHP-SWG station service: DC charger, heaters, HVAC, lighting", motor=False)
+lv_feeder(BY_TAG["PAD-LV"], pad_eh, 60, "PAD-EH station service: DC charger, heaters, HVAC, lighting", motor=False)
+lv_feeder(BY_TAG["MTG-CB"], mtg_swg, 45, "MTG-SWG station service: DC charger, heaters, HVAC, lighting", motor=False)
+for sw in ("TGF-SWG", "SWG-MY"):
+    add(BY_TAG[sw], BY_TAG[sw], f"{sw} station service from its internal 480 V aux transformer: charger, heaters, HVAC",
+        "LV", "3/C+G", "2", 1, 1, 45, 480, 60, "internal to the lineup", length=(40, 10, "Tray"))
+for t, sw in ([(f"TGF-{k}", "TGF-SWG") for k in range(1, 7)] + [(f"CGE-{k}", "CGE-SWG") for k in range(1, 5)] +
+              [(f"CHP-{k}", "CHP-SWG") for k in range(1, 5)] + [("MTG-1", "MTG-SWG"), ("MTG-2", "MTG-SWG"),
+                                                                ("AX-1", "SWG-PK"), ("IG-1", "SWG-PK")]):
+    add(BY_TAG[t], BY_TAG[t], f"{t} generator neutral to its high-resistance grounding resistor (in the package)", "MV15",
+        "1/C", "2", 1, 1, None, 13800, None, "NGR in the generator / terminal-box enclosure", length=(15, 5, "Conduit"))
+    add(BY_TAG[t], BY_TAG[sw], f"{t} generator CT / VT secondaries to the protection", "CTCT", "12/C", "10")
 for sw in ("TGF-SWG", "CGE-SWG", "PGS-SWG", "MTG-SWG", "CHP-SWG"):
     add(swg_pk, BY_TAG[sw], f"{sw} SCADA / dispatch fibre", "FO", "12 SM", "-")
 mt_tx = BY_TAG["MT-TX"]
@@ -952,7 +991,7 @@ SKIP_LV = re.compile(r"^R1 |SWGR|LC-480|MCC|EMCC|transformer|T-R\d|T-R4|LCT-|T4-
                      r"Fuel-gas compressors 3|Air-cooled condenser|GCB-|NGT-|SPC-|breaker|entrance|terminal tower|"
                      r"cable termination structure|GTG-|STG|230 kV switchyard|BESS yard|INL-|stair tower|Turbine hall exterior")
 done_bld = set()
-GB_OWN = re.compile(r"^(GB-\d|GBC-\d|GBT-\d|SWG-MY|TGF-|CGE-|PGS-|LGN-|MTG-|CHP-|SWG-PK|T-MOD-3|PAD-GSU|AX-|IG-|MT-TX)")     # modular gas blocks carry their own L1-L7 circuits (above)
+GB_OWN = re.compile(r"^(GB-\d|GBC-\d|GBT-\d|SWG-MY|TGF-|CGE-|PGS-|LGN-|MTG-|CHP-|SWG-PK|T-MOD-3|PAD-GSU|AX-|IG-|MT-TX|RICE-GSU-|SC-GSU-|MOD-SST|MOD-GT|PK-GT)")     # modular gas blocks carry their own L1-L7 circuits (above)
 for it in ITEMS:
     apps = " ".join(it.get("wiring", []))
     if GB_OWN.match(it.get("tag") or ""):
