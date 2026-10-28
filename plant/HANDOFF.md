@@ -697,3 +697,10 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 - `road_audit.py` check 2b "paved net": every road joins the gate roads on pavement alone (8-connected). Exempt: lanes
   inside fenced yards, gas yard, and the drawn 24 ft lane (OPEN ITEM: it meets the removal apron only corner to corner;
   an 11 ft pipe and the 24 ft rack posts sit across its ends — owner to decide).
+
+## Oct 28 — power-park cable clean-up
+- Orphan: GEN-O's portable feeder (routes_optional.json, from (2036, 424) to PAD-LV) was still lying on the ground after
+  GEN-O was removed; skipped at load in build_model.
+- MOB-1 → PIC feeder (sheet 08, across the pad lane on the C-L01 ramp) had gone missing, so the auto-wiring hooked
+  MOB-1 to the load-bank cable. Route restored: (2213, 695) → (2245, 695) → (2245, 575) → PIC west face.
+- Scan: no other surface cable has a dead end.

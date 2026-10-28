@@ -1954,6 +1954,8 @@ for fname, src, optional in [("routes_base.json", "SW-3X1-01", False), ("routes_
             pieces = [[q for a, c in zip(pl, pl[1:]) for q in ([a, [c[0], a[1]]] if a[0] != c[0] and a[1] != c[1]
                                                                 else [a])] + [pl[-1]] for pl in pieces]
         for pl in pieces:
+            if [list(map(float, p)) for p in pl[:1]] == [[2036.0, 424.0]]:
+                continue      # GEN-O's feeder to PAD-LV: the open skid was taken out Oct 28, its cable was left lying
             if len(pl) < 2 or sum(abs(b[0] - a[0]) + abs(b[1] - a[1]) for a, b in zip(pl, pl[1:])) < 3:
                 continue
             lay = (opt_layer(pl, rtype) if optional else layer) if not layer or optional else layer
@@ -2012,6 +2014,8 @@ MX = "OPT_MODX_ROUTES"
 # between SC-1 and SC-2 down to the modular collector e-house MOD-EH
 # portable power cable in ground trays (surface_cable), across the pad lane on the C-L01 drive-over ramp beside
 # the MOB-1 feeder, down to the north face of PAD-EH
+add_route("mvlv_cable", [(2213, 695), (2245, 695), (2245, 575), (2255, 575)], "OPT_TMP_ROUTES",
+          sheet="SW-3X1-08")             # MOB-1 -> PIC across the pad lane on the C-L01 ramp (had gone missing, Oct 28)
 add_route("mvlv_cable", [(2255, 575), (2228, 575), (2228, 592), (2215, 592)], "OPT_TMP_ROUTES",
           sheet="typical (portable pad)")                                                   # PIC -> load bank
 add_route("mvlv_cable", [(2200, 795), (2200, 805), (2241, 805), (2241, 500), (2180, 500), (2180, 484)],
