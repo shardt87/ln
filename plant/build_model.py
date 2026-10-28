@@ -2036,7 +2036,7 @@ add_route("mvlv_cable", [(2062, 376), (2062, 385), (2040, 385), (2040, 400)], MX
 add_route("mvlv_cable", [(2139, 372), (2139, 377)], MX)                                     # MT switchboard -> MT-TX
 add_route("mvlv_cable", [(2132, 383), (2118, 383), (2118, 397), (2158, 397), (2158, 477), (2160, 477)],
           MX)                                                                               # MT-TX 13.8 kV -> PAD-EH
-add_route("mvlv_cable", [(1987.5, 1032), (1987.5, 996), (2019, 996), (2019, 976)], MX)    # AX-1 gen leads -> AX-GSU
+add_route("mvlv_cable", [(2052.5, 1021), (2052.5, 996), (2019, 996), (2019, 976)], MX)    # AX-1 gen leads -> AX-GSU
 add_route("mvlv_cable", [(2180.5, 1032), (2180.5, 990), (2152, 990), (2152, 978)], MX)     # IG-1 gen leads -> IG-GSU
 add_route("mvlv_cable", [(2258.5, 1252), (2266, 1252), (2266, 1324), (2240, 1324)], "OPT_MOD_ROUTES")  # SC-2 PCM (mirrored
                                                                           # to x 2218.5-2258.5 by sc2_mirror) -> ammonia skid
