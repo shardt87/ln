@@ -59,3 +59,4 @@ Views now on training slides that only exist as Oct 8-13 previews: E10, E16, E41
 - **E151 / E152 / E153** (stacked containers, CHP row with heat recovery, mid-size GT site; Oct 27): preview only. E147 (park overview) also needs a re-render with these sites.
 - **E154** (power park collector substation SWG-PK / T-MOD-3; Oct 28): preview only.
 - **E155** (modular yard regrouped: RICE group step-ups by the PCM; Oct 28): preview only.
+- **E156** (PAD-EH / SWG-MY on the middle park lane; Oct 28): preview only. E147 / E155 re-previewed after the road audit.

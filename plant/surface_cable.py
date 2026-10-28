@@ -33,9 +33,52 @@ def _inside(p, m=0):
     return x0 - m <= p[0] <= x1 + m and y0 - m <= p[1] <= y1 + m
 
 
+def _roads():
+    """Every road / drive / lane surface in the pad area (road audit, Oct 28: not only the portable pad lanes)."""
+    return [r for r in fuel._roads() if r[1] > REGION[0] - 20 and r[0] < REGION[1] + 20 and r[3] > REGION[2] - 20
+            and r[2] < REGION[3] + 20]
+
+
+def _along_road(P, roads, m=.5):
+    """A run lies along a road when one of its segments runs inside a road band for more than 6 ft."""
+    for a, b in zip(P, P[1:]):
+        horiz = a[1] == b[1]
+        for (x0, x1, y0, y1) in roads:
+            if horiz and (x1 - x0) >= (y1 - y0) and y0 + m <= a[1] <= y1 - m:
+                lo, hi = max(min(a[0], b[0]), x0), min(max(a[0], b[0]), x1)
+            elif not horiz and (y1 - y0) > (x1 - x0) and x0 + m <= a[0] <= x1 - m:
+                lo, hi = max(min(a[1], b[1]), y0), min(max(a[1], b[1]), y1)
+            else:
+                continue
+            if hi - lo > 6:
+                return True
+    return False
+
+
+def _crossings(P, roads):
+    """(lo, hi, c, horiz) for each place a segment crosses a road over its width: a horizontal segment across a
+    north-south road band, a vertical one across an east-west band."""
+    out = []
+    for a, b in zip(P, P[1:]):
+        horiz = a[1] == b[1]
+        for (x0, x1, y0, y1) in roads:
+            if horiz and (x1 - x0) < (y1 - y0) and y0 <= a[1] <= y1:
+                lo, hi = sorted((a[0], b[0]))
+                if lo <= x0 and hi >= x1:
+                    out.append((x0, x1, a[1], True))
+            elif not horiz and (y1 - y0) <= (x1 - x0) and x0 <= a[0] <= x1:
+                lo, hi = sorted((a[1], b[1]))
+                if lo <= y0 and hi >= y1:
+                    out.append((y0, y1, a[0], False))
+    return out
+
+
 def convert(routes):
-    """Re-tag the pad-area cable routes as surface cable (after wiring, before the underground pass)."""
+    """Re-tag the pad-area cable routes as surface cable (after wiring, before the underground pass). A run that would
+    lie along a road stays buried, and so does a bridge-power ground tray that would cross one; loose cable crossing a
+    road gets a drive-over protector (build)."""
     n = 0
+    roads = _roads()
     for r in routes:
         if r["type"] not in ("mvlv_cable", "hv_cable") or r["layer"] not in ("OPT_TMP_ROUTES", "OPT_MODX_ROUTES"):
             continue
@@ -48,6 +91,8 @@ def convert(routes):
             r["points"] = P = [[2213.0, 695.0], [2245.0, 695.0], [2245.0, 575.0], [2255.0, 575.0]]
         r["points"] = P = _trim(P)
         tray = r["layer"] == "OPT_MODX_ROUTES"
+        if _along_road(P, roads) or (tray and _crossings(P, roads)):
+            continue                                                   # stays in the buried duct bank
         r.update(type="mvlv_cable", z=.3, w=1.5, h=.3, color="cable_mv", surface=True,
                  label="Bridge-power feeders: portable power cable in ground trays" if tray else
                  "Portable power cable on grade (temporary power)")
@@ -172,6 +217,7 @@ def build():
                             "modular plant keeps its buried duct banks.")
     import cable_install
     n_leg = 0
+    roads = _roads()
     loose = [r["points"] for r in SURF if r["layer"] != "OPT_MODX_ROUTES"]
     for ri, r in enumerate(SURF):
         tray = r["layer"] == "OPT_MODX_ROUTES"
@@ -209,26 +255,23 @@ def build():
             for (ax, ay), (bx_, by) in zip(Q, Q[1:]):
                 # lift over a lane: the cable rides through a protector
                 rod((ax, ay, zg + rc), (bx_, by, zg + rc), rc, col, seg=8, layer=lay)
-        # cable protectors where a loose run crosses a pad lane (the C-L01 ramp already covers its crossing)
+        # cable protectors wherever a loose run crosses a road or lane (the C-L01 ramp already covers its crossing)
         if not tray:
-            for a, b in zip(P, P[1:]):
-                horiz = a[1] == b[1]
-                if horiz:
+            for (lo, hi, c, horiz) in _crossings(P, roads):
+                if not horiz and RAMP[0] <= c <= RAMP[1]:
                     continue
-                for (x0, x1, y0, y1) in LANES:
-                    if not (x0 <= a[0] <= x1) or RAMP[0] <= a[0] <= RAMP[1]:
-                        continue
-                    lo, hi = sorted((a[1], b[1]))
-                    if hi < y0 or lo > y1:
-                        continue
-                    ya, yb = max(lo, y0 - 1.5), min(hi, y1 + 1.5)
-                    yy = ya
-                    while yy < yb - .1:                                   # 3 ft interlocking modules
-                        y2 = min(yy + 3, yb)
-                        box(a[0] - 1.5, a[0] + 1.5, yy + .03, y2 - .03, .45, .85, "amber", layer=lay)
-                        for s in (-1, 1):                                 # sloped wings (stepped)
-                            box(a[0] + s * 1.5, a[0] + s * 2.4, yy + .03, y2 - .03, .45, .62, "amber", layer=lay)
-                        yy = y2
+                u = lo - 1.5
+                while u < hi + 1.5 - .1:                                    # 3 ft interlocking modules
+                    u2 = min(u + 3, hi + 1.5)
+                    if horiz:
+                        box(u + .03, u2 - .03, c - 1.5, c + 1.5, .45, .85, "amber", layer=lay)
+                        for s_ in (-1, 1):
+                            box(u + .03, u2 - .03, c + s_ * 1.5, c + s_ * 2.4, .45, .62, "amber", layer=lay)
+                    else:
+                        box(c - 1.5, c + 1.5, u + .03, u2 - .03, .45, .85, "amber", layer=lay)
+                        for s_ in (-1, 1):                                # sloped wings (stepped)
+                            box(c + s_ * 1.5, c + s_ * 2.4, u + .03, u2 - .03, .45, .62, "amber", layer=lay)
+                    u = u2
         # ends: MV cables rise into a gland plate; LV sets end in cam-lock plugs (black, red, blue, white + green)
         for p, q in ((P[0], P[1]), (P[-1], P[-2])):
             dx, dy = (p[0] - q[0], p[1] - q[1])

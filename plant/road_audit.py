@@ -7,7 +7,8 @@ car behind the air inlet"). Reads sw3x1_model.json and checks:
 3. vehicles: every vehicle and trailer stands on a drivable surface (road, concrete, crushed stone, pad, mats), can be
    driven to from the main gate along a 14 ft clear lane (obstacles 1-14 ft high block it), and is not parked in front
    of an air inlet (within 25 ft of a filter face) or in a transformer's oil-containment / firewall bay;
-4. fenced sites: each gate opens onto ground a vehicle can reach.
+4. cable on grade: no portable / ground-tray cable runs along a road, every crossing has a drive-over protector;
+5. fenced sites: each gate opens onto ground a vehicle can reach.
 
 Writes road_audit.json; exit 1 on any FAIL. A 2 ft raster; typical, not a traffic study."""
 import json
@@ -194,7 +195,32 @@ def main():
         if in_xf:
             issues.append("inside a transformer bay")
         res["vehicles"].append(dict(name=v["name"][:70], at=[round((x0 + x1) / 2), round((y0 + y1) / 2)], issues=issues))
-    # 4. fenced site gates
+    # 4. cable on grade (portable power cable, ground trays): never along a road, a protector at every crossing
+    prot = [part_bbox(p) for p in M["parts"] if p["color"] == "amber" and p.get("kind") == "box"
+            and re.match(r"Surface cables|Drive-over cable ramp", ITEMS[p["item"]]["name"])]
+    cab = []
+    for r in M["routes"]:
+        if not r.get("surface"):
+            continue
+        P = r["points"]
+        for a, b in zip(P, P[1:]):
+            horiz = a[1] == b[1]
+            for (x0, x1, y0, y1, nm) in roads:
+                long_x = (x1 - x0) >= (y1 - y0)
+                if horiz and long_x and y0 + .5 <= a[1] <= y1 - .5 and \
+                        min(max(a[0], b[0]), x1) - max(min(a[0], b[0]), x0) > 6:
+                    cab.append(f"runs along {nm[:40]} at y {a[1]:.0f}")
+                elif not horiz and not long_x and x0 + .5 <= a[0] <= x1 - .5 and \
+                        min(max(a[1], b[1]), y1) - max(min(a[1], b[1]), y0) > 6:
+                    cab.append(f"runs along {nm[:40]} at x {a[0]:.0f}")
+                elif horiz and not long_x and y0 <= a[1] <= y1 and min(a[0], b[0]) <= x0 and max(a[0], b[0]) >= x1:
+                    if not any(q[0] <= (x0 + x1) / 2 <= q[1] and q[2] - .5 <= a[1] <= q[3] + .5 for q in prot):
+                        cab.append(f"crosses {nm[:40]} at y {a[1]:.0f} without a protector")
+                elif not horiz and long_x and x0 <= a[0] <= x1 and min(a[1], b[1]) <= y0 and max(a[1], b[1]) >= y1:
+                    if not any(q[2] <= (y0 + y1) / 2 <= q[3] and q[0] - .5 <= a[0] <= q[1] + .5 for q in prot):
+                        cab.append(f"crosses {nm[:40]} at x {a[0]:.0f} without a protector")
+    res["surface_cables"] = sorted(set(cab))
+    # 5. fenced site gates
     for it in M["items"]:
         if "chain-link fence" not in it["name"]:
             continue
@@ -206,7 +232,7 @@ def main():
             if 0 <= j < NY and reach[i - 1:i + 2, j - 1:j + 2].any():
                 ok = True
         res["gates"].append(dict(site=it["name"].split(":")[0], ok=ok))
-    fails = (len(res["roads"]["blocked_by"]) + len(lost) + sum(bool(v["issues"]) for v in res["vehicles"])
+    fails = (len(res["roads"]["blocked_by"]) + len(lost) + len(res["surface_cables"]) + sum(bool(v["issues"]) for v in res["vehicles"])
              + sum(not g["ok"] for g in res["gates"]))
     res["ok"] = fails == 0
     json.dump(res, open(os.path.join(HERE, "road_audit.json"), "w"), indent=1)
@@ -220,6 +246,9 @@ def main():
     for v in res["vehicles"]:
         if v["issues"]:
             print(f"   VEHICLE  {v['name'][:60]} at {v['at']}: {'; '.join(v['issues'])}")
+    print(f"cable on grade: {len(res['surface_cables'])} runs along a road or unprotected crossings")
+    for c in res["surface_cables"]:
+        print(f"   CABLE    {c}")
     print(f"site gates : {len(res['gates'])}; {sum(not g['ok'] for g in res['gates'])} not reachable")
     for g in res["gates"]:
         if not g["ok"]:

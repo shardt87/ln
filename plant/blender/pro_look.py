@@ -1798,6 +1798,8 @@ EPIC = [
          eye=(1925.0, 425.0, 48.0), target=(1990.0, 492.0, 10.0), lens=28, show="all"),
     dict(k="E152", n="Gas engines with heat recovery: the engine row, exhaust heat exchangers and stacks on the rack, hot-water headers",
          eye=(2112.0, 600.0, 46.0), target=(2150.0, 672.0, 12.0), lens=26, show="all"),
+    dict(k="E156", n="PAD-EH and SWG-MY on the middle park lane: links buried, the PIC cable crossing under a protector",
+         eye=(2200.0, 395.0, 55.0), target=(2205.0, 478.0, 6.0), lens=26, show="all"),
     dict(k="E155", n="Modular yard regrouped: the four RICE group step-ups beside the PCM, the 34.5 kV lanes south to MOD-EH",
          eye=(1965.0, 1005.0, 72.0), target=(1872.0, 1088.0, 8.0), lens=26, show="all"),
     dict(k="E154", n="Power park collector substation: SWG-PK 34.5 kV switchgear, T-MOD-3 under the extended 230 kV gantry, T-MOD-1/2 beyond",
