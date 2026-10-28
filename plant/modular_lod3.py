@@ -49,6 +49,17 @@ def surfaces():
         # (the drive between the SC units and their PCMs, y 1226-1240, is gone (road audit, Oct 28): generator leads and
         # lube-oil lines cross that strip; the SC units are served from the y 1104 drive, the PCMs from the reserved pad)
         box(x0, x1, y0, y1, .08, .16, "road")
+    # link drives to the plant roads (owner, Oct 28: "the roads on the modular area are islands"): west to the east
+    # spine road, north to the 30 ft utilities road, and down the east side to the power-park lanes, so the yard's
+    # drives form one loop with the site road network
+    new("Modular yard: link drives to the east spine, utilities road and power park", (1490, 2406, 620, 1370), (0, .2))
+    for (x0, x1, y0, y1) in ((1490, 1556, 981, 995),          # west, to the east spine road
+                             (1490, 1556, 1221, 1232),        # north drive, west to the east spine road
+                             (1864, 1880, 1336, 1370),        # north, to the 30 ft utilities road
+                             (2392, 2406, 1104, 1124),        # east end of the y 1104 drive
+                             (2386, 2406, 640, 1124),         # east side, south to the power park
+                             (2370, 2406, 620, 640)):         # onto the portable-pad lane / gas-yard road
+        box(x0, x1, y0, y1, .08, .16, "road")
     for (x0, x1, y0, y1) in ((1824, 1836, 1128, 1136), (1926, 1940, 870, 876)):
         box(x0, x1, y0, y1, .08, .2, "concrete")                # door aprons
 

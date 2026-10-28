@@ -1619,6 +1619,8 @@ for nm, (x0, x1, y0, y1) in (("west park road", (1922, 1942, 300, 648)),        
     pad(L, f"Power park: {nm}", x0, x1, y0, y1, "road", z1=0.3, area="I", basis="design change", sheet="beyond Rev 14")
 pad(L, "Power park: middle park lane, joint with the group road", 2292, 2312, 461, 465, "road", z1=0.3, area="I",
     basis="design change", sheet="beyond Rev 14")
+pad(L, "Power park: portable pad lane, joint with the group road (north end)", 2292, 2312, 616, 621, "road", z1=0.3,
+    area="I", basis="design change", sheet="beyond Rev 14")
 pad(L, "Portable pad lane: joint with the 30 ft access road", 2346, 2370, 299, 306, "road", z1=0.3, area="I",
     basis="design change", sheet="beyond Rev 14")
 for nm, (x0, x1, y0, y1) in (("load-bank trailer", (2181, 2219, 584, 620)), ("MOB-1 trailer", (2157, 2240, 692, 708)),
@@ -1683,8 +1685,8 @@ for k in range(8):
     R((x + 6.25, 1747, 11), (x + 6.25, 1820.6, 11), 6.25, "tank", seg=20)
     for yy in (1760, 1805):
         B(x + 1, x + 11.5, yy - 1.5, yy + 1.5, 0.3, 7, "concrete")
-pad(L, "LNG 10: truck unloading bay 1", 1840, 1912, 1690, 1712, "road", z1=0.3, area="K")
-pad(L, "LNG 10: truck unloading bay 2", 1925, 1997, 1690, 1712, "road", z1=0.3, area="K")
+pad(L, "LNG 10: truck unloading bay 1", 1840, 1912, 1675, 1712, "road", z1=0.3, area="K")
+pad(L, "LNG 10: truck unloading bay 2", 1925, 1997, 1675, 1712, "road", z1=0.3, area="K")
 solid(L, "LNG 10: unloading skid", 1885, 1925, 1716, 1728, 0, 8, "equip", area="K", sheet="SW-3X1-14")
 item(L, "LNG 14: vaporizers + glycol heater", (1880, 1990, 1760, 1820), (0, 30), area="K", sheet="SW-3X1-14")
 B(1880, 1990, 1760, 1820, 0, 1, "concrete")

@@ -686,3 +686,14 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 ## Oct 28 — timber access mats removed
 - Owner didn't like the yellow/brown mats under the cable-pull trucks (south of the RICE engines). `maintenance.access_mats()` call removed; trucks stand on the ground as before.
 - `road_audit.py`: new `WORK_ZONE` regex exempts the cable-pull / rejuvenation crew vehicles and the SIMpull truck from the on-surface check (14 ft drive-path check still applies). All checks PASS.
+
+## Oct 28 — modular-yard roads joined to the site network
+- Owner: "the roads on the modular area are islands … not connected to the main roads or doing a complete loop". True:
+  the old reach check let crushed stone count as a connection.
+- `modular_lod3.surfaces()`: link drives west to the east spine road (y 981-995 and y 1221-1232), north to the 30 ft
+  utilities road (x 1864-1880), and down the east side (x 2386-2406, y 620-1124) onto the portable-pad lane → loop.
+- Power park: joint at the north end of the gas-group road (2292-2312, 616-621).
+- CCS drive: both ends linked north to the utilities road; LNG unloading bays extended to the fuel road (y 1675).
+- `road_audit.py` check 2b "paved net": every road joins the gate roads on pavement alone (8-connected). Exempt: lanes
+  inside fenced yards, gas yard, and the drawn 24 ft lane (OPEN ITEM: it meets the removal apron only corner to corner;
+  an 11 ft pipe and the 24 ft rack posts sit across its ends — owner to decide).

@@ -1,7 +1,8 @@
 {
  "roads": {
   "blocked_by": [],
-  "unreached": []
+  "unreached": [],
+  "paved_islands": []
  },
  "vehicles": [
   {

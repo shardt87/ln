@@ -38,6 +38,9 @@ PASS_NAMES = re.compile(r"^Vehicles|operators|^People|sign\b|Site sign|Technolog
 HIGH = 14.0                                            # clear height under overhead structures
 ROADLIKE = re.compile(r"road|lane|drive|unloading bay", re.I)
 NOT_ROAD = re.compile(r"^(Parking|Removal apron|Gallery door apron|Control / admin|Turbine hall|FH-\d hoist)")
+ISLAND_OK = re.compile(r"inside the fence|^Gas yard|"     # lanes inside a fenced, gated yard
+                       r"^24 ft lane")       # drawn (Rev 14): meets the removal apron corner to corner; an 11 ft pipe
+                                             # and the 24 ft rack posts sit across both ends - open item for the owner
 WORK_ZONE = re.compile(r"^(Underground: cable|Cable delivery: SIMpull Truck at the modular-yard cable pull)")
 # a crew's vehicles at an open manhole stand on the ground of the work zone (owner, Oct 28: no mats)
 TEMP_WORK = re.compile(r"outage|Cable pull|Cable reels staged|Cable moment|crane lift|"         # road closed for the job
@@ -91,6 +94,7 @@ def main():
     drive = np.zeros((NX, NY), bool)
     openg = np.zeros((NX, NY), bool)
     road = np.zeros((NX, NY), bool)
+    paved = np.zeros((NX, NY), bool)                   # every road-coloured surface at grade (joints included)
     obst = np.zeros((NX, NY), bool)
     owner = {}                                         # obstacle cell -> item (for the road check)
     roads = []
@@ -106,6 +110,8 @@ def main():
         if p["kind"] == "box" and z1 <= 1.0 and z0 >= -.6 and p["color"] in DRIVE:
             i0, i1, j0, j1 = grid_box(x0, x1, y0, y1)
             drive[i0:i1, j0:j1] = True
+            if p["color"] == "road":
+                paved[i0:i1, j0:j1] = True
             if p["color"] == "road" and ROADLIKE.search(it["name"]) and not NOT_ROAD.search(it["name"]):
                 road[i0:i1, j0:j1] = True
                 roads.append((x0, x1, y0, y1, it["name"]))
@@ -174,6 +180,27 @@ def main():
         if sub_r.sum() and (sub_n & sub_r).sum() < .5 * sub_r.sum() and (x1 - x0) * (y1 - y0) > 400:
             lost.append(f"{nm[:60]} ({x0:.0f}-{x1:.0f}, {y0:.0f}-{y1:.0f})")
     res["roads"]["unreached"] = lost
+    # 2b. paved network (owner, Oct 28: "the roads on the modular area are islands"): every road / drive joins the gate
+    # roads on pavement alone (crushed stone between two drives is not a road); a lane inside a fenced site is gated
+    pv = np.zeros_like(paved)
+    q = deque()
+    for (gx, gy) in (GATE, CAMPUS_GATE):
+        i, j = int(gx / CELL), int(gy / CELL)
+        pv[i, j] = True
+        q.append((i, j))
+    while q:
+        i, j = q.popleft()
+        for a in (i - 1, i, i + 1):
+            for b in (j - 1, j, j + 1):
+                if 0 <= a < NX and 0 <= b < NY and paved[a, b] and not pv[a, b]:
+                    pv[a, b] = True
+                    q.append((a, b))
+    islands = []
+    for (x0, x1, y0, y1, nm) in roads:
+        i0, i1, j0, j1 = grid_box(x0, x1, y0, y1)
+        if (x1 - x0) * (y1 - y0) > 400 and not pv[i0:i1, j0:j1].any() and not ISLAND_OK.search(nm):
+            islands.append(f"{nm[:60]} ({x0:.0f}-{x1:.0f}, {y0:.0f}-{y1:.0f})")
+    res["roads"]["paved_islands"] = sorted(set(islands))
     # 3. vehicles
     inlets = [part_bbox(p) + (p["item"],) for p in M["parts"] if p["color"] == "filter" and p.get("kind") == "box"
               and part_bbox(p)[5] - part_bbox(p)[4] > 4]
@@ -234,7 +261,7 @@ def main():
             if 0 <= j < NY and reach[i - 1:i + 2, j - 1:j + 2].any():
                 ok = True
         res["gates"].append(dict(site=it["name"].split(":")[0], ok=ok))
-    fails = (len(res["roads"]["blocked_by"]) + len(lost) + len(res["surface_cables"]) + sum(bool(v["issues"]) for v in res["vehicles"])
+    fails = (len(res["roads"]["blocked_by"]) + len(lost) + len(res["roads"]["paved_islands"]) + len(res["surface_cables"]) + sum(bool(v["issues"]) for v in res["vehicles"])
              + sum(not g["ok"] for g in res["gates"]))
     res["ok"] = fails == 0
     json.dump(res, open(os.path.join(HERE, "road_audit.json"), "w"), indent=1)
@@ -244,6 +271,9 @@ def main():
         print(f"   BLOCKS   {nm[:80]}  ({n * CELL * CELL:.0f} sq ft of road)")
     for nm in lost:
         print(f"   UNREACHED {nm}")
+    print(f"paved net  : {len(res['roads']['paved_islands'])} roads / drives not joined to the gate roads on pavement")
+    for nm in res["roads"]["paved_islands"]:
+        print(f"   ISLAND   {nm}")
     print(f"vehicles   : {len(vs)}; {sum(bool(v['issues']) for v in res['vehicles'])} with issues")
     for v in res["vehicles"]:
         if v["issues"]:

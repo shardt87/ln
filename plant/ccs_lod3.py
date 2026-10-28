@@ -84,6 +84,8 @@ def surfaces():
         "Crushed stone over the carbon-capture block; concrete drive north of the absorbers for maintenance access.")
     box(545, 1458, 932, 1368, 0, .08, "gravel_yard")
     box(545, 1205, 1292, 1306, .08, .16, "road")
+    for x0 in (545, 1189):                                      # both ends up to the 30 ft utilities road (paved loop)
+        box(x0, x0 + 16, 1306, 1370, .08, .16, "road")
 
 
 def nameplates():
