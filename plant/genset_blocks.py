@@ -97,7 +97,7 @@ def ground_ring():
 
 
 def sign():
-    x, y = RX - 13.0, Y0 - 5.0                                                          # south end of the group road
+    x, y = RX - 13.0, Y0 - 24.0                                                         # south of the park lane, facing it
     for s in (-1.6, 1.6):
         rod((x + s, y, 0), (x + s, y, 6.4), .08, "steel", seg=6)
     decal((x, y - .1, 4.6), (0, -1, 0), 4.2, 2.6, [("MODULAR GAS BLOCKS", .17, 1, "#ffffff"),

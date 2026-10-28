@@ -1,0 +1,511 @@
+{
+ "roads": {
+  "blocked_by": [],
+  "unreached": []
+ },
+ "vehicles": [
+  {
+   "name": "TGF-1: trailer-mounted gas-engine generator ~2.5 MW, 13.8 kV (trailer ",
+   "at": [
+    1957,
+    574
+   ],
+   "issues": []
+  },
+  {
+   "name": "TGF-2: trailer-mounted gas-engine generator ~2.5 MW, 13.8 kV (trailer ",
+   "at": [
+    1971,
+    574
+   ],
+   "issues": []
+  },
+  {
+   "name": "TGF-3: trailer-mounted gas-engine generator ~2.5 MW, 13.8 kV (trailer ",
+   "at": [
+    1985,
+    574
+   ],
+   "issues": []
+  },
+  {
+   "name": "TGF-4: trailer-mounted gas-engine generator ~2.5 MW, 13.8 kV (trailer ",
+   "at": [
+    1999,
+    574
+   ],
+   "issues": []
+  },
+  {
+   "name": "TGF-5: trailer-mounted gas-engine generator ~2.5 MW, 13.8 kV (trailer ",
+   "at": [
+    2013,
+    574
+   ],
+   "issues": []
+  },
+  {
+   "name": "TGF-6: trailer-mounted gas-engine generator ~2.5 MW, 13.8 kV (trailer ",
+   "at": [
+    2027,
+    574
+   ],
+   "issues": []
+  },
+  {
+   "name": "TGF-SWG: mobile 13.8 kV switchgear trailer (fleet collector)",
+   "at": [
+    2046,
+    569
+   ],
+   "issues": []
+  },
+  {
+   "name": "TGF-CT: fleet control and gas-conditioning trailer",
+   "at": [
+    2062,
+    569
+   ],
+   "issues": []
+  },
+  {
+   "name": "CONDITIONAL: ULSD truck unloading station (canopy, spill containment)",
+   "at": [
+    1356,
+    1462
+   ],
+   "issues": []
+  },
+  {
+   "name": "CONDITIONAL: ULSD truck unloading station (canopy, spill containment)",
+   "at": [
+    1386,
+    1462
+   ],
+   "issues": []
+  },
+  {
+   "name": "MOB-1: trailer genset",
+   "at": [
+    2186,
+    700
+   ],
+   "issues": []
+  },
+  {
+   "name": "LB: commissioning load bank (trailer)",
+   "at": [
+    2200,
+    592
+   ],
+   "issues": []
+  },
+  {
+   "name": "TM-1: trailer-mounted aeroderivative GT (TM2500 class, ~35 MW)",
+   "at": [
+    2162,
+    776
+   ],
+   "issues": []
+  },
+  {
+   "name": "TM-1: trailer-mounted aeroderivative GT (TM2500 class, ~35 MW)",
+   "at": [
+    2196,
+    776
+   ],
+   "issues": []
+  },
+  {
+   "name": "TM-1: trailer-mounted aeroderivative GT (TM2500 class, ~35 MW)",
+   "at": [
+    2161,
+    752
+   ],
+   "issues": []
+  },
+  {
+   "name": "H2T: tube-trailer unloading bay (2 bays, commissioning / test supply)",
+   "at": [
+    2316,
+    1586
+   ],
+   "issues": []
+  },
+  {
+   "name": "H2T: tube-trailer unloading bay (2 bays, commissioning / test supply)",
+   "at": [
+    2316,
+    1616
+   ],
+   "issues": []
+  },
+  {
+   "name": "Gas yard: operators and maintenance pickup",
+   "at": [
+    1648,
+    1622
+   ],
+   "issues": []
+  },
+  {
+   "name": "M&R station: operator and pickup",
+   "at": [
+    1650,
+    1712
+   ],
+   "issues": []
+  },
+  {
+   "name": "Modular yard: engine spares and cable-reel laydown (ISO containers, re",
+   "at": [
+    2335,
+    1060
+   ],
+   "issues": []
+  },
+  {
+   "name": "Modular yard: operators and vehicles",
+   "at": [
+    1640,
+    988
+   ],
+   "issues": []
+  },
+  {
+   "name": "Modular yard: operators and vehicles",
+   "at": [
+    1760,
+    1230
+   ],
+   "issues": []
+  },
+  {
+   "name": "Modular yard: operators and vehicles",
+   "at": [
+    2000,
+    1114
+   ],
+   "issues": []
+  },
+  {
+   "name": "CCS area: operators and vehicles",
+   "at": [
+    760,
+    1299
+   ],
+   "issues": []
+  },
+  {
+   "name": "CCS area: operators and vehicles",
+   "at": [
+    1010,
+    1299
+   ],
+   "issues": []
+  },
+  {
+   "name": "CCS area: operators and vehicles",
+   "at": [
+    1350,
+    1100
+   ],
+   "issues": []
+  },
+  {
+   "name": "Vehicles: pickups, flatbeds, a forklift, a mobile crane",
+   "at": [
+    1240,
+    285
+   ],
+   "issues": []
+  },
+  {
+   "name": "Vehicles: pickups, flatbeds, a forklift, a mobile crane",
+   "at": [
+    1620,
+    290
+   ],
+   "issues": []
+  },
+  {
+   "name": "Vehicles: pickups, flatbeds, a forklift, a mobile crane",
+   "at": [
+    1700,
+    1662
+   ],
+   "issues": []
+  },
+  {
+   "name": "Vehicles: pickups, flatbeds, a forklift, a mobile crane",
+   "at": [
+    385,
+    1300
+   ],
+   "issues": []
+  },
+  {
+   "name": "Vehicles: pickups, flatbeds, a forklift, a mobile crane",
+   "at": [
+    2050,
+    1385
+   ],
+   "issues": []
+  },
+  {
+   "name": "Vehicles: pickups, flatbeds, a forklift, a mobile crane",
+   "at": [
+    248,
+    278
+   ],
+   "issues": []
+  },
+  {
+   "name": "Vehicles: pickups, flatbeds, a forklift, a mobile crane",
+   "at": [
+    118,
+    515
+   ],
+   "issues": []
+  },
+  {
+   "name": "Vehicles: pickups, flatbeds, a forklift, a mobile crane",
+   "at": [
+    118,
+    567
+   ],
+   "issues": []
+  },
+  {
+   "name": "Vehicles: pickups, flatbeds, a forklift, a mobile crane",
+   "at": [
+    1660,
+    509
+   ],
+   "issues": []
+  },
+  {
+   "name": "Vehicles: pickups, flatbeds, a forklift, a mobile crane",
+   "at": [
+    3345,
+    740
+   ],
+   "issues": []
+  },
+  {
+   "name": "Vehicles: pickups, flatbeds, a forklift, a mobile crane",
+   "at": [
+    3345,
+    792
+   ],
+   "issues": []
+  },
+  {
+   "name": "Vehicles: pickups, flatbeds, a forklift, a mobile crane",
+   "at": [
+    3100,
+    395
+   ],
+   "issues": []
+  },
+  {
+   "name": "Vehicles: pickups, flatbeds, a forklift, a mobile crane",
+   "at": [
+    345,
+    520
+   ],
+   "issues": []
+  },
+  {
+   "name": "Vehicles: pickups, flatbeds, a forklift, a mobile crane",
+   "at": [
+    1130,
+    285
+   ],
+   "issues": []
+  },
+  {
+   "name": "Vehicles: pickups, flatbeds, a forklift, a mobile crane",
+   "at": [
+    1144,
+    285
+   ],
+   "issues": []
+  },
+  {
+   "name": "Vehicles: pickups, flatbeds, a forklift, a mobile crane",
+   "at": [
+    1163,
+    285
+   ],
+   "issues": []
+  },
+  {
+   "name": "Underground: cable-pull maintenance on the modular-yard 13.8 kV collec",
+   "at": [
+    1719,
+    945
+   ],
+   "issues": []
+  },
+  {
+   "name": "Underground: cable-pull maintenance on the modular-yard 13.8 kV collec",
+   "at": [
+    1739,
+    942
+   ],
+   "issues": []
+  },
+  {
+   "name": "Underground: cable-pull maintenance on the modular-yard 13.8 kV collec",
+   "at": [
+    1920,
+    942
+   ],
+   "issues": []
+  },
+  {
+   "name": "Underground: cable rejuvenation, Southwire field-service van at the co",
+   "at": [
+    1686,
+    944
+   ],
+   "issues": []
+  },
+  {
+   "name": "Underground: cable rejuvenation, Southwire field-service van at the co",
+   "at": [
+    1686,
+    944
+   ],
+   "issues": []
+  },
+  {
+   "name": "Cable reel yard: stocked reels and SIMpull Truck",
+   "at": [
+    169,
+    734
+   ],
+   "issues": []
+  },
+  {
+   "name": "Cable reel yard: stocked reels and SIMpull Truck",
+   "at": [
+    194,
+    734
+   ],
+   "issues": []
+  },
+  {
+   "name": "Cable delivery: SIMpull Truck at the modular-yard cable pull",
+   "at": [
+    1760,
+    927
+   ],
+   "issues": []
+  },
+  {
+   "name": "Cable delivery: SIMpull Truck at the modular-yard cable pull",
+   "at": [
+    1760,
+    927
+   ],
+   "issues": []
+  },
+  {
+   "name": "Reel yard: SIMpull / Maxis staging (reels on cradles, reel rollers, fl",
+   "at": [
+    225,
+    886
+   ],
+   "issues": []
+  },
+  {
+   "name": "Prefab cable spine going in: MOD-EH north along the 34.5 kV collector ",
+   "at": [
+    1921,
+    1066
+   ],
+   "issues": []
+  },
+  {
+   "name": "Prefab cable spine going in: MOD-EH north along the 34.5 kV collector ",
+   "at": [
+    1975,
+    1061
+   ],
+   "issues": []
+  },
+  {
+   "name": "Prefab staging bay: cable spine modules on dunnage, pre-terminated MV ",
+   "at": [
+    102,
+    774
+   ],
+   "issues": []
+  },
+  {
+   "name": "Skid pre-assembly / pre-wire workstation beside the inlet chillers, ne",
+   "at": [
+    200,
+    1021
+   ],
+   "issues": []
+  },
+  {
+   "name": "Cable delivery: SIMpull tractor-trailer at the turbine hall west door",
+   "at": [
+    440,
+    488
+   ],
+   "issues": []
+  },
+  {
+   "name": "Cable delivery: SIMpull tractor-trailer at the turbine hall west door",
+   "at": [
+    440,
+    488
+   ],
+   "issues": []
+  }
+ ],
+ "gates": [
+  {
+   "site": "Open engine skid site",
+   "ok": true
+  },
+  {
+   "site": "Fuel-cell site",
+   "ok": true
+  },
+  {
+   "site": "Microturbine site",
+   "ok": true
+  },
+  {
+   "site": "Trailer gas-engine fleet site",
+   "ok": true
+  },
+  {
+   "site": "Containerized gas engine site",
+   "ok": true
+  },
+  {
+   "site": "Paralleled gas genset site",
+   "ok": true
+  },
+  {
+   "site": "Linear generator site",
+   "ok": true
+  },
+  {
+   "site": "Mid-size gas turbine site",
+   "ok": true
+  },
+  {
+   "site": "Gas engine CHP site",
+   "ok": true
+  }
+ ],
+ "ok": true
+}

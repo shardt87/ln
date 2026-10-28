@@ -43,9 +43,11 @@ def surfaces():
         box(x0, x1, y0, y1, 0, .08, "gravel_yard")
     for (x0, x1, y0, y1) in ((1556, 1900, 981, 995),          # south drive along the exhaust trains
                              (1864, 1880, 995, 1336),         # N-S drive between the PCM and the aero units
-                             (1556, 1864, 1219, 1232),        # north drive between radiators and the lube building
-                             (1880, 2392, 1104, 1124),        # drive between the aero units and the fuel cells
-                             (1880, 2392, 1226, 1240)):       # drive north of the aero units
+                             (1556, 1835, 1221, 1232),        # north drive between radiators and the lube building
+                             (1835, 1864, 1222.6, 1232),      # (narrowed past the PCM's end-wall HVAC unit)
+                             (1880, 2392, 1104, 1124)):       # drive between the aero units and the fuel cells
+        # (the drive between the SC units and their PCMs, y 1226-1240, is gone (road audit, Oct 28): generator leads and
+        # lube-oil lines cross that strip; the SC units are served from the y 1104 drive, the PCMs from the reserved pad)
         box(x0, x1, y0, y1, .08, .16, "road")
     for (x0, x1, y0, y1) in ((1824, 1836, 1128, 1136), (1926, 1940, 870, 876)):
         box(x0, x1, y0, y1, .08, .2, "concrete")                # door aprons
@@ -298,8 +300,8 @@ def furniture(S):
     fuel.D = False
     new("Modular yard: operators and vehicles", (1556, 2392, 860, 1336), (0, 8))
     pickup(S, 1640, 988)
-    pickup(S, 1872, 1180, along_x=False)
-    pickup(S, 1990, 1233)
+    pickup(S, 1760, 1230)                          # on the north drive (was parked at SC-1's air inlet)
+    pickup(S, 2000, 1114)                          # on the drive south of the SC units
     for (x, y, a, v) in ((1710.5, 1027.6, 1.57, "hivis"), (1706.4, 1027.6, 1.2, "hivis_o"), (1830, 1133, 1.57, "hivis"),
                          (1960, 1226, 0, "hivis"), (1725, 1218, 3.14, "hivis_o")):
         p = S.place(x, y, .8, .8, 6)

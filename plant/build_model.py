@@ -1275,10 +1275,13 @@ xfmr(L, "T-MOD-2: 230 / 34.5 kV", 2105, 2145, 870, 905, 24, bushing=13, tag="T-M
 # 34.5 kV collector MOD-EH (two bus sections, tie open) and on to T-MOD-1 / T-MOD-2. MOD-EH keeps a 13.8 kV station-service
 # section (fuel-gas compressors, MOD-LV) from MOD-SST. Zigzag grounding transformers give each 34.5 kV section its ground.
 DCY = dict(area="I", basis="design change", sheet="beyond Rev 14 (electrical review)")
-for k, (y0, y1) in enumerate(((1110, 1132), (1085, 1107), (1060, 1082), (1035, 1057))):   # SE of the PCM
+for k, (y0, y1) in enumerate(((1079, 1101), (1052, 1074), (1025, 1047), (998, 1020))):   # strip east of the N-S drive
     g = "ABCD"[k]
-    xfmr(L, f"RICE-GSU-{g}: 13.8 / 34.5 kV group step-up, ~45 MVA (RICE {2 * k + 1}-{2 * k + 2})", 1866, 1894, y0, y1, 13,
-         fins="y", tag=f"RICE-GSU-{g}", **DCY)
+    xfmr(L, f"RICE-GSU-{g}: 13.8 / 34.5 kV group step-up, ~45 MVA (RICE {2 * k + 1}-{2 * k + 2})", 1882, 1898, y0, y1, 13,
+         fins="x", tag=f"RICE-GSU-{g}", **DCY)
+item(L, "RICE-GSU-A..D firewalls (between the group step-ups)", (1882, 1898, 1020, 1079), (0, 16), register=False, **DCY)
+for yw in (1022, 1049, 1076):
+    B(1882, 1898, yw, yw + 1, 0, 16, "concrete")
 xfmr(L, "SC-GSU-1: 13.8 / 34.5 kV unit step-up, ~60 MVA (SC-1)", 1999, 2025, 1234, 1262, 14, fins="y", tag="SC-GSU-1",
      **DCY)
 xfmr(L, "SC-GSU-2: 13.8 / 34.5 kV unit step-up, ~60 MVA (SC-2)", 2150, 2176, 1234, 1262, 14, fins="y", tag="SC-GSU-2",
@@ -1302,13 +1305,14 @@ solid(L, "Drive-over cable ramp (C-L01 crossing)", 2238, 2252, 617, 643, 0, 1, "
 # gravel pad, not a showroom row): fuel cells, microturbines (south band), open engine skid, enclosed genset (middle
 # band), container genset (north band); the pad gas header (y 452) runs between the bands, one LV lane (y 400) to PAD-LV
 def tech_site(name, x0, x1, y0, y1, gate):
-    """Fenced gravel site: pad, 7 ft chain-link on the pad edge with a 16 ft gate gap on the `gate` side (n / s)."""
+    """Fenced gravel site: pad, 7 ft chain-link on the pad edge with a 16 ft gate gap on each `gate` side (n, s or both:
+    the vehicle gate onto the park road, the other a cable / personnel gate)."""
     pad(L, f"{name}: gravel pad", x0, x1, y0, y1, "gravel", z1=0.25, area="I", basis="design change", sheet="beyond Rev 14")
     item(L, f"{name}: chain-link fence (7 ft) and gate", (x0, x1, y0, y1), (0, 7), register=False, area="I",
          basis="design change", sheet="beyond Rev 14")
     xm = (x0 + x1) / 2
     for (yy, side) in ((y0, "s"), (y1 - .4, "n")):
-        if side == gate:
+        if side in gate:
             B(x0, xm - 8, yy, yy + .4, 0, 7, "fence"); B(xm + 8, x1, yy, yy + .4, 0, 7, "fence")
             B(xm - 8.4, xm - 7.6, yy - .2, yy + .6, 0, 8, "steel"); B(xm + 7.6, xm + 8.4, yy - .2, yy + .6, 0, 8, "steel")
         else:
@@ -1323,7 +1327,7 @@ for xx in (2165, 2200, 2206):
 ehouse(L, "PIC: portable input cabinet", 2255, 2263, 572, 578, 7, tag="PIC", area="I", sheet="SW-3X1-08")
 solid(L, "LB: commissioning load bank (trailer)", 2185, 2215, 588, 596, 0, 12, "equip", tag="LB", area="I",
       sheet="SW-3X1-08")
-tech_site("Open engine skid site", 1995, 2052, 404, 444, "s")
+tech_site("Open engine skid site", 1995, 2052, 404, 444, "sn")
 item(L, "GEN-O canopy: steel shade roof over the open skid", (2004, 2042, 413, 435), (0, 13.6), area="I",
      basis="design change", register=False)
 for _cx in (2004.5, 2041.5):
@@ -1370,12 +1374,12 @@ for k in range(1):                             # one trailer aeroderivative (own
     B(x + 66, x + 78, y + 30, y + 42, 0, 9, "cabinet")               # fuel-gas / water skid
 # one fuel-cell module with its inverter and one microturbine south of the portable pad (feeding PAD-LV); owner,
 # Oct 27: one bay per technology (the duplicate containers, fuel cells and microturbines are gone)
-tech_site("Fuel-cell site", 1995, 2077, 336, 394, "n")
+tech_site("Fuel-cell site", 1995, 2077, 336, 394, "ns")
 for k in range(4):
     x = 2003 + 12 * k
     solid(L, f"FC-{k + 5}: SOFC module (200-300 kW class)", x, x + 9, 350, 376, 0, 7, "bess", tag=f"FC-{k + 5}", **DC)
 ehouse(L, "FC-5..8 inverter / AC cabinet / desulfurizer", 2050, 2074, 352, 376, 8, **DC)
-tech_site("Microturbine site", 2085, 2150, 336, 394, "n")
+tech_site("Microturbine site", 2085, 2150, 336, 394, "ns")
 ehouse(L, "MT-4..6 480 V switchboard", 2129, 2145, 358, 372, 9, **DC)
 for k in range(3):
     x = 2093 + 12 * k
@@ -1505,7 +1509,7 @@ ehouse(L, "SWG-MY: 35 kV switchgear lineup for the modular blocks (group breaker
 # fenced site with its own collection gear and one sign (class names only; the example companies are in HANDOFF):
 # trailer gas-engine fleet, containerized gas engines, paralleled gas gensets, linear generators (the aeroderivative and
 # industrial turbine classes are AX-1 / IG-1 by the T-MOD transformers, modular_packages.py)
-tech_site("Trailer gas-engine fleet site", 1945, 2085, 540, 642, "n")
+tech_site("Trailer gas-engine fleet site", 1945, 2085, 540, 630, "n")
 for k in range(6):
     x = 1953 + 14 * k
     item(L, f"TGF-{k + 1}: trailer-mounted gas-engine generator ~2.5 MW, 13.8 kV (trailer {k + 1} of 6)",
@@ -1531,7 +1535,7 @@ B(2058, 2067, 548, 590, 3.4, 4.2, "steel_dark"); B(2058.3, 2066.7, 552, 588, 4.2
 for _y in (553.5, 558):
     R((2058.1, _y, 1.6), (2059.1, _y, 1.6), 1.6, "tyre", seg=14); R((2065.9, _y, 1.6), (2066.9, _y, 1.6), 1.6, "tyre", seg=14)
 
-tech_site("Containerized gas engine site", 1945, 2085, 462, 530, "n")
+tech_site("Containerized gas engine site", 1945, 2085, 462, 530, "ns")
 for k in range(4):                                  # stacked: engine containers on grade, cooling containers above
     x = 1955 + 18 * k                               # on the steel deck (park_looks.cge_deck)
     item(L, f"CGE-{k + 1}: containerized gas-engine generator ~4.4 MW, 13.8 kV (40 ft engine container {k + 1} of 4)",
@@ -1548,9 +1552,9 @@ ehouse(L, "CGE-SWG: 13.8 kV switchgear container (engine breakers, site feeder)"
 xfmr(L, "CGE-AUX: 13.8 / 0.48 kV auxiliary transformer (cooling containers, radiator fans)", 2050, 2062, 474, 486, 8,
      tag="CGE-AUX", **DC)
 
-tech_site("Paralleled gas genset site", 2095, 2150, 462, 640, "s")
+tech_site("Paralleled gas genset site", 2095, 2150, 462, 619.6, "sn")
 for k in range(8):
-    y = 520 + 13 * k
+    y = 520 + 12 * k
     item(L, f"PGS-{k + 1}: enclosed gas genset 1 MW, 480 V (paralleled, unit {k + 1} of 8)", (2103, 2131, y, y + 8.5),
          (0, 12.5), tag=f"PGS-{k + 1}",
          info="Sound-attenuated gas genset, 1 MW at 480 V, paralleled on the site's 480 V switchgear and stepped up "
@@ -1559,14 +1563,14 @@ for k in range(8):
     B(2103.2, 2126, y + .1, y + 8.4, .8, 11, "white_truck")                               # enclosure
     B(2126, 2130.8, y + .1, y + 8.4, .8, 11, "louvre")                                   # radiator end (east)
     V(2108, y + 4.25, .45, 11, 12.5, "stack", seg=10)
-ehouse(L, "PGS-SWG: 480 V paralleling switchgear (8 generator breakers, 2 transformer mains)", 2135, 2147, 520, 620, 10,
+ehouse(L, "PGS-SWG: 480 V paralleling switchgear (8 generator breakers, 2 transformer mains)", 2135, 2147, 520, 612, 10,
        tag="PGS-SWG", **DC)
 padmount(L, "PGS-TX1: 480 V : 34.5 kV, ~5 MVA loop-feed pad-mount (gensets 1-4)", lambda u, v: (u, v), 2099, 2111, 470, 482, 6.5,
          tag="PGS-TX1", **DC)
 padmount(L, "PGS-TX2: 480 V : 34.5 kV, ~5 MVA loop-feed pad-mount (gensets 5-8)", lambda u, v: (u, v), 2134, 2146, 470, 482, 6.5,
          tag="PGS-TX2", **DC)
 
-tech_site("Linear generator site", 2060, 2150, 404, 444, "s")
+tech_site("Linear generator site", 2060, 2150, 404, 444, "sn")
 for k in range(4):
     x = 2068 + 14 * k
     solid(L, f"LGN-{k + 1}: linear generator ~250 kW (gas, no combustion engine), DC out", x, x + 8, 412, 432, 0, 8,
@@ -1576,7 +1580,7 @@ ehouse(L, "LGN-INV: linear generator inverter / AC cabinet (480 V)", 2126, 2144,
 
 # (owner, Oct 27, reference pictures) two more classes north of the park: mid-size industrial gas-turbine packages and
 # a gas-engine row with exhaust heat recovery; the detail (filter houses, stacks, rack, heat exchangers) is park_looks.py
-tech_site("Mid-size gas turbine site", 1945, 2085, 652, 775, "n")
+tech_site("Mid-size gas turbine site", 1945, 2085, 652, 775, "ns")
 for k, yc in enumerate((690, 742)):
     y0, y1 = (680, 709) if k == 0 else (723, 752)
     item(L, f"MTG-{k + 1}: mid-size industrial gas-turbine generator package ~16 MW, 13.8 kV (unit {k + 1} of 2)",
@@ -1611,13 +1615,32 @@ ehouse(L, "CHP-SWG: 13.8 kV switchgear container (4 engine breakers, site feeder
 padmount(L, "CHP-AUX: 13.8 / 0.48 kV, 750 kVA auxiliary pad-mount (engine auxiliaries, heat-recovery pumps, dump cooler)",
          lambda u, v: (u, v), 2191, 2199, 673, 679, 5.0, tag="CHP-AUX", **DC)
 
+# power park roads (road audit, Oct 28: the site gates opened onto 10 ft gaps and bare ground, the trailer fleet sat behind
+# its own gas header): crushed-stone roads, 18-22 ft, with every site's vehicle gate on one of them; low pipes under the
+# roads are sleeved (fuel.road_crossings)
+for nm, (x0, x1, y0, y1) in (("west park road", (1922, 1942, 300, 648)),          # from the 30 ft access road
+                             ("park spine road", (1922, 2135, 630, 648)),         # joins the portable pad lane
+                             ("middle park lane", (1942, 2312, 444, 462)),        # to the gas-block group road
+                             ("south park drive (fuel-cell and microturbine gates)", (1942, 2160, 300, 334)),
+                             ("trailer fleet access lane (inside the fence)", (1950, 2066, 603, 628)),
+                             ("paralleled genset north gate apron road", (2095, 2135, 620, 630))):
+    pad(L, f"Power park: {nm}", x0, x1, y0, y1, "road", z1=0.3, area="I", basis="design change", sheet="beyond Rev 14")
+pad(L, "Power park: middle park lane, joint with the group road", 2292, 2312, 461, 465, "road", z1=0.3, area="I",
+    basis="design change", sheet="beyond Rev 14")
+pad(L, "Portable pad lane: joint with the 30 ft access road", 2346, 2370, 299, 306, "road", z1=0.3, area="I",
+    basis="design change", sheet="beyond Rev 14")
+for nm, (x0, x1, y0, y1) in (("load-bank trailer", (2181, 2219, 584, 620)), ("MOB-1 trailer", (2157, 2240, 692, 708)),
+                             ("MOB-1 trailer, access from the lane", (2210, 2240, 640, 692))):
+    pad(L, f"Portable pad: crushed-stone hardstand, {nm}", x0, x1, y0, y1, "gravel", z1=0.25, area="I",
+        basis="design change", sheet="beyond Rev 14")
+
 # power park collection (electrical review, Oct 28): the park no longer lands on the 13.8 kV pad / MOD-EH buses. Each
 # site steps up to 34.5 kV at the site (xxx-GSU), the PGS pad-mounts are 480 V : 34.5 kV, AX-1 / IG-1 get unit step-ups;
 # all feed the 34.5 kV park collector SWG-PK (two bus sections) and the third 230 kV transformer T-MOD-3 (three-winding,
 # 230 / 34.5 / 34.5 kV, ~250 MVA) on the T-MOD gantry. MOD-EH keeps RICE + SC-1/2 + MOD-LV (~255 MW, as reviewed Oct 21);
 # PAD-EH keeps TM-1, the CHP site, MT-TX and PAD-TX (~51 MW, ~2,370 A) and steps up through PAD-GSU.
 GSU = "13.8 / 34.5 kV step-up"
-xfmr(L, f"TGF-GSU: {GSU}, ~20 MVA (trailer fleet)", 2025, 2039, 609, 633, 10, fins="y", tag="TGF-GSU", **DC)
+xfmr(L, f"TGF-GSU: {GSU}, ~20 MVA (trailer fleet)", 2068, 2083, 600, 628.5, 10, fins="y", tag="TGF-GSU", **DC)
 xfmr(L, f"CGE-GSU: {GSU}, ~20 MVA (containerized engines)", 2048, 2064, 492, 514, 10, fins="y", tag="CGE-GSU", **DC)
 xfmr(L, f"MTG-GSU: {GSU}, ~40 MVA (mid-size turbines)", 2044, 2064, 740, 768, 13, fins="y", tag="MTG-GSU", **DC)
 xfmr(L, f"PAD-GSU: {GSU}, ~60 MVA (PAD-EH: TM-1, CHP site, MT-TX, PAD-TX)", 2166, 2192, 506, 532, 14, fins="y", tag="PAD-GSU", **DC)
@@ -2025,13 +2048,13 @@ add_route("fuel_gas", [(2081, 452), (2081, 389), (2099, 389), (2099, 379)], MX) 
 for k in range(6):                                                                          # TGF trailers -> TGF-SWG
     add_route("mvlv_cable", [(1957.25 + 14 * k, 548), (1957.25 + 14 * k, 544)], MX)
 add_route("mvlv_cable", [(1957.25, 544), (2045.5, 544), (2045.5, 548)], MX)
-add_route("mvlv_cable", [(2045.5, 590), (2045.5, 621), (2039, 621)], MX)                  # TGF-SWG -> TGF-GSU
+add_route("mvlv_cable", [(2045.5, 590), (2045.5, 596), (2072, 596), (2072, 600)], MX)     # TGF-SWG -> TGF-GSU
 for k in range(4):                                                                          # CGE containers -> CGE-SWG
     add_route("mvlv_cable", [(1959 + 18 * k, 469.6), (1959 + 18 * k, 466)], MX)
 add_route("mvlv_cable", [(1959, 466), (2034, 466), (2034, 470)], MX)
 add_route("mvlv_cable", [(2038, 503), (2048, 503)], MX)                                     # CGE-SWG -> CGE-GSU
 for k in range(8):                                                                          # PGS gensets -> PGS-SWG
-    add_route("mvlv_cable", [(2131, 524.25 + 13 * k), (2135, 524.25 + 13 * k)], MX)
+    add_route("mvlv_cable", [(2131, 524.25 + 12 * k), (2135, 524.25 + 12 * k)], MX)
 add_route("mvlv_cable", [(2137, 520), (2137, 505), (2105, 505), (2105, 482)], MX)          # PGS-SWG -> TX1
 add_route("mvlv_cable", [(2140, 520), (2140, 482)], MX)                                     # PGS-SWG -> TX2
 add_route("mvlv_cable", [(2105, 470), (2105, 466), (2140, 466), (2140, 470)], MX)          # TX1 -> TX2 (34.5 kV loop feed)
@@ -2039,16 +2062,16 @@ for k in range(4):                                                              
     add_route("mvlv_cable", [(2072 + 14 * k, 432), (2072 + 14 * k, 436)], MX)
 add_route("mvlv_cable", [(2072, 436), (2135, 436), (2135, 428)], MX)
 add_route("mvlv_cable", [(2135, 414), (2135, 408), (2105, 408), (2105, 400)], MX)          # LGN-INV -> LV lane
-add_route("fuel_gas", [(1990, 452), (1938, 452), (1938, 606)], MX)                         # west riser
-add_route("fuel_gas", [(1938, 606), (2032, 606)], MX)                                       # -> trailer fleet
+add_route("fuel_gas", [(1990, 452), (1943.5, 452), (1943.5, 606)], MX)                         # west riser
+add_route("fuel_gas", [(1943.5, 606), (1943.5, 608), (2028, 608)], MX)   # (under the fleet lane)                                       # -> trailer fleet
 for k in range(6):
-    add_route("fuel_gas", [(1957.25 + 14 * k, 606), (1957.25 + 14 * k, 601)], MX)
-add_route("fuel_gas", [(1938, 533), (2013, 533)], MX)                                       # -> engine containers
+    add_route("fuel_gas", [(1957.25 + 14 * k, 608), (1957.25 + 14 * k, 601)], MX)
+add_route("fuel_gas", [(1943.5, 533), (2013, 533)], MX)                                       # -> engine containers
 for k in range(4):
     add_route("fuel_gas", [(1959 + 18 * k, 533), (1959 + 18 * k, 510)], MX)
 add_route("fuel_gas", [(2092.5, 452), (2092.5, 615.5)], MX)                                 # -> paralleled gensets
 for k in range(8):
-    add_route("fuel_gas", [(2092.5, 524.25 + 13 * k), (2103, 524.25 + 13 * k)], MX)
+    add_route("fuel_gas", [(2092.5, 524.25 + 12 * k), (2103, 524.25 + 12 * k)], MX)
 add_route("fuel_gas", [(2066, 452), (2066, 422), (2068, 422)], MX)                          # -> linear generators
 for yc in (690, 742):                                                                       # MTG leads -> MTG-SWG
     add_route("mvlv_cable", [(2032, yc), (2038, yc), (2038, 720 if yc < 720 else 724), (2045, 720 if yc < 720 else 724)], MX)
@@ -2057,7 +2080,7 @@ add_route("mvlv_cable", [(2071, 728), (2071, 745)], MX)                         
 add_route("mvlv_cable", [(2078, 751), (2081, 751), (2081, 687), (2078, 687)], MX)          # MTG-AUX 480 V -> MTG-CB
 add_route("mvlv_cable", [(2064, 716), (2064, 694)], MX)                                     # e-house -> MTG-CB (control)
 add_route("mvlv_cable", [(1968, 713), (2040, 713), (2040, 688), (2050, 688)], MX)          # MTG-FG (MC-HL) -> MTG-CB
-add_route("fuel_gas", [(1938, 606), (1938, 716), (1948, 716)], MX)                          # west riser -> MTG-FG
+add_route("fuel_gas", [(1943.5, 606), (1943.5, 716), (1948, 716)], MX)                          # west riser -> MTG-FG
 add_route("fuel_gas", [(1968, 716), (1985, 716), (1985, 696.5)], MX)                        # -> MTG-1
 add_route("fuel_gas", [(1985, 716), (1985, 735.5)], MX)                                     # -> MTG-2
 for k in range(4):                                                                          # CHP units -> CHP-SWG
@@ -2071,7 +2094,7 @@ add_route("mvlv_cable", [(2056, 474), (2056, 464), (2021.6, 464), (2021.6, 467.6
 add_route("mvlv_cable", [(2038, 480), (2050, 480)], MX)                                     # CGE-SWG -> CGE-AUX
 # 34.5 kV park collector: each site's step-up to SWG-PK in one buried trunk (x 2088-2091 between the sites, y 776-779 north
 # of the turbine site, x 2141-2144 up to the substation); AX-GSU / IG-GSU from the north, PAD-GSU along x 2243
-PK = [("TGF", [(2032, 633), (2032, 637), (2015, 637), (2015, 646), (2088, 646)]),
+PK = [("TGF", [(2068, 620), (2015, 620), (2015, 640), (2088, 640)]),
       ("CGE", [(2056, 514), (2056, 520), (2015, 520), (2015, 535), (2089, 535)]),
       ("PGS", [(2140, 470), (2140, 466), (2122, 466), (2122, 459), (2090, 459)])]             # (out by the south gate)
 for i, (k, pts) in enumerate(PK):
@@ -2089,10 +2112,10 @@ for xw in (2176, 2186):                                                         
 # modular yard regroup (Oct 28): PCM sections -> RICE group step-ups -> MOD-EH; SC PCMs -> unit step-ups -> MOD-EH;
 # MOD-EH -> T-MOD-1 / -2, MOD-SST, grounding transformers; switchgear station service
 MY = "OPT_MOD_ROUTES"
-for k, yc in enumerate((1121, 1096, 1071, 1046)):
-    add_route("mvlv_cable", [(1860, 1146 + 5 * k), (1861 + k, 1146 + 5 * k), (1861 + k, yc), (1866, yc)], MY)  # PCM -> GSU
-    xl, yl = 1895 + k, 904 - k
-    add_route("mvlv_cable", [(1894, yc), (xl, yc), (xl, yl), (1919 + 4 * k, yl), (1919 + 4 * k, 900)], MY)  # GSU -> MOD-EH
+for k, yc in enumerate((1090, 1063, 1036, 1009)):                                         # (under the N-S drive)
+    add_route("mvlv_cable", [(1860, 1146 + 5 * k), (1861 + k, 1146 + 5 * k), (1861 + k, yc), (1882, yc)], MY)  # PCM -> GSU
+    xl, yl = 1899 + k, 904 - k
+    add_route("mvlv_cable", [(1898, yc), (xl, yc), (xl, yl), (1919 + 4 * k, yl), (1919 + 4 * k, 900)], MY)  # GSU -> MOD-EH
 add_route("mvlv_cable", [(1955, 1250), (1959, 1250), (1959, 1244), (1999, 1244)], MY)     # SC-1 PCM -> SC-GSU-1
 add_route("mvlv_cable", [(2218.5, 1250), (2214, 1250), (2214, 1244), (2176, 1244)], MY)   # SC-2 PCM -> SC-GSU-2
 add_route("mvlv_cable", [(2025, 1248), (2046, 1248), (2046, 1080), (1955, 1080), (1955, 900)], MY)   # SC-GSU-1 -> MOD-EH

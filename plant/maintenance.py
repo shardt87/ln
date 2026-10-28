@@ -343,6 +343,30 @@ def build():
         open_manhole(cx, cy)
     rejuvenation(*to_site(*MH_C))
     fuel.G["cur"] = it
+    access_mats()
+    fuel.G["cur"] = it
+    return it
+
+
+def access_mats():
+    """Timber crane mats laid for the job (road audit, Oct 28: the crews' vehicles stood on the bare cut ground): from
+    the south drive (y 981) down between the openings to a hardstand under the reel trailer, the SIMpull truck and the
+    rejuvenation van, and a second track at the east end to the puller truck at MH-B."""
+    it = fuel.new_item(LAYER, "Temporary access mats: timber crane mats from the drive to the cable-pull crews",
+                       (1668, 1920, 918, 995), (0, .3), area="I", basis="typical", register=False,
+                       sheet="typical (underground maintenance scene)",
+                       info="Timber crane mats (8 x 12 in hardwood) laid over the ground for the outage: the access from "
+                            "the south drive and the hardstand under the vehicles, kept clear of the open manholes and the "
+                            "trench. Typical.")
+    fuel.on(it)
+    for (x0, x1, y0, y1) in ((1724, 1738, 948, 981),                 # track down between MH-A and the trench
+                             (1668, 1792, 918, 948),                 # hardstand: van, reel trailer, SIMpull truck
+                             (1904, 1918, 950, 981),                 # east track (past MH-B's opening at x 1898-1902)
+                             (1896, 1918, 981, 995),                 # joins the end of the south drive
+                             (1900, 1934, 932, 950)):               # puller-truck hardstand
+        box(x0, x1, y0, y1, 0, .25, "timber")
+        for k in range(int((y1 - y0) / 4)):                             # mat joints, every 4 ft
+            box(x0, x1, y0 + 4 * k + 3.9, y0 + 4 * k + 4.0, .25, .27, "steel_dark")
     return it
 
 

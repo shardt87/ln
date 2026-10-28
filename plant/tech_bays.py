@@ -8,14 +8,14 @@ from fuel import rod
 # site signs at each gate: (x, y), title, rating, cable story
 SITES = [
     ((1962.0, 536.0), "TRAILER GAS-ENGINE FLEET", "6 x ~2.5 MW trailers · 13.8 kV", "SHD-GC > switchgear trailer > 35 kV step-up"),
-    ((1962.0, 458.5), "CONTAINERIZED GAS ENGINES", "4 x ~4.4 MW · stacked: engines below, cooling above", "15 kV leads > switchgear > 35 kV step-up"),
-    ((1962.0, 648.5), "MID-SIZE GAS TURBINES", "2 x ~16 MW packages · 13.8 kV", "15 kV leads > step-up > 35 kV collector"),
-    ((2120.0, 644.0), "GAS ENGINES + HEAT RECOVERY", "4 x ~2.5 MW · exhaust heat to hot water", "15 kV leads > switchgear > PAD-EH"),
-    ((2105.0, 632.0), "PARALLELED GAS GENSETS", "8 x 1 MW · 480 V paralleled", "480 V leads > switchgear > 2 pad-mounts to 35 kV"),
-    ((2140.0, 401.5), "LINEAR GENERATORS", "4 x ~250 kW · gas, DC out", "DC to the inverter · 480 V AC"),
-    ((2005.0, 401.5), "OPEN ENGINE SKID", "1 MW · 480 V · under a canopy", "480 V leads to PAD-LV · control"),
-    ((2020.0, 397.0), "FUEL CELLS", "4 x ~250 kW solid-oxide + inverter", "DC to the inverter · 480 V AC"),
-    ((2100.0, 397.0), "MICROTURBINES", "3 x 1 MW + 480 V switchboard", "480 V leads to the switchboard"),
+    ((1962.0, 465.0), "CONTAINERIZED GAS ENGINES", "4 x ~4.4 MW · stacked: engines below, cooling above", "15 kV leads > switchgear > 35 kV step-up"),
+    ((1962.0, 655.0), "MID-SIZE GAS TURBINES", "2 x ~16 MW packages · 13.8 kV", "15 kV leads > step-up > 35 kV collector"),
+    ((2116.0, 650.5), "GAS ENGINES + HEAT RECOVERY", "4 x ~2.5 MW · exhaust heat to hot water", "15 kV leads > switchgear > PAD-EH"),
+    ((2105.0, 616.0, 1), "PARALLELED GAS GENSETS", "8 x 1 MW · 480 V paralleled", "480 V leads > switchgear > 2 pad-mounts to 35 kV"),
+    ((2140.0, 441.0, 1), "LINEAR GENERATORS", "4 x ~250 kW · gas, DC out", "DC to the inverter · 480 V AC"),
+    ((2005.0, 441.0, 1), "OPEN ENGINE SKID", "1 MW · 480 V · under a canopy", "480 V leads to PAD-LV · control"),
+    ((2020.0, 338.5), "FUEL CELLS", "4 x ~250 kW solid-oxide + inverter", "DC to the inverter · 480 V AC"),
+    ((2100.0, 338.5), "MICROTURBINES", "3 x 1 MW + 480 V switchboard", "480 V leads to the switchboard"),
 ]
 TRAILERS = [
     (2154.0, 708.0, "TRAILER GENSET", "13.8 kV · on wheels", "SHD-GC through the cable ramp"),
@@ -28,22 +28,25 @@ def decal(*a, **k):
     showcase.decal(*a, **k)
 
 
-def sign(x, y, title, rating, story):
+def sign(x, y, title, rating, story, ny=-1):
+    """ny: the face direction, -1 south (default), +1 north: signs face the road the site's vehicle gate opens on."""
     for s in (-1.8, 1.8):
         rod((x + s, y, 0), (x + s, y, 6.4), .08, "steel", seg=6)
-    decal((x, y - .12, 4.7), (0, -1, 0), 4.4, 2.4, [(title, .17, 1, "#ffffff"), (rating, .13, 0, "#e6e6e6"),
+    decal((x, y + .12 * ny, 4.7), (0, ny, 0), 4.4, 2.4, [(title, .17, 1, "#ffffff"), (rating, .13, 0, "#e6e6e6"),
                                                    ("cable: " + story, .12, 1, "#f2c200")], bg="#22303a")
 
 
 def build():
     n = 0
-    for (x, y), title, rating, story in SITES:
+    for pos, title, rating, story in SITES:
+        x, y = pos[:2]
+        ny = pos[2] if len(pos) > 2 else -1
         it = fuel.new_item("OPT_MODX", f"Site sign: {title.lower()}", (x - 2.4, x + 2.4, y - .4, y + .4), (0, 6.6),
                            area="I", register=False, basis="typical",
                            info=f"Modular yard technology site: {title.lower()}, {rating}; cable: {story}.")
         fuel.on(it)
         fuel.D = True
-        sign(x, y, title, rating, story)
+        sign(x, y, title, rating, story, ny)
         fuel.D = False
         n += 1
     for x, y, title, rating, story in TRAILERS:

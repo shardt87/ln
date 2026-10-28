@@ -124,7 +124,7 @@ def crane(cx, cy, tip):
 
 
 def spine_install():
-    it = fuel.new_item("OPT_MODX", "Prefab cable spine going in: MOD-EH north to the aeroderivative units (modules on bents, "
+    it = fuel.new_item("OPT_MODX", "Prefab cable spine going in: MOD-EH north along the 34.5 kV collector lanes (modules on bents, "
                        "module 5 on the crane)", (1900, 2004, 900, 1150), (0, 70), basis="typical", register=False, area="I",
                        sheet="typical (prefab cable installation)",
                        info="Elevated LV power / control / fibre spine for the modular-yard expansion, built from 40 ft factory "
@@ -171,7 +171,7 @@ def spine_install():
         rod((SX, ya, zh), (px, py, 3.6), .03, "rope", seg=4)
         person(px, py, 0, math.atan2(ya - py, SX - px), vest="hivis_o")
     # boom lift at the module 4/5 splice with two electricians
-    bx, by = 1986.0, y5 - 3
+    bx, by = 1975.0, y5 - 3                                                     # clear of AX-1's pad (x 1981)
     box(bx - 3, bx + 3, by - 4, by + 4, .5, 2.6, "crane")
     for s in (-1, 1):
         rod((bx + 2.4, by + s * 3.2, 1.1), (bx + 2.6, by + s * 3.2 - .5, 1.1), 1.1, "tyre", seg=12)

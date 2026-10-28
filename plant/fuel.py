@@ -304,7 +304,11 @@ def gas_yard():
     pipe([(1715, 1608), (1806, 1608), (1806, 1594), (1830, 1594)], 4, .55, "conditional")
     pipe([(1820, 1572), (1820, 1590), (1715, 1590)], 4.0, .55, "conditional")
     # vent header to the stack
-    pipe([(1708, 1612), (1610, 1612), (1610, 1600), (1601, 1600)], 2.4, .3, "pipe")
+    pipe([(1708, 1612), (1646, 1612)], 2.4, .3, "pipe")                              # (sleeved under the yard drive,
+    rod((1646, 1612, 2.4), (1646, 1612, -1.5), .3, "pipe", seg=10)                   # road audit, Oct 28)
+    rod((1646, 1612, -1.5), (1624, 1612, -1.5), .3, "pipe", seg=10)
+    rod((1624, 1612, -1.5), (1624, 1612, 2.4), .3, "pipe", seg=10)
+    pipe([(1624, 1612), (1610, 1612), (1610, 1600), (1601, 1600)], 2.4, .3, "pipe")
     # hot IP feedwater to the performance heater (from the HRSG area, typical)
     for xn in (1712, 1729):                                                          # to the feedwater routes
         pipe([(xn, 1480, 13.8), (xn, 1480, 15.5), (xn, 1493, 15.5), (xn, 1493, 12)], 12, .45, "feedwater")

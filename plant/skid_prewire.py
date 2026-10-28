@@ -485,6 +485,9 @@ def build():
                                                          ("HARD HAT · SAFETY GLASSES · GLOVES", .16, 1, "#f2c200")], bg="#22303a")
     for x in (173.6, 182.4):
         rod((x + ox, 1712.1 + oy, 0), (x + ox, 1712.1 + oy, 5.8), .1, "steel", seg=6)
+    fuel.D = False
+    box(146 + ox, 200 + ox, 1802 + oy, 1820 + oy, 0, .1, "gravel")                     # crushed-stone stand (road audit)
+    fuel.D = True
     box(150 + ox, 196 + ox, 1806 + oy, 1816 + oy, 2.8, 3.4, "steel_dark")              # lowboy deck
     box(150 + ox, 160 + ox, 1806 + oy, 1816 + oy, 3.4, 5.2, "steel_dark")              # gooseneck
     for xx in (186, 190, 194):

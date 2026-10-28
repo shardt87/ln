@@ -82,6 +82,12 @@ def lng():
     dress(True)
     for (xa, xb) in ((1895, 1880), (1915, 1960)):
         rod((xa, 1722, 8), (xa, 1722, 18), .7, "steel", seg=10)                         # riser
+        if xb < xa:                                                                     # bay 1 empty: arm stowed
+            rod((xa, 1722, 18), (xa - 4, 1719, 22), .45, "lamp", seg=10)                # (road audit, Oct 28)
+            rod((xa - 4, 1719, 22), (xa - 4.5, 1718.5, 8), .45, "lamp", seg=10)
+            rod((xa, 1722, 20), (xa - 3, 1720, 25), .25, "steel", seg=6)
+            box(xa - 1.2, xa + 1.2, 1723.5, 1726, 12, 14.5, "machine")
+            continue
         rod((xa, 1722, 18), ((xa + xb) / 2, 1714, 22), .45, "lamp", seg=10)             # inner arm
         rod(((xa + xb) / 2, 1714, 22), (xb, 1706, 6), .45, "lamp", seg=10)              # outer arm
         rod((xa, 1722, 20), ((xa + xb) / 2, 1716, 26), .25, "steel", seg=6)             # counterweight link

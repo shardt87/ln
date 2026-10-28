@@ -53,6 +53,7 @@ The checks corrected the model in several places:
 | `routes_base.json`, `routes_optional.json` | Tray, bus, duct-bank, 230 kV and process-pipe centrelines from the vector geometry of sheets 01 and 02. |
 | `extract_reference.py` | Pulls reference geometry from the drawing PDF into `reference/sw3x1_rev14_reference.json` (committed, so the PDF is not needed to verify). |
 | `verify.py` | Runs the checks above and writes `verify_report.json`. Exits 1 on failure. |
+| `road_audit.py` | Roads and vehicle logic: no equipment on a road or drive, every road joined to the network, every vehicle on a surfaced spot with a 14 ft drive path from the gate and clear of air-inlet faces and transformer bays, every fenced site gate served. Writes `road_audit.json`; `--png FILE` draws the reach map. Exits 1 on failure. |
 | `palette.json` | Colour for each material key, shared by the viewer and the OBJ export. |
 | `viewer/index.html` | Interactive Three.js viewer: physically based materials with procedural textures (ribbed cladding, concrete, gravel, asphalt, grass, grating, fin stripes), a sky with fog, camera-following shadows and a Detail toggle. It also has the sheet 11 views, layer toggles, a section cut by elevation, a live X / Y / EL readout, an inspector, the equipment register, a verification report, electrical rooms and the motor schedule. |
 | `threejs/` | GT train 1 bay as compact JSON (`export_bay.py`) and a standalone three.js r181 scene (`gt1_bay_scene.js`, `bay.html`). |
