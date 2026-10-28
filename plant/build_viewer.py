@@ -23,25 +23,6 @@ if GENERIC:
         if d["lines"] or d.get("img"):
             dd.append(d)
     model["decals"] = dd
-# meeting variant (Oct 28, Mitsubishi Power): the three main gas turbines labelled with another frame class, e.g.
-# "--gt-class J" -> J-class (class name only, no maker); sizing notes that cite H-class plant filings stay as they are
-GT_CLASS = sys.argv[sys.argv.index("--gt-class") + 1] if "--gt-class" in sys.argv else None
-GT_SUB = []
-if GT_CLASS:
-    c = GT_CLASS
-    GT_SUB = [("H-class gas turbine", f"{c}-class gas turbine"), ("H-CLASS GAS TURBINE", f"{c}-CLASS GAS TURBINE"),
-              ("3 x 1  ·  H-CLASS", f"3 x 1  ·  {c}-CLASS"), ("3x1 H-CLASS", f"3x1 {c}-CLASS"), ("3x1 H-class", f"3x1 {c}-class")]
-
-    def gt_sub(t):
-        for a, b in GT_SUB:
-            t = t.replace(a, b)
-        return t
-    for it in model["items"]:
-        it["name"], it["info"] = gt_sub(it["name"]), gt_sub(it.get("info") or "")
-    for d in model.get("decals", []):
-        for l in d["lines"]:
-            l["t"] = gt_sub(l["t"])
-    tpl = gt_sub(tpl)
 COASTAL = "--no-coastal" not in sys.argv   # the sheet-15 marine LNG import terminal (on unless --no-coastal)
 ov = {"items": []}
 full = next(v for v in model["views"] if v["k"] == "ALL")
@@ -124,8 +105,6 @@ if GENERIC:                                           # unbranded build: generic
 tour2 = open(os.path.join(HERE, "presentation", "tour_nov11.json")).read()
 if GENERIC:
     tour2 = tour2.replace("ARMOR-X MC-HL", "MC-HL").replace("ARMOR-X ", "")
-if GT_CLASS:
-    tour, tour2 = gt_sub(tour), gt_sub(tour2)
 for key, data in (("TOUR", tour), ("TOUR2", tour2), ("PALETTE", open(os.path.join(HERE, "palette.json")).read()),
                   ("REPORT", open(os.path.join(HERE, "verify_report.json")).read())):
     tpl = tpl.replace(f"/*{key}_JSON*/null", data)
