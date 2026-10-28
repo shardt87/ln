@@ -93,6 +93,14 @@
    "issues": []
   },
   {
+   "name": "LB: commissioning load bank (trailer)",
+   "at": [
+    2200,
+    592
+   ],
+   "issues": []
+  },
+  {
    "name": "TM-1: trailer-mounted aeroderivative GT (TM2500 class, ~35 MW)",
    "at": [
     2162,
@@ -456,6 +464,14 @@
   },
   {
    "site": "Containerized gas engine site",
+   "ok": true
+  },
+  {
+   "site": "Paralleled gas genset site",
+   "ok": true
+  },
+  {
+   "site": "Linear generator site",
    "ok": true
   },
   {

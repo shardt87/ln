@@ -155,6 +155,16 @@ def trailers():
     for s in range(4):                                                       # access stair
         box(x0 + 26, x0 + 29, y0 - 1.2 - s * .9 + 0, y0 - .3 - s * .9, .6 + s * .9, .8 + s * .9, "grating")
     dress(False)
+    # load bank trailer
+    it = find("LB:")
+    x0, x1, y0, y1 = it["fp"]
+    strip(it)
+    trailer(it, x0, x1, y0, y1, 3.5, (x1 - 5, x1 - 2),
+            (x0 + 4,), "cabinet", body=(x0 + 2, x1 - .5, y0 + .3, y1 - .3, 3.5, 10.5))
+    for xf in (x0 + 7, x0 + 14, x0 + 21):
+        box(xf - 3, xf + 3, y0 + 1, y1 - 1, 10.5, 11.3, "louvre")
+        rod((xf, (y0 + y1) / 2, 11.3), (xf, (y0 + y1) / 2, 11.7), 2.6, "fan", seg=16)
+    box(x0, x0 + 2, y0 + 2, y1 - 2, 2.6, 3.5, "steel")
     for it in items("TM-"):
         tm2500(it)
 
