@@ -41,7 +41,7 @@ if GT_CLASS:
     for d in model.get("decals", []):
         for l in d["lines"]:
             l["t"] = gt_sub(l["t"])
-    tpl = gt_sub(tpl).replace("<title>SW-3X1 Plant Model</title>", f"<title>SW-3X1 Plant Model {c}-class</title>", 1)
+    tpl = gt_sub(tpl)
 COASTAL = "--no-coastal" not in sys.argv   # the sheet-15 marine LNG import terminal (on unless --no-coastal)
 ov = {"items": []}
 full = next(v for v in model["views"] if v["k"] == "ALL")
