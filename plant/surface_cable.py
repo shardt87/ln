@@ -22,7 +22,7 @@ RAMP = (2238, 2252, 617, 643)                          # drive-over cable ramp (
 PERMANENT = [(1945, 2085, 652, 775), (2095, 2205, 648, 692), (1945, 2085, 462, 530),     # turbine / CHP / container
              (2140, 2245, 776, 900), (2181, 2192, 501, 532)]          # 34.5 kV collector approach, PAD-GSU
 # engine sites and the 34.5 kV park collection are permanent plant (electrical review, Oct 28): buried duct bank
-LV_TAGS = ("GEN-O", "PAD-LV", "PGS-SWG", "LGN-INV") + tuple(f"PGS-{k}" for k in range(1, 9))                 # 480 V equipment (Type W sets)
+LV_TAGS = ("PAD-LV",)                 # 480 V equipment (Type W sets)
 LEGEND_SHD = "15 kV  3/C 2 AWG CU  TYPE SHD-GC  EPR  CPE JACKET  2/C GROUND + GC  PORTABLE POWER CABLE  -40C"
 LEGEND_W = "2000 V  1/C 4/0 AWG CU  TYPE W  EPR  CPE JACKET  -50C  OIL RES"
 SURF = []

@@ -11,11 +11,7 @@ SITES = [
     ((1962.0, 465.0), "CONTAINERIZED GAS ENGINES", "4 x ~4.4 MW · stacked: engines below, cooling above", "15 kV leads > switchgear > 35 kV step-up"),
     ((1962.0, 655.0), "MID-SIZE GAS TURBINES", "2 x ~16 MW packages · 13.8 kV", "15 kV leads > step-up > 35 kV collector"),
     ((2116.0, 650.5), "GAS ENGINES + HEAT RECOVERY", "4 x ~2.5 MW · exhaust heat to hot water", "15 kV leads > switchgear > PAD-EH"),
-    ((2105.0, 616.0, 1), "PARALLELED GAS GENSETS", "8 x 1 MW · 480 V paralleled", "480 V leads > switchgear > 2 pad-mounts to 35 kV"),
-    ((2140.0, 441.0, 1), "LINEAR GENERATORS", "4 x ~250 kW · gas, DC out", "DC to the inverter · 480 V AC"),
-    ((2005.0, 441.0, 1), "OPEN ENGINE SKID", "1 MW · 480 V · under a canopy", "480 V leads to PAD-LV · control"),
-    ((2020.0, 338.5), "FUEL CELLS", "4 x ~250 kW solid-oxide + inverter", "DC to the inverter · 480 V AC"),
-    ((2100.0, 338.5), "MICROTURBINES", "3 x 1 MW + 480 V switchboard", "480 V leads to the switchboard"),
+    ((2040.0, 338.5), "FUEL CELLS + MICROTURBINES", "4 x ~250 kW SOFC · 3 x 1 MW microturbines", "480 V > inverter / switchboard > PAD"),
 ]
 TRAILERS = [
     (2154.0, 708.0, "TRAILER GENSET", "13.8 kV · on wheels", "SHD-GC through the cable ramp"),

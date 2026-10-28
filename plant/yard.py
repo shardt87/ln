@@ -136,19 +136,6 @@ def containers():
         genset_enclosure(it, h, "cabinet", stack_top=h + 6 if h > 10 else None)
     for it in items("Black-start genset"):
         genset_enclosure(it, 12, "ehouse", stack_top=16, fans=3)
-    # open engine-generator skid
-    it = find("GEN-O:")
-    x0, x1, y0, y1 = it["fp"]
-    strip(it)
-    box(x0, x1, y0, y1, 0, .6, "concrete")
-    box(x0 + .5, x1 - .5, y0 + .5, y1 - .5, .6, 1.4, "steel")
-    box(x0 + 1, x0 + 5, y0 + .6, y1 - .6, 1.4, 7.8, "bundle")              # radiator
-    rod((x0 + 5.3, (y0 + y1) / 2, 4.6), (x0 + 6, (y0 + y1) / 2, 4.6), 3, "fan", seg=18)
-    box(x0 + 7, x0 + 16, y0 + 1.5, y1 - 1.5, 1.4, 6.5, "machine")            # engine
-    box(x0 + 7.5, x0 + 15.5, y0 + 2, y1 - 2, 6.5, 7.6, "motor")              # rocker covers
-    rod((x0 + 16, (y0 + y1) / 2, 4), (x0 + 23.5, (y0 + y1) / 2, 4), 2.6, "machine", seg=20)   # generator
-    box(x0 + 22, x0 + 25, y0 + .6, y0 + 2.6, 1.4, 6.5, "panel")
-    rod((x0 + 12, y1 - 1.5, 6), (x0 + 12, y1 - 1.5, 8), .4, "stack", seg=8)
 
 
 def trailers():
@@ -168,16 +155,6 @@ def trailers():
     for s in range(4):                                                       # access stair
         box(x0 + 26, x0 + 29, y0 - 1.2 - s * .9 + 0, y0 - .3 - s * .9, .6 + s * .9, .8 + s * .9, "grating")
     dress(False)
-    # load bank trailer
-    it = find("LB:")
-    x0, x1, y0, y1 = it["fp"]
-    strip(it)
-    trailer(it, x0, x1, y0, y1, 3.5, (x1 - 5, x1 - 2),
-            (x0 + 4,), "cabinet", body=(x0 + 2, x1 - .5, y0 + .3, y1 - .3, 3.5, 10.5))
-    for xf in (x0 + 7, x0 + 14, x0 + 21):
-        box(xf - 3, xf + 3, y0 + 1, y1 - 1, 10.5, 11.3, "louvre")
-        rod((xf, (y0 + y1) / 2, 11.3), (xf, (y0 + y1) / 2, 11.7), 2.6, "fan", seg=16)
-    box(x0, x0 + 2, y0 + 2, y1 - 2, 2.6, 3.5, "steel")
     for it in items("TM-"):
         tm2500(it)
 
@@ -483,33 +460,6 @@ def small_units():
         box(xf, xf + s * .4, y0 + .6, y1 - .6, 3.7, 3.8, "steel")              # rain hood
         box(xf, xf + s * .05, y0 + 1.5, y1 - 1.5, 4.2, 6, "door")
     box(x1 - .3, x1 - .25, y0 + 2, y1 - 2, 6.1, 6.4, "sign")
-    dress(False)
-    # GEN-O: open engine-generator skid
-    it = find("GEN-O:")
-    x0, x1, y0, y1 = it["fp"]
-    ym = (y0 + y1) / 2
-    strip(it)
-    for yb in (y0 + .6, y1 - 1.2):
-        box(x0, x1, yb, yb + .6, 0, 1.2, "steel_dark")                        # base rails
-    box(x0 + .3, x1 - .3, y0 + .6, y1 - .6, .9, 1.2, "steel")
-    box(x0 + .5, x0 + 4, y0 + .5, y1 - .5, 1.2, 7.6, "radiator")              # radiator, west end
-    box(x0 + 4, x0 + 4.4, y0 + 1, y1 - 1, 2, 7, "steel")                       # fan shroud
-    box(x0 + 6, x0 + 15, ym - 1.6, ym + 1.6, 1.2, 4.8, "machine")             # engine block
-    for s in (-1, 1):
-        box(x0 + 6.3, x0 + 14.7, ym + s * 1.7 - .9, ym + s * 1.7 + .9, 4.2, 5.8, "motor")   # cylinder heads (V)
-    rod((x0 + 15, ym, 3.4), (x0 + 16.4, ym, 3.4), 2.4, "steel", seg=18)      # flywheel housing
-    rod((x0 + 16.4, ym, 3.4), (x0 + 23.5, ym, 3.4), 2.7, "machine", seg=20)  # generator
-    box(x0 + 18, x0 + 22, y1 - 1.6, y1 - .4, 4.5, 7.2, "cabinet")              # terminal box
-    dress(True)
-    rod((x0 + 8, ym, 6.6), (x0 + 14, ym, 6.6), .9, "stack", seg=14)            # exhaust silencer on brackets
-    rod((x0 + 14, ym, 6.6), (x0 + 14, ym, 7.9), .35, "stack", seg=10)
-    for xb in (x0 + 9, x0 + 13):
-        box(xb - .1, xb + .1, ym - .2, ym + .2, 5.6, 5.8, "steel")
-    rod((x0 + 6.5, ym + 1.2, 3), (x0 + 6.5, ym + 1.2, 6.6), .25, "duct", seg=8)
-    box(x1 - 2.2, x1 - .4, y0 + .6, y0 + 2.2, 1.2, 6, "panel")                 # control panel
-    box(x0 + 5, x0 + 6, y0 + .6, y0 + 2, 1.2, 2.2, "battery")                  # start batteries
-    for (xg, yg) in ((x0 + 2, y0 + .3), (x0 + 2, y1 - .3)):
-        box(xg - 1.5, xg + 1.5, yg - .05, yg + .05, 1.5, 7, "louvre")          # radiator guards
     dress(False)
     # portable-pad gas-conditioning skid: filter-separators, line heater, regulator runs, panel
     it = find("Portable pad gas-conditioning skid")

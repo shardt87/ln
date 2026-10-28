@@ -1371,8 +1371,6 @@ EPIC = [
     dict(k="E91", n="SIMpull Reels on Cradles and the RR-SW45 Reel Roller, Maxis puller and carts behind",
          eye=(231, 806, 5.6), target=(262, 826, 3.6), lens=24, show="all", sun=(34, 150), dof=(22, 5.6)),
     # prefabricated cable systems (prefab.py)
-    dict(k="E92", n="Prefab cable spine going in: module 5 on the crane over its bents, modules 1-4 set from MOD-EH",
-         eye=(2040, 1022, 34), target=(1970, 1072, 16), lens=24, show="all", sun=(38, 140)),
     dict(k="E93", n="Prefab staging bay: spine modules on dunnage, one on the flatbed, pre-terminated MV crates, conduit racks",
          eye=(156, 694, 19), target=(92, 758, 1.5), lens=22, show="all", sun=(34, 150)),
     dict(k="E94", n="Spine splice: electricians on the boom lift take the coiled tails of module 4 as module 5 comes down",

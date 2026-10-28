@@ -462,25 +462,6 @@
    "near": 0.3
   },
   {
-   "sec": "05 · Cable logistics",
-   "title": "The prefab cable spine going in",
-   "eq": "Spine module 5 on the crane over its bents, modules 1 to 4 already set from MOD-EH",
-   "sys": "Weeks of field pulling replaced by a crane lift and a splice",
-   "cab": "Factory-terminated MV-105 tails spliced at each module joint",
-   "c": [
-    2040,
-    1022,
-    34
-   ],
-   "t": [
-    1970,
-    1072,
-    16
-   ],
-   "lens": 24,
-   "drift": 1.2
-  },
-  {
    "sec": "06 · Controls",
    "title": "HRSG 1: from the e-house to the marshalling box",
    "eq": "HRSG casing, EL 42 control and instrument tray, marshalling box",
@@ -696,19 +677,19 @@
   },
   {
    "sec": "08 · Modular power",
-   "title": "Containerized gas gensets",
-   "eq": "Eight 2 MW-class gas gensets in 40 ft containers with their generator breakers",
-   "sys": "13.8 kV units paralleled on the pad's one switchgear lineup, PAD-EH (no separate paralleling e-house)",
-   "cab": "MV-105 15 kV from each container in ground tray to the PAD-EH lineup",
+   "title": "Containerized gas engines, stacked",
+   "eq": "Four ~4.4 MW gas engines in 40 ft containers, their cooling containers and radiators on a steel deck above",
+   "sys": "13.8 kV engine breakers in the site switchgear, stepped up to 34.5 kV at the site into the park collector",
+   "cab": "MV-105 15 kV generator leads to the switchgear container; MV-105 35 kV feeder in the buried trunk to SWG-PK",
    "c": [
-    2205,
-    455,
-    42
+    1925,
+    425,
+    48
    ],
    "t": [
-    2075,
-    560,
-    4
+    1990,
+    492,
+    10
    ],
    "lens": 26,
    "drift": 1.2
@@ -735,29 +716,10 @@
   },
   {
    "sec": "08 · Modular power",
-   "title": "Open-skid and enclosed gensets",
-   "eq": "GEN-O open engine-generator skid and GEN-E 2 MW enclosed industrial genset",
-   "sys": "480 V generators into the PAD-LV paralleling switchboard",
-   "cab": "Type W 480 V sets with cam-lock plugs; flexible cable rated for vibration and oil",
-   "c": [
-    2058,
-    398,
-    16
-   ],
-   "t": [
-    2024,
-    440,
-    3
-   ],
-   "lens": 26,
-   "drift": 1.2
-  },
-  {
-   "sec": "08 · Modular power",
    "title": "The portable power pad",
-   "eq": "Containerized gas gensets, trailer genset, load bank, pad switchgear",
-   "sys": "Temporary and rental power plugged in and out in days",
-   "cab": "Type W 2 kV with cam-lock plugs at 480 V; Type SHD-GC 15 kV portable feeders",
+   "eq": "Trailer turbine TM-1, trailer genset MOB-1, the pad switchgear PAD-EH and its 34.5 kV step-up",
+   "sys": "Bridge and rental power plugged in and out in days, onto the pad bus and up to the park collector",
+   "cab": "Type SHD-GC 15 kV portable feeders on grade, protectors at the lane crossings; MV-105 in the duct bank to the step-up",
    "c": [
     2400,
     380,
@@ -770,26 +732,6 @@
    ],
    "lens": 26,
    "drift": 1.0
-  },
-  {
-   "sec": "08 · Modular power",
-   "title": "Type W sets into the paralleling switchboard",
-   "eq": "PAD-LV paralleling switchboard, cam-lock panel, Type W sets from the gensets",
-   "sys": "480 V generator outputs paralleled on the pad",
-   "cab": "Type W 2 kV single conductors, EPDM / CPE, colour-coded cam-lock plugs",
-   "c": [
-    2148,
-    447,
-    6.5
-   ],
-   "t": [
-    2160,
-    434,
-    1.5
-   ],
-   "lens": 24,
-   "near": 0.3,
-   "drift": 1.2
   },
   {
    "sec": "08 · Modular power",

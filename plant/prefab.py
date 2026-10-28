@@ -280,6 +280,6 @@ def staging_bay():
 
 
 def build():
-    spine_install()
+    # spine_install(): the crane lifting the cable spine was taken out Oct 28 (owner: modular yard too busy)
     staging_bay()
     return 2

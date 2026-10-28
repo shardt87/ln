@@ -593,15 +593,10 @@ for k in (1,):
         "3 per phase for 125 % (nine cables in the model)")
 mob = BY_TAG["MOB-1"]
 add(mob, BY_TAG["PIC"], "MOB-1 13.8 kV to PIC through the C-L01 ramp", "SHD", "3/C", "2", 1, 1, 2000, 13800, 93, "portable")
-add(BY_TAG["PIC"], BY_TAG["LB"], "PIC to commissioning load bank", "SHD", "3/C", "2", 1, 1, 2000, 13800, 93, "portable")
-for t, kw in (("GEN-O", 1000),):
-    g = BY_TAG[t]
-    I = kw / (1.732 * .48)
-    sets = math.ceil(I * 1.25 / 405)
-    add(g, BY_TAG["PAD-LV"], f"{t} 480 V to PAD-LV (Type W sets, cam-lock)", "W", "1/C", "4/0", sets, 4, kw, 480,
-        round(I), "4 x 1/C per set incl. ground")
+add(BY_TAG["PIC"], pad_eh, "PIC to PAD-EH (MOB-1 trailer genset onto the pad bus)", "SHD", "3/C", "2", 1, 1, 2000, 13800, 93,
+    "portable; the commissioning load bank was taken out Oct 28")
 add(BY_TAG["PAD-LV"], BY_TAG["PAD-TX"] if "PAD-TX" in BY_TAG else one(r"^PAD-TX"), "PAD-LV to PAD-TX", "LV1C", "1/C", "500",
-    12, 4, 3000, 480, 3600, "12 sets of 4 x 1/C (or bus duct)")
+    4, 4, 1000, 480, 1200, "4 sets of 4 x 1/C (fuel-cell output only since Oct 28)")
 # modular gas blocks GB-1..4 (owner, Oct 26) on the modular-gas-campus logic from the ERock call, by cable layer:
 # L1 480 V generator leads unit -> GBC (2 sets, count TO VERIFY); L2 GBC -> GBT 480 V block feed (8 sets or bus, TO VERIFY);
 # L3 the 35 kV collector loop SWG-MY G1 -> GBT-1 -> ... -> GBT-6 -> SWG-MY (750 kcmil Al, 133 %, WA); L4 ties: none (one
@@ -636,7 +631,7 @@ if swg_my:
         length=(585, 20, "Buried"))
 # modular power park (Oct 27): each class from its units to its collector, the collector to the yard switchgear
 # power park (Oct 27 classes; electrical review Oct 28): units -> site collector -> site step-up 13.8 / 34.5 kV ->
-# SWG-PK (bus A: TGF, CGE, PGS, PAD-EH; bus B: MTG, AX-1, IG-1) -> T-MOD-3 (230 / 34.5 / 34.5 kV) -> T-MOD gantry.
+# SWG-PK (bus A: TGF, CGE, PAD-EH; bus B: MTG, AX-1, IG-1) -> T-MOD-3 (230 / 34.5 / 34.5 kV) -> T-MOD gantry.
 swg_pk, tmod3 = BY_TAG["SWG-PK"], BY_TAG["T-MOD-3"]
 tgf_swg, tgf_gsu = BY_TAG["TGF-SWG"], BY_TAG["TGF-GSU"]
 for k in range(1, 7):
@@ -661,26 +656,6 @@ mv_feeder(cge_swg, cge_aux, 600, 13.8, "CGE-AUX 13.8 kV primary", motor=False)
 xf_wiring(cge_swg, cge_aux, "CGE-AUX")
 for k in range(1, 5):
     lv_feeder(cge_aux, BY_TAG["CGE-DECK"], 110, f"CGE-{k} cooling container: radiator fans, jacket-water pumps (deck)")
-pgs_swg = BY_TAG["PGS-SWG"]
-for k in range(1, 9):
-    g = BY_TAG[f"PGS-{k}"]
-    add(g, pgs_swg, f"PGS-{k} 480 V generator leads to the paralleling switchgear", "LV1C", "1/C", "500", 4, 4, 1000, 480,
-        1203, "4 sets of 4 x 1/C")
-    add(pgs_swg, g, f"PGS-{k} control / sync", "CTAX", "12/C", "14")
-    add(pgs_swg, g, f"PGS-{k} instrumentation", "ITC", "4 pr", "18")
-add(pgs_swg, pgs_swg, "PGS-SWG bus / breaker monitoring (internal)", "ITC", "4 pr", "18", length=(60, 10, "Tray"))
-for n in (1, 2):
-    tx = BY_TAG[f"PGS-TX{n}"]
-    add(pgs_swg, tx, f"PGS-SWG main {n} to PGS-TX{n} 480 V secondary", "LV1C", "1/C", "600", 12, 4, 4000, 480, 4811,
-        "12 sets of 4 x 1/C")
-    xf_wiring(pgs_swg, tx, f"PGS-TX{n}")
-gen_feeder(BY_TAG["PGS-TX1"], BY_TAG["PGS-TX2"], 4000, 34.5, "PGS-TX1 to PGS-TX2 34.5 kV loop feed")
-gen_feeder(BY_TAG["PGS-TX2"], swg_pk, 8000, 34.5, "PGS-TX2 34.5 kV collector feeder to SWG-PK (bus A)")
-lgn_inv = BY_TAG["LGN-INV"]
-for k in range(1, 5):
-    add(BY_TAG[f"LGN-{k}"], lgn_inv, f"LGN-{k} DC output to the inverter", "LV1C", "1/C", "500", 2, 2, 250, 800, 320,
-        "DC, 2 sets of 2 x 1/C")
-lv_feeder(lgn_inv, BY_TAG["PAD-LV"], 1000, "LGN-INV 480 V AC to PAD-LV", motor=False)
 mtg_swg, mtg_gsu, mtg_aux = BY_TAG["MTG-SWG"], BY_TAG["MTG-GSU"], BY_TAG["MTG-AUX"]
 for k in (1, 2):
     m = BY_TAG[f"MTG-{k}"]
@@ -710,7 +685,7 @@ add(chp_swg, chp_aux, "CHP-AUX 13.8 kV primary", "MV15", "1/C", "2", 1, 3, 750, 
 xf_wiring(chp_swg, chp_aux, "CHP-AUX")
 lv_feeder(chp_aux, BY_TAG["CHP-HR"], 160, "CHP-HR dump-cooler fans and hot-water circulation pumps")
 add(chp_swg, BY_TAG["CHP-HR"], "CHP-HR heat-recovery instrumentation (flows, temperatures, valves)", "ITC", "4 pr", "18")
-# PAD-EH (TM-1 35 MW + CHP site 10 MW + MT-TX 3 MW + PAD-TX 3 MW, ~2,370 A on its 3,000 A bus) steps up to the park collector
+# PAD-EH (TM-1 35 MW + CHP site 10 MW + MT-TX 3 MW + MOB-1 2 MW + PAD-TX 1 MW, ~2,370 A on its 3,000 A bus) steps up to the park collector
 pad_gsu = BY_TAG["PAD-GSU"]
 gen_feeder(pad_eh, pad_gsu, 51000, 13.8, "PAD-EH 13.8 kV to PAD-GSU")
 xf_wiring(pad_eh, pad_gsu, "PAD-GSU")
@@ -726,7 +701,7 @@ for t, gsu, kw in (("AX-1", "AX-GSU", 35000), ("IG-1", "IG-GSU", 50000)):
     add(swg_pk, u, f"{t} unit control / sync / protection", "CTAX", "12/C", "14")
     add(CR, u, f"{t} unit control: plant network / DCS fibre", "FO", "12 SM", "-")
 # SWG-PK to T-MOD-3: one main per bus section / LV winding
-gen_feeder(swg_pk, tmod3, 91600, 34.5, "SWG-PK bus A main to T-MOD-3 LV winding 1")
+gen_feeder(swg_pk, tmod3, 83600, 34.5, "SWG-PK bus A main to T-MOD-3 LV winding 1")
 gen_feeder(swg_pk, tmod3, 117000, 34.5, "SWG-PK bus B main to T-MOD-3 LV winding 2")
 xf_wiring(swg_pk, tmod3, "T-MOD-3")
 add(swg_pk, swg_pk, "SWG-PK station service, HVAC, lighting, DC charger (station-service transformer inside)", "LV",
@@ -746,7 +721,7 @@ for t, sw in ([(f"TGF-{k}", "TGF-SWG") for k in range(1, 7)] + [(f"CGE-{k}", "CG
     add(BY_TAG[t], BY_TAG[t], f"{t} generator neutral to its high-resistance grounding resistor (in the package)", "MV15",
         "1/C", "2", 1, 1, None, 13800, None, "NGR in the generator / terminal-box enclosure", length=(15, 5, "Conduit"))
     add(BY_TAG[t], BY_TAG[sw], f"{t} generator CT / VT secondaries to the protection", "CTCT", "12/C", "10")
-for sw in ("TGF-SWG", "CGE-SWG", "PGS-SWG", "MTG-SWG", "CHP-SWG"):
+for sw in ("TGF-SWG", "CGE-SWG", "MTG-SWG", "CHP-SWG"):
     add(swg_pk, BY_TAG[sw], f"{sw} SCADA / dispatch fibre", "FO", "12 SM", "-")
 mt_tx = BY_TAG["MT-TX"]
 fc_inv = [one(r"^FC-5..8 inverter")]                     # FC-1..4 / MT-1..3 taken out Oct 20 (one set, in the yard)
