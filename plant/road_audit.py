@@ -38,6 +38,8 @@ PASS_NAMES = re.compile(r"^Vehicles|operators|^People|sign\b|Site sign|Technolog
 HIGH = 14.0                                            # clear height under overhead structures
 ROADLIKE = re.compile(r"road|lane|drive|unloading bay", re.I)
 NOT_ROAD = re.compile(r"^(Parking|Removal apron|Gallery door apron|Control / admin|Turbine hall|FH-\d hoist)")
+WORK_ZONE = re.compile(r"^(Underground: cable|Cable delivery: SIMpull Truck at the modular-yard cable pull)")
+# a crew's vehicles at an open manhole stand on the ground of the work zone (owner, Oct 28: no mats)
 TEMP_WORK = re.compile(r"outage|Cable pull|Cable reels staged|Cable moment|crane lift|"         # road closed for the job
                        r"^LNG 10: unloading skid", re.I)            # (its bay-2 loading arm is on the trailer parked there)
 
@@ -186,7 +188,7 @@ def main():
                    or [999])
         in_xf = any(f[0] - 2 < (x0 + x1) / 2 < f[1] + 2 and f[2] - 2 < (y0 + y1) / 2 < f[3] + 2 for f in xf)
         issues = []
-        if on < .6:
+        if on < .6 and not WORK_ZONE.search(v["name"]):
             issues.append(f"off the drivable surface ({on:.0%} on)")
         if not ok_reach:
             issues.append("no 14 ft drive path from the gate")

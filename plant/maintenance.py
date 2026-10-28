@@ -343,8 +343,7 @@ def build():
         open_manhole(cx, cy)
     rejuvenation(*to_site(*MH_C))
     fuel.G["cur"] = it
-    access_mats()
-    fuel.G["cur"] = it
+    # (the timber access mats, access_mats(), were taken out again Oct 28: owner preferred the trucks on the ground)
     return it
 
 
