@@ -193,16 +193,38 @@ def trailers():
                   "enclosure on a road trailer, roof radiator, catalyst / SCR and stack; gas from the park header "
                   "through a regulator / meter skid and a flexible hose; 15 kV SHD-GC feeder to the portable input "
                   "cabinet over the C-L01 ramp. Class layout, not a vendor's drawing.")
-    # load bank trailer
+    # LB: medium-voltage trailer load bank (owner, Oct 29): louvred resistor enclosure on a tandem-axle trailer,
+    # vertical-discharge fan hoods on the roof, side air intakes, MV terminal box at the east end (the PIC feeder
+    # lands there), control panel with a door at the west end, stair, landing gear at the nose
     it = find("LB:")
     x0, x1, y0, y1 = it["fp"]
+    yc = (y0 + y1) / 2
     strip(it)
-    trailer(it, x0, x1, y0, y1, 3.5, (x1 - 5, x1 - 2),
-            (x0 + 4,), "cabinet", body=(x0 + 2, x1 - .5, y0 + .3, y1 - .3, 3.5, 10.5))
-    for xf in (x0 + 7, x0 + 14, x0 + 21):
-        box(xf - 3, xf + 3, y0 + 1, y1 - 1, 10.5, 11.3, "louvre")
-        rod((xf, (y0 + y1) / 2, 11.3), (xf, (y0 + y1) / 2, 11.7), 2.6, "fan", seg=16)
-    box(x0, x0 + 2, y0 + 2, y1 - 2, 2.6, 3.5, "steel")
+    trailer(it, x0, x1, y0, y1, 3.5, (x1 - 6, x1 - 3), (x0 + 4,), "cabinet")
+    box(x0, x0 + 2, y0 + 2, y1 - 2, 2.6, 3.5, "steel")                          # gooseneck / kingpin plate
+    box(x0 + 2, x0 + 7, y0 + .3, y1 - .3, 3.5, 10, "panel")                     # control compartment
+    box(x0 + 7, x1 - 2.5, y0 + .3, y1 - .3, 3.5, 10, "cabinet")                 # resistor enclosure
+    box(x1 - 2.5, x1 - .3, y0 + 1.2, y1 - 1.2, 3.5, 8.5, "panel")               # MV terminal box (east end)
+    box(x1 - .3, x1 - .1, yc - .8, yc + .8, 4, 5.2, "steel_dark")               # gland plate, feeder entry
+    box(x0 + 2, x1 - .3, y0 + .2, y1 - .2, 10, 10.25, "steel")                  # roof edge
+    dress(True)
+    for y, sg in ((y0 + .3, -1), (y1 - .3, 1)):
+        box(x0 + 8, x1 - 3.5, y + sg * .02, y + sg * .14, 4.2, 9.3, "louvre")   # air intake louvres, both faces
+        box(x0 + 3, x0 + 5.6, y + sg * .02, y + sg * .14, 4, 8.8, "door")       # control-compartment door
+        box(x0 + 3.2, x0 + 3.5, y + sg * .14, y + sg * .3, 6, 6.6, "steel_dark")   # handle
+    for xf in (x0 + 10, x0 + 16, x0 + 22):                                       # vertical-discharge fan hoods
+        box(xf - 2.7, xf + 2.7, y0 + .6, y1 - .6, 10.25, 11.6, "steel")
+        rod((xf, yc, 11.6), (xf, yc, 12.2), 2.5, "cabinet", seg=18)
+        rod((xf, yc, 12.2), (xf, yc, 12.35), 2.6, "fan", seg=18)
+    for s in range(3):                                                           # stair to the control door
+        box(x0 + 3, x0 + 5.6, y0 - 1.0 - s * .9, y0 - .2 - s * .9, .6 + s * .9, .8 + s * .9, "grating")
+    for xs in (x0 + 2.9, x0 + 5.7):
+        rod((xs, y0 - 3.6, 0), (xs, y0 - .6, 3.4), .1, "steel", seg=6)
+    dress(False)
+    it["z"] = [0, 12.35]
+    it["info"] = ("Medium-voltage trailer load bank for commissioning and periodic load tests of MOB-1 and TM-1: "
+                  "resistor elements cooled by vertical-discharge fans, fed at 13.8 kV from the portable input "
+                  "cabinet PIC on SHD-GC portable cable. Class layout, not a vendor's drawing.")
     for it in items("TM-"):
         tm2500(it)
 

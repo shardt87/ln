@@ -722,3 +722,9 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
   stair with stringers and a landing. Item EL 24.4; info rewritten (~2.5 MW, 13.8 kV, class layout).
 - Gas: new item "MOB-1 gas regulator / meter skid" (2309-2315, 661-668); fuel_gas route off the x 2378 header at
   y 664.5 to the skid. Hardstand trimmed to x 2308. All checks PASS.
+
+## Oct 29 — LB restyled as an MV trailer load bank
+- yard.trailers(): louvred resistor enclosure on a tandem-axle trailer, three vertical-discharge fan hoods on the roof,
+  air-intake louvres both faces, control compartment with doors at the west (nose) end and a stair, MV terminal box at
+  the east end where the PIC feeder lands, landing gear / kingpin plate. Same footprint, same cable. Item EL 12.35,
+  info rewritten (13.8 kV test load for MOB-1 / TM-1). All checks PASS.
