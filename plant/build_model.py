@@ -1286,7 +1286,8 @@ xfmr(L, "SC-GSU-1: 13.8 / 34.5 kV unit step-up, ~60 MVA (SC-1)", 1999, 2025, 123
      **DCY)
 xfmr(L, "SC-GSU-2: 13.8 / 34.5 kV unit step-up, ~60 MVA (SC-2)", 2150, 2176, 1234, 1262, 14, fins="y", tag="SC-GSU-2",
      **DCY)
-xfmr(L, "MOD-SST: 34.5 / 13.8 kV station-service transformer, ~10 MVA (yard station service)", 2026, 2042, 904, 920,
+# (moved 14 ft west, audit Oct 29: it stood 3 ft from T-MOD-1; now ~17 ft from T-MOD-1 and from MOD-EH)
+xfmr(L, "MOD-SST: 34.5 / 13.8 kV station-service transformer, ~10 MVA (yard station service)", 2012, 2028, 904, 920,
      11, fins="y", tag="MOD-SST", **DCY)
 for k, (y0, y1) in enumerate(((882, 889), (891, 898))):
     xfmr(L, f"MOD-GT{k + 1}: 34.5 kV zigzag grounding transformer, MOD-EH bus {k + 1}", 1903, 1911, y0, y1, 7,
@@ -1521,6 +1522,10 @@ for k in range(6):
     for _y in (553.5, 558):
         R((x + .1, _y, 1.6), (x + 1.1, _y, 1.6), 1.6, "tyre", seg=14)
         R((x + 7.4, _y, 1.6), (x + 8.4, _y, 1.6), 1.6, "tyre", seg=14)
+    # gas riser off the buried header, isolation valve, flexible hose up into the gooseneck (audit, Oct 29)
+    R((x + 4.25, 601.4, 0), (x + 4.25, 601.4, 2.6), .25, "fuelgas", seg=8)
+    B(x + 3.85, x + 4.65, 601.0, 601.8, 1.6, 2.2, "steel_dark")
+    R((x + 4.25, 601.4, 2.6), (x + 4.25, 599.5, 4.4), .2, "hdpe", seg=8)
 item(L, "TGF-SWG: mobile 13.8 kV switchgear trailer (fleet collector)", (2041, 2050, 548, 590), (0, 13), tag="TGF-SWG", **DC)
 B(2041, 2050, 548, 590, 3.4, 4.2, "steel_dark"); B(2041.3, 2049.7, 550, 584, 4.2, 12.5, "ehouse")
 for _y in (553.5, 558):
@@ -2042,8 +2047,14 @@ add_route("mvlv_cable", [(2180.5, 1032), (2180.5, 990), (2152, 990), (2152, 978)
 add_route("mvlv_cable", [(2258.5, 1252), (2266, 1252), (2266, 1324), (2240, 1324)], "OPT_MOD_ROUTES")  # SC-2 PCM (mirrored
                                                                           # to x 2218.5-2258.5 by sc2_mirror) -> ammonia skid
 add_route("fuel_gas", [(2340, 440), (2340, 452), (2005, 452)], MX)                         # pad skid header (west)
-add_route("fuel_gas", [(2005, 452), (1990, 452), (1990, 364), (2003, 364)], MX)            # -> fuel cells (west end)
-add_route("fuel_gas", [(2081, 452), (2081, 389), (2099, 389), (2099, 379)], MX)            # -> microturbines
+# fuel cells / microturbines: a header behind each row with a drop to every unit (audit, Oct 29: only the first
+# unit of each row was piped)
+add_route("fuel_gas", [(2005, 452), (1990, 452), (1990, 381), (2043.5, 381)], MX)          # -> fuel-cell header
+for _x in (2007.5, 2019.5, 2031.5, 2043.5):
+    add_route("fuel_gas", [(_x, 381), (_x, 376)], MX)
+add_route("fuel_gas", [(2081, 452), (2081, 384), (2121, 384)], MX)                         # -> microturbine header
+for _x in (2097, 2109, 2121):
+    add_route("fuel_gas", [(_x, 384), (_x, 379)], MX)
 # modular power park: each site's units to its collector, the collectors to MOD-EH / PAD-EH / PAD-LV out by the gates
 for k in range(6):                                                                          # TGF trailers -> TGF-SWG
     add_route("mvlv_cable", [(1957.25 + 14 * k, 548), (1957.25 + 14 * k, 544)], MX)
@@ -2072,7 +2083,9 @@ for k in range(4):
 add_route("fuel_gas", [(2092.5, 452), (2092.5, 615.5)], MX)                                 # -> paralleled gensets
 for k in range(8):
     add_route("fuel_gas", [(2092.5, 524.25 + 12 * k), (2103, 524.25 + 12 * k)], MX)
-add_route("fuel_gas", [(2066, 452), (2066, 422), (2068, 422)], MX)                          # -> linear generators
+add_route("fuel_gas", [(2066, 452), (2066, 436), (2114, 436)], MX)                          # -> linear generators
+for _x in (2072, 2086, 2100, 2114):
+    add_route("fuel_gas", [(_x, 436), (_x, 432)], MX)
 for yc in (690, 742):                                                                       # MTG leads -> MTG-SWG
     add_route("mvlv_cable", [(2032, yc), (2038, yc), (2038, 720 if yc < 720 else 724), (2045, 720 if yc < 720 else 724)], MX)
 add_route("mvlv_cable", [(2054, 728), (2054, 740)], MX)                                     # MTG-SWG -> MTG-GSU
@@ -2122,8 +2135,8 @@ add_route("mvlv_cable", [(2025, 1248), (2046, 1248), (2046, 1080), (1955, 1080),
 add_route("mvlv_cable", [(2150, 1248), (2120, 1248), (2120, 1083), (1958, 1083), (1958, 900)], MY)   # SC-GSU-2 -> MOD-EH
 add_route("mvlv_cable", [(1995, 884), (2045, 884)], MY)                                   # MOD-EH bus 1 -> T-MOD-1
 add_route("mvlv_cable", [(1995, 881), (2001, 881), (2001, 864), (2125, 864), (2125, 870)], MY)   # bus 2 -> T-MOD-2
-add_route("mvlv_cable", [(1995, 897), (2034, 897), (2034, 904)], MY)                      # MOD-EH -> MOD-SST (34.5 kV)
-add_route("mvlv_cable", [(2030, 904), (2030, 899), (1995, 899)], MY)                      # MOD-SST 13.8 kV -> MOD-EH
+add_route("mvlv_cable", [(1995, 897), (2020, 897), (2020, 904)], MY)                      # MOD-EH -> MOD-SST (34.5 kV)
+add_route("mvlv_cable", [(2016, 904), (2016, 899), (1995, 899)], MY)                      # MOD-SST 13.8 kV -> MOD-EH
 add_route("mvlv_cable", [(1915, 885.5), (1911, 885.5)], MY)                               # MOD-EH -> MOD-GT1
 add_route("mvlv_cable", [(1915, 894.5), (1911, 894.5)], MY)                               # MOD-EH -> MOD-GT2
 add_route("mvlv_cable", [(2196, 824), (2204, 824), (2204, 828)], MX)                      # SWG-PK -> PK-GT1
@@ -2149,12 +2162,22 @@ add_route("mvlv_cable", [(2234, 493), (2245, 493), (2245, 892)], MX, sheet="typi
 add_route("mvlv_cable", [(2520, 880), (2530, 880)], MX, sheet="typical (modular gas blocks)")                     # into BTM-SWGR
 for xg in (GB_RX - 37.5, GB_RX + 39.0):                                                    # gas headers behind the rows
     add_route("fuel_gas", [(xg, 452), (xg, GB_Y[1] + 70)], MX, sheet="typical (modular gas blocks)")
+    for _yb in (468, 546):                                         # a branch into every genset (audit, Oct 29)
+        for _k in range(5):
+            _y = _yb + 10 * _k + 4
+            add_route("fuel_gas", [(xg, _y), (xg + (4.5 if xg < GB_RX else -6), _y)], MX,
+                      sheet="typical (modular gas blocks)")
 add_route("fuel_gas", [(2340, 452), (2378, 452), (2378, 805), (2222, 805), (2222, 782)], MX)   # pad header -> TM-1 skid
 for k in range(8):                                                                          # FC tails to the DC feeder
     add_route("mvlv_cable", [(2014 + 14 * k, 350), (2014 + 14 * k, 345)], MX)
 # SC-1 / SC-2 fuel gas from the fuel-gas compressor building (not drawn on sheet 07)
 # the drops come up into each unit's fuel-gas module (sc_detail.py, x + 36 .. 46), not at the enclosure door (Oct 21)
 add_route("fuel_gas", [(2330, 1182), (1950, 1182), (1950, 1187.6)], "OPT_MOD_ROUTES")  # from the moved building
+# RICE engines (audit, Oct 29: the header passed the gas-conditioning skid and the hall without a connection): off
+# the y 1350 header into the skid, out of its south face straight down the gap between RICE 6's and RICE 7's
+# radiators into the hall's north wall (no low pipe across the gravel the north drive is reached from) (the engine header inside the hall is not drawn)
+add_route("fuel_gas", [(1730, 1350), (1730, 1280)], "OPT_MOD_ROUTES")
+add_route("fuel_gas", [(1745, 1250), (1745, 1130)], "OPT_MOD_ROUTES")
 add_route("fuel_gas", [(2218.5, 1182), (2218.5, 1187.6)], "OPT_MOD_ROUTES")
 # reserved SC-3 / SC-4 pad (reserved_pad.py): the PCM pads pre-wired into the yard MV duct bank
 add_route("mvlv_cable", [(1917, 1312), (1917, 1266), (1900, 1266), (1900, 1252)], "OPT_MOD_ROUTES", sheet="typical (reserved pad)")

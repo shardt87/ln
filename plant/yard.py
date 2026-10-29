@@ -189,7 +189,7 @@ def trailers():
         rod((xr, y0 - 1.2, 4.3), (xr, y0 - 1.2, 7.8), .07, "yellow", seg=6)
     dress(False)
     it["z"] = [0, 24.4]
-    it["info"] = ("Trailer-mounted natural-gas engine genset, ~2.5 MW at 13.8 kV: sound-attenuated engine / generator "
+    it["info"] = ("Trailer-mounted natural-gas engine genset, ~2 MW at 13.8 kV: sound-attenuated engine / generator "
                   "enclosure on a road trailer, roof radiator, catalyst / SCR and stack; gas from the park header "
                   "through a regulator / meter skid and a flexible hose; 15 kV SHD-GC feeder to the portable input "
                   "cabinet over the C-L01 ramp. Class layout, not a vendor's drawing.")

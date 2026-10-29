@@ -728,3 +728,24 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
   air-intake louvres both faces, control compartment with doors at the west (nose) end and a stair, MV terminal box at
   the east end where the PIC feeder lands, landing gear / kingpin plate. Same footprint, same cable. Item EL 12.35,
   info rewritten (13.8 kV test load for MOB-1 / TM-1). All checks PASS.
+
+## Oct 29 — modular power yard audit (owner: "audit ... architecturally, technically and visually")
+Checked: every generator → collector → step-up → T-MOD chain from the cable schedule (voltages consistent, every
+transformer rated above its load: RICE-GSU 45 MVA / 36.8 MW, SC-GSU 60 / 50, PAD-GSU 60 / 52, MTG-GSU 40 / 32,
+CGE/TGF-GSU 20 / 17.6 / 15, T-MOD-3 ~250 MVA / 210 MW, MOD-EH bus mains ~2,300 A on 3,000 A gear); gas to every
+gas-fired unit; oil-transformer separation; product names; roads; 12-view visual pass.
+Fixed:
+- Gas: RICE engines had no gas (y 1350 header passed the gas-conditioning skid): header → skid (x 1730), skid →
+  hall north wall down the gap between RICE 6 / 7 radiators (x 1745, sleeved under the north drive). Modular gas
+  blocks GB-1..4: 20 branches off the two headers into each genset. FC-6..8, MT-5/6, LGN-3/4 unfed: headers behind
+  each row (y 381 / 384 / 436) with a drop to every unit. TGF trailers: riser, valve and hose from the buried drop
+  into each gooseneck.
+- MOD-SST stood 3 ft from T-MOD-1: moved to x 2012-2028 (~17 ft from T-MOD-1 and MOD-EH); its two routes follow.
+- T-MOD-2 / T-MOD-3 13 ft apart without a firewall: concrete firewall x 2150-2154 (zone_detail.tmod, OPT_PARK).
+- MOB-1 info said ~2.5 MW, schedule 2 MW: info now ~2 MW.
+Open (owner decision): product names in the model (LM6000 class SC-1/2, TM2500 class TM-1 — widespread incl. tour /
+brochures; LM2500XPRESS class AX-1, SGT-800 / H-25 class IG-1 — recent); GSUs 6-20 ft from e-houses / packages
+(SC-GSU-1/2 7 ft from the ammonia FCU, MTG-GSU 8 ft from MTG-2 and 2 ft from MTG-AUX, CGE-GSU 6-10 ft, TGF-GSU
+10 ft, PAD-GSU 17 ft) → firewalls or 2-hr walls; big GSUs drawn 13-14 ft tall (real 45-60 MVA ~20-25 ft with
+conservator / bushings); north drive's west link and the RICE-3 radiator pinch are ~12-13 ft clear (pickups only);
+black-start gensets show no fuel (assume diesel sub-base tanks); L5 feeder scope (known).

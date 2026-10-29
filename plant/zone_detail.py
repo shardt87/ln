@@ -33,6 +33,11 @@ def tmod():
                        basis="typical", register=False, sheet="typical (zone detail)",
                        info="Concrete firewall between the two 13.8/230 kV transformers (NFPA 850).")
     box(2093, 2097, 866, 909, 0, 38, "concrete")
+    fw = fuel.new_item("OPT_PARK", "T-MOD-2 / T-MOD-3 firewall", (2150, 2154, 866, 909), (0, 38), area="I",
+                       basis="typical", register=False, sheet="typical (zone detail)",
+                       info="Concrete firewall between T-MOD-2 and the power-park transformer T-MOD-3, 13 ft apart "
+                            "(audit, Oct 29; NFPA 850 / IEEE 979 separation).")
+    box(2150, 2154, 866, 909, 0, 38, "concrete")
     g = fuel.new_item("OPT_MOD", "T-MOD 230 kV take-off gantry with arresters", (2055, 2135, 846, 856), (0, 46), area="I",
                       basis="typical", register=False, sheet="typical (zone detail)",
                       info="The 230 kV leads of T-MOD-1 / -2 rise to a take-off gantry with surge arresters and leave on "
