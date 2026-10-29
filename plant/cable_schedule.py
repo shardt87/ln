@@ -508,7 +508,7 @@ pad_eh = BY_TAG["PAD-EH"]
 pcm = src_of(r"^PCM: power control")
 for k in range(8):
     eg = one(rf"^RICE engine-generator {k + 1}$")
-    gen_feeder(eg, pcm, 18400, 13.8, f"RICE-{k + 1} generator leads to the PCM", note="18V50 class ~18 MW (typ.), 0.9 pf")
+    gen_feeder(eg, pcm, 18400, 13.8, f"RICE-{k + 1} generator leads to the PCM", note="18-cylinder ~18 MW class (typ.), 0.9 pf")
 # regroup (electrical review, Oct 28): PCM bus sections A-D (2 engines each) -> group step-ups -> MOD-EH 34.5 kV
 for k, g in enumerate("ABCD"):
     gsu = BY_TAG[f"RICE-GSU-{g}"]
@@ -517,7 +517,7 @@ for k, g in enumerate("ABCD"):
     gen_feeder(gsu, mod_eh, 36800, 34.5, f"RICE-GSU-{g} 34.5 kV to MOD-EH bus {1 if k < 2 else 2}")
 for k in (1, 2):
     sc = one(rf"^SC-{k}: aeroderivative")
-    gen_feeder(sc, one(rf"^SC-{k} PCM"), 50000, 13.8, f"SC-{k} (LM6000 class) generator leads to its PCM / GCB")
+    gen_feeder(sc, one(rf"^SC-{k} PCM"), 50000, 13.8, f"SC-{k} (50 MW class) generator leads to its PCM / GCB")
     gsu = BY_TAG[f"SC-GSU-{k}"]
     gen_feeder(one(rf"^SC-{k} PCM"), gsu, 50000, 13.8, f"SC-{k} PCM (GCB) to SC-GSU-{k}")
     xf_wiring(one(rf"^SC-{k} PCM"), gsu, f"SC-GSU-{k}")
@@ -541,10 +541,10 @@ for k in (1, 2):
     add(pcm_k, pcm_k, f"SC-{k} 125 V DC battery to charger / DC panel", "LV1C", "1/C", "4/0", 1, 2, None, 125, None,
         "battery rack inside the PCM", length=(15, 5, "Tray"))
     add(pcm_k, sc, f"SC-{k} emergency DC lube-oil pump (125 V DC, coast-down)", "LV1C", "1/C", "2", 1, 2, 7.5, 125, 65,
-        "LM6000 class: DC pump keeps the bearings fed on loss of AC")
+        "Aeroderivative: DC pump keeps the bearings fed on loss of AC")
     add(pcm_k, sc, f"SC-{k} 120 V AC UPS to the unit control and protection", "LV1C", "1/C", "6", 1, 2, 5, 120, None)
     lv_feeder(pcm_k, sc, 225, f"SC-{k} hydraulic starter pump motor (start sequence only)",
-              note="typical LM6000 hydraulic start; verify starter type / rating with the OEM")
+              note="typical aeroderivative hydraulic start; verify starter type / rating with the OEM")
     for w_ in range(2):
         lv_feeder(pcm_k, sc, 60, f"SC-{k} 480 V welding receptacle {w_ + 1}", motor=False)
     # the PCM's own building services (it is register-free, so the generic building pass never reached it)
@@ -589,7 +589,7 @@ for k in range(1, 9):
         add(g, dst, f"CONT-{k} 13.8 kV to PAD-EH (extension section, ground tray)", "MV15", "1/C", "2", 1, 3, 2000, 13800, 93)
 for k in (1,):
     tm = BY_TAG[f"TM-{k}"]
-    add(tm, pad_eh, f"TM-{k} (TM2500) generator leads to PAD-EH", "MV15", "1/C", "1000", 3, 3, 35000, 13800, 1464,
+    add(tm, pad_eh, f"TM-{k} (trailer GT) generator leads to PAD-EH", "MV15", "1/C", "1000", 3, 3, 35000, 13800, 1464,
         "3 per phase for 125 % (nine cables in the model)")
 mob = BY_TAG["MOB-1"]
 add(mob, BY_TAG["PIC"], "MOB-1 13.8 kV to PIC through the C-L01 ramp", "SHD", "3/C", "2", 1, 1, 2000, 13800, 93, "portable")

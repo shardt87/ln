@@ -1,6 +1,6 @@
 """SC-1 / SC-2 simple-cycle units, second LOD 3 pass (owner, Oct 21: improve the simple-cycle model and its
 details). Built in drawn coordinates right after modular.simple_cycle(); every part sits on an item named "SC-k ...",
-so sc2_mirror.build() turns SC-2's set end for end with the rest of the unit. What a real LM6000-class site has and
+so sc2_mirror.build() turns SC-2's set end for end with the rest of the unit. What a real 50 MW-class aeroderivative site has and
 the first pass left out:
 - inlet: a tapered transition out of the filter house, a silencer duct over the generator with its stiffener bands
   and expansion joint, and the inlet plenum dropping into the turbine enclosure;

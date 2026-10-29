@@ -749,3 +749,26 @@ brochures; LM2500XPRESS class AX-1, SGT-800 / H-25 class IG-1 — recent); GSUs 
 10 ft, PAD-GSU 17 ft) → firewalls or 2-hr walls; big GSUs drawn 13-14 ft tall (real 45-60 MVA ~20-25 ft with
 conservator / bushings); north drive's west link and the RICE-3 radiator pinch are ~12-13 ft clear (pickups only);
 black-start gensets show no fuel (assume diesel sub-base tanks); L5 feeder scope (known).
+
+## Oct 29 — final campus items + audit decisions (owner: "Yes" to the recommended batch)
+- Product names out of the model, tour, slides, viewer text and brochure sources (internal docs keep them): LM6000 class
+  → 50 MW-class aeroderivative; TM2500 class → ~35 MW trailer-mounted; LM2500XPRESS class → ~35 MW class; SGT-800 /
+  H-25 class → ~50 MW class; HyLYZER-1000 → 5 MW PEM; Cummins → vendor; Siemens SGT6-8000H → H-class; Cat 3516C
+  dropped; 18V50 → 18-cylinder ~18 MW class; LNG "Chart HS 50000" → 51,780 gal horizontal vacuum-insulated.
+  INTERNAL mapping unchanged: SC ~ GE LM6000, TM ~ GE TM2500, AX ~ GE LM2500XPRESS, IG ~ Siemens SGT-800 / MHI H-25,
+  electrolyzers ~ Cummins HyLYZER-1000, LNG tanks ~ Chart HS 50000.
+- Firewater: already there (combined fire / service water tank 52 x 40 ft); info now states the ~300,000 gal reserve.
+- BTM-STATCOM pad (2554-2644, 932-992, fenced, OPT_DC): 34.5 / 17 kV coupling transformer BTM-STX, +/-60 Mvar converter
+  e-house, fin-fan valve cooling, BTM-HF 5th/7th/11th filter bank (open capacitor racks, air-core reactors); three
+  buried feeders from BTM-SWGR (OPT_DC_ROUTES). BTM stays out of the cable schedule (as the rest of the option).
+- site_finish.py (new, last in build_model): 27 lightning shield masts (75 ft + spike; switchyard, T-MOD yard, RICE
+  strip, BTM transformer yard, GT step-ups), met mast by the admin building, 9 windsocks, 4 eyewash / safety showers,
+  8 emergency assembly-point signs. Placed on a 1 ft occupancy raster with clear margins.
+- Buildings: water / steam chemistry lab (456-496, 1620-1644); flammable / hazmat store by the workshop (298-322, 660-672).
+- GSU heights raised: 60 MVA h 19, 45 MVA 17, 40 MVA 16, 20 MVA 13 (RICE-GSU firewalls to 19 ft).
+- Firewalls: SC-GSU-1/2 (to the SCR / ammonia FCU), MTG-GSU (to MTG-2 and to MTG-AUX, AUX moved 4 ft east), CGE-GSU
+  (to CGE-SWG and CGE-AUX), TGF-GSU (to the control trailer), PAD-GSU (south and west).
+- North drive: west link widened to 15 ft (y 1219-1234); light pole (1640, 1218) → (1696, 1239); extinguisher
+  (1810, 1236) → (1800, 1238). 14 ft lane clear end to end.
+- Black-start gensets: info states diesel with sub-base tanks.
+- All checks PASS (verify 0 clashes, road audit, audit, schedule, discrepancy, coastal).

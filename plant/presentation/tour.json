@@ -659,7 +659,7 @@
   {
    "sec": "08 · Modular power",
    "title": "Simple-cycle aeroderivative units",
-   "eq": "Two LM6000-class units: inlet filter house, turbine enclosure, SCR, 80 ft stack",
+   "eq": "Two 50 MW-class aeroderivative units: inlet filter house, turbine enclosure, SCR, 80 ft stack",
    "sys": "Peaking power in about ten minutes from start; 13.8 kV generators onto the collector",
    "cab": "MV-105 generator leads; Type TC-ER control; ARMOR-X MC-HL in the fuel-gas skid",
    "c": [
@@ -678,7 +678,7 @@
   {
    "sec": "08 · Modular power",
    "title": "Trailer-mounted turbines",
-   "eq": "TM2500-class mobile aeroderivatives, about 35 MW each: filter house, raised stack, control trailer",
+   "eq": "trailer-mounted mobile aeroderivatives, about 35 MW each: filter house, raised stack, control trailer",
    "sys": "Bridge power while the plant is built, or emergency capacity later",
    "cab": "MV-105 15 kV generator leads in ground trays to the pad switchgear",
    "c": [

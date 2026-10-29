@@ -1,6 +1,6 @@
 """Cable on the surface in the portable / bridge-power part of the modular yard.
 
-Permanent modular plant (RICE, LM6000-class units, collector e-house, step-up transformers) keeps its
+Permanent modular plant (RICE, 50 MW-class aeroderivative units, collector e-house, step-up transformers) keeps its
 13.8 kV / 480 V feeders in buried duct banks. Temporary and bridge-power units are cabled on grade, the
 way rental power is installed, and connect to the permanent network at the pad switchgear:
 - portable pad (OPT_TMP): flexible portable power cable laid loose on the gravel. MV feeders are
@@ -16,7 +16,7 @@ Printed jacket legends at a few points along the runs.
 import fuel
 from fuel import box, rod
 
-REGION = (1935, 2350, 375, 815)        # portable pad + the TM2500 plot north of it
+REGION = (1935, 2350, 375, 815)        # portable pad + the trailer-turbine plot north of it
 LANES = [(2130, 2370, 620, 640)]                       # portable pad lanes (cable protectors where crossed)
 RAMP = (2238, 2252, 617, 643)                          # drive-over cable ramp (C-L01), already drawn
 PERMANENT = [(1945, 2085, 652, 775), (2095, 2205, 648, 692), (1945, 2085, 462, 530),     # turbine / CHP / container

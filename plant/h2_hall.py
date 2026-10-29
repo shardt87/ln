@@ -1,4 +1,4 @@
-"""Electrolyzer hall H2 22 at LOD 3 (25 MW PEM, 5 x HyLYZER-1000 class units, sheet 14).
+"""Electrolyzer hall H2 22 at LOD 3 (25 MW PEM, 5 x 5 MW PEM units, sheet 14).
 
 The building was a solid block. It is now an open hall, and its roof sits on its own layer (H2_ROOF) so cameras
 and the viewer can lift it off:

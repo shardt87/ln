@@ -54,7 +54,7 @@ def surfaces():
     # drives form one loop with the site road network
     new("Modular yard: link drives to the east spine, utilities road and power park", (1490, 2406, 620, 1370), (0, .2))
     for (x0, x1, y0, y1) in ((1490, 1556, 981, 995),          # west, to the east spine road
-                             (1490, 1556, 1221, 1232),        # north drive, west to the east spine road
+                             (1490, 1556, 1219, 1234),        # north drive, west to the east spine road (15 ft: risers clear)
                              (1864, 1880, 1336, 1370),        # north, to the 30 ft utilities road
                              (2392, 2406, 1104, 1124),        # east end of the y 1104 drive
                              (2386, 2406, 640, 1124),         # east side, south to the power park
@@ -301,12 +301,12 @@ def furniture(S):
     new("Modular yard: flood-light poles, extinguishers (typical)", (1556, 2392, 860, 1336), (0, 31))
     fuel.D = True
     for (x, y) in ((1605, 998), (1689, 998), (1773, 998), (1862, 1000), (1862, 1100), (1862, 1200),
-                   (1640, 1218), (1740, 1218), (1885, 1243), (2000, 1243), (2100, 1243), (2200, 1243),
+                   (1696, 1239), (1740, 1218), (1885, 1243), (2000, 1243), (2100, 1243), (2200, 1243),
                    (1990, 1127), (2100, 1127), (2210, 1127), (2320, 1127), (1950, 1000), (2160, 960),
                    (2330, 940), (1600, 890)):
         light_pole(S, x, y, h=30)
     for (x, y) in ((1812, 1035), (1603, 1137), (1717, 1137), (1905, 1225), (2105, 1225), (1862, 1135),
-                   (1810, 1236)):
+                   (1800, 1238)):          # (was 1810: with the PCM corner it pinched the north drive)
         extinguisher(S, x, y)
     fuel.D = False
     new("Modular yard: operators and vehicles", (1556, 2392, 860, 1336), (0, 8))

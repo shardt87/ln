@@ -535,9 +535,9 @@ ZONES = [
 def modular_spread():
     half = SW // 2
     types = [("Permanent: RICE and simple-cycle", ["MOD-RICE", "MOD-SC", "MOD-COLL"], "E14",
-              "8 RICE engines and two LM6000-class units: buried duct banks to the collector, skids pre-wired in the laydown, the "
+              "8 RICE engines and two 50 MW-class aeroderivative units: buried duct banks to the collector, skids pre-wired in the laydown, the "
               "prefab spine for LV / control / fibre.", "Prefab spine, skid pre-wire, SIMpull NoLube in duct banks"),
-             ("Bridge & temporary: TM2500, gensets, portable pad", ["MOD-TM", "MOD-PORT"], "E77",
+             ("Bridge & temporary: trailer turbines, gensets, portable pad", ["MOD-TM", "MOD-PORT"], "E77",
               "Power for months, not decades: cable on grade in ground trays, Type SHD-GC 15 kV and Type W with cam-locks, "
               "drive-over protectors.", "SHD-GC, Type W, cam-locks, temporary power & lighting"),
              ("Small factory skids: fuel cells, microturbines", ["MOD-FC"], "E17",

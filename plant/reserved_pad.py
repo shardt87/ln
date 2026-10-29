@@ -39,7 +39,7 @@ def build():
     import showcase
     it = new_item("OPT_MOD", "Reserved pad: SC-3 / SC-4 future simple-cycle pair (pre-wired)", [X0, X1, Y0, Y1], [0, 6],
                   area="I", register=False,
-                  info="Phase-2 pad for two more LM6000-class units, laid out as SC-1 / SC-2 (stacks paired, inlets "
+                  info="Phase-2 pad for two more 50 MW-class aeroderivative units, laid out as SC-1 / SC-2 (stacks paired, inlets "
                        "outboard). Foundations poured; PCM pads tied into the yard MV duct bank; conduits stubbed up "
                        "and capped; fuel-gas tie-in risers capped and blinded. Typical, not engineered.")
     on(it)
@@ -87,7 +87,7 @@ def build():
 
 # ------------------------------------------------------------------------------- SC-4: plug-and-play demonstration
 # Remodelled Oct 21 (owner: the elevated three-tier spine modules read generic and clunky on a simple-cycle pad, and
-# that is not how such a pad is wired). As an LM6000-class pad is really built: generator power in a factory cable
+# that is not how such a pad is wired). As a 50 MW-class aeroderivative pad is really built: generator power in a factory cable
 # bus over the short run to the PCM; control, instrument and fibre in a precast surface cable trough with lids
 # from the PCM pad to each skid landing; the harnesses factory-cut, pre-terminated and tested, coiled at each landing;
 # the ground-grid pigtails up at the foundation corners. Showing the wire (Oct 21): one cable-bus section opened on
@@ -159,7 +159,7 @@ def demo():
     import showcase
     it = new_item("OPT_MOD", "Reserved pad SC-4: plug-and-play prefab cable demonstration", [2084, 2234, 1268, 1328],
                   [0, 12], area="I", register=False,
-                  info="The future SC-4 pad with its cable system already in, as an LM6000-class pad is built: "
+                  info="The future SC-4 pad with its cable system already in, as a 50 MW-class aeroderivative pad is built: "
                        "generator power in a factory cable bus to the PCM (13.8 kV, MV-105 paralleled per phase); "
                        "control, instrument and fibre in a precast surface cable trough to each skid landing; harnesses "
                        "factory-cut, pre-terminated and tested, coiled at each landing; ground-grid pigtails up at the "

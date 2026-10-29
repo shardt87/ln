@@ -231,7 +231,7 @@ ZONES = [
                "through ground trays to the permanent duct bank.",
          points=[("Type SHD-GC", "Flexible 15 kV portable power cable for the MV feeders."),
                  ("Type W", "2000 V single conductors with cam-lock connections for 480 V hookups."),
-                 ("MV-105 leads", "Generator leads from the TM2500 terminal boxes in ground trays.")],
+                 ("MV-105 leads", "Generator leads from the trailer-turbine terminal boxes in ground trays.")],
          chips=["15 kV SHD-GC", "ICEA S-75-381", "2000 V TYPE W", "CAM-LOCK", "15 kV MV-105"]),
     dict(n="06", kicker="INSTALLED FASTER", title=("ACCELERATING", "TIME TO POWER™"), hero="E64_pro.png",
          hf=(.5, .5), inset="E58_pro.png", inset_cap="The cable reel yard: SIMpull Reels staged for the pulls",

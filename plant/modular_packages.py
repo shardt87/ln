@@ -1,12 +1,12 @@
 """Two more modular gas-turbine package types for the modular yard (owner, Oct 24: "the other gas power plants on the
 modular yard ... different modular ones"), in the open block between the collector e-house and the SC units:
 
-- AX-1, a compact modular aeroderivative installation (LM2500XPRESS class, ~35 MW; owner reference pictures Oct 27):
+- AX-1, a compact modular aeroderivative installation (~35 MW class, ~35 MW; owner reference pictures Oct 27):
   factory modules standing on a raised steel base with stairs and yellow-railed walkways: the inlet filter module with
   its stacked weather hoods, the turbine module with its ventilation fans and ducts on the roof, the exhaust plenum and
   a tall banded stack, the generator module with its doors, the lube / fuel auxiliary skid and the control module;
   the module joints carry pre-terminated plug-in interconnects;
-- IG-1, an industrial gas-turbine installation (SGT-800 / H-25 class, ~50 MW; owner reference pictures Oct 27): the
+- IG-1, an industrial gas-turbine installation (~50 MW class, ~50 MW; owner reference pictures Oct 27): the
   turbine-generator building, the combustion-air filter house raised on a steel frame with its inclined filter faces,
   the exhaust diffuser out of the end wall into a tall stack, generator air coolers and ventilation on the roof with a
   railed roof walkway, the electrical and control module, the lube-oil cooler, the fuel-gas module.
@@ -114,14 +114,14 @@ def legs(x0, x1, y0, y1, zb, step=8.0):
 
 
 def ax1():
-    """AX-1: compact modular aeroderivative (LM2500XPRESS class), rebuilt after the owner's package picture (Oct 28):
+    """AX-1: compact modular aeroderivative (~35 MW class), rebuilt after the owner's package picture (Oct 28):
     separate factory modules on short legs, west to east: control platform with canopy and stair, inlet filter house
     with stacked weather hoods on its long faces, turbine module with a roof vent fan and an angled vent duct, the plain
     banded stack behind the exhaust end, the generator module with its door, stair and platform and a roof vent box with
     angled hoods, the auxiliary skids; lube cooler and fuel-gas module behind. Generator terminal box on the generator's
     south face (x 2051-2054), leads south to AX-GSU."""
     YC = 1032.0
-    it = fuel.new_item(L, "AX-1: compact modular aeroderivative installation, LM2500XPRESS class (~35 MW)",
+    it = fuel.new_item(L, "AX-1: compact modular aeroderivative installation, ~35 MW class (~35 MW)",
                        (1981, 2076, 1004, 1062), (0, 81), area="I", register=False, basis="typical", tag="AX-1",
                        sheet="typical (modular expansion)",
                        info="Aeroderivative gas-turbine generator delivered as factory modules on short legs: control "
@@ -213,11 +213,11 @@ def ax1():
 
 
 def ig1():
-    """IG-1: industrial gas-turbine installation (SGT-800 / H-25 class), west to east: stack, exhaust diffuser, the
+    """IG-1: industrial gas-turbine installation (~50 MW class), west to east: stack, exhaust diffuser, the
     turbine-generator building (generator at the east end, terminal box at x 2176-2181), with the filter house raised on
     its steel frame above the compressor end; E&C module south, lube-oil cooler and fuel gas north."""
     YC = 1032.0
-    it = fuel.new_item(L, "IG-1: industrial gas-turbine installation, SGT-800 / H-25 class (~50 MW)",
+    it = fuel.new_item(L, "IG-1: industrial gas-turbine installation, ~50 MW class (~50 MW)",
                        (2092, 2188, 1004, 1062), (0, 80), area="I", register=False, basis="typical", tag="IG-1",
                        sheet="typical (modular expansion)",
                        info="Industrial gas-turbine generator in its building: combustion-air filter house raised on a steel "

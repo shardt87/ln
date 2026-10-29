@@ -4,7 +4,7 @@ smaller generating units, their switchgear and the skids around them.
 Every item keeps its drawn footprint; the single boxes become typical equipment:
 - containerized and enclosed gas gensets: ISO-style enclosure with corrugation ribs and corner
   castings, end doors, side intake louvres, roof radiator with two fans, roof silencer and stack;
-- trailer units (MOB-1 trailer genset, load bank, TM2500-class turbines): chassis, axle sets,
+- trailer units (MOB-1 trailer genset, load bank, 35 MW-class trailer-mounted turbines): chassis, axle sets,
   landing legs, gooseneck, stairs and walkways;
 - fuel cells (Bloom ES5 class): power-module cabinets with seams, roof exhaust vents, doors;
 - microturbines (Capstone C1000 class): enclosure with roof intake hoods and exhaust outlets;
@@ -244,7 +244,7 @@ def axle(x, y0, y1, r=1.65):
 
 
 def tm2500(it):
-    """TM2500-class mobile aeroderivative at LOD 3 inside the drawn envelope (78 x 55 ft, 42 ft):
+    """35 MW-class trailer-mounted mobile aeroderivative at LOD 3 inside the drawn envelope (78 x 55 ft, 42 ft):
     - GT trailer (south-north y+31..41): ladder chassis, rear bogie of four axles and a two-axle mid bogie on crane
       mats, gooseneck on landing legs; turbine enclosure with panel seams, doors, roof ventilation fans and a
       vent silencer; generator enclosure at the gooseneck end with the terminal box on the north face;

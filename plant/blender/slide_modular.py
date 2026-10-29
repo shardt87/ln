@@ -17,7 +17,7 @@ W, H = 2000 * S, 1125 * S
 NAVY, GREY, COPPER, BG, RULE = (31, 45, 61), (98, 104, 110), (166, 84, 40), (247, 247, 245), (214, 214, 210)
 ITEMS = [
     ("01", "Generation packages", ["Eight 18-cylinder gas engines (RICE)", "in one hall with SCR stacks, plus two",
-                                   "LM6000-class simple-cycle units."]),
+                                   "50 MW-class aeroderivative simple-cycle units."]),
     ("02", "Generator sets", ["Two black-start gensets with their", "switchgear; eight containerized and",
                               "trailer gensets on the portable pad."]),
     ("03", "Fuel-cell power", ["Twelve solid-oxide fuel-cell modules", "and six 1 MW microturbines, inverters",

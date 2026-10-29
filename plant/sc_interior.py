@@ -4,7 +4,7 @@ enclosure"), so a cutaway view can lift them off, with the package inside in a s
 - generator enclosure: the two-pole generator on its base frame, exciter at the non-drive end, bearing pedestals and
   lube lines, the air-to-water cooler on top, the line-side terminal box with the 13.8 kV leads rising to the wall
   (to the external terminal box over the MV tray), the neutral cubicle, the coupling guard;
-- turbine enclosure: the inlet plenum the roof duct drops into, the bellmouth, an LM6000-class engine (LP and HP
+- turbine enclosure: the inlet plenum the roof duct drops into, the bellmouth, a 50 MW-class aeroderivative engine (LP and HP
   compressor, combustor with its fuel-gas manifold and nozzles and the NOx water-injection ring, HP / LP turbine in
   insulating blankets), the exhaust diffuser into the collector, front and rear mounts on the base frame, the fuel
   line in from the fuel-gas module;
@@ -91,7 +91,7 @@ def ring(cx, r, z, rr, c, n=18):
 
 def interior(k, x):
     import showcase
-    it = new_item(L, f"SC-{k} package interior: generator, LM6000-class engine, harnesses", [x + 1, x + 69, 1193.5, 1216.5],
+    it = new_item(L, f"SC-{k} package interior: generator, 50 MW-class aeroderivative engine, harnesses", [x + 1, x + 69, 1193.5, 1216.5],
                   [1.5, 21.9], area="I", register=False,
                   info="Inside the enclosures: generator with exciter, cooler and terminal box; the aeroderivative engine "
                        "with fuel and water-injection manifolds; instrument and thermocouple harnesses to the wall "

@@ -312,7 +312,7 @@
   {
    "sec": "5 · Modular generation",
    "title": "Simple-cycle aeroderivative units",
-   "eq": "Two LM6000-class units: inlet filter house, turbine enclosure, SCR, 80 ft stack",
+   "eq": "Two 50 MW-class aeroderivative units: inlet filter house, turbine enclosure, SCR, 80 ft stack",
    "sys": "Peaking power in about ten minutes from start; 13.8 kV generators onto the collector",
    "cab": "MV-105 generator leads; Type TC-ER control; ARMOR-X MC-HL in the fuel-gas skid",
    "c": [

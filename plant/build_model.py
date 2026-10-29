@@ -335,7 +335,7 @@ for i, gx in enumerate(GX, start=1):
     # --- gas turbine: plenum (south, cold end) -> compressor -> combustors -> turbine -> diffuser
     item(L, f"GT{i}: H-class gas turbine (60 Hz)", (617 + dx, 643 + dx, 455, 540), (20, 38),
          tag=f"GT{i}", area="A", basis="vendor", sheet="SW-3X1-12",
-         info="Siemens SGT6-8000H class engine about 34 x 14 x 14 ft; 26 x 85 ft including the "
+         info="H-class engine about 34 x 14 x 14 ft; 26 x 85 ft including the "
          "inlet plenum and exhaust diffuser. Top EL 38, lifted height 18 ft. Cold-end drive: "
          "inlet plenum and generator at the south end, exhaust north into the HRSG.")
     zc = 29
@@ -749,7 +749,7 @@ xfmr(L, "T-R3: 13.8/0.48 kV", 1053, 1065, 626, 638, 10, area="A", sheet="SW-3X1-
 for k, (x0, x1) in enumerate([(412, 462), (468, 518)], 1):
     item(L, f"EDG-{k}: 3 MW emergency diesel generator (480 V)", (x0, x1, 338, 350), (0, 22),
          tag=f"EDG-{k}", area="F", basis="vendor", sheet="SW-3X1-12",
-         info="Cat 3516C sound-attenuated enclosure 546 x 105 x 167-197 in. Emergency supply "
+         info="Sound-attenuated enclosure 546 x 105 x 167-197 in. Emergency supply "
          "only; ATS / interlocked incomers to LC-480-A/B.")
     B(x0, x1, 338, 350, 0, 1.2, "concrete")
     B(x0 + 1, x1 - 1, 338.5, 349.5, 1.2, 15, "machine")
@@ -1006,9 +1006,19 @@ building(L, "Water treatment building (incl. R-WT electrical room)", 440, 600, 1
 building(L, "Wastewater treatment", 620, 745, 1445, 1530, 25, area="E")
 tank(L, "Raw water tank", 465, 1590, 20, 48, area="E", sheet="SW-3X1-12", info="40 dia x 48 ft class (Smarr EA).")
 tank(L, "Fire / service water tank", 530, 1590, 26, 40, area="E", sheet="SW-3X1-12",
-     info="52 dia x 40 ft (Smarr service water).")
+     info="52 dia x 40 ft (Smarr service water). Combined fire / service tank: the service suction sits above the "
+          "firewater reserve, so the lower ~300,000 gal (2 h at 2,500 gpm, NFPA 850) is held for the fire pumps.")
 tank(L, "Demineralised water tank", 600, 1590, 20, 48, area="E", sheet="SW-3X1-12", info="40 dia x 48 ft (Smarr demin).")
 building(L, "Fire pump house", 700, 740, 1575, 1605, 16, area="E", basis="typical")
+# final campus items (Oct 29): a water / steam chemistry lab (HRSG cycle chemistry, demin and cooling-water tests) and a
+# flammable / hazmat store by the workshop (lube-oil drums, solvents, gas cylinders: spill-contained, ventilated)
+building("BASE_UTILITIES", "Water / steam chemistry lab and sample room", 456, 496, 1620, 1644, 14, area="E",
+         basis="typical", info="Cycle-chemistry lab: grab samples and the on-line analyzer data from the HRSG sample "
+         "panels, demin and wastewater tests, reagent cabinet, fume hood, eyewash / safety shower.")
+building("BASE_SERVICES", "Flammable / hazmat storage building (lube-oil drums, chemicals, gas cylinders)", 298, 322,
+         660, 672, 10, area="F", basis="typical",
+         info="Prefabricated 2-hour rated storage building: spill sump, explosion-relief vents, mechanical ventilation, "
+         "grounding for drum transfer, cylinder rack outside on the north wall.")
 item(L, "Ammonia storage (aqueous, SCR reagent)", (800, 873, 1450, 1492), (0, 20), area="E", sheet="SW-3X1-12",
      info="73 x 42 ft (Smarr EA). Bunded; tank shown horizontal.")
 B(800, 873, 1450, 1492, 0, 4, "concrete")
@@ -1209,7 +1219,7 @@ solid(L, "CONDITIONAL: grounding transformer", 1565, 1575, 415, 425, 0, 8, "cond
 # ---------------------------------------------------------------------------
 L = "OPT_MOD"
 item(L, "RICE engine hall (8 engines)", (1570, 1810, 1040, 1130), (0, 40), tag="RICE", area="I", sheet="SW-3X1-07",
-     info="Hall for 8 medium-speed 18-cylinder engine-generators (18V50 class, approx.).")
+     info="Hall for 8 medium-speed 18-cylinder engine-generators (18-cylinder, ~18 MW class, approx.).")
 B(1570, 1810, 1040, 1130, 0, 34, "hall"); P(1570, 1810, 1040, 1130, 34, 40, "roof", ridge="x")
 for k in range(8):
     x = 1581 + 28 * k
@@ -1233,7 +1243,7 @@ ehouse(L, "PCM: power control module", 1820, 1860, 1140, 1220, 14, area="I", she
        info="RICE 13.8 kV switchgear (electrical review, Oct 28): four bus sections, two engines each (~37 MW, ~1,710 A), ties normally open, each section to its group step-up RICE-GSU-A..D; ~35 kA per section (50 kA gear). Unit auxiliaries and the engine-hall 480 V board inside.")
 solid(L, "RICE CEMS", 1830, 1846, 1005, 1015, 0, 10, "ehouse", area="I")
 for k, x in enumerate([1910, 2110], 1):
-    item(L, f"SC-{k}: aeroderivative simple-cycle unit (LM6000 class)", (x, x + 90, 1190, 1220), (0, 35),
+    item(L, f"SC-{k}: aeroderivative simple-cycle unit (50 MW class)", (x, x + 90, 1190, 1220), (0, 35),
          tag=f"SC-{k}", area="I", sheet="SW-3X1-07",
          info="Package with filter house; SCR and CO catalyst with an 80 ft stack (Mira Loma permit), "
          "CEMS, PCM with 15 kV GCB, lube-oil fin-fan cooler, CO2 fire suppression.")
@@ -1258,7 +1268,8 @@ for yy in (870, 888):
     item(L, "Black-start genset (proposed; requires study)", (1570, 1616, yy, yy + 10), (0, 16), area="I",
          sheet="SW-3X1-07",
          info="Black start is proposed only: needs starting-load, transformer-energisation, "
-         "protection and operating-sequence studies (SW-3X1-07).")
+         "protection and operating-sequence studies (SW-3X1-07). Diesel, with a double-wall sub-base fuel tank "
+         "(~24 h at full load) and a fill / vent point on the enclosure; no gas needed to start the yard.")
     B(1570, 1616, yy, yy + 10, 0, 13, "machine"); R((1610, yy + 5, 13), (1610, yy + 5, 16), 0.8, "steel")
 ehouse(L, "BS black-start switchgear", 1625, 1645, 875, 893, 12, area="I", sheet="SW-3X1-07")
 solid(L, "CONDITIONAL: BESS black-start alternative", 1655, 1700, 868, 900, 0, 9.5, "conditional", area="I",
@@ -1277,14 +1288,17 @@ xfmr(L, "T-MOD-2: 230 / 34.5 kV", 2105, 2145, 870, 905, 24, bushing=13, tag="T-M
 DCY = dict(area="I", basis="design change", sheet="beyond Rev 14 (electrical review)")
 for k, (y0, y1) in enumerate(((1079, 1101), (1052, 1074), (1025, 1047), (998, 1020))):   # strip east of the N-S drive
     g = "ABCD"[k]
-    xfmr(L, f"RICE-GSU-{g}: 13.8 / 34.5 kV group step-up, ~45 MVA (RICE {2 * k + 1}-{2 * k + 2})", 1882, 1898, y0, y1, 13,
+    xfmr(L, f"RICE-GSU-{g}: 13.8 / 34.5 kV group step-up, ~45 MVA (RICE {2 * k + 1}-{2 * k + 2})", 1882, 1898, y0, y1, 17,
          fins="x", tag=f"RICE-GSU-{g}", **DCY)
-item(L, "RICE-GSU-A..D firewalls (between the group step-ups)", (1882, 1898, 1020, 1079), (0, 16), register=False, **DCY)
+item(L, "RICE-GSU-A..D firewalls (between the group step-ups)", (1882, 1898, 1020, 1079), (0, 19), register=False, **DCY)
 for yw in (1022, 1049, 1076):
-    B(1882, 1898, yw, yw + 1, 0, 16, "concrete")
-xfmr(L, "SC-GSU-1: 13.8 / 34.5 kV unit step-up, ~60 MVA (SC-1)", 1999, 2025, 1234, 1262, 14, fins="y", tag="SC-GSU-1",
+    B(1882, 1898, yw, yw + 1, 0, 19, "concrete")
+xfmr(L, "SC-GSU-1: 13.8 / 34.5 kV unit step-up, ~60 MVA (SC-1)", 1999, 2025, 1234, 1262, 19, fins="y", tag="SC-GSU-1",
      **DCY)
-xfmr(L, "SC-GSU-2: 13.8 / 34.5 kV unit step-up, ~60 MVA (SC-2)", 2150, 2176, 1234, 1262, 14, fins="y", tag="SC-GSU-2",
+for _k, _x in ((1, 1997), (2, 2148)):            # firewall between each SC step-up and its unit's ammonia / SCR side
+    solid(L, f"SC-GSU-{_k} firewall (to the SCR / ammonia flow-control unit)", _x, _x + 30, 1229.5, 1231, 0, 20,
+          "concrete", register=False, **DCY)
+xfmr(L, "SC-GSU-2: 13.8 / 34.5 kV unit step-up, ~60 MVA (SC-2)", 2150, 2176, 1234, 1262, 19, fins="y", tag="SC-GSU-2",
      **DCY)
 # (moved 14 ft west, audit Oct 29: it stood 3 ft from T-MOD-1; now ~17 ft from T-MOD-1 and from MOD-EH)
 xfmr(L, "MOD-SST: 34.5 / 13.8 kV station-service transformer, ~10 MVA (yard station service)", 2012, 2028, 904, 920,
@@ -1352,11 +1366,11 @@ DC = dict(area="I", basis="design change", sheet="beyond Rev 14")
 # the north-west corner stays open: maintenance laydown for engine and turbine exchanges
 pad(L, "Maintenance laydown (gravel)", 45, 405, 1705, 1880, "gravel", z1=0.25, area="I", basis="design change",
     sheet="beyond Rev 14")
-# two trailer-mounted aeroderivatives (TM2500 class) on the open ground north of the portable pad, east of MOB-1
+# two trailer-mounted aeroderivatives (~35 MW) on the open ground north of the portable pad, east of MOB-1
 # (user review; the expansion fuel cells and microturbines took their old row south of the pad)
 for k in range(1):                             # one trailer aeroderivative (owner, Oct 27: one per technology)
     x, y = 2150 + 110 * k, 740
-    item(L, f"TM-{k + 1}: trailer-mounted aeroderivative GT (TM2500 class, ~35 MW)", (x, x + 78, y, y + 55),
+    item(L, f"TM-{k + 1}: trailer-mounted aeroderivative GT (~35 MW)", (x, x + 78, y, y + 55),
          (0, 42), tag=f"TM-{k + 1}", info="Design change: gas turbine + generator trailer, control/aux trailer, "
          "inlet filter on the trailer, exhaust stack.", **DC)
     B(x, x + 64, y + 30, y + 42, 0, 4.5, "steel")                    # main trailer deck
@@ -1594,7 +1608,7 @@ solid(L, "MTG-FG: fuel-gas conditioning skid (scrubber, filter-separator, heater
 ehouse(L, "MTG-SWG: 13.8 kV switchgear e-house (2 generator breakers, site feeder)", 2045, 2075, 716, 728, 11,
        tag="MTG-SWG", **DC)
 ehouse(L, "MTG-CB: control and MCC building (unit controls, 480 V MCC)", 2050, 2078, 680, 694, 12, tag="MTG-CB", **DC)
-xfmr(L, "MTG-AUX: 13.8 / 0.48 kV auxiliary transformer", 2066, 2078, 745, 757, 8, tag="MTG-AUX", **DC)
+xfmr(L, "MTG-AUX: 13.8 / 0.48 kV auxiliary transformer", 2070, 2080, 745, 757, 8, tag="MTG-AUX", **DC)
 
 tech_site("Gas engine CHP site", 2095, 2205, 648, 692, "s")
 for k in range(4):
@@ -1642,12 +1656,22 @@ for nm, (x0, x1, y0, y1) in (("load-bank trailer", (2181, 2219, 584, 620)), ("MO
 # 230 / 34.5 / 34.5 kV, ~250 MVA) on the T-MOD gantry. MOD-EH keeps RICE + SC-1/2 + MOD-LV (~255 MW, as reviewed Oct 21);
 # PAD-EH keeps TM-1, the CHP site, MT-TX, MOB-1 (via PIC) and PAD-TX (~51 MW, ~2,370 A) and steps up through PAD-GSU.
 GSU = "13.8 / 34.5 kV step-up"
-xfmr(L, f"TGF-GSU: {GSU}, ~20 MVA (trailer fleet)", 2068, 2083, 600, 628.5, 10, fins="y", tag="TGF-GSU", **DC)
-xfmr(L, f"CGE-GSU: {GSU}, ~20 MVA (containerized engines)", 2048, 2064, 492, 514, 10, fins="y", tag="CGE-GSU", **DC)
-xfmr(L, f"MTG-GSU: {GSU}, ~40 MVA (mid-size turbines)", 2044, 2064, 740, 768, 13, fins="y", tag="MTG-GSU", **DC)
-xfmr(L, f"PAD-GSU: {GSU}, ~60 MVA (PAD-EH: TM-1, CHP site, MT-TX, PAD-TX)", 2166, 2192, 506, 532, 14, fins="y", tag="PAD-GSU", **DC)
-xfmr(L, f"AX-GSU: {GSU}, ~45 MVA (AX-1 unit step-up)", 2008, 2030, 950, 976, 13, fins="y", tag="AX-GSU", **DC)
-xfmr(L, f"IG-GSU: {GSU}, ~60 MVA (IG-1 unit step-up)", 2140, 2164, 948, 978, 14, fins="y", tag="IG-GSU", **DC)
+xfmr(L, f"TGF-GSU: {GSU}, ~20 MVA (trailer fleet)", 2068, 2083, 600, 628.5, 13, fins="y", tag="TGF-GSU", **DC)
+xfmr(L, f"CGE-GSU: {GSU}, ~20 MVA (containerized engines)", 2048, 2064, 492, 514, 13, fins="y", tag="CGE-GSU", **DC)
+xfmr(L, f"MTG-GSU: {GSU}, ~40 MVA (mid-size turbines)", 2044, 2064, 740, 768, 16, fins="y", tag="MTG-GSU", **DC)
+xfmr(L, f"PAD-GSU: {GSU}, ~60 MVA (PAD-EH: TM-1, CHP site, MT-TX, PAD-TX)", 2166, 2192, 506, 532, 19, fins="y", tag="PAD-GSU", **DC)
+xfmr(L, f"AX-GSU: {GSU}, ~45 MVA (AX-1 unit step-up)", 2008, 2030, 950, 976, 17, fins="y", tag="AX-GSU", **DC)
+# firewalls (audit, Oct 29): each step-up within ~20 ft of an e-house, package or other transformer gets a 2-hour
+# concrete firewall 1 ft above it and 2 ft past it each side (NFPA 850 / IEEE 979)
+for _nm, (_x0, _x1, _y0, _y1, _h) in (("TGF-GSU firewall (to the control trailer)", (2056, 2084.4, 591, 592.4, 14)),
+                                     ("CGE-GSU firewall (to CGE-SWG)", (2042, 2043.5, 490, 516, 14)),
+                                     ("CGE-GSU firewall (to CGE-AUX)", (2046, 2066, 488.5, 490, 14)),
+                                     ("MTG-GSU firewall (to MTG-2)", (2040, 2041.5, 738, 770, 17)),
+                                     ("MTG-GSU firewall (to MTG-AUX)", (2065.2, 2066.6, 738, 770, 17)),
+                                     ("PAD-GSU firewall (to PAD-EH / SWG-MY)", (2164, 2194, 499, 500.5, 20)),
+                                     ("PAD-GSU firewall (to PGS-SWG)", (2158, 2159.5, 504, 534, 20))):
+    solid(L, _nm, _x0, _x1, _y0, _y1, 0, _h, "concrete", register=False, **DC)
+xfmr(L, f"IG-GSU: {GSU}, ~60 MVA (IG-1 unit step-up)", 2140, 2164, 948, 978, 19, fins="y", tag="IG-GSU", **DC)
 padmount(L, "MT-TX: 480 V : 13.8 kV, ~3.75 MVA pad-mount (microturbine site)", lambda u, v: (u, v), 2132, 2146, 377, 389,
          6.5, tag="MT-TX", **DC)
 ehouse(L, "SWG-PK: 34.5 kV park collector switchgear (2 bus sections, tie; 8 feeder + 2 main breakers)", 2148, 2196,
@@ -1687,7 +1711,7 @@ for bx in [(2115, 2298, 1732, 1733), (2115, 2298, 1835, 1836), (2115, 2116, 1732
 B(2116, 2297, 1733, 1835, 0, 0.3, "concrete")
 for k in range(8):
     x = 2130 + 20 * k
-    item(L, f"LNG 11: tank {k+1}, Chart HS 50000 (51,780 gal)", (x, x + 12.5, 1745, 1822.6), (0, 17.5),
+    item(L, f"LNG 11: tank {k+1}, 51,780 gal horizontal vacuum-insulated", (x, x + 12.5, 1745, 1822.6), (0, 17.5),
          tag=f"LNG-T{k+1}", area="K", basis="vendor", sheet="SW-3X1-14",
          info="150 in dia x 931 in long. Eight tanks hold 414,000 gal, roughly 9 h of one GT or 3 h of the plant.")
     R((x + 6.25, 1747, 11), (x + 6.25, 1820.6, 11), 6.25, "tank", seg=20)
@@ -1711,7 +1735,7 @@ ehouse(L, "LNG 17: LNG e-house (13.8 kV / 480 V)", 1950, 1990, 1850, 1864, 14, a
 item(L, "LNG 18: vent stack", (2092, 2098, 1860, 1866), (0, 60), area="K", basis="typical", shape="circle")
 V(2095, 1863, 1.5, 0, 60, "stack")
 L = "OPT_H2"
-item(L, "H2 22: electrolyzer building (5 x HyLYZER-1000 + 5 rectifiers)", (2010, 2170, 1440, 1520), (0, 30),
+item(L, "H2 22: electrolyzer building (5 x 5 MW PEM + 5 rectifiers)", (2010, 2170, 1440, 1520), (0, 30),
      tag="H2-EL", area="K", sheet="SW-3X1-14",
      info="25 MW PEM electrolysis, 10.8 t/day, sized like FPL Cavendish at Okeechobee. Hydrogen is "
      "GT fuel made from renewable or surplus power imported through D6, never from the plant's "
@@ -1719,19 +1743,19 @@ item(L, "H2 22: electrolyzer building (5 x HyLYZER-1000 + 5 rectifiers)", (2010,
 B(2010, 2170, 1440, 1520, 0, 26, "hall"); P(2010, 2170, 1440, 1520, 26, 30, "roof", ridge="x")
 for k in range(5):
     x = 2020 + 20 * k
-    solid(L, f"PEM electrolyzer {k+1} (HyLYZER-1000)", x, x + 7.5, 1450, 1477.7, 0, 10, "bess", area="K",
-          basis="vendor", sheet="SW-3X1-12", register=False, info="Cummins bulletin: 8.4 x 2.3 m.")
+    solid(L, f"PEM electrolyzer {k+1} (5 MW PEM stack)", x, x + 7.5, 1450, 1477.7, 0, 10, "bess", area="K",
+          basis="vendor", sheet="SW-3X1-12", register=False, info="Vendor bulletin: 8.4 x 2.3 m.")
     solid(L, f"Rectifier {k+1} (7 MVA)", x, x + 8.2, 1490, 1504.8, 0, 8, "cabinet", area="K", basis="vendor",
-          register=False, info="Cummins bulletin: 4.5 x 2.5 m, 7 MVA.")
+          register=False, info="Vendor bulletin: 4.5 x 2.5 m, 7 MVA.")
     xfmr(L, f"H2 21: rectifier transformer {k+1} (7 MVA)", x + 2 * k, x + 2 * k + 12, 1530, 1542, 10, area="K",
          sheet="SW-3X1-14")
 solid(L, "H2 24: water purification (RO / EDI)", 2125, 2160, 1455, 1480, 0, 12, "equip", area="K",
-      info="9 L per kg H2 (Cummins).")
+      info="9 L per kg H2 (vendor data).")
 ehouse(L, "H2 20: 13.8 kV e-house", 2240, 2300, 1440, 1456, 14, area="K", sheet="SW-3X1-14")
 xfmr(L, "H2 19: T-H2 230/13.8 kV (about 40 MVA)", 2330, 2370, 1440, 1480, 24, bushing=13, tag="T-H2", area="K",
      sheet="SW-3X1-14", info="230 kV cable from D6, 1,720 ft route along the east fence.")
 item(L, "H2 23: dry coolers", (2185, 2225, 1440, 1560), (0, 16), area="K", sheet="SW-3X1-14",
-     info="5 x 2,500 L/min (Cummins).")
+     info="5 x 2,500 L/min (vendor data).")
 column_grid((2186, 2224), range(1442, 1561, 39), 8, s=0.6)
 B(2185, 2225, 1440, 1560, 8, 12, "bundle")
 for k in range(3):
@@ -1794,6 +1818,36 @@ ehouse(L, "BTM 34.5 kV switchgear: double bus A / B with bus tie, 3-mode transfe
        "(B side): 2N. Operating modes by breaker: (1) islanded: T1/T2 mains closed, tie open; (2) islanded with backup: "
        "the 230 kV tie closes on loss of the modular supply (open transition) or for maintenance; (3) grid-parallel: tie "
        "closed with sync check, modular yard and BESS firm the load. Typical, not engineered.")
+# BTM-STATCOM (Oct 29: final campus items): fast reactive support and harmonic filtering on the 34.5 kV bus. AI
+# training loads swing in seconds and their rectifiers inject harmonics; islanded, the campus has no grid to hold the
+# voltage. A fenced pad north of BTM-SWGR: coupling transformer, converter e-house, cooling, filter bank.
+item(L, "BTM-STATCOM pad: fence and gate (STATCOM + harmonic filter)", (2554, 2644, 932, 992), (0, 7), register=False, **DC)
+for (_a, _b, _c, _d) in ((2554, 2644, 932, 932.4), (2554, 2644, 991.6, 992), (2554, 2554.4, 932, 992),
+                         (2643.6, 2644, 932, 962), (2643.6, 2644, 978, 992)):        # gate on the east side
+    B(_a, _b, _c, _d, 0, 7, "fence")
+B(2554.4, 2643.6, 932.4, 991.6, 0, .25, "gravel_yard")
+xfmr(L, "BTM-STATCOM-TX: 34.5 / 17 kV STATCOM coupling transformer, ~70 MVA", 2558, 2574, 938, 956, 16, fins="y",
+     tag="BTM-STX", **DC)
+ehouse(L, "BTM-STATCOM: +/- 60 Mvar STATCOM converter e-house (IGBT valves, controls)", 2582, 2620, 938, 952, 14,
+       tag="BTM-STATCOM", **DC)
+solid(L, "BTM-STATCOM valve cooling: fin-fan dry cooler and pump skid", 2626, 2640, 938, 952, 0, 10, "radiator", **DC)
+item(L, "BTM-HF: 34.5 kV harmonic filter bank (5th / 7th / 11th, ~20 Mvar), capacitor racks and air-core reactors",
+     (2560, 2640, 962, 988), (0, 16), tag="BTM-HF", **DC)
+B(2560, 2640, 962, 988, 0, .5, "concrete")
+for _k in range(3):
+    _x = 2566 + 26 * _k
+    for _px in (_x, _x + 11.6):                                                    # open capacitor rack
+        for _py in (966, 975.6):
+            B(_px, _px + .4, _py, _py + .4, .5, 12, "steel")
+    for _z in (3, 6.5, 10):
+        B(_x, _x + 12, 966, 976, _z - .3, _z, "steel")                           # tier frame
+        for _cx in range(4):                                                       # capacitor cans with bushings
+            for _cy in range(3):
+                _px, _py = _x + 1.2 + 2.9 * _cx, 967.4 + 3.1 * _cy
+                B(_px - .6, _px + .6, _py - .9, _py + .9, _z, _z + 2.2, "panel")
+                R((_px, _py, _z + 2.2), (_px, _py, _z + 2.9), .18, "insulator", seg=6)
+    V(_x + 6, 982, 2.6, .5, 8, "insulator", seg=16)                               # air-core reactor on insulators
+    V(_x + 6, 982, 3.0, 8, 13, "machine", seg=20)
 # BTM BESS for load steps and ride-through (AI training loads swing tens of percent in seconds)
 for r_ in range(5):
     y = 440 + 60 * r_
@@ -2090,7 +2144,7 @@ for yc in (690, 742):                                                           
     add_route("mvlv_cable", [(2032, yc), (2038, yc), (2038, 720 if yc < 720 else 724), (2045, 720 if yc < 720 else 724)], MX)
 add_route("mvlv_cable", [(2054, 728), (2054, 740)], MX)                                     # MTG-SWG -> MTG-GSU
 add_route("mvlv_cable", [(2071, 728), (2071, 745)], MX)                                     # MTG-SWG -> MTG-AUX
-add_route("mvlv_cable", [(2078, 751), (2081, 751), (2081, 687), (2078, 687)], MX)          # MTG-AUX 480 V -> MTG-CB
+add_route("mvlv_cable", [(2080, 751), (2082, 751), (2082, 687), (2078, 687)], MX)          # MTG-AUX 480 V -> MTG-CB
 add_route("mvlv_cable", [(2064, 716), (2064, 694)], MX)                                     # e-house -> MTG-CB (control)
 add_route("mvlv_cable", [(1968, 713), (2040, 713), (2040, 688), (2050, 688)], MX)          # MTG-FG (MC-HL) -> MTG-CB
 add_route("fuel_gas", [(1943.5, 606), (1943.5, 716), (1948, 716)], MX)                          # west riser -> MTG-FG
@@ -2160,6 +2214,10 @@ add_route("mvlv_cable", [(GB_RX, 460), (GB_RX, GB_Y[1] + 72)], MX, sheet="typica
 add_route("mvlv_cable", [(2234, 486), (2238, 486), (2238, 460), (GB_RX, 460)], MX, sheet="typical (modular gas blocks)")
 add_route("mvlv_cable", [(2234, 493), (2245, 493), (2245, 892)], MX, sheet="typical (modular gas blocks)")         # feeder
 add_route("mvlv_cable", [(2520, 880), (2530, 880)], MX, sheet="typical (modular gas blocks)")                     # into BTM-SWGR
+# BTM-STATCOM pad feeders (buried, 34.5 kV): switchgear -> coupling transformer -> converter; switchgear -> filter bank
+add_route("mvlv_cable", [(2566, 900), (2566, 938)], "OPT_DC_ROUTES", sheet="typical (STATCOM pad)")
+add_route("mvlv_cable", [(2574, 945), (2582, 945)], "OPT_DC_ROUTES", sheet="typical (STATCOM pad)")
+add_route("mvlv_cable", [(2545, 900), (2545, 975), (2560, 975)], "OPT_DC_ROUTES", sheet="typical (STATCOM pad)")
 for xg in (GB_RX - 37.5, GB_RX + 39.0):                                                    # gas headers behind the rows
     add_route("fuel_gas", [(xg, 452), (xg, GB_Y[1] + 70)], MX, sheet="typical (modular gas blocks)")
     for _yb in (468, 546):                                         # a branch into every genset (audit, Oct 29)
@@ -2817,6 +2875,8 @@ import boiler_row as _brw                         # Boiler Row (Oct 23): utility
 print('Boiler Row', _brw.build())
 import brownfield as _bf                          # boiler section: HRSG 3 module-replacement outage (brownfield)
 print('brownfield outage', _bf.build())
+import site_finish as _sf                        # final campus items: shield masts, met mast, windsocks, eyewash, muster
+print('site finish', _sf.build())
 
 
 # "conditional" was a drawing flag colour (yellow); the items keep basis="conditional" in their data, but are drawn

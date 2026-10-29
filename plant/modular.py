@@ -166,7 +166,7 @@ def simple_cycle():
     for k, x in enumerate((1910, 2110), 1):
         sc = find(f"SC-{k}: aeroderivative")
         strip(sc)
-        sc["info"] = ("LM6000-class package: inlet filter house on legs at the west end, generator and turbine "
+        sc["info"] = ("50 MW-class aeroderivative package: inlet filter house on legs at the west end, generator and turbine "
                       "enclosures on one skid, exhaust collector into the SCR and CO catalyst, 80 ft stack "
                       "(Mira Loma permit); CEMS, PCM with 15 kV GCB, lube-oil fin-fan cooler, CO2 fire suppression.")
         box(x, x + 70, 1192, 1218, 0, 1.5, "steel")                            # package skid
