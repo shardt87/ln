@@ -713,3 +713,12 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
   staggered pad heights bury a 0.11 ft cable on gravel).
 - Not a sheet 01 / 05 shape: footprints still 211/211. Sign moved to (2318, 652). Camera E77 and the tour stop
   re-aimed (eye 2205, 602, 40 → 2263, 660, 2). All checks PASS.
+
+## Oct 29 — MOB-1 restyled as a trailer gas-engine genset (owner: "make this look like a VoltaGrid type of system")
+- INTERNAL mapping (not for customer material): VoltaGrid-class trailer gas genset; the model says "trailer gas-engine genset".
+- yard.trailers(): white engine / generator enclosure on the 53 ft trailer, side doors and intake louvres, raised roof
+  radiator with two fans (cooling end, behind the nose), roof catalyst / SCR housing + silencer + stack to EL 24.4 at
+  the engine end, generator terminal box at the nose (SHD-GC feeder exit), gas inlet + flexible hose at the rear,
+  stair with stringers and a landing. Item EL 24.4; info rewritten (~2.5 MW, 13.8 kV, class layout).
+- Gas: new item "MOB-1 gas regulator / meter skid" (2309-2315, 661-668); fuel_gas route off the x 2378 header at
+  y 664.5 to the skid. Hardstand trimmed to x 2308. All checks PASS.

@@ -1322,10 +1322,12 @@ def tech_site(name, x0, x1, y0, y1, gate):
 
 # MOB-1 stands on its own hardstand east of the CHP site, nose (terminal end) west towards the cable ramp (owner, Oct 29:
 # "intentional"; it was squeezed behind the CHP heat-recovery rack). Not a sheet 01 / 05 shape, so free to move.
-item(L, "MOB-1: trailer genset", (2250, 2303, 660, 669), (0, 13.5), tag="MOB-1", area="I", sheet="SW-3X1-08")
+item(L, "MOB-1: trailer genset", (2250, 2303, 660, 669), (0, 24.4), tag="MOB-1", area="I", sheet="SW-3X1-08")
 B(2250, 2303, 660, 669, 3, 13.5, "machine")
 for xx in (2255, 2290, 2296):
     R((xx, 660.5, 1.8), (xx, 668.5, 1.8), 1.8, "conductor", seg=12)
+solid(L, "MOB-1 gas regulator / meter skid (flexible hose to the trailer)", 2309, 2315, 661, 668, 0, 5, "equip",
+      area="I", sheet="typical (trailer gas genset)")      # gas off the x 2378 header, owner Oct 29 (trailer fleet look)
 ehouse(L, "PIC: portable input cabinet", 2255, 2263, 572, 578, 7, tag="PIC", area="I", sheet="SW-3X1-08")
 solid(L, "LB: commissioning load bank (trailer)", 2185, 2215, 588, 596, 0, 12, "equip", tag="LB", area="I",
       sheet="SW-3X1-08")
@@ -1625,7 +1627,7 @@ pad(L, "Power park: portable pad lane, joint with the group road (north end)", 2
     area="I", basis="design change", sheet="beyond Rev 14")
 pad(L, "Portable pad lane: joint with the 30 ft access road", 2346, 2370, 299, 306, "road", z1=0.3, area="I",
     basis="design change", sheet="beyond Rev 14")
-for nm, (x0, x1, y0, y1) in (("load-bank trailer", (2181, 2219, 584, 620)), ("MOB-1 trailer", (2247, 2312, 640, 684))):   # cable at x 2245 stays beside it
+for nm, (x0, x1, y0, y1) in (("load-bank trailer", (2181, 2219, 584, 620)), ("MOB-1 trailer", (2247, 2308, 640, 684))):   # cable at x 2245 stays beside it
     pad(L, f"Portable pad: crushed-stone hardstand, {nm}", x0, x1, y0, y1, "gravel", z1=0.25, area="I",
         basis="design change", sheet="beyond Rev 14")
 
@@ -2015,6 +2017,7 @@ MX = "OPT_MODX_ROUTES"
 # between SC-1 and SC-2 down to the modular collector e-house MOD-EH
 # portable power cable in ground trays (surface_cable), across the pad lane on the C-L01 drive-over ramp beside
 # the MOB-1 feeder, down to the north face of PAD-EH
+add_route("fuel_gas", [(2378, 664.5), (2315, 664.5)], MX)                                   # header -> MOB-1 skid
 add_route("mvlv_cable", [(2250, 664.5), (2245, 664.5), (2245, 575), (2255, 575)], "OPT_TMP_ROUTES",
           sheet="SW-3X1-08")             # MOB-1 -> PIC across the pad lane on the C-L01 ramp (had gone missing, Oct 28)
 add_route("mvlv_cable", [(2255, 575), (2228, 575), (2228, 592), (2215, 592)], "OPT_TMP_ROUTES",

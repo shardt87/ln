@@ -139,22 +139,60 @@ def containers():
 
 
 def trailers():
-    # MOB-1 trailer genset
+    # MOB-1: trailer-mounted natural-gas engine genset (owner, Oct 29: the trailer gas-engine fleet look): white
+    # sound-attenuated engine enclosure on a 53 ft drop-deck trailer, raised roof radiator with fans over the cooling
+    # end, roof catalyst / SCR housing and silencer with a tall stack at the engine end, generator terminal box at the
+    # nose (the SHD-GC feeder drops out of it), gas inlet with a flexible hose at the rear, side doors and a stair
     it = find("MOB-1:")
     x0, x1, y0, y1 = it["fp"]
+    yc = (y0 + y1) / 2
     strip(it)
-    trailer(it, x0, x1, y0, y1, 4, (x1 - 10, x1 - 6.5, x1 - 3), (x0 + 8,), "cabinet",
-            body=(x0 + 1, x1 - .5, y0 + .3, y1 - .3, 4, 12.4))
+    trailer(it, x0, x1, y0, y1, 4, (x1 - 10, x1 - 6.5, x1 - 3), (x0 + 8,), "cabinet")
     box(x0, x0 + 4, y0 + 2, y1 - 2, 3, 4, "steel")                          # gooseneck / kingpin plate
-    box(x0 + 3, x0 + 18, y0 + .5, y1 - .5, 12.4, 13.1, "radiator")
-    for xf in (x0 + 7, x0 + 14):
-        rod((xf, (y0 + y1) / 2, 13.1), (xf, (y0 + y1) / 2, 13.5), 3.2, "fan", seg=16)
-    rod((x1 - 6, (y0 + y1) / 2, 12.4), (x1 - 6, (y0 + y1) / 2, 13.5), .5, "stack", seg=8)
+    box(x0 + 1, x0 + 4.5, y0 + 1.5, y1 - 1.5, 4, 8.5, "panel")               # generator terminal box (nose)
+    box(x0 + .6, x0 + 1, y0 + 2.5, y1 - 2.5, 4.5, 6, "steel_dark")           # gland plate, feeder exit
+    box(x0 + 4.5, x1 - .8, y0 + .3, y1 - .3, 4, 12.6, "white_truck")         # engine / generator enclosure
+    box(x0 + 4.5, x1 - .8, y0 + .2, y1 - .2, 12.6, 12.9, "steel")            # roof edge
     dress(True)
-    ribs(x0 + 1, x1 - .5, y0 + .3, y1 - .3, 4, 12.4, True, pitch=1.6)
-    for s in range(4):                                                       # access stair
-        box(x0 + 26, x0 + 29, y0 - 1.2 - s * .9 + 0, y0 - .3 - s * .9, .6 + s * .9, .8 + s * .9, "grating")
+    ribs(x0 + 4.5, x1 - .8, y0 + .3, y1 - .3, 4, 12.6, True, pitch=2.4)
+    for xd in (x0 + 12, x0 + 30, x1 - 12):                                     # side doors, both faces
+        for y, sg in ((y0 + .3, -1), (y1 - .3, 1)):
+            box(xd, xd + 3, y + sg * .02, y + sg * .14, 5, 11.2, "door")
+    for y, sg in ((y0 + .3, -1), (y1 - .3, 1)):                               # intake louvres at the cooling end
+        box(x0 + 6, x0 + 11, y + sg * .02, y + sg * .14, 6, 11.5, "louvre")
+    # roof radiator (cooling end, behind the generator): raised module, louvred sides, two fans
+    for xl in (x0 + 7, x0 + 22):
+        for y in (y0 + .8, y1 - .8):
+            box(xl - .2, xl + .2, y - .2, y + .2, 12.9, 14.2, "steel")
+    box(x0 + 6.5, x0 + 22.5, y0 + .5, y1 - .5, 14.2, 16.4, "radiator")
+    for xf in (x0 + 10.5, x0 + 18.5):
+        rod((xf, yc, 16.4), (xf, yc, 16.8), 3.3, "fan", seg=18)
+    # engine end: catalyst / SCR housing, horizontal silencer, stack
+    box(x1 - 20, x1 - 11, y0 + 1.2, y1 - 1.2, 12.9, 16.5, "steel")           # catalyst / SCR housing
+    rod((x1 - 11, yc, 15), (x1 - 3.5, yc, 15), 1.7, "stack", seg=16)          # silencer
+    rod((x1 - 4.5, yc, 15), (x1 - 4.5, yc, 24), 1.0, "stack", seg=14)         # stack
+    rod((x1 - 4.5, yc, 24), (x1 - 4.5, yc, 24.4), 1.15, "steel_dark", seg=14)
+    for xl in (x1 - 18, x1 - 13):                                              # housing legs on the roof
+        box(xl - .2, xl + .2, y0 + 1.4, y0 + 1.8, 12.9, 12.95, "steel")
+    # rear: gas inlet valve and the flexible hose to the regulator skid
+    box(x1 - .8, x1 - .2, yc - 1.2, yc + 1.2, 5, 7.5, "steel_dark")
+    rod((x1 - .2, yc, 6.2), (x1 + 1.5, yc, 6.2), .3, "fuelgas", seg=8)
+    rod((x1 + 1.5, yc, 6.2), (x1 + 2.5, yc, 1.2), .3, "hdpe", seg=8)
+    rod((x1 + 2.5, yc, 1.2), (x1 + 6, yc, 1.2), .3, "hdpe", seg=8)
+    # access stair and landing at the side door, south face
+    for s in range(4):
+        box(x0 + 29.5, x0 + 33.5, y0 - 1.2 - s * .9, y0 - .3 - s * .9, .6 + s * .9, .8 + s * .9, "grating")
+    box(x0 + 29.5, x0 + 33.5, y0 - 1.2, y0, 4.1, 4.3, "grating")
+    for xs in (x0 + 29.4, x0 + 33.6):                                          # stringers
+        rod((xs, y0 - 4.4, 0), (xs, y0 - 1.0, 4.2), .1, "steel", seg=6)
+    for xr in (x0 + 29.5, x0 + 33.5):
+        rod((xr, y0 - 1.2, 4.3), (xr, y0 - 1.2, 7.8), .07, "yellow", seg=6)
     dress(False)
+    it["z"] = [0, 24.4]
+    it["info"] = ("Trailer-mounted natural-gas engine genset, ~2.5 MW at 13.8 kV: sound-attenuated engine / generator "
+                  "enclosure on a road trailer, roof radiator, catalyst / SCR and stack; gas from the park header "
+                  "through a regulator / meter skid and a flexible hose; 15 kV SHD-GC feeder to the portable input "
+                  "cabinet over the C-L01 ramp. Class layout, not a vendor's drawing.")
     # load bank trailer
     it = find("LB:")
     x0, x1, y0, y1 = it["fp"]
