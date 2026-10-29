@@ -16,7 +16,7 @@ SITES = [
     ((2040.0, 338.5), "FUEL CELLS + MICROTURBINES", "4 x ~250 kW SOFC · 3 x 1 MW microturbines", "480 V > inverter / switchboard > PAD"),
 ]
 TRAILERS = [
-    (2154.0, 708.0, "TRAILER GENSET", "13.8 kV · on wheels", "SHD-GC through the cable ramp"),
+    (2318.0, 652.0, "TRAILER GENSET", "13.8 kV · on wheels", "SHD-GC through the cable ramp"),
     (2144.0, 735.0, "TRAILER GAS TURBINE", "~35 MW · 13.8 kV", "15 kV MV-105 leads, 3 per phase"),
 ]
 

@@ -1420,7 +1420,7 @@ EPIC = [
     dict(k="E76", n="Modular yard: fuel cells, microturbines and the 480 V step-up (from the south)",
          eye=(2140, 960, 60), target=(2130, 1120, 5), lens=26, show="all", sun=(24, 235)),
     dict(k="E77", n="Portable pad: 15 kV SHD-GC feeder from MOB-1 through the C-L01 drive-over ramp to the input cabinet",
-         eye=(2229, 668, 8), target=(2247, 628, 1), lens=26, show="all", sun=(24, 235), clip=.05),
+         eye=(2205, 602, 40), target=(2263, 660, 2), lens=26, show="all", sun=(24, 235), clip=.05),
     dict(k="E78", n="Portable pad: Type W 480 V sets with cam-lock plugs into the PAD-LV paralleling switchboard",
          eye=(2148, 447, 6.5), target=(2160, 434, 1.5), lens=24, show="all", sun=(30, 250), clip=.05),
     dict(k="E79", n="Portable pad: open engine-generator skid GEN-O, enclosed genset GEN-E and their Type W sets",

@@ -720,18 +720,17 @@
    "sys": "Plug-in power: the feeder crosses the road on a ramp, no trench",
    "cab": "Type SHD-GC 15 kV portable cable (two grounds and a ground check), through the C-L01 ramp",
    "c": [
-    2229,
-    668,
-    8
+    2205,
+    602,
+    40
    ],
    "t": [
-    2247,
-    628,
-    1
+    2263,
+    660,
+    2
    ],
    "lens": 26,
-   "drift": 1.2,
-   "near": 0.3
+   "drift": 1.2
   },
   {
    "sec": "08 · Modular power",

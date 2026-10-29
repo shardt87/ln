@@ -704,3 +704,12 @@ control / instrument cables are), so it is drawn but not counted. Deck: 1 overvi
 - MOB-1 → PIC feeder (sheet 08, across the pad lane on the C-L01 ramp) had gone missing, so the auto-wiring hooked
   MOB-1 to the load-bank cable. Route restored: (2213, 695) → (2245, 695) → (2245, 575) → PIC west face.
 - Scan: no other surface cable has a dead end.
+
+## Oct 29 — MOB-1 made intentional
+- Owner: keep the trailer genset, make it look intentional. MOB-1 moved from behind the CHP heat-recovery rack
+  (2160-2213, 695-704) to its own spot east of the CHP site: (2250-2303, 660-669), nose / terminal end west.
+  One crushed-stone hardstand (2247-2312, 640-684) off the portable pad lane replaces the two old ones.
+- Feeder MOB-1 → PIC: (2250, 664.5) → x 2245 → C-L01 ramp → PIC west face. Cable kept beside the hardstand (the
+  staggered pad heights bury a 0.11 ft cable on gravel).
+- Not a sheet 01 / 05 shape: footprints still 211/211. Sign moved to (2318, 652). Camera E77 and the tour stop
+  re-aimed (eye 2205, 602, 40 → 2263, 660, 2). All checks PASS.
