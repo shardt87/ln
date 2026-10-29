@@ -61,3 +61,9 @@ Views now on training slides that only exist as Oct 8-13 previews: E10, E16, E41
 - **E155** (modular yard regrouped: RICE group step-ups by the PCM; Oct 28): preview only.
 - **E156** (PAD-EH / SWG-MY on the middle park lane; Oct 28): preview only. E147 / E155 re-previewed after the road audit.
 - **E92** (prefab cable spine going in, re-aimed Oct 28) and **E147** (park after the trim and restore): preview only.
+
+## Oct 29: FULL BATCH DONE (32 spp, scale 100)
+All 71 views above rendered at full quality on the current model (after the yard audit, the final campus items and the
+generic product names): `renders/full/<view>_pro_clean.jpg`. Copies: boilers views → `renders/boilers_full/`, CC2 →
+`renders/training/CC2_pro_clean.jpg`, K1 (coastal overlay A) → `renders/cover/K1_pro*.{png,jpg}`. Decks / brochures that
+point at the older preview folders (renders/epic, renders/training, …) can be repointed to renders/full when rebuilt.
