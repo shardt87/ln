@@ -772,3 +772,18 @@ black-start gensets show no fuel (assume diesel sub-base tanks); L5 feeder scope
   (1810, 1236) → (1800, 1238). 14 ft lane clear end to end.
 - Black-start gensets: info states diesel with sub-base tanks.
 - All checks PASS (verify 0 clashes, road audit, audit, schedule, discrepancy, coastal).
+
+## Oct 29 — AX-1 / IG-1 detailed (owner: "can these plants be improved and detailed, kind of looks off")
+- modular_packages.hoods(): even box weather hoods (top, skirt, flashing, end cheeks) over a dark filter face; new
+  hoods_x() for faces at x. The old stepped blades read as shelves.
+- IG-1: clad building with seams all round, intake louvres with drip hoods, door canopy, roll-up door (north),
+  neutral-grounding cubicle; filter house on a braced frame (X-bracing all faces, base plates, deck grating), hoods on
+  three faces, access door, outlet hopper + inlet silencer + flanged duct into a roof curb; stair tower (4 flights,
+  landings, rails) at the north-west corner with a bridge to the filter deck; exhaust as a rectangular duct with an
+  expansion joint and stiffeners into the stack breeching; stack on a pedestal with bands, caged ladder, emissions-test
+  platform and sampling ports; roof: generator air coolers on a curb, two enclosure vent fans; E&C module seams,
+  door, HVAC; lube supply / return pipes; CO2 fire-suppression skid (8 cylinders, manifold, discharge header).
+- AX-1: hoods on three filter faces; vent outlet duct with flange and rain hood (no angled pipe); exhaust collector
+  with expansion joint into a transition / silencer box and a round transition up to the stack; caged ladder and
+  sampling platform on the stack.
+- All checks PASS.
