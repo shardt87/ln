@@ -787,3 +787,15 @@ black-start gensets show no fuel (assume diesel sub-base tanks); L5 feeder scope
   with expansion joint into a transition / silencer box and a round transition up to the stack; caged ladder and
   sampling platform on the stack.
 - All checks PASS.
+
+## Oct 30 — AX-1 / IG-1 second pass (owner: "Ok" to the five recommended items)
+- Hoods finer and shallower (pitch 1.45 ft, 0.85 ft deep) so a filter face reads as a grille, not shelves.
+- AX-1 filter house raised on a braced frame (deck EL 12, body to EL 27.5) with the inlet plenum and an elbow down
+  onto the turbine module; open frame beneath.
+- IG-1 filter-house door now a 3 x 7 ft door with a head trim.
+- Two-tone finish: fascia() helper (light roof, dark fascia band); blue-grey (gen_paint) base skirts on the IG-1
+  building, E&C module, AX-1 turbine / generator modules and filter-house base.
+- Piping into the packages: AX-1 fuel gas from its module on sleepers under the exhaust collector into the turbine
+  module, lube supply / return from the cooler; IG-1 fuel gas from its module on a support into the north wall, lube
+  lines moved to x 2168 (clear of the roll-up door), brown (fueloil); cable tray from the E&C module to the building.
+- All checks PASS. E149 / E150 / MP1 / MP2 re-rendered.

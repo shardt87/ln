@@ -94,14 +94,14 @@ def rail(pts, z):
             rod((x, y, z), (x, y, z + 3.4), .06, "sp_yellow", seg=6)
 
 
-def hoods(x0, x1, y, z0, z1, side, pitch=2.8):
+def hoods(x0, x1, y, z0, z1, side, pitch=1.45):
     """Weather hoods on a filter face at y (side -1 = south face, +1 = north face): even rows of box hoods (sloped-
     looking top, front skirt, dark filter face behind), the way a filter house is clad (Oct 29: the old stacked
     blades read as shelves)."""
     _hood_rows(x0, x1, y, z0, z1, side, "y", pitch)
 
 
-def hoods_x(y0, y1, x, z0, z1, side, pitch=2.8):
+def hoods_x(y0, y1, x, z0, z1, side, pitch=1.45):
     """The same on a face at x (side -1 = west face, +1 = east face)."""
     _hood_rows(y0, y1, x, z0, z1, side, "x", pitch)
 
@@ -115,12 +115,20 @@ def _hood_rows(a0, a1, f, z0, z1, side, axis, pitch):
     B(a0 + .3, a1 - .3, f, f + side * .12, z0 + .6, z1 - .4, "louvre")                 # filter face
     z = z0 + .8
     while z + pitch <= z1 - .2:
-        B(a0 + .2, a1 - .2, f, f + side * 1.5, z + pitch - .35, z + pitch - .2, "steel")      # hood top
-        B(a0 + .2, a1 - .2, f + side * 1.35, f + side * 1.5, z + pitch - 1.1, z + pitch - .2, "steel")   # skirt
-        B(a0 + .2, a1 - .2, f + side * .15, f + side * 1.5, z + pitch - .2, z + pitch - .05, "filter")    # top flashing
+        B(a0 + .2, a1 - .2, f, f + side * .85, z + pitch - .22, z + pitch - .12, "steel")      # hood top
+        B(a0 + .2, a1 - .2, f + side * .75, f + side * .85, z + pitch - .62, z + pitch - .12, "steel")   # skirt
+        B(a0 + .2, a1 - .2, f + side * .12, f + side * .85, z + pitch - .12, z + pitch - .06, "filter")  # top flashing
         z += pitch
     for u in (a0 + .2, a1 - .35):                                                           # end cheeks
-        B(u, u + .15, f, f + side * 1.5, z0 + .6, z - .1, "steel")
+        B(u, u + .15, f, f + side * .85, z0 + .6, z - .1, "steel")
+
+
+def fascia(x0, x1, y0, y1, z, h=.7, c="steel_dark"):
+    """Light roof slab with a dark fascia band round its edge (the two-tone package look)."""
+    box(x0, x1, y0, y1, z, z + .4, "roof")
+    for (a, b, cc, d) in ((x0 - .1, x1 + .1, y0 - .1, y0 + .05), (x0 - .1, x1 + .1, y1 - .05, y1 + .1),
+                          (x0 - .1, x0 + .05, y0, y1), (x1 - .05, x1 + .1, y0, y1)):
+        box(a, b, cc, d, z + .4 - h, z + .4, c)
 
 
 def legs(x0, x1, y0, y1, zb, step=8.0):
@@ -163,17 +171,32 @@ def ax1():
     rail([(1993, 1026), (1993, 1038), (1983, 1038), (1983, 1026), (1986.5, 1026)], 5.0)
     stair(1988, 1026, 5.0, dy=-1)
     # inlet filter house: stacked weather hoods on both long faces, plain roof
-    legs(1995, 2026, 1022, 1042, ZB)
-    box(1995, 2026, 1022, 1042, ZB, 19, "filter")
-    box(1995, 2026, 1022, 1042, 19, 19.5, "roof")
-    hoods(1996, 2025, 1022, ZB, 19, -1)
-    hoods(1996, 2025, 1042, ZB, 19, 1)
-    hoods_x(1023, 1041, 1995, ZB, 19, -1)
-    box(2026, 2029, 1026, 1038, ZB, 15, "duct")                                        # inlet plenum to the turbine
+    # inlet filter house raised on a braced frame (the compact package's signature profile), inlet plenum dropping
+    # into the turbine module (Oct 30)
+    ZF = 12.0
+    for x in (1995.6, 2010.5, 2025.4):
+        for y in (1022.6, 1041.4):
+            box(x - .45, x + .45, y - .45, y + .45, .6, ZF - .35, "steel")
+            box(x - .8, x + .8, y - .8, y + .8, .6, 1.0, "steel_dark")
+    for y in (1022.6, 1041.4):
+        for (xa, xb) in ((1995.6, 2010.5), (2010.5, 2025.4)):
+            rod((xa, y, 1.4), (xb, y, ZF - .8), .16, "steel", seg=6); rod((xb, y, 1.4), (xa, y, ZF - .8), .16, "steel", seg=6)
+    box(1995, 2026, 1022, 1042, ZF - .35, ZF, "steel_dark")                            # frame deck
+    box(1995, 2026, 1022, 1042, ZF, 27, "filter")
+    box(1994.8, 2026.2, 1021.8, 1042.2, 27, 27.5, "roof")
+    box(1995, 2026, 1021.9, 1042.1, ZF, ZF + .9, "gen_paint")                          # base skirt
+    hoods(1996, 2025, 1022, ZF + .9, 27, -1)
+    hoods(1996, 2025, 1042, ZF + .9, 27, 1)
+    hoods_x(1023, 1041, 1995, ZF + .9, 27, -1)
+    box(2026, 2029.5, 1026, 1038, 15, 25, "duct")                                      # inlet plenum
+    box(2029.5, 2033, 1026, 1038, 17, 25, "duct")                                      # elbow onto the turbine roof
+    for z in (15, 20, 25):
+        box(2025.8, 2029.7, 1025.8, 1038.2, z - .2, z + .2, "steel")                     # flanges
     # turbine module: roof vent fan housing, angled vent duct, door with platform and stair
     legs(2029, 2048, 1024, 1040, ZB)
     box(2029, 2048, 1024, 1040, ZB, 16.5, "ehouse")
-    box(2029, 2048, 1024, 1040, 16.5, 17, "roof")
+    fascia(2029, 2048, 1024, 1040, 16.5)
+    box(2028.9, 2048.1, 1023.9, 1040.1, ZB, ZB + 1.6, "gen_paint")                       # base skirt
     box(2031.5, 2038.5, 1028, 1036, 17, 21, "steel")                                    # vent fan housing
     rod((2035, YC, 21), (2035, YC, 23.6), 2.6, "steel", seg=16)
     rod((2035, YC, 23.6), (2035, YC, 24.1), 2.9, "fanhub", seg=16)
@@ -212,7 +235,8 @@ def ax1():
     # generator module: door, platform and stair, roof vent box with angled hoods both sides, terminal box (south)
     legs(2050, 2068, 1024, 1040, ZB)
     box(2050, 2068, 1024, 1040, ZB, 15, "ehouse")
-    box(2050, 2068, 1024, 1040, 15, 15.4, "roof")
+    fascia(2050, 2068, 1024, 1040, 15)
+    box(2049.9, 2068.1, 1023.9, 1040.1, ZB, ZB + 1.6, "gen_paint")                       # base skirt
     box(2055, 2063, 1027, 1037, 15.4, 22, "louvre")                                    # vent box
     box(2054.5, 2063.5, 1026.5, 1037.5, 22, 22.4, "roof")
     for s_ in (-1, 1):                                                                 # angled hoods both sides
@@ -232,6 +256,15 @@ def ax1():
     box(2069.3, 2075.2, 1026, 1038, 8.5, 8.9, "roof")
     fin_fan(2027, 2040, 1045, 1053)
     gas_module(2057, 2073, 1045, 1051, "FUEL GAS  ·  CLASS I DIV 2")
+    # fuel gas from the module, on sleepers under the exhaust collector, up into the turbine module; lube supply /
+    # return from the cooler into the turbine module (Oct 30)
+    poly([(2059, 1045, 1.2), (2059, 1042.5, 1.2), (2040, 1042.5, 1.2), (2040, 1039, 1.2), (2040, 1039, ZB - .4)], .3,
+         "fuelgas", seg=10)
+    for x in (2048, 2054):
+        box(x - .3, x + .3, 1042, 1043, .6, .9, "concrete")
+    for dx in (-.6, .6):
+        poly([(2033.4 + dx, 1045, 3.0), (2033.4 + dx, 1041, 3.0), (2033.4 + dx, 1041, 5.0), (2033.4 + dx, 1040.05, 5.0)],
+             .25, "fueloil", seg=8)
     # control module (south-west, unchanged) with the control cables to the platform
     box(1990, 2010, 1010, 1017, .6, 10, "ehouse"); box(1990, 2010, 1010, 1017, 10, 10.5, "roof")
     decal((2000, 1009.9, 8.4), (0, -1, 0), 14, 1.1, [("AX-1  CONTROL MODULE", .6, True, "#111111")], bg="#ffffff")
@@ -270,7 +303,9 @@ def ig1():
     # turbine-generator building: clad steel, panel seams all round, intake louvres at the turbine end, personnel
     # doors, a roll-up door at the generator end (north), roof edge
     box(2120, 2172, 1018, 1046, .6, 26, "ehouse")
-    box(2119.6, 2172.4, 1017.6, 1046.4, 26, 26.6, "roof")
+    fascia(2119.6, 2172.4, 1017.6, 1046.4, 26, h=1.0)
+    box(2119.6, 2172.4, 1017.6, 1046.4, 26.4, 26.6, "roof")
+    box(2119.8, 2172.2, 1017.8, 1046.2, .6, 3.2, "gen_paint")                             # base skirt
     for x in range(2124, 2172, 4):
         box(x - .08, x + .08, 1017.8, 1018, .6, 26, "steel")                               # south seams
         box(x - .08, x + .08, 1046, 1046.2, .6, 26, "steel")                               # north seams
@@ -310,7 +345,8 @@ def ig1():
     hoods(2127, 2149, 1022, 41, 55.5, -1)
     hoods(2127, 2149, 1042, 41, 55.5, 1)
     hoods_x(1023, 1041, 2127, 41, 55.5, -1)
-    box(2147, 2149.6, 1028, 1036, 41, 47, "steel_dark")                                 # filter-house access door (east)
+    box(2149, 2149.15, 1030.5, 1033.5, 40.4, 47.4, "steel_dark")                         # filter-house access door (east)
+    box(2148.9, 2149.25, 1030.3, 1033.7, 47.4, 47.7, "steel")
     rail([(2125, 1018.5), (2151, 1018.5), (2151, 1045.5), (2125, 1045.5), (2125, 1018.5)], 40.15)
     box(2131, 2145, 1026, 1038, 33.5, 39.4, "duct")                                     # outlet transition (hopper)
     box(2132.5, 2143.5, 1027.5, 1036.5, 26.6, 33.5, "duct")                              # inlet silencer section
@@ -380,7 +416,11 @@ def ig1():
     rod((2172.8, 1040, .6), (2172.8, 1040, 29), .06, "sp_yellow", seg=6)
     rod((2172.8, 1042, .6), (2172.8, 1042, 29), .06, "sp_yellow", seg=6)
     # electrical & control module (south), lube-oil cooler and fuel gas (north), CO2 fire-suppression skid
-    box(2132, 2170, 1007, 1015, .6, 11, "ehouse"); box(2132, 2170, 1007, 1015, 11, 11.5, "roof")
+    box(2132, 2170, 1007, 1015, .6, 11, "ehouse"); fascia(2132, 2170, 1007, 1015, 11)
+    box(2131.9, 2170.1, 1006.9, 1015.1, .6, 2.2, "gen_paint")
+    box(2140, 2146, 1015, 1018, 12, 12.4, "steel")                                       # cable tray to the building
+    for x in (2140.3, 2145.7):
+        box(x - .15, x + .15, 1014.6, 1015, 11.5, 12.4, "steel")
     for x in range(2135, 2170, 4):
         box(x - .06, x + .06, 1006.9, 1007, 1, 11, "steel")
     box(2134, 2137, 1006.85, 1007, 1.2, 8.2, "steel_dark")                               # module door
@@ -390,9 +430,11 @@ def ig1():
         x = 2140 + k * .5
         poly([(x, 1015, 8), (x, 1018, 8)], .1, "cable_tc", seg=6)
     fin_fan(2150, 2170, 1048, 1056)
-    for dy in (-.6, .6):                                                                   # lube supply / return
-        poly([(2156 + dy, 1048, 3.5), (2156 + dy, 1046.2, 3.5)], .3, "pipe", seg=10)
+    for dx in (-.6, .6):                                                                   # lube supply / return
+        poly([(2168 + dx, 1048, 3.5), (2168 + dx, 1046.2, 3.5)], .3, "fueloil", seg=10)
     gas_module(2124, 2140, 1049, 1055, "FUEL GAS  ·  CLASS I DIV 2")
+    poly([(2140, 1052, 2.6), (2142.5, 1052, 2.6), (2142.5, 1052, 7), (2142.5, 1046.2, 7)], .35, "fuelgas", seg=10)
+    box(2142, 2143, 1048.4, 1049.2, .6, 6.6, "steel")                                    # pipe support
     box(2109, 2117, 1009, 1015.5, .6, 1.2, "steel_dark")                                 # CO2 skid frame
     for i in range(4):
         for j in range(2):
