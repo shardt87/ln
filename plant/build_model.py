@@ -1,0 +1,3021 @@
+#!/usr/bin/env python3
+"""Build the SW-3X1 Rev 14 3D coordinate model.
+
+Source: "SW-3X1 Drawing Set Rev 14" (3x1 combined-cycle plant, 16 sheets).
+Plan coordinates (X east, Y north, feet, origin at the SW corner of the
+2,420 x 1,920 ft compound) come from the vector geometry of sheets
+SW-3X1-01 (base site), -02 (optional systems) and -05 (R1 floor plan).
+Elevations come from SW-3X1-09 (hall section), -12 (dimension review) and
+-13 (height comparison). Anything without a published value uses a typical
+value and is tagged basis="typical".
+
+The model has two levels:
+  items  - the equipment register: one entry per piece of equipment, with its
+           drawn footprint (fp), envelope, tag, layer, area, basis and sheet.
+  parts  - the carved geometry of each item (boxes, rods / cones, A-frame
+           prisms and 8-vertex lofts), each pointing at its item.
+
+Layers follow the Blender collections on SW-3X1-11, so the view
+definitions on that sheet (e.g. view B hides R1_ROOF and R1_WALL_E) map
+one-to-one.
+
+Output: sw3x1_model.json, consumed by render.go (ln line art),
+viewer/index.html (Three.js), export_obj.py and verify.py.
+
+Conceptual illustration. Not engineered. Not for construction.
+"""
+import json
+import math
+import os
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+
+items, parts = [], []
+_cur = None
+
+
+# ---------------------------------------------------------------------------
+# Builder primitives
+# ---------------------------------------------------------------------------
+def item(layer, name, fp, z, *, tag="", area="", info="", basis="drawing",
+         sheet="SW-3X1-01", shape="rect", register=True):
+    """Start an equipment item. fp = (x0, x1, y0, y1) drawn footprint (for a
+    circle: the bounding square), z = (z0, z1) envelope. Parts added after
+    this call belong to it."""
+    global _cur
+    _cur = dict(id=f"{layer.lower()}-{len(items)+1:04d}", layer=layer, name=name,
+                tag=tag, area=area, fp=[round(v, 2) for v in fp], z=list(z),
+                shape=shape, info=info, basis=basis, sheet=sheet, register=register)
+    items.append(_cur)
+    return _cur
+
+
+def _part(**kw):
+    kw.setdefault("item", _cur["id"])
+    kw.setdefault("layer", _cur["layer"])
+    parts.append(kw)
+
+
+def B(x0, x1, y0, y1, z0, z1, c="equip", layer=None):
+    """Axis-aligned box."""
+    _part(kind="box", min=[x0, y0, z0], max=[x1, y1, max(z1, z0 + 0.1)], color=c,
+          **({"layer": layer} if layer else {}))
+
+
+def R(a, b, r, c="equip", r2=None, seg=None, layer=None):
+    """Rod / cylinder / cone frustum from point a to point b (radius r at a,
+    r2 at b)."""
+    kw = dict(kind="rod", a=list(a), b=list(b), r=r, r2=r if r2 is None else r2, color=c)
+    if seg:
+        kw["seg"] = seg
+    if layer:
+        kw["layer"] = layer
+    _part(**kw)
+
+
+def sweep(pts, r, c="equip", seg=32):
+    """Round duct / pipe along a polyline: each straight run is extended into the joints by r*tan(turn/2), so short
+    runs on an arc (see arc_pts) read as one smooth bend with no notches or open seams."""
+    import math as _m
+    def turn(i):
+        if i <= 0 or i >= len(pts) - 1:
+            return 0.0
+        u = [pts[i][k] - pts[i - 1][k] for k in range(3)]; v = [pts[i + 1][k] - pts[i][k] for k in range(3)]
+        nu = _m.sqrt(sum(x * x for x in u)); nv = _m.sqrt(sum(x * x for x in v))
+        return _m.acos(max(-1.0, min(1.0, sum(a * b for a, b in zip(u, v)) / (nu * nv))))
+    for i in range(len(pts) - 1):
+        a, b = pts[i], pts[i + 1]
+        d = [b[k] - a[k] for k in range(3)]; L = _m.sqrt(sum(x * x for x in d)); u = [x / L for x in d]
+        ea, eb = r * _m.tan(turn(i) / 2), r * _m.tan(turn(i + 1) / 2)
+        R([a[k] - u[k] * ea for k in range(3)], [b[k] + u[k] * eb for k in range(3)], r, c, seg=seg)
+
+
+def arc_pts(centre, rad, ang0, ang1, plane="xz", n=12):
+    """Points on a circular arc (degrees) in the x-z or y-z plane through centre (x, y, z): bend centrelines."""
+    import math as _m
+    out = []
+    for k in range(n + 1):
+        t = _m.radians(ang0 + (ang1 - ang0) * k / n)
+        if plane == "xz":
+            out.append((centre[0] + rad * _m.cos(t), centre[1], centre[2] + rad * _m.sin(t)))
+        else:
+            out.append((centre[0], centre[1] + rad * _m.cos(t), centre[2] + rad * _m.sin(t)))
+    return out
+
+
+def V(cx, cy, r, z0, z1, c="equip", r2=None, seg=None):
+    """Vertical cylinder."""
+    R((cx, cy, z0), (cx, cy, z1), r, c, r2, seg)
+
+
+def P(x0, x1, y0, y1, z0, z1, c="equip", ridge="y"):
+    """Gable / A-frame prism, ridge along `ridge`."""
+    _part(kind="prism", min=[x0, y0, z0], max=[x1, y1, z1], ridge=ridge, color=c)
+
+
+def H(v, c="equip"):
+    """8-vertex loft (hexahedron): v = [near 4 (ccw), far 4 (same order)]."""
+    _part(kind="hex", v=[list(p) for p in v], color=c)
+
+
+def loft_y(y0, rect0, y1, rect1, c):
+    """Loft between two rectangles facing north: rect = (x0, x1, z0, z1)."""
+    a, b = rect0, rect1
+    H([(a[0], y0, a[2]), (a[1], y0, a[2]), (a[1], y0, a[3]), (a[0], y0, a[3]),
+       (b[0], y1, b[2]), (b[1], y1, b[2]), (b[1], y1, b[3]), (b[0], y1, b[3])], c)
+
+
+def solid(layer, name, x0, x1, y0, y1, z0, z1, c="equip", **meta):
+    item(layer, name, (x0, x1, y0, y1), (z0, z1), **meta)
+    B(x0, x1, y0, y1, z0, z1, c)
+
+
+def pad(layer, name, x0, x1, y0, y1, c="pad", z1=0.4, **meta):
+    meta.setdefault("register", False)
+    z1 += 0.008 * (len(items) % 30)      # unique heights: overlapping pads never share a face
+    item(layer, name, (x0, x1, y0, y1), (0, z1), **meta)
+    B(x0, x1, y0, y1, 0, z1, c)
+
+
+def tank(layer, name, cx, cy, r, h, c="tank", **meta):
+    """Vertical tank with a cone roof."""
+    item(layer, name, (cx - r, cx + r, cy - r, cy + r), (0, h + r * 0.18), shape="circle", **meta)
+    V(cx, cy, r, 0, h, c, seg=40 if r > 12 else 24)
+    V(cx, cy, r, h, h + r * 0.18, c, r2=r * 0.12, seg=40 if r > 12 else 24)
+    V(cx, cy, r + 0.4, 0, 0.8, "concrete")
+
+
+def building(layer, name, x0, x1, y0, y1, h, c="building", parapet=True, **meta):
+    item(layer, name, (x0, x1, y0, y1), (0, h), **meta)
+    B(x0, x1, y0, y1, 0, h - (1.5 if parapet else 0), c)
+    if parapet:
+        t = 0.8
+        for bx in [(x0, x1, y0, y0 + t), (x0, x1, y1 - t, y1), (x0, x0 + t, y0, y1), (x1 - t, x1, y0, y1)]:
+            B(*bx, h - 1.5, h, c)
+
+
+def ehouse(layer, name, x0, x1, y0, y1, h, **meta):
+    """Prefabricated e-house on a raised skid with a stair and a door landing."""
+    item(layer, name, (x0, x1, y0, y1), (0, h), **meta)
+    B(x0, x1, y0, y1, 0, 2.5, "concrete")
+    B(x0 + 0.3, x1 - 0.3, y0 + 0.3, y1 - 0.3, 2.5, h - 0.6, "ehouse")
+    B(x0, x1, y0, y1, h - 0.6, h, "roof")
+    # HVAC unit on one end wall
+    if x1 - x0 >= y1 - y0:
+        B(x1, x1 + 2.5, (y0 + y1) / 2 - 3, (y0 + y1) / 2 + 3, 4, 10, "machine")
+    else:
+        B((x0 + x1) / 2 - 3, (x0 + x1) / 2 + 3, y1, y1 + 2.5, 4, 10, "machine")
+
+
+def xfmr(layer, name, x0, x1, y0, y1, h, *, bushing=0.0, fins="x", c="xfmr", hv=None, lv_dx=0.0, **meta):
+    """Liquid-filled transformer: tank, radiator banks on two sides,
+    conservator, HV bushings (height `bushing` above the tank) and LV throat.
+    fins='x' puts radiators on the east and west faces. hv='s' (generator step-up units)
+    turns the HV side to the south: bushings in an east-west row along the south edge,
+    surge arresters and a take-off gantry facing the switchyard, conservator and the LV
+    (isolated-phase bus) throat on the north side, towards the generator."""
+    top = h + bushing
+    item(layer, name, (x0, x1, y0, y1), (0, top), **meta)
+    W, D = x1 - x0, y1 - y0
+    B(x0, x1, y0, y1, 0, 0.6, "concrete")  # containment curb
+    if fins == "x":
+        tx0, tx1, ty0, ty1 = x0 + W * 0.2, x1 - W * 0.2, y0 + D * 0.08, y1 - D * 0.08
+    else:
+        tx0, tx1, ty0, ty1 = x0 + W * 0.08, x1 - W * 0.08, y0 + D * 0.2, y1 - D * 0.2
+    th = h * 0.72
+    B(tx0, tx1, ty0, ty1, 0.6, th, c)
+    B(tx0 - 0.3, tx1 + 0.3, ty0 - 0.3, ty1 + 0.3, th, th + 0.6, c)  # tank cover
+    n = 4 if min(W, D) > 20 else 3
+    for k in range(n):
+        if fins == "x":
+            yy = ty0 + (ty1 - ty0) * (k + 0.5) / n
+            for (a, b) in ((x0, tx0 - 0.6), (tx1 + 0.6, x1)):
+                B(a, b, yy - 0.5, yy + 0.5, h * 0.12, h * 0.8, "radiator")
+        else:
+            xx = tx0 + (tx1 - tx0) * (k + 0.5) / n
+            for (a, b) in ((y0, ty0 - 0.6), (ty1 + 0.6, y1)):
+                B(xx - 0.5, xx + 0.5, a, b, h * 0.12, h * 0.8, "radiator")
+    # conservator along the long axis of the tank
+    rc = max(1.0, min(W, D) * 0.07)
+    zc = th + 0.6 + rc + 1.2
+    if hv == "s":
+        gsu_hv_south(tx0, tx1, ty0, ty1, th, top, rc, zc, bushing, c, x0, x1, y0, lv_dx)
+        return
+    if fins == "x":
+        R((tx1 - rc, ty0 + 1, zc), (tx1 - rc, ty1 - 1, zc), rc, c)
+    else:
+        R((tx0 + 1, ty1 - rc, zc), (tx1 - 1, ty1 - rc, zc), rc, c)
+    # bushings: three HV on the tank centreline
+    if bushing > 0:
+        cx, cy = (tx0 + tx1) / 2, (ty0 + ty1) / 2
+        span = (tx1 - tx0) * 0.3 if fins == "x" else (ty1 - ty0) * 0.3
+        for k in (-1, 0, 1):
+            px, py = (cx, cy + k * span) if fins == "x" else (cx + k * span, cy)
+            R((px, py, th + 0.6), (px, py, top), max(0.6, bushing * 0.06), "insulator", r2=0.35, seg=10)
+
+
+def gsu_hv_south(tx0, tx1, ty0, ty1, th, top, rc, zc, bushing, c, x0, x1, y0, lv_dx=0.0):
+    """GSU arrangement: HV faces the switchyard (south), LV faces the generator (north)."""
+    _cur["z"][1] = 45
+    cx = (tx0 + tx1) / 2
+    B(x0 + .5, x0 + 3.5, y0 + 3, y0 + 7, 0.6, 7, "panel")                               # marshalling cabinet
+    R((tx0 + 1, ty1 - rc - .5, zc), (tx1 - 1, ty1 - rc - .5, zc), rc, c)               # conservator, north
+    for xs in (tx0 + 3, tx1 - 3):
+        B(xs - .3, xs + .3, ty1 - rc - 1, ty1 - rc, th + .6, zc - rc + .2, "steel")
+    B(cx + lv_dx - 5, cx + lv_dx + 5, ty1 - 1, ty1 + 2.2, th - 6, th + 1.5, c)         # LV throat to the IPB
+    span = (tx1 - tx0) * 0.32
+    yb = ty0 + 2.2
+    for k in (-1, 0, 1):                                                                 # HV bushings, E-W row
+        px = cx + k * span
+        R((px, yb, th + 0.6), (px, yb - 1.2, top), max(0.6, bushing * 0.06), "insulator", r2=0.35, seg=10)
+        R((px, yb - 1.2, top), (px, yb - 1.2, top + .8), .45, "steel", seg=8)              # terminal
+        # surge arrester on a stand in front of each bushing
+        ya = y0 + 1.6
+        B(px - .4, px + .4, ya - .4, ya + .4, .6, 18, "steel")
+        R((px, ya, 18), (px, ya, 27), .45, "insulator", seg=8)
+        R((px, yb - 1.2, top + .8), (px, ya, 41.5), .14, "conductor", seg=6)            # dropper to the gantry
+    # take-off gantry along the south edge: the 230 kV overhead to the diameter leaves from here
+    for xs in (x0 + 1, x1 - 1):
+        R((xs, y0 + 1, 0.6), (xs, y0 + 1, 45), 0.7, "steel", r2=0.5, seg=8)
+    B(x0 + 0.5, x1 - 0.5, y0 + 0.4, y0 + 1.6, 43, 45, "steel")
+    for k in (-1, 0, 1):
+        R((cx + k * span, y0 + 1.6, 43), (cx + k * span, y0 + 1.6, 41.5), .3, "insulator", seg=6)
+
+
+def column_grid(xs, ys, z1, s=1.5, c="steel"):
+    for x in xs:
+        for y in ys:
+            B(x - s, x + s, y - s, y + s, 0, z1, c)
+
+
+# ---------------------------------------------------------------------------
+# SITE (SW-3X1-01)
+# ---------------------------------------------------------------------------
+L = "SITE"
+item(L, "Compound (2,420 x 1,920 ft, 107 acres)", (0, 2420, 0, 1920), (0, 0), register=False,
+     info="Compound unchanged since Rev 06; base plant about 43 acres.")
+# ground slab built around the stormwater basin (no coplanar faces over the water)
+for (gx0, gx1, gy0, gy1) in [(0, 2420, 0, 1430), (0, 2420, 1640, 1920), (0, 40, 1430, 1640), (320, 2420, 1430, 1640)]:
+    B(gx0, gx1, gy0, gy1, -0.5, 0, "ground")
+for (x0, x1, y0, y1, n) in [
+        (0, 2400, 270, 300, "30 ft access road"), (370, 400, 300, 1675, "West spine road"),
+        (1460, 1490, 270, 1400, "East spine road"), (370, 1490, 900, 930, "30 ft ring road"),
+        (370, 2400, 1370, 1400, "30 ft utilities road"),
+        (400, 1500, 1650, 1675, "30 ft road (reserved for CCS utilities)"),
+        (1490, 2400, 1650, 1675, "30 ft fuel road (LNG trucks)"),
+        (1950, 1975, 1400, 1650, "Fuel-yard link road"), (484, 508, 560, 830, "24 ft lane")]:
+    pad(L, n, x0, x1, y0, y1, "road", z1=0.25 + 0.012 * len(items))   # staggered: no coplanar crossings
+pad(L, "Removal apron", 400, 480, 410, 560, "road", z1=0.25, sheet="SW-3X1-10",
+    info="GT, generator and ST leave the laydown bay through the west door onto a trailer.")
+item(L, "Perimeter fence (8 ft)", (0, 2420, 0, 1920), (0, 8), basis="typical", register=False)
+for (x0, x1, y0, y1) in [(0, 2420, 0, 0.5), (0, 1465, 1919.5, 1920), (1505, 2420, 1919.5, 1920), (0, 0.5, 0, 270),
+                         (0, 0.5, 300, 1920), (2419.5, 2420, 0, 1920)]:
+    B(x0, x1, y0, y1, 0, 8, "fence")
+# north gate (x 1465-1505): link to the coastal LNG terminal (sheet 15 variant, placed north of the plant);
+# gate posts, and the two swing leaves parked open against the fence inside
+B(1464, 1465.5, 1918.5, 1920, 0, 10, "steel"); B(1504.5, 1506, 1918.5, 1920, 0, 10, "steel")
+B(1446, 1464, 1918.6, 1919, 0, 8, "fence"); B(1506, 1524, 1918.6, 1919, 0, 8, "fence")
+solid(L, "Gatehouse", 277, 300, 305, 325, 0, 12, "building", area="F", sheet="SW-3X1-12",
+      info="Keadby 3 DCO: gatehouse 6 x 7 x 4 m.")
+B(0, 1.5, 270, 272, 0, 10, "steel"); B(0, 1.5, 298, 300, 0, 10, "steel")
+
+# ---------------------------------------------------------------------------
+# A POWER BLOCK (SW-3X1-01, -03, -09, -10, -12, -13)
+# ---------------------------------------------------------------------------
+L = "BASE_POWER_BLOCK"
+GX = [630, 790, 950]                    # GT centrelines
+
+# Turbine hall shell: walls in BASE_POWER_BLOCK, roof in HALL_ROOF
+item(L, "Common turbine hall", (480, 1100, 370, 560), (0, 101), tag="HALL", area="A",
+     sheet="SW-3X1-09",
+     info="Main bay y 404-560 with roof EL 98-101 (raised 6 ft in Rev 09 so the ST lift "
+     "clears). Bridge-crane runway y 404-556, bridge travel EL 84-96, hook max EL 82. "
+     "South inlet gallery y 370-404, roof EL 66.4, holds GCBs and IPB outside crane coverage. "
+     "Layout note: a common hall over all GTs and the ST is typical of cold or noise-sensitive sites and owners who "
+     "maintain with their own crews (one crane for every unit, all-weather outages). Many plants in warm regions "
+     "instead set each GT outdoors in its own OEM acoustic enclosure (no hall) and keep a building only for the ST "
+     "(crane for casings and rotors, valves and lube / EHC protected): lower cost and faster to build, mobile cranes "
+     "for outages, and outdoor-rated, sunlight-resistant cable in more conduit.")
+t = 1.0
+B(480, 1100, 559, 560, 0, 98, "hall")            # north wall
+B(1099, 1100, 404, 556, 0, 98, "hall")           # east wall main bay
+B(480, 481, 404, 556, 0, 98, "hall")             # west wall main bay
+B(480, 1100, 370, 371, 0, 64.4, "hall")          # gallery south wall (raised Oct 20 so its top meets the EL 64 copper band)
+B(480, 481, 370, 404, 0, 64.4, "hall")           # gallery west wall
+B(1099, 1100, 370, 404, 0, 64.4, "hall")         # gallery east wall
+B(480, 1100, 403, 404, 60, 98, "hall")           # clerestory wall above gallery roof
+B(479.5, 481.5, 440, 480, 0, 36, "door")         # west door (laydown bay), sheet 10
+for i, gx in enumerate(GX):                      # gallery doors, one per bay (sheet 10)
+    B(gx - 61, gx - 47, 369.5, 371.5, 0, 16, "door")
+_part(kind="prism", min=[480, 404, 98], max=[1100, 560, 101], ridge="x", color="roof", layer="HALL_ROOF")
+_part(kind="box", min=[480, 370, 64.4], max=[1100, 404, 66.4], color="roof", layer="HALL_ROOF")
+# runway columns and crane rails (sheet 09/10)
+for x in range(482, 1101, 44):
+    for y in (404, 556):
+        B(x - 1.2, x + 1.2, y - 1.2, y + 1.2, 0, 97, "steel")
+for y in (404, 556):
+    B(482, 1098, y - 1.5, y + 1.5, 82, 84, "steel")
+item(L, "Bridge crane (parked over laydown bay)", (486, 540, 404, 556), (84, 96), tag="CRANE",
+     area="A", sheet="SW-3X1-09", basis="typical",
+     info="Covers all bays plus the laydown bay; hook max EL 82. Capacity is vendor data "
+     "(unresolved requirement on SW-3X1-09).")
+B(505, 511, 404, 556, 86, 96, "crane"); B(525, 531, 404, 556, 86, 96, "crane")
+B(503, 533, 404, 410, 84, 96, "crane"); B(503, 533, 550, 556, 84, 96, "crane")
+B(510, 526, 476, 486, 88, 95, "crane")  # trolley
+R((518, 481, 88), (518, 481, 82.5), 0.4, "steel"); B(515, 521, 478, 484, 81, 82.5, "crane")
+
+item(L, "Laydown bay (floor)", (480, 560, 370, 560), (0, 0.3), area="A", sheet="SW-3X1-10", register=False)
+B(481, 560, 371, 559, 0, 0.3, "pad")
+item(L, "Turbine deck EL 20", (560, 1100, 404, 556), (0, 20), area="A", sheet="SW-3X1-12",
+     info="GTs, generators, ST and their skids sit on the EL 20 deck (Rev 10 correction).")
+B(560, 1099, 404, 556, 0, 20, "concrete")
+
+for i, gx in enumerate(GX, start=1):
+    dx = gx - 630
+    # --- gas turbine: plenum (south, cold end) -> compressor -> combustors -> turbine -> diffuser
+    item(L, f"GT{i}: H-class gas turbine (60 Hz)", (617 + dx, 643 + dx, 455, 540), (20, 38),
+         tag=f"GT{i}", area="A", basis="vendor", sheet="SW-3X1-12",
+         info="H-class engine about 34 x 14 x 14 ft; 26 x 85 ft including the "
+         "inlet plenum and exhaust diffuser. Top EL 38, lifted height 18 ft. Cold-end drive: "
+         "inlet plenum and generator at the south end, exhaust north into the HRSG.")
+    zc = 29
+    B(617 + dx, 643 + dx, 455, 540, 20, 21.5, "steel")
+    B(619 + dx, 641 + dx, 455, 468, 21.5, 38, "machine")
+    R((gx, 468, zc), (gx, 494, zc), 6.2, "machine", r2=5.0, seg=28)
+    R((gx, 494, zc), (gx, 506, zc), 8.5, "machine", seg=28)
+    R((gx, 506, zc), (gx, 518, zc), 6.5, "machine", r2=8.0, seg=28)
+    R((gx, 518, zc), (gx, 540, zc), 8.0, "machine", r2=9.0, seg=28)
+    for k in range(8):                                        # can combustors
+        a = 2 * math.pi * k / 8
+        cxk, czk = gx + 9.2 * math.cos(a), zc + 9.2 * math.sin(a)
+        if 21.5 < czk - 1.1 and czk + 1.1 <= 38:
+            R((cxk, 495, czk), (cxk, 505, czk), 1.1, "steel", seg=10)
+    # --- generator (south), exhaust duct through the north wall
+    item(L, f"GTG-{i}: GT generator", (622 + dx, 638 + dx, 410, 455), (20, 36), tag=f"GTG-{i}",
+         area="A", basis="typical", sheet="SW-3X1-04",
+         info="21 kV (assumed); typical H2-cooled 350-450 MVA; 16 x 45 ft. Lifted height 16 ft.")
+    B(622 + dx, 638 + dx, 410, 455, 20, 21.5, "steel")
+    R((gx, 414, 28.5), (gx, 452, 28.5), 7.0, "machine", seg=28)
+    R((gx, 410.5, 28.5), (gx, 414, 28.5), 3.5, "machine", seg=16)
+    B(gx - 7.5, gx + 7.5, 426, 440, 21.5, 36, "machine")      # terminal / cooler housing
+    item(L, f"GT{i} exhaust duct to HRSG {i}", (619 + dx, 641 + dx, 540, 560), (21, 38), area="A",
+         register=False)
+    B(620 + dx, 640 + dx, 540, 556, 21, 38, "duct")
+    # --- GT skids on the deck
+    solid(L, f"GT{i} aux: lube oil, hydraulics, enclosure fans", 661 + dx, 675 + dx, 470, 505, 20, 30,
+          "equip", tag=f"GT{i} aux", area="A", sheet="SW-3X1-03",
+          info=f"MCC-GT{i} in R1 (route LV-GTAUX-{i}).")
+    solid(L, f"FS-GT{i}: CO2 fire-suppression skid", 662 + dx, 674 + dx, 510, 534, 20, 28, "red",
+          tag=f"FS-GT{i}", area="A", sheet="SW-3X1-03",
+          info="Detection, release and interlocks; 480 V + 24 V DC; hall control tray.")
+    solid(L, f"WASH-GT{i}: compressor water-wash skid", 584 + dx, 596 + dx, 475, 495, 20, 27,
+          "equip", tag=f"WASH-GT{i}", area="A", sheet="SW-3X1-03")
+    solid(L, f"GT{i} removable plenum spool", 643 + dx, 658 + dx, 440, 466, 23, 37, "duct",
+          tag=f"SPOOL-{i}", area="A", sheet="SW-3X1-10",
+          info="Removed before any GT lift; touches the GT lift column by design.")
+
+    # --- HRSG: casing, drums, stair, inlet transition, outlet breeching
+    item(L, f"HRSG {i} + SCR (3P reheat, horizontal)", (595 + dx, 665 + dx, 600, 760), (0, 100),
+         tag=f"HRSG-{i}", area="A", sheet="SW-3X1-13",
+         info="70 x 160 ft envelope, top EL 100 (501G HRSG ~70 ft; largest casing 85 ft): a 130 ft casing "
+         "behind a long inlet diffuser, the stack tight at the outlet. Three-pressure reheat with SCR. HP, IP "
+         "and LP drums on the roof steel.")
+    B(595 + dx, 665 + dx, 600, 760, 0, 1.5, "concrete")
+    # casing 85 ft tall (the sheet-13 note: ~70 ft for a 501G HRSG, 85 ft the largest; H-class units are at the
+    # top of that range); the drums sit on a short steel frame above it, so the overall top stays at EL 100
+    B(597 + dx, 663 + dx, 629, 759, 1.5, 85, "hrsg")
+    for yy in range(640, 760, 20):                            # casing stiffener bands
+        B(596.5 + dx, 663.5 + dx, yy - 0.6, yy + 0.6, 1.5, 85, "steel")
+    if i == 3:      # outage (brownfield.py): the roof cut open over one HP evaporator module, x 943-957, y 674-686
+        for (a0, a1, b0, b1) in ((596.6, 663.4, 628.6, 674), (596.6, 663.4, 686, 759.4), (596.6, 623, 674, 686),
+                                 (637, 663.4, 674, 686)):
+            B(a0 + dx, a1 + dx, b0, b1, 85, 86, "roof")
+    else:
+        B(596.6 + dx, 663.4 + dx, 628.6, 759.4, 85, 86, "roof")    # casing roof (headers below)
+    for fx in (600, 630, 660):                                 # drum-support frame, EL 86-89
+        for fy in (650, 670, 690, 710, 724, 740):
+            B(fx + dx - .6, fx + dx + .6, fy - .6, fy + .6, 86, 88.6, "steel")
+        if i == 3 and fx == 630:                               # centre stringer unbolted over the module slot
+            B(fx + dx - .5, fx + dx + .5, 649, 671, 88.6, 89.2, "steel")
+            B(fx + dx - .5, fx + dx + .5, 689, 741, 88.6, 89.2, "steel")
+        else:
+            B(fx + dx - .5, fx + dx + .5, 649, 741, 88.6, 89.2, "steel")
+    for fy in (650, 670, 690, 710, 724, 740):
+        B(600 + dx, 660 + dx, fy - .4, fy + .4, 88.6, 89.2, "steel")
+    for (yy, rr) in ((660, 3.4), (700, 4.6), (732, 3.2)):     # IP, HP, LP drums
+        R((600 + dx, yy, 89.2 + rr + 1), (660 + dx, yy, 89.2 + rr + 1), rr, "hrsg", seg=20)
+        for sx in (606, 654):
+            B(sx + dx - 1, sx + dx + 1, yy - 2, yy + 2, 89.2, 90.2, "steel")
+        for side in (-1, 1):                                   # drum walkways
+            ya = yy + side * (rr + 1.2)
+            B(600 + dx, 660 + dx, min(ya, ya + side * 3), max(ya, ya + side * 3), 88.9, 89.2, "grating")
+    for sx in (612, 648):                                     # safety-valve silencers
+        R((sx + dx, 715, 89.2), (sx + dx, 715, 100), 1.0, "steel", seg=10)
+    item(L, f"HRSG {i} inlet transition duct", (595 + dx, 665 + dx, 560, 629), (2, 96), area="A",
+         sheet="SW-3X1-01", info="Expands the GT exhaust into the HRSG face (SW-3X1-09 'exhaust transition').")
+    # inlet diffuser: a long transition from the GT exhaust to the casing face (about 70 ft on H-class units)
+    loft_y(560, (620 + dx, 640 + dx, 21, 38), 629, (598 + dx, 662 + dx, 3, 84), "hrsg")
+    item(L, f"HRSG {i} outlet breeching", (597 + dx, 663 + dx, 759, 786), (2, 85), area="A",
+         register=False)
+    # outlet hood: a short flanged section at the full casing outlet, then a converging hood into a tall
+    # rectangular inlet on the side of the stack (18 x 60 ft); the straight end pierces the shell and ends inside
+    loft_y(759, (598 + dx, 662 + dx, 3, 84), 762, (598 + dx, 662 + dx, 3, 84), "hrsg")
+    loft_y(762, (598 + dx, 662 + dx, 3, 84), 779, (621 + dx, 639 + dx, 18, 80), "hrsg")
+    loft_y(779, (621 + dx, 639 + dx, 18, 80), 786, (621 + dx, 639 + dx, 18, 80), "hrsg")
+    # --- stack with CEMS platform
+    item(L, f"HRSG {i} stack", (619 + dx, 641 + dx, 779, 801), (0, 180), tag=f"STK-{i}", area="A",
+         sheet="SW-3X1-13", shape="circle",
+         info="22 ft dia x 180 ft (US H-class filings: OCEC 149, Otay Mesa 160, Cosumnes 165, "
+         "Smarr 180). CEMS sampling platform at about EL 100.")
+    V(gx, 790, 11, 0, 178, "stack", seg=36)
+    V(gx, 790, 11.6, 178, 180, "steel", seg=36)
+    for zp in (100, 168):
+        V(gx, 790, 14.5, zp, zp + 1.2, "grating", seg=36)
+    solid(L, f"CEMS shelter, HRSG {i}", 648 + dx, 664 + dx, 806, 820, 0, 12, "ehouse", tag=f"CEMS-{i}",
+          area="A", sheet="SW-3X1-03")
+    # --- pumps and blowers at the HRSG
+    item(L, f"BFP-{i}A/B: boiler feed pumps (13.8 kV DOL)", (675 + dx, 708 + dx, 615, 660), (0, 10),
+         tag=f"BFP-{i}", area="A", sheet="SW-3X1-03",
+         info=f"Two pumps, 13.8 kV, MV breaker DOL, from R1 SWGR-13.8-{i} via route MV-BFP-{i} "
+         "(grade -> +36 at R1 wall, rack tier +36, drop to +10 at HRSG steel).")
+    B(675 + dx, 708 + dx, 615, 660, 0, 1, "concrete")
+    for yy in (626, 648):
+        B(678 + dx, 704 + dx, yy - 4, yy + 4, 1, 3, "steel")
+        R((680 + dx, yy, 6), (692 + dx, yy, 6), 3.2, "motor", seg=18)    # motor
+        R((693 + dx, yy, 6), (703 + dx, yy, 6), 2.4, "pump", seg=16)     # barrel pump
+    item(L, f"SCRB-{i}A/B: SCR dilution-air blowers", (675 + dx, 700 + dx, 705, 725), (0, 8),
+         tag=f"SCRB-{i}", area="A", sheet="SW-3X1-03",
+         info=f"480 V, MCC starters in R2{'ABC'[i-1]} (LV-SCR-{i}).")
+    B(675 + dx, 700 + dx, 705, 725, 0, 1, "concrete")
+    for yy in (710, 720):
+        R((678 + dx, yy, 4), (686 + dx, yy, 4), 2.2, "motor", seg=14)
+        B(687 + dx, 697 + dx, yy - 3.5, yy + 3.5, 1, 8, "equip")
+
+# Steam turbine train
+item(L, "ST: steam turbine (HP/IP + LP), ACC plant", (1020, 1080, 460, 552), (20, 46), tag="ST",
+     area="A", basis="typical", sheet="SW-3X1-12",
+     info="Top EL 46; lifted as casing halves / rotors (14 ft), not assembled. LP hoods govern "
+     "width. Side exhaust east to the ACC through the 26 ft ST exhaust duct.")
+B(1020, 1080, 460, 552, 20, 21.5, "steel")
+R((1050, 552, 32), (1050, 518, 32), 7.0, "machine", r2=10.5, seg=28)
+B(1024, 1076, 462, 516, 21.5, 40, "machine")
+P(1024, 1076, 462, 516, 40, 46, "machine", ridge="y")
+item(L, "STG: steam-turbine generator", (1041, 1059, 410, 460), (20, 38), tag="STG", area="A",
+     basis="typical", sheet="SW-3X1-04", info="21 kV (assumed), 550-650 MVA typical.")
+B(1041, 1059, 410, 460, 20, 21.5, "steel")
+R((1050, 414, 29.5), (1050, 458, 29.5), 8.2, "machine", seg=28)
+B(1042, 1058, 428, 444, 21.5, 38, "machine")
+solid(L, "ST aux: lube oil, turning gear, EHC", 1082, 1098, 470, 505, 20, 30, "equip", tag="ST aux",
+      area="A", sheet="SW-3X1-03", info="480 V MCC in R3 (LV-ST).")
+item(L, "ST exhaust duct (26 ft)", (1080, 1130, 487, 513), (31, 57), tag="ST exhaust", area="A",
+     sheet="SW-3X1-12", info="ST exhaust duct set to 26 ft diameter (Rev 10); side exhaust from the LP "
+     "casing east through the hall wall, above the ST aux skid.")
+B(1076, 1080, 489, 511, 31, 46, "duct")
+R((1080, 500, 44), (1130, 500, 44), 13, "duct", seg=32)
+item(L, "ACC main steam duct, manifold and street risers", (1130, 1450, 359, 513), (31, 125), area="B",
+     sheet="SW-3X1-13", basis="typical",
+     info="Main duct continues under the fan deck (clear of the 40 ft column grid), turns south to a "
+     "manifold along the ACC south edge, and rises at each street end into the street header, so "
+     "no duct passes through the fans. Hunterstown main duct 23 ft; arrangement typical.")
+R((1130, 500, 44), (1150, 500, 44), 13, "duct", seg=32)
+R((1150, 500, 44), (1150, 386, 44), 13, "duct", seg=32)
+R((1150, 386, 44), (1150, 372, 44), 13, "duct", r2=6, seg=32)
+for yy in (420, 460):
+    B(1146, 1154, yy - 3, yy + 3, 0, 31, "steel")
+
+# ---------------------------------------------------------------------------
+# Filter houses and inlet ducts (SW-3X1-09, -10)
+# ---------------------------------------------------------------------------
+L = "BASE_INLET_AIR"
+for i, gx in enumerate(GX, start=1):
+    dx = gx - 630
+    item(L, f"FH-{i}: GT inlet filter house on its own frame", (588 + dx, 672 + dx, 366, 403),
+         (0, 135), tag=f"FH-{i}", area="A", sheet="SW-3X1-09",
+         info="Casing EL 100-135 on six columns: three outside the gallery wall and three on the "
+         "runway column line, so nothing cantilevers over the main roof. Filter elements "
+         "change from the south platform at EL 108 via the stair tower; a hoist beam lowers "
+         "them to a landing with truck access.")
+    B(588 + dx, 672 + dx, 367, 403, 104, 135, "filter")
+    B(588 + dx, 672 + dx, 367, 403, 100, 104, "steel")
+    for k in range(3):                                        # weather hoods, south face
+        z0 = 108 + 9 * k
+        H([(589 + dx, 367, z0 + 7), (671 + dx, 367, z0 + 7), (671 + dx, 367, z0 + 8), (589 + dx, 367, z0 + 8),
+           (589 + dx, 363, z0), (671 + dx, 363, z0), (671 + dx, 363, z0 + 1), (589 + dx, 363, z0 + 1)], "filter")
+    for cx in (590, 630, 670):
+        for cy in (367.5, 401.5):
+            B(cx + dx - 1.5, cx + dx + 1.5, cy - 1.5, cy + 1.5, 0, 100, "steel")
+    B(588 + dx, 672 + dx, 356, 366, 107, 108, "grating")      # platform EL 108
+    B(588 + dx, 672 + dx, 356, 356.4, 108, 111.5, "steel")    # handrail
+    B(600 + dx, 700 + dx, 352.5, 354, 114, 115.5, "steel")    # hoist beam (to landing, east)
+    item(L, f"FH-{i} stair tower", (678 + dx, 688 + dx, 352, 368), (0, 111), area="A", sheet="SW-3X1-10",
+         info="Stair to the filter platform at EL 108 (sheet 10).")
+    B(678 + dx, 688 + dx, 352, 368, 0, 111, "stair")
+    B(672 + dx, 678 + dx, 356, 362, 107, 108, "grating")
+    item(L, f"FH-{i} hoist landing + truck access", (692 + dx, 707 + dx, 300, 366), (0, 0.5), area="A",
+         sheet="SW-3X1-10", info="Filter elements lowered by the hoist beam to this landing; truck access "
+         "from the access road.")
+    B(692 + dx, 707 + dx, 338, 366, 0, 0.5, "amber")
+    B(692 + dx, 707 + dx, 300, 338, 0, 0.3, "road")
+    item(L, f"Gallery door apron, bay {i}", (568 + dx, 584 + dx, 300, 366), (0, 0.3), area="A",
+         sheet="SW-3X1-10", info="Forklift / mobile-crane apron from the access road to the gallery door; "
+         "GCB and IPB sections leave on the gallery monorail.")
+    B(568 + dx, 584 + dx, 300, 366, 0, 0.3, "road")
+    item(L, f"GT{i} inlet duct (drop + horizontal EL 23-37)", (658 + dx, 694 + dx, 372, 466), (23, 104),
+         area="A", sheet="SW-3X1-09", tag=f"INL-{i}",
+         info="Drop from the filter house through the gallery roof, then horizontal north at "
+         "EL 23-37, 28-64 ft east of the GT centreline, into the plenum spool. It keeps 6 ft "
+         "under the GT travel band and 4 ft under the generator band.")
+    H([(644 + dx, 368, 104), (672 + dx, 368, 104), (672 + dx, 400, 104), (644 + dx, 400, 104),
+       (660 + dx, 372, 96), (692 + dx, 372, 96), (692 + dx, 400, 96), (660 + dx, 400, 96)], "filter")
+    B(660 + dx, 692 + dx, 372, 400, 37, 96, "filter")
+    B(658 + dx, 694 + dx, 372, 466, 23, 37, "filter")
+
+# ---------------------------------------------------------------------------
+# B ACC: 80 cells = 8 streets x 10 cells of 40 ft (SW-3X1-01, -03, -05, -13)
+# ---------------------------------------------------------------------------
+L = "BASE_POWER_BLOCK"
+item(L, "Air-cooled condenser, 80 cells (steam-cycle heat rejection)", (1130, 1450, 380, 780), (0, 125),
+     tag="ACC", area="B", sheet="SW-3X1-13",
+     info="8 streets x 10 cells of 40 ft. Fan deck EL 90, top of steel 125 ft (Hunterstown ~120; "
+     "Sewaren, Bridgeport ~125). Fans ACC-F01..F80, 480 V VFDs in R4, fan-bridge tray at EL +90; "
+     "VFD-ACC route ~633 ft to the farthest fan (verify drive-cable limits).")
+B(1130, 1450, 380, 780, 88, 92, "acc")
+for s in range(8):
+    x0 = 1130 + 40 * s
+    P(x0 + 2, x0 + 38, 382, 778, 92, 118.5, "bundle", ridge="y")
+    R((x0 + 20, 382, 121.5), (x0 + 20, 778, 121.5), 3.5, "duct", seg=16)    # street steam header
+for (x0, x1, y0, y1, zt) in [(1130, 1450, 379, 380, 117.5), (1130, 1450, 780, 781, 125),
+                             (1129, 1130, 380, 780, 125), (1450, 1451, 380, 780, 125)]:
+    B(x0, x1, y0, y1, 92, zt, "windwall")    # south wall stops under the street-header inlets
+_mid = [it for it in items if it["name"].startswith("ACC main steam duct")][0]["id"]
+_part(kind="rod", a=[1150, 372, 44], b=[1432, 372, 44], r=5, r2=5, color="duct", seg=20, item=_mid,
+      layer="BASE_POWER_BLOCK")                                   # manifold along the south edge
+for s_ in range(8):
+    xs = 1150 + 40 * s_
+    _part(kind="rod", a=[xs, 372, 44], b=[xs, 372, 121.5], r=3.5, r2=3.5, color="duct", seg=14, item=_mid,
+          layer="BASE_POWER_BLOCK")                               # street riser
+    _part(kind="rod", a=[xs, 372, 121.5], b=[xs, 382, 121.5], r=3.5, r2=3.5, color="duct", seg=14, item=_mid,
+          layer="BASE_POWER_BLOCK")
+for cx in range(1130, 1451, 40):
+    for cy in range(380, 781, 40):
+        if (cx, cy) != (1130, 500):          # ST exhaust duct entry: transfer girder instead
+            B(cx - 2, cx + 2, cy - 2, cy + 2, 0, 88, "steel")
+B(1128, 1132, 458, 542, 80, 88, "steel")     # transfer girder over the duct entry
+for i in range(8):
+    for j in range(10):
+        cx, cy = 1150 + 40 * i, 400 + 40 * j
+        V(cx, cy, 17, 92, 99, "fan", seg=24)
+        V(cx, cy, 16.2, 97, 99.2, "fanhub", r2=2, seg=24)
+B(1450, 1459.5, 380, 396, 0, 92, "stair"); B(1450, 1459.5, 764, 780, 0, 92, "stair")   # clear of the east spine road (x 1460)
+
+# ---------------------------------------------------------------------------
+# ELECTRICAL (SW-3X1-03, -04, -05)
+# ---------------------------------------------------------------------------
+L = "BASE_ELECTRICAL"
+for i, gx in enumerate(GX, start=1):
+    dx = gx - 630
+    xfmr(L, f"GSU-{i}: 21/230 kV generator step-up transformer", 610 + dx, 650 + dx, 325, 365, 24,
+         bushing=14, fins="x", hv="s", lv_dx=7, tag=f"GSU-{i}", area="A", sheet="SW-3X1-04",
+         info="21/230 kV (assumed), 350-450 MVA typical; bushings add 12-15 ft. HV connects by "
+         f"230 kV overhead to diameter D{i}; the unit pulls to the access road for replacement.")
+    xfmr(L, f"UAT-{i}: 21/13.8 kV unit auxiliary transformer", 658 + dx, 676 + dx, 330, 352, 16,
+         bushing=0, fins="x", tag=f"UAT-{i}", area="A", sheet="SW-3X1-04",
+         info="Tapped between GCB and GSU (GSU side of the GCB), so the grid back-feeds 13.8 kV "
+         f"bus {i} while GCB-{i} is open for LCI start-up. 40-60 MVA typical.")
+    solid(L, f"GCB-{i}: generator circuit breaker", 625 + dx, 635 + dx, 378, 392, 14, 26, "xfmr",
+          tag=f"GCB-{i}", area="A", sheet="SW-3X1-10",
+          info="On the IPB in the south gallery, outside bridge-crane coverage; gallery monorail "
+          "west to a door clear of the filter-house columns.")
+    B(625 + dx, 635 + dx, 378, 392, 0, 14, "steel")
+    solid(L, f"GSU-{i} firewall", 602 + dx, 604 + dx, 318, 368, 0, 30, "concrete", basis="typical",
+          area="A", register=False)
+    ehouse(L, f"R2{'ABC'[i-1]}: unit / HRSG electrical e-house (32 x 40 ft)", 552 + dx, 584 + dx,
+           612, 652, 14, tag=f"R2{'ABC'[i-1]}", area="A", sheet="SW-3X1-03",
+           info=f"Supply SWGR-13.8-{i}. 480 V switchgear, MCC and DCS remote I/O for SCR blowers, "
+           "ammonia injection, HRSG valves and drains.")
+    xfmr(L, f"T-R2{'ABC'[i-1]}: 13.8/0.48 kV", 555 + dx, 567 + dx, 664, 676, 10, bushing=0,
+         area="A", sheet="SW-3X1-04")
+xfmr(L, "GSU-ST: 21/230 kV (one ST GSU, baseline)", 1030, 1072, 320, 370, 24, bushing=14, fins="x", hv="s",
+     tag="GSU-ST", area="A", sheet="SW-3X1-04",
+     info="One ST GSU shown; 2 x 50% is a real option (Okeechobee). No UAT on the ST unit; ST "
+     "auxiliaries are fed from the 13.8 kV buses.")
+solid(L, "GSU-ST firewall", 1009, 1011, 318, 368, 0, 30, "concrete", basis="typical", area="A", register=False)
+solid(L, "GCB-ST", 1046, 1056, 378, 392, 14, 26, "xfmr", tag="GCB-ST", area="A", sheet="SW-3X1-04")
+B(1046, 1056, 378, 392, 0, 14, "steel")
+
+# R1 main electrical building: shell split into sheet-11 collections
+item(L, "R1: main electrical building (64 x 180 ft)", (410, 474, 600, 780), (0, 24), tag="R1", area="A",
+     sheet="SW-3X1-05",
+     info="Conventional building 64 x 180 ft (11,520 sq ft), 24 ft high (Wrexham 16 ft, Progress "
+     "Power 37 ft). Holds SWGR-13.8-1/2/3, SWGR-4.16-A/B, LC-480-A/B, EMCC, MCC-GT1..3, "
+     "MCC-C1/C2, protection & control, DCS, three LCI static starters with dry-type input "
+     "transformers, DC/UPS and battery rooms, HVAC. Supply UAT-1/2/3 via DB-S; EDG-1/2 "
+     "emergency. The Rev 04 box (120 x 50 ft) could not hold it.")
+B(410, 474, 600, 780, 0, 0.6, "concrete")
+B(410, 411, 600, 780, 0.6, 23, "building")                     # west wall
+B(410, 474, 600, 601, 0.6, 23, "building")                     # south wall
+B(410, 474, 779, 780, 0.6, 23, "building")                     # north wall
+B(473, 474, 600, 780, 0.6, 23, "building", layer="R1_WALL_E")  # east wall
+_part(kind="box", min=[410, 600, 23], max=[474, 780, 24], color="roof", layer="R1_ROOF")
+for (x0, x1, y0, y1, h) in [(409.2, 410.8, 628, 632, 8), (409.2, 410.8, 748.5, 751.5, 8),
+                            (409.2, 410.8, 764.5, 767.5, 8), (473.2, 474.8, 748.5, 751.5, 8),
+                            (473.2, 474.8, 611.5, 614.5, 8), (473.2, 474.8, 627, 633, 10)]:
+    _part(kind="box", min=[x0, y0, 0.6], max=[x1, y1, h], color="door",
+          layer="R1_WALL_E" if x0 > 470 else "BASE_ELECTRICAL")
+xfmr(L, "T4-A: 13.8/4.16 kV station transformer", 410, 430, 786, 802, 14, bushing=0, fins="y",
+     tag="T4-A", area="A", sheet="SW-3X1-04")
+xfmr(L, "T4-B: 13.8/4.16 kV station transformer", 410, 430, 808, 824, 14, bushing=0, fins="y",
+     tag="T4-B", area="A", sheet="SW-3X1-04")
+xfmr(L, "LCT-A: 13.8/0.48 kV load-centre transformer", 436, 448, 786, 798, 10, tag="LCT-A", area="A",
+     sheet="SW-3X1-04")
+xfmr(L, "LCT-B: 13.8/0.48 kV load-centre transformer", 436, 448, 808, 820, 10, tag="LCT-B", area="A",
+     sheet="SW-3X1-04")
+
+# R1 interior (SW-3X1-05), collection R1_INTERIOR
+L = "R1_INTERIOR"
+R1_ROOMS = [
+    ("Cable entry / spreading area (DB-S, DB-W entries)", 410, 440, 600, 626),
+    ("HVAC mechanical room (AHUs, pressurization)", 444, 474, 600, 626),
+    ("Battery room BAT-1 / BAT-2 (vented, eyewash, spill containment)", 410, 438, 752, 780),
+    ("DC / UPS room: CHG-1/2, DC-1/2, UPS-A/B, UPS panels", 442, 474, 752, 780),
+]
+for (n, x0, x1, y0, y1) in R1_ROOMS:
+    item(L, "R1 " + n, (x0, x1, y0, y1), (0, 23), area="A", sheet="SW-3X1-05")
+    # partitions on the sides that are not exterior walls (full height to the roof)
+    if y0 > 600:
+        B(x0, x1, y0, y0 + 0.5, 0.6, 23, "partition")
+    if y1 < 780:
+        B(x0, x1, y1 - 0.5, y1, 0.6, 23, "partition")
+    if x0 > 410:
+        B(x0, x0 + 0.5, y0, y1, 0.6, 23, "partition")
+    if x1 < 474:
+        B(x1 - 0.5, x1, y0, y1, 0.6, 23, "partition")
+item(L, "R1 AHUs", (447, 471, 604, 622), (0.6, 10), area="A", sheet="SW-3X1-05", basis="typical")
+B(447, 459, 604, 622, 0.6, 10, "machine"); B(462, 471, 604, 622, 0.6, 9, "machine")
+item(L, "R1 battery racks BAT-1 / BAT-2", (413, 435, 756, 776), (0.6, 5.6), area="A", basis="typical",
+     sheet="SW-3X1-05", info="Battery rack (each) 20 x 3 ft, illustrative.")
+for yy in (757, 763, 769):
+    B(414, 434, yy, yy + 3, 0.6, 5.6, "battery")
+item(L, "R1 DC / UPS equipment", (446, 470, 756, 776), (0.6, 7.6), area="A", basis="typical", sheet="SW-3X1-05")
+for yy in (757, 766):
+    B(446, 470, yy, yy + 3, 0.6, 7.6, "cabinet")
+B(426, 426.5, 636, 748, 0.6, 12, "partition")                   # LCI room wall (sheet 05)
+CAB = [  # (name, x0, x1, y0, y1, height, colour) from sheet 05; heights typical
+    ("SWGR-13.8-1 (11 x 36 in cubicles, 15 kV metal-clad)", 462, 470, 636, 669, 8.0, "swgr"),
+    ("SWGR-13.8-2 (11 x 36 in cubicles, 15 kV metal-clad)", 462, 470, 673, 706, 8.0, "swgr"),
+    ("SWGR-13.8-3 (11 x 36 in cubicles, 15 kV metal-clad)", 462, 470, 710, 743, 8.0, "swgr"),
+    ("SWGR-4.16-A (9 x 36 in cubicles, 5 kV metal-clad)", 447, 454, 636, 663, 7.5, "swgr"),
+    ("SWGR-4.16-B (5 kV metal-clad)", 447, 454, 666, 693, 7.5, "swgr"),
+    ("LC-480-A (480 V switchgear)", 448, 454, 697, 713, 7.5, "cabinet"),
+    ("LC-480-B (480 V switchgear)", 448, 454, 716, 732, 7.5, "cabinet"),
+    ("EMCC (emergency MCC)", 452, 454, 735, 746, 7.5, "amber"),
+    ("MCC-GT1", 441, 443, 636, 650, 7.5, "cabinet"), ("MCC-GT2", 441, 443, 652, 666, 7.5, "cabinet"),
+    ("MCC-GT3", 441, 443, 668, 682, 7.5, "cabinet"), ("MCC-C1", 441, 443, 684, 698, 7.5, "cabinet"),
+    ("MCC-C2", 441, 443, 700, 714, 7.5, "cabinet"),
+    ("Protection & control panels (22 x 30 in)", 428, 431, 636, 691, 7.5, "panel"),
+    ("DCS / network cabinets", 428, 431, 694, 724, 7.5, "panel"),
+    ("Telecom / FO", 428, 431, 727, 737, 7.5, "panel"), ("LP / HT panels", 428, 431, 739, 746, 7.5, "amber"),
+    ("LCI-1 static starter lineup", 414, 418, 636, 656, 7.5, "swgr"),
+    ("TX-LCI-1 dry-type input transformer", 413, 422, 658, 668, 8.0, "xfmr"),
+    ("LCI-2 static starter lineup", 414, 418, 672, 692, 7.5, "swgr"),
+    ("TX-LCI-2 dry-type input transformer", 413, 422, 694, 704, 8.0, "xfmr"),
+    ("LCI-3 static starter lineup", 414, 418, 708, 728, 7.5, "swgr"),
+    ("TX-LCI-3 dry-type input transformer", 413, 422, 730, 740, 8.0, "xfmr"),
+]
+for (n, x0, x1, y0, y1, h, c) in CAB:
+    tag = n.split(" ")[0] if n.split(" ")[0].isupper() or "-" in n.split(" ")[0] else ""
+    item(L, "R1 " + n, (x0, x1, y0, y1), (0.6, 0.6 + h), tag=tag, area="A", sheet="SW-3X1-05",
+         basis="drawing", info="Plan from SW-3X1-05; cabinet height typical.")
+    B(x0, x1, y0, y1, 0.6, 0.6 + h, c)
+    # section seams on long lineups
+    L_len = y1 - y0
+    if L_len > 12 and x1 - x0 >= 3:
+        n_sec = int(L_len / 3)
+        for k in range(1, n_sec):
+            yy = y0 + L_len * k / n_sec
+            B(x1, x1 + 0.08, yy - 0.05, yy + 0.05, 0.9, 0.6 + h - 0.4, "steel")
+item(L, "R1 cable basement below MV rows (hatched on sheet 05)", (444, 471, 634, 747), (-8, 0), area="A",
+     sheet="SW-3X1-05", basis="typical", info="Depth illustrative.")
+B(444, 471, 634, 747, -8, 0, "basement")
+item(L, "R1 overhead LV / control trays", (426, 472, 636, 747), (14, 15), area="A", sheet="SW-3X1-05")
+for xx in (438, 456, 468):
+    B(xx - 1, xx + 1, 636, 747, 14, 14.4, "pipe")            # galvanised ladder tray with its cables
+    B(xx - .8, xx + .8, 636, 747, 14.4, 14.6, "cable_tc")
+B(426, 472, 719, 721, 14.6, 15.0, "pipe")
+B(426, 472, 719.2, 720.8, 15.0, 15.2, "cable_tc")
+item(L, "R1 east-wall tray exits to hall (LCI, GT aux, DC) and tray riser to rack", (470, 478, 638, 748),
+     (0, 36), area="A", sheet="SW-3X1-05")
+for yy in (640, 650, 660):
+    B(472.6, 474, yy - 1.5, yy + 1.5, 18, 20, "pipe")               # wall sleeve (galvanised)
+# (the riser up the east wall to the rack trays is built by trays.py as a ladder riser with a wall entry)
+B(470, 474, 744, 748, 0.6, 1.2, "concrete")
+
+# R4 ACC VFD e-house, shell + typical interior (SW-3X1-03, -11 view B2)
+L = "BASE_ELECTRICAL"
+item(L, "R4: ACC electrical (VFD) e-house (60 x 120 ft)", (1135, 1255, 308, 368), (0, 16), tag="R4",
+     area="B", sheet="SW-3X1-03",
+     info="Supply SWGR-13.8-1/2/2/3 through four outdoor 13.8/0.48 kV transformers. 480 V "
+     "switchgear, 92 VFDs (80 ACC fans, 12 aux cooler fans), MCC for the vacuum pumps. "
+     "Cable exit toward the ACC column riser.")
+B(1135, 1255, 308, 368, 0, 2.5, "concrete")
+B(1135, 1136, 308, 368, 2.5, 15.4, "ehouse"); B(1135, 1255, 308, 309, 2.5, 15.4, "ehouse")
+B(1135, 1255, 367, 368, 2.5, 15.4, "ehouse")
+B(1254, 1255, 308, 368, 2.5, 15.4, "ehouse", layer="R4_WALL_E")
+_part(kind="box", min=[1135, 308, 15.4], max=[1255, 368, 16], color="roof", layer="R4_ROOF")
+L = "R4_INTERIOR"
+for k, yy in enumerate((314, 326, 344, 356)):
+    item(L, f"R4 VFD lineup {k+1} (23 drives, fed from T-R4-{k+1})", (1146, 1246, yy, yy + 3), (2.5, 10),
+         tag=f"VFD-L{k+1}", area="B", basis="typical", sheet="SW-3X1-03",
+         info="92 VFDs total per SW-3X1-03; lineup arrangement typical (sheet 11 view B2).")
+    B(1146, 1246, yy, yy + 3, 2.5, 10, "cabinet")
+    for s in range(1, 23):
+        xx = 1146 + 100 * s / 23
+        B(xx - 0.05, xx + 0.05, yy - 0.08, yy, 3, 9.6, "steel")
+item(L, "R4 480 V switchgear + vacuum-pump MCC", (1138, 1143, 314, 360), (2.5, 10), area="B",
+     basis="typical", sheet="SW-3X1-03")
+B(1138, 1143, 314, 360, 2.5, 10, "swgr")
+item(L, "R4 cable exit to the ACC column riser", (1250, 1254, 330, 346), (2.5, 14), area="B",
+     sheet="SW-3X1-11")
+B(1250, 1254, 330, 346, 12, 14, "copper")
+L = "BASE_ELECTRICAL"
+for k, (x0, y0) in enumerate([(1266, 310), (1292, 310), (1266, 340), (1292, 340)], 1):
+    xfmr(L, f"T-R4-{k}: 13.8/0.48 kV", x0, x0 + 12, y0, y0 + 14, 10, fins="y", area="B", sheet="SW-3X1-04")
+pad(L, "Spare e-house pad (reserve, as drawn)", 1320, 1445, 308, 368, "pad", z1=0.6, area="B")
+ehouse(L, "R3: ST auxiliary electrical e-house (40 x 65 ft)", 1035, 1100, 572, 612, 14, tag="R3", area="A",
+       sheet="SW-3X1-03",
+       info="Supply SWGR-13.8-2. 480 V switchgear and MCC for ST lube oil, turning gear, EHC and "
+       "air compressors.")
+xfmr(L, "T-R3: 13.8/0.48 kV", 1053, 1065, 626, 638, 10, area="A", sheet="SW-3X1-04")
+for k, (x0, x1) in enumerate([(412, 462), (468, 518)], 1):
+    item(L, f"EDG-{k}: 3 MW emergency diesel generator (480 V)", (x0, x1, 338, 350), (0, 22),
+         tag=f"EDG-{k}", area="F", basis="vendor", sheet="SW-3X1-12",
+         info="Sound-attenuated enclosure 546 x 105 x 167-197 in. Emergency supply "
+         "only; ATS / interlocked incomers to LC-480-A/B.")
+    B(x0, x1, 338, 350, 0, 1.2, "concrete")
+    B(x0 + 1, x1 - 1, 338.5, 349.5, 1.2, 15, "machine")
+    R((x1 - 6, 344, 15), (x1 - 6, 344, 22), 0.9, "steel", seg=10)
+for (tg, n, x0, x1, y0, y1, h, a) in [
+        ("HTP-1", "heat-trace panel (rack)", 569, 575, 852, 855, 7, "A"),
+        ("HTP-2", "heat-trace panel (NH3)", 912, 918, 1450, 1453, 7, "E"),
+        ("HTP-3", "heat-trace panel (tanks)", 605, 611, 1541, 1544, 7, "E"),
+        ("HTP-4", "heat-trace panel (gas)", 1600, 1606, 1444, 1447, 7, "D"),
+        ("CPR-1", "cathodic-protection rectifier", 1541, 1545, 1478, 1481, 6, "D"),
+        ("CPR-2", "cathodic-protection rectifier", 655, 659, 1578, 1582, 6, "E")]:
+    solid(L, f"{tg}: {n}", x0, x1, y0, y1, 0, h, "panel", tag=tg, area=a, sheet="SW-3X1-03")
+
+# ---------------------------------------------------------------------------
+# BOP utilities around the hall and ACC; pipe racks
+# ---------------------------------------------------------------------------
+L = "BASE_UTILITIES"
+building(L, "Air compressors AC-A/B/C", 1030, 1100, 700, 745, 14, tag="AC-A/B/C", area="A",
+         sheet="SW-3X1-03", info="480 V MCC soft starters in R3 (LV-AIRC).")
+building(L, "Chemical feed", 1030, 1100, 760, 781, 12, tag="Chem feed", area="A", sheet="SW-3X1-01")
+building(L, "SWAS: steam and water analysis", 1030, 1100, 784, 805, 12, tag="SWAS", area="A", sheet="SW-3X1-01")
+for (tg, n, x0, x1, y0, y1, cnt, info) in [
+        ("CP-A/B/C", "condensate pumps (4.16 kV)", 1182, 1218, 809, 827, 3,
+         "North of the ACC; 4.16 kV MV contactor, SWGR-4.16-A/B (MV-CP)."),
+        ("VAC-A/B", "ACC air-removal vacuum pumps", 1235, 1265, 797, 817, 2, "480 V MCC starter in R4 (LV-VAC)."),
+        ("CCW-A/B", "closed cooling water pumps", 1283, 1313, 807, 827, 2, "4.16 kV MV contactor (MV-CCW).")]:
+    item(L, f"{tg}: {n}", (x0, x1, y0, y1), (0, 8), tag=tg, area="B", sheet="SW-3X1-03", info=info)
+    B(x0, x1, y0, y1, 0, 1, "concrete")
+    for k in range(cnt):
+        xx = x0 + (x1 - x0) * (k + 0.5) / cnt
+        R((xx, y0 + 2, 5), (xx, y0 + 8, 5), 2.2, "motor", seg=14)
+        R((xx, y0 + 8.5, 5), (xx, y1 - 2, 5), 2.6, "pump", seg=14)
+item(L, "Aux dry coolers AUXC-F01..12 (closed cooling water)", (1326, 1446, 792, 828), (0, 18), tag="AUXC",
+     area="B", sheet="SW-3X1-03", info="12 fans with 480 V VFDs in R4; heat rejection for the closed "
+     "cooling-water loop.")
+column_grid((1328, 1386, 1444), (794, 826), 10, s=1)
+B(1326, 1446, 792, 828, 10, 15, "bundle")
+for k in range(6):
+    for r_ in (0, 1):
+        V(1336 + 20 * k, 801 + 18 * r_, 8, 15, 18, "fan", seg=18)
+tank(L, "Condensate storage tank", 1155, 812, 14, 30, area="B")
+for (x0, x1, y0, y1, n) in [(460, 1300, 826, 850, "Main E-W pipe and cable rack (24 ft)"),
+                            (1108, 1128, 570, 850, "N-S pipe rack along the ACC")]:
+    item(L, n, (x0, x1, y0, y1), (0, 42), area="A", sheet="SW-3X1-12",
+         info="Widened from 16 to 24 ft in Rev 10. Process tiers EL 24/30, MV tray tier EL +36, "
+         "control tray EL +42.")
+    if x1 - x0 > y1 - y0:
+        for x in range(int(x0), int(x1) + 1, 25):
+            B(x - 0.8, x + 0.8, y0 + 1.5, y0 + 3.1, 0, 42, "steel"); B(x - 0.8, x + 0.8, y1 - 3.1, y1 - 1.5, 0, 42, "steel")
+            for z in (24, 30, 36, 42):
+                B(x - 0.6, x + 0.6, y0, y1, z - 0.8, z, "steel")
+        for z in (24, 30, 36, 42):
+            B(x0, x1, y0, y0 + 1, z - 0.8, z, "steel"); B(x0, x1, y1 - 1, y1, z - 0.8, z, "steel")
+    else:
+        for y in range(int(y0), int(y1) + 1, 25):
+            B(x0 + 1.5, x0 + 3.1, y - 0.8, y + 0.8, 0, 42, "steel"); B(x1 - 3.1, x1 - 1.5, y - 0.8, y + 0.8, 0, 42, "steel")
+            for z in (24, 30, 36, 42):
+                B(x0, x1, y - 0.6, y + 0.6, z - 0.8, z, "steel")
+        for z in (24, 30, 36, 42):
+            B(x0, x0 + 1, y0, y1, z - 0.8, z, "steel"); B(x1 - 1, x1, y0, y1, z - 0.8, z, "steel")
+
+# ---------------------------------------------------------------------------
+# C GRID INTERFACE: 230 kV breaker-and-a-half (SW-3X1-01, -04, -13)
+# ---------------------------------------------------------------------------
+L = "BASE_SWITCHYARD"
+pad(L, "230 kV switchyard (gravel)", 400, 1940, 50, 250, "gravel", z1=0.4, area="C", sheet="SW-3X1-04",
+    register=True,
+    info="Breaker-and-a-half: 5 diameters x 3 breakers = 15 positions, 9 installed in the base plant. D1 "
+    "GTG-1 + Line 1, D2 GTG-2 + Line 2, D3 STG + GTG-3; D4 (BESS / modular) and D5 (CCS) are shown built "
+    "out with the optional systems, plus D6 (green H2) on a bus extension: 18 breakers. "
+    "345 or 500 kV is common at ~1.6 GW (Okeechobee and Greensville use 500 kV).")
+PH = (-7, 0, 7)                        # phase spacing, ft
+for yb, n in [(237, "230 kV bus 1"), (65, "230 kV bus 2")]:
+    item(L, n + " (strain bus, 3 phases)", (530, 1925, yb - 8, yb + 8), (0, 47), tag=n.split()[-2] + n[-1],
+         area="C", sheet="SW-3X1-04")
+    for ph in PH:
+        R((530, yb + ph, 40), (1925, yb + ph, 40), 0.35, "conductor", seg=6)
+for x in (530, 1300, 1925):
+    for yb in (62, 242):
+        item(L, "230 kV dead-end structure (47 ft)", (x - 2, x + 2, yb - 12, yb + 12), (0, 47), area="C",
+             sheet="SW-3X1-13", info="230 kV dead-ends 47 ft (CPUC Jefferson-Martin); 132 kV yards 33-37 ft.",
+             register=False)
+        for yy in (yb - 11, yb + 11):
+            R((x, yy, 0), (x, yy, 47), 1.1, "steel", r2=0.7, seg=8)
+        B(x - 0.8, x + 0.8, yb - 12, yb + 12, 43, 45, "steel")
+        for ph in PH:
+            R((x, yb + ph, 43), (x, yb + ph, 40.5), 0.3, "insulator", seg=6)
+
+
+def diameter(d, x, installed=True, lines=(), buildout=None):
+    """One breaker-and-a-half diameter. buildout: circuits text for the D4-D6 build-out, which
+    is drawn complete on the SWYD_FUTURE layer (shown with the optional systems)."""
+    L = "BASE_SWITCHYARD" if installed and not buildout else "SWYD_FUTURE"
+    c = "xfmr" if installed else "future"
+    for k, y in enumerate((110, 150, 190), 1):
+        item(L, f"{d} 230 kV breaker {k}" + ("" if installed else " (position, not installed)")
+             + (" (build-out)" if buildout else ""),
+             (x - 8, x + 8, y - 8, y + 8), (0, 28 if installed else 1), tag=f"{d}-CB{k}", area="C",
+             sheet="SW-3X1-04", info=("Dead-tank SF6 breaker (typical)." if installed else
+             "Future position; breakers not installed.") + (f" Build-out of the future diameter: {buildout}."
+                                                             if buildout else ""))
+        B(x - 8, x + 8, y - 8, y + 8, 0, 1, "concrete")
+        if not installed:
+            continue
+        B(x - 7, x + 7, y - 3, y + 3, 1, 6, "steel")
+        R((x - 7, y, 8.5), (x + 7, y, 8.5), 2.6, c, seg=16)
+        for ph in PH:                                                # bushings, two per phase
+            for s in (-1, 1):
+                R((x + ph, y + 1.2 * s, 10), (x + ph, y + 4 * s, 26), 0.55, "insulator", r2=0.35, seg=8)
+    if not installed:
+        return
+    item(L, f"{d} disconnect switches, supports and conductors" + (" (build-out)" if buildout else ""),
+         (x - 10, x + 10, 65, 237), (0, 40),
+         area="C", sheet="SW-3X1-04", register=False)
+    for y in (90, 130, 170, 210):                                    # switch / support stands
+        B(x - 9, x + 9, y - 0.8, y + 0.8, 14, 15.5, "steel")
+        for xs in (x - 9, x + 9):
+            R((xs, y, 0), (xs, y, 14), 0.6, "steel", seg=6)
+        for ph in PH:
+            R((x + ph, y, 15.5), (x + ph, y, 24), 0.4, "insulator", seg=8)
+    for ph in PH:
+        R((x + ph, 65, 40), (x + ph, 65, 26), 0.25, "conductor", seg=6)
+        R((x + ph, 237, 40), (x + ph, 237, 26), 0.25, "conductor", seg=6)
+        R((x + ph, 65, 26), (x + ph, 237, 26), 0.3, "conductor", seg=6)
+    for y in (130, 170):                                             # take-off gantries
+        for xs in (x - 36, x + 36):
+            R((xs, y, 0), (xs, y, 45), 1.0, "steel", r2=0.7, seg=8)
+        B(x - 36, x + 36, y - 0.8, y + 0.8, 43, 45, "steel")
+
+
+diameter("D1", 700); diameter("D2", 900); diameter("D3", 1100)
+# complete yard: the D4 / D5 future diameters built out, and D6 (green H2 import) on a bus extension
+diameter("D4", 1720, buildout="T-MOD-1/2 modular yard (lower) + BESS MPT (upper)")
+diameter("D5", 1860, buildout="CCS 230 kV cable, 2 circuits")
+L = "SWYD_FUTURE"
+pad(L, "230 kV switchyard extension for D6 (gravel)", 1940, 2060, 50, 250, "gravel", z1=0.4, area="C",
+    basis="typical", info="Bus extension and the D6 diameter for the green-hydrogen import (SW-3X1-14).")
+for yb, n in [(237, "230 kV bus 1"), (65, "230 kV bus 2")]:
+    item(L, n + " extension to D6 (build-out)", (1925, 2045, yb - 8, yb + 8), (0, 47), area="C",
+         basis="typical", register=False)
+    for ph in PH:
+        R((1925, yb + ph, 40), (2045, yb + ph, 40), 0.35, "conductor", seg=6)
+for yb in (62, 242):
+    item(L, "230 kV dead-end structure (47 ft), D6 extension", (2043, 2047, yb - 12, yb + 12), (0, 47), area="C",
+         basis="typical", register=False)
+    for yy in (yb - 11, yb + 11):
+        R((2045, yy, 0), (2045, yy, 47), 1.1, "steel", r2=0.7, seg=8)
+    B(2044.2, 2045.8, yb - 12, yb + 12, 43, 45, "steel")
+    for ph in PH:
+        R((2045, yb + ph, 43), (2045, yb + ph, 40.5), 0.3, "insulator", seg=6)
+diameter("D6", 2010, buildout="green-H2 import cable (T-H2) + spare")
+L = "BASE_SWITCHYARD"
+for x, n in [(670, "Line 1"), (870, "Line 2")]:
+    item(L, f"{n} 230 kV terminal tower", (x - 8, x + 8, 10, 26), (0, 90), tag=n.replace(" ", "-"),
+         area="C", basis="typical", sheet="SW-3X1-01", info="Line exits south to the grid.")
+    for sx in (-6, 6):
+        for sy in (-6, 6):
+            R((x + sx, 18 + sy, 0), (x + sx * 0.3, 18 + sy * 0.3, 80), 0.6, "steel", seg=6)
+    B(x - 14, x + 14, 17, 19, 68, 70, "steel"); B(x - 10, x + 10, 17, 19, 80, 81.5, "steel")
+    R((x, 18, 81.5), (x, 18, 90), 0.4, "steel", seg=6)
+ehouse(L, "RH: switchyard relay / control house (52 x 70 ft)", 420, 490, 180, 232, 14, tag="RH", area="C",
+       sheet="SW-3X1-03",
+       info="Protection, SCADA and communications for the 230 kV yard; 125 V DC and fibre to R1 via DB-S.")
+L = "HV_CORRIDOR"
+# footprints as drawn; the slabs are trimmed where the strips overlap (overlapping flat pads render black)
+for (x0, x1, y0, y1), (sx0, sx1, sy0, sy1) in [
+        ((1490, 1540, 237, 830), (1490, 1540, 287, 780)), ((1490, 2120, 780, 830), (1490, 2120, 780, 830)),
+        ((2070, 2120, 780, 860), (2070, 2120, 830, 860)), ((1490, 1715, 237, 287), (1490, 1715, 237, 287)),
+        ((1665, 1715, 225, 287), (1665, 1715, 225, 237))]:
+    z1 = 0.2 + 0.008 * (len(items) % 30)
+    item(L, "Reserved 230 kV corridor COR-HMOD", (x0, x1, y0, y1), (0, z1), register=False, sheet="SW-3X1-01",
+         area="I")
+    B(sx0, sx1, sy0, sy1, 0, z1, "corridor")
+
+# ---------------------------------------------------------------------------
+# F CONTROLS / SERVICE and E WATER / UTILITIES
+# ---------------------------------------------------------------------------
+L = "BASE_SERVICES"
+pad(L, "Parking", 40, 320, 60, 240, "road", z1=0.2, area="F")
+for k in range(7):
+    B(60 + 36 * k, 61 + 36 * k, 80, 220, 0.2, 0.3, "fence")
+building(L, "Control / admin building (main control room)", 83, 320, 345, 396, 20, tag="CR", area="F",
+         sheet="SW-3X1-12",
+         info="51 x 237 x 20 ft (Smarr EA, 7HA.03, 2025). Operator consoles only; DCS cabinets are "
+         "distributed in R1, R2A-C, R3 and R4.")
+building(L, "Warehouse", 133, 320, 470, 561, 35, area="F", sheet="SW-3X1-12", info="91 x 187 x 35 ft (Smarr EA).")
+building(L, "Maintenance building / workshop", 198, 320, 600, 641, 20, area="F", sheet="SW-3X1-12",
+         info="41 x 122 x 20 ft (Smarr EA).")
+item(L, "Comms tower: private 5G / LTE monopole with microwave backhaul", (250, 275, 445, 465), (0, 120), tag="COMMS",
+     area="F", basis="typical",
+     info="Modernised plant network (owner, Oct 20, was a plain lattice mast): 120 ft tapered monopole; a square sector "
+          "platform at EL 100 with panel antennas and 5G massive-MIMO units on four faces, radio units behind; "
+          "microwave backhaul dishes at EL 86; hybrid fibre / power cables up a cable ladder; aviation light and "
+          "lightning rod; fenced base compound with the outdoor baseband / power cabinets and an ice bridge.")
+CX5, CY5 = 262.5, 455.0
+B(CX5 - 5, CX5 + 5, CY5 - 5, CY5 + 5, 0, 1.0, "concrete")                     # foundation cap
+R((CX5, CY5, 1.0), (CX5, CY5, 112), 1.5, "steel", r2=.75, seg=20)              # tapered monopole
+for z, r in ((1.0, 2.1), (38.0, 1.45), (75.0, 1.15)):                          # base plate and slip-joint flanges
+    R((CX5, CY5, z), (CX5, CY5, z + .4), r, "steel", seg=20)
+for dy in (-.25, .25):                                                         # cable ladder up the east face
+    R((CX5 + 1.75, CY5 + dy, 1.4), (CX5 + 1.05, CY5 + dy, 99.5), .05, "steel", seg=4)
+R((CX5 + 1.7, CY5, 1.4), (CX5 + 1.0, CY5, 99.5), .14, "cable_tc", seg=6)       # hybrid fibre / power trunk
+P5, ZP5 = 5.5, 100.0                                                           # sector platform, half width, EL
+for (a0, a1, b0, b1) in ((-P5, P5, -P5, -P5 + .3), (-P5, P5, P5 - .3, P5), (-P5, -P5 + .3, -P5, P5), (P5 - .3, P5, -P5, P5)):
+    B(CX5 + a0, CX5 + a1, CY5 + b0, CY5 + b1, ZP5, ZP5 + .4, "steel")          # platform frame
+    B(CX5 + a0, CX5 + a1, CY5 + b0, CY5 + b1, ZP5 + 3.2, ZP5 + 3.4, "steel")    # top rail / antenna pipe ring
+for (dx, dy) in ((-P5, 0), (P5, 0), (0, -P5), (0, P5)):                        # arms to the pole
+    R((CX5, CY5, ZP5 + .2), (CX5 + dx, CY5 + dy, ZP5 + .2), .18, "steel", seg=6)
+for (nx, ny) in ((1, 0), (-1, 0), (0, 1), (0, -1)):                            # four sectors
+    for k, (u, w, z0, z1, d, c) in enumerate(((-3.0, .9, 101.0, 107.5, .45, "hall"), (3.0, .9, 101.0, 107.5, .45, "hall"),
+                                              (0.0, 1.5, 101.8, 105.2, .6, "hall"))):     # 4G panels, 5G AAU
+        o = P5 + .3                                                            # outside the ring
+        if nx:
+            x0, x1 = (CX5 + o, CX5 + o + d) if nx > 0 else (CX5 - o - d, CX5 - o)
+            B(x0, x1, CY5 + u - w / 2, CY5 + u + w / 2, z0, z1, c)
+            xr = x0 - .65 if nx > 0 else x1 + .05
+            B(xr, xr + .6, CY5 + u - .4, CY5 + u + .4, z0 + .8, z0 + 2.4, "machine")   # radio unit behind
+        else:
+            y0, y1 = (CY5 + o, CY5 + o + d) if ny > 0 else (CY5 - o - d, CY5 - o)
+            B(CX5 + u - w / 2, CX5 + u + w / 2, y0, y1, z0, z1, c)
+            yr = y0 - .65 if ny > 0 else y1 + .05
+            B(CX5 + u - .4, CX5 + u + .4, yr, yr + .6, z0 + .8, z0 + 2.4, "machine")
+for (dx, dy) in ((1, 0), (0, -1)):                                             # microwave backhaul dishes, EL 86
+    a = (CX5 + dx * 1.3, CY5 + dy * 1.3, 86.0)
+    R(a, (a[0] + dx * .9, a[1] + dy * .9, 86.0), 1.4, "hall", r2=1.6, seg=24)
+    R((CX5, CY5, 85.2), (a[0], a[1], 85.2), .12, "steel", seg=6)
+R((CX5, CY5, 112), (CX5, CY5, 120), .07, "steel", seg=4)                       # lightning rod
+R((CX5, CY5, 112.0), (CX5, CY5, 112.8), .35, "red", seg=10)                     # aviation obstruction light
+for k in range(2):                                                             # base compound: baseband / power cabinets
+    B(CX5 - 11.5, CX5 - 8.5, CY5 - 5 + k * 4.5, CY5 - 1.5 + k * 4.5, 1.0, 6.0, "panel")
+B(CX5 - 12, CX5 - 8, CY5 - 5.5, CY5 + 3.5, 0, 1.0, "concrete")
+R((CX5 - 8.5, CY5, 7.0), (CX5 - 1.6, CY5, 7.0), .12, "cable_tc", seg=6)         # cables over the ice bridge
+for x in (CX5 - 8.5, CX5 - 2.5):
+    R((x, CY5 - .8, 1.0), (x, CY5 - .8, 7.4), .12, "steel", seg=6)
+    R((x, CY5 + .8, 1.0), (x, CY5 + .8, 7.4), .12, "steel", seg=6)
+B(CX5 - 8.5, CX5 - 1.6, CY5 - .9, CY5 + .9, 7.4, 7.6, "grating")                  # ice bridge
+for (a0, a1, b0, b1) in ((-12.4, 9.0, -9.6, -9.5), (-12.4, 9.0, 9.5, 9.6), (-12.4, -12.3, -9.6, 9.6), (8.9, 9.0, -9.6, 9.6)):
+    B(CX5 + a0, CX5 + a1, CY5 + b0, CY5 + b1, 0, 8.0, "fence")                  # compound fence
+pad(L, "Cable reel yard / outage laydown", 40, 320, 690, 900, "pad", z1=0.3, area="F")
+item(L, "Stormwater basin", (40, 320, 1430, 1640), (-8, 0), area="F", info="Detention basin; depth illustrative.")
+# a depression, not a slab: four sloped grass banks (rim at grade, toe at EL -8), the floor, and the permanent
+# pool at EL -5 (wet detention pond)
+for (o0, o1, i1, i0) in (((40, 1430), (320, 1430), (304, 1446), (56, 1446)), ((320, 1430), (320, 1640), (304, 1624), (304, 1446)),
+                         ((320, 1640), (40, 1640), (56, 1624), (304, 1624)), ((40, 1640), (40, 1430), (56, 1446), (56, 1624))):
+    top = [(o0[0], o0[1], 0), (o1[0], o1[1], 0), (i1[0], i1[1], -8), (i0[0], i0[1], -8)]
+    H([(x, y, z - .6) for (x, y, z) in top] + top, "turf")
+B(56, 304, 1446, 1624, -8.6, -8, "turf")
+B(50, 310, 1440, 1630, -5.4, -5, "water")
+L = "BASE_UTILITIES"
+building(L, "Water treatment building (incl. R-WT electrical room)", 440, 600, 1445, 1530, 30, tag="R-WT", area="E",
+         sheet="SW-3X1-12",
+         info="R-WT: 480 V MCC for water treatment, wastewater and the fire-pump jockey pump; supply "
+         "SWGR-13.8-2 via DB-W. Height 30 ft (Wrexham 33 ft).")
+building(L, "Wastewater treatment", 620, 745, 1445, 1530, 25, area="E")
+tank(L, "Raw water tank", 465, 1590, 20, 48, area="E", sheet="SW-3X1-12", info="40 dia x 48 ft class (Smarr EA).")
+tank(L, "Fire / service water tank", 530, 1590, 26, 40, area="E", sheet="SW-3X1-12",
+     info="52 dia x 40 ft (Smarr service water). Combined fire / service tank: the service suction sits above the "
+          "firewater reserve, so the lower ~300,000 gal (2 h at 2,500 gpm, NFPA 850) is held for the fire pumps.")
+tank(L, "Demineralised water tank", 600, 1590, 20, 48, area="E", sheet="SW-3X1-12", info="40 dia x 48 ft (Smarr demin).")
+building(L, "Fire pump house", 700, 740, 1575, 1605, 16, area="E", basis="typical")
+# final campus items (Oct 29): a water / steam chemistry lab (HRSG cycle chemistry, demin and cooling-water tests) and a
+# flammable / hazmat store by the workshop (lube-oil drums, solvents, gas cylinders: spill-contained, ventilated)
+building("BASE_UTILITIES", "Water / steam chemistry lab and sample room", 456, 496, 1620, 1644, 14, area="E",
+         basis="typical", info="Cycle-chemistry lab: grab samples and the on-line analyzer data from the HRSG sample "
+         "panels, demin and wastewater tests, reagent cabinet, fume hood, eyewash / safety shower.")
+building("BASE_SERVICES", "Flammable / hazmat storage building (lube-oil drums, chemicals, gas cylinders)", 298, 322,
+         660, 672, 10, area="F", basis="typical",
+         info="Prefabricated 2-hour rated storage building: spill sump, explosion-relief vents, mechanical ventilation, "
+         "grounding for drum transfer, cylinder rack outside on the north wall.")
+item(L, "Ammonia storage (aqueous, SCR reagent)", (800, 873, 1450, 1492), (0, 20), area="E", sheet="SW-3X1-12",
+     info="73 x 42 ft (Smarr EA). Bunded; tank shown horizontal.")
+B(800, 873, 1450, 1492, 0, 4, "concrete")
+R((808, 1471, 12), (865, 1471, 12), 8, "tank", seg=24)
+for xs in (818, 855):
+    B(xs - 2, xs + 2, 1464, 1478, 0, 5, "concrete")
+item(L, "Auxiliary boiler", (935, 995, 1450, 1540), (0, 70), area="E", basis="typical",
+     info="Gas-fired package boiler AB-1 (~150,000 lb/h class, D-type): start-up and sealing steam, HRSG / ST "
+          "warm-keeping, CCS reboiler back-up. Burner and BMS, FD fan on VFD, gas train (double block and bleed), "
+          "economizer, 70 ft stack, deaerator and feedwater pumps, AB-MCC e-house (aux_boiler.py; typical).")
+item(L, "H2 / CO2 storage (generator gas)", (1080, 1125, 1450, 1510), (0, 10), area="E", basis="typical")
+for k in range(4):
+    R((1084 + 10 * k, 1453, 4), (1084 + 10 * k, 1507, 4), 3.2, "tank", seg=16)
+item(L, "Oil-water separator", (1200, 1226, 1450, 1458), (0, 8), area="E", sheet="SW-3X1-12",
+     info="26 x 8 ft (Smarr EA).")
+R((1201, 1454, 4), (1225, 1454, 4), 4, "tank", seg=16)
+
+# D FUEL GAS
+pad(L, "Plant gas yard (pad)", 1560, 1940, 1430, 1640, "gravel", z1=0.4, area="D", sheet="SW-3X1-12",
+    register=True, info="Pad with filter-separators, heater, metering and regulation skids; skids 16 ft "
+    "max (Wrexham, Progress Power).")
+item(L, "Gas yard filter-separators", (1640, 1680, 1470, 1490), (0, 12), area="D", sheet="SW-3X1-12")
+for yy in (1475, 1485):
+    R((1643, yy, 6), (1677, yy, 6), 3.5, "tank", seg=16)
+item(L, "Fuel-gas performance heater", (1700, 1740, 1470, 1490), (0, 14), area="D", sheet="SW-3X1-12")
+R((1703, 1480, 7), (1737, 1480, 7), 6, "tank", seg=18)
+solid(L, "Gas metering skid", 1640, 1690, 1520, 1540, 0, 10, "equip", area="D", sheet="SW-3X1-12")
+solid(L, "Gas pressure regulation skid", 1710, 1750, 1520, 1540, 0, 12, "equip", area="D", sheet="SW-3X1-12")
+solid(L, "Gas yard local control enclosure", 1565, 1585, 1440, 1452, 0, 10, "ehouse", area="D",
+      info="Local enclosure, not an e-house.")
+solid(L, "CONDITIONAL: fuel-gas compressors", 1800, 1930, 1560, 1630, 0, 20, "conditional", area="D",
+      basis="conditional", info="Needed only if pipeline pressure is below the GT requirement.")
+pad(L, "CONDITIONAL: backup fuel oil (ULSD) unloading and forwarding area", 1330, 1490, 1430, 1640,
+    "conditional", z1=0.4, area="D", basis="conditional", register=True)
+tank(L, "CONDITIONAL: ULSD backup fuel-oil tank", 1410, 1580, 45, 40, "conditional", area="D",
+     basis="conditional", info="Unloading, tank and forwarding pumps; design-dependent.")
+
+# Pipeline M&R (by pipeline operator) - SW-3X1-14 key 1-9
+L = "BASE_UTILITIES"
+pad(L, "Pipeline M&R station (by pipeline operator)", 1560, 1800, 1690, 1900, "gravel", z1=0.4, area="K",
+    sheet="SW-3X1-14", register=True,
+    info="Built by the pipeline operator under a separate contract (Smarr shows it as its own "
+    "gas supplier yard).")
+item(L, "M&R 1: pig receiver, lateral terminus", (1600, 1612, 1850, 1895), (0, 6), area="K", sheet="SW-3X1-14")
+R((1606, 1852, 3.5), (1606, 1893, 3.5), 2.2, "tank", seg=14)
+solid(L, "M&R 2: insulating joint + ESD valve", 1602, 1610, 1830, 1838, 0, 5, "amber", area="K", sheet="SW-3X1-14")
+item(L, "M&R 3: horizontal filter-separator", (1630, 1665, 1845, 1857), (0, 12), area="K", sheet="SW-3X1-14",
+     info="Iron Bank (FERC).")
+R((1632, 1851, 6), (1663, 1851, 6), 5, "tank", seg=16)
+for k, y in enumerate([1820, 1838, 1856], 1):
+    item(L, f"M&R 4: line heater {k} (water bath)", (1690, 1720, y, y + 10), (0, 10), area="K",
+         sheet="SW-3X1-14", info="Cove Point: 3 heaters.")
+    R((1691, y + 5, 5), (1719, y + 5, 5), 4.6, "tank", seg=16)
+solid(L, "M&R 5: ultrasonic meters, 2 runs (custody transfer)", 1620, 1670, 1770, 1786, 0, 6, "equip",
+      area="K", sheet="SW-3X1-14")
+building(L, "M&R 6: regulation / flow control building", 1700, 1730, 1760, 1790, 16, area="K", sheet="SW-3X1-14",
+         parapet=False, info="Cove Point: 30 x 30 ft.")
+building(L, "M&R 7: gas quality + measurement building", 1620, 1636, 1730, 1738, 10, area="K",
+         sheet="SW-3X1-14", parapet=False, info="Cove Point: 8 x 16 ft.")
+tank(L, "M&R 8: condensate tank", 1751, 1861, 6, 10, area="K", sheet="SW-3X1-14")
+solid(L, "M&R 9: service panel + UPS, SCADA RTU, CP", 1740, 1756, 1728, 1740, 0, 8, "panel", area="K",
+      sheet="SW-3X1-14")
+solid(L, "M&R CP test station (as drawn)", 1765, 1769, 1730, 1734, 0, 4, "panel", area="K", sheet="SW-3X1-01")
+solid(L, "M&R SCADA antenna mast base (as drawn)", 1775, 1779, 1745, 1748, 0, 4, "panel", area="K",
+      sheet="SW-3X1-01")
+
+# ---------------------------------------------------------------------------
+# G CARBON CAPTURE (SW-3X1-06), optional
+# ---------------------------------------------------------------------------
+L = "OPT_CCS"
+for i, dx in enumerate([0, 160, 320]):
+    t = "ABC"[i]
+    gx = 630 + dx
+    solid(L, f"DMP-{t}: diverter / bypass damper", 613 + dx, 643 + dx, 808, 826, 40, 62, "duct",
+          tag=f"DMP-{t}", area="G", sheet="SW-3X1-06")
+    item(L, f"Flue-gas duct, HRSG {i+1} to DCC-{t}", (621 + dx, 639 + dx, 826, 985), (40, 62), area="G",
+         sheet="SW-3X1-02", register=False)
+    B(621 + dx, 639 + dx, 826, 985, 44, 62, "duct")
+    for yy in (870, 930):
+        B(624 + dx, 636 + dx, yy - 1, yy + 1, 0, 44, "steel")
+    # DCC sized for the train's flue gas: an H-class GT exhausts ~790 kg/s; saturated at ~40 C that is ~730 m3/s,
+    # and a packed / spray quench tower runs at ~3 m/s superficial velocity -> ~260 m2, a 60 ft diameter (close to the
+    # 62 ft absorber, as on large-scale capture plants). Counter-current: gas in low from the booster fan, out at the top.
+    cx = 584 + dx
+    item(L, f"DCC-{t}: direct-contact cooler (quench)", (cx - 30, cx + 30, 992, 1052), (0, 90),
+         tag=f"DCC-{t}", area="G", basis="typical", sheet="SW-3X1-13",
+         info="60 ft dia x 90 ft (height per sheet 13). Sized for ~790 kg/s of H-class flue gas (~730 m3/s saturated "
+              "at ~40 C) at ~3 m/s superficial velocity. Counter-current: flue gas in low from the booster fan, "
+              "quench water sprayed from the top, cooled gas out of the top nozzle to the absorber.")
+    R((cx, 1022, 0), (cx, 1022, 1.5), 31, "concrete", seg=48)                       # ring foundation
+    R((cx, 1022, 1.5), (cx, 1022, 76), 30, "ccs", seg=64)                           # shell
+    R((cx, 1022, 76), (cx, 1022, 86), 30, "ccs", r2=10.5, seg=64)                   # conical head
+    R((cx, 1022, 86), (cx, 1022, 90), 10, "duct", seg=32)                           # 20 ft outlet nozzle
+    B(605 + dx, 615 + dx, 1004, 1018, 4, 22, "duct")                                 # gas inlet from the fan
+    solid(L, f"DCC-{t} pumps + water filter", 568 + dx, 608 + dx, 1066, 1090, 0, 8, "pump", area="G",
+          sheet="SW-3X1-06")
+    item(L, f"BF-{t}: booster fan (~16 MW)", (615 + dx, 655 + dx, 985, 1035), (0, 30), tag=f"BF-{t}", area="G",
+         sheet="SW-3X1-06", info="NZT: 16.4 MWe per H-class train; VFD from the CCS MV building.")
+    B(615 + dx, 655 + dx, 985, 1035, 0, 2, "concrete")
+    R((635 + dx, 990, 16), (635 + dx, 1012, 16), 13, "motor", seg=28)
+    B(621 + dx, 639 + dx, 985, 1003, 30, 62, "duct")                                 # HRSG flue gas down into the fan
+    B(615 + dx, 623 + dx, 1004, 1018, 4, 22, "duct")                                 # fan outlet to the DCC inlet
+    # cooled gas: out of the DCC top, arched over and down into the overhead duct that runs north to the absorber
+    item(L, f"Flue-gas duct, DCC-{t} to Absorber {t}", (cx - 10, 645 + dx, 1012, 1189), (34, 117), area="G",
+         sheet="typical (carbon capture)", register=False)
+    # 20 ft round duct: up from the nozzle, a long-radius bend (R 15 ft) to horizontal, across, a bend down, and down
+    # into the overhead duct; each bend swept on a 7.5 degree arc so it reads as one smooth elbow
+    H, Rb, xe = 106, 15, 635 + dx
+    path = [(cx, 1022, 90)] + arc_pts((cx + Rb, 1022, H - Rb), Rb, 180, 90) + \
+        arc_pts((xe - Rb, 1022, H - Rb), Rb, 90, 0) + [(xe, 1022, 50)]
+    sweep(path, 10, "duct", seg=40)
+    B(625 + dx, 645 + dx, 1012, 1189, 34, 50, "duct")
+    R((635 + dx, 1014, 12), (635 + dx, 1033, 12), 7, "motor", seg=20)
+    solid(L, f"Rich/lean pumps, cross exchanger, lean cooler {t}", 660 + dx, 705 + dx, 1040, 1100, 0, 15,
+          "equip", area="G", sheet="SW-3X1-06")
+    item(L, f"Absorber {t} (62 ft dia x 262 ft, stack to 313 ft)", (599 + dx, 661 + dx, 1189, 1251), (0, 313),
+         tag=f"ABS-{t}", area="G", sheet="SW-3X1-13", shape="circle",
+         info="Keadby 3 DCO: twin absorbers 19.0 m dia x 80 m AGL (62 x 262 ft); stack to 95.5 m "
+         "(313 ft). Water wash, wash pumps and cooler at the top section.")
+    V(gx, 1220, 31, 0, 262, "ccs", seg=48)
+    V(gx, 1220, 31, 262, 268, "ccs", r2=10, seg=48)
+    V(gx, 1220, 9, 268, 313, "stack", seg=24)
+    for zp in (60, 130, 200, 250):
+        V(gx, 1220, 34, zp, zp + 1.2, "grating", seg=48)
+    solid(L, f"Water-wash pumps {t}", 675 + dx, 705 + dx, 1150, 1195, 0, 8, "pump", area="G", sheet="SW-3X1-06")
+for i, cx in enumerate([1070, 1120, 1170]):
+    t = "ABC"[i]
+    item(L, f"STR-{t}: stripper / regenerator (45 ft dia x 207 ft)", (cx - 22.5, cx + 22.5, 1165, 1210),
+         (0, 207), tag=f"STR-{t}", area="G", sheet="SW-3X1-13", shape="circle",
+         info="Keadby 3 DCO: CO2 stripper 15.0 m dia x 63 m AGL (49 x 207 ft). Reboiler, overhead "
+         "condenser and reflux drum per train.")
+    V(cx, 1187.5, 22.5, 0, 200, "ccs", seg=40)
+    V(cx, 1187.5, 22.5, 200, 207, "ccs", r2=4, seg=40)
+    for zp in (70, 150):
+        V(cx, 1187.5, 24, zp, zp + 1, "grating", seg=40)
+        if i < 2:                                                          # walkway to the next stripper
+            B(cx + 22, cx + 28, 1193, 1197, zp + .7, zp + 1, "grating")
+    solid(L, f"RB-{t}: reboiler (LP steam from ST extraction)", cx - 20, cx + 20, 1105, 1150, 0, 30, "equip",
+          area="G", sheet="SW-3X1-06")
+solid(L, "Reclaimer (thermal, intermittent)", 1210, 1260, 1105, 1150, 0, 25, "equip", area="G", sheet="SW-3X1-06")
+item(L, "Solvent + NaOH storage", (1210, 1300, 1165, 1225), (0, 32), area="G", sheet="SW-3X1-06")
+B(1210, 1300, 1165, 1225, 0, 3, "concrete")
+for (cx, cy, r) in ((1228, 1185, 14), (1270, 1185, 14), (1228, 1210, 10), (1285, 1212, 10)):
+    V(cx, cy, min(r, 11), 3, 30, "tank", seg=24)
+solid(L, "Activated-carbon filter", 1210, 1300, 1235, 1265, 0, 15, "equip", area="G", sheet="SW-3X1-06")
+building(L, "CO2 compression 3 x ~19 MW + dehydration", 1310, 1435, 1230, 1345, 35, area="G", sheet="SW-3X1-06",
+         info="Three intercooled LP compressors; NZT 19.1 MWe per train.")
+solid(L, "CONDITIONAL: HP export compressor + metering", 1360, 1435, 1160, 1220, 0, 20, "conditional",
+      area="G", basis="conditional")
+ehouse(L, "CCS MV switchgear building (VFDs)", 1060, 1200, 985, 1050, 24, area="G", sheet="SW-3X1-06",
+       info="Three trains about 150 MWe (NZT 50.1 MWe per train).")
+xfmr(L, "CCS T-1: 230/13.8 kV", 1210, 1250, 985, 1030, 22, bushing=13, fins="x", tag="CCS T-1", area="G",
+     sheet="SW-3X1-06", info="Fed from the future D5 diameter by 230 kV underground cable (2 circuits).")
+xfmr(L, "CCS T-2: 230/13.8 kV", 1260, 1300, 985, 1030, 22, bushing=13, fins="x", tag="CCS T-2", area="G",
+     sheet="SW-3X1-06")
+solid(L, "CCS instrument air", 1310, 1350, 985, 1030, 0, 12, "equip", area="G")
+ehouse(L, "CCS F&G / control", 1360, 1435, 985, 1030, 16, area="G")
+L = "OPT_CCSU"
+item(L, "CCS cooling tower (~30 cells): CCS process cooling only", (440, 1190, 1740, 1860), (0, 50),
+     tag="CCS-CT", area="G", sheet="SW-3X1-06",
+     info="Not the ACC. About 30 cells (NZT 360-390 MWth per train); cell end walls up to 50 ft.")
+B(440, 1190, 1740, 1860, 0, 3, "water")
+B(440, 1190, 1740, 1860, 3, 40, "tower")
+B(440, 1190, 1740, 1860, 40, 42, "grating")
+for c in range(1, 15):
+    B(440 + 50 * c - 0.5, 440 + 50 * c + 0.5, 1740, 1860, 3, 42, "concrete")
+for c in range(15):
+    for r_ in range(2):
+        V(465 + 50 * c, 1770 + 60 * r_, 18, 42, 50, "tower", r2=19, seg=24)
+solid(L, "CCS circulating-water pumps", 1200, 1280, 1760, 1820, 0, 12, "pump", area="G")
+ehouse(L, "CT MCC / VFD e-house", 1200, 1290, 1830, 1885, 16, area="G")
+building(L, "CCS wastewater (DCC + tower blowdown)", 1300, 1430, 1720, 1800, 25, area="G")
+
+# ---------------------------------------------------------------------------
+# H BESS (SW-3X1-07)
+# ---------------------------------------------------------------------------
+L = "OPT_BESS"
+for y in (467, 525, 583, 641, 699):
+    for x in range(1565, 1866, 60):
+        item(L, "BESS container (ISO 40 ft high cube)", (x, x + 40, y, y + 8), (0, 10.5), area="H", basis="vendor",
+             sheet="SW-3X1-12", info="BMS, HVAC and fire suppression. ISO 668: 40 x 8 x 9.5 ft.", register=False)
+        B(x, x + 40, y, y + 8, 0, 1, "concrete"); B(x + 0.2, x + 39.8, y, y + 8, 1, 10.5, "bess")
+        B(x + 39.8, x + 40.6, y + 1.5, y + 6.5, 3, 8, "machine")
+    for x in (1590, 1710, 1830):
+        xfmr(L, "BESS PCS / MV skid", x, x + 20, y + 19, y + 27, 9, fins="y", area="H", register=False)
+item(L, "BESS blocks: 30 containers + 15 PCS / MV skids", (1565, 1905, 467, 726), (0, 10.5), tag="BESS", area="H",
+     sheet="SW-3X1-07", info="Counts, sizes and ratings are assumptions (sheet 02).")
+xfmr(L, "BESS main power transformer 34.5/230 kV (to D4 upper)", 1725, 1765, 352, 387, 24, bushing=13,
+     tag="BESS MPT", area="H", sheet="SW-3X1-07")
+ehouse(L, "34.5 kV collector e-house (arc-resistant)", 1800, 1850, 360, 376, 14, area="H", sheet="SW-3X1-07")
+xfmr(L, "BESS auxiliary transformer", 1885, 1905, 360, 372, 8, area="H", sheet="SW-3X1-07")
+ehouse(L, "BESS EMS / SCADA and revenue metering", 1885, 1905, 410, 422, 10, area="H", sheet="SW-3X1-07")
+solid(L, "CONDITIONAL: grounding transformer", 1565, 1575, 415, 425, 0, 8, "conditional", area="H",
+      basis="conditional")
+
+# ---------------------------------------------------------------------------
+# I MODULAR GENERATION + BLACK START, PORTABLE PAD (SW-3X1-07, -08)
+# ---------------------------------------------------------------------------
+L = "OPT_MOD"
+item(L, "RICE engine hall (8 engines)", (1570, 1810, 1040, 1130), (0, 40), tag="RICE", area="I", sheet="SW-3X1-07",
+     info="Hall for 8 medium-speed 18-cylinder engine-generators (18-cylinder, ~18 MW class, approx.).")
+B(1570, 1810, 1040, 1130, 0, 34, "hall"); P(1570, 1810, 1040, 1130, 34, 40, "roof", ridge="x")
+for k in range(8):
+    x = 1581 + 28 * k
+    item(L, f"RICE engine-generator {k+1}", (x, x + 19, 1055, 1115), (0, 20), tag=f"RICE-{k+1}", area="I",
+         basis="typical", sheet="SW-3X1-12", register=False)
+    B(x, x + 19, 1055, 1115, 0, 3, "concrete"); B(x + 2, x + 17, 1060, 1095, 3, 20, "machine")
+    R((x + 9.5, 1096, 11), (x + 9.5, 1112, 11), 7, "machine", seg=20)
+    item(L, f"RICE {k+1} SCR + oxidation catalyst and stack", (x - 1, x + 21, 1000, 1040), (0, 90),
+         area="I", sheet="SW-3X1-13", register=False, info="Stacks 90 ft (Weston ~65 ft; Humboldt Bay 100 ft).")
+    B(x - 1, x + 21, 1000, 1030, 0, 25, "equip")
+    V(x + 10, 1037, 3, 0, 90, "stack", seg=14)
+    item(L, f"RICE {k+1} radiators (5)", (x - 1, x + 21, 1140, 1216), (0, 14), area="I", register=False)
+    for r_ in range(5):
+        column_grid((x, x + 20), (1141 + 16 * r_, 1151 + 16 * r_), 4, s=0.5)
+        B(x - 1, x + 21, 1140 + 16 * r_, 1152 + 16 * r_, 4, 7, "bundle")
+        V(x + 10, 1146 + 16 * r_, 5, 7, 9, "fan", seg=14)
+building(L, "Lube oil / starting air / oily water building", 1570, 1690, 1235, 1290, 20, area="I", sheet="SW-3X1-07")
+solid(L, "Gas conditioning skid", 1700, 1760, 1250, 1280, 0, 10, "equip", area="I")
+tank(L, "Reagent storage", 1810, 1260, 12, 15, area="I")
+ehouse(L, "PCM: power control module", 1820, 1860, 1140, 1220, 14, area="I", sheet="SW-3X1-07",
+       info="RICE 13.8 kV switchgear (electrical review, Oct 28): four bus sections, two engines each (~37 MW, ~1,710 A), ties normally open, each section to its group step-up RICE-GSU-A..D; ~35 kA per section (50 kA gear). Unit auxiliaries and the engine-hall 480 V board inside.")
+solid(L, "RICE CEMS", 1830, 1846, 1005, 1015, 0, 10, "ehouse", area="I")
+for k, x in enumerate([1910, 2110], 1):
+    item(L, f"SC-{k}: aeroderivative simple-cycle unit (50 MW class)", (x, x + 90, 1190, 1220), (0, 35),
+         tag=f"SC-{k}", area="I", sheet="SW-3X1-07",
+         info="Package with filter house; SCR and CO catalyst with an 80 ft stack (Mira Loma permit), "
+         "CEMS, PCM with 15 kV GCB, lube-oil fin-fan cooler, CO2 fire suppression.")
+    B(x, x + 70, 1192, 1218, 0, 22, "machine")
+    B(x + 70, x + 90, 1190, 1220, 0, 32, "filter")
+    B(x - 20, x, 1196, 1214, 8, 26, "duct")
+    solid(L, f"SC-{k} SCR / CO catalyst", x + 90, x + 130, 1190, 1220, 0, 35, "equip", area="I", register=False)
+    item(L, f"SC-{k} stack (80 ft)", (x + 135.5, x + 148.5, 1198, 1211), (0, 80), area="I", sheet="SW-3X1-13",
+         shape="circle", register=False)
+    V(x + 142, 1204.5, 6.5, 0, 80, "stack", seg=20)
+    ehouse(L, f"SC-{k} PCM + 15 kV GCB", x, x + 40, 1245, 1259, 12, area="I", register=False)
+    solid(L, f"SC-{k} lube-oil fin-fan cooler", x + 50, x + 70, 1245, 1259, 0, 10, "bundle", area="I", register=False)
+    solid(L, f"CONDITIONAL: SC-{k} inlet chiller / evaporative cooler", x, x + 60, 1135, 1170, 0, 14,
+          "conditional", area="I", basis="conditional")
+# drawn at x 2290-2370; moved 40 ft east (owner, Oct 20) so it stands ~45 ft clear of SC-2's inlet filter house, now on
+# this side since SC-2 was turned end for end (sc2_mirror.py): gas vents and ventilation exhaust kept off the inlet
+building(L, "Fuel-gas compressors 3 x 100% electric", 2330, 2410, 1180, 1240, 20, area="I", sheet="SW-3X1-07")
+tank(L, "Demin tank + trailer pad", 2310, 1280, 20, 30, area="I")
+solid(L, "Water-injection skid", 2255, 2275, 1280, 1290, 0, 8, "equip", area="I")
+solid(L, "Aqueous ammonia (SC units)", 2240, 2280, 1318, 1330, 0, 10, "tank", area="I")
+for yy in (870, 888):
+    item(L, "Black-start genset (proposed; requires study)", (1570, 1616, yy, yy + 10), (0, 16), area="I",
+         sheet="SW-3X1-07",
+         info="Black start is proposed only: needs starting-load, transformer-energisation, "
+         "protection and operating-sequence studies (SW-3X1-07). Diesel, with a double-wall sub-base fuel tank "
+         "(~24 h at full load) and a fill / vent point on the enclosure; no gas needed to start the yard.")
+    B(1570, 1616, yy, yy + 10, 0, 13, "machine"); R((1610, yy + 5, 13), (1610, yy + 5, 16), 0.8, "steel")
+ehouse(L, "BS black-start switchgear", 1625, 1645, 875, 893, 12, area="I", sheet="SW-3X1-07")
+solid(L, "CONDITIONAL: BESS black-start alternative", 1655, 1700, 868, 900, 0, 9.5, "conditional", area="I",
+      basis="conditional")
+ehouse(L, "MOD-EH: 34.5 kV modular collector e-house (2 bus sections + 13.8 kV station-service section)", 1915, 1995,
+       880, 900, 16, tag="MOD-EH", area="I", sheet="SW-3X1-08",
+       info="34.5 kV collector (electrical review, Oct 28): bus 1 (RICE-GSU-A, B, SC-GSU-1) to T-MOD-1, bus 2 (RICE-GSU-C, D, SC-GSU-2) to T-MOD-2, ~2,300 A and ~31 kA per section, tie normally open (40 kA gear); 13.8 kV station-service section from MOD-SST for the fuel-gas compressors and MOD-LV.")
+xfmr(L, "T-MOD-1: 230 / 34.5 kV", 2045, 2085, 870, 905, 24, bushing=13, tag="T-MOD-1", area="I", sheet="SW-3X1-08",
+     info="~150 MVA ONAN/ONAF, 230 / 34.5 kV (electrical review, Oct 28: was 13.8 / 230 kV off one 13.8 kV hub, ~175 kA). Fed from MOD-EH 34.5 kV bus 1: RICE groups A, B and SC-1, ~124 MW (~137 MVA). Typical, not engineered.")
+xfmr(L, "T-MOD-2: 230 / 34.5 kV", 2105, 2145, 870, 905, 24, bushing=13, tag="T-MOD-2", area="I", sheet="SW-3X1-08",
+     info="~150 MVA ONAN/ONAF, 230 / 34.5 kV (electrical review, Oct 28). Fed from MOD-EH 34.5 kV bus 2: RICE groups C, D and SC-2, ~124 MW (~137 MVA). Typical, not engineered.")
+# modular yard regrouped (electrical review, Oct 28): no 13.8 kV hub. RICE engines in four 2-engine groups on the PCM's
+# bus sections, each with a 13.8 / 34.5 kV group step-up; SC-1 / SC-2 each with a unit step-up at its PCM; all to the
+# 34.5 kV collector MOD-EH (two bus sections, tie open) and on to T-MOD-1 / T-MOD-2. MOD-EH keeps a 13.8 kV station-service
+# section (fuel-gas compressors, MOD-LV) from MOD-SST. Zigzag grounding transformers give each 34.5 kV section its ground.
+DCY = dict(area="I", basis="design change", sheet="beyond Rev 14 (electrical review)")
+for k, (y0, y1) in enumerate(((1079, 1101), (1052, 1074), (1025, 1047), (998, 1020))):   # strip east of the N-S drive
+    g = "ABCD"[k]
+    xfmr(L, f"RICE-GSU-{g}: 13.8 / 34.5 kV group step-up, ~45 MVA (RICE {2 * k + 1}-{2 * k + 2})", 1882, 1898, y0, y1, 17,
+         fins="x", tag=f"RICE-GSU-{g}", **DCY)
+item(L, "RICE-GSU-A..D firewalls (between the group step-ups)", (1882, 1898, 1020, 1079), (0, 19), register=False, **DCY)
+for yw in (1022, 1049, 1076):
+    B(1882, 1898, yw, yw + 1, 0, 19, "concrete")
+xfmr(L, "SC-GSU-1: 13.8 / 34.5 kV unit step-up, ~60 MVA (SC-1)", 1999, 2025, 1234, 1262, 19, fins="y", tag="SC-GSU-1",
+     **DCY)
+for _k, _x in ((1, 1997), (2, 2148)):            # firewall between each SC step-up and its unit's ammonia / SCR side
+    solid(L, f"SC-GSU-{_k} firewall (to the SCR / ammonia flow-control unit)", _x, _x + 30, 1229.5, 1231, 0, 20,
+          "concrete", register=False, **DCY)
+xfmr(L, "SC-GSU-2: 13.8 / 34.5 kV unit step-up, ~60 MVA (SC-2)", 2150, 2176, 1234, 1262, 19, fins="y", tag="SC-GSU-2",
+     **DCY)
+# (moved 14 ft west, audit Oct 29: it stood 3 ft from T-MOD-1; now ~17 ft from T-MOD-1 and from MOD-EH)
+xfmr(L, "MOD-SST: 34.5 / 13.8 kV station-service transformer, ~10 MVA (yard station service)", 2012, 2028, 904, 920,
+     11, fins="y", tag="MOD-SST", **DCY)
+for k, (y0, y1) in enumerate(((882, 889), (891, 898))):
+    xfmr(L, f"MOD-GT{k + 1}: 34.5 kV zigzag grounding transformer, MOD-EH bus {k + 1}", 1903, 1911, y0, y1, 7,
+         tag=f"MOD-GT{k + 1}", **DCY)
+for k, (y0, y1) in enumerate(((828, 835), (838, 845))):
+    xfmr(L, f"PK-GT{k + 1}: 34.5 kV zigzag grounding transformer, SWG-PK bus {'AB'[k]}", 2200, 2208, y0, y1, 7,
+         tag=f"PK-GT{k + 1}", **DCY)
+# FC-1..4, their inverter cabinet and MT-1..3 stood here (x 1995-2296, y 1068-1096); taken out Oct 20 (owner: the
+# modular yard already carries one of each, FC-5 / MT-4)
+ehouse(L, "MOD-LV 480 V board + 480 V : 13.8 kV step-up", 2215, 2267, 970, 982, 10, area="I", sheet="SW-3X1-08")
+L = "OPT_TMP"
+pad(L, "Portable pad lane", 2130, 2370, 620, 640, "road", z1=0.3, area="I")
+pad(L, "Portable pad lane", 2346, 2370, 305, 620, "road", z1=0.3, area="I")
+solid(L, "Drive-over cable ramp (C-L01 crossing)", 2238, 2252, 617, 643, 0, 1, "amber", area="I", sheet="SW-3X1-08")
+# technology sites (owner, Oct 27: one technology per site, each a small working installation on its own fenced
+# gravel pad, not a showroom row): fuel cells, microturbines (south band), open engine skid, enclosed genset (middle
+# band), container genset (north band); the pad gas header (y 452) runs between the bands, one LV lane (y 400) to PAD-LV
+def tech_site(name, x0, x1, y0, y1, gate):
+    """Fenced gravel site: pad, 7 ft chain-link on the pad edge with a 16 ft gate gap on each `gate` side (n, s or both:
+    the vehicle gate onto the park road, the other a cable / personnel gate)."""
+    pad(L, f"{name}: gravel pad", x0, x1, y0, y1, "gravel", z1=0.25, area="I", basis="design change", sheet="beyond Rev 14")
+    item(L, f"{name}: chain-link fence (7 ft) and gate", (x0, x1, y0, y1), (0, 7), register=False, area="I",
+         basis="design change", sheet="beyond Rev 14")
+    xm = (x0 + x1) / 2
+    for (yy, side) in ((y0, "s"), (y1 - .4, "n")):
+        if side in gate:
+            B(x0, xm - 8, yy, yy + .4, 0, 7, "fence"); B(xm + 8, x1, yy, yy + .4, 0, 7, "fence")
+            B(xm - 8.4, xm - 7.6, yy - .2, yy + .6, 0, 8, "steel"); B(xm + 7.6, xm + 8.4, yy - .2, yy + .6, 0, 8, "steel")
+        else:
+            B(x0, x1, yy, yy + .4, 0, 7, "fence")
+    B(x0, x0 + .4, y0, y1, 0, 7, "fence"); B(x1 - .4, x1, y0, y1, 0, 7, "fence")
+
+
+# MOB-1 stands on its own hardstand east of the CHP site, nose (terminal end) west towards the cable ramp (owner, Oct 29:
+# "intentional"; it was squeezed behind the CHP heat-recovery rack). Not a sheet 01 / 05 shape, so free to move.
+item(L, "MOB-1: trailer genset", (2250, 2303, 660, 669), (0, 24.4), tag="MOB-1", area="I", sheet="SW-3X1-08")
+B(2250, 2303, 660, 669, 3, 13.5, "machine")
+for xx in (2255, 2290, 2296):
+    R((xx, 660.5, 1.8), (xx, 668.5, 1.8), 1.8, "conductor", seg=12)
+solid(L, "MOB-1 gas regulator / meter skid (flexible hose to the trailer)", 2309, 2315, 661, 668, 0, 5, "equip",
+      area="I", sheet="typical (trailer gas genset)")      # gas off the x 2378 header, owner Oct 29 (trailer fleet look)
+ehouse(L, "PIC: portable input cabinet", 2255, 2263, 572, 578, 7, tag="PIC", area="I", sheet="SW-3X1-08")
+solid(L, "LB: commissioning load bank (trailer)", 2185, 2215, 588, 596, 0, 12, "equip", tag="LB", area="I",
+      sheet="SW-3X1-08")
+# (the open engine skid GEN-O with its canopy was taken out Oct 28: owner, the modular yard was too busy)
+ehouse(L, "PAD-LV 480 V paralleling switchboard", 2160, 2190, 430, 440, 9, tag="PAD-LV", area="I", sheet="SW-3X1-08")
+xfmr(L, "PAD-TX 480 V : 13.8 kV", 2215, 2227, 429, 441, 10, tag="PAD-TX", area="I", sheet="SW-3X1-08")
+ehouse(L, "PAD-EH 13.8 kV switchgear e-house", 2160, 2200, 470, 484, 14, tag="PAD-EH", area="I", sheet="SW-3X1-08")
+solid(L, "Portable pad gas-conditioning skid", 2310, 2340, 430, 440, 0, 8, "equip", area="I")
+
+# ---------------------------------------------------------------------------
+# I+ MODULAR EXPANSION: design change beyond Rev 14 (not on the drawing)
+# Adds more of the smaller sheet 07/08 technologies beside the Rev 14 modular
+# yard (2 simple-cycle units and 8 RICE engines stay as drawn): two
+# trailer-mounted aeroderivatives, six containerized gensets, eight fuel-cell
+# modules and three microturbines. Plots were chosen from an occupancy map of the
+# verified model with a 10 ft clearance to every part and route; the north-west
+# corner stays open as a maintenance laydown.
+# ---------------------------------------------------------------------------
+L = "OPT_MODX"
+DC = dict(area="I", basis="design change", sheet="beyond Rev 14")
+# the north-west corner stays open: maintenance laydown for engine and turbine exchanges
+pad(L, "Maintenance laydown (gravel)", 45, 405, 1705, 1880, "gravel", z1=0.25, area="I", basis="design change",
+    sheet="beyond Rev 14")
+# two trailer-mounted aeroderivatives (~35 MW) on the open ground north of the portable pad, east of MOB-1
+# (user review; the expansion fuel cells and microturbines took their old row south of the pad)
+for k in range(1):                             # one trailer aeroderivative (owner, Oct 27: one per technology)
+    x, y = 2150 + 110 * k, 740
+    item(L, f"TM-{k + 1}: trailer-mounted aeroderivative GT (~35 MW)", (x, x + 78, y, y + 55),
+         (0, 42), tag=f"TM-{k + 1}", info="Design change: gas turbine + generator trailer, control/aux trailer, "
+         "inlet filter on the trailer, exhaust stack.", **DC)
+    B(x, x + 64, y + 30, y + 42, 0, 4.5, "steel")                    # main trailer deck
+    B(x + 2, x + 60, y + 31, y + 41, 4.5, 16, "machine")             # GT + generator enclosure
+    B(x + 44, x + 60, y + 29, y + 43, 16, 24, "filter")              # inlet filter house
+    V(x + 8, y + 36, 5, 16, 42, "stack", seg=16)                     # exhaust stack
+    B(x + 4, x + 52, y + 8, y + 17, 0, 4.5, "steel")                 # aux / control trailer
+    B(x + 6, x + 50, y + 9, y + 16, 4.5, 13, "ehouse")
+    for (xx, yy) in ((x + 6, y + 30), (x + 20, y + 30), (x + 54, y + 30), (x + 6, y + 42), (x + 20, y + 42),
+                     (x + 54, y + 42), (x + 10, y + 8), (x + 46, y + 8), (x + 10, y + 17), (x + 46, y + 17)):
+        R((xx, yy, 1.8), (xx, yy + (1 if yy in (y + 30, y + 8) else -1), 1.8), 1.8, "conductor", seg=12)
+    B(x + 66, x + 78, y + 30, y + 42, 0, 9, "cabinet")               # fuel-gas / water skid
+# one fuel-cell module with its inverter and one microturbine south of the portable pad (feeding PAD-LV); owner,
+# Oct 27: one bay per technology (the duplicate containers, fuel cells and microturbines are gone)
+tech_site("Fuel-cell and microturbine site", 1995, 2150, 336, 394, "ns")    # one site (Oct 28)
+for k in range(4):
+    x = 2003 + 12 * k
+    solid(L, f"FC-{k + 5}: SOFC module (200-300 kW class)", x, x + 9, 350, 376, 0, 7, "bess", tag=f"FC-{k + 5}", **DC)
+ehouse(L, "FC-5..8 inverter / AC cabinet / desulfurizer", 2050, 2074, 352, 376, 8, **DC)
+ehouse(L, "MT-4..6 480 V switchboard", 2129, 2145, 358, 372, 9, **DC)
+for k in range(3):
+    x = 2093 + 12 * k
+    solid(L, f"MT-{k + 4}: microturbine 1 MW (1 MW package class)", x, x + 8, 351, 379, 0, 9.5, "machine",
+          tag=f"MT-{k + 4}", **DC)
+
+# modular gas blocks (owner, Oct 26), on the modular-gas-campus logic from the ERock call: unit (500 kW, 480 V) ->
+# block (5 units paralleled in a generator collector box GBC-n, one 480 V : 34.5 kV pad-mount step-up GBT-n) -> group
+# (the blocks on one 35 kV loop to one switchgear breaker) -> lineup SWG-MY (group breaker, spare group breakers, feeder)
+# -> feeder to the data centre's 34.5 kV switchgear BTM-SWGR. Six blocks on the portable pad's free ground (2 x 3 rows,
+# either side of the pad lane). Generic enclosed units (not a vendor's product). Status per number: unit 500 kW standby
+# / 450 kW prime and 10 x 8 ft footprint KNOWN; 9 ft height, GBC / GBT / SWG sizes and 34.5 kV TO VERIFY; group size,
+# block spacing, 750 kcmil Al loop WORKING ASSUMPTION.
+GB_RX = 2302.0                           # group access road centre line (north-south), 20 ft road
+GB_Y = [466.0, 544.0]                    # block south ends (each block 72 ft long, north-south)
+U_PITCH = 10.0                           # 8 ft units, 2 ft apart (access from the ends)
+
+
+def gb_frame(n):
+    """Block n's local frame: u along the block (0..72, south -> north), v across it (0 at the road, 22 at the back).
+    GB-1 / GB-2 west of the road (south / north), GB-3 / GB-4 east of it (north / south): loop order round the road."""
+    west = n in (1, 2)
+    y0 = GB_Y[0] if n in (1, 4) else GB_Y[1]
+    if west:
+        return lambda u, v: (GB_RX - 13.0 - v, y0 + u)
+    return lambda u, v: (GB_RX + 13.0 + v, y0 + u)
+
+
+def TB(T, u0, u1, v0, v1, z0, z1, c):
+    (xa, ya), (xb, yb) = T(u0, v0), T(u1, v1)
+    B(min(xa, xb), max(xa, xb), min(ya, yb), max(ya, yb), z0, z1, c)
+
+
+def Tfp(T, u0, u1, v0, v1):
+    (xa, ya), (xb, yb) = T(u0, v0), T(u1, v1)
+    return min(xa, xb), max(xa, xb), min(ya, yb), max(ya, yb)
+
+
+def unit_dress(T, u0):
+    """Generic enclosed 500 kW gas genset, 8 x 10 ft (u0..u0+8 along the block, v 10..20): units stand 2 ft apart, so
+    access is from the ends (control door and generator terminal box on the road side, service doors at the back);
+    intake louvres low on the sides; a roof radiator with two fans (back half); exhaust catalyst / silencer box and a
+    short stack on the road half of the roof."""
+    v0 = 10.0
+    TB(T, u0 - .1, u0 + 8.1, v0 - .1, v0 + 10.1, 0, .6, "steel_dark")                   # base frame
+    TB(T, u0 - .05, u0 + 8.05, v0 - .05, v0 + 10.05, .6, 8.6, "white_truck")          # enclosure
+    for us in (u0 - .12, u0 + 8.05):                                                   # intake louvres, low on the sides
+        for k in range(5):
+            TB(T, us, us + .07, v0 + 1.2, v0 + 8.8, 1.4 + k * .32, 1.55 + k * .32, "louvre")
+    TB(T, u0 + 1.0, u0 + 3.6, v0 + 10.05, v0 + 10.12, 1.0, 7.4, "steel_dark")          # service doors (back)
+    TB(T, u0 + 4.4, u0 + 7.0, v0 + 10.05, v0 + 10.12, 1.0, 7.4, "steel_dark")
+    TB(T, u0 + .2, u0 + 7.8, v0 + 4.6, v0 + 9.8, 8.6, 9.6, "radiator")                  # roof radiator, vertical discharge
+    for uc in (u0 + 2.1, u0 + 5.9):
+        x, y = T(uc, v0 + 7.2)
+        V(x, y, 1.6, 9.6, 9.9, "steel_dark", seg=16)                                     # fan rings
+        V(x, y, .3, 9.9, 10.0, "fanhub", seg=8)
+    TB(T, u0 + 2.4, u0 + 5.6, v0 + .8, v0 + 3.8, 8.6, 10.2, "steel")                    # catalyst / silencer box
+    x, y = T(u0 + 4.0, v0 + 2.3)
+    V(x, y, .38, 10.2, 13.0, "reflect", seg=12)                                          # short stack
+    V(x, y, .52, 13.0, 13.12, "steel", seg=12)                                           # rain cap
+    TB(T, u0 + .7, u0 + 2.6, v0 - .12, v0 - .05, 1.0, 7.2, "steel_dark")                # control door (road side)
+    TB(T, u0 + 5.0, u0 + 7.4, v0 - .45, v0, 1.6, 4.8, "panel")                          # generator terminal box
+
+
+def switchboard(layer, name, T, u0, u1, v0, v1, h, **meta):
+    """Outdoor (NEMA 3R) switchboard on a slab: sections with front doors (road side), rain hood."""
+    item(layer, name, Tfp(T, u0 - 1, u1 + 1, v0 - 1.5, v1 + 1), (0, h + .4), **meta)
+    TB(T, u0 - 1, u1 + 1, v0 - 1.5, v1 + 1, 0, .5, "concrete")
+    TB(T, u0, u1, v0, v1, .5, h, "panel")
+    n = 3
+    for k in range(n):
+        ua = u0 + (u1 - u0) * k / n
+        TB(T, ua + .1, ua + (u1 - u0) / n - .1, v0 - .06, v0, .9, h - .5, "panel")       # section door
+        TB(T, ua + (u1 - u0) / n - .5, ua + (u1 - u0) / n - .35, v0 - .14, v0 - .06, 3.6, 4.4, "steel_dark")
+    TB(T, u0 - .2, u1 + .2, v0 - .4, v1 + .2, h, h + .4, "steel")                        # rain hood
+
+
+def padmount(layer, name, T, u0, u1, v0, v1, h, **meta):
+    """Pad-mount transformer: low tank with cooling panels on the back and sides, the HV / LV termination cabinet on
+    the front (road side), lifting lugs. No conservator, no bushings in the air."""
+    item(layer, name, Tfp(T, u0 - 1, u1 + 1, v0 - 1, v1 + 1), (0, h + .3), **meta)
+    TB(T, u0 - 1, u1 + 1, v0 - 1, v1 + 1, 0, .5, "concrete")
+    TB(T, u0 + .6, u1 - .6, v0 + 3.0, v1 - .8, .5, h, "padmount")                        # tank
+    TB(T, u0, u1, v0, v0 + 3.0, .5, h - .4, "padmount")                                  # termination cabinet (front)
+    TB(T, (u0 + u1) / 2 - .03, (u0 + u1) / 2 + .03, v0 - .06, v0, .8, h - .7, "steel_dark")
+    for k in range(6):                                                                   # cooling panels, back
+        ua = u0 + 1.0 + k * (u1 - u0 - 2.0) / 6
+        TB(T, ua, ua + .25, v1 - .8, v1, 1.0, h - .8, "padmount")
+    for us in (u0 + .3, u1 - .6):                                                         # cooling panels, sides
+        for k in range(3):
+            va = v0 + 3.6 + k * 1.3
+            TB(T, us, us + .3, va, va + .25, 1.0, h - .8, "padmount")
+    for uu in (u0 + 1.2, u1 - 1.2):
+        TB(T, uu - .15, uu + .15, v1 - 1.2, v1 - .9, h, h + .3, "steel")                  # lifting lugs
+
+
+GB_N = 4
+for n in range(1, GB_N + 1):
+    T = gb_frame(n)
+    for m in range(5):
+        u0 = 2 + U_PITCH * m
+        x0, x1, y0_, y1_ = Tfp(T, u0, u0 + 8, 10, 20)
+        item(L, f"GB-{n}.{m + 1}: modular gas genset 500 kW, 480 V (block GB-{n}, unit {m + 1} of 5)", (x0, x1, y0_, y1_),
+             (0, 8.6), tag=f"GB-{n}.{m + 1}",
+             info="Natural-gas genset unit, 500 kW standby / 450 kW prime, 480 V, 10 x 8 ft footprint (KNOWN, public "
+                  "ERT500-class data); height, roof radiator and exhaust arrangement TO VERIFY. Terminal box on the road "
+                  f"side on the 480 V lead trench to GBC-{n}. One of 20 units in four 2.5 MW blocks on one 35 kV loop.", **DC)
+        unit_dress(T, u0)
+    switchboard(L, f"GBC-{n}: block GB-{n} generator collector box, 480 V outdoor switchboard, one breaker per unit (5)",
+                T, 51, 59, 5, 8, 7.5, tag=f"GBC-{n}",
+                info="Generator collector box (call, Oct 26): a 480 V panelboard with an individual breaker per generator, "
+                     "outdoor on a slab. Rating for 5 x 500 kW and size TO VERIFY.", **DC)
+    padmount(L, f"GBT-{n}: block GB-{n} step-up 480 V : 34.5 kV, ~3 MVA pad-mount (on the 35 kV loop)", T, 63, 71, 2, 11,
+             6.5, tag=f"GBT-{n}",
+             info="One pad-mount step-up per block, 480 V to distribution voltage (KNOWN topology); 34.5 kV and ~3 MVA "
+                  "TO VERIFY / WORKING ASSUMPTION. Loop in and out at the front (road side) HV cabinet.", **DC)
+item(L, "Modular gas group access road (between the two block rows; the 35 kV loop runs under it)",
+     (GB_RX - 10, GB_RX + 10, GB_Y[0] - 2, GB_Y[1] + 74), (0, .06), **DC)
+B(GB_RX - 10, GB_RX + 10, GB_Y[0] - 2, GB_Y[1] + 74, 0, .06, "road")
+ehouse(L, "SWG-MY: 35 kV switchgear lineup for the modular blocks (group breaker G1, spares G2-G4, feeder FDR)", 2206, 2234,
+       482, 496, 14, tag="SWG-MY",
+       info="Lineup on the call's logic: about four generator-group breakers per lineup (one used here: G1 takes the "
+            "six-block loop out and back), a feeder breaker to the data centre's 34.5 kV switchgear BTM-SWGR. Whether "
+            "the feeder is the generator owner's cable or the data centre's is TO VERIFY. Size is a placeholder.", **DC)
+
+# modular power park (owner, Oct 27): the main modular gas classes, each built as a real deployment block on its own
+# fenced site with its own collection gear and one sign (class names only; the example companies are in HANDOFF):
+# trailer gas-engine fleet, containerized gas engines, paralleled gas gensets, linear generators (the aeroderivative and
+# industrial turbine classes are AX-1 / IG-1 by the T-MOD transformers, modular_packages.py)
+tech_site("Trailer gas-engine fleet site", 1945, 2085, 540, 630, "n")
+for k in range(6):
+    x = 1953 + 14 * k
+    item(L, f"TGF-{k + 1}: trailer-mounted gas-engine generator ~2.5 MW, 13.8 kV (trailer {k + 1} of 6)",
+         (x, x + 8.5, 548, 601), (0, 15), tag=f"TGF-{k + 1}",
+         info="Gas reciprocating engine and generator in an enclosure on a road trailer, ~2.5 MW at 13.8 kV, cabled on "
+              "grade to the fleet's mobile switchgear trailer. Class layout, not a vendor's drawing.", **DC)
+    B(x, x + 8.5, 548, 601, 3.4, 4.2, "steel_dark")                                        # trailer deck
+    B(x + .2, x + 8.3, 551, 590, 4.2, 13.2, "white_truck")                                 # genset enclosure
+    B(x + .4, x + 8.1, 584, 590, 13.2, 14.4, "radiator")                                   # roof radiator
+    V(x + 4.25, 556, .55, 13.2, 15.0, "stack", seg=10)
+    B(x + 1, x + 7.5, 548, 551, 2.0, 7.0, "panel")                                         # terminal box (rear)
+    B(x + 1.5, x + 7, 594, 601, 3.4, 5.5, "steel")                                         # gooseneck
+    B(x + 1.6, x + 2.2, 596, 597, 0, 3.4, "steel"); B(x + 6.3, x + 6.9, 596, 597, 0, 3.4, "steel")   # landing gear
+    for _y in (553.5, 558):
+        R((x + .1, _y, 1.6), (x + 1.1, _y, 1.6), 1.6, "tyre", seg=14)
+        R((x + 7.4, _y, 1.6), (x + 8.4, _y, 1.6), 1.6, "tyre", seg=14)
+    # gas riser off the buried header, isolation valve, flexible hose up into the gooseneck (audit, Oct 29)
+    R((x + 4.25, 601.4, 0), (x + 4.25, 601.4, 2.6), .25, "fuelgas", seg=8)
+    B(x + 3.85, x + 4.65, 601.0, 601.8, 1.6, 2.2, "steel_dark")
+    R((x + 4.25, 601.4, 2.6), (x + 4.25, 599.5, 4.4), .2, "hdpe", seg=8)
+item(L, "TGF-SWG: mobile 13.8 kV switchgear trailer (fleet collector)", (2041, 2050, 548, 590), (0, 13), tag="TGF-SWG", **DC)
+B(2041, 2050, 548, 590, 3.4, 4.2, "steel_dark"); B(2041.3, 2049.7, 550, 584, 4.2, 12.5, "ehouse")
+for _y in (553.5, 558):
+    R((2041.1, _y, 1.6), (2042.1, _y, 1.6), 1.6, "tyre", seg=14); R((2048.9, _y, 1.6), (2049.9, _y, 1.6), 1.6, "tyre", seg=14)
+item(L, "TGF-CT: fleet control and gas-conditioning trailer", (2058, 2067, 548, 590), (0, 13), **DC)
+B(2058, 2067, 548, 590, 3.4, 4.2, "steel_dark"); B(2058.3, 2066.7, 552, 588, 4.2, 12.0, "machine")
+for _y in (553.5, 558):
+    R((2058.1, _y, 1.6), (2059.1, _y, 1.6), 1.6, "tyre", seg=14); R((2065.9, _y, 1.6), (2066.9, _y, 1.6), 1.6, "tyre", seg=14)
+
+tech_site("Containerized gas engine site", 1945, 2085, 462, 530, "ns")
+for k in range(4):                                  # stacked: engine containers on grade, cooling containers above
+    x = 1955 + 18 * k                               # on the steel deck (park_looks.cge_deck)
+    item(L, f"CGE-{k + 1}: containerized gas-engine generator ~4.4 MW, 13.8 kV (40 ft engine container {k + 1} of 4)",
+         (x, x + 8, 470, 510), (0, 9.6), tag=f"CGE-{k + 1}",
+         info="Gas reciprocating engine and generator in a 40 ft container on grade, its cooling container, radiators "
+              "and exhaust silencer stacked above on a steel deck with walkways; ~4.4 MW at 13.8 kV, to the site's "
+              "switchgear container. Class layout, not a vendor's drawing.", **DC)
+    B(x, x + 8, 470, 510, 0, 9.6, "white_truck")                                           # engine container
+    for _y in range(472, 509, 4):
+        B(x - .08, x, _y, _y + .2, .4, 9.2, "steel"); B(x + 8, x + 8.08, _y, _y + .2, .4, 9.2, "steel")   # ribs
+    B(x + 1.5, x + 6.5, 469.6, 470, 2.0, 7.0, "panel")                                    # generator terminal box
+ehouse(L, "CGE-SWG: 13.8 kV switchgear container (engine breakers, site feeder)", 2030, 2038, 470, 510, 10,
+       tag="CGE-SWG", **DC)
+xfmr(L, "CGE-AUX: 13.8 / 0.48 kV auxiliary transformer (cooling containers, radiator fans)", 2050, 2062, 474, 486, 8,
+     tag="CGE-AUX", **DC)
+
+# paralleled gensets and linear generators: back Oct 28 (owner: they are trends worth showing)
+tech_site("Paralleled gas genset site", 2095, 2150, 462, 619.6, "sn")
+for k in range(8):
+    y = 520 + 12 * k
+    item(L, f"PGS-{k + 1}: enclosed gas genset 1 MW, 480 V (paralleled, unit {k + 1} of 8)", (2103, 2131, y, y + 8.5),
+         (0, 12.5), tag=f"PGS-{k + 1}",
+         info="Sound-attenuated gas genset, 1 MW at 480 V, paralleled on the site's 480 V switchgear and stepped up "
+              "in two pad-mounts. Class layout, not a vendor's drawing.", **DC)
+    B(2103, 2131, y, y + 8.5, 0, .8, "steel_dark")
+    B(2103.2, 2126, y + .1, y + 8.4, .8, 11, "white_truck")                               # enclosure
+    B(2126, 2130.8, y + .1, y + 8.4, .8, 11, "louvre")                                   # radiator end (east)
+    V(2108, y + 4.25, .45, 11, 12.5, "stack", seg=10)
+ehouse(L, "PGS-SWG: 480 V paralleling switchgear (8 generator breakers, 2 transformer mains)", 2135, 2147, 520, 612, 10,
+       tag="PGS-SWG", **DC)
+padmount(L, "PGS-TX1: 480 V : 34.5 kV, ~5 MVA loop-feed pad-mount (gensets 1-4)", lambda u, v: (u, v), 2099, 2111, 470, 482, 6.5,
+         tag="PGS-TX1", **DC)
+padmount(L, "PGS-TX2: 480 V : 34.5 kV, ~5 MVA loop-feed pad-mount (gensets 5-8)", lambda u, v: (u, v), 2134, 2146, 470, 482, 6.5,
+         tag="PGS-TX2", **DC)
+
+tech_site("Linear generator site", 2060, 2150, 404, 444, "sn")
+for k in range(4):
+    x = 2068 + 14 * k
+    solid(L, f"LGN-{k + 1}: linear generator ~250 kW (gas, no combustion engine), DC out", x, x + 8, 412, 432, 0, 8,
+          "white_truck", tag=f"LGN-{k + 1}", **DC)
+    B(x + 1, x + 7, 426, 431, 8, 9, "louvre")
+ehouse(L, "LGN-INV: linear generator inverter / AC cabinet (480 V)", 2126, 2144, 414, 428, 8, tag="LGN-INV", **DC)
+
+# (owner, Oct 27, reference pictures) two more classes north of the park: mid-size industrial gas-turbine packages and
+# a gas-engine row with exhaust heat recovery; the detail (filter houses, stacks, rack, heat exchangers) is park_looks.py
+tech_site("Mid-size gas turbine site", 1945, 2085, 652, 775, "ns")
+for k, yc in enumerate((690, 742)):
+    y0, y1 = (680, 709) if k == 0 else (723, 752)
+    item(L, f"MTG-{k + 1}: mid-size industrial gas-turbine generator package ~16 MW, 13.8 kV (unit {k + 1} of 2)",
+         (1952, 2036, y0, y1), (0, 50.6), tag=f"MTG-{k + 1}",
+         info="Single-shaft industrial gas turbine and generator in an acoustic enclosure on a skid, the self-cleaning "
+              "inlet filter house raised on legs over the inlet end, the exhaust stack on its own frame, lube-oil "
+              "cooler beside; ~16 MW at 13.8 kV to the site switchgear. Class layout, not a vendor's drawing.", **DC)
+solid(L, "MTG-FG: fuel-gas conditioning skid (scrubber, filter-separator, heater)", 1948, 1968, 711, 721, 0, 12,
+      "steel_dark", tag="MTG-FG", **DC)
+ehouse(L, "MTG-SWG: 13.8 kV switchgear e-house (2 generator breakers, site feeder)", 2045, 2075, 716, 728, 11,
+       tag="MTG-SWG", **DC)
+ehouse(L, "MTG-CB: control and MCC building (unit controls, 480 V MCC)", 2050, 2078, 680, 694, 12, tag="MTG-CB", **DC)
+xfmr(L, "MTG-AUX: 13.8 / 0.48 kV auxiliary transformer", 2070, 2080, 745, 757, 8, tag="MTG-AUX", **DC)
+
+tech_site("Gas engine CHP site", 2095, 2205, 648, 692, "s")
+for k in range(4):
+    x = 2101 + 19 * k
+    item(L, f"CHP-{k + 1}: gas-engine generator ~2.5 MW with exhaust heat recovery, 13.8 kV (unit {k + 1} of 4)",
+         (x, x + 10, 651, 679), (0, 12.8), tag=f"CHP-{k + 1}",
+         info="Gas reciprocating engine and generator in a sound enclosure, ~2.5 MW at 13.8 kV; the exhaust rises to "
+              "its heat exchanger and stack on the rack behind, the jacket and exhaust heat go to the hot-water "
+              "headers. Class layout, not a vendor's drawing.", **DC)
+    B(x - .5, x + 10.5, 651, 679, 0, .3, "concrete")
+    B(x, x + 10, 653, 678, .3, 11.6, "ehouse")                                             # enclosure
+    B(x, x + 10, 653, 678, 11.6, 12, "roof")
+    B(x + 1, x + 9, 662, 672, 12, 12.8, "louvre")                                          # roof ventilation
+    for _y in (656, 664, 672):
+        B(x - .12, x, _y, _y + 4, 1.2, 9, "louvre"); B(x + 10, x + 10.12, _y, _y + 4, 1.2, 9, "louvre")
+    B(x + 2.5, x + 7.5, 652.6, 653, 2.0, 7.0, "panel")                                     # generator terminal box
+ehouse(L, "CHP-SWG: 13.8 kV switchgear container (4 engine breakers, site feeder)", 2178, 2186, 652, 676, 10,
+       tag="CHP-SWG", **DC)
+padmount(L, "CHP-AUX: 13.8 / 0.48 kV, 750 kVA auxiliary pad-mount (engine auxiliaries, heat-recovery pumps, dump cooler)",
+         lambda u, v: (u, v), 2191, 2199, 673, 679, 5.0, tag="CHP-AUX", **DC)
+
+# power park roads (road audit, Oct 28: the site gates opened onto 10 ft gaps and bare ground, the trailer fleet sat behind
+# its own gas header): crushed-stone roads, 18-22 ft, with every site's vehicle gate on one of them; low pipes under the
+# roads are sleeved (fuel.road_crossings)
+for nm, (x0, x1, y0, y1) in (("west park road", (1922, 1942, 300, 648)),          # from the 30 ft access road
+                             ("park spine road", (1922, 2135, 630, 648)),         # joins the portable pad lane
+                             ("middle park lane", (1942, 2312, 444, 462)),        # to the gas-block group road
+                             ("south park drive (fuel-cell and microturbine gates)", (1942, 2160, 300, 334)),
+                             ("trailer fleet access lane (inside the fence)", (1950, 2066, 603, 628)),
+                             ("paralleled genset north gate apron road", (2095, 2135, 620, 630))):
+    pad(L, f"Power park: {nm}", x0, x1, y0, y1, "road", z1=0.3, area="I", basis="design change", sheet="beyond Rev 14")
+pad(L, "Power park: middle park lane, joint with the group road", 2292, 2312, 461, 465, "road", z1=0.3, area="I",
+    basis="design change", sheet="beyond Rev 14")
+pad(L, "Power park: portable pad lane, joint with the group road (north end)", 2292, 2312, 616, 621, "road", z1=0.3,
+    area="I", basis="design change", sheet="beyond Rev 14")
+pad(L, "Portable pad lane: joint with the 30 ft access road", 2346, 2370, 299, 306, "road", z1=0.3, area="I",
+    basis="design change", sheet="beyond Rev 14")
+for nm, (x0, x1, y0, y1) in (("load-bank trailer", (2181, 2219, 584, 620)), ("MOB-1 trailer", (2247, 2308, 640, 684))):   # cable at x 2245 stays beside it
+    pad(L, f"Portable pad: crushed-stone hardstand, {nm}", x0, x1, y0, y1, "gravel", z1=0.25, area="I",
+        basis="design change", sheet="beyond Rev 14")
+
+# power park collection (electrical review, Oct 28): the park no longer lands on the 13.8 kV pad / MOD-EH buses. Each
+# site steps up to 34.5 kV at the site (xxx-GSU), the PGS pad-mounts are 480 V : 34.5 kV, AX-1 / IG-1 get unit step-ups;
+# all feed the 34.5 kV park collector SWG-PK (two bus sections) and the third 230 kV transformer T-MOD-3 (three-winding,
+# 230 / 34.5 / 34.5 kV, ~250 MVA) on the T-MOD gantry. MOD-EH keeps RICE + SC-1/2 + MOD-LV (~255 MW, as reviewed Oct 21);
+# PAD-EH keeps TM-1, the CHP site, MT-TX, MOB-1 (via PIC) and PAD-TX (~51 MW, ~2,370 A) and steps up through PAD-GSU.
+GSU = "13.8 / 34.5 kV step-up"
+xfmr(L, f"TGF-GSU: {GSU}, ~20 MVA (trailer fleet)", 2068, 2083, 600, 628.5, 13, fins="y", tag="TGF-GSU", **DC)
+xfmr(L, f"CGE-GSU: {GSU}, ~20 MVA (containerized engines)", 2048, 2064, 492, 514, 13, fins="y", tag="CGE-GSU", **DC)
+xfmr(L, f"MTG-GSU: {GSU}, ~40 MVA (mid-size turbines)", 2044, 2064, 740, 768, 16, fins="y", tag="MTG-GSU", **DC)
+xfmr(L, f"PAD-GSU: {GSU}, ~60 MVA (PAD-EH: TM-1, CHP site, MT-TX, PAD-TX)", 2166, 2192, 506, 532, 19, fins="y", tag="PAD-GSU", **DC)
+xfmr(L, f"AX-GSU: {GSU}, ~45 MVA (AX-1 unit step-up)", 2008, 2030, 950, 976, 17, fins="y", tag="AX-GSU", **DC)
+# firewalls (audit, Oct 29): each step-up within ~20 ft of an e-house, package or other transformer gets a 2-hour
+# concrete firewall 1 ft above it and 2 ft past it each side (NFPA 850 / IEEE 979)
+for _nm, (_x0, _x1, _y0, _y1, _h) in (("TGF-GSU firewall (to the control trailer)", (2056, 2084.4, 591, 592.4, 14)),
+                                     ("CGE-GSU firewall (to CGE-SWG)", (2042, 2043.5, 490, 516, 14)),
+                                     ("CGE-GSU firewall (to CGE-AUX)", (2046, 2066, 488.5, 490, 14)),
+                                     ("MTG-GSU firewall (to MTG-2)", (2040, 2041.5, 738, 770, 17)),
+                                     ("MTG-GSU firewall (to MTG-AUX)", (2065.2, 2066.6, 738, 770, 17)),
+                                     ("PAD-GSU firewall (to PAD-EH / SWG-MY)", (2164, 2194, 499, 500.5, 20)),
+                                     ("PAD-GSU firewall (to PGS-SWG)", (2158, 2159.5, 504, 534, 20))):
+    solid(L, _nm, _x0, _x1, _y0, _y1, 0, _h, "concrete", register=False, **DC)
+xfmr(L, f"IG-GSU: {GSU}, ~60 MVA (IG-1 unit step-up)", 2140, 2164, 948, 978, 19, fins="y", tag="IG-GSU", **DC)
+padmount(L, "MT-TX: 480 V : 13.8 kV, ~3.75 MVA pad-mount (microturbine site)", lambda u, v: (u, v), 2132, 2146, 377, 389,
+         6.5, tag="MT-TX", **DC)
+ehouse(L, "SWG-PK: 34.5 kV park collector switchgear (2 bus sections, tie; 8 feeder + 2 main breakers)", 2148, 2196,
+       810, 826, 14, tag="SWG-PK", **DC)
+xfmr(L, "T-MOD-3: 230 / 34.5 / 34.5 kV, ~250 MVA three-winding (power park collector)", 2158, 2200, 858, 890, 24,
+     bushing=13, tag="T-MOD-3",
+     info="Third modular-yard main transformer (electrical review, Oct 28): two 34.5 kV windings, one per SWG-PK bus "
+          "section (~2,100 A each); HV to the T-MOD 230 kV gantry (extended east). The park collects ~208 MW (~231 MVA "
+          "at 0.9 pf): trailer fleet, containerized engines, paralleled gensets, mid-size turbines, PAD-EH, AX-1, IG-1. "
+          "Typical, not engineered.", **DC)
+
+
+# ---------------------------------------------------------------------------
+# J GT INLET CHILLING (SW-3X1-02), optional
+# ---------------------------------------------------------------------------
+L = "OPT_IC"
+item(L, "Inlet-chilling tower (12 cells): chiller heat rejection", (60, 300, 1240, 1320), (0, 50), area="J",
+     basis="typical", sheet="SW-3X1-02")
+B(60, 300, 1240, 1320, 0, 3, "water"); B(60, 300, 1240, 1320, 3, 40, "tower"); B(60, 300, 1240, 1320, 40, 42, "grating")
+for c in range(6):
+    for r_ in range(2):
+        V(80 + 40 * c, 1260 + 40 * r_, 15, 42, 50, "tower", r2=16, seg=20)
+building(L, "Chillers x6 (water-cooled)", 60, 240, 1040, 1170, 25, area="J", sheet="SW-3X1-02")
+solid(L, "CW pumps (inlet chilling)", 250, 305, 1100, 1170, 0, 10, "pump", area="J")
+ehouse(L, "Inlet-chilling e-house / transformer", 250, 305, 1040, 1085, 14, area="J")
+solid(L, "CHW pumps", 60, 150, 1190, 1225, 0, 10, "pump", area="J")
+tank(L, "CONDITIONAL: TES chilled-water tank", 200, 1205, 24, 40, "conditional", area="J", basis="conditional")
+
+# ---------------------------------------------------------------------------
+# K LNG SATELLITE and 25 MW GREEN HYDROGEN (SW-3X1-14), adjacent market
+# ---------------------------------------------------------------------------
+L = "OPT_LNG"
+item(L, "LNG 12: spill impoundment (NFPA 59A, to verify)", (2115, 2298, 1732, 1836), (0, 4), area="K",
+     sheet="SW-3X1-14")
+for bx in [(2115, 2298, 1732, 1733), (2115, 2298, 1835, 1836), (2115, 2116, 1732, 1836), (2297, 2298, 1732, 1836)]:
+    B(*bx, 0, 4, "concrete")
+B(2116, 2297, 1733, 1835, 0, 0.3, "concrete")
+for k in range(8):
+    x = 2130 + 20 * k
+    item(L, f"LNG 11: tank {k+1}, 51,780 gal horizontal vacuum-insulated", (x, x + 12.5, 1745, 1822.6), (0, 17.5),
+         tag=f"LNG-T{k+1}", area="K", basis="vendor", sheet="SW-3X1-14",
+         info="150 in dia x 931 in long. Eight tanks hold 414,000 gal, roughly 9 h of one GT or 3 h of the plant.")
+    R((x + 6.25, 1747, 11), (x + 6.25, 1820.6, 11), 6.25, "tank", seg=20)
+    for yy in (1760, 1805):
+        B(x + 1, x + 11.5, yy - 1.5, yy + 1.5, 0.3, 7, "concrete")
+pad(L, "LNG 10: truck unloading bay 1", 1840, 1912, 1675, 1712, "road", z1=0.3, area="K")
+pad(L, "LNG 10: truck unloading bay 2", 1925, 1997, 1675, 1712, "road", z1=0.3, area="K")
+solid(L, "LNG 10: unloading skid", 1885, 1925, 1716, 1728, 0, 8, "equip", area="K", sheet="SW-3X1-14")
+item(L, "LNG 14: vaporizers + glycol heater", (1880, 1990, 1760, 1820), (0, 30), area="K", sheet="SW-3X1-14")
+B(1880, 1990, 1760, 1820, 0, 1, "concrete")
+for k in range(4):
+    B(1886 + 26 * k, 1904 + 26 * k, 1766, 1790, 1, 30, "bundle")
+B(1886, 1984, 1798, 1816, 1, 12, "equip")
+solid(L, "LNG 13: send-out pumps 2 x 100%", 2030, 2070, 1765, 1795, 0, 8, "pump", area="K", sheet="SW-3X1-14")
+solid(L, "LNG 15: boil-off gas compressor", 2030, 2075, 1815, 1845, 0, 12, "motor", area="K", sheet="SW-3X1-14")
+solid(L, "LNG 16: send-out metering + pressure control", 1880, 1930, 1840, 1880, 0, 10, "equip", area="K",
+      sheet="SW-3X1-14")
+solid(L, "LNG impoundment sump pump", 1830, 1860, 1760, 1780, 0, 6, "pump", area="K")
+ehouse(L, "LNG 17: LNG e-house (13.8 kV / 480 V)", 1950, 1990, 1850, 1864, 14, area="K", sheet="SW-3X1-14",
+       info="15 kV from R1, about 2,690 ft (1,760 shared DB-N + 931 new).")
+item(L, "LNG 18: vent stack", (2092, 2098, 1860, 1866), (0, 60), area="K", basis="typical", shape="circle")
+V(2095, 1863, 1.5, 0, 60, "stack")
+L = "OPT_H2"
+item(L, "H2 22: electrolyzer building (5 x 5 MW PEM + 5 rectifiers)", (2010, 2170, 1440, 1520), (0, 30),
+     tag="H2-EL", area="K", sheet="SW-3X1-14",
+     info="25 MW PEM electrolysis, 10.8 t/day, sized like FPL Cavendish at Okeechobee. Hydrogen is "
+     "GT fuel made from renewable or surplus power imported through D6, never from the plant's "
+     "own output (SW-3X1-16). Group B hazardous area.")
+B(2010, 2170, 1440, 1520, 0, 26, "hall"); P(2010, 2170, 1440, 1520, 26, 30, "roof", ridge="x")
+for k in range(5):
+    x = 2020 + 20 * k
+    solid(L, f"PEM electrolyzer {k+1} (5 MW PEM stack)", x, x + 7.5, 1450, 1477.7, 0, 10, "bess", area="K",
+          basis="vendor", sheet="SW-3X1-12", register=False, info="Vendor bulletin: 8.4 x 2.3 m.")
+    solid(L, f"Rectifier {k+1} (7 MVA)", x, x + 8.2, 1490, 1504.8, 0, 8, "cabinet", area="K", basis="vendor",
+          register=False, info="Vendor bulletin: 4.5 x 2.5 m, 7 MVA.")
+    xfmr(L, f"H2 21: rectifier transformer {k+1} (7 MVA)", x + 2 * k, x + 2 * k + 12, 1530, 1542, 10, area="K",
+         sheet="SW-3X1-14")
+solid(L, "H2 24: water purification (RO / EDI)", 2125, 2160, 1455, 1480, 0, 12, "equip", area="K",
+      info="9 L per kg H2 (vendor data).")
+ehouse(L, "H2 20: 13.8 kV e-house", 2240, 2300, 1440, 1456, 14, area="K", sheet="SW-3X1-14")
+xfmr(L, "H2 19: T-H2 230/13.8 kV (about 40 MVA)", 2330, 2370, 1440, 1480, 24, bushing=13, tag="T-H2", area="K",
+     sheet="SW-3X1-14", info="230 kV cable from D6, 1,720 ft route along the east fence.")
+item(L, "H2 23: dry coolers", (2185, 2225, 1440, 1560), (0, 16), area="K", sheet="SW-3X1-14",
+     info="5 x 2,500 L/min (vendor data).")
+column_grid((2186, 2224), range(1442, 1561, 39), 8, s=0.6)
+B(2185, 2225, 1440, 1560, 8, 12, "bundle")
+for k in range(3):
+    V(2205, 1460 + 40 * k, 12, 12, 16, "fan", seg=18)
+solid(L, "H2 25: H2 dryer / purification", 2240, 2280, 1470, 1490, 0, 12, "equip", area="K")
+item(L, "H2 28: N2 purge supply", (2240, 2270, 1500, 1520), (0, 14), area="K")
+for k in range(2):
+    V(2248 + 14 * k, 1510, 5, 0, 14, "tank")
+for k, y in ((1, 1500), (2, 1515)):
+    solid(L, f"H2 26: H2 compressor {k} (40 ft ISO)", 2290, 2330, y, y + 8, 0, 9.5, "machine", area="K",
+          sheet="SW-3X1-14")
+for (x, y) in [(2250, 1560), (2250, 1580), (2300, 1560), (2300, 1580)]:
+    item(L, "H2 27: storage tube bank (~40 ft tubes)", (x, x + 40, y, y + 10), (0, 10), area="K", register=False)
+    for k in range(3):
+        R((x + 1, y + 1.7 + 3.3 * k, 2.5), (x + 39, y + 1.7 + 3.3 * k, 2.5), 1.5, "tank", seg=12)
+        R((x + 1, y + 1.7 + 3.3 * k, 6), (x + 39, y + 1.7 + 3.3 * k, 6), 1.5, "tank", seg=12)
+item(L, "H2 storage tube banks x4", (2250, 2340, 1560, 1590), (0, 8), tag="H2-ST", area="K", sheet="SW-3X1-14",
+     info="Buffer hours between solar production and turbine operation; seasonal storage needs "
+     "geology such as salt caverns (SW-3X1-16).")
+item(L, "H2 29: vent stack", (2378, 2382, 1595, 1599), (0, 40), area="K", basis="typical", shape="circle")
+V(2380, 1597, 1.2, 0, 40, "stack")
+solid(L, "H2 30: H2 / gas blending skid (plant gas yard)", 1800, 1840, 1470, 1500, 0, 10, "equip", area="K",
+      sheet="SW-3X1-14", info="Blends into the GT-1 fuel branch (5% by volume pilot, as FPL tested one of three units).")
+
+# ---------------------------------------------------------------------------
+# L BTM DATA CENTRE (design option beyond Rev 14): ~150 MW campus outside the east fence, beside
+# the modular yard, fed behind the meter. One BTM substation supports three operating modes,
+# selected by breakers: (1) islanded on the modular yard + BTM BESS; (2) islanded with the
+# normally-open 230 kV backup tie to the plant switchyard (D6); (3) grid-parallel, tie closed.
+# ---------------------------------------------------------------------------
+L = "OPT_DC"
+DC = dict(area="L", basis="typical", sheet="design option (BTM data centre)")
+pad(L, "BTM data-centre campus (crushed stone)", 2460, 3380, 300, 1380, "pad", z1=0.2, **DC)
+for (x0, x1, y0, y1, n) in ((2480, 3360, 380, 410, "south"), (2480, 2510, 380, 1360, "west"),
+                            (2730, 3360, 935, 965, "central"), (3330, 3360, 380, 1360, "east"),
+                            (2480, 3360, 1330, 1360, "north"), (3000, 3030, 0, 380, "entrance")):
+    pad(L, f"Campus road (30 ft), {n}", x0, x1, y0, y1, "road", z1=0.3, **DC)
+item(L, "Campus security fence (8 ft) and entrance gate", (2460, 3380, 300, 1380), (0, 8), register=False, **DC)
+for (x0, x1, y0, y1) in ((2460, 3000, 300, 300.5), (3030, 3380, 300, 300.5), (2460, 3380, 1379.5, 1380),
+                         (2460, 2460.5, 300, 1380), (3379.5, 3380, 300, 1380)):
+    B(x0, x1, y0, y1, 0, 8, "fence")
+B(2998.5, 3000, 299, 302, 0, 10, "steel"); B(3030, 3031.5, 299, 302, 0, 10, "steel")
+building(L, "DC admin / security / NOC building", 3060, 3180, 315, 370, 24, tag="DC-ADM", **DC)
+solid(L, "DC gatehouse", 3035, 3052, 318, 338, 0, 11, "building", **DC)
+# BTM substation: two 13.8/34.5 kV step-ups from the modular yard, the 230/34.5 kV tie, switchgear
+xfmr(L, "BTM-T1: 13.8/34.5 kV step-up from the modular yard, to bus A (90 MVA)", 2530, 2565, 770, 810, 24, tag="BTM-T1", **DC)
+xfmr(L, "BTM-T2: 13.8/34.5 kV step-up from the modular yard, to bus B (90 MVA)", 2580, 2615, 770, 810, 24, tag="BTM-T2", **DC)
+xfmr(L, "BTM-T3: 13.8/34.5 kV step-up from the modular yard, on the bus-tie section (90 MVA, N+1)", 2530, 2565, 712,
+     752, 24, tag="BTM-T3", **DC)
+for k, gx in enumerate((2600, 2622)):
+    xfmr(L, f"BTM-GT{k + 1}: 34.5 kV zigzag grounding transformer, bus {'AB'[k]}", gx, gx + 12, 906, 918, 9, fins="y",
+         tag=f"BTM-GT{k + 1}", **DC)
+xfmr(L, "BTM-TIE: 230/34.5 kV backup / grid-parallel tie transformer (180 MVA, carries the full campus)", 2630, 2675, 762, 815, 28, bushing=13,
+     tag="BTM-TIE", **DC)
+solid(L, "BTM 230 kV tie breaker (dead tank, normally open) + disconnect", 2650, 2668, 822, 845, 0, 22, "steel",
+      tag="BTM-52T", **DC)
+ehouse(L, "BTM 34.5 kV switchgear: double bus A / B with bus tie, 3-mode transfer scheme, sync check", 2530, 2650, 860,
+       900, 18, tag="BTM-SWGR", **DC, info="Bus A: BTM-T1 and the genset GSU-1; bus B: BTM-T2 and GSU-2; BTM-T3 (N+1), the "
+       "230 kV tie and the BTM BESS on the bus tie section; zigzag grounding transformers GT1 / GT2 on each bus. Each data hall takes one feeder from bus A (A side) and one from bus B "
+       "(B side): 2N. Operating modes by breaker: (1) islanded: T1/T2 mains closed, tie open; (2) islanded with backup: "
+       "the 230 kV tie closes on loss of the modular supply (open transition) or for maintenance; (3) grid-parallel: tie "
+       "closed with sync check, modular yard and BESS firm the load. Typical, not engineered.")
+# BTM-STATCOM (Oct 29: final campus items): fast reactive support and harmonic filtering on the 34.5 kV bus. AI
+# training loads swing in seconds and their rectifiers inject harmonics; islanded, the campus has no grid to hold the
+# voltage. A fenced pad north of BTM-SWGR: coupling transformer, converter e-house, cooling, filter bank.
+item(L, "BTM-STATCOM pad: fence and gate (STATCOM + harmonic filter)", (2554, 2644, 932, 992), (0, 7), register=False, **DC)
+for (_a, _b, _c, _d) in ((2554, 2644, 932, 932.4), (2554, 2644, 991.6, 992), (2554, 2554.4, 932, 992),
+                         (2643.6, 2644, 932, 962), (2643.6, 2644, 978, 992)):        # gate on the east side
+    B(_a, _b, _c, _d, 0, 7, "fence")
+B(2554.4, 2643.6, 932.4, 991.6, 0, .25, "gravel_yard")
+xfmr(L, "BTM-STATCOM-TX: 34.5 / 17 kV STATCOM coupling transformer, ~70 MVA", 2558, 2574, 938, 956, 16, fins="y",
+     tag="BTM-STX", **DC)
+ehouse(L, "BTM-STATCOM: +/- 60 Mvar STATCOM converter e-house (IGBT valves, controls)", 2582, 2620, 938, 952, 14,
+       tag="BTM-STATCOM", **DC)
+solid(L, "BTM-STATCOM valve cooling: fin-fan dry cooler and pump skid", 2626, 2640, 938, 952, 0, 10, "radiator", **DC)
+item(L, "BTM-HF: 34.5 kV harmonic filter bank (5th / 7th / 11th, ~20 Mvar), capacitor racks and air-core reactors",
+     (2560, 2640, 962, 988), (0, 16), tag="BTM-HF", **DC)
+B(2560, 2640, 962, 988, 0, .5, "concrete")
+for _k in range(3):
+    _x = 2566 + 26 * _k
+    for _px in (_x, _x + 11.6):                                                    # open capacitor rack
+        for _py in (966, 975.6):
+            B(_px, _px + .4, _py, _py + .4, .5, 12, "steel")
+    for _z in (3, 6.5, 10):
+        B(_x, _x + 12, 966, 976, _z - .3, _z, "steel")                           # tier frame
+        for _cx in range(4):                                                       # capacitor cans with bushings
+            for _cy in range(3):
+                _px, _py = _x + 1.2 + 2.9 * _cx, 967.4 + 3.1 * _cy
+                B(_px - .6, _px + .6, _py - .9, _py + .9, _z, _z + 2.2, "panel")
+                R((_px, _py, _z + 2.2), (_px, _py, _z + 2.9), .18, "insulator", seg=6)
+    V(_x + 6, 982, 2.6, .5, 8, "insulator", seg=16)                               # air-core reactor on insulators
+    V(_x + 6, 982, 3.0, 8, 13, "machine", seg=20)
+# BTM BESS for load steps and ride-through (AI training loads swing tens of percent in seconds)
+for r_ in range(5):
+    y = 440 + 60 * r_
+    for k in range(3):
+        x = 2530 + 50 * k
+        item(L, "BTM BESS container (ISO 40 ft)", (x, x + 40, y, y + 8), (0, 10.5), register=False, **DC)
+        B(x, x + 40, y, y + 8, 0, 1, "concrete"); B(x + 0.2, x + 39.8, y, y + 8, 1, 10.5, "bess")
+    xfmr(L, "BTM BESS PCS / MV skid", 2675, 2697, y + 14, y + 22, 9, fins="y", register=False, **DC)
+item(L, "BTM BESS 40 MW / 80 MWh: 15 containers + 5 PCS / MV skids", (2530, 2697, 440, 698), (0, 10.5), tag="BTM-BESS",
+     **DC, info="Absorbs the data-centre load steps so the engines follow slowly; ride-through on mode transfers.")
+# data halls (single storey, ~60 MW IT each), fed 2N. Each long face carries one side (A north, B south):
+# next to the wall a row of 24 two-tier power skids (UPS modules, Li-ion battery, LV switchboard), then a row of
+# 24 x 3.5 MVA 34.5/0.48 kV pad-mount transformers (84 MVA per side: one side carries the whole hall), each
+# transformer bus-ducted into its skid; the 24 transformers of a side hang on four 34.5 kV feeder loops of six
+for (t, y0, y1) in (("A", 1020, 1280), ("B", 620, 880)):
+    building(L, f"Data hall {t}: ~60 MW IT, liquid-cooled racks (closed loop)", 2730, 3290, y0, y1, 45, c="hall",
+             tag=f"DH-{t}", **DC, info="Closed-loop liquid cooling to rooftop dry coolers; no evaporative water. "
+             "Power 2N: A side from bus A, B side from bus B; each rack row takes one A and one B feed.")
+    building(L, f"Data hall {t} gallery: MV / LV distribution, controls, cooling pumps (A and B sides)", 2700, 2728, y0,
+             y1, 30, c="ehouse", tag=f"DH-{t}-EG", **DC)
+    for side, sk, pm in (("A", (y1 + 2, y1 + 28), (y1 + 30, y1 + 39)), ("B", (y0 - 28, y0 - 2), (y0 - 39, y0 - 30))):
+        for k in range(24):
+            x = 2742 + 22.5 * k
+            item(L, f"Data hall {t} {side}-side power skid {k + 1} (UPS, battery, LV switchboard, two-tier)",
+                 (x, x + 18, sk[0], sk[1]), (0, 24), register=False, **DC)
+            B(x, x + 18, sk[0], sk[1], 0, 1, "concrete")
+            B(x + .3, x + 17.7, sk[0] + .3, sk[1] - .3, 1, 12, "ehouse")
+            B(x + .3, x + 17.7, sk[0] + .3, sk[1] - .3, 12.3, 23.4, "ehouse")
+            B(x, x + 18, sk[0], sk[1], 23.4, 24, "roof")
+            B(x + 2, x + 16, sk[0] + 2, sk[1] - 2, 24, 26, "machine")                         # rooftop HVAC
+            xfmr(L, f"Data hall {t} {side}-side pad-mount 34.5/0.48 kV (3.5 MVA)", x + 4.5, x + 13.5, pm[0], pm[1], 8,
+                 fins="x", register=False, **DC)
+            wy0, wy1 = (sk[1], pm[0]) if side == "A" else (pm[1], sk[0])                     # bus duct to the skid
+            B(x + 8, x + 10, wy0, wy1, 5.5, 7, "steel")
+            dy0, dy1 = (y1, sk[0]) if side == "A" else (sk[1], y0)                           # skid to the hall wall
+            B(x + 8, x + 10, dy0, dy1, 9, 10.5, "steel")
+        item(L, f"Data hall {t} {side}-side power skids: 24 x UPS + Li-ion battery + LV switchboard (bus {side})",
+             (2742, 3277.5, sk[0], sk[1]), (0, 26), tag=f"DH-{t}-S{side}", **DC)
+        item(L, f"Data hall {t} {side}-side MV/LV transformers: 24 x 3.5 MVA 34.5/0.48 kV pad-mount, 4 feeder loops "
+             f"(bus {side})", (2742, 3277.5, pm[0], pm[1]), (0, 8), tag=f"DH-{t}-T{side}", **DC)
+# backup generation: 36 x 3.6 MW diesel gensets (130 MW: IT load plus the critical cooling pumps, the BESS bridging
+# the start), 13.8 kV,
+# paralleled in their switchgear and stepped up to 34.5 kV by two GSUs onto bus A and bus B
+for row, y in enumerate((440, 500, 560)):
+    for k in range(12):
+        x = 2780 + 46 * k
+        item(L, f"DC backup genset {row * 12 + k + 1} (3.6 MW diesel, 13.8 kV, 48 h belly tank)", (x, x + 40, y, y + 12),
+             (0, 14), register=False, **DC)
+        B(x, x + 40, y, y + 12, 0, 1.5, "concrete"); B(x + 0.5, x + 39.5, y + .5, y + 11.5, 1.5, 13, "ehouse")
+        R((x + 34, y + 6, 13), (x + 34, y + 6, 20), 0.9, "stack", seg=10)
+item(L, "DC backup gensets 36 x 3.6 MW (diesel, 130 MW)", (2780, 3326, 440, 572), (0, 20), tag="DC-GEN", **DC)
+ehouse(L, "DC genset paralleling switchgear (13.8 kV, two buses)", 2742, 2774, 440, 572, 14, tag="DC-PSG", **DC)
+xfmr(L, "DC-GSU-1: genset 13.8/34.5 kV step-up to bus A (75 MVA)", 2702, 2736, 445, 480, 22, tag="DC-GSU-1", **DC)
+xfmr(L, "DC-GSU-2: genset 13.8/34.5 kV step-up to bus B (75 MVA)", 2702, 2736, 525, 560, 22, tag="DC-GSU-2", **DC)
+
+# Fuel systems at LOD 3 (gas yard, M&R train, GT gas fuel modules, ULSD area, modular gas skids)
+import fuel as _fuel
+_fuel.build(dict(item=item, items=items, parts=parts))
+import modular as _modular
+_modular.build()     # RICE hall and simple-cycle units at LOD 3
+import yard as _yard
+_yard.build()        # gensets, trailers, fuel cells, microturbines, skids in the modular yard
+import sc2_mirror as _sc2
+print('SC-2 mirrored', _sc2.build())  # SC-2 end for end (stacks paired, inlets outboard), before wiring and routes
+import hall as _hall
+_hall.build()        # turbine hall: GTs, generators, ST, skids, fit-out
+import hrsg as _hrsg
+_hrsg.build()        # HRSG casing, SCR, drums, steam leads, blowdown
+import station as _station
+_station.build()     # cycle 2: transformers, e-houses, EDGs
+import acc as _acc
+_acc.build()         # cycle 3: ACC fans, drives, cable ladders, condensate drains, deck steel
+
+# ---------------------------------------------------------------------------
+# Routes: drawn centrelines lifted to their tiers
+# ---------------------------------------------------------------------------
+ROUTE_STYLE = {
+    # type: (elevation ft, width ft, height ft, colour, label, default layer)
+    "ipb":          (22, 4, 4, "copper_dark", "Isolated-phase bus + UAT tap (bus duct, not cable)", "ROUTES_BASE"),
+    "mv_tray":      (36, 3, 0.8, "copper", "MV power tray (rack tier EL +36)", "ROUTES_BASE"),
+    "lv_tray":      (30, 2, 0.6, "copper", "LV / hall power tray", "ROUTES_BASE"),
+    "control_tray": (42, 1.5, 0.5, "copper", "Control / instrument tray (EL +42)", "ROUTES_BASE"),
+    "duct_bank":    (-2, 4, 2, "ductbank", "Duct bank (underground)", "ROUTES_BASE"),
+    "hv_overhead":  (40, 0.8, 0.8, "conductor", "230 kV overhead", "ROUTES_BASE"),
+    "steam":        (27, 3, 3, "steam", "Steam", "PROCESS_PIPING"),
+    "condensate":   (25, 2, 2, "condensate", "Condensate", "PROCESS_PIPING"),
+    "feedwater":    (12, 2, 2, "feedwater", "Feedwater", "PROCESS_PIPING"),
+    "ccw":          (24.5, 2, 2, "ccw", "Closed cooling water", "PROCESS_PIPING"),
+    "fuel_gas":     (4, 1.5, 1.5, "fuelgas", "Fuel gas", "PROCESS_PIPING"),
+    "hv_cable":     (-3, 2, 2, "copper_dark", "230 kV underground cable", None),
+    "mvlv_cable":   (-2, 2, 1, "copper", "MV / LV cable (optional systems)", None),
+    "cw":           (3, 4, 4, "cw", "Circulating / condenser water", "OPT_CCSU_ROUTES"),
+    "chw":          (3, 2, 2, "chw", "Chilled water", "OPT_IC_ROUTES"),
+    "hydrogen":     (4, 1, 1, "hydrogen", "Hydrogen", "OPT_H2_ROUTES"),
+    "lng":          (4, 1.5, 1.5, "lng", "LNG (cryogenic)", "OPT_LNG_ROUTES"),
+    "fuel_oil":     (6.5, 1, 1, "fueloil", "Backup fuel oil (ULSD), conditional", "PROCESS_PIPING"),
+    "firewater":    (-4, 1.2, 1.2, "firewater", "Firewater ring main (buried)", "PROCESS_PIPING"),
+    "cable_trench": (-1, 3, .6, "concrete", "Control-cable trench (precast, covered)", "ROUTES_BASE"),
+    "water":        (3, 1.2, 1.2, "waterline", "Raw / demineralised / service water", "PROCESS_PIPING"),
+    "aux_steam":    (12, 1.3, 1.3, "steam", "Auxiliary steam (insulated)", "PROCESS_PIPING"),
+    "hmod":         (45, 0.8, 0.8, "conductor", "230 kV overhead tie H-MOD (reserved corridor)", "HV_CORRIDOR"),
+}
+OPT_AREAS = [  # (layer, x0, x1, y0, y1) from sheet 02
+    ("OPT_H2_ROUTES", 1985, 2400, 1410, 1640), ("OPT_LNG_ROUTES", 1815, 2400, 1685, 1910),
+    ("OPT_BESS_ROUTES", 1540, 1940, 330, 780), ("OPT_TMP_ROUTES", 1960, 2380, 330, 780),
+    ("OPT_MOD_ROUTES", 1540, 2380, 820, 1360), ("OPT_CCS_ROUTES", 420, 1440, 960, 1360),
+    ("OPT_CCSU_ROUTES", 420, 1440, 1690, 1900), ("OPT_IC_ROUTES", 40, 320, 960, 1360),
+]
+
+
+def opt_layer(pl, rtype):
+    if rtype in ("steam", "flue_duct"):
+        return "OPT_CCS_ROUTES"
+    for pt in (pl[-1], pl[0]):
+        for (lay, x0, x1, y0, y1) in OPT_AREAS:
+            if x0 <= pt[0] <= x1 and y0 <= pt[1] <= y1:
+                return lay
+    return "OPT_MOD_ROUTES"
+
+
+def clip_out(pl, box):
+    """Split a polyline at an axis-aligned rectangle, keeping the parts outside.
+    Trays leave R1 through the cable basement and rise at the east wall
+    (SW-3X1-05), so their drawn centrelines inside R1 are not tray."""
+    x0, x1, y0, y1 = box
+    inside = lambda p: x0 < p[0] < x1 and y0 < p[1] < y1
+    out, cur = [], []
+    for a, b in zip(pl, pl[1:]):
+        ia, ib = inside(a), inside(b)
+        if ia and ib:
+            continue
+        if not ia and not ib:
+            cur = cur or [a]
+            cur.append(b)
+            continue
+        # one end inside: clip to the rectangle edge (segments are orthogonal)
+        o, i = (a, b) if not ia else (b, a)
+        if o[0] == i[0]:
+            e = [o[0], y0 if o[1] < y0 else y1]
+        else:
+            e = [x0 if o[0] < x0 else x1, o[1]]
+        if not ia:
+            cur = cur or [a]
+            cur.append(e)
+            out.append(cur); cur = []
+        else:
+            cur = [e, b]
+    if len(cur) > 1:
+        out.append(cur)
+    return out
+
+
+R1_BOX = (410, 476, 600, 780)
+routes = []
+for fname, src, optional in [("routes_base.json", "SW-3X1-01", False), ("routes_optional.json", "SW-3X1-02", True)]:
+    data = json.load(open(os.path.join(HERE, fname)))
+    for rtype, polys in data.items():
+        if rtype == "flue_duct":
+            continue  # modelled as the firewall and flue-duct items
+        z, w, h, colour, label, layer = ROUTE_STYLE[rtype]
+        pieces = []
+        for pl in polys:
+            pieces += clip_out(pl, R1_BOX) if rtype in ("mv_tray", "lv_tray", "control_tray") else [pl]
+        if rtype in ("mv_tray", "lv_tray", "control_tray"):
+            # a ladder tray runs straight: a diagonal segment on the drawing becomes an L (along x, then y)
+            pieces = [[q for a, c in zip(pl, pl[1:]) for q in ([a, [c[0], a[1]]] if a[0] != c[0] and a[1] != c[1]
+                                                                else [a])] + [pl[-1]] for pl in pieces]
+        for pl in pieces:
+            if [list(map(float, p)) for p in pl[:1]] == [[2036.0, 424.0]]:
+                continue      # GEN-O's feeder to PAD-LV: the open skid was taken out Oct 28, its cable was left lying
+            if len(pl) < 2 or sum(abs(b[0] - a[0]) + abs(b[1] - a[1]) for a, b in zip(pl, pl[1:])) < 3:
+                continue
+            lay = (opt_layer(pl, rtype) if optional else layer) if not layer or optional else layer
+            if optional and rtype in ("cw", "chw", "hydrogen", "lng"):
+                lay = layer
+            routes.append(dict(type=rtype, layer=lay, label=label, z=z, w=w, h=h, color=colour,
+                               points=pl, sheet=src))
+# inlet-chilling CHW headers to the GT inlets: carried overhead at EL 10 under the turbine deck (between the
+# pedestal legs and column lines), so the ground-floor walkways stay clear
+for r in routes:
+    if r["type"] == "chw" and r["points"][-1][0] in (910.0, 916.0):
+        r["z"] = 10
+# H-MOD 230 kV overhead tie in the reserved corridor COR-HMOD (SW-3X1-08)
+HMOD = [[2095, 870], [2095, 805], [1515, 805], [1515, 262], [1690, 262], [1690, 237], [1720, 130]]
+routes.append(dict(type="hmod", layer="HV_CORRIDOR", label=ROUTE_STYLE["hmod"][4], z=45, w=0.8, h=0.8,
+                   color="conductor", points=HMOD, sheet="SW-3X1-08"))
+# ---------------------------------------------------------------------------
+# Connections the drawing leaves open (site audit, plant/audit.py): typical routing
+# ---------------------------------------------------------------------------
+def add_route(rtype, points, layer=None, sheet="typical (site audit)"):
+    z, w, h, colour, label, default = ROUTE_STYLE[rtype]
+    routes.append(dict(type=rtype, layer=layer or default, label=label, z=z, w=w, h=h, color=colour,
+                       points=[[float(x), float(y)] for x, y in points], sheet=sheet))
+
+
+# GT fuel gas: the drawn header stops over HRSG 1 (x 600); it now ends at the GT1 branch and
+# each GT gets a branch between the HRSGs to its fuel / auxiliary skid (clear of the BFPs and the ST)
+for r in routes:
+    if r["type"] == "fuel_gas" and r["points"][-1] == [600.0, 885.0]:
+        r["points"][-1] = [715.0, 885.0]
+# (they rise at the hall's north wall to the GT gas fuel modules GFM-1..3 on the deck)
+for k, xb in enumerate((715, 875, 1034)):
+    add_route("fuel_gas", [(xb, 885), (xb, 570), (686 + 160 * k, 570), (686 + 160 * k, 559)], layer="PROCESS_PIPING")
+# conditional backup fuel oil: forwarding pumps -> GT liquid-fuel modules, one tier above the gas
+add_route("fuel_oil", [(1475, 1465), (1505, 1465), (1505, 889), (711, 889)], sheet="typical (fuel detail)")
+for k, xb in enumerate((715, 875, 1034)):
+    add_route("fuel_oil", [(xb - 4, 889), (xb - 4, 574), (682 + 160 * k, 574), (682 + 160 * k, 559)],
+              sheet="typical (fuel detail)")
+# IP feedwater supply / return between HRSG 3 and the fuel-gas performance heater
+add_route("feedwater", [(985, 740), (1000, 740), (1000, 877), (1518, 877), (1518, 1493), (1712, 1493)],
+          sheet="typical (fuel detail)")
+add_route("feedwater", [(985, 748), (1004, 748), (1004, 873), (1522, 873), (1522, 1497), (1729, 1497),
+                        (1729, 1493)], sheet="typical (fuel detail)")
+# CCS circulating water: the drawn line stops on the utilities road. It serves the absorber intercoolers (plate
+# exchangers), not the absorber shells: carry it to a distribution header north of the absorbers (clear of the
+# shells at y 1251) and branch to each intercooler's exchanger
+for r in routes:
+    if r["type"] == "cw" and r["points"][-1] == [770.0, 1360.0]:
+        r["points"].append([770.0, 1262.0])
+add_route("cw", [(686, 1262), (1006, 1262)], layer="OPT_CCSU_ROUTES", sheet="typical (CCS cooling water)")
+for _dx in (0, 160, 320):
+    add_route("cw", [(686 + _dx, 1262), (686 + _dx, 1251)], layer="OPT_CCSU_ROUTES", sheet="typical (CCS cooling water)")
+# modular expansion (OPT_MODX): MV cables to the portable-pad and modular collectors, gas stubs
+MX = "OPT_MODX_ROUTES"
+# TM-1 / TM-2 generator leads leave the trailer's ground tray at the north edge, run in the yard duct bank
+# between SC-1 and SC-2 down to the modular collector e-house MOD-EH
+# portable power cable in ground trays (surface_cable), across the pad lane on the C-L01 drive-over ramp beside
+# the MOB-1 feeder, down to the north face of PAD-EH
+add_route("fuel_gas", [(2378, 664.5), (2315, 664.5)], MX)                                   # header -> MOB-1 skid
+add_route("mvlv_cable", [(2250, 664.5), (2245, 664.5), (2245, 575), (2255, 575)], "OPT_TMP_ROUTES",
+          sheet="SW-3X1-08")             # MOB-1 -> PIC across the pad lane on the C-L01 ramp (had gone missing, Oct 28)
+add_route("mvlv_cable", [(2255, 575), (2228, 575), (2228, 592), (2215, 592)], "OPT_TMP_ROUTES",
+          sheet="typical (portable pad)")                                                   # PIC -> load bank
+add_route("mvlv_cable", [(2200, 795), (2200, 805), (2241, 805), (2241, 500), (2180, 500), (2180, 484)],
+          MX)                                                                               # TM-1 -> PAD-EH
+# technology sites: one LV lane (y 400, between the south and middle bands) to PAD-LV; GSP-1 to PAD-EH
+for k in range(4):                                                                          # FC-5..8 -> inverter
+    add_route("mvlv_cable", [(2007.5 + 12 * k, 376), (2007.5 + 12 * k, 381)], MX)
+add_route("mvlv_cable", [(2007.5, 381), (2050, 381), (2050, 376)], MX)
+for k in range(3):                                                                          # MT-4..6 -> switchboard
+    add_route("mvlv_cable", [(2097 + 12 * k, 351), (2097 + 12 * k, 346)], MX)
+add_route("mvlv_cable", [(2097, 346), (2137, 346), (2137, 358)], MX)
+add_route("mvlv_cable", [(2023, 400), (2156, 400), (2156, 435), (2160, 435)], MX)           # LV lane -> PAD-LV
+# every drop to the lane leaves its site through the gate
+add_route("mvlv_cable", [(2062, 376), (2062, 385), (2068, 385), (2068, 400)], MX)           # inverter (north gate)
+add_route("mvlv_cable", [(2139, 372), (2139, 377)], MX)                                     # MT switchboard -> MT-TX
+add_route("mvlv_cable", [(2132, 383), (2078, 383), (2078, 397), (2158, 397), (2158, 477), (2160, 477)],
+          MX)                                                                               # MT-TX 13.8 kV -> PAD-EH
+add_route("mvlv_cable", [(2052.5, 1021), (2052.5, 996), (2019, 996), (2019, 976)], MX)    # AX-1 gen leads -> AX-GSU
+add_route("mvlv_cable", [(2180.5, 1032), (2180.5, 990), (2152, 990), (2152, 978)], MX)     # IG-1 gen leads -> IG-GSU
+add_route("mvlv_cable", [(2258.5, 1252), (2266, 1252), (2266, 1324), (2240, 1324)], "OPT_MOD_ROUTES")  # SC-2 PCM (mirrored
+                                                                          # to x 2218.5-2258.5 by sc2_mirror) -> ammonia skid
+add_route("fuel_gas", [(2340, 440), (2340, 452), (2005, 452)], MX)                         # pad skid header (west)
+# fuel cells / microturbines: a header behind each row with a drop to every unit (audit, Oct 29: only the first
+# unit of each row was piped)
+add_route("fuel_gas", [(2005, 452), (1990, 452), (1990, 381), (2043.5, 381)], MX)          # -> fuel-cell header
+for _x in (2007.5, 2019.5, 2031.5, 2043.5):
+    add_route("fuel_gas", [(_x, 381), (_x, 376)], MX)
+add_route("fuel_gas", [(2081, 452), (2081, 384), (2121, 384)], MX)                         # -> microturbine header
+for _x in (2097, 2109, 2121):
+    add_route("fuel_gas", [(_x, 384), (_x, 379)], MX)
+# modular power park: each site's units to its collector, the collectors to MOD-EH / PAD-EH / PAD-LV out by the gates
+for k in range(6):                                                                          # TGF trailers -> TGF-SWG
+    add_route("mvlv_cable", [(1957.25 + 14 * k, 548), (1957.25 + 14 * k, 544)], MX)
+add_route("mvlv_cable", [(1957.25, 544), (2045.5, 544), (2045.5, 548)], MX)
+add_route("mvlv_cable", [(2045.5, 590), (2045.5, 596), (2072, 596), (2072, 600)], MX)     # TGF-SWG -> TGF-GSU
+for k in range(4):                                                                          # CGE containers -> CGE-SWG
+    add_route("mvlv_cable", [(1959 + 18 * k, 469.6), (1959 + 18 * k, 466)], MX)
+add_route("mvlv_cable", [(1959, 466), (2034, 466), (2034, 470)], MX)
+add_route("mvlv_cable", [(2038, 503), (2048, 503)], MX)                                     # CGE-SWG -> CGE-GSU
+for k in range(8):                                                                          # PGS gensets -> PGS-SWG
+    add_route("mvlv_cable", [(2131, 524.25 + 12 * k), (2135, 524.25 + 12 * k)], MX)
+add_route("mvlv_cable", [(2137, 520), (2137, 505), (2105, 505), (2105, 482)], MX)          # PGS-SWG -> TX1
+add_route("mvlv_cable", [(2140, 520), (2140, 482)], MX)                                     # PGS-SWG -> TX2
+add_route("mvlv_cable", [(2105, 470), (2105, 466), (2140, 466), (2140, 470)], MX)          # TX1 -> TX2 (34.5 kV loop feed)
+for k in range(4):                                                                          # LGN skids -> inverter
+    add_route("mvlv_cable", [(2072 + 14 * k, 432), (2072 + 14 * k, 436)], MX)
+add_route("mvlv_cable", [(2072, 436), (2135, 436), (2135, 428)], MX)
+add_route("mvlv_cable", [(2135, 414), (2135, 408), (2105, 408), (2105, 400)], MX)          # LGN-INV -> LV lane
+add_route("fuel_gas", [(1990, 452), (1943.5, 452), (1943.5, 606)], MX)                         # west riser
+add_route("fuel_gas", [(1943.5, 606), (1943.5, 608), (2028, 608)], MX)   # (under the fleet lane)                                       # -> trailer fleet
+for k in range(6):
+    add_route("fuel_gas", [(1957.25 + 14 * k, 608), (1957.25 + 14 * k, 601)], MX)
+add_route("fuel_gas", [(1943.5, 533), (2013, 533)], MX)                                       # -> engine containers
+for k in range(4):
+    add_route("fuel_gas", [(1959 + 18 * k, 533), (1959 + 18 * k, 510)], MX)
+add_route("fuel_gas", [(2092.5, 452), (2092.5, 615.5)], MX)                                 # -> paralleled gensets
+for k in range(8):
+    add_route("fuel_gas", [(2092.5, 524.25 + 12 * k), (2103, 524.25 + 12 * k)], MX)
+add_route("fuel_gas", [(2066, 452), (2066, 436), (2114, 436)], MX)                          # -> linear generators
+for _x in (2072, 2086, 2100, 2114):
+    add_route("fuel_gas", [(_x, 436), (_x, 432)], MX)
+for yc in (690, 742):                                                                       # MTG leads -> MTG-SWG
+    add_route("mvlv_cable", [(2032, yc), (2038, yc), (2038, 720 if yc < 720 else 724), (2045, 720 if yc < 720 else 724)], MX)
+add_route("mvlv_cable", [(2054, 728), (2054, 740)], MX)                                     # MTG-SWG -> MTG-GSU
+add_route("mvlv_cable", [(2071, 728), (2071, 745)], MX)                                     # MTG-SWG -> MTG-AUX
+add_route("mvlv_cable", [(2080, 751), (2082, 751), (2082, 687), (2078, 687)], MX)          # MTG-AUX 480 V -> MTG-CB
+add_route("mvlv_cable", [(2064, 716), (2064, 694)], MX)                                     # e-house -> MTG-CB (control)
+add_route("mvlv_cable", [(1968, 713), (2040, 713), (2040, 688), (2050, 688)], MX)          # MTG-FG (MC-HL) -> MTG-CB
+add_route("fuel_gas", [(1943.5, 606), (1943.5, 716), (1948, 716)], MX)                          # west riser -> MTG-FG
+add_route("fuel_gas", [(1968, 716), (1985, 716), (1985, 696.5)], MX)                        # -> MTG-1
+add_route("fuel_gas", [(1985, 716), (1985, 735.5)], MX)                                     # -> MTG-2
+for k in range(4):                                                                          # CHP units -> CHP-SWG
+    add_route("mvlv_cable", [(2106 + 19 * k, 652.6), (2106 + 19 * k, 651.3)], MX)
+add_route("mvlv_cable", [(2106, 651.3), (2182, 651.3), (2182, 652)], MX)
+add_route("mvlv_cable", [(2184, 652), (2184, 649.5), (2150, 649.5), (2150, 644), (2156.5, 644), (2156.5, 492), (2164, 492),
+                         (2164, 484)], MX)                                                  # CHP-SWG -> PAD-EH (south gate)
+add_route("mvlv_cable", [(2186, 674), (2190, 674)], MX)                                     # CHP-SWG -> CHP-AUX
+add_route("mvlv_cable", [(2195, 672), (2195, 670)], MX)                                     # CHP-AUX -> dump cooler / pumps
+add_route("mvlv_cable", [(2056, 474), (2056, 464), (2021.6, 464), (2021.6, 467.6)], MX)     # CGE-AUX -> cooling deck
+add_route("mvlv_cable", [(2038, 480), (2050, 480)], MX)                                     # CGE-SWG -> CGE-AUX
+# 34.5 kV park collector: each site's step-up to SWG-PK in one buried trunk (x 2088-2091 between the sites, y 776-779 north
+# of the turbine site, x 2141-2144 up to the substation); AX-GSU / IG-GSU from the north, PAD-GSU along x 2243
+PK = [("TGF", [(2068, 620), (2015, 620), (2015, 640), (2088, 640)]),
+      ("CGE", [(2056, 514), (2056, 520), (2015, 520), (2015, 535), (2089, 535)]),
+      ("PGS", [(2140, 470), (2140, 466), (2122, 466), (2122, 459), (2090, 459)])]             # (out by the south gate)
+for i, (k, pts) in enumerate(PK):
+    xl, yl, xs = 2088 + i, 776 + i, 2141 + i
+    add_route("mvlv_cable", pts + [(xl, yl), (xs, yl), (xs, 806 - i), (2152 + 3 * i, 806 - i), (2152 + 3 * i, 810)],
+              MX)                                                                           # site step-up -> SWG-PK
+add_route("mvlv_cable", [(2054, 768), (2054, 771), (2015, 771), (2015, 779), (2144, 779), (2144, 803), (2161, 803),
+                         (2161, 810)], MX)                                                  # MTG-GSU -> SWG-PK (north gate)
+add_route("mvlv_cable", [(2186, 484), (2186, 506)], MX)                                     # PAD-EH -> PAD-GSU
+add_route("mvlv_cable", [(2182, 532), (2182, 536), (2243, 536), (2243, 818), (2196, 818)], MX)   # PAD-GSU -> SWG-PK
+add_route("mvlv_cable", [(2019, 950), (2019, 842), (2146, 842), (2146, 822), (2148, 822)], MX)   # AX-GSU -> SWG-PK
+add_route("mvlv_cable", [(2152, 948), (2152, 832), (2164, 832), (2164, 826)], MX)          # IG-GSU -> SWG-PK
+for xw in (2176, 2186):                                                                     # SWG-PK -> T-MOD-3 (two windings)
+    add_route("mvlv_cable", [(xw, 826), (xw, 858)], MX)
+# modular yard regroup (Oct 28): PCM sections -> RICE group step-ups -> MOD-EH; SC PCMs -> unit step-ups -> MOD-EH;
+# MOD-EH -> T-MOD-1 / -2, MOD-SST, grounding transformers; switchgear station service
+MY = "OPT_MOD_ROUTES"
+for k, yc in enumerate((1090, 1063, 1036, 1009)):                                         # (under the N-S drive)
+    add_route("mvlv_cable", [(1860, 1146 + 5 * k), (1861 + k, 1146 + 5 * k), (1861 + k, yc), (1882, yc)], MY)  # PCM -> GSU
+    xl, yl = 1899 + k, 904 - k
+    add_route("mvlv_cable", [(1898, yc), (xl, yc), (xl, yl), (1919 + 4 * k, yl), (1919 + 4 * k, 900)], MY)  # GSU -> MOD-EH
+add_route("mvlv_cable", [(1955, 1250), (1959, 1250), (1959, 1244), (1999, 1244)], MY)     # SC-1 PCM -> SC-GSU-1
+add_route("mvlv_cable", [(2218.5, 1250), (2214, 1250), (2214, 1244), (2176, 1244)], MY)   # SC-2 PCM -> SC-GSU-2
+add_route("mvlv_cable", [(2025, 1248), (2046, 1248), (2046, 1080), (1955, 1080), (1955, 900)], MY)   # SC-GSU-1 -> MOD-EH
+add_route("mvlv_cable", [(2150, 1248), (2120, 1248), (2120, 1083), (1958, 1083), (1958, 900)], MY)   # SC-GSU-2 -> MOD-EH
+add_route("mvlv_cable", [(1995, 884), (2045, 884)], MY)                                   # MOD-EH bus 1 -> T-MOD-1
+add_route("mvlv_cable", [(1995, 881), (2001, 881), (2001, 864), (2125, 864), (2125, 870)], MY)   # bus 2 -> T-MOD-2
+add_route("mvlv_cable", [(1995, 897), (2020, 897), (2020, 904)], MY)                      # MOD-EH -> MOD-SST (34.5 kV)
+add_route("mvlv_cable", [(2016, 904), (2016, 899), (1995, 899)], MY)                      # MOD-SST 13.8 kV -> MOD-EH
+add_route("mvlv_cable", [(1915, 885.5), (1911, 885.5)], MY)                               # MOD-EH -> MOD-GT1
+add_route("mvlv_cable", [(1915, 894.5), (1911, 894.5)], MY)                               # MOD-EH -> MOD-GT2
+add_route("mvlv_cable", [(2196, 824), (2204, 824), (2204, 828)], MX)                      # SWG-PK -> PK-GT1
+add_route("mvlv_cable", [(2196, 825), (2212, 825), (2212, 841.5), (2208, 841.5)], MX)    # SWG-PK -> PK-GT2
+add_route("mvlv_cable", [(2175, 440), (2175, 470)], MX)                                   # PAD-LV -> PAD-EH station service
+add_route("fuel_gas", [(2092.5, 615.5), (2092.5, 681), (2163, 681)], MX)                   # -> CHP engines
+for k in range(4):
+    add_route("fuel_gas", [(2106 + 19 * k, 681), (2106 + 19 * k, 678)], MX)
+# modular gas blocks: per block the 480 V lead trench (unit drops into one trench along the south side to GBC-n), GBC to
+# the step-up, the step-up's HV tap to the 35 kV loop corridor (x 2256), the corridor into SWG-MY, the SWG-MY feeder to
+# the data centre's 34.5 kV switchgear (joins the yard -> BTM corridor at y 892); gas headers east of the blocks
+for n in range(1, GB_N + 1):
+    T = gb_frame(n)
+    for m in range(5):
+        ut = 2 + U_PITCH * m + 6.2
+        add_route("mvlv_cable", [T(ut, 9.55), T(ut, 7.5)], MX, sheet="typical (modular gas blocks)")
+    add_route("mvlv_cable", [T(2, 7.5), T(51, 7.5)], MX, sheet="typical (modular gas blocks)")
+    add_route("mvlv_cable", [T(59, 7), T(63, 7)], MX, sheet="typical (modular gas blocks)")
+    add_route("mvlv_cable", [T(67, 2), (GB_RX, T(67, 2)[1])], MX, sheet="typical (modular gas blocks)")   # HV tap -> road
+add_route("mvlv_cable", [(GB_RX, 460), (GB_RX, GB_Y[1] + 72)], MX, sheet="typical (modular gas blocks)")  # loop, road
+add_route("mvlv_cable", [(2234, 486), (2238, 486), (2238, 460), (GB_RX, 460)], MX, sheet="typical (modular gas blocks)")
+add_route("mvlv_cable", [(2234, 493), (2245, 493), (2245, 892)], MX, sheet="typical (modular gas blocks)")         # feeder
+add_route("mvlv_cable", [(2520, 880), (2530, 880)], MX, sheet="typical (modular gas blocks)")                     # into BTM-SWGR
+# BTM-STATCOM pad feeders (buried, 34.5 kV): switchgear -> coupling transformer -> converter; switchgear -> filter bank
+add_route("mvlv_cable", [(2566, 900), (2566, 938)], "OPT_DC_ROUTES", sheet="typical (STATCOM pad)")
+add_route("mvlv_cable", [(2574, 945), (2582, 945)], "OPT_DC_ROUTES", sheet="typical (STATCOM pad)")
+add_route("mvlv_cable", [(2545, 900), (2545, 975), (2560, 975)], "OPT_DC_ROUTES", sheet="typical (STATCOM pad)")
+for xg in (GB_RX - 37.5, GB_RX + 39.0):                                                    # gas headers behind the rows
+    add_route("fuel_gas", [(xg, 452), (xg, GB_Y[1] + 70)], MX, sheet="typical (modular gas blocks)")
+    for _yb in (468, 546):                                         # a branch into every genset (audit, Oct 29)
+        for _k in range(5):
+            _y = _yb + 10 * _k + 4
+            add_route("fuel_gas", [(xg, _y), (xg + (4.5 if xg < GB_RX else -6), _y)], MX,
+                      sheet="typical (modular gas blocks)")
+add_route("fuel_gas", [(2340, 452), (2378, 452), (2378, 805), (2222, 805), (2222, 782)], MX)   # pad header -> TM-1 skid
+for k in range(8):                                                                          # FC tails to the DC feeder
+    add_route("mvlv_cable", [(2014 + 14 * k, 350), (2014 + 14 * k, 345)], MX)
+# SC-1 / SC-2 fuel gas from the fuel-gas compressor building (not drawn on sheet 07)
+# the drops come up into each unit's fuel-gas module (sc_detail.py, x + 36 .. 46), not at the enclosure door (Oct 21)
+add_route("fuel_gas", [(2330, 1182), (1950, 1182), (1950, 1187.6)], "OPT_MOD_ROUTES")  # from the moved building
+# RICE engines (audit, Oct 29: the header passed the gas-conditioning skid and the hall without a connection): off
+# the y 1350 header into the skid, out of its south face straight down the gap between RICE 6's and RICE 7's
+# radiators into the hall's north wall (no low pipe across the gravel the north drive is reached from) (the engine header inside the hall is not drawn)
+add_route("fuel_gas", [(1730, 1350), (1730, 1280)], "OPT_MOD_ROUTES")
+add_route("fuel_gas", [(1745, 1250), (1745, 1130)], "OPT_MOD_ROUTES")
+add_route("fuel_gas", [(2218.5, 1182), (2218.5, 1187.6)], "OPT_MOD_ROUTES")
+# reserved SC-3 / SC-4 pad (reserved_pad.py): the PCM pads pre-wired into the yard MV duct bank
+add_route("mvlv_cable", [(1917, 1312), (1917, 1266), (1900, 1266), (1900, 1252)], "OPT_MOD_ROUTES", sheet="typical (reserved pad)")
+add_route("mvlv_cable", [(2187, 1312), (2187, 1305), (2266, 1305)], "OPT_MOD_ROUTES", sheet="typical (reserved pad)")  # SC-2 drop (mirrored package)
+# BESS main power transformer to the D4 upper position (230 kV cable to the take-off gantry)
+add_route("hv_cable", [(1756, 352), (1756, 170)], "OPT_BESS_ROUTES", sheet="typical (switchyard build-out)")
+# Turbine-hall cabling the drawing leaves to the vendor (typical): a control / instrument backbone
+# from R1 along the hall north wall at EL +42, and per unit the control drops (turbine control
+# cabinets, GT junction boxes, generator neutral cubicle, excitation and IPB cubicles in the
+# gallery), the LV feeders to every motor load on the deck, the excitation transformer tap and
+# the DC field cables to the generator collector end.
+HC = "typical (hall cabling)"
+
+
+def hall_lv(points, layer="ROUTES_BASE", sheet=HC):
+    """LV branch off the hall LV run, which rides at EL +44 above the GT exhaust ducts."""
+    add_route("lv_tray", points, layer, sheet=sheet)
+    routes[-1]["z"] = 44
+
+
+add_route("control_tray", [(474, 724), (500, 724), (500, 552), (1017, 552)], "ROUTES_BASE", sheet=HC)
+for k in range(3):
+    dx = 160 * k
+    add_route("control_tray", [(606 + dx, 552), (606 + dx, 512)], "ROUTES_BASE", sheet=HC)       # -> TCP
+    add_route("control_tray", [(645 + dx, 552), (645 + dx, 480)], "ROUTES_BASE", sheet=HC)       # -> GT junction boxes
+    add_route("control_tray", [(650 + dx, 552), (650 + dx, 414)], "ROUTES_BASE", sheet=HC)       # -> NGT, GCB
+    add_route("control_tray", [(655 + dx, 552), (655 + dx, 398)], "ROUTES_BASE", sheet=HC)       # -> EXC / SPC
+    hall_lv([(668 + dx, 544), (668 + dx, 530)], "ROUTES_BASE", sheet=HC)            # -> CO2 skid
+    hall_lv([(590 + dx, 544), (590 + dx, 493)], "ROUTES_BASE", sheet=HC)            # -> water wash
+    hall_lv([(690 + dx, 544), (690 + dx, 526)], "ROUTES_BASE", sheet=HC)            # -> gas fuel module
+    hall_lv([(605 + dx, 544), (605 + dx, 513)], "ROUTES_BASE", sheet=HC)            # -> TCP (UPS)
+    hall_lv([(612 + dx, 544), (612 + dx, 440)], "ROUTES_BASE", sheet=HC)            # -> generator aux
+    add_route("lv_tray", [(612 + dx, 397), (642 + dx, 397)], "ROUTES_BASE", sheet=HC)            # ET -> EXC
+    add_route("lv_tray", [(648 + dx, 399), (648 + dx, 407), (636 + dx, 407)], "ROUTES_BASE", sheet=HC)   # DC field
+    add_route("mv_tray", [(609 + dx, 396), (609 + dx, 386), (622 + dx, 386)], "ROUTES_BASE", sheet=HC)   # ET tap
+# ST: down the west side of the ST (the 26 ft exhaust duct blocks the east side), then over the STG
+add_route("control_tray", [(1017, 552), (1017, 431), (1082, 431)], "ROUTES_BASE", sheet=HC)      # -> TCP-ST
+add_route("control_tray", [(1064, 431), (1064, 417)], "ROUTES_BASE", sheet=HC)                    # -> NGT-ST
+add_route("lv_tray", [(1068, 401), (1068, 407), (1052, 407)], "ROUTES_BASE", sheet=HC)            # ST DC field
+for k in range(3):                                                                         # GCB control
+    add_route("control_tray", [(655 + 160 * k, 398), (655 + 160 * k, 385), (636 + 160 * k, 385)], "ROUTES_BASE",
+              sheet=HC)
+# HRSG instrument / control cabling: from the rack control tier (EL 42) down the east side of each
+# HRSG to the riser at its south-east corner (clear of the stair towers and the rack bents)
+for k, xr in enumerate((674.5, 837.0, 994.5)):
+    add_route("control_tray", [(xr, 842), (xr, 626.0), (672.0 + 160 * k, 626.0)], "ROUTES_BASE",
+              sheet="typical (HRSG detail)")
+# GSU / UAT marshalling cabinets to the existing duct bank (protection, monitoring, cooling control)
+for x in (612, 772, 932):
+    add_route("duct_bank", [(x, 330), (x, 312)], "ROUTES_BASE", sheet=HC)
+add_route("duct_bank", [(1034, 324), (1034, 312), (987, 312)], "ROUTES_BASE", sheet=HC)
+item("HV_CORRIDOR", "H-MOD 230 kV monopoles in COR-HMOD", (1505, 2105, 255, 815), (0, 50), area="I",
+     basis="typical", sheet="SW-3X1-08", info="Overhead tie from T-MOD-1/2 to the D4 lower position (future).")
+for (x, y) in [(2095, 815), (1950, 805), (1800, 805), (1650, 805), (1515, 805), (1515, 650), (1515, 500),
+               (1515, 350), (1515, 262), (1690, 262)]:
+    R((x, y, 0), (x, y, 50), 1.2, "steel", r2=0.8, seg=10)
+    B(x - 6, x + 6, y - 0.6, y + 0.6, 45, 46, "steel") if x != 1515 else B(x - 0.6, x + 0.6, y - 6, y + 6, 45, 46, "steel")
+
+LAYERS = {
+    "SITE": ("Site, roads and fence", "Base plant"),
+    "BASE_POWER_BLOCK": ("A/B Power block: hall, GTs, ST, HRSGs, stacks, ACC", "Base plant"),
+    "HALL_ROOF": ("Turbine hall and gallery roofs", "Base plant"),
+    "BASE_INLET_AIR": ("Filter houses and inlet ducts", "Base plant"),
+    "BASE_ELECTRICAL": ("Electrical: GSUs, UATs, GCBs, e-houses, EDGs", "Base plant"),
+    "R1_ROOF": ("R1 roof", "Base plant"), "R1_WALL_E": ("R1 east wall", "Base plant"),
+    "R1_INTERIOR": ("R1 interior (SW-3X1-05)", "Base plant"),
+    "R2A_ROOF": ("R2A e-house roof, west and south walls (cutaway)", "Base plant"),
+    "CEMS_ROOF": ("CEMS shelter roofs, east and south walls (cutaway)", "Base plant"),
+    "R4_ROOF": ("R4 roof", "Base plant"), "R4_WALL_E": ("R4 east wall", "Base plant"),
+    "R4_INTERIOR": ("R4 VFD interior", "Base plant"),
+    "CR_ROOF": ("Control / admin building roof and ceiling", "Base plant"),
+    "H2_ROOF": ("Electrolyzer hall roof (K)", "Optional / adjacent"),
+    "CR_INTERIOR": ("Control room and admin interior", "Base plant"),
+    "BASE_SWITCHYARD": ("C Grid interface: 230 kV switchyard", "Base plant"),
+    "BASE_UTILITIES": ("D/E Fuel gas, water and BOP utilities, pipe racks, M&R", "Base plant"),
+    "BASE_SERVICES": ("F Controls / service", "Base plant"),
+    "ROUTES_BASE": ("Cable trays, IPB, duct banks, 230 kV", "Routes"),
+    "PROCESS_PIPING": ("Process piping", "Routes"),
+    "UNDERGROUND": ("Underground: duct banks, ground grid, drains, water mains", "Routes"),
+    "SWYD_FUTURE": ("D4 / D5 / D6 switchyard build-out", "Optional / adjacent"),
+    "HV_CORRIDOR": ("Reserved 230 kV corridor + H-MOD tie", "Optional / adjacent"),
+    "OPT_CCS": ("G Carbon capture, 3 trains", "Optional / adjacent"),
+    "OPT_CCSU": ("G CCS utilities (cooling tower)", "Optional / adjacent"),
+    "OPT_BESS": ("H BESS", "Optional / adjacent"),
+    "OPT_MOD": ("I Modular generation + black start", "Optional / adjacent"),
+    "OPT_TMP": ("I Portable / containerized power pad", "Optional / adjacent"),
+    "OPT_MODX": ("I+ Modular expansion (design change beyond Rev 14)", "Optional / adjacent"),
+    "OPT_MODX_ROUTES": ("I+ modular expansion routes", "Optional routes"),
+    "OPT_PARK": ("Power park showcase: trailer fleet, stacked containers, CHP, mid-size GTs, fuel cells + microturbines, "
+                 "AX-1, IG-1 and their 34.5 kV collection", "Optional / adjacent"),
+    "OPT_PARK_ROUTES": ("Power park showcase routes", "Optional routes"),
+    "OPT_IC": ("J GT inlet chilling", "Optional / adjacent"),
+    "OPT_LNG": ("K LNG satellite", "Optional / adjacent"),
+    "OPT_H2": ("K 25 MW green hydrogen (on-site electrolysis)", "Optional / adjacent"),
+    "OPT_H2P": ("K alt: hydrogen by pipeline (receiving station, trailer bay, reserve pad)", "Optional / adjacent"),
+    "OPT_CCS_ROUTES": ("G routes", "Optional routes"), "OPT_CCSU_ROUTES": ("G utility routes", "Optional routes"),
+    "OPT_BESS_ROUTES": ("H routes", "Optional routes"), "OPT_MOD_ROUTES": ("I modular routes", "Optional routes"),
+    "OPT_TMP_ROUTES": ("I portable-pad routes", "Optional routes"), "OPT_IC_ROUTES": ("J routes", "Optional routes"),
+    "OPT_LNG_ROUTES": ("K LNG routes", "Optional routes"), "OPT_H2_ROUTES": ("K H2 routes", "Optional routes"),
+    "OPT_H2P_ROUTES": ("K pipeline-supply routes", "Optional routes"),
+    "OPT_DC": ("L BTM data centre (~150 MW, design option)", "Optional / adjacent"),
+    "OPT_DC_ROUTES": ("L BTM routes", "Optional routes"),
+    "OPT_UNDERGROUND": ("Underground: option duct banks", "Optional routes"),
+    "OPT_BOILERS": ("Boiler Row: utility gas boiler and electric boiler (showcase)", "Optional / adjacent"),
+    "BOILER_ROW_ROOF": ("Boiler Row: electric-boiler roof and south / east walls (cutaway)", "Optional / adjacent"),
+    "NOMOD_GROUND": ("Ground patch (views without the modular yard)", "Base plant"),
+    "NOBESS_GROUND": ("Ground patch (views without the BESS)", "Base plant"),
+}
+AREAS = {"A": "Power block", "B": "ACC", "C": "Grid interface", "D": "Fuel gas", "E": "Water / utilities",
+         "F": "Controls / service", "G": "Carbon capture", "H": "BESS", "I": "Modular / portable power",
+         "J": "GT inlet chilling", "K": "Fuel supply (adjacent market)", "L": "BTM data centre (design option)"}
+# Views from SW-3X1-11 (collections to show), plus two convenience views.
+BASE_SHOW = ["SITE", "BASE_POWER_BLOCK", "HALL_ROOF", "BASE_INLET_AIR", "BASE_ELECTRICAL", "R1_ROOF", "R1_WALL_E", "R2A_ROOF", "CEMS_ROOF",
+             "R4_ROOF", "R4_WALL_E", "BASE_SWITCHYARD", "BASE_UTILITIES", "BASE_SERVICES", "ROUTES_BASE",
+             "PROCESS_PIPING"]
+VIEWS = [
+    dict(k="A", n="A Plant overview", show=["SITE", "BASE_POWER_BLOCK", "BASE_ELECTRICAL", "BASE_INLET_AIR",
+         "BASE_SWITCHYARD", "HALL_ROOF", "R1_ROOF", "R1_WALL_E", "R2A_ROOF", "CEMS_ROOF", "R4_ROOF", "R4_WALL_E", "ROUTES_BASE",
+         "PROCESS_PIPING"], t=[930, 560, 30], c=[-150, -560, 950]),
+    dict(k="B", n="B R1 cutaway", show=["SITE", "BASE_ELECTRICAL", "R1_INTERIOR", "ROUTES_BASE"],
+         t=[442, 692, 4], c=[560, 560, 120]),
+    dict(k="B2", n="B2 R4 VFD room", show=["SITE", "BASE_ELECTRICAL", "R4_INTERIOR", "ROUTES_BASE", "BASE_POWER_BLOCK"],
+         t=[1195, 338, 6], c=[1330, 250, 95]),
+    dict(k="B3", n="B3 R2A HRSG e-house cutaway", show=["SITE", "BASE_ELECTRICAL", "ROUTES_BASE", "BASE_POWER_BLOCK"],
+         t=[568, 634, 6], c=[628, 560, 95]),
+    dict(k="C", n="C Pumps / ACC routes", show=["SITE", "BASE_POWER_BLOCK", "BASE_ELECTRICAL", "BASE_UTILITIES",
+         "ROUTES_BASE", "PROCESS_PIPING"], t=[1250, 800, 20], c=[1190, 1070, 190]),
+    dict(k="H", n="Turbine hall (roof off)", show=["SITE", "BASE_POWER_BLOCK", "BASE_INLET_AIR", "BASE_ELECTRICAL",
+         "ROUTES_BASE", "PROCESS_PIPING"], t=[790, 480, 25], c=[600, 250, 260]),
+    dict(k="U", n="U Underground (ground removed)", show=["UNDERGROUND", "BASE_POWER_BLOCK", "BASE_ELECTRICAL",
+         "BASE_SWITCHYARD", "BASE_UTILITIES", "BASE_SERVICES", "BASE_INLET_AIR"], t=[800, 420, -4], c=[560, 40, 330]),
+    dict(k="U2", n="U2 Underground: all zones (BESS, modular, gas, CCS, H2, BTM)", show=["UNDERGROUND", "OPT_UNDERGROUND"]
+         + [l for l in LAYERS if l.startswith(("BASE_", "OPT_")) and not l.endswith("_ROUTES") and l != "OPT_UNDERGROUND"],
+         t=[1500, 900, -4], c=[600, -500, 1300]),
+    dict(k="CY", n="Cable reel yard: reels and SIMpull Truck", show=BASE_SHOW,
+         t=[150, 790, 2], c=[120, 690, 45]),
+    dict(k="CHV", n="Cable installed: 230 kV termination at the BESS bay",
+         show=BASE_SHOW + ["OPT_BESS", "OPT_BESS_ROUTES"], t=[1756, 177, 12], c=[1772, 202, 16]),
+    dict(k="CEH", n="Cable installed: MV cable entries under MOD-EH",
+         show=BASE_SHOW + ["OPT_MOD", "OPT_MOD_ROUTES"], t=[1960, 899, 1.6], c=[1953, 911, 4.5]),
+    dict(k="CBE", n="Cable installed: BESS skid elbows and the open DC trench",
+         show=BASE_SHOW + ["OPT_BESS", "OPT_BESS_ROUTES"], t=[1610, 490, 3.3], c=[1619, 483, 5.5]),
+    dict(k="SH2", n="Story: green hydrogen - 2 kV DC conductors pulled into the electrolyzer DC tray",
+         show=BASE_SHOW + ["OPT_H2", "OPT_H2_ROUTES"], t=[2106, 1478, 11], c=[2126, 1500, 20]),
+    dict(k="SLN", n="Story: LNG - ARMOR-X MC-HL pulled from the e-house to the send-out pumps",
+         show=BASE_SHOW + ["OPT_LNG", "OPT_LNG_ROUTES"], t=[2010, 1845, 7], c=[1985, 1895, 30]),
+    dict(k="SMR", n="Story: gas meter house (M&R) - instrumentation terminated at the meter-run JB",
+         show=BASE_SHOW, t=[1648, 1790, 4], c=[1638, 1772, 12]),
+    dict(k="SMY", n="Story: modular yard - 13.8 kV MV-105 generator cables on the tray bridge to the PCM",
+         show=BASE_SHOW + ["OPT_MOD", "OPT_MOD_ROUTES"], t=[1833, 1113, 11.5], c=[1852, 1099, 16.5]),
+    dict(k="CCS", n="Carbon capture: absorbers A-C with the green CCS band",
+         show=BASE_SHOW + ["OPT_CCS", "OPT_CCS_ROUTES", "OPT_CCSU"], t=[800, 1225, 215], c=[420, 960, 150]),
+    dict(k="SD", n="Story: SIMpull Truck delivers reels to the modular-yard cable pull",
+         show=BASE_SHOW + ["OPT_MOD", "OPT_MOD_ROUTES"], t=[1752, 944, 5], c=[1702, 906, 7.5]),
+    dict(k="SB", n="Story: BESS crew pulling DC cable into the trench",
+         show=BASE_SHOW + ["OPT_BESS", "OPT_BESS_ROUTES"], t=[1714, 534, 1.4], c=[1768, 546, 6.2]),
+    dict(k="ST", n="Story: GT1 outage, MV feeder pull into the turbine-hall tray",
+         show=["SITE", "BASE_POWER_BLOCK", "BASE_INLET_AIR", "BASE_ELECTRICAL", "ROUTES_BASE", "PROCESS_PIPING"],
+         t=[556, 538, 30], c=[508, 497, 6.5]),
+    dict(k="SL", n="Story: cable legends in the turbine-hall tray stack (electricians dressing cable)",
+         show=["SITE", "BASE_POWER_BLOCK", "HALL_ROOF", "BASE_INLET_AIR", "BASE_ELECTRICAL", "ROUTES_BASE", "PROCESS_PIPING"],
+         t=[702, 606, 61], c=[638, 540.5, 50.5]),
+    dict(k="M", n="Maintenance: cable pull on the modular-yard 13.8 kV collector (manholes, reel, trench)",
+         show=BASE_SHOW + ["OPT_MOD", "OPT_MOD_ROUTES"], t=[1805, 950, 0], c=[1680, 860, 80]),
+    dict(k="O1", n="O1 Modular / portable", show=BASE_SHOW + ["OPT_MOD", "OPT_TMP", "OPT_MODX", "OPT_MOD_ROUTES", "OPT_TMP_ROUTES", "OPT_MODX_ROUTES",
+         "HV_CORRIDOR", "SWYD_FUTURE"], t=[1960, 880, 20], c=[1520, 300, 760]),
+    dict(k="O1C", n="O1C Modular yard (core: RICE, SC units, gas blocks, BESS; power park hidden)",
+         show=BASE_SHOW + ["OPT_MOD", "OPT_TMP", "OPT_MODX", "OPT_MOD_ROUTES", "OPT_TMP_ROUTES", "OPT_MODX_ROUTES",
+                           "OPT_BESS", "OPT_BESS_ROUTES", "HV_CORRIDOR", "SWYD_FUTURE"], t=[2000, 880, 20], c=[1560, 300, 760]),
+    dict(k="O2", n="O2 BESS", show=BASE_SHOW + ["OPT_BESS", "OPT_BESS_ROUTES"], t=[1740, 560, 5], c=[1480, 200, 420]),
+    dict(k="O3", n="O3 Carbon capture", show=BASE_SHOW + ["OPT_CCS", "OPT_CCSU", "OPT_CCS_ROUTES", "OPT_CCSU_ROUTES"],
+         t=[900, 1300, 110], c=[150, 150, 1150]),
+    dict(k="O4", n="O4 Inlet chilling", show=BASE_SHOW + ["OPT_IC", "OPT_IC_ROUTES"], t=[180, 1160, 20], c=[-150, 820, 420]),
+    dict(k="O5", n="O5 Gas, LNG, H2", show=BASE_SHOW + ["OPT_LNG", "OPT_H2", "OPT_LNG_ROUTES", "OPT_H2_ROUTES",
+         "SWYD_FUTURE"], t=[1980, 1650, 10], c=[1650, 1150, 700]),
+    dict(k="O5E", n="O5E Electrolyzer hall (roof off): PEM skids, rectifiers, DC cable trays", show=BASE_SHOW + ["OPT_H2",
+         "OPT_H2_ROUTES"], t=[2090, 1480, 6], c=[2000, 1395, 120]),
+    dict(k="O5P", n="O5P Alt: hydrogen by pipeline (receiving station)", show=BASE_SHOW + ["OPT_LNG", "OPT_H2P", "OPT_LNG_ROUTES",
+         "OPT_H2P_ROUTES", "SWYD_FUTURE"], t=[2190, 1520, 10], c=[2050, 1250, 380]),
+    dict(k="O6", n="Add-on: plant + BTM data centre", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND", "OPT_H2P", "OPT_H2P_ROUTES")],
+         t=[2200, 850, 30], c=[700, -1400, 1700]),
+    dict(k="ALL", n="Complete plant", show=[l for l in LAYERS if l not in ("R1_INTERIOR", "R4_INTERIOR", "CR_INTERIOR", "UNDERGROUND", "OPT_UNDERGROUND", "OPT_H2P", "OPT_H2P_ROUTES")
+                                            and not l.startswith("OPT_DC")],
+         t=[1250, 1500, 0], c=[350, -1500, 1750]),
+]
+VIEWS.insert(3, dict(
+    k="B3", n="B3 Control room (roof off)", show=["SITE", "BASE_SERVICES", "CR_INTERIOR"], t=[262, 370, 4], c=[205, 255, 120]))
+for _v in VIEWS:                              # the control-building roof travels with the rest of the services
+    if "BASE_SERVICES" in _v["show"] and "CR_ROOF" not in _v["show"] and _v["k"] != "B3":
+        _v["show"].append("CR_ROOF")
+    if "OPT_H2" in _v["show"] and "H2_ROOF" not in _v["show"] and _v["k"] not in ("O5E", "SH2"):
+        _v["show"].append("H2_ROOF")
+
+
+# Fit sets for the orthographic cameras (SW-3X1-11: "its fit set is projected
+# along the view direction; ortho scale and target are solved so the fit set
+# fills the frame with a 3% margin"). Either layers or a plan/elevation box.
+FIT = {
+    "A": dict(layers=["BASE_POWER_BLOCK", "BASE_INLET_AIR", "BASE_ELECTRICAL", "BASE_SWITCHYARD"],
+              clip=[380, 1480, 0, 900]),       # core plant + D1-D3; the long buses run beyond
+    "B": dict(box=[410, 480, 600, 780, 0, 24]),
+    "B2": dict(box=[1135, 1310, 308, 368, 0, 16]),
+    "B3": dict(box=[83, 320, 345, 396, 0, 20]),
+    "C": dict(box=[1130, 1450, 790, 850, 0, 40]),
+    "H": dict(box=[480, 1100, 370, 560, 0, 60]),
+    "U": dict(box=[0, 2420, 0, 1920, -10, 20]),
+    "U2": dict(box=[0, 3380, 0, 1920, -10, 20]),
+    "M": dict(box=[1695, 1940, 905, 972, -9, 12]),
+    "CY": dict(box=[44, 316, 700, 880, 0, 14]),
+    "CHV": dict(box=[1745, 1767, 166, 188, 0, 27]),
+    "CEH": dict(box=[1925, 1995, 890, 906, 0, 4]),
+    "CBE": dict(box=[1600, 1620, 480, 500, 0, 9]),
+    "SL": dict(box=[600, 665, 534, 554, 40, 51]),
+    "ST": dict(box=[518, 606, 436, 556, 0, 50]),
+    "SH2": dict(box=[2100, 2124, 1466, 1490, 0, 16]),
+    "SLN": dict(box=[1985, 2035, 1795, 1885, 0, 14]),
+    "SMR": dict(box=[1636, 1658, 1782, 1796, 0, 8]),
+    "SD": dict(box=[1700, 1785, 915, 965, 0, 14]),
+    "SMY": dict(box=[1808, 1850, 1100, 1142, 0, 14]),
+    "CCS": dict(box=[599, 981, 1189, 1251, 200, 250]),
+    "SB": dict(box=[1700, 1760, 525, 550, 0, 10]),
+    "O1": dict(layers=["OPT_MOD", "OPT_TMP", "OPT_MODX", "OPT_PARK"]),
+    "O1C": dict(layers=["OPT_MOD", "OPT_TMP", "OPT_MODX", "OPT_BESS"]),
+    "O2": dict(layers=["OPT_BESS"]),
+    "O3": dict(layers=["OPT_CCS", "OPT_CCSU"]),
+    "O4": dict(layers=["OPT_IC"]),
+    "O5": dict(layers=["OPT_LNG", "OPT_H2"], box=[1560, 2400, 1410, 1910, 0, 30]),
+    "O5P": dict(layers=["OPT_H2P"], box=[1985, 2400, 1410, 1640, 0, 40]),
+    "O5E": dict(box=[2010, 2170, 1440, 1520, 0, 26]),
+    "O6": dict(box=[0, 3380, 0, 1920, 0, 120]),
+    "ALL": dict(box=[0, 2420, 0, 1920, 0, 120]),
+}
+for v in VIEWS:
+    v["fit"] = FIT[v["k"]]
+
+
+# the LV branch north off the rack to the heat-trace panel rides just above the tier-30 pipes
+for r in routes:
+    if r["type"] == "lv_tray" and [tuple(p) for p in r["points"]] == [(572.0, 838.0), (572.0, 852.0)]:
+        r["z"] = 33.0
+
+# IPB around the filter-house columns: the drawing puts the middle FH-n columns (x 630, y 366-369 and
+# 400-403) on the GT centreline, where the IPB and the GCB also sit. Coordination fix (typical): the
+# IPB jogs 7 ft east past each column line and returns to the centreline through the GCB; the UAT
+# tap leaves the GSU-side leg and drops to the UAT clear of the east column (x 670).
+_ipb = []
+for r in routes:
+    if r["type"] != "ipb":
+        continue
+    pts = [tuple(p) for p in r["points"]]
+    for k, x in enumerate((630.0, 790.0, 950.0)):
+        if pts == [(x, 410.0), (x, 365.0)]:
+            r["points"] = [[x, 410.0], [x, 407.5], [x + 7, 407.5], [x + 7, 395.5], [x, 395.5], [x, 375.0],
+                           [x + 7, 375.0], [x + 7, 363.0]]
+        elif pts == [(x, 375.0), (x + 37, 375.0)]:
+            r["points"] = [[x + 7, 366.0], [x + 34, 366.0]]
+        elif pts == [(x + 37, 375.0), (x + 37, 352.0)]:
+            r["points"] = [[x + 34, 366.0], [x + 34, 352.0]]
+    _ipb.append(r)
+
+# Hall cable tiers: the drawn MV and LV hall runs (from R1 along the north wall at y 544 / 548) would
+# pass through the GT exhaust ducts (EL 21-38) at EL +36 / +30; inside the hall they ride above
+# them, LV at EL +44 and MV at EL +48 (control stays at EL +42). The drawing splits each run into
+# pieces, so the whole connected chain from R1 is raised. The LV run's tail to the ST aux skid
+# drops back to EL +30 to pass under the 26 ft ST exhaust duct (bottom EL 31).
+_tails = []
+for r in list(routes):
+    if r["type"] == "lv_tray" and [1010.0, 556.0] in r["points"] and [1010.0, 544.0] in r["points"]:
+        k = r["points"].index([1010.0, 544.0])
+        _tails.append(dict(r, points=r["points"][k:]))
+        r["points"] = r["points"][:k + 1]
+routes += _tails
+
+
+def _chain(rtype, seed):
+    """Routes of one type connected (by shared end points) to any route touching `seed`."""
+    rs = [r for r in routes if r["type"] == rtype and r["z"] > 0 and not any(t is r for t in _tails)]
+    key = lambda p: (round(p[0], 1), round(p[1], 1))
+    hit = [r for r in rs if any(seed(p) for p in r["points"])]
+    ends = {key(p) for r in hit for p in (r["points"][0], r["points"][-1])}
+    grown = True
+    while grown:
+        grown = False
+        for r in rs:
+            if r in hit:
+                continue
+            if key(r["points"][0]) in ends or key(r["points"][-1]) in ends:
+                hit.append(r)
+                ends |= {key(r["points"][0]), key(r["points"][-1])}
+                grown = True
+    return hit
+
+
+_in_hall = lambda p: 555 < p[0] < 1015 and 410 < p[1] < 559
+for r in _chain("lv_tray", _in_hall):
+    r["z"] = 44
+for r in routes:                       # the tail east of x 1010 to the ST aux skid stays under the ST exhaust duct
+    if r["type"] == "lv_tray" and r["z"] == 44 and all(p[0] >= 1010 and p[1] >= 505 for p in r["points"]):
+        r["z"] = 30
+for r in _chain("mv_tray", _in_hall):
+    r["z"] = 48
+# drawn tray legs that sit on column lines: the MV legs off the HRSG stair towers (x 672 / 832 / 992)
+# and off the ACC column line and main-steam duct supports (x 1150 -> 1157, y 580 -> 585)
+for r in routes:
+    if r["type"] in ("lv_tray", "mv_tray") and r["z"] > 0:
+        for p in r["points"]:
+            if r["type"] == "mv_tray" and p[0] in (672.0, 832.0, 992.0) and 600 <= p[1] <= 840:
+                p[0] += -4.85 if p[0] == 832.0 else 5       # clear of the rack bent at x 835 and the HRSG 2 column and stair
+            elif r["type"] == "lv_tray" and p[0] in (672.0, 832.0, 992.0) and 700 <= p[1] <= 840:
+                p[0] -= 0.6                                  # between the HRSG platform rail and the stair-tower posts
+            if r["type"] == "mv_tray" and p[0] == 561.0 and 670 <= p[1] <= 840:
+                p[0] = 565.0
+            if r["type"] == "lv_tray" and p[0] == 1150.0 and 370 <= p[1] <= 585:
+                p[0] = 1157.0
+            if r["type"] == "lv_tray" and p[1] == 580.0 and 1149 <= p[0] <= 1441:
+                p[1] = 585.0
+
+# Utilities piping routes (cycle 4): tank farm water headers, fire water, auxiliary steam
+import utilities as _util
+_util.routes(add_route)
+
+# Switchyard control-cable trenches (routes; their concrete is drawn in switchyard.py)
+import switchyard as _swyd
+_swyd.routes(add_route)
+_swyd.build(routes)       # trenches, breaker mechanisms, disconnect blades, line entrances, masts, fence
+_util.build()             # cycle 4: fire pump house, ammonia, aux boiler, air compressors, OWS
+import services as _services
+_services.routes(add_route)
+N_DRAIN = _services.build()
+import ponds as _ponds
+_ponds.build()            # stormwater pond works and pump station; wastewater treatment process area
+import lng_h2 as _lh
+_lh.routes(add_route)
+_lh.build()               # cycle 9: LNG satellite and green hydrogen
+import inletchill as _ic
+_ic.routes(add_route)
+_ic.build()               # cycle 8: GT inlet chilling tower, chillers, pumps, CW / CHW loops
+import bess as _bess
+_bess.routes(add_route)
+_bess.build()             # cycle 7: BESS yard, containers, PCS skids, collector, buildings
+import datacenter as _dc
+_dc.routes(add_route)
+_dc.color_routes(routes)
+_dc.build()               # BTM data centre: dressing, BESS / genset / substation detail
+import ccs as _ccs
+_ccs.routes(add_route)
+import ccs_detail as _ccsd
+_ccsd.routes(add_route)
+for _r in routes:
+    if _r.get('sheet') == 'typical (CCS audit)' and _r['type'] == 'lv_tray' and _r['points'][0][1] == 1133 or \
+            (_r.get('sheet') == 'typical (CCS audit)' and _r['type'] == 'lv_tray' and [1046, 1133] in _r['points']):
+        _r['z'] = 27.3                    # on top of the CCS pipe rack
+_ccs.build(); _ccsd.build(); import zone_detail as _zd; _zd.build()              # cycle 6: carbon capture flue-gas path, amine piping and rack, regeneration, CT   # cycle 5: gate, fence wire and CCTV, drainage, lighting, admin / workshop dressing
+import placeholders as _ph
+_ph.build()               # single-box placeholders rebuilt as equipment (CCS, LNG, H2, BTM)
+import h2_ready as _h2r
+N_H2R = _h2r.build(routes)  # alternative hydrogen supply by pipeline (OPT_H2P): receiving station, trailer bay, reserve pad
+_dc.color_parts()         # BTM data centre: colour by supply path (islanded / modular yard / grid tie)
+
+# Wiring applications: every powered / instrumented item gets its cable applications, and a buried
+# feeder to the nearest underground cable network where no cable route reached it
+import wiring as _wiring
+import hall as _hall_w
+_hall_w.inlet_routes(add_route)
+_hall_w.gt_st_routes(add_route)
+N_WAPPS, N_FEEDERS = _wiring.build(items, routes, LAYERS, add_route)
+_hall_w.inlet_wiring()
+_wiring.apply_overrides(items)
+# temporary and bridge power on the portable pad: cable on grade / in ground trays, not in duct banks
+import surface_cable as _surf
+N_SURF = _surf.convert(routes)
+N_SURF = _surf.build()
+_fuel.G['routes'] = routes
+_station.build_late()  # duct-bank manholes and handholes (after the feeders exist)
+
+# Low pipe routes: road crossings go below grade in sleeves; sleepers / T-posts under the rest
+# LV / instrument cables inside the gas yard and the M&R station run buried in conduit (hazardous
+# area), not on 30 ft trays
+for r in routes:
+    if r["type"] == "lv_tray" and all(any(x0 <= x <= x1 and y0 <= y <= y1 for (x0, x1, y0, y1) in _fuel.GAS_AREAS)
+                                      for x, y in r["points"]):
+        r["z"], r["h"] = -2, 0.6
+        r["label"] = "LV / instrument cable, buried conduit (gas area)"
+
+
+# Detail pass (LOD 2): stairs, rails, ladders, sheds, lattice, rack piping, doors, poles
+import detail as _detail
+N_DETAIL = _detail.Detail(items, parts).run()
+# LOD 3: building and equipment dressing for close views
+import detail3 as _detail3
+N_DETAIL += _detail3.Detail3(items, parts).run()
+# LOD 3 switchgear rooms: R1 and the R4 VFD e-house get real lineup fronts and a fitted-out room
+import swgr_rooms as _swgr
+N_DETAIL += _swgr.build()
+# control / admin building: hollowed, main control room with video wall and console, offices
+import control_room as _cr
+N_DETAIL += _cr.build()
+# turbine hall: open operating floor on columns, pedestals, stairs between the units, crossover stiles
+import hall_access as _ha
+N_DETAIL += _ha.build()
+# turbine hall: lube-oil skid reservoirs / plate coolers, ST casing stiffeners and joint, nameplates
+import hall_detail as _hd
+N_DETAIL += _hd.build()
+# electrolyzer hall: open hall with PEM skids, rectifiers, DC cable trays, 13.8 kV trenches; roof on H2_ROOF
+import h2_hall as _h2h
+N_DETAIL += _h2h.build()
+# gas yard and pipeline M&R at LOD 3: fences, floods, gas detection, JB stands with sealed conduit, signs, people
+import gas_lod3 as _glod
+N_DETAIL += _glod.build()
+# wire-and-cable hero moments for the growth markets: green hydrogen DC pull, LNG ARMOR-X pull, M&R terminations
+import cable_moments as _cm
+print("cable moments legends", _cm.build())
+# modular power yard at LOD 3: crushed stone and drives, conduit / MC racks, MV tray bridge, SCR / aero detail, people
+import modular_lod3 as _mlod
+N_DETAIL += _mlod.build()
+# carbon capture at LOD 3: green CCS band and lettering on the absorbers, crushed stone, nameplates, safety showers
+import ccs_lod3 as _clod
+N_DETAIL += _clod.build()
+# low pipe routes: road crossings below grade in sleeves, then supports and round pipe geometry. Runs after
+# the LOD 3 area passes so their paved drives (CCS, modular yard) count as roads too.
+# pipes run square: a drawn diagonal (sheet 01 sketches a few) gets a corner, x first, so it is rendered and supported
+for _r in routes:
+    if _r["type"] in _fuel.LOW + ("steam", "condensate", "ccw"):
+        _q = [_r["points"][0]]
+        for _a, _b in zip(_r["points"], _r["points"][1:]):
+            if _a[0] != _b[0] and _a[1] != _b[1]:
+                _q.append([_b[0], _a[1]])
+            _q.append(_b)
+        _r["points"] = _q
+N_XING = _fuel.road_crossings(routes)
+N_SUPPORTS = _fuel.supports(routes)
+import pipes as _pipes
+N_PIPE = _pipes.build(item, items, parts, routes)     # round pipes, elbows, flanges, jackets
+# visual hierarchy: orange accents and lettering on the HRSGs / stacks only (hero)
+import hero as _hero
+print("hero accents", _hero.build())
+import hall_finish as _hall_finish
+print("turbine hall finish", _hall_finish.build())
+import st_detail as _st_detail
+print("steam turbine detail / cable", _st_detail.build())
+import gt_wiring as _gtw                           # GT1-3 / GTG-1..3: probes, IGV servos, flame, ignition, generator RTDs
+print("gas turbine / generator wiring", _gtw.build())
+# Tray review (user screenshots): short tray stubs drawn between a duct-bank end and pad equipment
+# rode the EL +36 rack tier, so a 10 ft connection became a 36 ft goalpost over the transformer. A
+# duct bank comes up straight into the equipment: those stubs are now buried, with rigid-conduit
+# stub-ups into the terminal compartment. In the south gallery the excitation-transformer feed
+# runs at the IPB tap level (EL +24) and the ET -> excitation cable tray just above the cubicles.
+_db_ends = {tuple(p) for r in routes if r["type"] == "duct_bank" for p in (r["points"][0], r["points"][-1])}
+N_STUB = 0
+for r in routes:
+    P = r["points"]
+    if r["type"] not in ("mv_tray", "lv_tray") or len(P) != 2:
+        continue
+    L = abs(P[0][0] - P[1][0]) + abs(P[0][1] - P[1][1])
+    if L > 30 or not (tuple(P[0]) in _db_ends or tuple(P[1]) in _db_ends):
+        continue
+    end = P[1] if tuple(P[0]) in _db_ends else P[0]
+    r["type"], r["z"], r["w"], r["h"], r["color"] = "duct_bank", -2, 3, 1.5, "ductbank"
+    r["label"] = "Duct bank (underground), stub-up into the equipment"
+    tgt = min((it for it in items if it["z"][1] < 20 and it["fp"][1] - it["fp"][0] < 200 and
+               it["fp"][0] - 6 <= end[0] <= it["fp"][1] + 6 and it["fp"][2] - 6 <= end[1] <= it["fp"][3] + 6),
+              key=lambda it: (it["fp"][1] - it["fp"][0]) * (it["fp"][3] - it["fp"][2]), default=None)
+    if tgt is None:
+        continue
+    x0, x1, y0, y1 = tgt["fp"]
+    ex, ey = min(max(end[0], x0), x1), min(max(end[1], y0), y1)       # where the bank meets the pad
+    along_x = ey in (y0, y1)
+    for k in range(4):                                                  # rigid conduit stub-ups
+        o = -1.2 + .8 * k
+        cx, cy = (ex + o, ey) if along_x else (ex, ey + o)
+        parts.append(dict(kind="rod", a=[cx, cy, .3], b=[cx, cy, 2.4], r=.22, r2=.22, color="steel", seg=8,
+                          item=tgt["id"], layer=tgt["layer"], d=1))
+    parts.append(dict(kind="box", min=[ex - 2.2 if along_x else ex - 1, ey - 1 if along_x else ey - 2.2, 0],
+                      max=[ex + 2.2 if along_x else ex + 1, ey + 1 if along_x else ey + 2.2, .3], color="concrete",
+                      item=tgt["id"], layer=tgt["layer"], d=1))
+    N_STUB += 1
+for r in routes:
+    if r.get("sheet") == HC and r["type"] == "mv_tray" and r["points"][0][1] < 404:
+        r["z"] = 24                                                     # ET feed from the IPB tap
+    if r.get("sheet") == HC and r["type"] == "lv_tray" and r["points"][0][1] < 400 and r["points"][-1][1] < 400:
+        r["z"] = 10.5                                                   # ET -> excitation cubicles
+# sanitary lift station feed (underground pass): LV duct bank from the maintenance building
+add_route("duct_bank", [(320, 630), (332, 630), (332, 652)], "ROUTES_BASE", sheet="typical (underground)")
+# (the ST-aux LV branch leaves R3 through its south face; R3's north face feeds the run to the rack)
+# chain-link fences: every fence panel gets line posts every 10 ft and a top rail (the panel itself is the
+# mesh, drawn see-through by the renderers), so no fence reads as a solid wall
+N_POSTS = 0
+for p in [q for q in parts if q["kind"] == "box" and q["color"] == "fence"]:
+    (x0, y0, z0), (x1, y1, z1) = p["min"], p["max"]
+    if z1 - z0 < 4.5:
+        continue
+    along_x = (x1 - x0) >= (y1 - y0)
+    L, T = (x1 - x0, y1 - y0) if along_x else (y1 - y0, x1 - x0)
+    if L < 4 or T > 1.2:
+        continue
+    c = (y0 + y1) / 2 if along_x else (x0 + x1) / 2
+    a0 = x0 if along_x else y0
+    n = max(1, int(round(L / 10)))
+    for k in range(n + 1):
+        s0 = a0 + L * k / n
+        px, py = (s0, c) if along_x else (c, s0)
+        parts.append(dict(kind="rod", a=[round(px, 2), round(py, 2), z0], b=[round(px, 2), round(py, 2), z1 + .2],
+                          r=.12, r2=.12, color="steel", seg=6, item=p["item"], layer=p["layer"], d=1))
+        N_POSTS += 1
+    a, b = ([x0, c, z1], [x1, c, z1]) if along_x else ([c, y0, z1], [c, y1, z1])
+    parts.append(dict(kind="rod", a=a, b=b, r=.08, r2=.08, color="steel", seg=6, item=p["item"], layer=p["layer"], d=1))
+# cable-network ties: pieces of the buried network that stopped short of the plant network (found by the
+# cable-schedule connectivity check: their loads could only be "estimated")
+_TIE = "typical (cable network ties)"
+add_route("duct_bank", [(460, 1420), (590, 1420), (590, 1425)], sheet=_TIE)            # utilities-area bank to the west trunk
+add_route("mvlv_cable", [(1307, 1046), (1500, 1046)], layer="OPT_CCS_ROUTES", sheet=_TIE)  # CCS banks to the x 1500 trunk
+add_route("mvlv_cable", [(305, 1062), (355, 1062)], layer="OPT_IC_ROUTES", sheet=_TIE)    # inlet-chilling bank to the x 355 trunk
+add_route("mvlv_cable", [(2726, 1150), (2678.7, 1150)], layer="OPT_DC_ROUTES", sheet=_TIE)  # data-hall LV stub to its bank
+# every other gap in the cable network gets real buried conduit (the schedule used to bridge these on paper):
+# an L at EL -2 from below one piece's nearest node to the other's, in the layer of the piece it serves
+import network as _net
+_NODE_LAYER = {}
+for _r in routes:
+    if _r["type"] in _net.ELEC:
+        for _p in _r["points"]:
+            _NODE_LAYER.setdefault((round(_p[0], 1), round(_p[1], 1)), _r["layer"])
+N_TIES = 0
+for _v, _w in _net.ties(routes):
+    _lay = [_NODE_LAYER.get(n[:2], "ROUTES_BASE") for n in (_v, _w)]
+    _lay = next((l for l in _lay if l != "ROUTES_BASE"), "ROUTES_BASE")              # optional systems keep their layer
+    _pts = [(_v[0], _v[1]), (_w[0], _v[1]), (_w[0], _w[1])]
+    _pts = [p for i, p in enumerate(_pts) if i == 0 or p != _pts[i - 1]]
+    if len(_pts) > 1:
+        add_route("duct_bank", _pts, layer=_lay, sheet="typical (cable network ties)")
+        routes[-1]["label"] = "Conduit (buried, network tie)"
+        N_TIES += 1
+# underground systems in real geometry (duct banks, chambers, ground grid, firewater, drains, water mains)
+import underground as _ug
+N_UG = _ug.build(items, routes)
+# strung conductors sag between their supports (strain buses, shield wires, overhead lines, H-MOD, jumpers)
+import cables as _cables
+N_CAB = _cables.build(routes)
+# trays last, so their supports and drops see every stair, platform and pipe already in the model
+import trays as _trays
+N_TRAY = _trays.build(item, items, parts, routes)     # ladder trays, cables, supports, drops, IPB
+import hall_trays as _htr
+print("hall tray frames (frames, posts replaced)", _htr.build())
+import cable_links as _cl
+print("tier risers added", _cl.build(routes))
+import hall_wiring as _hall_wiring                     # after the trays: the drops route round the wall trays
+print("turbine hall interior electrical", _hall_wiring.build())
+# rooftop equipment on the buildings (HVAC units, exhaust fans, vents, hatches), before the realism pass sees them
+import rooftop as _rooftop
+N_ROOF = _rooftop.build(item, items, parts, routes)
+print("rooftop", N_ROOF)
+# realism pass last: firewater, small-bore piping, signage, people, vehicles, scaffolding, HRSG harps
+import realism as _realism
+N_REAL = _realism.build(item, items, parts, routes)
+import maintenance as _maint
+_maint.build()      # cable-pull scene on the modular-yard 13.8 kV collector bank
+import showcase as _show
+print("cable showcase", _show.build())
+_show.stories()
+_show.turbine_hall_pull()
+import simpull as _sp
+_sp.build()                # SIMpull / Maxis staging in the reel yard, feeder pull at the workshop
+import prefab as _pf
+_pf.build()                # prefab staging bay on the laydown pad, cable spine going in at the modular yard
+import contractor_yard as _cy
+print('contractor area', _cy.build())   # conduit handling, cable laid out, cut-to-length, job-site services, LED lighting
+import skid_prewire as _skp
+_skp.build()               # skid pre-assembly / pre-wire workstation beside the spine
+import prefab_electrical as _pel
+print('prefab electrical yard', _pel.build())   # switchgear / VFD / UPS lineups opened, panel shop
+import genset_blocks as _gbk
+print('genset block 1 detail', _gbk.build())
+import tech_bays as _tb
+print('technology bay signs', _tb.build())   # one bay per technology (Oct 27)   # open lead trench, terminal box, ground ring, sign (Oct 26)
+import modular_packages as _mpk
+print("modular GT packages", _mpk.build())   # AX-1 aero modules, IG-1 industrial GT (Oct 24)
+import park_looks as _pl
+print("park looks", _pl.build())            # stacked containers, CHP rack, mid-size GT packages (Oct 27)
+print("tray legends", _show.tray_legends())
+print("CCS rack tray legends", _show.tray_legends(x0=726, x1=856, y0=1131, y1=1135.5, z0=26, z1=29))
+for _p in parts:                    # tray cables round, not faceted (they are seen close up in the tray shots)
+    if _p["kind"] == "rod" and _p["color"] in ("cable_mv", "cable_armor", "cable_tc", "cable_inst", "cable_tcx", "cable_mc") \
+            and _p.get("seg", 12) < 14 and abs(_p["a"][2] - _p["b"][2]) < .01 and (40 < _p["a"][2] < 52 or (26 < _p["a"][2] < 29 and 1130 < _p["a"][1] < 1136)) or (_p["kind"] == "rod" and _p["color"] in ("cable_mv", "cable_armor") and abs(_p["a"][0] - _p["b"][0]) < .01 and 556 < _p["a"][0] < 563 and 47 < _p["a"][2] < 50):
+        _p["seg"] = 16
+_show.tray_dresser()
+print("armor ribs", _show.armor_ribs())
+print("ARMOR-X ribs, CCS rack", _show.armor_ribs(x0=708, x1=800, pitch=.085, color="cable_mc", y0=1131, y1=1135.5, z0=26, z1=29, depth=.014))
+_show.armor_sample()
+print("R1 -> hall MV tray legends / ribs", _show.tray_legends_y(), _show.armor_ribs_y())
+import cable_install as _ci
+print("e-house bottom cable entries", _ci.ehouse_bottom_entry("MOD-EH"))
+_sk = [i for i in items if i["name"] == "BESS PCS / MV skid"]
+for _i in _sk:
+    _ci.padmount_cabinet(_i, "+x", open_=_i["fp"][0] == 1590 and _i["fp"][2] == 486)
+_ci.bess_dc_trench(next(i for i in _sk if i["fp"][0] == 1710 and i["fp"][2] == 544), open_=True)
+for _i in _sk:
+    if not (_i["fp"][0] == 1710 and _i["fp"][2] == 544):
+        _ci.bess_dc_trench(_i)
+print("pad-mount cabinets", len(_sk))
+import terminate as _term
+N_TERM = _term.build(items, parts)   # quality sweep: every open pipe end terminated (drop to UG, valve, blind flange)
+print('pipe-end terminations', N_TERM)
+print('supports added under floating parts', _term.support_floating(items, parts))
+import hall_exterior as _hx                        # after everything: its strips are cut round all that stands at the walls
+print('turbine hall exterior finish', _hx.build())
+import front_door as _fd                         # zone 07: the control / admin building outside and on the roof
+print('front door (zone 07)', _fd.build())
+import campus_brand as _cb                        # the facade language, lighter, on RICE, SC-1/2 and the e-houses
+print('campus finish', _cb.build())
+print('compressor building west louvre removed', _sc2.late())
+import reserved_pad as _rp                        # phase-2 pad for SC-3 / SC-4, pre-wired
+print('reserved pad', _rp.build())
+import gate_detail as _gd                         # zone 07 part 2: the gate checkpoint, its devices and their wiring
+print('gate checkpoint', _gd.build())
+import admin_wiring as _aw                        # admin / control building wiring; open office mid fit-out
+print('admin building wiring', _aw.build())
+import fitout_products as _fp                     # the install products in use in the open-office fit-out
+print('fit-out products', _fp.build())
+import standard_kits as _sk                       # kits 4-5: BESS block kit and modular generator kit, staged in place
+print('standard kits', _sk.build())
+import rice_electrical as _rel                      # RICE hall interior electrical (audit, Oct 22)
+print('RICE hall electrical', _rel.build())
+import gallery_electrical as _gel                  # turbine hall south gallery equipment fronts, power, lighting (Oct 22)
+print('gallery electrical', _gel.build())
+import mv_terminations as _mvt                    # MV connections at the generators: SC-1 TB-G1 opened, GT1 starting disconnect
+print('MV terminations', _mvt.build())
+import aux_boiler as _ab                         # boiler section (Oct 22): AB-1 gas-fired package boiler at LOD 3
+print('aux boiler', _ab.build())
+import hrsg_electrical as _hel                    # boiler section: HRSG duct burners, BFP MV terminations
+print('HRSG electrical', _hel.build())
+import bfp_kit as _bk                             # BFP-1B at LOD 3: terminal box opened on kit 2's pre-terminated leads
+print('BFP-1B kit 2', _bk.build())
+import r2a_interior as _r2a                       # boiler slide 4: R2A e-house shell, lineups and every cable leg
+print('R2A interior', _r2a.build())
+import cems_lod3 as _cems                       # boiler deck: CEMS shelters at LOD 3 (analyzers, sample line, every cable)
+print('CEMS shelters', _cems.build())
+import boiler_row as _brw                         # Boiler Row (Oct 23): utility gas boiler UB-1 + STG, electric boiler EB-1, sign
+print('Boiler Row', _brw.build())
+import brownfield as _bf                          # boiler section: HRSG 3 module-replacement outage (brownfield)
+print('brownfield outage', _bf.build())
+import site_finish as _sf                        # final campus items: shield masts, met mast, windsocks, eyewash, muster
+print('site finish', _sf.build())
+
+
+# "conditional" was a drawing flag colour (yellow); the items keep basis="conditional" in their data, but are drawn
+# in their real finishes
+def _real_finish(p, name):
+    hi = (p.get("max") or p.get("b"))[2]
+    if "tank" in name and "transformer" not in name:
+        return "tankroof" if p["kind"] == "rod" and hi > 42 else "tankwall"
+    if "unloading" in name:
+        return "concrete"
+    if "grounding transformer" in name:
+        return "xfmr"
+    if "black-start" in name:
+        return "bess"
+    if name.startswith("Plant gas yard") or ("compressor" in name and p["kind"] == "rod" and hi < 6):
+        return "fuelgas"
+    if "compressor" in name:
+        return "machine" if p["kind"] == "box" else "tank"
+    if "chiller" in name:
+        return "machine" if p["kind"] == "box" else "pipe"
+    return "equip"
+_nm = {it["id"]: it["name"] for it in items}
+for _p in parts:
+    if _p["color"] == "conditional":
+        _p["color"] = _real_finish(_p, _nm[_p["item"]])
+
+
+def _tank_dress(it, cx, cy, R, H, roof, a0):
+    """Storage-tank detail: spiral stair up the shell (treads, stringer, handrail) from the ground at bearing a0 to
+    the roof, roof handrail ring with toe board, wind girder and top angle, roof vent and gauge hatch, shell
+    manway, nozzles near the base."""
+    import math as _m
+    def add(kind, **kw):
+        kw.update(item=it["id"], layer=it["layer"], d=1)
+        parts.append(dict(kind=kind, **kw))
+    def P(a, r, z):
+        return [round(cx + r * _m.cos(a), 2), round(cy + r * _m.sin(a), 2), round(z, 2)]
+    sweep = H / (2 * _m.pi * R) * 1.25 * 2 * _m.pi * .55        # ~38 deg stair pitch
+    n = int(H / .65)
+    for k in range(n):                                          # treads on brackets
+        a = a0 + sweep * k / n
+        z = H * (k + 1) / (n + 1)
+        add("rod", a=P(a, R + .2, z), b=P(a, R + 3.2, z), r=.12, r2=.12, color="grating", seg=4)
+    for k in range(24):                                         # outer stringer and handrail
+        a1, a2 = a0 + sweep * k / 24, a0 + sweep * (k + 1) / 24
+        z1, z2 = H * k / 24, H * (k + 1) / 24
+        add("rod", a=P(a1, R + 3.2, z1), b=P(a2, R + 3.2, z2), r=.1, r2=.1, color="steel", seg=4)
+        add("rod", a=P(a1, R + 3.25, z1 + 3.4), b=P(a2, R + 3.25, z2 + 3.4), r=.06, r2=.06, color="crane", seg=4)
+        add("rod", a=P(a1, R + 3.25, z1), b=P(a1, R + 3.25, z1 + 3.4), r=.05, r2=.05, color="crane", seg=4)
+    for k in range(48):                                         # roof-edge handrail and toe board
+        a1, a2 = 2 * _m.pi * k / 48, 2 * _m.pi * (k + 1) / 48
+        add("rod", a=P(a1, R - .6, H + 3.6), b=P(a2, R - .6, H + 3.6), r=.06, r2=.06, color="crane", seg=4)
+        add("rod", a=P(a1, R - .6, H + .2), b=P(a1, R - .6, H + 3.6), r=.05, r2=.05, color="crane", seg=4)
+    add("rod", a=[cx, cy, H - 2.2], b=[cx, cy, H - 1.6], r=R + .45, r2=R + .45, color="steel", seg=40)   # wind girder
+    add("rod", a=[cx, cy, H - .15], b=[cx, cy, H + .15], r=R + .3, r2=R + .3, color="steel", seg=40)     # top angle
+    add("rod", a=[cx, cy, roof], b=[cx, cy, roof + 2.5], r=1.2, r2=1.2, color="steel", seg=12)          # vent
+    add("rod", a=[cx, cy, roof + 2.5], b=[cx, cy, roof + 3.3], r=2.0, r2=.6, color="steel", seg=12)
+    add("rod", a=P(a0 + sweep, R * .55, H + 1.2), b=P(a0 + sweep, R * .55, H + 2.2), r=1.0, r2=1.0,
+        color="steel", seg=10)                                  # gauge hatch
+    for k, da in enumerate((.35, .9, 1.4)):                     # base nozzles and the shell manway
+        a = a0 + _m.pi + da
+        add("rod", a=P(a, R, 2.2), b=P(a, R + 1.8, 2.2), r=.6 if k else 1.3, r2=.6 if k else 1.3, color="steel", seg=12)
+for _nm_, _a0 in (("CONDITIONAL: ULSD backup fuel-oil tank", 3.6), ("CONDITIONAL: TES chilled-water tank", 0.3)):
+    _it = next(i for i in items if i["name"] == _nm_)
+    _sh = next(p for p in parts if p["item"] == _it["id"] and p["color"] == "tankwall")
+    _rf = next(p for p in parts if p["item"] == _it["id"] and p["color"] == "tankroof")
+    _tank_dress(_it, _sh["a"][0], _sh["a"][1], _sh["r"], _sh["b"][2], _rf["b"][2], _a0)
+
+
+# power park showcase on its own layer (owner, Oct 28: the modular yard looked too busy; the "core" view O1C hides it)
+import re
+PARK = re.compile(r"^(TGF-|CGE-|CHP-|MTG-|FC-|MT-|PGS-|LGN-|AX-|AX-1|IG-|SWG-PK|PK-GT|T-MOD-3|Power park:|Site sign|"
+                  r"Trailer gas-engine fleet site|Containerized gas engine site|Mid-size gas turbine site|Gas engine CHP site|"
+                  r"Fuel-cell and microturbine site|Paralleled gas genset site|Linear generator site)")
+_park_ids = set()
+for it in items:
+    if it["layer"] in ("OPT_MODX", "OPT_MOD") and PARK.search(it["name"]):
+        it["layer"] = "OPT_PARK"
+        _park_ids.add(it["id"])
+for p in parts:
+    if p["item"] in _park_ids and p.get("layer") in ("OPT_MODX", "OPT_MOD"):
+        p["layer"] = "OPT_PARK"
+for r in routes:
+    if r["layer"] == "OPT_MODX_ROUTES" and all(1918 <= x <= 2215 and 296 <= y <= 800 for x, y in r["points"]):
+        r["layer"] = "OPT_PARK_ROUTES"
+for v in VIEWS:
+    if v["k"] != "O1C" and "OPT_MODX" in v.get("show", []):
+        v["show"] = v["show"] + ["OPT_PARK", "OPT_PARK_ROUTES"]
+print("power park layer", len(_park_ids), "items")
+
+
+def validate():
+    ids = {it["id"] for it in items}
+    assert all(p["item"] in ids for p in parts)
+    for p in parts:
+        assert p["layer"] in LAYERS, p["layer"]
+    for r in routes:
+        assert r["layer"] in LAYERS, r
+    for it in items:
+        assert it["layer"] in LAYERS, it["layer"]
+
+
+model = dict(
+    title="SW-3X1 Rev 14 - 3x1 combined-cycle plant, 3D coordinate model",
+    units="feet", axes="X east, Y north, Z up; origin SW corner of compound",
+    compound=[2420, 1920],
+    disclaimer="Conceptual illustration. Not engineered. Not for construction.",
+    source="SW-3X1 Drawing Set Rev 14 (Sept 26, 2026), Stephan Hardt | Power Generation Solutions",
+    layers={k: dict(label=v[0], group=v[1]) for k, v in LAYERS.items()},
+    areas=AREAS, views=VIEWS, items=items, parts=parts, routes=routes, decals=_fuel.G.get("decals", []),
+    underground_audit={k: v for k, v in N_UG['audit'].items()})
+
+if __name__ == "__main__":
+    validate()
+    out = os.path.join(HERE, "sw3x1_model.json")
+    def _r(o):  # 0.01 ft is far below any drawn tolerance; keeps the file small
+        if isinstance(o, float):
+            return round(o, 2)
+        if isinstance(o, list):
+            return [_r(v) for v in o]
+        if isinstance(o, dict):
+            return {k: _r(v) for k, v in o.items()}
+        return o
+    # nothing floating: posts / brackets for parts that touch nothing, stray leftovers removed
+    import attach as _att
+    print("attach (posts, brackets, removed)", _att.run(model["parts"], {it["id"]: it["layer"] for it in model["items"]}))
+    print("free-standing signs posted", _att.signs(model["parts"], model.get("decals", [])))
+    # one crushed-stone finish across the site (user review): every yard / pad / corridor surfacing in the
+    # gravel_yard colour; the switchyard keeps its own (lighter) gravel
+    _nm = {it["id"]: it["name"] for it in model["items"]}
+    _stone = ("Maintenance laydown (gravel)", "BTM data-centre campus (crushed stone)")
+    for _p in model["parts"]:
+        n = _nm.get(_p["item"], "")
+        if "switchyard" in n:
+            continue
+        if _p["color"] in ("gravel", "corridor") or (_p["color"] == "pad" and n.startswith(_stone)):
+            _p["color"] = "gravel_yard"
+    with open(out, "w") as f:
+        json.dump(_r(model), f, separators=(",", ":"))
+    reg = sum(1 for it in items if it["register"])
+    print(f"wrote {out}: {len(items)} items ({reg} in the register), {len(parts)} parts "
+          f"({N_DETAIL} detail), {len(routes)} route polylines; {N_XING} road crossings, {N_SUPPORTS} pipe supports, {N_PIPE} pipe parts, {N_TRAY} tray / IPB parts; wiring on {N_WAPPS} items, {N_FEEDERS} new feeders; realism {N_REAL}")

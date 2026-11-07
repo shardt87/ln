@@ -1,0 +1,506 @@
+<title>RockBlock Campus Module</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Sans+Condensed:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: engineering viewer. Header with doc number, a tool row, the 3D stage with its inspector, then takeoff / register / key tabs.
+   Single dark look on purpose (near-black field, copper accent). */
+:root{
+  color-scheme:dark;
+  --field:#0f1113; --panel:#171a1d; --panel2:#1e2226; --rule:#2c3238; --ink:#e7e4de; --ink2:#9aa3a8;
+  --copper:#d0743a; --copper2:#e8955c; --known:#e7e4de; --wa:#e3a21a; --tv:#ef6a5a; --focus:#7fb2ff;
+  --disp:"Barlow Condensed","Arial Narrow",sans-serif;
+  --sans:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--field);color:var(--ink)}
+body{font:14px/1.45 var(--sans);margin:0}
+.wrap{padding-block:14px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:1560px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 24px;border-bottom:2px solid var(--copper);padding-bottom:10px}
+.eyebrow{font:600 12px/1 var(--disp);letter-spacing:.24em;text-transform:uppercase;color:var(--copper2)}
+h1{font:800 34px/1 var(--disp);text-transform:uppercase;margin:6px 0 0;letter-spacing:.01em;text-wrap:balance}
+h1 em{font-style:normal;color:var(--copper)}
+.sub{color:var(--ink2);margin:6px 0 0;max-width:90ch}
+.docno{font:500 12px/1.5 var(--mono);text-align:right;color:var(--ink2)}
+.docno b{color:var(--ink);font-weight:500}
+.tools{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.tg{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.tg>span{font:600 11px/1 var(--disp);letter-spacing:.16em;text-transform:uppercase;color:var(--ink2);margin-right:4px}
+button,select{font:500 12.5px/1 var(--sans);color:var(--ink);background:var(--panel2);border:1px solid var(--rule);padding:7px 9px;cursor:pointer;border-radius:2px}
+button:hover{border-color:var(--ink2)}
+button[aria-pressed="true"]{background:var(--copper);border-color:var(--copper);color:#fff}
+button.ly{display:inline-flex;gap:6px;align-items:center}
+button.ly i{display:inline-block;width:16px;height:3px;background:var(--c)}
+button.ly i.d{background:repeating-linear-gradient(90deg,var(--c) 0 4px,transparent 4px 7px)}
+button:focus-visible,select:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:12px}
+@media (max-width:1100px){.grid{grid-template-columns:minmax(0,1fr)}}
+.stage{position:relative;background:#0b0c0e;border:1px solid var(--rule);height:72vh;min-height:520px;overflow:hidden}
+@media (max-width:700px){.stage{height:64vh;min-height:420px}}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.tag{position:absolute;transform:translate(-50%,-100%);font:500 10.5px/1 var(--mono);color:var(--ink);background:rgba(15,17,19,.82);border:1px solid var(--rule);padding:2px 4px;white-space:nowrap}
+.tag.s{border-color:var(--copper);color:var(--copper2)}
+.tag.g{font:600 12px/1 var(--disp);letter-spacing:.08em;border-color:#3a4148}
+.read{position:absolute;left:10px;top:8px;font:500 11.5px/1.35 var(--mono);background:rgba(15,17,19,.85);border:1px solid var(--rule);padding:4px 7px;pointer-events:none;font-variant-numeric:tabular-nums;max-width:calc(100% - 80px)}
+.read span{color:var(--ink2)}
+.north{position:absolute;right:12px;top:10px;width:46px;height:46px;pointer-events:none;color:var(--ink)}
+.stamp{position:absolute;right:10px;bottom:8px;font:600 10.5px/1.35 var(--disp);letter-spacing:.14em;text-transform:uppercase;color:var(--copper2);pointer-events:none;text-align:right;text-shadow:0 1px 2px #000}
+.stamp b{display:block;font:500 11px/1.3 var(--sans);letter-spacing:.02em;text-transform:none;color:var(--ink)}
+.kleg{position:absolute;left:10px;bottom:8px;display:flex;gap:6px;flex-wrap:wrap;pointer-events:none}
+.pill{display:inline-block;font:600 10px/1 var(--disp);letter-spacing:.12em;text-transform:uppercase;padding:4px 6px;border:1px solid currentColor;border-radius:2px;white-space:nowrap}
+.p-K{color:var(--known);background:rgba(231,228,222,.08)}
+.p-W{color:var(--wa);border-style:dashed}
+.p-T{color:var(--tv);border-style:dotted;border-width:2px;padding:3px 5px}
+.tourgo{position:absolute;left:10px;top:44px;z-index:3;font:700 14px var(--disp);letter-spacing:.1em;text-transform:uppercase;background:var(--copper);color:#fff;border:0;padding:8px 14px}
+.loading{position:absolute;inset:0;display:grid;place-items:center;font:500 13px var(--mono);color:var(--ink2)}
+#tour[hidden]{display:none}
+#tour{position:absolute;inset:0;pointer-events:none;z-index:4}
+#tour .tcap{position:absolute;left:clamp(12px,3vw,48px);bottom:clamp(44px,6vh,70px);max-width:min(760px,calc(100% - 24px));background:rgba(15,17,19,.9);border-top:4px solid var(--copper);padding:14px 18px 14px}
+#tour .tsec{margin:0 0 4px;font:600 13px/1.2 var(--disp);letter-spacing:.22em;text-transform:uppercase;color:var(--copper2)}
+#tour h2{margin:0 0 8px;font:800 clamp(22px,2.4vw,38px)/1.02 var(--disp);text-transform:uppercase;text-wrap:balance}
+#tour p{margin:0;max-width:70ch;font-size:14.5px}
+#tour .tnav{position:absolute;right:12px;bottom:12px;display:flex;gap:6px;pointer-events:auto;align-items:center}
+#tour .tnav span{font:500 12px var(--mono);background:rgba(15,17,19,.85);padding:6px 8px}
+body.touring .tourgo,body.touring .read,body.touring .kleg{display:none}
+body.touring .stamp{top:66px;bottom:auto}
+.insp{background:var(--panel);border:1px solid var(--rule);padding:12px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.lbl{font:600 11px/1 var(--disp);letter-spacing:.18em;text-transform:uppercase;color:var(--ink2);margin:0}
+.insp h2{font:700 22px/1.05 var(--disp);margin:0;text-transform:uppercase;text-wrap:balance}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:13px;margin:0}
+.kv dt{color:var(--ink2)} .kv dd{margin:0;font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:anywhere}
+.info{font-size:13px;margin:0}
+.muted{color:var(--ink2);font-size:12.5px;margin:0}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.stat{background:var(--panel);padding:8px 10px}
+.stat b{display:block;font:700 22px/1.05 var(--disp);font-variant-numeric:tabular-nums}
+.stat span{color:var(--ink2);font-size:12px}
+.tabs{display:flex;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.tabs button{background:none;border:none;border-bottom:3px solid transparent;padding:10px 14px;font:700 15px var(--disp);letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);border-radius:0}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--copper)}
+.panel{padding-top:12px;display:flex;flex-direction:column;gap:14px}
+.tw{overflow-x:auto;border:1px solid var(--rule);background:var(--panel)}
+.tw.tall{max-height:520px;overflow-y:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:6px 9px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+th{position:sticky;top:0;background:var(--panel2);font:600 11px/1.2 var(--disp);letter-spacing:.12em;text-transform:uppercase;color:var(--ink2);z-index:1}
+td.m{font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.r,th.r{text-align:right}
+tr.tot td{border-top:2px solid var(--copper);font-weight:600}
+h3{margin:0;font:700 18px/1.1 var(--disp);text-transform:uppercase;letter-spacing:.04em}
+.note{color:var(--ink2);font-size:12.5px;margin:0;max-width:110ch}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.card{background:var(--panel);padding:12px}
+.card b{display:block;font:800 28px/1 var(--disp);font-variant-numeric:tabular-nums}
+.card span{color:var(--ink2);font-size:12.5px}
+.card.hi b{color:var(--copper2)}
+#snap[hidden]{display:none}
+#snap{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.82);display:grid;place-items:center;padding:16px}
+#snap figure{margin:0;max-width:min(1400px,100%);display:flex;flex-direction:column;gap:8px}
+#snap img{width:100%;border:1px solid var(--rule)}
+#snap figcaption{display:flex;justify-content:space-between;gap:12px;align-items:center;color:var(--ink2);font-size:13px}
+footer{color:var(--ink2);font-size:12px;border-top:1px solid var(--rule);padding-top:8px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <div>
+    <div class="eyebrow">Modular gas generation · campus module</div>
+    <h1>RockBlock campus, <em>the cable instrument</em></h1>
+    <p class="sub">A generic 2.5 MW RockBlock campus module. Unit → block → group → lineup → campus, built from the Oct 26 call and the public record. Cable circuits live in the cable layers (off by default) and in the takeoff below. Tell us where it is wrong.</p>
+  </div>
+  <div class="docno"><b id="docno">ER-RB REV 00</b><br>X east · Y north · EL up · true feet<br><span id="credit"></span></div>
+</header>
+
+<div class="tools">
+  <div class="tg"><span>Campus</span><select id="size" aria-label="Campus size"></select><span id="pdesc" class="muted" style="letter-spacing:0;text-transform:none;font:400 12.5px var(--sans)"></span></div>
+  <div class="tg" id="views"><span>View</span></div>
+  <div class="tg" id="lys"><span>Cable layers</span></div>
+  <div class="tg"><span>Show</span><button id="bXr" aria-pressed="false">X-ray</button><button id="bGas" aria-pressed="false">Gas lateral</button><button id="bGrid" aria-pressed="false">40 ft grid</button><button id="bTags" aria-pressed="true">Tags</button><button id="bSnap">Snapshot</button></div>
+</div>
+
+<div class="grid">
+  <div class="stage" id="stage">
+    <canvas id="cv"></canvas>
+    <div id="labels"></div>
+    <div class="read" id="read"><span>X</span> — <span>Y</span> — <span>EL</span> —</div>
+    <svg class="north" viewBox="-23 -23 46 46" aria-hidden="true"><circle r="21" fill="rgba(15,17,19,.7)" stroke="currentColor" stroke-opacity=".35"/><g id="narrow"><path d="M0,-18 L5,-2 L0,-5 L-5,-2 Z" fill="#d0743a"/><path d="M0,18 L5,2 L0,5 L-5,2 Z" fill="currentColor" opacity=".45"/><text x="0" y="-6" dy="-14" text-anchor="middle" font-size="9" font-family="IBM Plex Mono,monospace" fill="currentColor">N</text></g></svg>
+    <button class="tourgo" id="tourgo">Tour</button>
+    <div class="kleg"><span class="pill p-K">Known</span><span class="pill p-W">Working assumption</span><span class="pill p-T">To verify</span></div>
+    <div class="stamp" id="stamp"></div>
+    <div class="loading" id="loading">building the campus…</div>
+    <div id="tour" hidden>
+      <div class="tcap"><p class="tsec" id="tsec"></p><h2 id="th"></h2><p id="tp"></p></div>
+      <div class="tnav"><button id="tprev">Back</button><span id="tn"></span><button id="tnext">Next</button><button id="texit">Exit</button></div>
+    </div>
+  </div>
+  <aside class="insp" id="insp" aria-live="polite"></aside>
+</div>
+
+<div>
+  <div class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-t="tko">Takeoff</button>
+    <button role="tab" aria-selected="false" data-t="reg">Basis register</button>
+    <button role="tab" aria-selected="false" data-t="key">Key and layers</button>
+  </div>
+  <section class="panel" id="tko"></section>
+  <section class="panel" id="reg" hidden></section>
+  <section class="panel" id="key" hidden></section>
+</div>
+<footer><span id="foot1"></span><span>Sources: the Oct 26, 2026 call and the public record (ERock S-1/A, 10-Q Q2 2026, ERT500 release, erock.com, PUCT Docket 59076). Nothing under NDA.</span></footer>
+</div>
+
+<div id="snap" hidden><figure><img id="snapimg" alt="Snapshot of the 3D view with the credit and stamp"><figcaption><span>Right-click or long-press the image to save it. The credit and stamp are in the pixels.</span><button id="snapx">Close</button></figcaption></figure></div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+"use strict";
+const D = /*__DATA__*/null;
+const $ = id => document.getElementById(id);
+const fmt = n => Math.round(n).toLocaleString('en-US');
+const ST = {"KNOWN":"K","WORKING ASSUMPTION":"W","TO VERIFY":"T"};
+const pill = s => `<span class="pill p-${ST[s]||'T'}">${s==="WORKING ASSUMPTION"?"Working assumption":s==="KNOWN"?"Known":"To verify"}</span>`;
+$('docno').textContent = D.doc.toUpperCase(); $('credit').textContent = D.credit;
+$('stamp').innerHTML = `${D.stamp}<b>${D.credit} · ${D.doc}</b>`;
+$('foot1').textContent = `${D.doc} · ${D.credit} · ${D.stamp}`;
+const REG = Object.fromEntries(D.register.map(r=>[r[0], r]));
+const LYR = Object.fromEntries(D.layers.map(l=>[l[0], {name:l[1], col:l[2], st:l[3], dash:l[4]}]));
+const LW = {L1:.32, L2:.55, L3:.8, L4:.8, L5:1.1, L6:.22, L7:.2};
+
+// ---------------------------------------------------------------- three setup
+const cv = $('cv'), stage = $('stage');
+const renderer = new THREE.WebGLRenderer({canvas:cv, antialias:true, preserveDrawingBuffer:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.outputEncoding = THREE.sRGBEncoding;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#0b0c0e');
+scene.fog = new THREE.Fog('#0b0c0e', 6000, 16000);
+const camera = new THREE.PerspectiveCamera(40, 1, 1, 40000);
+const controls = new THREE.OrbitControls(camera, cv);
+controls.enableDamping = true; controls.dampingFactor = .12; controls.maxPolarAngle = Math.PI*.495; controls.screenSpacePanning = false;
+scene.add(new THREE.HemisphereLight('#dfe6ea', '#2a2622', .85));
+const sun = new THREE.DirectionalLight('#fff4e6', .95); sun.position.set(-.55, 1, .35); scene.add(sun);
+const P3 = (x,y,z) => new THREE.Vector3(x, z, -y);
+const COLS = D.colors.map(h => new THREE.Color(h).convertSRGBToLinear());
+const TRANS = new Set(['ghost','fence','glass','water','ownwall'].map(n=>D.cnames.indexOf(n)));
+
+function Buf(){ return {p:[], n:[], c:[], id:[]}; }
+function vtx(B, x,y,z, nx,ny,nz, col, id){ B.p.push(x, z, -y); B.n.push(nx, nz, -ny); B.c.push(col.r, col.g, col.b); B.id.push(id); }
+function quad(B, a,b,c,d, n, col, id){ for(const v of [a,b,c,a,c,d]) vtx(B, v[0],v[1],v[2], n[0],n[1],n[2], col, id); }
+function box(B, x0,x1,y0,y1,z0,z1, col, id){
+  if(x0>x1)[x0,x1]=[x1,x0]; if(y0>y1)[y0,y1]=[y1,y0];
+  quad(B,[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1],[0,0,1],col,id);
+  quad(B,[x0,y0,z0],[x0,y1,z0],[x1,y1,z0],[x1,y0,z0],[0,0,-1],col,id);
+  quad(B,[x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1],[0,-1,0],col,id);
+  quad(B,[x1,y1,z0],[x0,y1,z0],[x0,y1,z1],[x1,y1,z1],[0,1,0],col,id);
+  quad(B,[x0,y1,z0],[x0,y0,z0],[x0,y0,z1],[x0,y1,z1],[-1,0,0],col,id);
+  quad(B,[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[x1,y0,z1],[1,0,0],col,id);
+}
+function cyl(B, a, b, r, col, id, seg=12){
+  const ax=[b[0]-a[0],b[1]-a[1],b[2]-a[2]], L=Math.hypot(...ax); if(L<1e-6) return; ax[0]/=L; ax[1]/=L; ax[2]/=L;
+  let u = Math.abs(ax[2])<.9 ? [ax[1],-ax[0],0] : [0,ax[2],-ax[1]]; const ul=Math.hypot(...u); u=u.map(x=>x/ul);
+  const w=[ax[1]*u[2]-ax[2]*u[1], ax[2]*u[0]-ax[0]*u[2], ax[0]*u[1]-ax[1]*u[0]];
+  const ring = k => { const t=2*Math.PI*k/seg, c=Math.cos(t), s=Math.sin(t); return [u[0]*c+w[0]*s, u[1]*c+w[1]*s, u[2]*c+w[2]*s]; };
+  for(let k=0;k<seg;k++){ const d0=ring(k), d1=ring(k+1), dm=ring(k+.5);
+    const A=[a[0]+d0[0]*r,a[1]+d0[1]*r,a[2]+d0[2]*r], Bb=[a[0]+d1[0]*r,a[1]+d1[1]*r,a[2]+d1[2]*r];
+    const C=[b[0]+d1[0]*r,b[1]+d1[1]*r,b[2]+d1[2]*r], Dd=[b[0]+d0[0]*r,b[1]+d0[1]*r,b[2]+d0[2]*r];
+    quad(B,A,Bb,C,Dd,dm,col,id);
+    for(const v of [b, Dd, C]) vtx(B, v[0],v[1],v[2], ax[0],ax[1],ax[2], col, id);
+    for(const v of [a, Bb, A]) vtx(B, v[0],v[1],v[2], -ax[0],-ax[1],-ax[2], col, id); }
+}
+function mesh(B, mat){ const g=new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(B.p,3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(B.n,3));
+  g.setAttribute('color', new THREE.Float32BufferAttribute(B.c,3)); g.setAttribute('iid', new THREE.Float32BufferAttribute(B.id,1));
+  g.computeBoundingSphere(); return new THREE.Mesh(g, mat); }
+const matOpaque = new THREE.MeshLambertMaterial({vertexColors:true, side:THREE.DoubleSide});
+const matTrans = new THREE.MeshLambertMaterial({vertexColors:true, side:THREE.DoubleSide, transparent:true, opacity:.28, depthWrite:false});
+const matGas = new THREE.MeshLambertMaterial({vertexColors:true});
+const groundMat = new THREE.MeshLambertMaterial({color:'#15181a', transparent:true, opacity:1});
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(1,1), groundMat); ground.rotation.x=-Math.PI/2; ground.position.y=-.05; scene.add(ground);
+let grid = null;
+
+// ---------------------------------------------------------------- campus build
+let SZ = '250', S, ITEMS, CIRC, root, cabMesh = {}, gasMesh, selHelper, selCab, labelsPool = [];
+const VIS = {L1:false,L2:false,L3:false,L4:false,L5:false,L6:false,L7:false};
+const SHOW = {xr:false, gas:false, grid:false, tags:true};
+const TPL_INFO = {
+  unit:['TO VERIFY','ERT500-class 500 kW natural-gas genset (450 kW prime), 480 V. 10 x 8 ft footprint KNOWN (ERT500 release); 9 ft height and the stack position TO VERIFY; stack top EL 25 per the TCEQ gas-EGU standard permit minimum (working assumption).','ERT500 spec sheet; site air permit'],
+  gcb:['TO VERIFY','GCB, generator collector box: 480 V panelboard with one breaker per generator (KNOWN, Oct 26 call). Rating for 5 x 500 kW and the enclosure size TO VERIFY.','Cliff / ER engineering; ER product sheet'],
+  xfmr:['WORKING ASSUMPTION','Pad-mount step-up, 480 V : 34.5 kV, ~3 MVA (2.5-3 MVA working assumption). Distribution voltage 34.5 vs 13.8 kV TO VERIFY. The HV cabinet faces the 35 kV loop corridor.','ER product sheet; transformer data sheet'],
+};
+function build(sz){
+  SZ = sz; S = D.sizes[sz]; ITEMS = [null]; CIRC = S.circ;
+  if(root){ scene.remove(root); root.traverse(o=>{ if(o.geometry) o.geometry.dispose(); }); }
+  root = new THREE.Group(); scene.add(root);
+  const BO = Buf(), BT = Buf(), BG = Buf();
+  const tp = D.tpl.parts, ti = D.tpl.items;
+  for(const [n,bx,by,s,g] of S.blocks){
+    const T = (x,y) => [bx+x, by+s*y];
+    const nn = String(n).padStart(3,'0');
+    ITEMS.push({tag:`RB-${nn}`, name:`RockBlock RB-${nn}: 5 x 500 kW + GCB + step-up (${S.groups[g][0]})`, st:'KNOWN', kind:'block',
+      info:'Five units paralleled at 480 V on the GCB, stepped up on the block transformer, looped on the group\'s 35 kV loop (KNOWN, Oct 26 call). Block pitch and spacing are working assumptions.', src:'Oct 26 call; ER layout',
+      c:[...T(40,20), 30], blk:n});
+    for(const [role,k,fp,z,p0,p1] of ti){
+      const id = ITEMS.length, info = TPL_INFO[role];
+      const tag = role==='unit' ? `G-${nn}-${k}` : role==='gcb' ? `GCB-${nn}` : `XFMR-${nn}`;
+      const a=T(fp[0],fp[2]), b=T(fp[1],fp[3]);
+      ITEMS.push({tag, name: role==='unit' ? `${tag}: genset unit ${k} of RB-${nn}` : role==='gcb' ? `${tag}: generator collector box, 480 V` : `${tag}: step-up transformer 480 V : 34.5 kV`,
+        st:info[0], info:info[1], src:info[2], kind:role, fp:[Math.min(a[0],b[0]),Math.max(a[0],b[0]),Math.min(a[1],b[1]),Math.max(a[1],b[1])], z, c:[(a[0]+b[0])/2,(a[1]+b[1])/2,z[1]+1.5], blk:n});
+      for(let q=p0;q<p1;q++){ const p=tp[q], col=COLS[p[1]];
+        if(p[0]==='b'){ const A=T(p[2],p[4]), Bb=T(p[3],p[5]); box(TRANS.has(p[1])?BT:BO, A[0],Bb[0],A[1],Bb[1],p[6],p[7],col,id); }
+        else if(p[0]==='v'){ const A=T(p[2],p[3]); cyl(BO,[A[0],A[1],p[5]],[A[0],A[1],p[6]],p[4],col,id,12); }
+        else { const A=T(p[2],p[3]), Bb=T(p[5],p[6]); cyl(BO,[A[0],A[1],p[4]],[Bb[0],Bb[1],p[7]],p[8],col,id,12); } }
+    }
+  }
+  for(const g of S.groups) ITEMS.push({tag:g[0], name:`${g[0]}: ${g[4]} blocks on one 35 kV loop (${(g[4]*2.5).toFixed(1)} MW)`, st:'WORKING ASSUMPTION', kind:'group',
+    info:'Eight blocks in two rows with an access road between, on one 35 kV loop to one switchgear group breaker (~20 MW). Group size is a working assumption.', src:'Cliff / ER engineering', c:[g[1]+160, g[2]+55, 40]});
+  for(const it of S.siteItems){ const [tag,name,key,st,info,src,fp,z,p0,p1] = it; const id = ITEMS.length;
+    ITEMS.push({tag, name, st, info, src, kind:'site', key, fp, z, c:[(fp[0]+fp[1])/2,(fp[2]+fp[3])/2,z[1]+4]});
+    for(let q=p0;q<p1;q++){ const p=S.siteParts[q], col=COLS[p[1]], lay=p[2], B = lay===2 ? BG : (TRANS.has(p[1]) ? BT : BO);
+      if(p[0]==='b') box(B,p[3],p[4],p[5],p[6],p[7],p[8],col,id);
+      else if(p[0]==='v') cyl(B,[p[3],p[4],p[6]],[p[3],p[4],p[7]],p[5],col,id,12);
+      else cyl(B,[p[3],p[4],p[5]],[p[6],p[7],p[8]],p[9],col,id,10); } }
+  root.add(mesh(BO, matOpaque)); root.add(mesh(BT, matTrans)); gasMesh = mesh(BG, matGas); root.add(gasMesh);
+  // cable layers: axis-aligned segments as thin boxes; dashed layers broken into 6 ft dashes
+  cabMesh = {};
+  for(const L of Object.keys(LYR)){ const B = Buf(), col = new THREE.Color(LYR[L].col).convertSRGBToLinear(), w = LW[L], dash = LYR[L].dash;
+    CIRC.forEach((c,ci)=>{ if(c[0]!==L) return; const p=c[6];
+      for(let i=0;i+5<p.length;i+=3){ const a=[p[i],p[i+1],p[i+2]], b=[p[i+3],p[i+4],p[i+5]];
+        const seg = (a,b) => box(B, Math.min(a[0],b[0])-w, Math.max(a[0],b[0])+w, Math.min(a[1],b[1])-w, Math.max(a[1],b[1])+w, Math.min(a[2],b[2])-w, Math.max(a[2],b[2])+w, col, ci+1);
+        const len = Math.hypot(b[0]-a[0], b[1]-a[1], b[2]-a[2]);
+        if(dash && len>12 && a[2]===b[2]){ const n=Math.floor(len/10); for(let k=0;k<n;k++){ const t0=k/n, t1=t0+.6/n;
+            seg([a[0]+(b[0]-a[0])*t0, a[1]+(b[1]-a[1])*t0, a[2]], [a[0]+(b[0]-a[0])*t1, a[1]+(b[1]-a[1])*t1, a[2]]); } }
+        else seg(a,b); } });
+    const m = mesh(B, new THREE.MeshBasicMaterial({vertexColors:true})); m.userData.cab = L; m.visible = VIS[L]; m.renderOrder = 2; root.add(m); cabMesh[L] = m; }
+  // ground, grid, camera
+  const xs = S.siteItems.map(i=>i[6]); const minX = 0, maxX = Math.max(...xs.map(f=>f[1])), minY = Math.min(...xs.map(f=>f[2])), maxY = Math.max(...xs.map(f=>f[3]));
+  S.ext = {minX, maxX, minY, maxY, cx:(minX+maxX)/2, cy:(minY+maxY)/2, w:maxX-minX, h:maxY-minY};
+  ground.scale.set(S.ext.w+4000, S.ext.h+4000, 1); ground.position.set(S.ext.cx, -.05, -S.ext.cy);
+  if(grid){ scene.remove(grid); grid.geometry.dispose(); }
+  const gs = Math.ceil(Math.max(S.ext.w, S.ext.h)/40)*40 + 400;
+  grid = new THREE.GridHelper(gs, gs/40, '#3a4046', '#262b2f'); grid.position.set(S.ext.cx, .08, -S.ext.cy); grid.visible = SHOW.grid; scene.add(grid);
+  const p = S.params;
+  $('pdesc').textContent = `${fmt(p.n_units)} units · ${p.n_blocks} blocks · ${p.n_groups} groups of ${p.blocks_per_group} · ${p.n_lineups} lineups of ${p.groups_per_lineup}`;
+  clearSel(); applyVis(); buildViews(); renderTakeoff(); showDefault();
+}
+
+// ---------------------------------------------------------------- visibility, x-ray
+function anyCab(){ return Object.values(VIS).some(Boolean); }
+function applyVis(){
+  for(const L in cabMesh) cabMesh[L].visible = VIS[L];
+  const under = anyCab() || SHOW.gas;
+  groundMat.opacity = under ? .45 : 1; groundMat.depthWrite = !under;
+  matOpaque.transparent = SHOW.xr; matOpaque.opacity = SHOW.xr ? .16 : 1; matOpaque.depthWrite = !SHOW.xr; matOpaque.needsUpdate = true;
+  if(gasMesh) gasMesh.visible = SHOW.gas; if(grid) grid.visible = SHOW.grid;
+  document.querySelectorAll('#lys button[data-l]').forEach(b=>b.setAttribute('aria-pressed', VIS[b.dataset.l]));
+  $('bXr').setAttribute('aria-pressed', SHOW.xr); $('bGas').setAttribute('aria-pressed', SHOW.gas); $('bGrid').setAttribute('aria-pressed', SHOW.grid); $('bTags').setAttribute('aria-pressed', SHOW.tags);
+}
+for(const L of Object.keys(LYR)){ const b=document.createElement('button'); b.className='ly'; b.dataset.l=L; b.style.setProperty('--c', LYR[L].col);
+  b.innerHTML=`<i class="${LYR[L].dash?'d':''}"></i>${L}`; b.title=`${L}: ${LYR[L].name} (${LYR[L].st.toLowerCase()})`; b.setAttribute('aria-pressed','false');
+  b.onclick=()=>{ VIS[L]=!VIS[L]; applyVis(); }; $('lys').appendChild(b); }
+{ const b=document.createElement('button'); b.textContent='All'; b.onclick=()=>{ const on=!Object.values(VIS).every(Boolean); for(const L in VIS) VIS[L]=on; applyVis(); }; $('lys').appendChild(b); }
+$('bXr').onclick=()=>{ SHOW.xr=!SHOW.xr; applyVis(); };
+$('bGas').onclick=()=>{ SHOW.gas=!SHOW.gas; applyVis(); };
+$('bGrid').onclick=()=>{ SHOW.grid=!SHOW.grid; applyVis(); };
+$('bTags').onclick=()=>{ SHOW.tags=!SHOW.tags; applyVis(); };
+
+// ---------------------------------------------------------------- views, camera moves
+let anim = null;
+function look(t, c, ms=1100){ const t0 = controls.target.clone(), c0 = camera.position.clone(); const t1 = P3(...t), c1 = P3(...c);
+  if(ms<=0 || matchMedia('(prefers-reduced-motion: reduce)').matches){ controls.target.copy(t1); camera.position.copy(c1); return; }
+  anim = {t0,c0,t1,c1,s:performance.now(),ms}; }
+function blk(n){ return S.blocks[n-1]; }
+function itemBy(tag){ return ITEMS.find(i=>i && i.tag===tag); }
+function viewsFor(){
+  const e=S.ext, b1=blk(1), g0=S.groups[0], L0=S.lineups[0], st=S.site;
+  const bxc = b1[1]+40, byc = b1[2]+20;
+  return [
+    {k:'Campus', t:[e.cx, e.cy, 0], c:[e.cx-e.w*.55, e.cy-e.h*.75, Math.max(e.w,e.h)*.62]},
+    {k:'Group', t:[g0[1]+160, g0[2]+55, 0], c:[g0[1]-120, g0[2]-260, 260]},
+    {k:'Block', t:[bxc, byc, 4], c:[bxc-55, byc-95, 62]},
+    {k:'Unit', t:[b1[1]+8, b1[2]+21, 5], c:[b1[1]-14, b1[2]-8, 22]},
+    {k:'Lineup', t:[st.swg_x0+8, L0[1]+32, 4], c:[st.swg_x0-120, L0[1]-90, 110]},
+    {k:'Ownership line', t:[st.own_x, e.cy, 0], c:[st.own_x-500, e.cy-900, 620]},
+  ];
+}
+function buildViews(){ const el=$('views'); el.querySelectorAll('button').forEach(b=>b.remove());
+  for(const v of viewsFor()){ const b=document.createElement('button'); b.textContent=v.k; b.onclick=()=>look(v.t, v.c); el.appendChild(b); } }
+
+// ---------------------------------------------------------------- picking, inspector
+const ray = new THREE.Raycaster(), mouse = new THREE.Vector2();
+function pick(e){ const r=cv.getBoundingClientRect(); mouse.set(((e.clientX-r.left)/r.width)*2-1, -((e.clientY-r.top)/r.height)*2+1);
+  ray.setFromCamera(mouse, camera);
+  const objs = [...root.children.filter(o=>o.visible && (o.userData.cab || !SHOW.xr || o===gasMesh)), ground];
+  const hits = ray.intersectObjects(objs, false);
+  for(const h of hits){ if(h.object===ground) return {pt:h.point};
+    const id = h.object.geometry.attributes.iid.getX(h.face.a);
+    if(h.object.userData.cab) return {pt:h.point, circ:id-1};
+    if(h.object.material===matTrans && hits.length>1 && h.object!==gasMesh) continue;
+    return {pt:h.point, item:id}; }
+  return null; }
+let hoverT = 0;
+cv.addEventListener('pointermove', e=>{ const now=performance.now(); if(now-hoverT<60) return; hoverT=now;
+  const h = pick(e); if(!h){ $('read').innerHTML='<span>X</span> — <span>Y</span> — <span>EL</span> —'; return; }
+  const x=h.pt.x, y=-h.pt.z, z=h.pt.y; const nm = h.circ!=null ? CIRC[h.circ][1] : h.item ? ITEMS[h.item].tag : '';
+  $('read').innerHTML = `<span>X</span> ${x.toFixed(1)} <span>Y</span> ${y.toFixed(1)} <span>EL</span> ${z.toFixed(1)} ft${nm?` <span>·</span> ${nm}`:''}`; });
+let downAt = null;
+cv.addEventListener('pointerdown', e=>{ downAt=[e.clientX,e.clientY]; });
+cv.addEventListener('pointerup', e=>{ if(!downAt || Math.hypot(e.clientX-downAt[0], e.clientY-downAt[1])>5) return;
+  const h=pick(e); if(!h || (h.item==null && h.circ==null)){ clearSel(); showDefault(); return; }
+  if(h.circ!=null) selectCirc(h.circ); else selectItem(h.item); });
+function clearSel(){ if(selHelper){ scene.remove(selHelper); selHelper.geometry.dispose(); selHelper=null; } if(selCab){ scene.remove(selCab); selCab.geometry.dispose(); selCab=null; } }
+function selectItem(id){ clearSel(); const it=ITEMS[id];
+  if(it.fp){ const g=new THREE.BoxGeometry(it.fp[1]-it.fp[0]+.6, it.z[1]-it.z[0]+.6, it.fp[3]-it.fp[2]+.6);
+    selHelper = new THREE.LineSegments(new THREE.EdgesGeometry(g), new THREE.LineBasicMaterial({color:'#e8955c'})); g.dispose();
+    selHelper.position.copy(P3((it.fp[0]+it.fp[1])/2, (it.fp[2]+it.fp[3])/2, (it.z[0]+it.z[1])/2)); scene.add(selHelper); }
+  const blkRows = it.blk ? CIRC.filter(c=>c[18]===it.blk && (it.kind==='block' || c[2]===it.tag || c[3]===it.tag)) : [];
+  const loopRows = it.kind==='xfmr' ? CIRC.filter(c=>c[0]==='L3' && (c[2]===it.tag || c[3]===it.tag)) : [];
+  $('insp').innerHTML = `<p class="lbl">${it.kind==='site'?'Site':'Equipment'} · ${pill(it.st)}</p><h2>${it.tag}</h2><p class="info">${it.name}</p>
+    <p class="muted">${it.info}</p>${it.src?`<dl class="kv"><dt>Source to check</dt><dd>${it.src}</dd></dl>`:''}
+    ${it.fp?`<dl class="kv"><dt>Footprint</dt><dd>${(it.fp[1]-it.fp[0]).toFixed(1)} x ${(it.fp[3]-it.fp[2]).toFixed(1)} ft</dd><dt>Top</dt><dd>EL ${it.z[1].toFixed(1)}</dd><dt>At</dt><dd>X ${it.c[0].toFixed(0)} · Y ${it.c[1].toFixed(0)}</dd></dl>`:''}
+    ${(blkRows.length+loopRows.length)?`<p class="lbl">Circuits</p>${circList([...blkRows,...loopRows].slice(0,14))}`:''}`; }
+function circList(rows){ return `<div class="tw"><table><tr><th>Circuit</th><th class="r">Cut ft</th></tr>${rows.map(c=>`<tr><td class="m">${c[1]}</td><td class="m r">${fmt(basisOf(c[0])==='MEASURED'?c[11]:c[12])}</td></tr>`).join('')}</table></div>`; }
+function selectCirc(ci){ clearSel(); const c=CIRC[ci], L=c[0], p=c[6], B=Buf(), col=new THREE.Color('#ffffff'), w=LW[L]*1.9;
+  for(let i=0;i+5<p.length;i+=3) box(B, Math.min(p[i],p[i+3])-w, Math.max(p[i],p[i+3])+w, Math.min(p[i+1],p[i+4])-w, Math.max(p[i+1],p[i+4])+w, Math.min(p[i+2],p[i+5])-w, Math.max(p[i+2],p[i+5])+w, col, 0);
+  selCab = mesh(B, new THREE.MeshBasicMaterial({color:'#ffffff'})); selCab.renderOrder=3; scene.add(selCab);
+  const bs = basisOf(L), cut = bs==='MEASURED'?c[11]:c[12], cft = bs==='MEASURED'?c[13]:c[14];
+  $('insp').innerHTML = `<p class="lbl">Circuit · ${L} · ${pill(LYR[L].st)}</p><h2>${c[1]}</h2><p class="info">${LYR[L].name}</p>
+    <dl class="kv"><dt>From</dt><dd>${c[2]}</dd><dt>To</dt><dd>${c[3]}</dd><dt>Runs</dt><dd>${c[4]}</dd><dt>Conductors / run</dt><dd>${c[5]}</dd>
+    <dt>Routed</dt><dd>${c[7].toFixed(1)} ft</dd><dt>Risers</dt><dd>${c[8].toFixed(1)} ft</dd><dt>Terminations</dt><dd>${c[9].toFixed(1)} ft</dd><dt>Slack</dt><dd>${c[10].toFixed(1)} ft</dd>
+    <dt>Cut (measured)</dt><dd>${c[11].toFixed(1)} ft</dd><dt>Cut (assumed)</dt><dd>${c[12].toFixed(1)} ft</dd><dt>Basis in use</dt><dd>${bs}</dd><dt>Conductor-ft</dt><dd>${fmt(cft)}</dd>
+    <dt>Construction</dt><dd>${S.constr[c[15]]}</dd></dl><p class="muted">cut = (routed + risers + terminations + slack) x (1 + spare)</p>`; }
+function showDefault(){ const p=S.params, per=S.per;
+  const mv = (per.L3?per.L3[1]:0) + (per.L4?per.L4[1]:0);
+  $('insp').innerHTML = `<p class="lbl">Campus · ${p.mw} MW</p><h2>${p.n_blocks} RockBlocks</h2>
+    <div class="stats"><div class="stat"><b>${fmt(p.n_units)}</b><span>units, 500 kW</span></div><div class="stat"><b>${p.n_groups}</b><span>35 kV loops (groups)</span></div>
+    <div class="stat"><b>${p.n_lineups}</b><span>switchgear lineups</span></div><div class="stat"><b>${fmt(CIRC.length)}</b><span>circuits in the schedule</span></div></div>
+    <p class="muted">Click equipment for its tag, basis and circuits; turn on a cable layer and click a circuit for its takeoff row. The campus size, blocks per group and groups per lineup are inputs to the generator (model.py); 250, 500 and 1,000 MW are built here.</p>
+    <p class="lbl">Hierarchy</p><dl class="kv"><dt>Unit</dt><dd>500 kW, 480 V ${pill('KNOWN')}</dd><dt>Block</dt><dd>5 units + GCB + step-up ${pill('KNOWN')}</dd>
+    <dt>Group</dt><dd>${p.blocks_per_group} blocks on one 35 kV loop ${pill('WORKING ASSUMPTION')}</dd><dt>Lineup</dt><dd>${p.groups_per_lineup} group breakers, ~75 MW ${pill('KNOWN')}</dd>
+    <dt>Feeders</dt><dd>~75 MW to the data center, scope ${pill('TO VERIFY')}</dd></dl>
+    <p class="lbl">35 kV in this campus</p><dl class="kv"><dt>Loops + ties</dt><dd>${fmt(mv)} conductor-ft</dd><dt>Feeders</dt><dd>${fmt(per.L5?per.L5[basisOf('L5')==='MEASURED'?1:2]:0)} conductor-ft (${basisOf('L5').toLowerCase()}, scope TO VERIFY)</dd></dl>`; }
+
+// ---------------------------------------------------------------- tags
+function labels(){ const el=$('labels'); if(!SHOW.tags){ el.innerHTML=''; return; }
+  const W=cv.clientWidth, H=cv.clientHeight, cam=camera.position, out=[];
+  const v=new THREE.Vector3();
+  for(let i=1;i<ITEMS.length;i++){ const it=ITEMS[i]; const k=it.kind;
+    const pos=P3(...it.c); const d=pos.distanceTo(cam);
+    if(k==='site' && ['ROADS','FENCE','GAS'].includes(it.tag)) continue;
+    const lim = k==='site' ? 1e9 : k==='group' ? 2600 : k==='block' ? 700 : 170;
+    if(d>lim) continue; v.copy(pos).project(camera); if(v.z>1||v.x<-1||v.x>1||v.y<-1||v.y>1) continue;
+    out.push([d, it, (v.x+1)/2*W, (1-v.y)/2*H]); }
+  out.sort((a,b)=>a[0]-b[0]); const sel=out.slice(0,90);
+  while(labelsPool.length<sel.length){ const d=document.createElement('div'); el.appendChild(d); labelsPool.push(d); }
+  labelsPool.forEach((d,i)=>{ if(i>=sel.length){ d.hidden=true; return; } const [,it,x,y]=sel[i]; d.hidden=false;
+    d.className = 'tag' + (it.kind==='site'?' s':it.kind==='group'?' g':''); d.textContent = it.tag; d.style.left=x+'px'; d.style.top=y+'px'; }); }
+
+// ---------------------------------------------------------------- tour
+let TOUR=[], ti=0;
+function tourSteps(){ const v=Object.fromEntries(viewsFor().map(x=>[x.k,x])), p=S.params, g0=S.groups[0], st=S.site, e=S.ext, b1=blk(1);
+  return [
+    {sec:'Campus', h:`${p.mw} MW, ${p.n_blocks} RockBlocks`, txt:`${fmt(p.n_units)} units of 500 kW in ${p.n_blocks} blocks, ${p.n_groups} groups and ${p.n_lineups} switchgear lineups along the fence nearest the data center. Ops building, warehouse, water retention and the gas metering skid to the west. Generic module, not a named site.`, v:v.Campus, L:[]},
+    {sec:'Block', h:'RB-001: five units, one GCB, one step-up', txt:'Five ~10 x 8 ft units (KNOWN footprint) paralleled at 480 V in the generator collector box, then a pad-mount step-up to 34.5 kV (voltage TO VERIFY). The HV cabinet faces the group road, where the loop runs.', v:v.Block, L:[]},
+    {sec:'Unit', h:'G-001-1: 500 kW, 480 V', txt:'500 kW standby / 450 kW prime. Terminal box at the road end, radiator grille at the far end, roof silencer and a stack to EL 25 (TCEQ standard-permit minimum, working assumption). Height TO VERIFY.', v:v.Unit, L:['L1']},
+    {sec:'Block electrical', h:'L1 leads and L2 block feed', txt:'L1 (teal): each unit to its GCB breaker, 2 parallel sets of 4 x 1/C (count TO VERIFY). L2 (heavy teal): GCB to the transformer LV, 8 parallel sets or bus duct (TO VERIFY). L6 ground ring and taps, L7 control per unit.', v:{t:[b1[1]+40,b1[2]+28,-1], c:[b1[1]+10,b1[2]-30,70]}, L:['L1','L2','L6','L7'], xr:true},
+    {sec:'35 kV loop', h:`${g0[0]}: one loop, eight transformers`, txt:'L3 (amber), the quoted scope: from the group breaker out along one row, round the west road, back along the other row and home to the same lineup, so it reads as a closed loop at every transformer. 3 x 1/C 750 kcmil Al, 35 kV, 133 % (working assumption).', v:v.Group, L:['L3'], xr:true},
+    {sec:'Lineup', h:`${S.lineups[0][0]}: group breakers, ties, feeder`, txt:'Four group breakers (one per loop), tie breakers to the neighbouring lineups (L4, dashed amber, closed ring), and the feeder breaker toward the data center.', v:v.Lineup, L:['L3','L4','L5'], xr:true},
+    {sec:'Ownership line', h:'ER scope / customer scope: to verify', txt:'The ~75 MW feeders (L5, red) cross the fence to the data center. Whether they are ER cable or the customer\'s changes the roll-up by a lot; Cliff can answer it in one line. Takeoff shows them separately, on the ASSUMED basis.', v:v['Ownership line'], L:['L3','L4','L5'], xr:true},
+    {sec:'Plant-wide reach', h:'All seven layers', txt:'Every circuit of the schedule on its route. Base views stay clean; this is the cable layer. The takeoff tab below measures each circuit off these routes and rolls it up to the campus.', v:v.Campus, L:['L1','L2','L3','L4','L5','L6','L7'], xr:true},
+  ]; }
+function tourGo(i){ ti=Math.max(0,Math.min(TOUR.length-1,i)); const s=TOUR[ti];
+  for(const L in VIS) VIS[L]=s.L.includes(L); SHOW.xr=!!s.xr; applyVis(); look(s.v.t, s.v.c, 1400);
+  $('tsec').textContent=s.sec; $('th').textContent=s.h; $('tp').textContent=s.txt; $('tn').textContent=`${ti+1} / ${TOUR.length}`; }
+$('tourgo').onclick=()=>{ TOUR=tourSteps(); $('tour').hidden=false; document.body.classList.add('touring'); tourGo(0); };
+$('tnext').onclick=()=>tourGo(ti+1); $('tprev').onclick=()=>tourGo(ti-1);
+$('texit').onclick=()=>{ $('tour').hidden=true; document.body.classList.remove('touring'); };
+addEventListener('keydown', e=>{ if($('tour').hidden) return; if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){ e.preventDefault(); tourGo(ti+1); }
+  if(e.key==='ArrowLeft'||e.key==='PageUp') tourGo(ti-1); if(e.key==='Escape') $('texit').click(); });
+
+// ---------------------------------------------------------------- snapshot (credit burned into the pixels)
+$('bSnap').onclick=()=>{ renderer.render(scene, camera); const w=cv.width, h=cv.height, c=document.createElement('canvas'); c.width=w; c.height=h;
+  const g=c.getContext('2d'); g.drawImage(cv,0,0); const s=Math.max(1, w/1400);
+  g.fillStyle='rgba(15,17,19,.82)'; g.fillRect(0,h-46*s,w,46*s); g.fillStyle='#d0743a'; g.fillRect(0,h-46*s,w,3*s);
+  g.font=`600 ${15*s}px "Barlow Condensed","Arial Narrow",sans-serif`; g.fillStyle='#e8955c'; g.textBaseline='middle';
+  g.fillText(D.stamp.toUpperCase(), 14*s, h-29*s); g.font=`500 ${13*s}px "IBM Plex Sans Condensed",Arial,sans-serif`; g.fillStyle='#e7e4de';
+  g.fillText(`${D.credit} · ${D.doc} · ${S.params.mw} MW campus module · ${new Date().toISOString().slice(0,10)}`, 14*s, h-12*s);
+  g.textAlign='right'; g.fillStyle='#9aa3a8'; g.fillText('Sources: Oct 26 call and the public record. Nothing under NDA.', w-14*s, h-12*s);
+  $('snapimg').src=c.toDataURL('image/png'); $('snap').hidden=false; };
+$('snapx').onclick=()=>{ $('snap').hidden=true; };
+
+// ---------------------------------------------------------------- takeoff, register, key
+const BASIS = Object.assign({}, D.defaultBasis);
+function basisOf(L){ return BASIS[L]; }
+function renderTakeoff(){ const p=S.params, per=S.per;
+  const kit = CIRC.filter(c=>c[18]===1).sort((a,b)=>a[0]<b[0]?-1:a[0]>b[0]?1:0);
+  const kitRows = kit.map(c=>{ const bs=basisOf(c[0]), cut=bs==='MEASURED'?c[11]:c[12], cft=bs==='MEASURED'?c[13]:c[14];
+    return `<tr><td class="m">${c[0]}</td><td class="m">${c[1]}</td><td>${c[2]} → ${c[3]}</td><td class="m r">${c[4]}</td><td class="m r">${c[5]}</td><td class="m r">${(c[7]+c[8]).toFixed(1)}</td><td class="m r">${cut.toFixed(1)}</td><td class="m r">${fmt(cft)}</td><td>${S.constr[c[15]]}</td><td class="m">${bs}</td></tr>`; }).join('');
+  const kitTot = {}; kit.forEach(c=>{ const bs=basisOf(c[0]); kitTot[bs]=(kitTot[bs]||0)+(bs==='MEASURED'?c[13]:c[14]); });
+  const tot = {MEASURED:0, ASSUMED:0};
+  const roll = Object.keys(LYR).map(L=>{ const d=per[L]; if(!d) return ''; const bs=basisOf(L), cft=bs==='MEASURED'?d[1]:d[2], cab=bs==='MEASURED'?d[3]:d[4]; tot[bs]+=cft;
+    return `<tr><td class="m">${L}</td><td>${LYR[L].name}</td><td>${pill(LYR[L].st)}</td><td class="m r">${fmt(d[0])}</td>
+      <td><select data-b="${L}" aria-label="Basis for ${L}"><option${bs==='MEASURED'?' selected':''}>MEASURED</option><option${bs==='ASSUMED'?' selected':''}>ASSUMED</option></select></td>
+      <td class="m r">${fmt(cab)}</td><td class="m r">${fmt(cft)}</td></tr>`; }).join('');
+  const sizes = Object.keys(D.sizes).map(k=>{ const q=D.sizes[k], pr=q.params;
+    const cells = Object.keys(LYR).map(L=>{ const d=q.per[L]; return `<td class="m r">${d?fmt(basisOf(L)==='MEASURED'?d[1]:d[2]):'–'}</td>`; }).join('');
+    return `<tr${k===SZ?' style="background:var(--panel2)"':''}><td class="m">${pr.mw} MW</td><td class="m r">${pr.n_blocks}</td><td class="m r">${pr.n_groups}</td><td class="m r">${pr.n_lineups}</td>${cells}</tr>`; }).join('');
+  const mvLoops = (per.L3?per.L3[basisOf('L3')==='MEASURED'?1:2]:0)+(per.L4?per.L4[basisOf('L4')==='MEASURED'?1:2]:0);
+  const fdr = per.L5?per.L5[basisOf('L5')==='MEASURED'?1:2]:0;
+  $('tko').innerHTML = `
+  <div class="cards">
+    <div class="card hi"><b>${fmt(tot.MEASURED)}</b><span>conductor-ft, MEASURED basis, ${p.mw} MW</span></div>
+    <div class="card"><b>${fmt(tot.ASSUMED)}</b><span>conductor-ft, ASSUMED basis (shown apart, never summed)</span></div>
+    <div class="card"><b>${fmt(mvLoops)}</b><span>35 kV loops + ties (the quoted scope), conductor-ft</span></div>
+    <div class="card"><b>${fmt(fdr)}</b><span>35 kV feeders to the data center, conductor-ft · scope to verify</span></div>
+  </div>
+  <p class="note">cut length = (routed + risers + terminations + slack) x (1 + spare); conductor-ft = cut x conductors/run x runs. Allowances: terminations ${D.allow.term_lv} ft/end at 600 V and ${D.allow.term_mv} ft/end at 35 kV, slack ${D.allow.slack*100}% of routed, spare ${D.allow.spare*100}%, trench depth ${D.allow.depth_lv} ft (600 V) and ${D.allow.depth_mv} ft (35 kV), all working assumptions. Construction is family and insulation only; no stock numbers, no dollars.</p>
+  <h3>Per-block cable kit · RB-001</h3>
+  <p class="note">Every block is the same template, so the measured kit is identical block to block. L1 is the natural pre-cut, pre-terminated, labelled and tested kit the call described.</p>
+  <div class="tw"><table><thead><tr><th>Layer</th><th>Circuit</th><th>From → to</th><th class="r">Runs</th><th class="r">Cond / run</th><th class="r">Length / run ft</th><th class="r">Cut ft</th><th class="r">Conductor-ft</th><th>Construction</th><th>Basis</th></tr></thead>
+  <tbody>${kitRows}</tbody><tfoot>${Object.entries(kitTot).map(([b,v])=>`<tr class="tot"><td colspan="7">Block kit total, ${b}</td><td class="m r">${fmt(v)}</td><td colspan="2"></td></tr>`).join('')}</tfoot></table></div>
+  <h3>Campus roll-up · ${p.mw} MW</h3>
+  <p class="note">Blocks x per-block kit + loops (by group) + ties + feeders. Switch any layer between MEASURED (off the model's routes) and ASSUMED (a stated typical length per run).</p>
+  <div class="tw"><table><thead><tr><th>Layer</th><th>Circuit family</th><th>Status</th><th class="r">Circuits</th><th>Basis</th><th class="r">Cable-ft</th><th class="r">Conductor-ft</th></tr></thead>
+  <tbody>${roll}</tbody><tfoot><tr class="tot"><td colspan="6">Total, MEASURED rows</td><td class="m r">${fmt(tot.MEASURED)}</td></tr><tr class="tot"><td colspan="6">Total, ASSUMED rows (not added to the measured total)</td><td class="m r">${fmt(tot.ASSUMED)}</td></tr></tfoot></table></div>
+  <h3>Same model, three campuses · conductor-ft by layer</h3>
+  <div class="tw"><table><thead><tr><th>Campus</th><th class="r">Blocks</th><th class="r">Groups</th><th class="r">Lineups</th>${Object.keys(LYR).map(L=>`<th class="r">${L}</th>`).join('')}</tr></thead><tbody>${sizes}</tbody></table></div>
+  <p class="note">The same files are in takeoff_250MW / 500MW / 1000MW .csv and .json, with every circuit.</p>`;
+  $('tko').querySelectorAll('select[data-b]').forEach(s=>s.onchange=()=>{ BASIS[s.dataset.b]=s.value; renderTakeoff(); showDefault(); });
+}
+function renderStatic(){
+  $('reg').innerHTML = `<p class="note">Every number that drives geometry or the takeoff, with its status and the source to check. Known = the Oct 26 call or the public record. Working assumption = stated here, changed on feedback. To verify = open, with where to look.</p>
+  <div class="tw tall"><table><thead><tr><th>Item</th><th>Value</th><th>Status</th><th>Statement</th><th>Source to check</th></tr></thead><tbody>
+  ${D.register.map(r=>`<tr><td class="m">${r[0]}</td><td class="m">${r[1]}${r[2]?' '+r[2]:''}</td><td>${pill(r[3])}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`).join('')}</tbody></table></div>`;
+  $('key').innerHTML = `<div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+   <div class="card"><h3>Equipment key</h3><table>${D.key.map(k=>`<tr><td class="m">${k[0]}</td><td>${k[1]}</td></tr>`).join('')}</table></div>
+   <div class="card"><h3>Cable layers (off by default)</h3><table>${D.layers.map(l=>`<tr><td class="m">${l[0]}</td><td><span style="display:inline-block;width:22px;height:4px;vertical-align:middle;background:${l[4]?`repeating-linear-gradient(90deg,${l[2]} 0 5px,transparent 5px 8px)`:l[2]}"></span></td><td>${l[1]}</td><td>${pill(l[3])}</td></tr>`).join('')}
+   <tr><td class="m">—</td><td><span style="display:inline-block;width:22px;height:4px;vertical-align:middle;background:#7f878c"></span></td><td>Gas lateral (context, not a cable layer)</td><td></td></tr></table>
+   <p class="note" style="margin-top:8px">Circuits are drawn at trench depth (EL −3 to −4.4); the ground turns translucent while a layer is on. Loops close at every transformer: no branch trees.</p></div></div>`;
+}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{ document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected', x===b));
+  for(const t of ['tko','reg','key']) $(t).hidden = t!==b.dataset.t; });
+
+// ---------------------------------------------------------------- loop
+function resize(){ const w=stage.clientWidth, h=stage.clientHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix(); }
+addEventListener('resize', resize);
+let lt=0;
+function tick(now){ requestAnimationFrame(tick);
+  if(anim){ const t=Math.min(1,(now-anim.s)/anim.ms), e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    controls.target.lerpVectors(anim.t0, anim.t1, e); camera.position.lerpVectors(anim.c0, anim.c1, e); if(t>=1) anim=null; }
+  controls.update();
+  const dir=new THREE.Vector3(); camera.getWorldDirection(dir); const az=Math.atan2(dir.x, -dir.z);
+  $('narrow').setAttribute('transform', `rotate(${-az*180/Math.PI})`);
+  if(now-lt>120){ labels(); lt=now; }
+  renderer.render(scene, camera); }
+const sel = $('size');
+for(const k of Object.keys(D.sizes)){ const o=document.createElement('option'); o.value=k; o.textContent=`${D.sizes[k].params.mw} MW`; sel.appendChild(o); }
+sel.onchange=()=>{ build(sel.value); const v=viewsFor()[0]; look(v.t, v.c, 0); };
+resize(); renderStatic(); build('250'); { const v=viewsFor()[0]; look(v.t, v.c, 0); }
+$('loading').hidden = true;
+requestAnimationFrame(tick);
+</script>

@@ -1,0 +1,270 @@
+"""Zone 07, infrastructure and construction: the plant's front door (user, Oct 19). Part 1, the control / admin
+building, outside and on the roof. The same design family as the turbine hall, no Southwire logo here:
+- facade: a copper band round all four walls above the window band, black coping on the parapet, black corner
+  pilasters; at the glazed entrance a black portal (piers either side of the canopy, a lintel above it) lettered
+  SW-3X1 POWER CAMPUS / CONTROL & ADMINISTRATION, a plain campus information sign on the lawn and three flagpoles (the US
+  flag in the middle);
+- rooftop HVAC: two more packaged units (over the lobby and over the control room, the 24/7 load) beside the two the
+  rooftop pass placed, and every unit wired as an electrician would: a fused disconnect on a strut stand beside the
+  unit, rigid conduit up through the roof into it, a short MC whip from the disconnect into the unit's electrical
+  section; roof-walkway pavers from the hatch to each unit;
+- precision cooling for the DCS / server room (x 220-240): a concrete pad north of the building with four
+  condensing units, their disconnects on a strut rack against the wall, conduit feeders and copper line sets into
+  the building.
+Typical, not engineered. Built last (after the rooftop pass and hall_exterior), so it sees everything already there.
+"""
+import math
+
+import fuel
+from fuel import box, rod, find, new_item, on
+
+BX0, BX1, BY0, BY1 = 83.0, 320.0, 345.0, 396.0            # admin building outer faces
+ZR, ZP = 18.5, 20.0                                          # roof deck, parapet top
+XM = (BX0 + BX1) / 2                                         # entrance centre (detail3: glazed door xm +- 5)
+
+
+def poly(pts, r, c, seg=8):
+    for a, b in zip(pts, pts[1:]):
+        rod(a, b, r, c, seg=seg)
+
+
+def facade():
+    import showcase
+    bld = find("Control / admin building (main")
+    it = new_item(bld["layer"], "Control / admin building exterior finish: copper band, coping, entrance portal, sign",
+                  [81, 322, 343, 398], [0, 20.6], area=bld.get("area"), register=False,
+                  info="The turbine hall's facade language on the control / admin building: copper band, black coping "
+                       "and corner pilasters, a black entrance portal with the campus name. Typical, not engineered.")
+    # the generic door / roll-up / louvre pass (detail3.py) put a roll-up over two office windows by the entrance, a
+    # personnel door under a window and a louvre through the band line on this front (owner, Oct 20: "random doors"):
+    # the roll-up and louvre go, the personnel door moves to the west end wall as the second exit
+    keep = []
+    for p in fuel.G["parts"]:
+        if p["item"] == bld["id"] and p["kind"] == "box" and p["min"][1] >= 344.5 and p["max"][1] <= 345.2:
+            if p["color"] in ("rollup", "louvre"):
+                continue
+            if p["color"] == "door":
+                p["min"], p["max"] = [82.75, 350.0, 0], [83.0, 353.5, 7.5]       # clear of the end-wall windows
+        keep.append(p)
+    fuel.G["parts"][:] = keep
+    on(it)
+    fuel.D = True
+    n = 0
+    # band, coping and corner pilasters as strips cut round anything standing at the walls (the hall's helper; the
+    # building's own panels, roof, windows and base count as wall)
+    from hall_exterior import Face, hstrip, pilaster
+    sk = ({it["id"]}, {bld["id"]})
+    wc = ("building", "roof", "concrete", "window")
+    S, N = Face(1, BY0, -1, sk, wc), Face(1, BY1, 1, sk, wc)
+    Wf, E = Face(0, BX0, -1, sk, wc), Face(0, BX1, 1, sk, wc)
+    for f, a0, a1 in ((S, BX0, BX1), (N, BX0, BX1), (Wf, BY0 - .45, BY1 + .45), (E, BY0 - .45, BY1 + .45)):
+        n += hstrip(f, a0, a1, 13.6, 14.4, .25, "hero_accent")                            # copper band
+        n += hstrip(f, a0, a1, ZP - .5, ZP + .3, .3, "hero_rail")                          # coping
+    for f, a in ((S, BX0 + 1.0), (S, BX1 - 1.0), (N, BX0 + 1.0), (N, BX1 - 1.0)):        # corner pilasters
+        n += pilaster(f, a, 0, ZP - .5)
+    # entrance portal: piers clear of the canopy (x 192.5-210.5) and the band windows, lintel above the canopy
+    # (x 189.8-213.2: the roll-up door starts at x 213.35); in front of the concrete base band (y 344.88)
+    y0, y1 = BY0 - .7, BY0 - .13
+    box(XM - 11.7, XM - 9.1, y0, y1, 0, 17.4, "hero_rail")
+    box(XM + 9.1, XM + 11.7, y0, y1, 0, 17.4, "hero_rail")
+    box(XM - 11.7, XM + 11.7, y0, y1, 10.9, 17.4, "hero_rail")
+    n += 3
+    fuel.D = False
+    showcase.decal((XM, y0 - .03, 14.15), (0, -1, 0), 22.0, 5.6,
+                   [("SW-3X1 POWER CAMPUS", .42, 1, "#f2f2f0"), ("CONTROL & ADMINISTRATION", .2, 1, "#c4744a")], bg=None)
+    # campus information sign on the lawn west of the walk (owner, Oct 20: a plain technical sign, not a monument):
+    # the campus type and its installed capacity, on two posts. Ratings approximate (several are model assumptions)
+    sx, sy = XM - 28.0, 318.0
+    fuel.D = True
+    for x in (sx - 5.6, sx + 5.6):
+        rod((x, sy, 0), (x, sy, 9.6), .2, "steel", seg=8)
+    box(sx - 6.2, sx + 6.2, sy - .15, sy + .15, 2.6, 9.4, "steel")
+    n += 3
+    fuel.D = False
+    showcase.decal((sx, sy - .18, 6.0), (0, -1, 0), 12.0, 6.6,
+                   [("SW-3X1 POWER CAMPUS", .12, 1, "#111111"),
+                    ("NATURAL-GAS GENERATION CAMPUS  ·  INSTALLED ~1,690 MW", .075, 1, "#111111"),
+                    ("COMBINED CYCLE  3x1 H-CLASS (3 GT + 1 ST)  ·  ~1,350 MW", .065, 1, "#222222"),
+                    ("MODULAR POWER  ·  ~339 MW", .065, 1, "#222222"),
+                    ("RICE ENGINES  8 x 18 MW  ·  144 MW", .058, 0, "#333333"),
+                    ("SIMPLE CYCLE  2 x 50 MW (AERODERIVATIVE)  ·  100 MW", .058, 0, "#333333"),
+                    ("MOBILE GAS TURBINES  2 x 35 MW (TRAILER-MOUNTED)  ·  70 MW", .058, 0, "#333333"),
+                    ("CONTAINERIZED GENSETS  8 x 2.5 MW  ·  20 MW", .058, 0, "#333333"),
+                    ("FUEL CELLS + MICROTURBINES  ·  5 MW", .058, 0, "#333333"),
+                    ("BATTERY STORAGE ~60 MW / 120 MWh  ·  CARBON CAPTURE  ·  25 MW GREEN H2", .058, 0, "#222222"),
+                    ("230 kV SWITCHYARD  ·  RATINGS APPROXIMATE", .05, 0, "#555555")], bg="#f4f4f2")
+    # three flagpoles east of the walk, 11 ft apart so the flags fly clear of each other: the US flag on the taller
+    # middle pole, a company flag (black with a copper stripe) either side (owner, Oct 20: the blue one matched to it)
+    fuel.D = True
+    for k, fx in enumerate((XM + 20.0, XM + 31.0, XM + 42.0)):
+        fy = 318.0
+        top = 32.0 if k == 1 else 28.0
+        box(fx - 1.2, fx + 1.2, fy - 1.2, fy + 1.2, 0, .5, "concrete")
+        rod((fx, fy, .5), (fx, fy, top), .22, "alu", r2=.12, seg=12)
+        rod((fx, fy, top), (fx, fy, top + .5), .35, "lamp", seg=10)                         # finial
+        z1 = top - .6
+        if k == 1:
+            w, h = 9.0, 9.0 / 1.9
+            st = h / 13
+            for i in range(13):
+                za = z1 - (i + 1) * st
+                box(fx + .25, fx + .25 + w, fy - .04, fy + .04, za, za + st, "flag_red" if i % 2 == 0 else "flag_white")
+            box(fx + .25, fx + .25 + .4 * w, fy - .07, fy + .07, z1 - 7 * st, z1, "flag_blue")
+            n += 14
+        else:                                                                          # company flags either side
+            box(fx + .25, fx + 6.25, fy - .04, fy + .04, z1 - 3.6, z1, "hero_rail")
+            box(fx + .25, fx + 6.25, fy - .07, fy + .07, z1 - 2.5, z1 - 2.0, "hero_accent")
+            n += 2
+        n += 3
+    fuel.D = False
+    return n
+
+
+def disconnect(x, y, z, face):
+    """Fused safety switch on a two-post strut stand; face = +-1 along y (which way the door faces)."""
+    for dx in (-.55, .55):
+        rod((x + dx, y, z), (x + dx, y, z + 3.4), .07, "steel", seg=4)
+    box(x - .7, x + .7, y - .25, y + .25, z + 1.7, z + 3.4, "panel")
+    box(x - .55, x + .55, y + face * .25, y + face * .28, z + 1.85, z + 3.25, "cabinet")      # door
+    box(x - .1, x + .1, y + face * .28, y + face * .45, z + 2.9, z + 3.1, "sw_red")            # handle
+    return 6
+
+
+def hvac():
+    roof = find("Control / admin building: rooftop HVAC")
+    on(roof)
+    fuel.D = True
+    n = 0
+    # the units the rooftop pass placed, plus two: over the lobby and over the control room
+    units = [(258.35, 379.65, 9.5, 5.5), (144.65, 358.45, 9.5, 5.5)]
+    for (x, y) in ((190.0, 382.0), (294.0, 381.0)):
+        w, d, h = 9.5, 5.5, 4.2
+        box(x - w / 2 - .4, x + w / 2 + .4, y - d / 2 - .4, y + d / 2 + .4, ZR, ZR + 1.0, "steel")
+        box(x - w / 2, x + w / 2, y - d / 2, y + d / 2, ZR + 1.0, ZR + 1.0 + h, "equip")
+        box(x + w / 2 - 2.2, x + w / 2 + .05, y - d / 2 + .3, y + d / 2 - .3, ZR + 1.4, ZR + .8 + h, "bundle")
+        for fy in (y - 1.3, y + 1.3):
+            rod((x + w / 2 - 1.6, fy, ZR + 1.0 + h), (x + w / 2 - 1.6, fy, ZR + 1.35 + h), 1.15, "fan", seg=16)
+            rod((x + w / 2 - 1.6, fy, ZR + 1.35 + h), (x + w / 2 - 1.6, fy, ZR + 1.5 + h), .35, "fanhub", seg=10)
+        for k in (-1, 1):
+            box(x + k * w / 5 - .9, x + k * w / 5 + .9, y - d / 2 - .05, y - d / 2 + .02, ZR + 1.4, ZR + .6 + h, "cabinet")
+        units.append((x, y, w, d))
+        n += 10
+    # each unit: disconnect south of its west end, conduit up through the roof, MC whip into the electrical section
+    for (x, y, w, d) in units:
+        dx, dy = x - w / 2 + 1.0, y - d / 2 - 2.6
+        n += disconnect(dx, dy, ZR, 1)
+        rod((dx, dy, ZR - .3), (dx, dy, ZR + 1.7), .1, "steel", seg=6)                     # conduit through the roof
+        box(dx - .35, dx + .35, dy - .35, dy + .35, ZR, ZR + .25, "steel")                  # roof penetration boot
+        ex = x - w / 2 + 1.0
+        poly([(dx + .3, dy + .25, ZR + 1.9), (dx + .3, dy + 1.0, ZR + 1.2), (ex + .3, y - d / 2 - .4, ZR + 1.2),
+              (ex + .3, y - d / 2 - .05, ZR + 2.0)], .09, "cable_mc", seg=6)                # MC whip
+        n += 5
+    # roof walkway pavers from the hatch (x 309-312, y 358-362) west along y 366, spurs to the disconnects
+    yw = 366.0
+    box(150.0, 307.5, yw - 1.25, yw + 1.25, ZR, ZR + .12, "concrete")
+    n += 1
+    for (x, y, w, d) in units:
+        dx, dy = x - w / 2 + 1.0, y - d / 2 - 2.6
+        if dy < yw:
+            box(dx - 1.25, dx + 1.25, dy + .6, yw - 1.25, ZR, ZR + .12, "concrete")
+        n += 1
+    fuel.D = False
+    return n
+
+
+def condensers():
+    bld = find("Control / admin building (main")
+    it = new_item(bld["layer"], "Control / admin building: precision-cooling condensing units for the DCS / server room",
+                  [208, 252, 396, 414], [0, 12], area=bld.get("area"), register=False,
+                  info="Four condensing units on a pad north of the building serving the DCS / server room's "
+                       "precision cooling (N+1), disconnects on a strut rack against the wall, conduit feeders and "
+                       "refrigerant line sets. Typical, not engineered.")
+    on(it)
+    fuel.D = True
+    n = 0
+    box(210.0, 250.0, 401.0, 413.0, 0, .5, "concrete")                                  # pad
+    rack_y = BY1 + .6
+    for (a, b) in ((211.5, 212.0), (248.0, 248.5)):                                      # strut rack posts
+        box(a, b, rack_y - .2, rack_y + .2, 0, 6.5, "steel")
+    box(211.5, 248.5, rack_y - .2, rack_y + .2, 6.3, 6.5, "steel")
+    n += 3
+    for k in range(4):
+        x = 215.0 + 10.0 * k
+        box(x - 2.6, x + 2.6, 404.0, 410.0, .5, 4.8, "equip")                             # condensing unit
+        box(x - 2.4, x + 2.4, 403.95, 404.0, .9, 4.4, "bundle")                           # coil face
+        rod((x, 407.0, 4.8), (x, 407.0, 5.15), 1.9, "fan", seg=18)
+        rod((x, 407.0, 5.15), (x, 407.0, 5.3), .4, "fanhub", seg=10)
+        # disconnect on the rack, conduit from the building wall, whip into the unit
+        box(x - .7, x + .7, rack_y + .2, rack_y + .7, 3.4, 5.1, "panel")
+        box(x - .55, x + .55, rack_y + .7, rack_y + .73, 3.55, 4.95, "cabinet")
+        poly([(x - .3, BY1, 9.0), (x - .3, rack_y + .45, 9.0), (x - .3, rack_y + .45, 5.1)], .1, "steel", seg=6)
+        poly([(x + .3, rack_y + .7, 3.6), (x + .3, 402.6, 1.2), (x + .3, 404.0, 1.6)], .09, "cable_mc", seg=6)
+        # refrigerant line set: suction (insulated, black) and liquid (copper), up the wall into the building
+        for (o, r, c) in ((1.2, .14, "sp_black"), (1.7, .06, "copper")):                 # in above the window band
+            poly([(x + o, 404.0, 2.4), (x + o, 400.6, 2.4), (x + o, BY1 + .3, 2.4), (x + o, BY1 + .3, 12.4),
+                  (x + o, BY1, 12.4)], r, c, seg=6)
+        n += 11
+    fuel.D = False
+    return n
+
+
+def blob(x, y, z0, z1, r, c, n=6, seg=16):
+    """A rounded (ellipsoid) mass from stacked frustums: crowns and shrubs."""
+    k = 0
+    for i in range(n):
+        t0, t1 = i / n, (i + 1) / n
+        r0 = max(r * math.sin(math.pi * t0), r * .12)
+        r1 = max(r * math.sin(math.pi * t1), r * .12)
+        rod((x, y, z0 + (z1 - z0) * t0), (x, y, z0 + (z1 - z0) * t1), r0, c, r2=r1, seg=seg)
+        k += 1
+    return k
+
+
+def tree(x, y, h=24.0):
+    """A deciduous street tree in the campus style: trunk and a full oval crown, as the trees round the site."""
+    rod((x, y, 0), (x, y, h * .4), .45, "timber", r2=.32, seg=10)
+    return 1 + blob(x, y, h * .3, h, h * .24, "foliage", n=8, seg=20)
+
+
+def shrub(x, y, r=1.1, h=2.4, c="foliage"):
+    return blob(x, y, 0, h, r, c, n=4, seg=12)
+
+
+def landscape():
+    """The office front landscaped (owner, Oct 20): the one place on site with lawn and planting, kept low and clear
+    of the process areas, fire access and the security sight lines.
+    - a lawn strip between the road and the parking row (y 301-321), either side of the entrance walk, west of the
+      gate drive; the flag plaza stands on it;
+    - street trees along the road on the west lawn only, clear of the flags and the gate;
+    - low shrubs round the flagpole bases;
+    - a mulched bed of low shrubs along the building base, behind the parking bollards, gapped at the entrance portal
+      and the bike rack; nothing above window sill height."""
+    bld = find("Control / admin building (main")
+    it = new_item(bld["layer"], "Control / admin building: landscaping (lawn, street trees, shrubs)", [84, 272, 300, 346],
+                  [0, 26], area=bld.get("area"), register=False,
+                  info="Lawn, street trees and low shrubs at the office front, the public face of the site. Typical.")
+    on(it)
+    fuel.D = True
+    n = 0
+    for (x0, x1) in ((84.0, 195.5), (207.5, 249.0)):                                   # lawn, either side of the walk
+        box(x0, x1, 301.0, 321.0, 0, .06, "turf")
+        n += 1
+    for x in (96.0, 122.0, 148.0):                                                     # street trees, west lawn
+        n += tree(x, 306.5)
+    for fx in (XM + 20.0, XM + 31.0, XM + 42.0):                                       # flag plaza: shrub ring
+        for k in range(6):
+            a = k * math.pi / 3
+            n += shrub(fx + 2.8 * math.cos(a), 318.0 + 2.8 * math.sin(a), r=.8, h=1.8)
+    for (x0, x1) in ((104.0, 187.0), (216.0, 318.0)):                                  # bed along the building base
+        box(x0, x1, 341.8, 344.8, 0, .12, "soil")
+        x = x0 + 2.0
+        while x < x1 - 1.5:
+            n += shrub(x, 343.3, r=1.0, h=2.6)
+            x += 4.0
+        n += 1
+    fuel.D = False
+    return n
+
+
+def build():
+    return dict(facade=facade(), hvac=hvac(), condensers=condensers(), landscape=landscape())

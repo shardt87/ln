@@ -1,0 +1,2100 @@
+"""Professional presentation look for the SW-3X1 Blender build (--style pro).
+
+- Materials: procedural PBR per surface type. They include ribbed metal
+  cladding (wave-texture bump), board-marked concrete, galvanised steel
+  with roughness break-up, gravel, asphalt, porcelain, safety-yellow
+  handrails and a chain-link fence. Hard-surface materials get a Bevel
+  node, so edges catch the light.
+- Landscape: grass with colour variation, clusters of trees outside the
+  fence, and a public road to the main gate.
+- Light: late-afternoon sun (elevation 24 deg) with a Nishita sky and
+  soft sun disc.
+- Cameras: perspective hero shots with real lenses and subtle depth of field.
+- Compositor: atmospheric haze from the mist pass, fog glow, a slight lens
+  dispersion and a warm grade; finish_pro.py adds the vignette and caption.
+
+All of it is visual dressing; the model geometry is the verified one.
+"""
+import math
+import os
+import random
+
+import bpy
+from mathutils import Vector
+
+FT = 0.3048
+
+
+def lin(h):
+    h = h.lstrip("#")
+    c = [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]
+    return tuple(v / 12.92 if v <= 0.04045 else ((v + 0.055) / 1.055) ** 2.4 for v in c) + (1,)
+
+
+# surface type, colour (sRGB), roughness, metallic
+LOOK = {
+    "ground": ("gravel", "#8b8a84", .95, 0), "road": ("asphalt", "#3b3d3f", .9, 0),
+    "gravel": ("gravel", "#83837f", .95, 0), "gravel_yard": ("gravel", "#8b8a84", .95, 0), "corridor": ("gravel", "#8b8a84", .95, 0),
+    "pad": ("concrete", "#a9a69e", .85, 0), "concrete": ("concrete", "#a6a39b", .85, 0),
+    "basement": ("concrete", "#8f8c86", .9, 0), "future": ("gravel", "#b3afa4", .95, 0),
+    "building": ("clad", "#c2bfb7", .55, .05), "hall": ("clad", "#c3c8ca", .45, .3),
+    "roof": ("roofing", "#868d92", .55, .3), "ehouse": ("clad", "#bfc4c2", .5, .1),   # roof: weathered standing seam
+    "hrsg": ("clad", "#596a76", .42, .45), "hrsg_b": ("clad", "#52626d", .42, .45), "filter": ("clad", "#a5afb4", .5, .25),
+    "windwall": ("clad", "#adb4b8", .5, .3), "tower": ("clad", "#b3bab7", .6, 0),
+    "ccs": ("clad", "#7a8184", .7, .1), "acc": ("clad", "#b4bbbe", .5, .25),   # ccs muted: recedes behind the hero stacks
+    "partition": ("paint", "#e4e4df", .7, 0),
+    "steel": ("galv", "#8e959a", .38, .85), "stair": ("galv", "#8a9196", .4, .8),
+    "grating": ("galv", "#9aa1a5", .45, .8), "pipe": ("galv", "#a2a8ab", .35, .85),
+    "copper": ("galv", "#9ea5a9", .35, .85), "fence": ("fence", "#8e959a", .4, .8), "barrier": ("fence", "#e2701f", .5, 0), "safety": ("paint", "#2f9a4a", .5, 0),
+    "soil": ("gravel", "#7a6347", 1, 0), "timber": ("paint", "#9a7448", .8, 0), "ductcase": ("concrete", "#b4b0a6", .9, 0),
+    "pvc_grey": ("paint", "#8f969a", .5, 0), "pvc_orange": ("paint", "#d0752a", .5, 0),
+    "copper_dark": ("paint", "#6f787d", .4, .5), "duct": ("paint", "#8a949a", .5, .4),
+    "stack": ("paint", "#b9bfc3", .45, .15), "machine": ("paint", "#8a9499", .4, .3),
+    "xfmr": ("paint", "#7d898f", .42, .1), "padmount": ("paint", "#5d7458", .45, .1), "radiator": ("fins", "#7b878d", .42, .15),
+    "bundle": ("fins", "#8b9396", .45, .5), "fan": ("paint", "#5e666b", .45, .4),
+    "fanhub": ("paint", "#3e4549", .45, .4), "motor": ("paint", "#3d6c8c", .35, .05),
+    "pump": ("paint", "#3f6f8e", .35, .05), "tank": ("paint", "#dcdcd6", .45, 0),
+    "rail": ("paint", "#9aa1a4", .45, .3), "hero_accent": ("paint", "#9a5530", .32, .75), "hero_rail": ("paint", "#1d1f21", .16, .35), "crane": ("paint", "#e0b01a", .38, 0),
+    "red": ("paint", "#b3342c", .4, 0), "amber": ("paint", "#d8a63a", .45, 0),
+    "door": ("paint", "#4f6f86", .4, .1), "rollup": ("clad", "#9ca3a7", .5, .3),
+    "louvre": ("fins", "#7c8489", .5, .3), "lamp": ("paint", "#f2efe4", .3, 0),
+    "insulator": ("ceramic", "#6a3a28", .12, 0), "conductor": ("galv", "#aeb3b6", .3, .9),
+    "water": ("water", "#2c464e", .04, 0), "conditional": ("paint", "#aab2b6", .5, .1),   # real finish, not the drawing tint
+    "bess": ("paint", "#e3e5e3", .45, 0), "cabinet": ("paint", "#b9c1c6", .4, .1),
+    "swgr": ("paint", "#a3adb3", .4, .1), "panel": ("paint", "#c9cfd2", .4, .1),
+    "battery": ("paint", "#4c6b58", .5, 0), "equip": ("paint", "#b0b8bc", .5, .1),
+    # coastal variant (sheet 15): terminal, marine structures and vessels
+    "tankwall": ("concrete", "#c9c5bb", .8, 0), "tankroof": ("paint", "#d9d8d2", .55, 0),
+    "lngpipe": ("paint", "#e7e6e0", .5, 0), "seawater": ("paint", "#4d7d93", .45, .05),
+    "pile": ("paint", "#4d4f4f", .6, .2), "rope": ("paint", "#d8cfa9", .8, 0),
+    "hull": ("paint", "#23282d", .4, .15), "antifoul": ("paint", "#8a2d25", .5, 0),
+    "deck": ("paint", "#6b4a3a", .6, 0), "super": ("paint", "#ecebe5", .4, 0),
+    "glass": ("paint", "#1f2d36", .08, .2), "mosscover": ("paint", "#d7cfbd", .5, 0),
+    "turf": ("paint", "#6d7c45", .95, 0),
+    "tug": ("paint", "#b03a26", .45, 0), "sea": ("sea", "#27434c", .05, 0),
+    "sand": ("gravel", "#c2b28f", .95, 0), "rock": ("concrete", "#6f6c66", .9, 0),
+    "window": ("window", "#2c3a44", .06, .55),
+    # fuel systems: gas lines in safety yellow, backup fuel oil in brown
+    "fuelgas": ("paint", "#c9a12e", .4, 0), "fueloil": ("paint", "#6d4a30", .45, 0),
+    "feedwater": ("galv", "#b7bdc0", .35, .8),      # insulated, aluminium-jacketed
+    "cable": ("paint", "#1d2124", .55, 0), "ipb": ("galv", "#a9b0b4", .35, .8),
+    "firewater": ("paint", "#a52a22", .45, 0), "waterline": ("paint", "#3a7480", .45, 0), "sign": ("paint", "#efefea", .35, 0), "label": ("paint", "#efefea", .4, 0),
+    "hivis": ("paint", "#bfd424", .55, 0), "hivis_o": ("paint", "#e06a22", .55, 0), "hardhat": ("paint", "#f1f1ec", .3, 0),
+    "workwear": ("paint", "#26324a", .7, 0), "skin": ("paint", "#b88c6c", .6, 0), "truck": ("paint", "#e4e6e7", .25, .1),
+    "cable_mv": ("paint", "#141719", .78, 0), "cable_armor": ("paint", "#6a2720", .7, 0), "cable_tc": ("paint", "#151819", .78, 0),
+    "cable_mc": ("paint", "#1c2023", .72, 0), "cable_inst": ("paint", "#26467a", .5, 0),
+    "cable_tcx": ("paint", "#cfa818", .45, 0), "cable_fa": ("paint", "#a52e25", .5, 0),
+    "cable_fo": ("paint", "#d36f22", .45, 0),
+    "sw_red": ("paint", "#c41f27", .4, 0), "xlpe": ("paint", "#e4e0cf", .3, 0), "alu": ("galv", "#b3b8bc", .3, .85),
+    "steel_dark": ("paint", "#3a4045", .45, .3), "tyre": ("paint", "#1c1e20", .85, 0), "hdpe": ("paint", "#1e2022", .7, 0), "cable_shd": ("paint", "#c9a01e", .6, 0), "camlock_r": ("paint", "#b02a22", .5, 0), "camlock_b": ("paint", "#244f8c", .5, 0), "camlock_w": ("paint", "#e4e4de", .5, 0), "camlock_g": ("paint", "#2f7a3c", .5, 0), "boot": ("paint", "#35261b", .7, 0), "reflect": ("galv", "#d4d8d9", .25, .7), "glove": ("paint", "#c7b088", .8, 0), "tent": ("paint", "#eeeeea", .8, 0), "white_truck": ("paint", "#e9ebea", .3, 0),
+    # switchgear-room interiors (swgr_rooms.py): clean ANSI 61 grey enclosures, epoxy floor, dielectric mats,
+    # LEDs, relay screens and LED fixtures (emissive)
+    "swgr_in": ("paint", "#a9b2b8", .32, .05), "cab_in": ("paint", "#bcc4c9", .32, .05),
+    "panel_in": ("paint", "#cbd1d4", .32, .05), "epoxy": ("paint", "#97a49f", .18, 0), "mat": ("paint", "#1d1f21", .9, 0),
+    "led_r": ("paint", "#ff3b30", .3, 0), "led_g": ("paint", "#2fe36b", .3, 0), "led_a": ("paint", "#ffb020", .3, 0),
+    "hmi": ("paint", "#2c5a4c", .12, 0), "yellow": ("paint", "#e2b622", .5, 0), "cu_bus": ("paint", "#b8733a", .3, .9),
+    "mimic": ("paint", "#23282c", .4, 0), "lamp_in": ("paint", "#fffbef", .3, 0),
+    # control / admin building interior (control_room.py)
+    "desk": ("paint", "#34383c", .35, 0), "console": ("paint", "#3d4247", .45, .1), "monitor": ("paint", "#141618", .35, .1),
+    "keycap": ("paint", "#2a2d30", .6, 0), "chair": ("paint", "#24272a", .8, 0), "vinyl": ("paint", "#b9b6ad", .35, 0),
+    "carpet": ("paint", "#454c53", .95, 0), "ceiling": ("paint", "#ecebe6", .9, 0), "wall_in": ("paint", "#e3e0d9", .8, 0),
+    "door_in": ("paint", "#9c7a55", .5, 0), "glass_in": ("paint", "#c8dde5", .05, 0), "xray": ("paint", "#a9d0e6", .05, 0), "blind": ("paint", "#dcd8cc", .8, 0),
+    "acoustic": ("paint", "#5a6672", .95, 0), "rack": ("paint", "#1b1e21", .5, .3), "wood": ("paint", "#a9835b", .5, 0),
+    "fabric": ("paint", "#5f6b74", .95, 0), "locker": ("paint", "#7d8c96", .4, .3), "foliage": ("paint", "#4b7a37", .7, 0),
+    "binder_r": ("paint", "#a3332c", .5, 0), "binder_b": ("paint", "#2f5a8a", .5, 0), "binder_w": ("paint", "#e8e6e0", .5, 0),
+    "binder_k": ("paint", "#2b2d2f", .5, 0), "shirt": ("paint", "#3e5f80", .85, 0), "shirt_w": ("paint", "#dfe3e6", .85, 0),
+    "trousers": ("paint", "#2d3238", .85, 0), "hair": ("paint", "#2b221b", .7, 0),
+    # SIMpull / Maxis equipment (simpull.py)
+    "sp_black": ("paint", "#1c1d1f", .45, 0), "sp_yellow": ("paint", "#f2c200", .4, 0), "ccs_green": ("paint", "#9dbba5", .55, 0),
+    "coilpak_p": ("paint", "#8a7fd0", .15, 0), "coilpak_b": ("paint", "#6f9ad8", .15, 0), "barrel_w": ("paint", "#eceae4", .45, 0),
+}
+# ---- plant colour system (one scheme for the whole campus, user review) -------------------------------------------
+# value hierarchy: neutral cool ground < light buildings < three equipment greys (light / mid / dark); the power block
+# is the hero: the darkest element is the HRSG casing (black ribs), the stacks are light, copper is the only accent and
+# only on the hero; CCS and everything else quiet; colour only on small safety items. No warm cast anywhere.
+COLOUR_SYSTEM = {
+    # site
+    "ground": ("gravel", "#8a8882", .95, 0), "gravel": ("gravel", "#7d7c76", .95, 0),
+    "gravel_yard": ("gravel", "#94928c", .95, 0), "corridor": ("gravel", "#8e8c86", .95, 0),
+    "future": ("gravel", "#a7aaa9", .95, 0), "road": ("asphalt", "#2e3032", .9, 0),
+    "pad": ("concrete", "#b1b2ae", .85, 0), "concrete": ("concrete", "#adaeaa", .85, 0),
+    "basement": ("concrete", "#94958f", .9, 0),
+    # buildings: off-white walls, mid-grey roofs
+    "building": ("clad", "#dcdedb", .55, .05), "rollup": ("clad", "#d2d5d4", .5, .2),
+    "ehouse": ("clad", "#d5d8d7", .5, .1), "hall": ("clad", "#cdd1d2", .45, .2),
+    "roof": ("roofing", "#7e858a", .55, .3), "partition": ("paint", "#e6e6e2", .7, 0),
+    # equipment greys: light / mid / dark
+    "equip": ("paint", "#c6cbce", .5, .1), "panel": ("paint", "#cfd3d5", .4, .1), "cabinet": ("paint", "#c3c9cc", .4, .1),
+    "swgr": ("paint", "#b2b9bd", .4, .1), "tank": ("paint", "#dadcdb", .45, 0), "bess": ("paint", "#dfe1e0", .45, 0),
+    "filter": ("clad", "#b9bfc2", .5, .2), "acc": ("clad", "#b8bdbf", .5, .25), "windwall": ("clad", "#b4b9bc", .5, .25),
+    "machine": ("paint", "#8f979b", .4, .3), "duct": ("paint", "#949b9f", .5, .3), "xfmr": ("paint", "#848e94", .42, .1), "padmount": ("paint", "#5d7458", .45, .1),
+    "radiator": ("fins", "#808a90", .42, .15), "bundle": ("fins", "#8e9598", .45, .4), "louvre": ("fins", "#6d7479", .5, .3),
+    "fan": ("paint", "#50575c", .45, .3), "fanhub": ("paint", "#3a4044", .45, .3),
+    "motor": ("paint", "#5d707c", .35, .05), "pump": ("paint", "#5d707c", .35, .05), "door": ("paint", "#5e6e78", .4, .1),
+    "rail": ("paint", "#a3a9ac", .45, .3),
+    # hero: dark HRSG casing, light stacks, copper accent, black ribs
+    "hrsg": ("clad", "#6b757c", .42, .4), "hrsg_b": ("clad", "#646e75", .42, .4),
+    "stack": ("paint", "#cfd3d5", .45, .15), "hero_accent": ("paint", "#a65a30", .32, .7),
+    "hero_rail": ("paint", "#1c1d1f", .3, .3),
+    # turbine hall interior (hall_finish.py): dark epoxy deck, painted generators, blue-grey structural steel
+    "deck_epoxy": ("paint", "#4e5856", .3, 0), "gen_paint": ("paint", "#33475a", .36, .1),
+    "hall_steel": ("paint", "#26292d", .42, .25),            # Southwire black structural steel
+    "gt_cold": ("paint", "#5d666c", .34, .55), "gt_comb": ("paint", "#454c51", .4, .5),
+    "gt_blanket": ("paint", "#c2c4c1", .62, .15), "deck_line": ("paint", "#d9b21c", .5, 0),
+    "flag_red": ("paint", "#b22234", .55, 0), "flag_white": ("paint", "#f1f0ea", .55, 0), "flag_blue": ("paint", "#3c3b6e", .55, 0),
+    # carbon capture and the rest: quiet
+    "ccs": ("clad", "#959b9e", .7, .1), "ccs_green": ("paint", "#a9bdb0", .6, 0), "tower": ("clad", "#b6bbbb", .6, 0),
+}
+LOOK.update(COLOUR_SYSTEM)
+CABLE_KEYS = ("cable", "cable_mv", "cable_tc", "cable_mc", "cable_inst", "cable_tcx", "cable_fa", "cable_fo", "cable_armor")
+if os.environ.get("SK_CABLE_MASK"):        # mask pass for the hero-cable composite (blender/hero_cable.py): cables pure red
+    _sel = {"mv": ("cable_mv", "cable_armor"),                         # mv: the 15 kV spine only
+            "power": ("cable_mv", "cable_armor", "cable_mc")}            # power: 15 kV and the 480 V MC-HL
+    for _k in _sel.get(os.environ["SK_CABLE_MASK"], CABLE_KEYS):
+        LOOK[_k] = ("paint", "#ff0000", .5, 0)
+GRIME = (.44, .44, .44, 1)              # neutral weathering (was warm brown, which tinted the whole plant)
+ALPHA = {"glass_in": .18, "coilpak_p": .7, "coilpak_b": .7, "xray": .14}   # xray: SC-2 enclosure
+EMIT = {"led_r": 4.0, "led_g": 4.0, "led_a": 4.0, "hmi": .8, "lamp_in": 12.0}
+_mats = {}
+# materials kept clean: glass, lamps, people, signs, labels, cables and the like
+WEATHER_SKIP = {"xray", "boot", "reflect", "glove", "tent", "sw_red", "xlpe", "alu", "white_truck", "lamp", "sign", "label", "hivis", "hivis_o", "hardhat", "workwear", "skin", "glass",
+                "window", "insulator", "rail", "cable_mv", "cable_armor", "cable_tc", "cable_mc", "cable_inst", "cable_tcx",
+                "cable_fa", "cable_fo", "cable", "truck", "sea", "water",
+                "swgr_in", "cab_in", "panel_in", "epoxy", "mat", "led_r", "led_g", "led_a", "hmi", "yellow", "cu_bus", "mimic",
+                "lamp_in", "desk", "console", "monitor", "keycap", "chair", "vinyl", "carpet", "ceiling", "wall_in", "door_in",
+                "glass_in", "blind", "acoustic", "rack", "wood", "fabric", "locker", "foliage", "binder_r", "binder_b",
+                "binder_w", "binder_k", "shirt", "shirt_w", "trousers", "hair", "sp_black", "sp_yellow", "coilpak_p",
+                "coilpak_b", "barrel_w"}
+
+
+def _node(nt, t, loc, **inputs):
+    n = nt.nodes.new(t)
+    n.location = loc
+    for k, v in inputs.items():
+        n.inputs[k].default_value = v
+    return n
+
+
+# Photoreal finish for the hero (HRSG casings, stacks, copper bands, black access steel). World units are metres.
+HERO_FINISH = {"hrsg", "hrsg_b", "stack", "hero_accent", "hero_rail", "gt_blanket"}
+STACK_TOP = 178 * .3048                    # stack exit, EL 178 ft
+STACK_PLATFORMS = (101.2 * .3048, 169.2 * .3048)
+
+
+def _mr(nt, loc, src, a, b_, c, d, clamp=True):
+    m = _node(nt, "ShaderNodeMapRange", loc)
+    m.inputs["From Min"].default_value, m.inputs["From Max"].default_value = a, b_
+    m.inputs["To Min"].default_value, m.inputs["To Max"].default_value = c, d
+    m.clamp = clamp
+    nt.links.new(src, m.inputs["Value"])
+    return m
+
+
+def _mul_col(nt, loc, col_in, fac, colour):
+    m = _node(nt, "ShaderNodeMix", loc)
+    m.data_type, m.blend_type = "RGBA", "MULTIPLY"
+    nt.links.new(fac, m.inputs["Factor"])
+    nt.links.new(col_in, m.inputs[6])
+    m.inputs[7].default_value = colour
+    return m.outputs[2]
+
+
+def hero_finish(nt, key, geo, base_out, b, normal_src, rough):
+    """Layers on top of the generic material: sheet-panel joints with panel-to-panel tone and sheen, weld seams,
+    rain and drip streaks, soot at the stack exit, brushed copper. Returns the new normal source."""
+    L = nt.links
+    sep = _node(nt, "ShaderNodeSeparateXYZ", (-1600, -900))
+    L.new(geo.outputs["Position"], sep.inputs[0])
+    col = base_out
+    height = None
+    if key in ("hrsg", "hrsg_b"):
+        # external casing lagging: 4 ft x 8 ft panels on (x + y, z), joints as fine grooves, each sheet a slightly
+        # different tone and sheen (the single biggest cue that it is real sheet metal, not a CG block)
+        uv = _node(nt, "ShaderNodeMath", (-1400, -900))
+        L.new(sep.outputs["X"], uv.inputs[0])
+        L.new(sep.outputs["Y"], uv.inputs[1])
+        cv = _node(nt, "ShaderNodeCombineXYZ", (-1250, -900))
+        L.new(uv.outputs[0], cv.inputs["X"])
+        L.new(sep.outputs["Z"], cv.inputs["Y"])
+        br = _node(nt, "ShaderNodeTexBrick", (-1050, -900), Scale=1.0, **{"Mortar Size": .008, "Mortar Smooth": .3,
+                   "Brick Width": 1.219, "Row Height": 2.438, "Bias": 0.0})
+        br.offset, br.offset_frequency, br.squash, br.squash_frequency = 0.0, 1, 1.0, 1
+        br.inputs["Color1"].default_value = (.88, .88, .88, 1)
+        br.inputs["Color2"].default_value = (1.08, 1.08, 1.08, 1)
+        br.inputs["Mortar"].default_value = (.5, .5, .5, 1)
+        L.new(cv.outputs[0], br.inputs["Vector"])
+        m = _node(nt, "ShaderNodeMix", (-800, -900))
+        m.data_type, m.blend_type = "RGBA", "MULTIPLY"
+        m.inputs["Factor"].default_value = 1
+        L.new(col, m.inputs[6])
+        L.new(br.outputs["Color"], m.inputs[7])
+        col = m.outputs[2]
+        bw = _node(nt, "ShaderNodeRGBToBW", (-850, -1100))
+        L.new(br.outputs["Color"], bw.inputs[0])
+        rr = _mr(nt, (-650, -1100), bw.outputs[0], .6, 1.05, rough + .12, rough - .1)
+        L.new(rr.outputs["Result"], b.inputs["Roughness"])
+        height = br.outputs["Fac"]
+        # rain streaks washing down from the casing roof edge, a little stronger than the plant-wide ones
+        vm = _node(nt, "ShaderNodeVectorMath", (-1250, -1300))
+        vm.operation = "MULTIPLY"
+        vm.inputs[1].default_value = (3.0, 3.0, .08)
+        L.new(geo.outputs["Position"], vm.inputs[0])
+        st = _node(nt, "ShaderNodeTexNoise", (-1050, -1300), Scale=1.0, Detail=6.0, Roughness=.6)
+        L.new(vm.outputs[0], st.inputs["Vector"])
+        sm = _mr(nt, (-850, -1300), st.outputs["Fac"], .5, .72, 0.0, .28)
+        col = _mul_col(nt, (-600, -1300), col, sm.outputs["Result"], (.62, .62, .63, 1))
+    elif key == "stack":
+        # welded shell cans every 8 ft (fine raised seams), heat / soot at the exit, drip stains below each platform,
+        # vertical rain streaks and a semi-gloss sheen that breaks up over the shell
+        wv = _node(nt, "ShaderNodeTexWave", (-1250, -900), Scale=1.0 / 2.438, Distortion=0.0, Detail=0.0)
+        wv.bands_direction, wv.wave_profile = "Z", "SAW"
+        L.new(geo.outputs["Position"], wv.inputs["Vector"])
+        seam = _mr(nt, (-1050, -900), wv.outputs["Fac"], .985, 1.0, 0.0, 1.0)
+        height = seam.outputs["Result"]
+        col = _mul_col(nt, (-800, -900), col, seam.outputs["Result"], (.82, .82, .82, 1))
+        nz = _node(nt, "ShaderNodeTexNoise", (-1250, -1100), Scale=.9, Detail=6.0, Roughness=.6)
+        L.new(geo.outputs["Position"], nz.inputs["Vector"])
+        top = _mr(nt, (-1050, -1150), sep.outputs["Z"], STACK_TOP - 4.5, STACK_TOP, 0.0, 1.0)
+        tn = _node(nt, "ShaderNodeMath", (-850, -1150))
+        tn.operation = "MULTIPLY"
+        L.new(top.outputs["Result"], tn.inputs[0])
+        nb = _mr(nt, (-1050, -1250), nz.outputs["Fac"], .35, .65, .55, 1.0)
+        L.new(nb.outputs["Result"], tn.inputs[1])
+        soot = _node(nt, "ShaderNodeMath", (-700, -1150))
+        soot.operation = "POWER"
+        L.new(tn.outputs[0], soot.inputs[0])
+        soot.inputs[1].default_value = 1.6
+        col = _mul_col(nt, (-500, -1150), col, soot.outputs[0], (.2, .19, .18, 1))
+        for i, zp in enumerate(STACK_PLATFORMS):                     # drip stains: darkest right under the deck
+            d = _mr(nt, (-1050, -1400 - 150 * i), sep.outputs["Z"], zp - 3.5, zp, 0.0, .3)
+            dm = _node(nt, "ShaderNodeMath", (-850, -1400 - 150 * i))
+            dm.operation = "MULTIPLY"
+            L.new(d.outputs["Result"], dm.inputs[0])
+            vm = _node(nt, "ShaderNodeVectorMath", (-1250, -1400 - 150 * i))
+            vm.operation = "MULTIPLY"
+            vm.inputs[1].default_value = (6.0, 6.0, .3)
+            L.new(geo.outputs["Position"], vm.inputs[0])
+            dn = _node(nt, "ShaderNodeTexNoise", (-1100, -1500 - 150 * i), Scale=1.0, Detail=4.0)
+            L.new(vm.outputs[0], dn.inputs["Vector"])
+            L.new(dn.outputs["Fac"], dm.inputs[1])
+            dd = _node(nt, "ShaderNodeMath", (-700, -1400 - 150 * i))
+            dd.operation = "MULTIPLY"
+            dd.inputs[1].default_value = 2.0
+            dd.use_clamp = True
+            L.new(dm.outputs[0], dd.inputs[0])
+            col = _mul_col(nt, (-500, -1400 - 150 * i), col, dd.outputs[0], (.6, .58, .55, 1))
+        vm = _node(nt, "ShaderNodeVectorMath", (-1250, -1800))
+        vm.operation = "MULTIPLY"
+        vm.inputs[1].default_value = (4.0, 4.0, .06)
+        L.new(geo.outputs["Position"], vm.inputs[0])
+        st = _node(nt, "ShaderNodeTexNoise", (-1050, -1800), Scale=1.0, Detail=6.0, Roughness=.6)
+        L.new(vm.outputs[0], st.inputs["Vector"])
+        sm = _mr(nt, (-850, -1800), st.outputs["Fac"], .5, .75, 0.0, .22)
+        col = _mul_col(nt, (-600, -1800), col, sm.outputs["Result"], (.66, .66, .67, 1))
+        rn = _node(nt, "ShaderNodeTexNoise", (-1050, -2000), Scale=1.3, Detail=5.0)
+        L.new(geo.outputs["Position"], rn.inputs["Vector"])
+        rr = _mr(nt, (-850, -2000), rn.outputs["Fac"], .3, .7, rough - .12, rough + .14)
+        L.new(rr.outputs["Result"], b.inputs["Roughness"])
+    elif key == "hero_accent":
+        # burnished copper: brushed grain around the stack (in the roughness, not anisotropy, which seams on the
+        # cylinder's UV-less tangent), uneven polish, faint darker oxidation
+        gr = _node(nt, "ShaderNodeTexNoise", (-1250, -900), Scale=1.0, Detail=10.0, Roughness=.7)
+        vm = _node(nt, "ShaderNodeVectorMath", (-1400, -900))
+        vm.operation = "MULTIPLY"
+        vm.inputs[1].default_value = (2.0, 2.0, 60.0)
+        L.new(geo.outputs["Position"], vm.inputs[0])
+        L.new(vm.outputs[0], gr.inputs["Vector"])
+        rr = _mr(nt, (-1050, -900), gr.outputs["Fac"], .3, .7, rough - .1, rough + .12)
+        L.new(rr.outputs["Result"], b.inputs["Roughness"])
+        ox = _node(nt, "ShaderNodeTexNoise", (-1250, -1100), Scale=.8, Detail=6.0)
+        L.new(geo.outputs["Position"], ox.inputs["Vector"])
+        om = _mr(nt, (-1050, -1100), ox.outputs["Fac"], .5, .7, 0.0, .35)
+        col = _mul_col(nt, (-800, -1100), col, om.outputs["Result"], (.55, .45, .4, 1))
+        height = gr.outputs["Fac"]
+    elif key == "gt_blanket":
+        # quilted insulation blankets on the GT hot end: stitched pads about 1.5 ft across, each a little puffed and
+        # a slightly different silver, with a fabric sheen
+        qv = _node(nt, "ShaderNodeTexVoronoi", (-1250, -900), Scale=1 / .45, Randomness=.15)
+        qv.feature = "DISTANCE_TO_EDGE"
+        L.new(geo.outputs["Position"], qv.inputs["Vector"])
+        height = _mr(nt, (-1050, -900), qv.outputs["Distance"], 0.0, .12, 0.0, 1.0).outputs["Result"]
+        qc = _node(nt, "ShaderNodeTexVoronoi", (-1250, -1100), Scale=1 / .45, Randomness=.15)
+        L.new(geo.outputs["Position"], qc.inputs["Vector"])
+        bw = _node(nt, "ShaderNodeRGBToBW", (-1050, -1100))
+        L.new(qc.outputs["Color"], bw.inputs[0])
+        tone = _mr(nt, (-850, -1100), bw.outputs[0], 0.0, 1.0, .88, 1.05)
+        cc = _node(nt, "ShaderNodeCombineColor", (-700, -1100))
+        for ch in ("Red", "Green", "Blue"):
+            L.new(tone.outputs["Result"], cc.inputs[ch])
+        m2 = _node(nt, "ShaderNodeMix", (-500, -1100))
+        m2.data_type, m2.blend_type = "RGBA", "MULTIPLY"
+        m2.inputs["Factor"].default_value = 1
+        L.new(col, m2.inputs[6])
+        L.new(cc.outputs[0], m2.inputs[7])
+        col = m2.outputs[2]
+        b.inputs["Sheen Weight"].default_value = .4
+    elif key == "hero_rail":
+        # black semi-gloss paint: sheen breaks up, edges and treads dulled by use
+        rn = _node(nt, "ShaderNodeTexNoise", (-1050, -900), Scale=4.0, Detail=6.0)
+        L.new(geo.outputs["Position"], rn.inputs["Vector"])
+        rr = _mr(nt, (-850, -900), rn.outputs["Fac"], .3, .7, rough - .06, rough + .22)
+        L.new(rr.outputs["Result"], b.inputs["Roughness"])
+    L.new(col, b.inputs["Base Color"])
+    if height is None:
+        return normal_src
+    bump = _node(nt, "ShaderNodeBump", (-300, -900), Strength=(.12 if key == "hero_accent" else .8 if key == "gt_blanket" else .5),
+                 Distance=(.004 if key == "hero_accent" else .03 if key == "gt_blanket" else .015))
+    bump.invert = key in ("hrsg", "hrsg_b")                      # panel joints are grooves, can seams are raised
+    L.new(height, bump.inputs["Height"])
+    if normal_src is not None:
+        L.new(normal_src.outputs["Normal"], bump.inputs["Normal"])
+    return bump
+
+
+def material(key):
+    if key in _mats:
+        return _mats[key]
+    kind, hexc, rough, metal = LOOK.get(key, LOOK["equip"])
+    m = bpy.data.materials.new(f"pro {key}")
+    m.use_nodes = True
+    nt = m.node_tree
+    L = nt.links
+    b = nt.nodes["Principled BSDF"]
+    b.inputs["Base Color"].default_value = lin(hexc)
+    b.inputs["Roughness"].default_value = rough
+    b.inputs["Metallic"].default_value = metal
+    geo = _node(nt, "ShaderNodeNewGeometry", (-1400, 0))
+    # colour break-up: large-scale noise darkens / lightens the base colour a few percent
+    nz = _node(nt, "ShaderNodeTexNoise", (-1100, 300), Scale=.35, Detail=3.0)
+    L.new(geo.outputs["Position"], nz.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.location = (-850, 300)
+    ramp.color_ramp.elements[0].color = (.9, .9, .9, 1)
+    ramp.color_ramp.elements[1].color = (1.06, 1.06, 1.06, 1)
+    L.new(nz.outputs["Fac"], ramp.inputs["Fac"])
+    mix = _node(nt, "ShaderNodeMix", (-550, 300))
+    mix.data_type = "RGBA"
+    mix.blend_type = "MULTIPLY"
+    mix.inputs["Factor"].default_value = 1
+    mix.inputs[6].default_value = lin(hexc)
+    L.new(ramp.outputs["Color"], mix.inputs[7])
+    base_out = mix.outputs[2]
+    if kind in ("paint", "clad", "galv", "concrete", "fins", "louvre", "roofing") and key not in WEATHER_SKIP:
+        # weathering: grime near grade (splash zone, first ~2 m), vertical rain streaks, and light
+        # rust bloom on bare / galvanised steel; all a few percent, varied by world position
+        sep = _node(nt, "ShaderNodeSeparateXYZ", (-1200, 650))
+        L.new(geo.outputs["Position"], sep.inputs[0])
+        gnd = _node(nt, "ShaderNodeMapRange", (-1000, 650))
+        gnd.inputs["From Min"].default_value = 0.0
+        gnd.inputs["From Max"].default_value = 2.2
+        gnd.inputs["To Min"].default_value = 0.55
+        gnd.inputs["To Max"].default_value = 0.0
+        L.new(sep.outputs["Z"], gnd.inputs["Value"])
+        vm = _node(nt, "ShaderNodeVectorMath", (-1000, 820))
+        vm.operation = "MULTIPLY"
+        vm.inputs[1].default_value = (5.0, 5.0, .18)
+        L.new(geo.outputs["Position"], vm.inputs[0])
+        st = _node(nt, "ShaderNodeTexNoise", (-800, 820), Scale=1.0, Detail=4.0)
+        L.new(vm.outputs[0], st.inputs["Vector"])
+        sm = _node(nt, "ShaderNodeMapRange", (-600, 820))
+        sm.inputs["From Min"].default_value = .55
+        sm.inputs["From Max"].default_value = .75
+        sm.inputs["To Min"].default_value = 0.0
+        sm.inputs["To Max"].default_value = .32
+        L.new(st.outputs["Fac"], sm.inputs["Value"])
+        mx = _node(nt, "ShaderNodeMath", (-400, 700))
+        mx.operation = "MAXIMUM"
+        L.new(gnd.outputs["Result"], mx.inputs[0])
+        L.new(sm.outputs["Result"], mx.inputs[1])
+        grime = _node(nt, "ShaderNodeMix", (-250, 500))
+        grime.data_type = "RGBA"
+        grime.blend_type = "MULTIPLY"
+        L.new(mx.outputs[0], grime.inputs["Factor"])
+        L.new(base_out, grime.inputs[6])
+        grime.inputs[7].default_value = GRIME
+        base_out = grime.outputs[2]
+        if kind == "galv" or key in ("steel", "stair", "grating"):
+            rn = _node(nt, "ShaderNodeTexNoise", (-800, 1000), Scale=1.6, Detail=8.0)
+            L.new(geo.outputs["Position"], rn.inputs["Vector"])
+            rm = _node(nt, "ShaderNodeMapRange", (-600, 1000))
+            rm.inputs["From Min"].default_value = .64
+            rm.inputs["From Max"].default_value = .78
+            rm.inputs["To Min"].default_value = 0.0
+            rm.inputs["To Max"].default_value = .45
+            L.new(rn.outputs["Fac"], rm.inputs["Value"])
+            rust = _node(nt, "ShaderNodeMix", (-100, 650))
+            rust.data_type = "RGBA"
+            rust.blend_type = "MIX"
+            L.new(rm.outputs["Result"], rust.inputs["Factor"])
+            L.new(base_out, rust.inputs[6])
+            rust.inputs[7].default_value = (.23, .1, .04, 1)
+            base_out = rust.outputs[2]
+    if kind == "roofing":
+        # roof weathering: broad water stains and ponding marks, darker along the low edges of the panels
+        rs = _node(nt, "ShaderNodeTexNoise", (-800, 1400), Scale=.06, Detail=6.0, Roughness=.6)
+        L.new(geo.outputs["Position"], rs.inputs["Vector"])
+        rsm = _node(nt, "ShaderNodeMapRange", (-600, 1400))
+        rsm.inputs["From Min"].default_value, rsm.inputs["From Max"].default_value = .45, .7
+        rsm.inputs["To Min"].default_value, rsm.inputs["To Max"].default_value = 0.0, .38
+        L.new(rs.outputs["Fac"], rsm.inputs["Value"])
+        stain = _node(nt, "ShaderNodeMix", (-100, 1100))
+        stain.data_type = "RGBA"
+        stain.blend_type = "MULTIPLY"
+        L.new(rsm.outputs["Result"], stain.inputs["Factor"])
+        L.new(base_out, stain.inputs[6])
+        stain.inputs[7].default_value = (.5, .49, .46, 1)
+        base_out = stain.outputs[2]
+    if kind == "gravel":
+        # crushed stone: broad patches (wheel paths, fresher stone, damp), then fine stone-to-stone speckle
+        gp = _node(nt, "ShaderNodeTexNoise", (-800, 1500), Scale=.02, Detail=6.0, Roughness=.6)
+        L.new(geo.outputs["Position"], gp.inputs["Vector"])
+        gpr = _node(nt, "ShaderNodeMapRange", (-600, 1500))
+        gpr.inputs["From Min"].default_value, gpr.inputs["From Max"].default_value = .35, .65
+        gpr.inputs["To Min"].default_value, gpr.inputs["To Max"].default_value = .78, 1.18
+        L.new(gp.outputs["Fac"], gpr.inputs["Value"])
+        gs = _node(nt, "ShaderNodeTexVoronoi", (-800, 1700), Scale=55.0, Randomness=1.0)
+        gs.feature = "F1"
+        L.new(geo.outputs["Position"], gs.inputs["Vector"])
+        gsr = _node(nt, "ShaderNodeMapRange", (-600, 1700))
+        gsr.inputs["To Min"].default_value, gsr.inputs["To Max"].default_value = .9, 1.08
+        L.new(gs.outputs["Color"], gsr.inputs["Value"])
+        gm = _node(nt, "ShaderNodeMath", (-400, 1600))
+        gm.operation = "MULTIPLY"
+        L.new(gpr.outputs["Result"], gm.inputs[0])
+        L.new(gsr.outputs["Result"], gm.inputs[1])
+        gc = _node(nt, "ShaderNodeCombineColor", (-250, 1600))
+        for ch in ("Red", "Green", "Blue"):
+            L.new(gm.outputs[0], gc.inputs[ch])
+        gmix = _node(nt, "ShaderNodeMix", (-100, 1400))
+        gmix.data_type = "RGBA"
+        gmix.blend_type = "MULTIPLY"
+        gmix.inputs["Factor"].default_value = 1
+        L.new(base_out, gmix.inputs[6])
+        L.new(gc.outputs[0], gmix.inputs[7])
+        base_out = gmix.outputs[2]
+    if kind in ("clad", "fins", "roofing"):
+        pv = _node(nt, "ShaderNodeTexVoronoi", (-800, 1200), Scale=.25, Randomness=1.0)
+        L.new(geo.outputs["Position"], pv.inputs["Vector"])
+        pr = _node(nt, "ShaderNodeMapRange", (-600, 1200))
+        pr.inputs["To Min"].default_value, pr.inputs["To Max"].default_value = .9, 1.06
+        L.new(pv.outputs["Distance"], pr.inputs["Value"])
+        pc = _node(nt, "ShaderNodeCombineColor", (-400, 1200))
+        for ch in ("Red", "Green", "Blue"):
+            L.new(pr.outputs[0], pc.inputs[ch])
+        tone = _node(nt, "ShaderNodeMix", (-100, 900))
+        tone.data_type = "RGBA"
+        tone.blend_type = "MULTIPLY"
+        tone.inputs["Factor"].default_value = 1
+        L.new(base_out, tone.inputs[6])
+        L.new(pc.outputs[0], tone.inputs[7])
+        base_out = tone.outputs[2]
+    L.new(base_out, b.inputs["Base Color"])
+    normal_src = None
+    if kind == "roofing":
+        # standing seams about every 2 ft along X, sharp ridges
+        wave = _node(nt, "ShaderNodeTexWave", (-600, -300), Scale=1.4, Distortion=0.0, Detail=0.0)
+        wave.bands_direction = "X"
+        wave.wave_profile = "SAW"
+        L.new(geo.outputs["Position"], wave.inputs["Vector"])
+        sr = _node(nt, "ShaderNodeMapRange", (-450, -300))
+        sr.inputs["From Min"].default_value, sr.inputs["From Max"].default_value = .9, 1.0
+        L.new(wave.outputs["Fac"], sr.inputs["Value"])
+        bump = _node(nt, "ShaderNodeBump", (-300, -300), Strength=.6, Distance=.03)
+        L.new(sr.outputs["Result"], bump.inputs["Height"])
+        normal_src = bump
+    elif kind in ("clad", "fins", "louvre"):
+        # ribs: wave bands on (x + y), so every wall orientation gets vertical ribs
+        sep = _node(nt, "ShaderNodeSeparateXYZ", (-1200, -300))
+        L.new(geo.outputs["Position"], sep.inputs[0])
+        add = _node(nt, "ShaderNodeMath", (-1000, -300))
+        add.operation = "ADD"
+        L.new(sep.outputs["X"], add.inputs[0])
+        L.new(sep.outputs["Y"], add.inputs[1])
+        comb = _node(nt, "ShaderNodeCombineXYZ", (-800, -300))
+        L.new(add.outputs[0], comb.inputs["X"])
+        L.new(sep.outputs["Z"], comb.inputs["Z"])
+        wave = _node(nt, "ShaderNodeTexWave", (-600, -300), Scale=(3.6 if kind == "clad" else 9.0),
+                     Distortion=0.0, Detail=0.0)
+        wave.bands_direction = "X"
+        wave.wave_profile = "SAW" if kind != "clad" else "SIN"
+        L.new(comb.outputs[0], wave.inputs["Vector"])
+        bump = _node(nt, "ShaderNodeBump", (-350, -300), Strength=.35 if kind == "clad" else .5, Distance=.02)
+        L.new(wave.outputs["Fac"], bump.inputs["Height"])
+        normal_src = bump
+    elif kind in ("concrete", "gravel", "asphalt"):
+        vor = _node(nt, "ShaderNodeTexNoise" if kind != "gravel" else "ShaderNodeTexVoronoi", (-800, -300))
+        if kind == "gravel":
+            vor.inputs["Scale"].default_value = 90
+        else:
+            vor.inputs["Scale"].default_value = 28 if kind == "concrete" else 120
+            vor.inputs["Detail"].default_value = 8
+        L.new(geo.outputs["Position"], vor.inputs["Vector"])
+        bump = _node(nt, "ShaderNodeBump", (-350, -300), Strength=.25 if kind == "concrete" else .45, Distance=.01)
+        L.new(vor.outputs[0] if kind != "gravel" else vor.outputs["Distance"], bump.inputs["Height"])
+        normal_src = bump
+        # finer speckle into roughness
+        if kind == "asphalt":
+            L.new(nz.outputs["Fac"], b.inputs["Roughness"])
+    elif kind == "galv":
+        # spangle / weathering: roughness break-up
+        vr = _node(nt, "ShaderNodeTexNoise", (-800, -150), Scale=2.5, Detail=6)
+        L.new(geo.outputs["Position"], vr.inputs["Vector"])
+        mr = _node(nt, "ShaderNodeMapRange", (-500, -150))
+        mr.inputs["To Min"].default_value = rough - .12
+        mr.inputs["To Max"].default_value = rough + .12
+        L.new(vr.outputs["Fac"], mr.inputs["Value"])
+        L.new(mr.outputs["Result"], b.inputs["Roughness"])
+    elif kind == "water":
+        b.inputs["Coat Weight"].default_value = 1
+        wv = _node(nt, "ShaderNodeTexNoise", (-800, -300), Scale=6, Detail=2)
+        L.new(geo.outputs["Position"], wv.inputs["Vector"])
+        bump = _node(nt, "ShaderNodeBump", (-350, -300), Strength=.08)
+        L.new(wv.outputs["Fac"], bump.inputs["Height"])
+        normal_src = bump
+    elif kind == "sea":
+        # open water: two wave scales in the bump, darker and bluer with depth of view
+        b.inputs["IOR"].default_value = 1.333
+        b.inputs["Coat Weight"].default_value = .3
+        w1 = _node(nt, "ShaderNodeTexNoise", (-800, -300), Scale=.9, Detail=6, Roughness=.55)
+        w2 = _node(nt, "ShaderNodeTexWave", (-800, -500), Scale=.35, Distortion=6, Detail=4)
+        w2.bands_direction = "DIAGONAL"
+        L.new(geo.outputs["Position"], w1.inputs["Vector"])
+        L.new(geo.outputs["Position"], w2.inputs["Vector"])
+        add = _node(nt, "ShaderNodeMath", (-550, -400))
+        L.new(w1.outputs["Fac"], add.inputs[0])
+        L.new(w2.outputs["Fac"], add.inputs[1])
+        bump = _node(nt, "ShaderNodeBump", (-350, -300), Strength=.22, Distance=.12)
+        L.new(add.outputs[0], bump.inputs["Height"])
+        normal_src = bump
+    elif kind == "window":
+        # tinted glazing: dark, glossy, with a clear coat so it picks up the sky
+        b.inputs["Coat Weight"].default_value = 1
+        b.inputs["Coat Roughness"].default_value = .02
+        b.inputs["Specular IOR Level"].default_value = .8
+    elif kind == "ceramic":
+        b.inputs["Coat Weight"].default_value = .6
+    elif kind == "fence":
+        # chain-link reads as a light haze, not a wall
+        b.inputs["Alpha"].default_value = .22
+        m.blend_method = "HASHED"
+    if key in HERO_FINISH:
+        normal_src = hero_finish(nt, key, geo, base_out, b, normal_src, rough)
+    if kind in ("clad", "paint", "galv", "concrete", "fins", "ceramic"):
+        bev = _node(nt, "ShaderNodeBevel", (-150, -500))
+        bev.samples = 6
+        bev.inputs["Radius"].default_value = .025
+        if normal_src is not None:
+            L.new(normal_src.outputs["Normal"], bev.inputs["Normal"])
+        L.new(bev.outputs["Normal"], b.inputs["Normal"])
+    elif normal_src is not None:
+        L.new(normal_src.outputs["Normal"], b.inputs["Normal"])
+    m.diffuse_color = lin(hexc)
+    if key in ALPHA:
+        b.inputs["Alpha"].default_value = ALPHA[key]
+        if hasattr(m, "blend_method"):
+            m.blend_method = "BLEND"
+    if key in EMIT:
+        b.inputs["Emission Color" if "Emission Color" in b.inputs else "Emission"].default_value = lin(hexc)
+        b.inputs["Emission Strength"].default_value = EMIT[key]
+    _mats[key] = m
+    return m
+
+
+# ---------------------------------------------------------------------------
+def landscape(scene, coll, coastal=None):
+    """Grass surround, tree clusters outside the fence and the public road.
+    coastal: the variant metadata of a sheet 15 overlay; the land then ends at the
+    shoreline with a sand strip and a rock revetment, and the sea runs north."""
+    def mesh_obj(name, verts, faces, mat):
+        me = bpy.data.meshes.new(name)
+        me.from_pydata(verts, [], faces)
+        me.materials.append(mat)
+        ob = bpy.data.objects.new(name, me)
+        coll.objects.link(ob)
+        return ob
+
+    grass = bpy.data.materials.new("pro grass")
+    grass.use_nodes = True
+    nt = grass.node_tree
+    b = nt.nodes["Principled BSDF"]
+    b.inputs["Roughness"].default_value = .95
+    geo = _node(nt, "ShaderNodeNewGeometry", (-1200, 0))
+    n1 = _node(nt, "ShaderNodeTexNoise", (-900, 200), Scale=.02, Detail=4)
+    n2 = _node(nt, "ShaderNodeTexNoise", (-900, -100), Scale=1.5, Detail=8)
+    nt.links.new(geo.outputs["Position"], n1.inputs["Vector"])
+    nt.links.new(geo.outputs["Position"], n2.inputs["Vector"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.location = (-600, 200)
+    ramp.color_ramp.elements[0].color = lin("#5f6e3c")
+    ramp.color_ramp.elements[1].color = lin("#8d8f55")
+    nt.links.new(n1.outputs["Fac"], ramp.inputs["Fac"])
+    nt.links.new(ramp.outputs["Color"], b.inputs["Base Color"])
+    bump = _node(nt, "ShaderNodeBump", (-400, -100), Strength=.3)
+    nt.links.new(n2.outputs["Fac"], bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], b.inputs["Normal"])
+
+    S = 9000
+    z = -.6 * FT
+    north = 1920 + S if not coastal else coastal["shoreline_y"] - 30
+    # grass all round, with a hole for the compound (its ground carries the stormwater pond)
+    v = [(-S, -S), (2420 + S, -S), (2420 + S, north), (-S, north), (0, 0), (2420, 0), (2420, 1920), (0, 1920)]
+    mesh_obj("pro surround", [(x * FT, y * FT, z) for (x, y) in v],
+             [(0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)], grass)
+    if coastal:
+        # the coast runs east-west north of the plant; the sea is to the north
+        sh, sea = coastal["shoreline_y"], coastal["sea_level"]
+        x0, x1 = -S * FT, (2420 + S) * FT
+        mesh_obj("pro beach", [(x0, north * FT, z), (x1, north * FT, z), (x1, sh * FT, -.9 * FT), (x0, sh * FT, -.9 * FT)],
+                 [(0, 1, 2, 3)], material("sand"))
+        mesh_obj("pro revetment", [(x0, sh * FT, -.9 * FT), (x1, sh * FT, -.9 * FT), (x1, (sh + 45) * FT, (sea - 7) * FT),
+                                   (x0, (sh + 45) * FT, (sea - 7) * FT)], [(0, 1, 2, 3)], material("rock"))
+        far = 90000
+        so = mesh_obj("pro sea", [(-far * FT, (sh + 5) * FT, sea * FT), (far * FT, (sh + 5) * FT, sea * FT),
+                                  (far * FT, far * FT, sea * FT), (-far * FT, far * FT, sea * FT)], [(0, 1, 2, 3)],
+                      material("sea"))
+        so["shore_y"] = sh
+        # the sea floor below the water keeps the shallows from reading as a void
+        mesh_obj("pro seabed", [(-far * FT, (sh + 45) * FT, (sea - 7) * FT), (far * FT, (sh + 45) * FT, (sea - 7) * FT),
+                                (far * FT, far * FT, (sea - 60) * FT), (-far * FT, far * FT, (sea - 60) * FT)],
+                 [(0, 1, 2, 3)], material("sand"))
+    # public road to the main gate (west), and a county road running north-south
+    asphalt = material("road")
+    mesh_obj("pro gate road", [(-900 * FT, 270 * FT, -.3 * FT), (0, 270 * FT, -.3 * FT), (0, 300 * FT, -.3 * FT),
+                               (-900 * FT, 300 * FT, -.3 * FT)], [(0, 1, 2, 3)], asphalt)
+    mesh_obj("pro county road", [(-930 * FT, -S * FT, -.3 * FT), (-890 * FT, -S * FT, -.3 * FT),
+                                 (-890 * FT, north * FT, -.3 * FT), (-930 * FT, north * FT, -.3 * FT)],
+             [(0, 1, 2, 3)], asphalt)
+
+    # trees: three low-poly archetypes, instanced as linked duplicates
+    bark = bpy.data.materials.new("pro bark")
+    bark.use_nodes = True
+    bark.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = lin("#4a3b2c")
+    leaves = []
+    for i, hx in enumerate(("#4e6a33", "#5b7236", "#43602f")):
+        lm = bpy.data.materials.new(f"pro leaves {i}")
+        lm.use_nodes = True
+        lb = lm.node_tree.nodes["Principled BSDF"]
+        lb.inputs["Base Color"].default_value = lin(hx)
+        lb.inputs["Roughness"].default_value = .8
+        lb.inputs["Subsurface Weight"].default_value = .15
+        leaves.append(lm)
+    protos = []
+    rng = random.Random(1987)
+    for i in range(3):
+        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2, radius=1)
+        crown = bpy.context.active_object
+        for v in crown.data.vertices:
+            v.co *= 1 + rng.uniform(-.12, .12)
+        crown.scale = (14 * FT, 14 * FT, (18 + 5 * i) * FT)
+        crown.location = (0, 0, (30 + 4 * i) * FT)
+        crown.data.materials.append(leaves[i])
+        bpy.ops.mesh.primitive_cylinder_add(vertices=8, radius=1.2 * FT, depth=24 * FT, location=(0, 0, 12 * FT))
+        trunk = bpy.context.active_object
+        trunk.data.materials.append(bark)
+        bpy.ops.object.select_all(action="DESELECT")
+        crown.select_set(True)
+        trunk.select_set(True)
+        bpy.context.view_layer.objects.active = crown
+        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+        bpy.ops.object.join()
+        proto = bpy.context.active_object
+        bpy.ops.object.shade_smooth()
+        proto.name = f"pro tree {i}"
+        for c in proto.users_collection:
+            c.objects.unlink(proto)
+        protos.append(proto)
+    placed = 0
+    centres = [(rng.uniform(-1600, 4000), rng.uniform(-1600, 3500)) for _ in range(70)]
+    for (cx, cy) in centres:
+        n = rng.randint(4, 14)
+        for _ in range(n):
+            x, y = cx + rng.gauss(0, 90), cy + rng.gauss(0, 90)
+            if -80 < x < 2500 and -80 < y < 2000:          # keep the compound and its margin clear
+                continue
+            if 2420 < x < 3440 and -60 < y < 1440:         # BTM data-centre campus (design option)
+                continue
+            if coastal:
+                tx0, tx1, ty0, ty1 = coastal.get("terminal") or (1150, 1450, 1900, 2700)
+                if (y > coastal["shoreline_y"] - 90 or (tx0 - 60 < x < tx1 + 60 and ty0 - 60 < y)
+                        or (1300 < x < 1650 and 1880 < y < 2700) or (2400 < x < 2500 and y < 2000)
+                        or (1750 < x < 2500 and 1920 < y < 2000)):
+                    continue                                # sea, beach, terminal plot, links and rights of way
+            if -960 < x < -860 or (-900 < x < 0 and 250 < y < 320):
+                continue                                    # roads
+            ob = bpy.data.objects.new("tree", protos[rng.randrange(3)].data)
+            s = rng.uniform(.7, 1.35)
+            ob.scale = (s, s, s * rng.uniform(.9, 1.2))
+            ob.rotation_euler = (0, 0, rng.uniform(0, 6.28))
+            ob.location = (x * FT, y * FT, -.6 * FT)
+            coll.objects.link(ob)
+            placed += 1
+    # a windbreak row along the south and west fence lines
+    for x in range(-60, 2480, 38):
+        ob = bpy.data.objects.new("tree", protos[x % 3].data)
+        ob.location = ((x + rng.uniform(-6, 6)) * FT, (-70 + rng.uniform(-8, 8)) * FT, -.6 * FT)
+        s = rng.uniform(.8, 1.1)
+        ob.scale = (s, s, s)
+        coll.objects.link(ob)
+        placed += 1
+    return placed
+
+
+def world_and_sun(scene, elevation=24, azimuth=258):
+    """Late-afternoon sky and sun. azimuth: compass bearing the sun shines FROM."""
+    world = bpy.data.worlds.new("pro world")
+    scene.world = world
+    world.use_nodes = True
+    wn = world.node_tree.nodes
+    bg = wn["Background"]
+    sky = wn.new("ShaderNodeTexSky")
+    sky.sky_type = "NISHITA"
+    sky.sun_disc = True
+    sky.sun_size = math.radians(1.2)
+    sky.sun_elevation = math.radians(elevation)
+    # Nishita rotation is measured from +X counter-clockwise; convert from a compass bearing
+    sky.sun_rotation = math.radians(90 - azimuth)
+    sky.air_density = 1.2
+    sky.dust_density = 2.5
+    world.node_tree.links.new(sky.outputs["Color"], bg.inputs["Color"])
+    bg.inputs["Strength"].default_value = .14
+    add_clouds(world)
+    world.mist_settings.start = 120
+    world.mist_settings.depth = 2200
+    world.mist_settings.falloff = "QUADRATIC"
+    sun = bpy.data.lights.new("pro sun", "SUN")
+    sun.energy = 3.1
+    sun.angle = math.radians(1.2)
+    sun.color = (1.0, .9, .78)
+    ob = bpy.data.objects.new("pro sun", sun)
+    el, az = math.radians(elevation), math.radians(azimuth)
+    towards_sun = Vector((math.sin(az) * math.cos(el), math.cos(az) * math.cos(el), math.sin(el)))
+    ob.rotation_euler = towards_sun.to_track_quat("Z", "Y").to_euler()
+    scene.collection.objects.link(ob)
+
+
+CLOUDS = dict(coverage=.535, softness=.075, scale=1.35, bright=10.5, shade=.68, seed=3.7)
+
+
+def add_clouds(world, **kw):
+    """Cumulus layer in the world shader, seen by camera rays only (the scene keeps its sky + sun lighting):
+    the view direction is projected onto a flat cloud deck (x/z, y/z), so clouds shrink and crowd toward the
+    horizon in perspective; fractal noise sets the shape, a second noise the self-shadowing; faded out at the
+    horizon. Full render resolution, no image needed."""
+    c = dict(CLOUDS, **kw)
+    nt = world.node_tree
+    N, L = nt.nodes, nt.links
+    bg = N["Background"]
+    sky = next(n for n in N if n.type == "TEX_SKY")
+
+    def node(t, x, y, **inputs):
+        n = N.new(t)
+        n.location = (x, y)
+        for k_, v in inputs.items():
+            n.inputs[k_].default_value = v
+        return n
+
+    def math_(op, x, y, a=None, b=None):
+        n = N.new("ShaderNodeMath")
+        n.operation = op
+        n.location = (x, y)
+        if a is not None:
+            n.inputs[0].default_value = a
+        if b is not None:
+            n.inputs[1].default_value = b
+        return n
+    tc = node("ShaderNodeTexCoord", -1600, 400)
+    sep = node("ShaderNodeSeparateXYZ", -1400, 400)
+    L.new(tc.outputs["Generated"], sep.inputs[0])
+    zc = math_("MAXIMUM", -1200, 300, b=.035)
+    L.new(sep.outputs["Z"], zc.inputs[0])
+    u = math_("DIVIDE", -1050, 480)
+    v = math_("DIVIDE", -1050, 360)
+    L.new(sep.outputs["X"], u.inputs[0]); L.new(zc.outputs[0], u.inputs[1])
+    L.new(sep.outputs["Y"], v.inputs[0]); L.new(zc.outputs[0], v.inputs[1])
+    comb = node("ShaderNodeCombineXYZ", -900, 420, Z=c["seed"])
+    L.new(u.outputs[0], comb.inputs["X"]); L.new(v.outputs[0], comb.inputs["Y"])
+    n1 = node("ShaderNodeTexNoise", -700, 500, Scale=c["scale"], Detail=8.0, Roughness=.52)
+    n1.noise_dimensions = "3D"
+    L.new(comb.outputs[0], n1.inputs["Vector"])
+    n2 = node("ShaderNodeTexNoise", -700, 250, Scale=c["scale"] * 3.2, Detail=6.0, Roughness=.6)
+    L.new(comb.outputs[0], n2.inputs["Vector"])
+    cov = node("ShaderNodeMapRange", -480, 500)
+    cov.inputs["From Min"].default_value = c["coverage"]
+    cov.inputs["From Max"].default_value = c["coverage"] + c["softness"]
+    cov.interpolation_type = "SMOOTHSTEP"
+    L.new(n1.outputs["Fac"], cov.inputs["Value"])
+    hor = node("ShaderNodeMapRange", -480, 280)                  # fade toward the horizon
+    hor.inputs["From Min"].default_value = .04
+    hor.inputs["From Max"].default_value = .28
+    hor.interpolation_type = "SMOOTHSTEP"
+    L.new(sep.outputs["Z"], hor.inputs["Value"])
+    mask = math_("MULTIPLY", -280, 420)
+    L.new(cov.outputs[0], mask.inputs[0]); L.new(hor.outputs[0], mask.inputs[1])
+    # cloud shading: lit tops, grey bellies (second noise), warmed by the sky colour
+    shade = node("ShaderNodeMapRange", -480, 120)
+    shade.inputs["From Min"].default_value = .35
+    shade.inputs["From Max"].default_value = .7
+    shade.inputs["To Min"].default_value = c["shade"]
+    shade.inputs["To Max"].default_value = 1.0
+    L.new(n2.outputs["Fac"], shade.inputs["Value"])
+    white = node("ShaderNodeMix", -280, 160)
+    white.data_type = "RGBA"
+    white.blend_type = "MIX"
+    white.inputs["Factor"].default_value = .82
+    L.new(sky.outputs["Color"], white.inputs[6])
+    white.inputs[7].default_value = (c["bright"], c["bright"] * .975, c["bright"] * .94, 1)
+    lit = node("ShaderNodeMix", -100, 160)
+    lit.data_type = "RGBA"
+    lit.blend_type = "MULTIPLY"
+    lit.inputs["Factor"].default_value = 1.0
+    L.new(white.outputs[2], lit.inputs[6])
+    L.new(shade.outputs[0], lit.inputs[7])
+    cloudy = node("ShaderNodeMix", 100, 300)
+    cloudy.data_type = "RGBA"
+    L.new(mask.outputs[0], cloudy.inputs["Factor"])
+    L.new(sky.outputs["Color"], cloudy.inputs[6])
+    L.new(lit.outputs[2], cloudy.inputs[7])
+    lp = node("ShaderNodeLightPath", 100, 600)
+    cam = node("ShaderNodeMix", 300, 350)
+    cam.data_type = "RGBA"
+    L.new(lp.outputs["Is Camera Ray"], cam.inputs["Factor"])
+    L.new(sky.outputs["Color"], cam.inputs[6])
+    L.new(cloudy.outputs[2], cam.inputs[7])
+    L.new(cam.outputs[2], bg.inputs["Color"])
+
+
+def set_sun(scene, elevation, azimuth):
+    """Re-aim the sky and the sun lamp (per-camera override)."""
+    sky = next(n for n in scene.world.node_tree.nodes if n.type == "TEX_SKY")
+    sky.sun_elevation = math.radians(elevation)
+    sky.sun_rotation = math.radians(90 - azimuth)
+    ob = bpy.data.objects["pro sun"]
+    el, az = math.radians(elevation), math.radians(azimuth)
+    towards_sun = Vector((math.sin(az) * math.cos(el), math.cos(az) * math.cos(el), math.sin(el)))
+    ob.rotation_euler = towards_sun.to_track_quat("Z", "Y").to_euler()
+
+
+def render_settings(scene, samples):
+    c = scene.cycles
+    c.samples = samples
+    c.use_adaptive_sampling = True
+    c.adaptive_threshold = .02
+    c.use_denoising = True
+    c.max_bounces = 8
+    c.diffuse_bounces = 4
+    c.glossy_bounces = 4
+    c.transparent_max_bounces = 8
+    c.volume_bounces = 3                    # multiple scattering: vapour plumes read white, not grey smoke
+    c.caustics_reflective = c.caustics_refractive = False
+    c.sample_clamp_indirect = 8
+    scene.view_settings.view_transform = "AgX"
+    scene.view_settings.look = "AgX - Punchy"
+    scene.view_settings.exposure = -.3
+    scene.render.use_freestyle = False
+    scene.view_layers[0].use_pass_mist = True
+
+
+def compositor(scene):
+    scene.use_nodes = True
+    nt = scene.node_tree
+    for n in list(nt.nodes):
+        nt.nodes.remove(n)
+    L = nt.links
+    rl = nt.nodes.new("CompositorNodeRLayers")
+    rl.location = (-900, 0)
+    # atmospheric perspective: blend toward the horizon haze with the mist pass
+    mul = nt.nodes.new("CompositorNodeMath")
+    mul.operation = "MULTIPLY"
+    mul.inputs[1].default_value = .28
+    mul.name = "haze amount"
+    mul.location = (-650, -200)
+    L.new(rl.outputs["Mist"], mul.inputs[0])
+    haze = nt.nodes.new("CompositorNodeMixRGB")
+    haze.location = (-450, 0)
+    haze.inputs[2].default_value = (.80, .84, .88, 1)
+    L.new(mul.outputs[0], haze.inputs["Fac"])
+    L.new(rl.outputs["Image"], haze.inputs[1])
+    glare = nt.nodes.new("CompositorNodeGlare")
+    glare.glare_type = "FOG_GLOW"
+    glare.quality = "HIGH"
+    glare.threshold = .9
+    glare.mix = -.85
+    glare.size = 8
+    glare.location = (-250, 0)
+    L.new(haze.outputs[0], glare.inputs["Image"])
+    lens = nt.nodes.new("CompositorNodeLensdist")
+    lens.use_fit = True
+    lens.inputs["Distortion"].default_value = -.004
+    lens.inputs["Dispersion"].default_value = .006
+    lens.location = (-50, 0)
+    L.new(glare.outputs["Image"], lens.inputs["Image"])
+    # vignette is applied in finishing (finish_pro.py): smooth and resolution independent
+    grade = nt.nodes.new("CompositorNodeColorBalance")
+    grade.correction_method = "LIFT_GAMMA_GAIN"
+    grade.lift = (1.0, 1.0, 1.02)
+    grade.gamma = (1.0, 1.0, 1.0)
+    grade.gain = (1.03, 1.0, .97)
+    grade.name = "grade"
+    grade.location = (550, 0)
+    L.new(lens.outputs["Image"], grade.inputs["Image"])
+    hs = nt.nodes.new("CompositorNodeHueSat")
+    hs.name = "saturation"
+    hs.location = (680, 0)
+    L.new(grade.outputs["Image"], hs.inputs["Image"])
+    comp = nt.nodes.new("CompositorNodeComposite")
+    comp.location = (850, 0)
+    L.new(hs.outputs["Image"], comp.inputs["Image"])
+
+
+LOOK_DEFAULT = dict(dust=1.0, air=1.0, haze=.1, sat=1.06, exposure=-.25, sun_col=(1.0, .975, .94), sun_energy=3.2,
+                    gain=(1.0, 1.0, 1.0), lift=(1.0, 1.0, 1.01))      # neutral daylight (colour system: no warm cast)
+LOOK_GOLDEN = dict(dust=.9, air=1.0, haze=.05, sat=1.22, exposure=-.12, sun_col=(1.0, .78, .55), sun_energy=4.2,
+                   gain=(1.08, 1.0, .9), lift=(.99, 1.0, 1.04))
+LOOK_CLEAR = dict(dust=.45, air=1.0, haze=.05, sat=1.1, exposure=-.8, sun_col=(.95, .975, 1.0), sun_energy=3.4,
+                  gain=(1.0, 1.0, 1.0), lift=(1.0, 1.0, 1.01))      # neutral clear day: no warm cast, white plumes, contrast
+
+
+def apply_look(scene, look=None):
+    """Per-camera grade: haze amount, saturation, exposure, sun colour / strength, lift / gain."""
+    lk = dict(LOOK_DEFAULT, **(look or {}))
+    nt = scene.node_tree
+    nt.nodes["haze amount"].inputs[1].default_value = lk["haze"]
+    hs = nt.nodes["saturation"]
+    hs.inputs["Saturation"].default_value = lk["sat"]
+    g = nt.nodes["grade"]
+    g.gain, g.lift = lk["gain"], lk["lift"]
+    scene.view_settings.exposure = lk["exposure"]
+    sun = bpy.data.objects["pro sun"].data
+    sun.color, sun.energy = lk["sun_col"], lk["sun_energy"]
+    sky = next(n for n in scene.world.node_tree.nodes if n.type == "TEX_SKY")
+    sky.dust_density, sky.air_density = lk["dust"], lk["air"]
+    scene.cycles.volume_bounces = 3 if look else 0
+
+
+PLUME_DENSITY = .45
+
+
+def add_plumes(coll, sources, wind_deg=25):
+    """White vapour plumes above stacks and absorbers, as chains of soft overlapping puffs (Principled Volume in
+    unit spheres: density = noise x radial falloff x per-puff strength), drifting downwind to the east-north-east
+    and widening. sources = [(x, y, z_top, r_top, strength)] in ft."""
+    m = bpy.data.materials.new("pro plume")
+    m.use_nodes = True
+    nt = m.node_tree
+    L = nt.links
+    for nd in list(nt.nodes):
+        if nd.type == "BSDF_PRINCIPLED":
+            nt.nodes.remove(nd)
+    out = next(nd for nd in nt.nodes if nd.type == "OUTPUT_MATERIAL")
+    vol = _node(nt, "ShaderNodeVolumePrincipled", (200, 0))
+    vol.inputs["Color"].default_value = (.97, .97, .97, 1)
+    vol.inputs["Absorption Color"].default_value = (1, 1, 1, 1)          # scatter, don't absorb: water vapour, never smoke
+    vol.inputs["Anisotropy"].default_value = .2
+    L.new(vol.outputs["Volume"], out.inputs["Volume"])
+    tc = _node(nt, "ShaderNodeTexCoord", (-1200, 0))
+    ln = _node(nt, "ShaderNodeVectorMath", (-950, -200))
+    ln.operation = "LENGTH"
+    L.new(tc.outputs["Object"], ln.inputs[0])
+    fall = _node(nt, "ShaderNodeMapRange", (-700, -200))
+    fall.inputs["From Min"].default_value, fall.inputs["From Max"].default_value = .25, 1.0
+    fall.inputs["To Min"].default_value, fall.inputs["To Max"].default_value = 1, 0
+    fall.interpolation_type = "SMOOTHSTEP"
+    L.new(ln.outputs["Value"], fall.inputs["Value"])
+    nz = _node(nt, "ShaderNodeTexNoise", (-950, 150), Scale=2.2, Detail=8.0, Roughness=.62)
+    L.new(tc.outputs["Object"], nz.inputs["Vector"])
+    mr = _node(nt, "ShaderNodeMapRange", (-700, 150))
+    mr.inputs["From Min"].default_value, mr.inputs["From Max"].default_value = .38, .7
+    L.new(nz.outputs["Fac"], mr.inputs["Value"])
+    mul = _node(nt, "ShaderNodeMath", (-450, 0))
+    mul.operation = "MULTIPLY"
+    L.new(mr.outputs[0], mul.inputs[0]); L.new(fall.outputs[0], mul.inputs[1])
+    att = nt.nodes.new("ShaderNodeAttribute")
+    att.attribute_type = "OBJECT"
+    att.attribute_name = "strength"
+    att.location = (-450, -250)
+    mul2 = _node(nt, "ShaderNodeMath", (-200, 0))
+    mul2.operation = "MULTIPLY"
+    L.new(mul.outputs[0], mul2.inputs[0]); L.new(att.outputs["Fac"], mul2.inputs[1])
+    thin = _node(nt, "ShaderNodeMath", (0, 0))                          # a faint gas-turbine exhaust haze
+    thin.operation = "MULTIPLY"
+    thin.inputs[1].default_value = PLUME_DENSITY
+    L.new(mul2.outputs[0], thin.inputs[0])
+    L.new(thin.outputs[0], vol.inputs["Density"])
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2, radius=1)
+    proto = bpy.context.active_object
+    proto.data.materials.append(m)
+    for c in proto.users_collection:
+        c.objects.unlink(proto)
+    wind = Vector((math.cos(math.radians(wind_deg)), math.sin(math.radians(wind_deg)), 0))
+    rng = random.Random(11)
+    n = 0
+    for (x, y, z, r, k) in sources:
+        length = 16 * r + 120
+        puffs = 12
+        for i in range(puffs):
+            t = i / (puffs - 1)
+            c = Vector((x, y, z)) + wind * (length * .7 * t ** 1.4) + Vector((0, 0, r * 1.2 + length * .75 * math.sqrt(t)))
+            c += Vector((rng.uniform(-1, 1), rng.uniform(-1, 1), rng.uniform(-.5, .5))) * r * .6 * t
+            rr = r * (1.3 + 4.2 * t)
+            ob = bpy.data.objects.new("pro plume", proto.data)
+            ob.location = c * FT
+            ob.scale = (rr * FT * 1.15, rr * FT, rr * FT * .85)
+            ob.rotation_euler = (rng.uniform(0, 3), rng.uniform(0, 3), rng.uniform(0, 3))
+            ob["strength"] = k * (1 - .8 * t) / (1 + 1.5 * t)
+            coll.objects.link(ob)
+            n += 1
+    return n
+
+
+# Hero cameras: model feet (X east, Y north, Z up)
+HEROES = [
+    dict(k="P1", n="Aerial three-quarter, late afternoon", eye=(-160, -560, 640), target=(860, 560, 20), lens=36,
+         show="all"),
+    dict(k="P2", n="Transformer bays and filter houses from the access road", eye=(470, 238, 36),
+         target=(1000, 372, 40), lens=30, show="all", dof=(320, 8.0)),
+    dict(k="P3", n="HRSGs and stacks from the north-west", eye=(420, 1110, 130), target=(790, 690, 95), lens=34,
+         show="all"),
+    dict(k="P4", n="Air-cooled condenser and turbine hall", eye=(1760, 1140, 250), target=(1160, 560, 60), lens=32,
+         show="all"),
+    dict(k="P5", n="Full site with optional systems", eye=(-720, -980, 1650), target=(1260, 1020, 0), lens=30,
+         show="all"),
+    dict(k="P6", n="Carbon capture island (optional)", eye=(200, 1720, 420), target=(900, 1180, 120), lens=34,
+         show="all"),
+    # complete-plant angles (not on the board)
+    dict(k="P7", n="Complete plant from the north-east", eye=(3100, 2700, 900), target=(1150, 900, 40), lens=32,
+         show="all"),
+    dict(k="P8", n="Complete plant from the south-east", eye=(3000, -700, 700), target=(1150, 950, 40), lens=32,
+         show="all"),
+    dict(k="P9", n="Complete plant from overhead", eye=(1210, 180, 4300), target=(1210, 900, 0), lens=34,
+         show="all"),
+    dict(k="P11", n="Modular power yard: RICE engine hall and simple-cycle units", eye=(1420, 330, 560),
+         target=(2060, 940, 20), lens=30, show="all"),
+    dict(k="P10", n="Complete plant from the south gate road", eye=(1200, -640, 240), target=(1200, 900, 70),
+         lens=26, show="all"),
+]
+
+
+def hero_camera(scene, h):
+    eye, tgt = Vector(h["eye"]) * FT, Vector(h["target"]) * FT
+    cam = bpy.data.cameras.new(f"cam {h['k']}")
+    cam.lens = h["lens"]
+    cam.sensor_width = 36
+    cam.clip_start, cam.clip_end = h.get("clip", 1), 20000
+    if "dof" in h:
+        cam.dof.use_dof = True
+        cam.dof.focus_distance = h["dof"][0] * FT
+        cam.dof.aperture_fstop = h["dof"][1]
+    ob = bpy.data.objects.new(f"cam {h['k']}", cam)
+    ob.location = eye
+    ob.rotation_euler = (eye - tgt).to_track_quat("Z", "Y").to_euler()
+    scene.collection.objects.link(ob)
+    return ob
+
+# Coastal variant (sheet SW-3X1-15). Morning sun from the south-east so the sea-side
+# views are front lit. A: onshore import terminal and jetty; B: FSRU ~21,000 ft offshore.
+COASTAL_A = [
+    dict(k="C1", n="Onshore LNG import terminal beside the plant", eye=(4750, -1150, 1050),
+         target=(2700, 950, 40), lens=30, show="coastal"),
+    dict(k="C2", n="LNG carrier at the berth, unloading arms connected", eye=(5190, 640, 58), target=(5470, 1010, 48), lens=28,
+         show="coastal"),
+    dict(k="C3", n="LNG tank, regasification and send-out", eye=(2350, 120, 190), target=(3150, 950, 70),
+         lens=30, show="coastal"),
+    dict(k="C4", n="Plant, terminal and jetty from overhead", eye=(1250, 300, 7000), target=(1250, 2450, 0),
+         lens=30, show="coastal", site=True),
+    dict(k="C5", n="Jetty trestle from the tank roof", eye=(3190, 1150, 190), target=(5400, 960, 40), lens=32,
+         show="coastal"),
+    dict(k="C6", n="HP send-out pumps and the LNG tank with its deluge rings", eye=(2800, 352, 15),
+         target=(2965, 560, 22), lens=24, show="coastal"),
+    dict(k="C7", n="Berth: unloading arms with emergency-release couplers, crew, the carrier alongside",
+         eye=(5346, 815, 40), target=(5420, 985, 46), lens=24, show="coastal"),
+    dict(k="C8", n="Everything: plant, LNG satellite and marine terminal, BTM data centre", eye=(4300, -900, 2300),
+         target=(1700, 1750, 20), lens=28, show="everything", site=True),
+    # cover shots (deck cover panel, ~1.07:1): the story from the sea to the data centre
+    dict(k="K1", n="LNG by sea, the 3x1 plant, the BTM data centre", eye=(-820, -620, 1450),
+         target=(1600, 1950, 40), lens=30, show="everything", site=True, res=(2400, 2240)),
+    dict(k="K2", n="LNG by sea, the 3x1 plant, the BTM data centre", eye=(3950, -650, 1100),
+         target=(1400, 2050, 50), lens=30, show="everything", site=True, res=(2400, 2240)),
+    dict(k="K3", n="LNG by sea, the 3x1 plant, the BTM data centre", eye=(1500, -1700, 950),
+         target=(1550, 1850, 80), lens=28, show="everything", site=True, res=(2400, 2240)),
+    dict(k="K4", n="Cover photo (1170 x 1080): the whole facility, LNG by sea, the 3x1 plant, the BTM data centre",
+         eye=(4300, -900, 1250), target=(1700, 1500, 30), lens=26, show="everything", site=True, res=(1170, 1080)),
+    dict(k="K8", n="HRSGs and stacks from the east (cover test)", eye=(1330, 560, 170), target=(800, 720, 80), lens=26,
+         show="everything", site=True, res=(1170, 1080), sun=(16, 240)),
+    dict(k="K9", n="HRSGs and stacks from the north-east over the flue ducts (cover test)", eye=(1220, 1080, 230),
+         target=(790, 700, 70), lens=26, show="everything", site=True, res=(1170, 1080), sun=(17, 75)),
+    dict(k="K10", n="Power block from the south-east over the GSUs and the 230 kV lines (cover test)",
+         eye=(1300, 120, 260), target=(820, 600, 70), lens=24, show="everything", site=True, res=(1170, 1080),
+         sun=(16, 240)),
+    dict(k="K11", n="Cover: the power block in front, the LNG terminal and the BTM data centre beyond (from the south-west)",
+         eye=(930, -380, 430), target=(1500, 1250, 20), lens=21, show="everything", site=True, res=(1170, 1080),
+         sun=(11, 250), look=LOOK_GOLDEN, plumes=True),
+    # title-cover candidates: the power block right of centre (the deck's dark diagonal covers the left), plumes
+    # drifting away from the type, the LNG terminal and the BTM data centre beyond
+    dict(k="K12", n="Title candidate: from the south over the GSUs, the three HRSGs and stacks face on, the ACC to the right",
+         eye=(1080, -480, 230), target=(640, 1000, 110), lens=26, show="everything", site=True, res=(1170, 1080),
+         sun=(11, 230), look=LOOK_GOLDEN, plumes=True, wind=20),
+    dict(k="K13", n="Title candidate: from the north-west over the carbon-capture absorbers, the campus beyond",
+         eye=(-180, 2200, 360), target=(1350, 720, 70), lens=28, show="everything", site=True, res=(1170, 1080),
+         sun=(11, 250), look=LOOK_GOLDEN, plumes=True, wind=215),
+    dict(k="K14", n="Title candidate: from the south-east over the GSUs and the 230 kV switchyard, power block close",
+         eye=(1500, -420, 300), target=(680, 980, 80), lens=26, show="everything", site=True, res=(1170, 1080),
+         sun=(11, 200), look=LOOK_GOLDEN, plumes=True, wind=30),
+    # brochure opening spread (17 x 11 in): the path of power left to right, gas turbine -> generator -> GCB / IPB ->
+    # GSU -> 230 kV line entrance -> terminal tower; callouts are the path nodes for the copper line overlay
+    dict(k="K15", n="Path of Power spread: GT1, generator, GSU-1 and the 230 kV line, from the west at golden hour",
+         eye=(640, -470, 400), target=(1180, 980, 10), lens=22, show="everything", site=True, res=(5100, 3300),
+         sun=(12, 245), look=LOOK_GOLDEN, plumes=True, wind=35,
+         callouts=[(1830, 1594, 6, "0", "Plant gas yard", ""), (1505, 889, 8, "0", "fuel gas header", ""),
+                   (715, 885, 8, "0", "GT branch", ""), (630, 498, 30, "1", "GT1", ""), (630, 432, 28, "2", "GTG-1", ""), (630, 385, 20, "3", "GCB-1", ""),
+                   (630, 345, 32, "4", "GSU-1", ""), (670, 79, 30, "5", "Line 1 entrance", ""),
+                   (670, 18, 88, "6", "Line 1 terminal tower", "")]),
+    dict(k="K7", n="Cover photo (1170 x 1080): golden hour, the 230 kV lines leaving the plant across the fields",
+         eye=(830, -3050, 215), target=(790, 700, 80), lens=44, show="everything", site=True, res=(1170, 1080),
+         sun=(13, 250)),
+    dict(k="K6", n="Cover photo (1170 x 1080): from the cable reel yard across the whole facility to the LNG terminal",
+         eye=(52, 801, 7.5), target=(1150, 1215, 52), lens=21, show="everything", site=True, res=(1170, 1080),
+         dof=(24, 8.0)),
+    dict(k="K5", n="Cover photo (1170 x 1080): the whole facility from the south-west", eye=(-260, -520, 900),
+         target=(1650, 1550, 20), lens=27, show="everything", site=True, res=(1170, 1080)),
+    # Strategy Update cover (915 x 810 pt photo panel): golden hour, the power block with its copper-banded stacks in
+    # front, the LNG carrier at the berth beyond and the BTM data centre to the right
+    dict(k="SC1", n="Strategy cover: from the south-west, power block forward, LNG carrier and BTM data centre beyond",
+         eye=(300, -380, 900), target=(1160, 1220, 75), lens=30, show="everything", site=True, res=(1830, 1620),
+         sun=(36, 215), look=LOOK_CLEAR, plumes=True, wind=45),
+    dict(k="SC2", n="Strategy cover: from the south, the whole campus face on, LNG carrier and BTM data centre beyond",
+         eye=(700, -350, 620), target=(1300, 1150, 90), lens=27, show="everything", site=True, res=(1830, 1620),
+         sun=(11, 250), look=LOOK_GOLDEN, plumes=True, wind=150),
+    dict(k="SC3", n="Strategy cover: low from the south-west, power block close, the campus and the sea beyond",
+         eye=(100, -300, 750), target=(1300, 1300, 30), lens=24, show="everything", site=True, res=(1830, 1620),
+         sun=(11, 250), look=LOOK_GOLDEN, plumes=True, wind=150),
+]
+COASTAL_B = [
+    dict(k="F1", n="FSRU and LNG carrier, ship-to-ship transfer", eye=(25300, -300, 300), target=(24300, 950, 40),
+         lens=32, show="coastal"),
+    dict(k="F2", n="Landfall valve station and plant from the sea", eye=(4900, 2900, 700), target=(2300, 900, 20),
+         lens=30, show="coastal"),
+    dict(k="F3", n="FSRU 6.4 km offshore, the plant on the horizon", eye=(27800, 1500, 150), target=(1400, 950, 70),
+         lens=70, show="coastal"),
+]
+
+
+# Epic set: golden hour (sun 11 deg, from the west-south-west), low and dramatic viewpoints,
+# wide lenses near the ground and long lenses for compression.
+# the data centre's three supply paths, as numbered callouts on the captioned plates (x, y, z ft, number, text, colour)
+BTM_CALLOUTS = [
+    (3050, 506, 16, "1", "BACKUP · 36 GENSETS (130 MW) + 40 MW BATTERY", "#3d5a73"),
+    (2685, 470, 12, "1", "ISLANDED BTM POWER · BTM BATTERY 40 MW / 80 MWh", "#3d5a73"),
+    (2590, 880, 18, "1", "ISLANDED 34.5 kV BUS · SWITCHGEAR, TRANSFER SCHEME", "#3d5a73"),
+    (2547, 790, 22, "2", "FROM THE MODULAR YARD · 3 × 90 MVA STEP-UPS (N+1)", "#4f8a5b"),
+    (1955, 890, 16, "2", "MODULAR YARD 13.8 kV COLLECTOR · SUPPLIES THE CAMPUS", "#4f8a5b"),
+    (2652, 788, 36, "3", "GRID TIE 230 kV · NORMALLY OPEN", "#b0573f"),
+]
+EPIC = [
+    dict(k="E1", n="The three HRSG stacks from beside the absorbers", eye=(700, 1100, 150), target=(790, 780, 110), lens=24,
+         show="all", plumes=True),
+    dict(k="HX1", n="Cable trays leading into the power block: HRSGs, stacks and CCS behind", eye=(470, 560, 120),
+         target=(700, 770, 80), lens=24, show="all", plumes=False, sun=(13, 128), res=(1920, 1440)),
+    dict(k="HALL1", n="Inside the turbine hall: GT2 and GT3 under the tray stack, from the west gallery",
+         eye=(575, 455, 92), target=(870, 500, 24), lens=26, show="all", res=(1920, 1080),
+         hide=("Common turbine hall",), hide_layers=("HALL_ROOF",), sun=(42, 200)),
+    dict(k="HALL2", n="Turbine hall interior from the crane level at the west end, down the GT row, roof on",
+         eye=(515, 468, 72), target=(880, 497, 26), lens=22, show="all", res=(1920, 1080), lamps=4000, sun=(40, 200)),
+    dict(k="HALL3", n="Turbine hall: down the GT row from crane level, 36 mm, the machines filling the frame",
+         eye=(515, 468, 72), target=(720, 497, 10), lens=36, show="all", res=(1920, 1440), lamps=4000, sun=(40, 200)),
+    dict(k="HALL4", n="Turbine hall: down the GT row from crane level, 48 mm, GT1 to GT3 stacked",
+         eye=(515, 468, 72), target=(760, 497, 17), lens=48, show="all", res=(1920, 1440), lamps=4000, sun=(40, 200)),
+    dict(k="HALL5", n="Turbine hall three-quarter from the south-west corner: GT1, GT2, GT3 and the ST stepping back",
+         eye=(528, 422, 60), target=(900, 505, 26), lens=24, show="all", res=(1920, 1440), lamps=4000, sun=(40, 200)),
+    dict(k="HALL6", n="Turbine hall three-quarter, tighter: the four machine trains and the end wall",
+         eye=(528, 440, 74), target=(920, 510, 24), lens=28, show="all", res=(1920, 1440), lamps=4000, sun=(40, 200)),
+    dict(k="HALL10", n="Turbine hall angle shot: GT1, GT2, GT3 and the ST leading to the Southwire sign on the east end wall",
+         eye=(700, 418, 50), target=(1060, 470, 50), lens=26, show="all", res=(1920, 1440), lamps=4000, sun=(40, 200)),
+    dict(k="HALL7", n="Turbine hall cutaway from the south-west, south wall and roof lifted: GT1, GT2, GT3 and the ST",
+         eye=(585, 278, 240), target=(828, 488, 22), lens=32, show="all", res=(1920, 1440), lamps=4000, sun=(45, 200),
+         hide=("Turbine hall south cladding", "Turbine hall exterior electrical", "FH-1", "FH-2", "FH-3",
+               "GT1 inlet duct", "GT2 inlet duct", "GT3 inlet duct"), hide_layers=("HALL_ROOF",)),
+    dict(k="HX2", n="Turbine hall from the south-west: 3x1 CCGT on the west end, the copper band and pilasters, the SIMpull tractor-trailer at the door",
+         eye=(300, 262, 132), target=(600, 476, 58), lens=28, show="all", res=(1920, 1440), sun=(30, 215), plumes=False),
+    dict(k="HX3", n="SIMpull tractor-trailer at the turbine hall west door: steel reels with the Southwire logo",
+         eye=(402, 446, 24), target=(441, 486, 8), lens=35, show="all", res=(1920, 1440), sun=(30, 215), plumes=False),
+    dict(k="HX7", n="Turbine hall west gable: 3x1 CCGT lettering, copper chevrons running up past the band, SIMpull trailer",
+         eye=(318, 455, 46), target=(480, 482, 48), lens=24, show="all", sun=(30, 235), plumes=False),
+    dict(k="HX4", n="Turbine hall gallery doors from the south-east: GT 3 and the steam-turbine door with their ID signs",
+         eye=(1112, 334, 20), target=(1080, 371, 12), lens=30, show="all", res=(1920, 1440), sun=(30, 215), plumes=False),
+    dict(k="HX5", n="Turbine hall gallery from the south: the GT 2 door and its ID sign between the filter houses",
+         eye=(736, 318, 24), target=(736, 371, 14), lens=30, show="all", res=(1920, 1440), sun=(30, 215), plumes=False),
+    dict(k="HX6", n="Southwire cable-rejuvenation van at the collector bank's west manhole, hoses down the open shaft",
+         eye=(1652, 974, 20), target=(1684, 946, 3), lens=32, show="all", res=(1920, 1440), sun=(30, 215), plumes=False),
+    dict(k="HALL9", n="Turbine hall cutaway, whole hall: the bridge crane over the laydown bay, GT1, GT2, GT3 and the ST",
+         eye=(430, 232, 275), target=(770, 470, 28), lens=24, show="all", res=(1920, 1440), lamps=4000, sun=(45, 200),
+         hide=("Turbine hall south cladding", "Turbine hall exterior electrical", "FH-1", "FH-2", "FH-3",
+               "GT1 inlet duct", "GT2 inlet duct", "GT3 inlet duct"), hide_layers=("HALL_ROOF",)),
+    dict(k="HALL8", n="Turbine hall cutaway from the south, higher: the four machine trains side by side",
+         eye=(760, 300, 250), target=(845, 485, 20), lens=24, show="all", res=(1920, 1440), lamps=4000, sun=(45, 200),
+         hide=("Turbine hall south cladding", "Turbine hall exterior electrical", "FH-1", "FH-2", "FH-3",
+               "GT1 inlet duct", "GT2 inlet duct", "GT3 inlet duct"), hide_layers=("HALL_ROOF",)),
+    dict(k="ST1", n="Steam turbine close-up from the west aisle: LP casing, HP/IP under blankets, valves, cable to the tray",
+         eye=(996, 476, 50), target=(1050, 512, 31), lens=24, show="all", res=(1920, 1440), lamps=4000, sun=(40, 200)),
+    dict(k="E2", n="Long lens from the west road: stacks and absorbers stacked up", eye=(-1500, 880, 120),
+         target=(800, 1000, 130), lens=135, show="all"),
+    dict(k="E3", n="Low pass over the air-cooled condenser", eye=(1500, 300, 165), target=(1100, 800, 90),
+         lens=20, show="all", plumes=True),
+    dict(k="E4", n="Along the 230 kV switchyard at eye level", eye=(560, 150, 7), target=(1600, 175, 40),
+         lens=35, show="all"),
+    dict(k="E5", n="Beneath the carbon-capture absorbers", eye=(880, 1115, 6), target=(790, 1220, 210), lens=16,
+         show="all"),
+    dict(k="E6", n="Drone dive over the power block", eye=(820, 330, 560), target=(800, 660, 0), lens=20,
+         show="all"),
+    dict(k="E7", n="Into the sun: the plant in silhouette across the fields", eye=(1926, 3519, 110),
+         target=(900, 700, 330), lens=40, show="all"),
+    dict(k="E8", n="RICE engine hall stacks at golden hour", eye=(1545, 905, 10), target=(1700, 1045, 30),
+         lens=24, show="all"),
+    dict(k="E9", n="Water tanks and their spiral stairs", eye=(690, 1662, 12), target=(525, 1590, 30), lens=24,
+         show="all"),
+    dict(k="E10", n="EV charging carport and the admin building", eye=(150, 98, 6), target=(215, 330, 12),
+         lens=28, show="all"),
+    dict(k="E11", n="Plant gas yard: metering, regulation, heater and filter-separators", eye=(1800, 1428, 34),
+         target=(1688, 1522, 2), lens=26, show="all"),
+    dict(k="E12", n="Pipeline M&R station: pig receiver, filter-separator and line heaters", eye=(1572, 1792, 24),
+         target=(1640, 1858, 3), lens=24, show="all"),
+    dict(k="E13", n="Fuel systems from above: M&R station, gas yard and the ULSD backup area", eye=(1260, 1300, 260),
+         target=(1620, 1640, 0), lens=30, show="all"),
+    dict(k="E14", n="RICE engine hall: exhaust trains, SCRs and 90 ft stacks", eye=(1840, 955, 26),
+         target=(1700, 1035, 24), lens=24, show="all"),
+    dict(k="E15", n="Simple-cycle units: filter house, enclosure, SCR and 80 ft stack", eye=(2085, 1120, 30),
+         target=(2010, 1205, 16), lens=24, show="all"),
+    dict(k="E16", n="Portable power pad: containerized gensets, fuel cells and microturbines", eye=(1925, 615, 30),
+         target=(2085, 470, 6), lens=24, show="all"),
+    dict(k="E17", n="Simple-cycle units from the north-west", eye=(1872, 1345, 24),
+         target=(2030, 1262, 5), lens=24, show="all"),
+    dict(k="E18", n="Process pipes: fuel gas, fuel oil and feedwater crossing the east spine road", eye=(1395, 795, 48),
+         target=(1500, 900, 6), lens=26, show="all"),
+    dict(k="E19", n="GSUs facing the switchyard: HV bushings, arresters and take-off gantries", eye=(705, 255, 34),
+         target=(640, 340, 22), lens=24, show="all"),
+    dict(k="E20", n="The complete 230 kV switchyard: six breaker-and-a-half diameters", eye=(2140, 15, 95),
+         target=(1450, 160, 10), lens=28, show="all"),
+    # turbine-hall cutaways: walls and roofs hidden for these renders
+    dict(k="E21", n="Turbine hall cutaway: the three H-class GTs and generators on the EL 20 deck", eye=(552, 470, 72),
+         target=(720, 497, 25), lens=24, show="all", hide=("Common turbine hall",), hide_layers=("HALL_ROOF",)),
+    dict(k="E22", n="GT1 close-up: compressor, combustor cans, fuel manifold, lube-oil and cable drops", eye=(604, 466, 46),
+         target=(634, 506, 28), lens=24, show="all", hide=("Common turbine hall",), hide_layers=("HALL_ROOF",)),
+    dict(k="E23", n="Cable trays along the hall north wall and their drops to the GT skids", eye=(574, 528, 52),
+         target=(800, 546, 29), lens=22, show="all", hide=("Common turbine hall",), hide_layers=("HALL_ROOF",)),
+    dict(k="E24", n="Isolated-phase bus: generator terminals, GCB, UAT tap and GSU", eye=(694, 326, 42),
+         target=(636, 384, 21), lens=24, show="all", hide=("Common turbine hall",), hide_layers=("HALL_ROOF",)),
+    dict(k="E25", n="South gallery: excitation cubicles, excitation transformer, IPB cubicles, GCB and cable drops",
+         eye=(663, 381.5, 13), target=(646, 396, 5), lens=22, show="all", hide=("Common turbine hall", "Turbine hall south cladding", "Turbine hall exterior electrical", "FH-1", "FH-2", "FH-3"), lamps=4000,
+         hide_layers=("HALL_ROOF",)),
+    dict(k="E51", n="Steam turbine: combined reheat valves, LP admission, turning gear, EHC unit and gland-steam condenser",
+         eye=(1112, 414, 52), target=(1058, 492, 26), lens=24, show="all", hide=("Common turbine hall",),
+         hide_layers=("HALL_ROOF",)),
+    dict(k="E52", n="GT1 generator end: seal-oil / H2 gas-control skid, compressor bleed lines and blow-off valves",
+         eye=(590, 462, 40), target=(616, 432, 23), lens=24, show="all", hide=("Common turbine hall",),
+         hide_layers=("HALL_ROOF",)),
+    dict(k="E53", n="South gallery: GT1 static starter (LCI) lineup and isolation transformer, deck stair",
+         eye=(744, 402, 15), target=(708, 387, 4), lens=22, show="all", hide=("Common turbine hall", "Turbine hall south cladding", "Turbine hall exterior electrical", "FH-1", "FH-2", "FH-3"), lamps=4000,
+         hide_layers=("HALL_ROOF",)),
+    dict(k="E54", n="Modular-yard cable pull: open manhole MH-A, davit and reel trailer",
+         eye=(1684, 927, 26), target=(1718, 955, 1), lens=26, show="all"),
+    dict(k="E55", n="Open trench over the 13.8 kV collector bank: trench box, excavator, crew",
+         eye=(1780, 936, 24), target=(1808, 961, -3), lens=24, show="all"),
+    dict(k="E56", n="CCS absorber A: bed manways, intercooler skid, tray riser, platform lights",
+         eye=(712, 1150, 150), target=(655, 1215, 110), lens=28, show="all"),
+    dict(k="E57", n="CCS T-1 / T-2: 230 kV cable terminations, jumpers to the bushings, firewall; tray riser at the VFD building",
+         eye=(1300, 1085, 55), target=(1250, 1020, 20), lens=26, show="all"),
+    dict(k="E60", n="230 kV XLPE cable termination: cleated risers, sealing ends, surge arresters, bonding link box",
+         eye=(1740, 201, 10), target=(1757, 177, 13), lens=22, show="all", sun=(32, 330)),
+    dict(k="E62", n="BESS PCS / MV skid: 34.5 kV elbow terminations to the collector circuit",
+         eye=(1618.5, 483.5, 5.4), target=(1610, 490, 3.3), lens=26, show="all", sun=(24, 95)),
+    dict(k="E64", n="Modular yard: the SIMpull Truck brings the feeder reels to the 13.8 kV cable pull",
+         eye=(1702, 906, 7.5), target=(1752, 944, 5), lens=24, show="all", sun=(26, 215)),
+    dict(k="E65", n="BESS yard: crew pulling 1,500 V DC conductor into the precast trench, containers either side",
+         eye=(1764, 542.5, 9.5), target=(1718, 535, -0.5), lens=26, show="all", sun=(34, 150)),
+    dict(k="E66", n="Turbine hall, GT1 outage: new 13.8 kV feeder pulled from the laydown bay up into the EL 48 MV tray",
+         eye=(517, 484, 12.5), target=(549, 537, 23), lens=22, show="all", hide=("Common turbine hall",),
+         hide_layers=("HALL_ROOF",), sun=(40, 200)),
+    dict(k="E67", n="Turbine hall: ARMOR-X and MV-105 in the tray over GT1, the legend on every jacket",
+         eye=(638, 540.5, 50.5), target=(702, 606, 61), lens=24, show="all", lamps=6500, hall_alpha=.1,
+         sun=(40, 175), dof=(6, 5.6)),
+    dict(k="E81", n="Brochure page (portrait): ARMOR-X and MV-105 legends in the tray over GT1, running into the hall",
+         eye=(637.0, 539.4, 51.6), target=(652, 556, 46.8), lens=22, show="all", lamps=6500, hall_alpha=.1,
+         sun=(40, 175), dof=(2.2, 4.0), res=(2448, 3168), clip=.03),
+    dict(k="E68", n="Cover: the cable that runs carbon capture: ARMOR-X and Type TC-ER on the CCS rack below Absorber B",
+         eye=(729, 1128.3, 29.3), target=(785, 1220, 80), lens=14, res=(1545, 2000), show="all", sun=(38, 120), clip=.05,
+         dof=(5.5, 8.0)),
+    dict(k="E69", n="CCS section divider photo (1170 x 1080, deck style): absorbers over ARMOR-X on the CCS rack",
+         eye=(729, 1128.3, 29.3), target=(768, 1226, 78), lens=14, res=(1170, 1080), show="all", sun=(38, 120), clip=.05,
+         dof=(5.5, 8.0)),
+    dict(k="E70", n="Turbine hall section divider photo (1170 x 1080, deck style): legends in the tray, HRSG-2 beyond",
+         eye=(637, 540.3, 50.8), target=(706, 606, 58), lens=22, res=(1170, 1080), show="all", lamps=6500, hall_alpha=.1,
+         sun=(40, 175), clip=.05, dof=(6, 5.6)),
+    dict(k="E71", n="Gas power divider photo (1170 x 1080): ARMOR-X and MV-105 in the R1 -> hall tray, HRSG 1 and its stack ahead",
+         eye=(559.7, 565.5, 50.4), target=(618, 760, 92), lens=18, res=(1170, 1080), show="all", sun=(34, 120), clip=.05,
+         dof=(5, 6.0)),
+    # switchgear rooms (swgr_rooms.py): interior cameras lit by the room's LED fixtures
+    dict(k="E82", n="R1 switchgear room: 13.8 kV and 4.16 kV metal-clad lineups across the operating aisle",
+         eye=(456.0, 636.5, 6.0), target=(460.5, 700, 4.6), lens=16, show="all", add_layers=("R1_INTERIOR",),
+         lamps=320, lamp_z=15, lamp_box=(410, 474, 600, 780), clip=.03),
+    dict(k="E83", n="R1: MCCs and protection & control panels, conduit drops from the overhead tray",
+         eye=(433.5, 637, 6.0), target=(438.5, 705, 4.8), lens=16, show="all", add_layers=("R1_INTERIOR",),
+         lamps=320, lamp_z=15, lamp_box=(410, 474, 600, 780), clip=.03),
+    dict(k="E84", n="R4 VFD e-house: two lineups of ACC fan drives across the aisle, output trays overhead",
+         eye=(1148, 321.5, 6.8), target=(1210, 321.5, 5.6), lens=16, show="all", add_layers=("R4_INTERIOR",),
+         lamps=260, lamp_z=10, lamp_box=(1135, 1255, 308, 368), clip=.03),
+    dict(k="E85", n="R1 cutaway: roof and east wall off, the switchgear room from above",
+         eye=(372, 618, 82), target=(446, 692, 0), lens=24, show="all", add_layers=("R1_INTERIOR",),
+         hide_layers=("R1_ROOF",), sun=(52, 200)),
+    # control / admin building (control_room.py)
+    dict(k="E86", n="Main control room: six-position console facing the 16-cube video wall, shift supervisor behind",
+         eye=(280.5, 349.6, 8.4), target=(318, 375.5, 5.0), lens=17, show="all", add_layers=("CR_INTERIOR",),
+         lamps=230, lamp_z=10, lamp_box=(83, 320, 345, 396), clip=.03),
+    dict(k="E87", n="Control room: over the operator's shoulder, GT and alarm graphics, CCTV and one-line on the wall",
+         eye=(292.6, 375.2, 6.5), target=(312, 369.5, 5.0), lens=22, show="all", add_layers=("CR_INTERIOR",),
+         lamps=230, lamp_z=10, lamp_box=(83, 320, 345, 396), clip=.03, dof=(9, 4.0)),
+    dict(k="ADM1", n="Open office in the control / admin building: desks and the south windows, inside face",
+         eye=(112.0, 372.0, 5.6), target=(126.0, 346.0, 8.6), lens=24, show="all", add_layers=("CR_INTERIOR",),
+         lamps=230, lamp_z=10, lamp_box=(83, 320, 345, 396), clip=.03),
+    dict(k="E88", n="Control / admin building cutaway: control room, supervisor office, servers, lobby, offices",
+         eye=(345, 290, 105), target=(232, 372, 0), lens=24, show="all", add_layers=("CR_INTERIOR",),
+         hide_layers=("CR_ROOF",), sun=(50, 160)),
+    dict(k="ADM2", n="Control / admin building front: copper band, entrance portal, monument sign and flagpoles",
+         eye=(262, 262, 26), target=(196, 352, 10), lens=28, show="all", sun=(38, 215)),
+    dict(k="ADM4", n="Control / admin building from the south-west: office windows, west end exit door",
+         eye=(52, 300, 22), target=(150, 360, 9), lens=28, show="all", sun=(38, 215)),
+    dict(k="ADM3", n="Control / admin building roof: rooftop units, disconnects, MC whips, walkway; condensing-unit pad",
+         eye=(292, 300, 88), target=(214, 386, 14), lens=24, show="all", sun=(48, 200)),
+    # SIMpull / Maxis equipment (simpull.py)
+    dict(k="E89", n="Reel yard staging: SIMpull Reels on Cradles, 45K / 30K Reel Rollers, Flanges, Stack reels on JAX stands",
+         eye=(316, 797, 17), target=(254, 840, 2.5), lens=24, show="all", sun=(34, 150)),
+    dict(k="E90", n="Workshop feeder pull: SIMpull Reel with SIMpull Heads into the wireway, BARREL drum, wire wagon",
+         eye=(267, 670, 7.2), target=(251.5, 647, 3.8), lens=24, show="all", sun=(26, 315)),
+    dict(k="E91", n="SIMpull Reels on Cradles and the RR-SW45 Reel Roller, Maxis puller and carts behind",
+         eye=(231, 806, 5.6), target=(262, 826, 3.6), lens=24, show="all", sun=(34, 150), dof=(22, 5.6)),
+    # prefabricated cable systems (prefab.py)
+    dict(k="E92", n="Prefab cable spine going in: module 5 on the crane over its bents, modules 1-4 set from MOD-EH",
+         eye=(1998, 1108, 42), target=(1940, 1058, 14), lens=24, show="all", sun=(38, 140)),
+    dict(k="E93", n="Prefab staging bay: spine modules on dunnage, one on the flatbed, pre-terminated MV crates, conduit racks",
+         eye=(156, 694, 19), target=(92, 758, 1.5), lens=22, show="all", sun=(34, 150)),
+    dict(k="E94", n="Spine splice: electricians on the boom lift take the coiled tails of module 4 as module 5 comes down",
+         eye=(1998, 1046, 17.5), target=(1976, 1066, 15.5), lens=22, show="all", sun=(38, 140)),
+    dict(k="E95", n="Skid pre-wire workstation, ready-to-set row and PDC shipping splits",
+         eye=(246, 878, 62), target=(128, 982, 1), lens=22, show="all", sun=(40, 150)),
+    dict(k="E96", n="At the pre-wire pad: JBs, skid-edge tray and tagged tails on the fuel-gas skid, megger at the bench",
+         eye=(99, 963, 9.5), target=(83, 988, 5), lens=20, show="all", sun=(40, 150)),
+    # turbine hall access (hall_access.py)
+    dict(k="E97", n="Under the turbine deck: walkway at grade between the pedestals, crossover stile and stair up between GT1 and GT2",
+         eye=(668, 428, 6.2), target=(716, 470, 7.5), lens=18, show="all", lamps=450, lamp_z=15, lamp_box=(560, 1100, 404, 556),
+         clip=.03),
+    dict(k="E98", n="Turbine deck: stair coming up through the guarded opening between GT1 and GT2",
+         eye=(736, 538, 28.5), target=(714, 496, 19.5), lens=20, show="all", lamps=6500, hall_alpha=.1, sun=(40, 175)),
+    # EPC solutions brochure: portrait "cable moments" (1632 x 2112)
+    dict(k="B1", n="Cover: SIMpull Reels on Cradles at golden hour, the plant beyond",
+         eye=(203.5, 807.5, 4.2), target=(320, 818, 13), lens=22, show="all", res=(1632, 2112), look=LOOK_GOLDEN, sun=(10, 250),
+         plumes=True, wind=30, dof=(14, 5.6)),
+    dict(k="B2", n="Moment: factory SIMpull Heads going into the wireway",
+         eye=(253.0, 645.0, 3.7), target=(251.2, 641.9, 3.0), lens=36, show="all", res=(1632, 2112), sun=(26, 315),
+         dof=(3.6, 2.8), clip=.03),
+    dict(k="B3", n="Moment: coiled tails at the spine splice as module 5 comes down",
+         eye=(1970.6, 1059.6, 16.0), target=(1976.4, 1064.4, 14.0), lens=24, show="all", res=(1632, 2112), sun=(38, 140),
+         dof=(7.6, 3.5), clip=.03),
+    dict(k="B4", n="Moment: insulation-resistance test at the skid pre-wire bench",
+         eye=(97.6, 1767.2, 5.6), target=(100.2, 1762.2, 3.5), lens=30, show="all", res=(1632, 2112), sun=(40, 150),
+         dof=(5.6, 3.0), clip=.03),
+    dict(k="B5", n="Moment: the RR-SW45 pendant and the reel on its rollers",
+         eye=(281.5, 830.5, 3.6), target=(276.4, 823.6, 2.6), lens=26, show="all", res=(1632, 2112), sun=(34, 150),
+         dof=(8.5, 4.0), clip=.03),
+    dict(k="H1", n="HRSG 1 review: side elevation from the west",
+         eye=(330, 640, 95), target=(640, 690, 55), lens=24, show="all", sun=(40, 230)),
+    dict(k="E99", n="HRSG 1 from the south-east: open stair tower and the east-wall access platforms",
+         eye=(752, 572, 62), target=(662, 670, 42), lens=24, show="all", sun=(40, 140)),
+    dict(k="H2", n="HRSG 1 review: from the north-west, stack and outlet",
+         eye=(470, 900, 120), target=(630, 690, 50), lens=24, show="all", sun=(40, 230)),
+    dict(k="E72", n="Trailer aeroderivative TM-1 from the south-east (north of the portable pad), filter house, raised stack, control trailer",
+         eye=(2282, 701, 34), target=(2180, 767, 17), lens=26, show="all", sun=(20, 235)),
+    dict(k="E73", n="TM-1 generator leads: 15 kV MV-105 from the terminal box into the ground tray, jacket legend",
+         eye=(2205, 791.5, 3.6), target=(2199.8, 784.5, 1.6), lens=24, show="all", sun=(38, 300), clip=.05),
+    dict(k="E74", n="Portable power pad: containerized gensets, trailer genset, load bank, pad switchgear (from the south-east)",
+         eye=(2400, 380, 70), target=(2150, 560, 5), lens=26, show="all", sun=(24, 235)),
+    dict(k="E75", n="Modular yard: RICE engine hall, SCR stacks, PCM and the two 50 MW-class aeroderivative units (from the south-east)",
+         eye=(2080, 880, 110), target=(1800, 1120, 20), lens=26, show="all", sun=(24, 235)),
+    dict(k="E76", n="Modular yard: fuel cells, microturbines and the 480 V step-up (from the south)",
+         eye=(2140, 960, 60), target=(2130, 1120, 5), lens=26, show="all", sun=(24, 235)),
+    dict(k="E77", n="Portable pad: 15 kV SHD-GC feeder from MOB-1 through the C-L01 drive-over ramp to the input cabinet",
+         eye=(2205, 602, 40), target=(2263, 660, 2), lens=26, show="all", sun=(24, 235), clip=.05),
+    dict(k="E78", n="Portable pad: Type W 480 V sets with cam-lock plugs into the PAD-LV paralleling switchboard",
+         eye=(2148, 447, 6.5), target=(2160, 434, 1.5), lens=24, show="all", sun=(30, 250), clip=.05),
+    dict(k="E79", n="Portable pad: open engine-generator skid GEN-O, enclosed genset GEN-E and their Type W sets",
+         eye=(2058, 398, 16), target=(2024, 440, 3), lens=26, show="all", sun=(24, 235)),
+    dict(k="E80", n="Modular power slide plate: the whole modular yard, surrounding plant omitted",
+         eye=(2330, 600, 470), target=(1960, 1090, 0), lens=30, show="all", sun=(38, 215),
+         only=("SITE", "OPT_MOD", "OPT_TMP", "OPT_MODX", "OPT_MOD_ROUTES", "OPT_TMP_ROUTES", "OPT_MODX_ROUTES"),
+         callouts=[(1690, 1085, 46, "1", "RICE engine hall", ""), (2155, 1205, 36, "1", "SC-2", ""),
+                   (1593, 884, 18, "2", "black-start gensets", ""), (2030, 363, 9, "3", "FC-5", ""),
+                   (2240, 770, 42, "1", "TM-1/2", ""), (2198, 363, 11, "3", "MT-4..6", "")]),
+    dict(k="MOD9", n="Modular yard north edge: the plot where FC-1..4 and MT-1..3 stood, now clear",
+         eye=(2330, 1190, 40), target=(2120, 1080, 0), lens=28, show="all", sun=(38, 215)),
+    dict(k="CB1", n="RICE engine hall: copper band, black coping and pilasters, name sign over the roll-up door",
+         eye=(1515, 985, 38), target=(1660, 1088, 16), lens=28, show="all", sun=(38, 215)),
+    dict(k="CB2", n="SC-1 and SC-2: copper band and coping on the turbine enclosures, unit signs",
+         eye=(2252, 1150, 26), target=(2212, 1205, 14), lens=28, show="all", sun=(38, 215)),
+    dict(k="CB3", n="MOD-EH collector e-house: copper band under the eave, name sign by the door",
+         eye=(1968, 846, 14), target=(1950, 888, 8), lens=30, show="all", sun=(38, 215)),
+    dict(k="SC3", n="SC-1 and SC-2 facing each other: the two stacks paired in the middle, inlets at the outer ends",
+         eye=(2084, 1030, 95), target=(2084, 1205, 12), lens=22, show="all", sun=(38, 215)),
+    dict(k="SC4", n="SC-2 inlet end and the fuel-gas compressor building, moved east: clear working space between",
+         eye=(2300, 1105, 60), target=(2320, 1210, 10), lens=24, show="all", sun=(38, 215)),
+    dict(k="SC5", n="Reserved SC-3 / SC-4 pad south of SC-1 / SC-2: foundations, PCM pads, capped conduit stub-ups",
+         eye=(1855, 1385, 48), target=(2060, 1290, 2), lens=26, show="all", sun=(38, 215)),
+    dict(k="SC6", n="Reserved pad close-up: SC-3 PCM pad with capped conduit stub-ups and handhole, gas tie-in riser",
+         eye=(1890, 1345, 14), target=(1930, 1305, 1), lens=28, show="all", sun=(38, 215)),
+    dict(k="SC7", n="Plug and play: the SC-4 pad wired before the unit arrives: cable bus to the PCM, cable trough, pre-terminated harnesses",
+         eye=(2240, 1352, 26), target=(2160, 1300, 2), lens=26, show="all", sun=(38, 215)),
+    dict(k="SC8", n="SC-3 bare reserved pad beside the SC-4 pad pre-wired: cable trough, cable bus, harnesses at each landing",
+         eye=(1960, 1372, 38), target=(2080, 1300, 2), lens=26, show="all", sun=(38, 215)),
+    dict(k="SC9", n="SC-1 close: inlet filter house, silencer duct and plenum, package with its fuel-gas module, tempering-air fans",
+         eye=(1872, 1138, 38), target=(1955, 1200, 14), lens=24, show="all", sun=(38, 215)),
+    dict(k="SC10", n="Between the paired stacks: CEMS shelters and sample lines, SCR stairs, ammonia skids, tempering-air fans",
+         eye=(2084, 1128, 34), target=(2084, 1200, 22), lens=20, show="all", sun=(38, 215)),
+    dict(k="SC11", n="SC-1 north side: generator terminal box over the MV tray, NGR, water-wash skid, PCM and lube-oil cooler",
+         eye=(1990, 1282, 42), target=(1935, 1222, 8), lens=24, show="all", sun=(38, 215)),
+    dict(k="SC12", n="SC-1 tempering-air fans: two centrifugal fans on a platform over the fuel-gas header, close-coupled to the exhaust collector",
+         eye=(2022, 1140, 22), target=(1984, 1186, 8), lens=24, show="all", sun=(38, 215)),
+    dict(k="SC13", n="SC-1 / SC-2 from above: SCR housings, outlet ducts, stack tops and platforms",
+         eye=(2084, 1120, 120), target=(2084, 1205, 35), lens=24, show="all", sun=(38, 215)),
+    dict(k="SC14", n="SC-1 SCR and stack from grade: casing, platforms and stair, breeching, stack base and ladder",
+         eye=(1992, 1150, 6), target=(2045, 1204, 38), lens=22, show="all", sun=(38, 215)),
+    dict(k="SC15", n="SC-4 pad close: cable trough lids off over the control / instrument / fibre tray, pre-terminated harnesses coiled at the landings, cable bus to the PCM",
+         eye=(2146, 1287, 13), target=(2172, 1306, 2), lens=24, show="all", sun=(38, 215)),
+    dict(k="SC16", n="SC-4 cable bus opened: 13.8 kV generator leads, 4 x 500 kcmil MV-105 per phase in spacer blocks, phase-taped",
+         eye=(2193.5, 1316.5, 11.5), target=(2203, 1309.5, 9.6), lens=26, show="all", sun=(38, 215)),
+    dict(k="SC17", n="SC-4 pad: testing a pre-terminated harness at the TCP landing, QR cable tags, the digital-model sign and the trough's cable ID placard",
+         eye=(2151, 1284.5, 9.0), target=(2156.5, 1299, 2.6), lens=24, show="all", sun=(38, 215)),
+    dict(k="SC18", n="SC-1 generator leads: 5 x 3 x 750 kcmil MV-105 on the 36 in ladder tray from the terminal box to the PCM, NGR beside it",
+         eye=(1940, 1236, 17), target=(1922, 1226, 8), lens=26, show="all", sun=(38, 215)),
+    dict(k="SC19", n="SC-1 cutaway, enclosure lifted: generator, drive shaft, 50 MW-class aeroderivative engine, fuel and water-injection rings, harnesses to the wall JBs",
+         eye=(1968, 1166, 38), target=(1942, 1205, 7), lens=24, show="all", sun=(38, 215),
+         hide=("SC-1 package enclosure", "SC-1 turbine enclosure exterior finish")),
+    dict(k="SC20", n="SC-1 cutaway from the north: generator terminal box and 13.8 kV leads, interior tray and junction boxes, the MV tray outside",
+         eye=(1950, 1250, 34), target=(1935, 1207, 7), lens=24, show="all", sun=(38, 215),
+         hide=("SC-1 package enclosure", "SC-1 turbine enclosure exterior finish")),
+    dict(k="SC21", n="SC-2 with its enclosure x-rayed: generator, engine, harnesses and junction boxes seen through the panels",
+         eye=(2196, 1178, 62), target=(2224, 1206, 6), lens=24, show="all", sun=(38, 215)),
+    dict(k="GTW1", n="GT2 wiring: bearing probes, IGV servo cable, UV flame detectors, ignition leads, thermocouple rings to the junction boxes",
+         eye=(813, 486, 32.5), target=(792, 503, 30), lens=22, show="all", sun=(45, 200), lamps=4000,
+         hide=("Turbine hall south cladding", "Turbine hall exterior electrical", "FH-1", "FH-2", "FH-3",
+               "GT1 inlet duct", "GT2 inlet duct", "GT3 inlet duct"), hide_layers=("HALL_ROOF",)),
+    dict(k="GTW2", n="GTG-2 wiring: RTD / vibration box and conduit, bearing probes, space-heater feed, DC field leads at the collector end",
+         eye=(812, 420, 38), target=(790, 433, 26), lens=24, show="all", sun=(45, 200), lamps=4000,
+         hide=("Turbine hall south cladding", "Turbine hall exterior electrical", "FH-1", "FH-2", "FH-3",
+               "GT1 inlet duct", "GT2 inlet duct", "GT3 inlet duct"), hide_layers=("HALL_ROOF",)),
+    dict(k="MVT1", n="SC-1 generator terminal box opened: 15 x 750 kcmil MV-105 with cold-shrink terminations and lugs on the 13.8 kV phase bars",
+         eye=(1922.5, 1229.5, 14.8), target=(1922, 1218, 12.6), lens=26, show="all", sun=(38, 215)),
+    dict(k="MVT2", n="GT1 starting disconnect at the IPB: LCI output cables on their tray, terminated in the open cable chamber",
+         eye=(647.5, 377.0, 21.0), target=(646, 388, 20.3), lens=26, show="all", sun=(45, 200), lamps=4000,
+         hide=("Turbine hall south cladding", "Turbine hall exterior electrical", "FH-1", "FH-2", "FH-3",
+               "GT1 inlet duct", "GT2 inlet duct", "GT3 inlet duct"), hide_layers=("HALL_ROOF",)),
+    dict(k="CM-SC1", n="Cable moment, SC-1: terminating the 13.8 kV generator leads, the last set of MV-105 off the reel over a sheave into the tray",
+         eye=(1897, 1253, 27), target=(1916, 1229, 6.5), lens=24, show="all", sun=(38, 215)),
+    dict(k="RICE1", n="RICE engine hall, east end: the copper chevrons beside the roll-up door, band and coping, name sign",
+         eye=(1858, 1150, 34), target=(1810, 1092, 16), lens=24, show="all", sun=(38, 215)),
+    dict(k="RICE2", n="RICE plant from the south-east: the eight stacks with their copper bands, slate SCRs, the chevrons beside the east door",
+         eye=(1880, 960, 70), target=(1720, 1050, 35), lens=24, show="all", sun=(38, 215)),
+    dict(k="RICE3", n="RICE hall north-east corner: the copper band wrapping the corner, the door sign, the chevrons",
+         eye=(1838, 1162, 28), target=(1806, 1112, 16), lens=24, show="all", sun=(38, 215)),
+    dict(k="RICEIN", n="Inside the RICE engine hall (roof and south wall lifted): engines, generators, terminal boxes, cable and local panels",
+         eye=(1735, 1050, 30), target=(1712, 1100, 12), lens=22, show="all", sun=(38, 215), lamps=3000,
+         hide=("RICE engine hall (8 engines)", "RICE engine hall exterior finish")),
+    dict(k="RL1", n="Reel yard: the SIMpull Truck in the Southwire livery, SIMpull Reels with meatball flanges",
+         eye=(207, 711, 8), target=(178, 735, 5), lens=26, show="all", sun=(30, 200)),
+    dict(k="RL2", n="Reel yard rows: Southwire steel reels with black flanges and the copper meatball",
+         eye=(132, 700, 9), target=(170, 760, 4), lens=26, show="all", sun=(30, 200)),
+    dict(k="RB1", n="RICE MV bridge: the 13.8 kV cables sweeping round the ladder-tray elbow to the PCM",
+         eye=(1856, 1104, 17.5), target=(1843, 1115, 11.5), lens=26, show="all", sun=(34, 230)),
+    dict(k="CL1", n="Carbon capture: absorbers A-C, the CCS band with the sustainability leaf between the letterings",
+         eye=(505, 1085, 285), target=(700, 1250, 226), lens=34, show="all", sun=(34, 210), plumes=False),
+    dict(k="CL2", n="Absorber B close: the sage leaf between the CCS letterings",
+         eye=(880, 1140, 236), target=(790, 1220, 227), lens=40, show="all", sun=(34, 210), plumes=False),
+    dict(k="CL3", n="Absorber A from the south-west: one big leaf between the CCS letterings",
+         eye=(560, 1130, 236), target=(630, 1220, 227), lens=40, show="all", sun=(34, 210), plumes=False),
+    dict(k="CL4", n="Absorbers 1-3 from the south: CCS band, Growing Green sprig and the unit numbers",
+         eye=(790, 900, 230), target=(790, 1220, 195), lens=30, show="all", sun=(34, 210), plumes=False),
+    dict(k="BX1", n="Auxiliary boiler AB-1: gas-fired package boiler, burner front, FD fan, gas train and BMS panel",
+         eye=(1006, 1432, 34), target=(962, 1490, 10), lens=26, show="all", sun=(34, 215), look=dict(exposure=.05)),
+    dict(k="BX2", n="Auxiliary boiler AB-1 from the north-west: economizer, stack, deaerator, AB-MCC e-house",
+         eye=(912, 1572, 48), target=(962, 1500, 14), lens=26, show="all", sun=(34, 215)),
+    dict(k="BH1", n="HRSG 1 east wall: duct-burner gas header and runners, igniters and flame scanners, BFP 13.8 kV terminations",
+         eye=(669.2, 630.5, 27.5), target=(663.8, 636.5, 31), lens=16, show="all", sun=(36, 95)),
+    dict(k="BH2", n="HRSG 1 duct-burner fuel skid and BMS panel: double block and bleed, MC-HL on strut",
+         eye=(702, 677, 12), target=(681, 697, 3.5), lens=26, show="all", sun=(36, 95), look=dict(exposure=0.0),
+         fill=((694, 682, 18, 25000, 3), (672, 704, 12, 12000, 3))),
+    dict(k="BB1", n="Brownfield outage: HRSG 3 HP evaporator module lifted out through the roof by a crawler crane",
+         eye=(1100, 596, 96), target=(990, 676, 112), lens=22, show="all", sun=(34, 120), plumes=False, look=dict(exposure=.05)),
+    dict(k="BB2", n="Brownfield outage: the module on the hook over the opened HRSG 3 roof, crew on the drum walkway",
+         eye=(990, 640, 128), target=(950, 682, 112), lens=24, show="all", sun=(34, 120), plumes=False, look=dict(exposure=.05)),
+    dict(k="BB3", n="Outage cable work at HRSG 3: SIMpull Reels, pre-terminated harness crates, cut-back cable to recycling",
+         eye=(882, 701, 9.5), target=(898, 686, 2.5), lens=22, show="all", sun=(42, 330), plumes=False, look=dict(exposure=-.05),
+         fill=((886, 692, 16, 20000, 3), (900, 680, 12, 10000, 3))),
+    dict(k="BB4", n="The new HP evaporator module on its heavy-haul lowboy, ring road north of HRSG 3",
+         eye=(1080, 960, 30), target=(995, 913, 6), lens=26, show="all", sun=(34, 120), plumes=False),
+    dict(k="BF1", n="BFP-1A/B: 13.8 kV MV-105 cables off the drop tray into the motor terminal boxes",
+         eye=(700, 652, 16), target=(684, 637, 8), lens=26, show="all", sun=(36, 95), look=dict(exposure=-.05),
+         fill=((692, 640, 20, 20000, 3), (678, 652, 14, 10000, 3))),
+    dict(k="ISO1", n="HRSG 1 train, isometric hero: the train in full, every cable glowing, the rest of the plant faded",
+         eye=(1098, 318, 447), target=(688.1, 728.1, 55.2), lens=50.6, show="all", sun=(46, 210), plumes=False,
+         hide=("HRSG 2", "BFP-2", "SCRB-2", "CEMS shelter, HRSG 2", "GT2 exhaust duct", "Common turbine hall",
+               "Turbine hall south cladding", "Turbine hall exterior", "FH-1", "FH-2", "FH-3"), hide_layers=("HALL_ROOF",),
+         ghost=dict(keep=("HRSG 1", "BFP-1", "SCRB-1", "CEMS shelter, HRSG 1", "R2A", "GT1 exhaust duct", "T-R2A"), glow=9.0)),
+    dict(k="ELV1", n="HRSG 1 train from the west at a low elevation angle: R2A e-house, trays, AIG, stack, the rest faded",
+         eye=(225, 572, 124), target=(638.5, 629.9, 79.6), lens=33.4, show="all", sun=(30, 235), plumes=False,
+         hide=("R1", "Common turbine hall", "Turbine hall south cladding", "Turbine hall exterior"), hide_layers=("HALL_ROOF",),
+         ghost=dict(keep=("HRSG 1", "BFP-1", "SCRB-1", "CEMS shelter, HRSG 1", "R2A", "GT1 exhaust duct", "T-R2A",
+                          "HRSG 2", "HRSG 3", "Brownfield outage"), glow=9.0)),
+    dict(k="RA1", n="R2A HRSG e-house cutaway: T-R2A secondary over the room, lineups, trays and every cable drop",
+         eye=(534, 606, 27), target=(570, 636, 5), lens=22, show="all", sun=(62, 200), plumes=False,
+         hide=("Cable trays and isolated",), hide_layers=("HALL_ROOF", "R2A_ROOF"), lamps=160, lamp_z=13, lamp_box=(552, 584, 612, 652),
+         fill=((560, 625, 11.0, 2500, 2), (560, 640, 11.0, 2500, 2), (575, 620, 11.0, 2500, 2), (575, 638, 11.0, 2500, 2))),
+    dict(k="RA3", n="R2A interconnection: the MV tray down to T-R2A, the EL 42 control tray into the roof riser, the EL 30 LV tray off the north wall",
+         eye=(526, 592, 54), target=(573, 648, 14), lens=21, show="all", sun=(62, 200), plumes=False,
+         hide=("Cable trays and isolated",), hide_layers=("HALL_ROOF", "R2A_ROOF", "PROCESS_PIPING")),
+    dict(k="RA2", n="R2A inside: LC-R2A and MCC-R2A-1 (right), VFDs (left), ladder trays and the drops into each section",
+         eye=(575.0, 613.6, 10.7), target=(577.2, 650, 8.6), lens=16, show="all", plumes=False,
+         lamps=220, lamp_z=13, lamp_box=(552, 584, 612, 652), clip=.03,
+         fill=((560, 625, 11.0, 1200, 2), (560, 640, 11.0, 1200, 2), (575, 620, 11.0, 1200, 2), (575, 638, 11.0, 1200, 2))),
+    dict(k="CM1", n="HRSG 1 CEMS shelter from the south-east: conduit stub-ups, XP boxes, strobe / horn, HVAC, the stack and its sample line",
+         eye=(684, 772, 26), target=(652, 810, 8), lens=30, show="base", sun=(52, 140), plumes=False,
+         look=dict(exposure=0.4)),
+    dict(k="CM2", n="CEMS shelter cutaway: analyzer racks, sample conditioning, DAHS, tray and every cable drop",
+         eye=(680, 790, 34), target=(655, 814, 3), lens=28, show="base", sun=(62, 160), plumes=False,
+         hide=("Cable trays and isolated",), hide_layers=("HALL_ROOF", "CEMS_ROOF"), lamps=60, lamp_z=10.8,
+         lamp_box=(648, 664, 806, 820), fill=((656, 812, 9.5, 1200, 2),)),
+    dict(k="CM3", n="HRSG 1 stack sampling platform (EL 100): CEMS probes, probe junction box, heated sample line on its tray",
+         eye=(662, 786, 110), target=(641.5, 795.5, 101), lens=34, show="base", sun=(45, 120), plumes=False),
+    dict(k="CM4", n="HRSG 1 stack top: obstruction lights, lighting JB and photocell, conduit, lightning air terminals and down conductors",
+         eye=(596, 766, 194), target=(628, 790, 174), lens=30, show="base", sun=(40, 230), plumes=False),
+    dict(k="BR1", n="Boiler Row aerial: package boiler AB-1, utility gas boiler UB-1 with its STG hall, electric boiler EB-1",
+         eye=(1125, 1320, 300), target=(1140, 1580, 20), lens=22, show="all", sun=(38, 215), plumes=False,
+         hide=("Cable trays and isolated",)),
+    dict(k="BR2", n="Boiler Row at grade: UB-1 burner front, gas train and BMS, FD fans; the stack and STG hall beyond",
+         eye=(1062, 1462, 58), target=(1036, 1532, 34), lens=22, show="all", sun=(38, 215), plumes=False,
+         hide=("Cable trays and isolated",)),
+    dict(k="BR3", n="Electric boiler EB-1 cutaway: electrode vessel, MV bushings, MV-105 parallel sets from its 13.8 kV e-house",
+         eye=(1322, 1528, 48), target=(1274, 1580, 14), lens=24, show="all", sun=(38, 215), plumes=False,
+         hide=("Cable trays and isolated",), hide_layers=("BOILER_ROW_ROOF",)),
+    dict(k="BR4", n="Boiler Row back bay: UB-1 station-service transformers, 13.8 kV switchgear (MV-105 starts here) and gas metering",
+         eye=(905, 1532, 46), target=(965, 1606, 6), lens=24, show="all", sun=(38, 215), plumes=False,
+         hide=("Cable trays and isolated",)),
+    dict(k="BR5", n="UB-1 burner front close-up: burners, scanners, igniters, actuators, level JBs and armoured cable",
+         eye=(1050, 1505, 56), target=(1040, 1543, 47), lens=24, show="all", sun=(38, 215), plumes=False,
+         hide=("Cable trays and isolated",)),
+    dict(k="BR6", n="Shared cooling tower: the 8 UB-1 cells at the west end of the CCS cooling tower, CW pumps (4.16 kV) and the cells' MCC",
+         eye=(150, 1640, 110), target=(330, 1800, 25), lens=24, show="all", sun=(38, 215), plumes=False,
+         hide=("Cable trays and isolated",)),
+    dict(k="BR7", n="UB-1 burner front, wide: stair tower to levels A-C, platforms on knee braces, windbox stiffeners, scanner cooling air, lights, operators",
+         eye=(1062, 1488, 44), target=(1036, 1541, 47), lens=22, show="all", sun=(38, 215), plumes=False,
+         hide=("Cable trays and isolated",)),
+    dict(k="BR8", n="Boiler Row west: condensate storage, emergency diesel generator, gas metering, package boiler AB-1 and UB-1 beyond",
+         eye=(760, 1470, 75), target=(880, 1590, 10), lens=24, show="all", sun=(38, 215), plumes=False,
+         hide=("Cable trays and isolated",)),
+    dict(k="BR9", n="UB-1 CEMS shelter at the foot of the stack, north side: heated sample line to the EL 120 platform",
+         eye=(1172, 1700, 46), target=(1128, 1636, 14), lens=26, show="all", sun=(38, 330), plumes=False, look=dict(exposure=.3),
+         hide=("Cable trays and isolated",)),
+    dict(k="MP1", n="Modular yard: AX-1 compact modular aeroderivative (~35 MW) and IG-1 industrial gas-turbine installation (~50 MW)",
+         eye=(2084, 860, 175), target=(2084, 1095, 10), lens=24, show="all", sun=(38, 215), plumes=False,
+         hide=("Cable trays and isolated",)),
+    dict(k="MP2", n="AX-1 module joint: pre-terminated plug-in interconnects (MV, control, instrumentation) across the factory modules",
+         eye=(2030, 996, 16), target=(2016, 1025, 8), lens=24, show="all", sun=(38, 215), plumes=False,
+         hide=("Cable trays and isolated",)),
+    dict(k="CC1", n="Combined cycle explained: the power block from above, hall roof off (GTs, HRSGs, stacks, ST, GSUs, ACC)",
+         eye=(965, 140, 860), target=(965, 585, 0), lens=30, show="all", res=(1920, 1080), plumes=False,
+         hide=("Common turbine hall",), hide_layers=("HALL_ROOF",), sun=(48, 160)),
+    dict(k="CC2", n="Combined cycle build: CC1 pulled back to leave title and caption room (training deck c_cc)",
+         eye=(965, -60, 1250), target=(965, 585, 0), lens=30, show="all", res=(1920, 1080), plumes=False,
+         hide=("Common turbine hall",), hide_layers=("HALL_ROOF",), sun=(48, 160)),
+    dict(k="T5G1", n="Private 5G / LTE monopole: sector platform with massive-MIMO units, microwave backhaul, base compound",
+         eye=(345, 380, 40), target=(262, 455, 62), lens=26, show="all", sun=(38, 215), plumes=False),
+    dict(k="T5G2", n="5G sector platform close-up: panel antennas, massive-MIMO units, radio units, aviation light",
+         eye=(288, 428, 110), target=(262.5, 455, 103), lens=32, show="all", sun=(38, 215), plumes=False),
+    dict(k="GATE1", n="Main gate: the SW-3X1 POWER CAMPUS welcome sign on its planted bed, barrier arms beyond",
+         eye=(52, 268, 9), target=(30, 306, 4.2), lens=30, show="all", sun=(38, 215), plumes=False),
+    dict(k="ADM5", n="Campus information sign on the office lawn: campus type and installed capacity",
+         eye=(178, 296, 7.5), target=(173.5, 318, 6), lens=32, show="all", sun=(38, 215), plumes=False),
+    dict(k="GATE2", n="Main gate checkpoint: islands with card readers, intercoms, LPR cameras, barriers, loops, gatehouse",
+         eye=(232, 252, 26), target=(275, 290, 3), lens=26, show="all", sun=(38, 215), plumes=False),
+    dict(k="GATE3", n="Access-control island close-up: open pull box with the cables, conduit stub-ups and whips into each device",
+         eye=(270.5, 265.0, 5.0), target=(265.5, 272.0, .7), lens=30, show="all", sun=(38, 215), plumes=False),
+    dict(k="AW1", n="Open office mid fit-out: MC home runs, Cat 6A on J-hooks to the desk drops, troffers going in, reel stand, wire cart, scissor lift",
+         eye=(141.0, 376.0, 6.8), target=(102.0, 356.0, 9.0), lens=20, show="all", add_layers=("CR_INTERIOR",),
+         lamps=230, lamp_z=10, lamp_box=(83, 320, 345, 396), clip=.03),
+    dict(k="AW2", n="Admin building wiring, roof and ceiling off: basket tray backbone, EMT, MC branches, fire-alarm loop, the fit-out",
+         eye=(70, 318, 62), target=(175, 372, 6), lens=24, show="all", add_layers=("CR_INTERIOR",),
+         hide_layers=("CR_ROOF",), sun=(50, 160)),
+    dict(k="AW3", n="Electrical room and MDF: MDP switchboard, T-1, panelboards with EMT risers, relay racks, UPS",
+         eye=(236.5, 385.2, 6.8), target=(244.0, 394.0, 5.0), lens=17, show="all", add_layers=("CR_INTERIOR",),
+         hide_layers=("CR_ROOF",), sun=(50, 160), clip=.03),
+    dict(k="AW4", n="Control room raised access floor: lifted tiles showing the under-floor tray, MC power and fibre to the consoles",
+         eye=(310.0, 384.0, 7.0), target=(306.0, 366.0, .8), lens=22, show="all", add_layers=("CR_INTERIOR",),
+         lamps=230, lamp_z=10, lamp_box=(83, 320, 345, 396), clip=.03),
+    dict(k="E58", n="Cable reel yard: SIMpull Truck unloading SIMpull Reels on payoffs, reel rows",
+         eye=(214, 702, 15), target=(160, 752, 6), lens=28, show="base"),
+    dict(k="E108", n="Plant gas yard: inlet ESD, metering, regulation, performance heater, filter-separators, GT header",
+         eye=(1622, 1432, 46), target=(1700, 1512, 4), lens=24, show="base", sun=(38, 215)),
+    dict(k="E109", n="Pipeline M&R station: pig receiver, filter-separator, line heaters, custody meters, regulation",
+         eye=(1600, 1712, 80), target=(1680, 1815, 3), lens=26, show="base", sun=(38, 215)),
+    dict(k="E110", n="Gas yard cable: rigid conduit and exposed ARMOR-X MC-HL on Unistrut, drops to XP JBs",
+         eye=(1622, 1519, 16), target=(1700, 1504, 6), lens=22, show="base", sun=(38, 215)),
+    dict(k="E111", n="Green hydrogen: 2 kV DC conductors pulled from JAX reel stands into the electrolyzer DC tray",
+         eye=(2123, 1471.5, 17), target=(2108, 1482, 10), lens=22, show="all", sun=(50, 200), hide_layers=["H2_ROOF"]),
+    dict(k="E112", n="LNG: ARMOR-X MC-HL pulled onto rack LNG-C1, from the e-house roof to the send-out pumps",
+         eye=(1985, 1897, 26), target=(2010, 1858, 6), lens=24, show="all", sun=(38, 215)),
+    dict(k="E113", n="Gas meter house (M&R): instrumentation cable terminated in the meter-run JB, wire wagon feeding",
+         eye=(1659, 1802, 10), target=(1646, 1789, 3.5), lens=26, show="base", sun=(38, 215)),
+    dict(k="E114", n="RICE yard: services rack along the exhaust trains, drops into the urea-dosing cabinets",
+         eye=(1566, 1026, 13), target=(1650, 1034, 10), lens=24, show="all", sun=(30, 235)),
+    dict(k="E115", n="RICE generator cables: MV-105 on the ladder-tray bridge to the PCM, crew dressing the cables",
+         eye=(1852, 1099, 16.5), target=(1833, 1113, 11.5), lens=24, show="all", sun=(34, 230)),
+    dict(k="E116", n="RICE radiators: fan disconnects and ARMOR-X MC on strut up the radiator rows",
+         eye=(1822, 1228, 9), target=(1720, 1160, 7), lens=26, show="all", sun=(30, 240)),
+    dict(k="E117", n="Modular power yard from above: RICE hall, aero units, drives, racks and the PCM",
+         eye=(1560, 760, 230), target=(1930, 1130, 0), lens=32, show="all", sun=(36, 230)),
+    dict(k="E118", n="Carbon capture: absorbers A-C with the green CCS band, strippers and compression beyond",
+         eye=(420, 960, 150), target=(800, 1225, 215), lens=30, show="all", sun=(30, 225)),
+    dict(k="E119", n="Carbon capture train A: rich / lean amine pump skid, safety showers, pipe rack, absorber beyond",
+         eye=(716, 1020, 30), target=(680, 1090, 4), lens=24, show="all", sun=(30, 225)),
+    dict(k="E120", n="TM-1 generator leads: ground trays from the terminal boxes to the pad, over the drive-over ramp",
+         eye=(2282, 830, 26), target=(2232, 760, 2), lens=24, show="all", sun=(30, 235)),
+    dict(k="E121", n="Turbine hall roof: MC risers over the eave and up the roof to the exhauster trays",
+         eye=(1125, 410, 112), target=(1098, 465, 99), lens=26, show="all", sun=(34, 230)),
+    dict(k="E123", n="The SW-3X1 campus from the south-west: power block, carbon capture, modular yard and the BTM campus",
+         eye=(-420, -820, 760), target=(1250, 880, 0), lens=34, show="dc", plumes=True, look=LOOK_GOLDEN),
+    dict(k="E124", n="Along the main E-W pipe and cable rack, the HRSG stacks alongside",
+         eye=(500, 846, 52), target=(860, 800, 70), lens=22, show="all", plumes=True, sun=(30, 230)),
+    dict(k="E122", n="LNG cable pull from above: one MC-HL rack from the e-house roof entry, rope to the capstan",
+         eye=(2042, 1880, 32), target=(2010, 1835, 6), lens=26, show="all", sun=(34, 230)),
+    dict(k="P110", n="Gas yard at eye level: conduit rack and ARMOR-X MC-HL on Unistrut between the equipment rows",
+         eye=(1646, 1499.0, 5.4), target=(1690, 1511.0, 7.4), lens=35, show="base", sun=(14, 250),
+         look=LOOK_GOLDEN, dof=(26, 4.0), hide=("People (scale figures", "Gas yard: operators")),
+    dict(k="P19", n="SW-3X1 campus: 16 zones (deck overview)", eye=(-800, -1500, 1100), target=(1210, 960, 0), lens=36,
+         show="all", res=(2400, 1350), sun=(42, 200), hide_layers=("OPT_LNG", "OPT_LNG_ROUTES", "OPT_H2", "OPT_H2_ROUTES",
+         "OPT_H2P", "OPT_H2P_ROUTES", "H2_ROOF", "OPT_UNDERGROUND"), deck_markers=True,
+         callouts=[(1000, 150, 22, "01", "Switchyard, GSU & grid tie", "#e07a2e"), (1735, 600, 14, "02", "BESS yard", "#e07a2e"),
+                  (180, 795, 16, "03", "Reel staging & prefab", "#e07a2e"), (200, 370, 24, "04", "Admin & control room", "#e07a2e"),
+                  (728, 632, 18, "05", "E-house", "#e07a2e"), (790, 680, 104, "06", "HRSG trains & stacks", "#e07a2e"),
+                  (950, 470, 104, "07", "Turbine hall", "#e07a2e"), (630, 385, 138, "08", "GT air inlets", "#e07a2e"),
+                  (442, 690, 28, "09", "MCC, VFD & UPS room", "#e07a2e"), (1955, 890, 20, "10", "Modular power yard", "#e07a2e"),
+                  (1290, 580, 128, "11", "Air-cooled condenser", "#e07a2e"), (180, 1240, 52, "12", "Chillers & cooling towers", "#e07a2e"),
+                  (520, 1488, 34, "13", "Water treatment", "#e07a2e"), (690, 1220, 200, "14", "Carbon capture (CCS)", "#e07a2e"),
+                  (1700, 1530, 16, "15", "Gas metering", "#e07a2e"), (1000, 838, 44, "16", "Cable corridor & MV", "#e07a2e"),
+                  (0, 0, 0, "C", "", "#000000"), (2420, 0, 0, "C", "", "#000000"), (2420, 1920, 0, "C", "", "#000000"), (0, 1920, 0, "C", "", "#000000")]),
+    dict(k="P21", n="Turbine hall at eye level: GT1 on the EL 20 deck, tray-support frames and cable drops overhead",
+         eye=(612, 519, 25.4), target=(631, 476, 30), lens=24, show="all", hide=("Common turbine hall", "People (scale figures"),
+         hide_layers=("HALL_ROOF",), look=LOOK_GOLDEN, sun=(30, 215), dof=(30, 5.6)),
+    dict(k="E106", n="Electrolyzer hall, roof off: five PEM skids, rectifiers and the DC cable trays over the aisle",
+         eye=(2046, 1408, 78), target=(2078, 1482, 2), lens=24, show="all", sun=(45, 200), hide_layers=["H2_ROOF"]),
+    dict(k="E107", n="Electrolyzer hall aisle: DC cable trays from the rectifiers to the PEM stacks, H2 header",
+         eye=(2117, 1488.6, 5.8), target=(2040, 1481, 9.5), lens=20, show="all", sun=(50, 200), hide_layers=["H2_ROOF"]),
+    dict(k="E105", n="H2 30 blending station in the gas yard: hydrogen and gas meter runs, static mixer, analyser",
+         eye=(1752, 1404, 58), target=(1848, 1474, 3), lens=24, show="all", sun=(38, 200)),
+    dict(k="E103", n="Hydrogen receiving station: ESD, pig receiver, filters, metering, pressure reduction",
+         eye=(2262, 1446, 52), target=(2318, 1530, 4), lens=24, show="all", sun=(38, 200),
+         add_layers=["OPT_H2P", "OPT_H2P_ROUTES"], hide_layers=["OPT_H2", "OPT_H2_ROUTES"]),
+    dict(k="E104", n="Hydrogen-ready zone: reserve pad for on-site electrolysis, receiving station and the tube-trailer bay",
+         eye=(1990, 1700, 150), target=(2215, 1530, 0), lens=26, show="all", sun=(40, 200),
+         add_layers=["OPT_H2P", "OPT_H2P_ROUTES"], hide_layers=["OPT_H2", "OPT_H2_ROUTES"]),
+    dict(k="E102", n="HRSG 1 outlet hood from the east: casing outlet converging into the stack's side inlet",
+         eye=(716, 846, 118), target=(632, 768, 46), lens=26, show="base", sun=(32, 95)),
+    dict(k="E101", n="HRSG 1 from the west: GT exhaust diffuser, 130 ft casing with the drums on top, stack at the outlet",
+         eye=(470, 640, 150), target=(640, 690, 50), lens=26, show="all", sun=(35, 230)),
+    dict(k="E100", n="HRSG 1 west side: EL 42 control / instrument tray from the R2 e-house to the HRSG marshalling box",
+         eye=(546, 728, 64), target=(584, 662, 32), lens=22, show="all", sun=(40, 230)),
+    dict(k="E26", n="HRSG 1 west wall: buckstays, SCR doors, ammonia injection grid, downcomers, blowdown tank",
+         eye=(452, 905, 92), target=(628, 690, 52), lens=28, show="all"),
+    dict(k="E27", n="HRSG roofs: drums, risers, safety valves and silencers, steam leads", eye=(560, 618, 122),
+         target=(645, 705, 92), lens=24, show="all"),
+    dict(k="E28", n="HRSG 1 stack: breeching joint, CEMS probes and sample line, caged ladder, CEMS shelter",
+         eye=(712, 900, 128), target=(632, 792, 70), lens=30, show="base"),
+    dict(k="E29", n="HRSG 3 cutaway: tube harps, headers and the SCR / CO catalyst in gas-flow order",
+         eye=(872, 560, 96), target=(950, 684, 34), lens=24, show="all", hide=("HRSG 3 + SCR",),
+         sun=(42, 200)),
+    dict(k="E30", n="Access road by the turbine hall: crews, pickups, mobile crane, hydrants and GSU deluge",
+         eye=(520, 268, 9), target=(760, 330, 18), lens=28, show="all"),
+    dict(k="E31", n="Switchyard bay D2: breakers with mechanisms, disconnect blades, trench to the relay house",
+         eye=(862, 102, 30), target=(905, 160, 14), lens=24, show="all"),
+    dict(k="E32", n="Station electrical: R2 e-houses with stairs and cable entries, unit transformers, manholes",
+         eye=(512, 596, 20), target=(568, 642, 7), lens=24, show="all"),
+    dict(k="E33", n="Emergency diesel generators beside the turbine-hall gallery", eye=(498, 312, 18),
+         target=(450, 346, 9), lens=24, show="all"),
+    dict(k="E34", n="ACC south-east corner: street risers, wind wall, stair tower, fan bells under the deck", eye=(1506, 322, 58),
+         target=(1388, 470, 92), lens=24, show="all"),
+    dict(k="E35", n="Tank farm: raw, fire / service and demineralised water tanks, headers, fire pump house",
+         eye=(668, 1668, 46), target=(560, 1578, 14), lens=24, show="all"),
+    dict(k="E36", n="Ammonia storage and the auxiliary boiler: bund, scrubber, safety shower, burner and FD fan",
+         eye=(866, 1418, 34), target=(915, 1478, 16), lens=24, show="all"),
+    dict(k="E37", n="Main gate and gatehouse: barrier arms, card readers, CCTV, entrance sign, control / admin building",
+         eye=(352, 246, 34), target=(240, 322, 6), lens=24, show="all"),
+    dict(k="E38", n="Warehouse and workshop yard: dumpsters, stock racks, gas-cylinder cage, delivery flatbed",
+         eye=(96, 690, 40), target=(190, 585, 6), lens=24, show="all"),
+    dict(k="E125", n="Carbon capture train A from grade: the 60 ft direct-contact cooler, its arched outlet duct and the absorber",
+         eye=(470, 930, 10), target=(612, 1070, 92), lens=18, show="all"),
+    dict(k="E39", n="Carbon capture train A: flue duct into the DCC, booster fan, overhead duct to the absorber, amine rack",
+         eye=(515, 1290, 105), target=(655, 1075, 30), lens=24, show="all"),
+    dict(k="E40", n="Regenerators: strippers with overhead lines, reboilers, reflux drums, CO2 header to compression",
+         eye=(1335, 1075, 85), target=(1140, 1195, 55), lens=24, show="all", sun=(28, 140)),
+    dict(k="E41", n="BESS aisle: containers with rack doors and vents, PCS / MV skids, DC trenches, collector feeders",
+         eye=(1548, 596, 28), target=(1672, 538, 4), lens=24, show="all"),
+    dict(k="E42", n="BESS collector e-house, main power transformer and EMS, with the container rows behind",
+         eye=(1700, 318, 42), target=(1800, 420, 8), lens=24, show="all"),
+    dict(k="E43", n="GT inlet chilling: chiller building, CW pumps and e-house, the chiller cooling tower behind",
+         eye=(345, 1015, 58), target=(175, 1195, 16), lens=24, show="all"),
+    dict(k="E44", n="Inlet-chilling tower: fans, louvres, stair, CHW pumps and the TES tank",
+         eye=(22, 1372, 72), target=(185, 1235, 18), lens=24, show="all"),
+    dict(k="E45", n="LNG satellite: unloading arms, ambient vaporizers, vacuum-jacketed tanks in the impoundment",
+         eye=(1862, 1655, 58), target=(2075, 1790, 6), lens=24, show="all"),
+    dict(k="E46", n="Green hydrogen: electrolyzer building, dryer, compressors, tube banks, T-H2",
+         eye=(1985, 1612, 72), target=(2215, 1500, 4), lens=24, show="all"),
+    dict(k="E47", n="BTM data centre: two data halls with rooftop dry coolers, BESS, gensets, modular yard beside",
+         eye=(2380, 140, 340), target=(2900, 900, 20), lens=24, show="dc", callouts=[c for c in BTM_CALLOUTS if "34.5 kV BUS" not in c[4]]),
+    dict(k="E48", n="BTM substation: 13.8/34.5 kV step-ups, 230 kV tie (normally open), switchgear, BTM BESS",
+         eye=(2470, 700, 60), target=(2610, 830, 12), lens=24, show="dc", callouts=BTM_CALLOUTS),
+    dict(k="E49", n="Stormwater detention pond: grass banks, permanent pool, forebay berm, ramp, pump station",
+         eye=(345, 1395, 95), target=(160, 1560, -6), lens=24, show="all"),
+    dict(k="E50", n="Wastewater treatment: equalization basin, neutralization, clarifier, sludge tank, press building",
+         eye=(800, 1405, 78), target=(680, 1490, 4), lens=24, show="all"),
+    dict(k="E126", n="Contractor area on the laydown pad: conduit racks and bundles, telehandler, SIMpull paralleled pull, cut-to-length, job-site services",
+         eye=(334, 672, 72), target=(250, 752, 2), lens=24, show="all"),
+    dict(k="E127", n="SIMpull paralleled feeder pull: three reels, one grip, Maxis XD10; reel return; MV pull on rollers; LED stand lights",
+         eye=(318, 726, 13), target=(270, 708, 2), lens=24, show="all"),
+    dict(k="E132", n="Pre-wire pad: the three standardized kits (GT aux harness, pump-skid motor leads, e-house split interconnects)",
+         eye=(126.0, 972.0, 19.0), target=(127.0, 1004.0, 1.5), lens=18, show="all"),
+    dict(k="E133", n="E-house split interconnect kit beside the PDC shipping splits",
+         eye=(140.0, 908.0, 9.0), target=(124.0, 930.0, 3.0), lens=26, show="all"),
+    dict(k="E136", n="Kit 1 being fitted to a bare lube-oil skid: harness trunk in the tray, branches plugged into the devices",
+         eye=(161.0, 960.0, 13.0), target=(137.0, 980.0, 4.0), lens=24, show="all"),
+    dict(k="E137", n="Pre-wire pad ready row: HRSG chemical-feed skid tested and ready to set, lube-oil skid getting kit 1",
+         eye=(178.0, 944.0, 24.0), target=(148.0, 980.0, 3.0), lens=24, show="all"),
+    dict(k="E138", n="Pre-wire pad east: power skid with its pre-terminated tails going on, instrument-air skid being wired, CEMS shelter ready to set",
+         eye=(222.0, 940.0, 26.0), target=(188.0, 980.0, 3.0), lens=24, show="all"),
+    dict(k="E139", n="BFP-1B motor: terminal box opened on kit 2's pre-terminated 13.8 kV leads, instrument harness plugged",
+         eye=(692.0, 633.0, 8.5), target=(685.0, 643.6, 5.4), lens=22, show="all", fill=((691.0, 636.0, 13.0, 18000, 3), (679.0, 639.0, 11.0, 9000, 3))),
+    dict(k="E140", n="Prefab electrical yard: 15 kV switchgear, VFD and UPS lineups with cabinets open, a breaker on its lift truck",
+         eye=(262.0, 903.0, 15.0), target=(262.0, 950.0, 3.5), lens=17, show="all"),
+    dict(k="E141", n="Panel shop: benches with back-panels mid-build, enclosures open, easel, wire spools, test bench",
+         eye=(248.0, 972.0, 9.5), target=(254.0, 1008.0, 3.5), lens=20, show="all",
+         fill=((250.0, 995.0, 14.0, 16000, 3), (272.0, 1005.0, 14.0, 12000, 3))),
+    dict(k="E142", n="Panel shop close-up: an enclosure open, the back-panel built out (wire duct, DIN rails, terminals, breakers, wiring)",
+         eye=(244.4, 1012.6, 5.4), target=(243.5, 1019.5, 3.9), lens=24, show="all",
+         fill=((241.0, 1013.5, 9.0, 2200, 2),)),
+    dict(k="E146", n="Golden hour from the south-east: the modular gas blocks in front, the carbon-capture absorbers and the power block beyond",
+         eye=(2445.0, 395.0, 62.0), target=(1700.0, 880.0, 30.0), lens=30, show="everything", site=True,
+         sun=(8, 285), look=LOOK_GOLDEN, plumes=False),
+    dict(k="E147", n="Modular power park: aeroderivative package, trailer gas-engine fleet, containerized engines, paralleled gensets, linear generators, fuel cells, microturbines",
+         eye=(1868.0, 320.0, 230.0), target=(2055.0, 565.0, 0.0), lens=24, show="all"),
+    dict(k="E148", n="Power park close: the trailer gas-engine fleet in front, the aeroderivative package beyond",
+         eye=(2078.0, 528.0, 34.0), target=(1992.0, 640.0, 9.0), lens=24, show="all"),
+    dict(k="E149", n="AX-1 compact modular aeroderivative: control platform, inlet filter house, turbine module, stack, generator module on legs",
+         eye=(2034.0, 918.0, 36.0), target=(2030.0, 1036.0, 20.0), lens=30, show="all"),
+    dict(k="E150", n="IG-1 industrial gas turbine: building, raised filter house, exhaust diffuser into the stack, E&C module",
+         eye=(2212.0, 972.0, 42.0), target=(2135.0, 1032.0, 28.0), lens=24, show="all"),
+    dict(k="E151", n="Containerized gas engines stacked: engine containers on grade, cooling containers and radiators on the deck above",
+         eye=(1925.0, 425.0, 48.0), target=(1990.0, 492.0, 10.0), lens=28, show="all"),
+    dict(k="E152", n="Gas engines with heat recovery: the engine row, exhaust heat exchangers and stacks on the rack, hot-water headers",
+         eye=(2112.0, 600.0, 46.0), target=(2150.0, 672.0, 12.0), lens=26, show="all"),
+    dict(k="E156", n="PAD-EH and SWG-MY on the middle park lane: links buried, the PIC cable crossing under a protector",
+         eye=(2200.0, 395.0, 55.0), target=(2205.0, 478.0, 6.0), lens=26, show="all"),
+    dict(k="E155", n="Modular yard regrouped: the four RICE group step-ups beside the PCM, the 34.5 kV lanes south to MOD-EH",
+         eye=(1965.0, 1005.0, 72.0), target=(1872.0, 1088.0, 8.0), lens=26, show="all"),
+    dict(k="E154", n="Power park collector substation: SWG-PK 34.5 kV switchgear, T-MOD-3 under the extended 230 kV gantry, T-MOD-1/2 beyond",
+         eye=(2262.0, 778.0, 70.0), target=(2160.0, 860.0, 22.0), lens=26, show="all"),
+    dict(k="E153", n="Mid-size gas turbine site: two packages with raised barrel filter houses, stacks on their frames, coolers, switchgear",
+         eye=(2110.0, 640.0, 85.0), target=(2005.0, 716.0, 18.0), lens=26, show="all"),
+    dict(k="E143", n="Modular gas blocks: four blocks of five 500 kW units, collector boxes, 34.5 kV step-ups, the loop to SWG-MY",
+         eye=(2195.0, 395.0, 105.0), target=(2302.0, 545.0, 0.0), lens=28, show="all"),
+    dict(k="E145", n="Down the group road: two rows of blocks facing the road, collector boxes and pad-mount step-ups on the loop",
+         eye=(2302.0, 436.0, 20.0), target=(2302.0, 560.0, 3.0), lens=28, show="all"),
+    dict(k="E144", n="Block GB-1 close-up: lead trench open on the 480 V lead sets to the collector box, terminal box open",
+         eye=(2284.5, 459.0, 8.0), target=(2281.5, 495.0, .8), lens=24, show="all",
+         fill=((2280.0, 462.0, 14.0, 2200, 3),)),
+    dict(k="E134", n="Kit 4, BESS block kit in the BESS yard: DC home runs, 35 kV elbow jumpers, aux / BMS / FA harness, grounding",
+         eye=(1648.0, 384.0, 14.0), target=(1646.0, 420.0, 2.5), lens=24, show="all"),
+    dict(k="E135", n="Kit 5, modular generator kit staged on the reserved SC-3 pad: 13.8 kV leads, plug-in control / comms harness, cam-lock sets",
+         eye=(1974.0, 1281.0, 13.0), target=(1974.0, 1315.0, 2.5), lens=24, show="all"),
+    dict(k="E128", n="Admin building fit-out: metal-stud partition with boxes and MC drops, EMT bending, Maxis puller, SIMpull barrels",
+         eye=(133.5, 376.0, 6.5), target=(92.0, 354.0, 1.8), lens=20, show="all", add_layers=("CR_INTERIOR",),
+         lamps=180, lamp_z=10, lamp_box=(83, 320, 345, 396), clip=.03),
+    dict(k="E130", n="Admin building fit-out: the new metal-stud partition, steel boxes with mud rings, MC drops from the J-hooks",
+         eye=(129.5, 361.0, 4.0), target=(136.0, 364.0, 2.6), lens=22, show="all", add_layers=("CR_INTERIOR",),
+         lamps=180, lamp_z=10, lamp_box=(83, 320, 345, 396), clip=.03),
+    dict(k="E129", n="Cable-in-Conduit reels with a cutaway length on the ground; conduit racks, bundles and the bending station",
+         eye=(214, 680, 10), target=(214, 704, 2.5), lens=24, show="all"),
+]
+
+
+def hero_set(coastal=None, name=""):
+    """Cameras, sun (elevation, azimuth) and sheet reference for the scene being rendered."""
+    if name == "epic":
+        return dict(heroes=EPIC, sun=(11, 250), sheet="SW-3X1")
+    if not coastal:
+        return dict(heroes=HEROES, sun=(24, 258), sheet="SW-3X1")
+    heroes = COASTAL_A if coastal["variant"] == "A" else COASTAL_B
+    t = coastal.get("transform")
+    if t:                                   # cameras are framed on sheet 15; rotate them onto the site
+        f = lambda p: (t["c"] - p[1], p[0] - t["d"], p[2])
+        heroes = [h if h.get("site") else dict(h, eye=f(h["eye"]), target=f(h["target"])) for h in heroes]
+    return dict(heroes=heroes, sun=(28, 140), sheet="SW-3X1-15")
+
+
+# ------------------------------------------------------------------------------------------------- backdrop
+SITE_C = (1210.0, 960.0)
+
+
+def ground_h(x, y):
+    """Terrain height (ft) of the backdrop: flat around the site, rolling hills beyond ~5,000 ft."""
+    d = math.hypot(x - SITE_C[0], y - SITE_C[1])
+    if d < 5200:
+        return 0.0
+    t = min(1.0, (d - 5200) / 9000)
+    t = t * t * (3 - 2 * t)
+    n = (math.sin(x * .00031 + 1.3) * math.cos(y * .00027 - .4) + .55 * math.sin(x * .00071 - y * .00052 + 2.1)
+         + .3 * math.sin(x * .0013 + y * .0011))
+    return t * (170 + 110 * n)
+
+
+def _fields_material():
+    """Farmland: field parcels (Voronoi cells, ~650 ft) in crop / pasture / stubble colours with fine row striping."""
+    m = bpy.data.materials.new("pro fields")
+    m.use_nodes = True
+    nt = m.node_tree
+    L = nt.links
+    b = nt.nodes["Principled BSDF"]
+    b.inputs["Roughness"].default_value = .96
+    geo = _node(nt, "ShaderNodeNewGeometry", (-1600, 0))
+    mp = _node(nt, "ShaderNodeMapping", (-1400, 0))                  # rectangular parcels ~1,300 x 650 ft, rotated
+    mp.inputs["Rotation"].default_value = (0, 0, math.radians(8))
+    mp.inputs["Scale"].default_value = (.5, 1.0, 1.0)
+    L.new(geo.outputs["Position"], mp.inputs["Vector"])
+    vor = _node(nt, "ShaderNodeTexVoronoi", (-1100, 200), Scale=.005, Randomness=0.0)
+    vor.feature = "F1"
+    L.new(mp.outputs["Vector"], vor.inputs["Vector"])
+    sep = _node(nt, "ShaderNodeSeparateColor", (-900, 200))
+    L.new(vor.outputs["Color"], sep.inputs["Color"])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    ramp.location = (-700, 200)
+    ramp.color_ramp.interpolation = "CONSTANT"
+    cols = ["#5a6d38", "#77823f", "#a99d62", "#617340", "#8a7a52", "#4f6634", "#93935a", "#6b7c3c"]
+    els = ramp.color_ramp.elements
+    els[0].position, els[0].color = 0.0, lin(cols[0])
+    els[1].position, els[1].color = 1 / len(cols), lin(cols[1])
+    for k, c in enumerate(cols[2:], start=2):
+        e = els.new(k / len(cols))
+        e.color = lin(c)
+    L.new(sep.outputs["Red"], ramp.inputs["Fac"])
+    # rows: fine stripes whose direction changes per field (wave texture on a per-cell rotated coordinate)
+    wave = _node(nt, "ShaderNodeTexWave", (-900, -150), Scale=.6, Distortion=.4)
+    wave.bands_direction = "DIAGONAL"
+    L.new(geo.outputs["Position"], wave.inputs["Vector"])
+    rows = _node(nt, "ShaderNodeMix", (-450, 0))
+    rows.data_type = "RGBA"
+    rows.blend_type = "MULTIPLY"
+    rows.inputs["Factor"].default_value = .12
+    L.new(ramp.outputs["Color"], rows.inputs[6])
+    L.new(wave.outputs["Color"], rows.inputs[7])
+    # field edges: a darker hedge line where the Voronoi distance to the cell border is small
+    edge = _node(nt, "ShaderNodeTexVoronoi", (-1100, -400), Scale=.005, Randomness=0.0)
+    edge.feature = "DISTANCE_TO_EDGE"
+    L.new(mp.outputs["Vector"], edge.inputs["Vector"])
+    er = _node(nt, "ShaderNodeMapRange", (-700, -400))
+    er.inputs["From Min"].default_value, er.inputs["From Max"].default_value = .0, .018
+    er.inputs["To Min"].default_value, er.inputs["To Max"].default_value = .62, 1.0
+    L.new(edge.outputs["Distance"], er.inputs["Value"])
+    hedge = _node(nt, "ShaderNodeMix", (-250, 0))
+    hedge.data_type = "RGBA"
+    hedge.blend_type = "MULTIPLY"
+    hedge.inputs["Factor"].default_value = 1.0
+    L.new(rows.outputs[2], hedge.inputs[6])
+    comb = _node(nt, "ShaderNodeCombineColor", (-450, -400))
+    L.new(er.outputs[0], comb.inputs["Red"]); L.new(er.outputs[0], comb.inputs["Green"]); L.new(er.outputs[0], comb.inputs["Blue"])
+    L.new(comb.outputs[0], hedge.inputs[7])
+    L.new(hedge.outputs[2], b.inputs["Base Color"])
+    n2 = _node(nt, "ShaderNodeTexNoise", (-700, -650), Scale=1.5, Detail=8)
+    L.new(geo.outputs["Position"], n2.inputs["Vector"])
+    bump = _node(nt, "ShaderNodeBump", (-250, -650), Strength=.25)
+    L.new(n2.outputs["Fac"], bump.inputs["Height"])
+    L.new(bump.outputs["Normal"], b.inputs["Normal"])
+    return m
+
+
+def _mesh(coll, name, verts, faces, mats):
+    me = bpy.data.meshes.new(name)
+    me.from_pydata(verts, [], faces)
+    for m in mats:
+        me.materials.append(m)
+    ob = bpy.data.objects.new(name, me)
+    coll.objects.link(ob)
+    return ob, me
+
+
+def _bars(segs, w):
+    """Thin square bars between point pairs (ft) as one vertex / face list (m)."""
+    verts, faces = [], []
+    for a, b in segs:
+        a, b = Vector(a), Vector(b)
+        ax = (b - a).normalized()
+        ref = Vector((0, 0, 1)) if abs(ax.z) < .9 else Vector((1, 0, 0))
+        u = ax.cross(ref).normalized() * w / 2
+        v = ax.cross(u).normalized() * w / 2
+        base = len(verts)
+        for p in (a, b):
+            for (su, sv) in ((1, 1), (-1, 1), (-1, -1), (1, -1)):
+                verts.append(tuple((p + u * su + v * sv) * FT))
+        faces += [(base + i, base + (i + 1) % 4, base + 4 + (i + 1) % 4, base + 4 + i) for i in range(4)]
+    return verts, faces
+
+
+def lattice_tower():
+    """230 kV double-circuit lattice tower (local: line along +y, arms along x), ~140 ft; returns (segments, phase
+    attachment points, shield-wire points)."""
+    segs = []
+    lv = [(0, 16), (36, 9.5), (88, 5.2), (128, 4.0)]                 # (z, half width) of the leg profile
+    corners = [(1, 1), (-1, 1), (-1, -1), (1, -1)]
+    for (z0, h0), (z1, h1) in zip(lv, lv[1:]):
+        for (sx, sy) in corners:
+            segs.append(((sx * h0, sy * h0, z0), (sx * h1, sy * h1, z1)))
+        n = 3 if z1 - z0 > 30 else 2
+        for k in range(n):                                            # X-bracing panels on all four faces
+            za, zb = z0 + (z1 - z0) * k / n, z0 + (z1 - z0) * (k + 1) / n
+            ha, hb = h0 + (h1 - h0) * k / n, h0 + (h1 - h0) * (k + 1) / n
+            for i in range(4):
+                (ax_, ay_), (bx_, by_) = corners[i], corners[(i + 1) % 4]
+                segs.append(((ax_ * ha, ay_ * ha, za), (bx_ * hb, by_ * hb, zb)))
+                segs.append(((bx_ * ha, by_ * ha, za), (ax_ * hb, ay_ * hb, zb)))
+            for i in range(4):
+                (ax_, ay_), (bx_, by_) = corners[i], corners[(i + 1) % 4]
+                segs.append(((ax_ * hb, ay_ * hb, zb), (bx_ * hb, by_ * hb, zb)))
+    phases, shields = [], []
+    for z, L_ in ((86, 24), (102, 28), (118, 24)):                   # three crossarms, both sides
+        h = 5.2 - (z - 88) * (1.2 / 40)
+        for s in (-1, 1):
+            for yy in (-h, h):
+                segs.append(((s * h, yy, z), (s * L_, 0, z)))
+                segs.append(((s * h, yy, z - 7), (s * L_, 0, z)))
+            phases.append((s * (L_ - 1.5), 0, z - 9))
+            segs.append(((s * (L_ - 1.5), 0, z), (s * (L_ - 1.5), 0, z - 9)))   # insulator string
+    for s in (-1, 1):                                                  # shield-wire peaks
+        segs.append(((s * 4, -4, 128), (s * 10, 0, 140)))
+        segs.append(((s * 4, 4, 128), (s * 10, 0, 140)))
+        shields.append((s * 10, 0, 140))
+    return segs, phases, shields
+
+
+def transmission_lines(coll, paths):
+    """Lattice towers along each path (list of (x, y) ft), conductors as catenaries between them."""
+    steel = material("steel")
+    insul = material("insulator")
+    cond = material("conductor")
+    segs, phases, shields = lattice_tower()
+    n_t = 0
+    for path in paths:
+        pts = []
+        for a, b in zip(path, path[1:]):                              # towers every ~1,000 ft along the path
+            L_ = math.dist(a, b)
+            n = max(1, round(L_ / 1000))
+            for k in range(n):
+                pts.append((a[0] + (b[0] - a[0]) * k / n, a[1] + (b[1] - a[1]) * k / n))
+        pts.append(path[-1])
+        heads = []
+        for i, (x, y) in enumerate(pts):
+            a = pts[max(0, i - 1)]
+            b = pts[min(len(pts) - 1, i + 1)]
+            ang = math.atan2(b[1] - a[1], b[0] - a[0]) - math.pi / 2       # arms perpendicular to the line
+            ca, sa = math.cos(ang), math.sin(ang)
+            gz = ground_h(x, y)
+            T = lambda p: (x + p[0] * ca - p[1] * sa, y + p[0] * sa + p[1] * ca, gz + p[2])
+            v, f = _bars([(T(p), T(q)) for p, q in segs], .9)
+            _mesh(coll, "pro tower", v, f, [steel])
+            heads.append(([T(p) for p in phases], [T(p) for p in shields]))
+            n_t += 1
+        cv, cf = [], []
+        for (h0, s0), (h1, s1) in zip(heads, heads[1:]):
+            for a, b, sag, w in [(p, q, 28, .55) for p, q in zip(h0, h1)] + [(p, q, 22, .35) for p, q in zip(s0, s1)]:
+                N = 14
+                curve = []
+                for k in range(N + 1):
+                    t = k / N
+                    curve.append((a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t,
+                                  a[2] + (b[2] - a[2]) * t - 4 * sag * t * (1 - t)))
+                v, f = _bars(list(zip(curve, curve[1:])), w)
+                base = len(cv)
+                cv += v
+                cf += [tuple(base + i for i in face) for face in f]
+        _mesh(coll, "pro conductors", cv, cf, [cond])
+    return n_t
+
+
+def backdrop(scene, coll, coastal=None):
+    """Context around the site for the wide shots: rolling hills with farmland, a highway with traffic, and the two
+    230 kV transmission lines leaving the switchyard across the fields."""
+    fields = _fields_material()
+    for ob in coll.objects:                                           # the flat surround becomes farmland too
+        if ob.name.startswith("pro surround"):
+            ob.data.materials.clear()
+            ob.data.materials.append(fields)
+    north_lim = (coastal["shoreline_y"] - 40) if coastal else 1e9
+    R, step = 26000, 400
+    xs = list(range(int(SITE_C[0] - R), int(SITE_C[0] + R) + 1, step))
+    ys = [y for y in range(int(SITE_C[1] - R), int(SITE_C[1] + R) + 1, step) if y <= north_lim] + \
+         ([north_lim] if coastal else [])
+    verts, idx = [], {}
+    for j, y in enumerate(ys):
+        for i, x in enumerate(xs):
+            idx[(i, j)] = len(verts)
+            verts.append((x * FT, y * FT, (-.6 + ground_h(x, y) + .35) * FT))
+    faces = []
+    for j in range(len(ys) - 1):
+        for i in range(len(xs) - 1):
+            cx, cy = (xs[i] + xs[i + 1]) / 2, (ys[j] + ys[j + 1]) / 2
+            if math.hypot(cx - SITE_C[0], cy - SITE_C[1]) < 5400:
+                continue
+            faces.append((idx[(i, j)], idx[(i + 1, j)], idx[(i + 1, j + 1)], idx[(i, j + 1)]))
+    ob, me = _mesh(coll, "pro hills", verts, faces, [fields])
+    me.polygons.foreach_set("use_smooth", [True] * len(me.polygons))
+    # highway (four lanes) south of the site, following the ground, with traffic
+    road = material("road")
+    yh = -2200
+    hv, hf = [], []
+    xs_h = list(range(-16000, 18001, 300))
+    for k, x in enumerate(xs_h):
+        z = (ground_h(x, yh) + .1) * FT
+        hv += [(x * FT, (yh - 40) * FT, z), (x * FT, (yh + 40) * FT, z)]
+        if k:
+            b0 = 2 * (k - 1)
+            hf.append((b0, b0 + 2, b0 + 3, b0 + 1))
+    _mesh(coll, "pro highway", hv, hf, [road])
+    rng = random.Random(42)
+    car_cols = ["white_truck", "steel_dark", "red", "truck", "door", "steel", "white_truck", "hivis_o"]
+    for k in range(70):
+        x = rng.uniform(-9000, 12000)
+        lane = rng.choice((-28, -12, 12, 28))
+        big = rng.random() < .3
+        L_, W_, H_ = (65, 8.5, 13) if big else (15, 6.2, 5)
+        gz = ground_h(x, yh)
+        ob, me = _mesh(coll, "pro vehicle", [], [], [material(rng.choice(car_cols))])
+        x0, x1, y0, y1, z0, z1 = x - L_ / 2, x + L_ / 2, yh + lane - W_ / 2, yh + lane + W_ / 2, gz + .5, gz + H_
+        bv = [(xx * FT, yy * FT, zz * FT) for zz in (z0, z1) for yy in (y0, y1) for xx in (x0, x1)]
+        me.from_pydata(bv, [], [(0, 2, 3, 1), (4, 5, 7, 6), (0, 1, 5, 4), (2, 6, 7, 3), (0, 4, 6, 2), (1, 3, 7, 5)])
+    # the two 230 kV lines out of the switchyard: south across the highway, then away to the south-west
+    paths = [[(670, -260), (670, -3400), (-2600, -9800), (-7000, -17000)],
+             [(870, -260), (870, -3600), (-2300, -10000), (-6600, -17200)]]
+    n_t = transmission_lines(coll, paths)
+    # drop from the switchyard gantries (EL 40 at the fence) to the first towers
+    cond = material("conductor")
+    dv, df = [], []
+    for x in (670, 870):
+        for dxp, zt in ((-24, 77), (24, 77), (-28, 93), (28, 93), (-24, 109), (24, 109)):
+            a, b = (x + dxp * .3, 18, 40), (x + dxp, -260, zt)
+            curve = [(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t - 4 * 6 * t * (1 - t))
+                     for t in [i / 10 for i in range(11)]]
+            v, f = _bars(list(zip(curve, curve[1:])), .5)
+            base = len(dv)
+            dv += v
+            df += [tuple(base + i for i in face) for face in f]
+    _mesh(coll, "pro line drops", dv, df, [cond])
+    return n_t

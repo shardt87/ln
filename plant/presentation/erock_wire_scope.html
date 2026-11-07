@@ -1,0 +1,96 @@
+<!doctype html><html><head><meta charset="utf-8">
+<title>Bridge Power Wire Scope</title>
+<style>
+@font-face{font-family:B;src:url(../blender/deck/Barlow-Regular.ttf)}
+@font-face{font-family:BC;src:url(../blender/deck/BarlowCondensed-Bold.ttf);font-weight:700}
+@font-face{font-family:BC;src:url(../blender/deck/BarlowCondensed-ExtraBold.ttf);font-weight:800}
+@page{size:1600px 1130px;margin:0}
+*{box-sizing:border-box}
+body{margin:0;width:1600px;height:1130px;background:#121417;color:#e6e3dd;font:15px/1.4 B,Arial,sans-serif;position:relative;overflow:hidden}
+.k{font:700 13px/1 BC;letter-spacing:.24em;text-transform:uppercase;color:#d0874a}
+h1{font:800 46px/1.02 BC;text-transform:uppercase;margin:8px 0 0;color:#f4f1ec}
+h1 em{font-style:normal;color:#e08a4a}
+.sub{color:#b9bdc0;margin-top:8px;font-size:16px;max-width:1100px}
+.wrap{position:absolute;left:48px;right:48px;top:36px}
+.flow{display:flex;align-items:stretch;gap:0;margin-top:22px}
+.node{background:#1b1f23;border-top:4px solid #b4591f;padding:10px 12px;width:178px}
+.node b{display:block;font:800 17px/1.1 BC;text-transform:uppercase;color:#f4f1ec}
+.node span{display:block;color:#a9aeb3;font-size:12.5px;margin-top:4px}
+.arr{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:110px;padding:0 6px}
+.arr i{display:block;height:4px;width:100%;background:#b4591f;position:relative}
+.arr i:after{content:"";position:absolute;right:-2px;top:-6px;border-left:12px solid #b4591f;border-top:8px solid transparent;border-bottom:8px solid transparent}
+.arr small{font:700 12px/1.2 BC;letter-spacing:.06em;color:#e6b089;text-transform:uppercase;text-align:center;margin-top:6px}
+.side{margin-top:10px;display:flex;gap:10px;font:700 12px/1 BC;letter-spacing:.08em;text-transform:uppercase}
+.side div{background:#1b1f23;border-left:4px solid #5d636a;padding:7px 10px;color:#c9cdd0}
+table{width:100%;border-collapse:collapse;margin-top:18px;font-size:14px}
+th{font:700 12px/1.2 BC;letter-spacing:.12em;text-transform:uppercase;color:#8f959a;text-align:left;padding:7px 8px;border-bottom:2px solid #b4591f}
+td{padding:7px 8px;border-bottom:1px solid #2c3036;vertical-align:top}
+td.n{text-align:right;font:700 15px/1.2 BC;color:#f4f1ec;white-space:nowrap}
+td.f{font:800 15px/1.15 BC;text-transform:uppercase;color:#f4f1ec}
+tr.tot td{border-top:2px solid #b4591f;border-bottom:none;font:800 17px/1.2 BC;color:#e08a4a}
+.cols{display:flex;gap:24px;margin-top:18px}
+.box{flex:1;background:#1b1f23;border-left:4px solid #b4591f;padding:12px 16px}
+.box h3{margin:0 0 6px;font:800 18px/1 BC;text-transform:uppercase;color:#f4f1ec}
+.box ul{margin:0;padding-left:18px}
+.box li{margin:3px 0}
+.foot{position:absolute;left:48px;right:48px;bottom:22px;display:flex;justify-content:space-between;color:#80868c;font-size:11.5px;border-top:1px solid #2c3036;padding-top:8px}
+.big{display:flex;gap:28px;margin-top:6px}
+.big div{font:800 34px/1 BC;color:#e08a4a}
+.big span{display:block;font:700 12px/1.2 BC;letter-spacing:.08em;color:#a9aeb3;text-transform:uppercase;margin-top:4px}
+</style></head><body>
+<div class="wrap">
+  <div class="k">Internal · call prep · Enchanted Rock (ERock) · Oct 26, 2026</div>
+  <h1>Bridge power, <em>the full wire scope</em></h1>
+  <div class="sub">A modular natural-gas genset microgrid built the way ERock builds it: hundreds of ~450 kW gensets paralleled in blocks, stepped up and collected
+    to the site switchgear. Every megawatt passes through 600 V leads first, so the cable story is mostly low-voltage, then MV collection.</div>
+
+  <div class="flow">
+    <div class="node"><b>Genset</b><span>~450 kW natural gas, 480 V (assumed), ~680 A</span></div>
+    <div class="arr"><i></i><small>Generator leads<br>2 x 3 x 500 kcmil</small></div>
+    <div class="node"><b>Block switchgear</b><span>480 V paralleling, 4 gensets per block (assumed), ~2,700 A</span></div>
+    <div class="arr"><i></i><small>Block secondary<br>8 x 3 x 600 kcmil</small></div>
+    <div class="node"><b>Pad-mount step-up</b><span>2,500 kVA, 480 V / 34.5 kV per block</span></div>
+    <div class="arr"><i></i><small>MV collection loops<br>1/C 500 kcmil MV-105 35 kV</small></div>
+    <div class="node"><b>34.5 kV switchgear</b><span>site collector, then the data centre or the utility point of interconnection</span></div>
+  </div>
+  <div class="side"><div>+ control and sync per genset</div><div>+ instrumentation</div><div>+ fiber ring to the microgrid controller</div>
+    <div>+ aux power: jacket-water heaters, chargers</div><div>+ grounding grid</div></div>
+
+  <table>
+    <tr><th>Cable family</th><th>Where it runs</th><th>Assumed size</th><th>Southwire answer</th><th style="text-align:right">Per block (4 units)</th><th style="text-align:right">Per 100 MW</th><th style="text-align:right">Meta-scale 366 MW</th></tr>
+    <tr><td class="f">Generator leads</td><td>genset to block switchgear</td><td>2 sets x 3 x 500 kcmil Cu, 600 V, + 1/0 ground</td><td>TC-ER or XHHW-2, SIMpull; paralleled sets on SIMpull reels</td><td class="n">3,200 ft</td><td class="n">34 mi</td><td class="n">124 mi</td></tr>
+    <tr><td class="f">Block secondary</td><td>switchgear to pad-mount</td><td>8 sets x 3 x 600 kcmil Cu + ground</td><td>TC-ER / XHHW-2 on SIMpull Stack reels (or bus duct)</td><td class="n">960 ft</td><td class="n">10 mi</td><td class="n">37 mi</td></tr>
+    <tr><td class="f">MV collection</td><td>pad-mounts to 34.5 kV switchgear</td><td>1/C 500 kcmil MV-105, 35 kV, 133 %</td><td>MV-105 EPR, pre-terminated with elbows</td><td class="n">450 ft</td><td class="n">9 mi</td><td class="n">32 mi</td></tr>
+    <tr><td class="f">Aux power</td><td>aux panel to each genset</td><td>3/C #10</td><td>TC-ER power</td><td class="n">400 ft</td><td class="n">4 mi</td><td class="n">16 mi</td></tr>
+    <tr><td class="f">Control and sync</td><td>genset to block controller</td><td>12/C #14</td><td>TC-ER control</td><td class="n">400 ft</td><td class="n">4 mi</td><td class="n">16 mi</td></tr>
+    <tr><td class="f">Instrumentation</td><td>gas, temperature, emissions</td><td>shielded pairs</td><td>PLTC / ITC</td><td class="n">400 ft</td><td class="n">4 mi</td><td class="n">16 mi</td></tr>
+    <tr><td class="f">Fiber</td><td>block ring to the microgrid controller</td><td>12-strand single-mode</td><td>fiber (confirm offer / partner)</td><td class="n">400 ft</td><td class="n">4 mi</td><td class="n">16 mi</td></tr>
+    <tr><td class="f">Grounding</td><td>block pad rings, equipment</td><td>4/0 bare Cu, #2 to each genset</td><td>bare copper</td><td class="n">420 ft</td><td class="n">5 mi</td><td class="n">16 mi</td></tr>
+    <tr class="tot"><td>Total</td><td></td><td></td><td>copper, all families (Cu assumed)</td><td class="n">~6,600 ft</td><td class="n">~75 mi · ~390k lb Cu</td><td class="n">~270 mi · ~1.4M lb Cu</td></tr>
+  </table>
+
+  <div class="cols">
+    <div class="box"><h3>Where we win</h3><ul>
+      <li><b>Standard blocks = standard kits.</b> Every block is the same: cut-to-length, tagged lead sets per genset, shipped per block.</li>
+      <li><b>Paralleled pulls.</b> ~1,600 lead pulls at 366 MW: SIMpull and paralleled reels cut the pull time.</li>
+      <li><b>Factory side.</b> 1 GW/yr of genset production in Texas: harness and enclosure wire in the factory (bucket 1).</li>
+      <li><b>Reel logistics</b> on a 30-acre site: staged delivery, reel return, job-site services.</li>
+      <li><b>MV pre-terminated</b> with elbows: faster energisation of each block.</li>
+    </ul></div>
+    <div class="box"><h3>Ask on the call</h3><ul>
+      <li>Genset output voltage, kW per unit, gensets per block.</li>
+      <li>Collection voltage: 13.8 or 34.5 kV? Duct bank, tray or direct burial?</li>
+      <li>Who buys the cable: ERock, the EPC, or the utility owner (El Paso Electric for Meta)?</li>
+      <li>Copper or aluminium on the leads and collection?</li>
+      <li>Factory wiring inside the enclosure: who supplies it today?</li>
+      <li>Schedule: Meta (366 MW, May 2027 target), Microsoft San Jose, the pipeline.</li>
+    </ul></div>
+    <div class="box"><h3>Their public numbers</h3>
+      <div class="big"><div>813<span>gensets, Meta 366 MW</span></div><div>224<span>gensets, Microsoft 100 MW</span></div></div>
+      <div class="big"><div>~450 kW<span>per genset</span></div><div>1 GW/yr<span>production capacity</span></div></div>
+    </div>
+  </div>
+</div>
+<div class="foot"><span>Estimate on an assumed design (480 V, 4 gensets per block, 2,500 kVA pad-mounts, 34.5 kV collection, 100 ft lead runs, ~1,500 ft MV home runs); not ERock data. Confirm on the call.
+  Public sources: Microgrids Now (Meta, IPO), Microgrid Knowledge (San Jose), CPUC (448 kW units), mgrid.org (1 GW/yr).</span><span>Internal · stephan.hardt@southwire.com</span></div>
+</body></html>

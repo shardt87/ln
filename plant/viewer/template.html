@@ -1,0 +1,968 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SW-3X1 Plant Model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --paper:#eef0ee; --panel:#f8f9f7; --ink:#1f2b33; --ink2:#55636c; --rule:#cfd5d4;
+  --copper:#b0662b; --teal:#177f7e; --amber:#a87c14; --ok:#2f7d4f; --bad:#b3413a; --focus:#1d6fd6;
+  --scene:#e7ebe8; --chip:#e2e7e5;
+  --sans:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark; --paper:#141a1e; --panel:#1b2328; --ink:#dde3e5; --ink2:#95a3aa; --rule:#2e3a41;
+  --copper:#d0874a; --teal:#3fb2ae; --amber:#d9aa3d; --ok:#5cc08a; --bad:#e57a70; --focus:#6aa8ff; --scene:#1c2328; --chip:#24303a;}}
+:root[data-theme="dark"]{
+  color-scheme:dark; --paper:#141a1e; --panel:#1b2328; --ink:#dde3e5; --ink2:#95a3aa; --rule:#2e3a41;
+  --copper:#d0874a; --teal:#3fb2ae; --amber:#d9aa3d; --ok:#5cc08a; --bad:#e57a70; --focus:#6aa8ff; --scene:#1c2328; --chip:#24303a;}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:14px/1.45 var(--sans);margin:0}
+.wrap{padding:16px 16px 40px;max-width:1520px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 24px;border-bottom:2px solid var(--ink);padding-bottom:10px}
+h1{font-weight:700;font-size:26px;line-height:1.1;margin:0;text-wrap:balance;letter-spacing:.2px}
+h1 span{color:var(--copper)}
+.sub{color:var(--ink2);margin:4px 0 0;max-width:95ch}
+.byline{margin:4px 0 0;font:600 13px/1.3 var(--sans);letter-spacing:.3px;color:var(--copper)}
+.docno{font:500 12px/1.4 var(--mono);text-align:right;color:var(--ink2)}
+.docno b{color:var(--ink);font-weight:500}
+.grid{display:grid;grid-template-columns:260px minmax(0,1fr) 310px;gap:12px}
+@media (max-width:1150px){.grid{grid-template-columns:minmax(0,1fr)}.side{order:2}.insp{order:3}}
+.side,.insp{background:var(--panel);border:1px solid var(--rule);padding:12px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.lbl{font:600 11px/1 var(--sans);letter-spacing:.9px;text-transform:uppercase;color:var(--ink2);margin:0 0 6px}
+.views{display:flex;flex-wrap:wrap;gap:6px}
+button{font:500 12px/1 var(--sans);color:var(--ink);background:var(--chip);border:1px solid var(--rule);padding:7px 9px;cursor:pointer;border-radius:2px}
+button:hover{border-color:var(--ink2)}
+button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.layers{display:flex;flex-direction:column;gap:1px;max-height:360px;overflow:auto;padding-right:4px}
+.layers label{display:flex;gap:7px;align-items:flex-start;padding:2px;cursor:pointer;font-size:13px}
+.layers input{margin-top:3px;accent-color:var(--copper)}
+.layers .opt{color:var(--teal)}
+.grp{font:600 10.5px/1 var(--sans);letter-spacing:.8px;text-transform:uppercase;color:var(--ink2);margin:8px 0 3px}
+.cut{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;font-size:13px}
+.cut input{width:100%;accent-color:var(--copper)}
+.cut output{font:500 12px var(--mono);min-width:7ch;text-align:right}
+.stage{position:relative;background:var(--scene);border:1px solid var(--rule);min-height:560px;height:74vh;overflow:hidden}
+@media (max-width:700px){.stage{height:62vh;min-height:420px}}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.tag{position:absolute;transform:translate(-50%,-100%);font:500 10.5px/1 var(--mono);color:var(--ink);background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--rule);padding:2px 4px;white-space:nowrap}
+.tag.o{color:var(--teal)}
+.tag.call{font:600 11.5px/1.25 var(--sans,system-ui);color:#fff;border:0;padding:4px 7px;border-radius:2px;max-width:220px;white-space:normal;transform:translate(-50%,-115%)}
+.tag.call::after{content:"";position:absolute;left:50%;top:100%;width:1px;height:18px;background:inherit}
+.read{position:absolute;left:10px;top:8px;font:500 11.5px/1.35 var(--mono);color:var(--ink);background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--rule);padding:4px 7px;pointer-events:none;font-variant-numeric:tabular-nums;max-width:calc(100% - 80px)}
+.read span{color:var(--ink2)}
+.hud{position:absolute;left:10px;bottom:8px;font:400 11px/1.3 var(--mono);color:var(--ink2);pointer-events:none}
+.north{position:absolute;right:12px;top:10px;width:44px;height:44px;pointer-events:none}
+.stamp{position:absolute;right:10px;bottom:8px;font:500 10.5px/1.3 var(--sans);letter-spacing:.6px;text-transform:uppercase;color:var(--copper);pointer-events:none;text-align:right}
+.stamp .credit{display:block;margin-top:3px;text-transform:none;letter-spacing:.3px;font-weight:600;color:var(--ink2)}
+body.tour .stamp .credit{color:#f2f2ee}
+@media (max-width:700px){body.tour .stamp{top:clamp(12px,2vh,24px);bottom:auto}   /* phones: stamp up top, clear of the caption card */
+  body #tour .tcap{bottom:64px}}                                                          /* and the caption above the Back / Next buttons */
+@media (max-width:700px){.hud{bottom:62px;right:10px}}       /* phones: the mouse hint sits above the stamp, never on it */
+.loading[hidden]{display:none}
+.loading{position:absolute;inset:0;display:grid;place-items:center;font:500 13px var(--mono);color:var(--ink2)}
+/* guided tour: the stage fills the screen (Teams share / recording), deck-style captions, keyboard and clicker */
+.tourgo{position:absolute;left:10px;top:44px;z-index:3;font:600 13px var(--sans);letter-spacing:.4px;background:#c8692b;color:#fff;border:0;padding:7px 12px;cursor:pointer}
+.tourgo:focus-visible,#tour button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+body.tour{overflow:hidden}
+body.tour .stage{position:fixed;inset:0;z-index:50;height:100vh;width:100vw;min-height:0;border:0}
+body.tour .read,body.tour .hud,body.tour .north,body.tour .tourgo,body.tour #labels{display:none}
+#tour[hidden]{display:none}
+#tour{position:absolute;inset:0;pointer-events:none;z-index:4;font-family:"Barlow Condensed","IBM Plex Sans Condensed","Arial Narrow",sans-serif}
+#tour .tbar{position:absolute;left:0;right:0;top:0;height:4px;background:rgba(20,24,27,.35)}
+#tour .tbar i{display:block;height:100%;background:#c8692b;width:0}
+#tour .tcap{position:absolute;left:clamp(16px,3vw,56px);bottom:clamp(16px,4.5vh,56px);max-width:min(820px,calc(100% - 32px));background:rgba(22,26,29,.88);color:#f3f1ec;
+  border-top:4px solid #c8692b;padding:clamp(12px,1.6vw,26px) clamp(14px,2vw,32px) clamp(12px,1.5vw,24px)}
+#tour .tsec{margin:0 0 4px;font:600 clamp(12px,1vw,17px)/1.2 inherit;letter-spacing:.22em;text-transform:uppercase;color:#e08a4a}
+#tour h2{margin:0 0 clamp(8px,1vw,16px);font:700 clamp(24px,2.6vw,46px)/1.02 inherit;text-transform:uppercase;letter-spacing:.01em;text-wrap:balance}
+#tour dl{display:grid;grid-template-columns:auto 1fr;gap:clamp(4px,.5vw,8px) clamp(10px,1.2vw,20px);margin:0;font:500 clamp(14px,1.15vw,21px)/1.25 "IBM Plex Sans Condensed","Arial Narrow",sans-serif}
+#tour dt{font:600 clamp(11px,.85vw,15px)/1.6 inherit;letter-spacing:.16em;text-transform:uppercase;color:#a9b3b8}
+#tour dd{margin:0}
+#tour dd.cab{color:#f0a46b}
+#tour .tnav{position:absolute;right:clamp(12px,2vw,32px);bottom:clamp(12px,2vh,28px);display:flex;gap:6px;align-items:center;pointer-events:auto;font:600 14px "IBM Plex Mono",monospace;color:#f3f1ec}
+#tour .tnav button{font:600 15px "IBM Plex Sans Condensed",sans-serif;background:rgba(22,26,29,.82);color:#f3f1ec;border:1px solid rgba(255,255,255,.25);padding:6px 12px;cursor:pointer}
+#tour .tnav span{background:rgba(22,26,29,.82);padding:6px 10px}
+#tour .tchap{position:absolute;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:4px;pointer-events:auto;max-width:calc(100% - 24px);flex-wrap:wrap;justify-content:center}
+#tour .tchap:empty{display:none}
+#tour .tchap button{font:600 13px "IBM Plex Sans Condensed",sans-serif;background:rgba(22,26,29,.72);color:#cfd5d8;border:1px solid rgba(255,255,255,.18);padding:4px 10px;cursor:pointer;white-space:nowrap}
+#tour .tchap button[aria-current="true"]{background:#c8692b;color:#fff;border-color:#c8692b}
+body.rec #tour .tchap{display:none}
+body.rec #tour .tnav{display:none}
+body.tour .stamp{z-index:5;bottom:clamp(52px,6vh,72px);right:clamp(12px,2vw,32px);color:#e08a4a;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.insp h2{font-size:18px;margin:0;line-height:1.2;text-wrap:balance}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:13px;margin:0}
+.kv dt{color:var(--ink2)} .kv dd{margin:0;font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;font:600 10.5px/1 var(--sans);letter-spacing:.6px;text-transform:uppercase;padding:4px 6px;border:1px solid currentColor;border-radius:2px}
+.b-drawing{color:var(--ink)} .b-vendor{color:var(--teal)} .b-typical{color:var(--ink2)} .b-conditional{color:var(--amber)}
+.p-ok{color:var(--ok)} .p-bad{color:var(--bad)}
+.info{font-size:13px;color:var(--ink);margin:0}
+.muted{color:var(--ink2);font-size:12.5px;margin:0}
+.legend{display:grid;grid-template-columns:18px 1fr;gap:4px 8px;font-size:12px;align-items:center}
+.sw{height:4px;width:18px}
+.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
+@media (max-width:900px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.stat{background:var(--panel);padding:10px 12px}
+.stat b{display:block;font:600 20px/1.1 var(--sans);font-variant-numeric:tabular-nums}
+.stat b.ok{color:var(--ok)}
+.stat span{color:var(--ink2);font-size:12px}
+.tabs{display:flex;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.tabs button{background:none;border:none;border-bottom:3px solid transparent;padding:10px 14px;font-size:14px;font-weight:600;color:var(--ink2);border-radius:0}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--copper)}
+.panel{padding-top:12px}
+.tbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;align-items:center}
+input[type=search],select{font:14px var(--sans);color:var(--ink);background:var(--panel);border:1px solid var(--rule);padding:7px 9px;border-radius:2px;min-width:0}
+.tw{overflow-x:auto;border:1px solid var(--rule);max-height:540px;overflow-y:auto;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:6px 9px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+th{position:sticky;top:0;background:var(--panel);font:600 11px/1.2 var(--sans);letter-spacing:.7px;text-transform:uppercase;color:var(--ink2);z-index:1}
+td.m{font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.r{text-align:right}
+tbody.pick tr{cursor:pointer} tbody.pick tr:hover td{background:var(--chip)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.card{background:var(--panel);border:1px solid var(--rule);padding:14px}
+.card h3{margin:0 0 6px;font-size:16px}
+.card p{margin:0 0 6px;max-width:68ch}
+h3.sec{margin:20px 0 8px;font-size:16px}
+.tagbox{display:inline-block;font:600 12px/1 var(--mono);background:var(--ink);color:var(--paper);padding:4px 6px;margin-right:6px}
+.hbars{display:flex;flex-direction:column;gap:4px}
+.hb{display:grid;grid-template-columns:150px 1fr 56px;gap:8px;align-items:center;font-size:12.5px}
+.hb .bar{height:12px;background:var(--ink2)}
+.hb .bar.hi{background:var(--copper)}
+.hb .v{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+.axis{display:grid;grid-template-columns:150px 1fr 56px;gap:8px;font:11px var(--mono);color:var(--ink2)}
+.axis div{display:flex;justify-content:space-between}
+footer{color:var(--ink2);font-size:12px;border-top:1px solid var(--rule);padding-top:8px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <div>
+    <h1>3x1 Combined-Cycle Plant <span>/ 3D model</span></h1>
+    <p class="byline">Created by Stephan Hardt · Power Generation Solutions · <a href="mailto:stephan.hardt@southwire.com" style="color:inherit">stephan.hardt@southwire.com</a></p>
+    <p class="sub">Coordinate model rebuilt from drawing set SW-3X1 Rev 14 and checked back against it: footprints against sheets 01 and 05, heights against sheet 13, crane clearances against sheet 09, plus a full clash check.</p>
+  </div>
+  <div class="docno"><b>SW-3X1-3D / REV 14</b><br>X east, Y north, Z up, feet<br>Compound 2,420 x 1,920 ft</div>
+</header>
+
+<div class="stats" id="stats"></div>
+
+<div class="grid">
+  <aside class="side" aria-label="Views and layers">
+    <div>
+      <p class="lbl">Views (SW-3X1-11)</p>
+      <div class="views" id="views"></div>
+    </div>
+    <div>
+      <p class="lbl">Display</p>
+      <div class="views">
+        <button id="bXray" aria-pressed="true">X-ray hall</button>
+        <button id="bTags" aria-pressed="true">Tags</button>
+        <button id="bShadow" aria-pressed="true">Shadows</button>
+        <button id="bDetail" aria-pressed="true">Detail</button>
+        <button id="bHero" aria-pressed="false" title="Keep the power block (GTs, HRSGs, stacks, turbine hall) in full colour and ghost everything else">Power block</button>
+        <button id="bPaths" aria-pressed="false" title="Data centre: show the three supply paths">BTM power paths</button>
+        <button id="bOpt" aria-pressed="false">All optional</button>
+        <button id="bCab" aria-pressed="false" title="Every cable of the cable schedule on its routed path">Cable X-ray</button>
+        <button id="bFill" aria-pressed="false" title="Cable count carried by each tray / duct-bank segment">Tray fill</button>
+      </div>
+    </div>
+    <div>
+      <p class="lbl">Section cut</p>
+      <div class="cut"><input type="range" id="cut" min="2" max="320" step="1" value="320" aria-label="Cut everything above this elevation"><output id="cutv" for="cut">off</output></div>
+      <p class="muted" style="margin-top:4px">Removes everything above the chosen elevation.</p>
+    </div>
+    <div>
+      <p class="lbl">Layers</p>
+      <div class="layers" id="layers"></div>
+    </div>
+  </aside>
+
+  <div class="stage" id="stage">
+    <canvas id="cv" aria-label="Interactive 3D model of the plant. Drag to orbit, scroll to zoom, right-drag to pan, click equipment for details."></canvas>
+    <div id="labels"></div>
+    <div class="read" id="read"><span>X</span> — <span>Y</span> — <span>EL</span> —</div>
+    <svg class="north" viewBox="-22 -22 44 44" aria-hidden="true" id="north"><circle r="20" fill="none" stroke="currentColor" opacity=".35"/><g id="narrow"><path d="M0,-18 L5,-2 L0,-5 L-5,-2 Z" fill="currentColor"/><text x="0" y="9" text-anchor="middle" font-size="10" font-family="IBM Plex Mono,monospace" fill="currentColor">N</text></g></svg>
+    <div class="hud">drag orbit · right-drag pan · scroll zoom · click to inspect · double-click to fly</div>
+    <div class="stamp">Conceptual illustration<br>Not engineered · not for construction<span class="credit">Model by Stephan Hardt</span></div>
+    <div class="loading" id="loading">building model…</div>
+    <button class="tourgo" id="tourGo" title="Guided tour: the power path, the electrical systems and the cable (keys: arrows / space / Esc)">▶ Tour</button>
+    <button class="tourgo" id="tourGo2" style="left:92px;background:#1d2b38" title="Nov 11 training tour: seven stops, about 30 min (keys: arrows / space, 1-7 jump to a stop, Esc)">▶ Nov 11</button>
+    <div id="tour" hidden aria-live="polite">
+      <div class="tbar"><i id="tprog"></i></div>
+      <div class="tchap" id="tchap"></div>
+      <div class="tcap" id="tcap"><p class="tsec" id="tsec"></p><h2 id="ttl"></h2>
+        <dl><dt>Equipment</dt><dd id="teq"></dd><dt>System</dt><dd id="tsys"></dd><dt>Cable</dt><dd class="cab" id="tcab"></dd></dl></div>
+      <div class="tnav"><button id="tPrev" aria-label="Previous stop">‹ Back</button><span id="tnum"></span><button id="tNext" aria-label="Next stop">Next ›</button><button id="tExit">Exit</button></div>
+    </div>
+  </div>
+
+  <aside class="insp" aria-label="Inspector" aria-live="polite">
+    <div id="insp"></div>
+    <div>
+      <p class="lbl">Route legend</p>
+      <div class="legend" id="legend"></div>
+    </div>
+  </aside>
+</div>
+
+<section>
+  <div class="tabs" role="tablist" id="tabs">
+    <button role="tab" aria-selected="true" data-t="reg" id="tab-reg">Equipment register</button>
+    <button role="tab" aria-selected="false" data-t="ver" id="tab-ver">Verification</button>
+    <button role="tab" aria-selected="false" data-t="ele" id="tab-ele">Electrical</button>
+    <button role="tab" aria-selected="false" data-t="hgt" id="tab-hgt">Heights</button>
+    <button role="tab" aria-selected="false" data-t="opt" id="tab-opt">Optional systems</button>
+    <button role="tab" aria-selected="false" data-t="bas" id="tab-bas">Basis and limits</button>
+  </div>
+
+  <div class="panel" id="p-reg" role="tabpanel">
+    <div class="tbar">
+      <input type="search" id="q" placeholder="Search tag or name (e.g. GSU, R4, absorber, LCI)" aria-label="Search equipment" style="flex:1 1 260px">
+      <select id="fa" aria-label="Filter by area"></select>
+      <select id="fb" aria-label="Filter by basis"><option value="">All bases</option><option value="drawing">drawing</option><option value="vendor">vendor</option><option value="typical">typical</option><option value="conditional">conditional</option></select>
+      <span class="muted" id="cnt"></span>
+    </div>
+    <div class="tw"><table><thead><tr><th>Tag</th><th>Equipment</th><th>Area</th><th>Plan X / Y (ft)</th><th>Size W x L (ft)</th><th>EL (ft)</th><th>Basis</th><th>Sheet</th></tr></thead><tbody id="tb" class="pick"></tbody></table></div>
+  </div>
+
+  <div class="panel" id="p-ver" role="tabpanel" hidden><div id="ver"></div></div>
+
+  <div class="panel" id="p-ele" role="tabpanel" hidden>
+    <div class="cols" id="rooms"></div>
+    <h3 class="sec">Preliminary motor / load schedule (SW-3X1-03)</h3>
+    <div class="tw" style="max-height:none"><table><thead><tr><th>ID</th><th>Driven equipment</th><th>Qty</th><th>Voltage</th><th>Starter / drive</th><th>Fed from</th><th>Route</th></tr></thead><tbody id="motors"></tbody></table></div>
+    <div class="cols" style="margin-top:16px">
+      <div class="card"><h3>Start-up path, GT-1 (SW-3X1-04)</h3><p>The 230 kV bus back-feeds GSU-1 through D1. The UAT-1 tap sits on the GSU side of GCB-1, so with GCB-1 open the grid energises UAT-1 and 13.8 kV bus 1 in R1. Bus 1 feeds the LCI-1 input transformer, and LCI-1 drives GTG-1 as a motor on the generator side of GCB-1. GCB-1 closes at synchronisation.</p></div>
+      <div class="card"><h3>Assumed ratings</h3><p>Generators 21 kV. GSUs 21/230 kV, one per generator. UATs 21/13.8 kV. T4-A/B 13.8/4.16 kV. LCT-A/B, T-R2A-C, T-R3, T-R4-1..4 and T-WT 13.8/0.48 kV. MVA, impedance and fault levels are not calculated.</p></div>
+      <div class="card"><h3>Switchyard</h3><p>Breaker-and-a-half, 5 diameters x 3 breakers: 15 positions, 9 installed. D1 GTG-1 + Line 1, D2 GTG-2 + Line 2, D3 STG + GTG-3. D4 (BESS / modular yard) and D5 (CCS) are future; D6 (green H2 import) is an adjacent-market extension.</p></div>
+    </div>
+  </div>
+
+  <div class="panel" id="p-hgt" role="tabpanel" hidden>
+    <p class="muted" style="margin-bottom:10px">Model heights drawn to one scale, with the sheet-13 reference for each class. The order HRSG &lt; ACC &lt; HRSG stack &lt; stripper &lt; absorber &lt; absorber stack follows real plants.</p>
+    <div class="hbars" id="hbars"></div>
+  </div>
+
+  <div class="panel" id="p-opt" role="tabpanel" hidden><div class="cols" id="opts"></div></div>
+
+  <div class="panel" id="p-bas" role="tabpanel" hidden>
+    <div class="cols">
+      <div class="card"><h3>How the model was built</h3><p>Plan positions come from the vector geometry of sheets 01, 02 and 05. On sheet 01 the frame maps exactly to the 2,420 x 1,920 ft compound (3.115 ft per PDF point); on sheet 05 the R1 plan is rotated with plant north to the right (4.08 pt per ft). Routes are the drawn centrelines lifted to their tiers: MV tray EL +36, control tray EL +42, IPB about EL 20.</p></div>
+      <div class="card"><h3>How it was checked</h3><p><code>verify.py</code> matches every drawn shape to a model item within 0.6 ft, reproduces the sheet-13 heights, recomputes the sheet-09 clearance screen and hook margins from the model, and tests every pair of parts for clashes. The Verification tab shows the latest run.</p></div>
+      <div class="card"><h3>What the checks corrected</h3><p>They caught GT combustor cans above the EL 38 envelope (which cut the GT hook margin to 9.7 ft instead of 11), an ACC steam riser rising through the fans, and three misread shapes: the filter-house stair tower, the hoist landing with truck access, and the gallery-door forklift apron (sheet 10).</p></div>
+      <div class="card"><h3>Simplifications</h3><p>Equipment is built from boxes, cylinders, cones, A-frames and lofts. Cabinet heights, drum sizes, transformer radiators, gantries and structural steel are typical where no drawing gives them, and are tagged <span class="pill b-typical">typical</span>. Conceptual illustration: not engineered, not for construction.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer><span>Source: SW-3X1 Drawing Set Rev 14, Sept 26 2026 · Stephan Hardt | Power Generation Solutions</span><span id="foot"></span></footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/utils/BufferGeometryUtils.js"></script>
+<script>
+const MODEL = /*MODEL_JSON*/null;
+const PALETTE = /*PALETTE_JSON*/null;
+const REPORT = /*REPORT_JSON*/null;
+
+const OPT = l => /^(OPT_|HV_CORRIDOR|SWYD_FUTURE)/.test(l);
+const INTERIOR = new Set(['R1_INTERIOR','R4_INTERIOR']);
+const CX = 1210, CY = 960;
+const P = (x,y,z) => new THREE.Vector3(x-CX, z, -(y-CY));
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = v => (Math.round(v*10)/10).toLocaleString('en-US');
+const items = Object.fromEntries(MODEL.items.map(i=>[i.id,i]));
+
+// ---------- renderer ----------
+const cv = document.getElementById('cv'), stage = document.getElementById('stage');
+const renderer = new THREE.WebGLRenderer({canvas:cv, antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.localClippingEnabled = true;
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, 1, 2, 30000);
+const controls = new THREE.OrbitControls(camera, cv);
+controls.enableDamping = true; controls.dampingFactor = .08; controls.maxPolarAngle = Math.PI*0.495;
+const hemi = new THREE.HemisphereLight(0xdfe9f5, 0x6b705f, .95); scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xfff4e2, 2.1);
+const SUN_DIR = new THREE.Vector3(-.52, .72, .46).normalize();
+sun.castShadow = true; sun.shadow.mapSize.set(4096,4096); sun.shadow.bias=-0.0004; sun.shadow.normalBias=0.35;
+scene.add(sun); scene.add(sun.target);
+const fillL = new THREE.DirectionalLight(0xcfdcff, .35); fillL.position.set(1200,500,-900); scene.add(fillL);
+function fitShadow(){ // keep the shadow map tight around what the camera looks at
+  const d = camera.position.distanceTo(controls.target), r = THREE.MathUtils.clamp(d*.85, 120, 1600);
+  sun.target.position.copy(controls.target); sun.position.copy(controls.target).addScaledVector(SUN_DIR, 2500);
+  const c = sun.shadow.camera; c.left=-r; c.right=r; c.top=r; c.bottom=-r; c.near=100; c.far=5200; c.updateProjectionMatrix();
+}
+
+const cutPlane = new THREE.Plane(new THREE.Vector3(0,-1,0), 1e6);
+const CLIP = [cutPlane];
+
+// ---------- procedural textures (near-white, multiplied by the vertex colour) ----------
+function canvasTex(size, draw, rep=true){ const c=document.createElement('canvas'); c.width=c.height=size; const g=c.getContext('2d'); draw(g,size);
+  const t=new THREE.CanvasTexture(c); if(rep){ t.wrapS=t.wrapT=THREE.RepeatWrapping; } t.anisotropy=8; t.encoding=THREE.sRGBEncoding; return t; }
+function rnd(seed){ let x=seed; return ()=>((x=Math.imul(x^x>>>15,0x2c1b3c6d)+0x297a2d39|0)>>>0)/4294967296; }
+function noise(g,s,base,amp,n,seedv){ const r=rnd(seedv); g.fillStyle=base; g.fillRect(0,0,s,s);
+  for(let i=0;i<n;i++){ const v=Math.floor(255-r()*amp); g.fillStyle=`rgb(${v},${v},${v})`; const w=1+r()*2.2; g.fillRect(r()*s,r()*s,w,w); } }
+const TEX = {
+  // chain-link: a diamond wire mesh on a transparent ground (alpha-tested), so fences read as mesh, not walls
+  chain: (()=>{ const t=canvasTex(128,(g,s)=>{ g.clearRect(0,0,s,s); g.strokeStyle='#c9ced1'; g.lineWidth=5;
+    g.beginPath(); g.moveTo(0,0); g.lineTo(s,s); g.moveTo(s,0); g.lineTo(0,s); g.moveTo(-s/2,s/2); g.lineTo(s/2,-s/2);
+    g.moveTo(s/2,s*1.5); g.lineTo(s*1.5,s/2); g.moveTo(-s/2,s/2); g.lineTo(s/2,s*1.5); g.moveTo(s/2,-s/2); g.lineTo(s*1.5,s/2); g.stroke(); }); return t; })(),
+  clad: canvasTex(256,(g,s)=>{ g.fillStyle='#fff'; g.fillRect(0,0,s,s); for(let i=0;i<16;i++){ const x=i*s/16; const grd=g.createLinearGradient(x,0,x+s/16,0);
+      grd.addColorStop(0,'#e4e7e9'); grd.addColorStop(.18,'#ffffff'); grd.addColorStop(.55,'#f1f3f4'); grd.addColorStop(.8,'#d3d8db'); grd.addColorStop(1,'#e4e7e9');
+      g.fillStyle=grd; g.fillRect(x,0,s/16,s); } g.fillStyle='rgba(0,0,0,.06)'; g.fillRect(0,s-2,s,2); }),
+  concrete: canvasTex(256,(g,s)=>{ noise(g,s,'#f2f2f0',38,5000,7); g.strokeStyle='rgba(0,0,0,.10)'; g.lineWidth=1.5; g.strokeRect(1,1,s-2,s-2); }),
+  gravel: canvasTex(256,(g,s)=>noise(g,s,'#ecebe7',95,14000,11)),
+  road: canvasTex(256,(g,s)=>noise(g,s,'#e4e4e2',55,9000,5)),
+  grass: canvasTex(256,(g,s)=>{ const r=rnd(3); g.fillStyle='#fff'; g.fillRect(0,0,s,s); for(let i=0;i<9000;i++){ const v=Math.floor(200+r()*55), gg=Math.floor(215+r()*40);
+      g.fillStyle=`rgb(${v},${gg},${v-20})`; g.fillRect(r()*s,r()*s,1.5,3); } }),
+  grating: canvasTex(128,(g,s)=>{ g.fillStyle='#f4f4f4'; g.fillRect(0,0,s,s); g.strokeStyle='#8d959a'; g.lineWidth=2;
+      for(let i=0;i<=s;i+=8){ g.beginPath(); g.moveTo(i,0); g.lineTo(i,s); g.stroke(); } g.lineWidth=1; for(let j=0;j<=s;j+=32){ g.beginPath(); g.moveTo(0,j); g.lineTo(s,j); g.stroke(); } }),
+  fins: canvasTex(128,(g,s)=>{ g.fillStyle='#fff'; g.fillRect(0,0,s,s); for(let i=0;i<s;i+=4){ g.fillStyle= i%8? '#d4dad8':'#b5bebb'; g.fillRect(i,0,1.5,s); } }),
+  panel: canvasTex(256,(g,s)=>{ g.fillStyle='#fbfbfb'; g.fillRect(0,0,s,s); g.strokeStyle='rgba(0,0,0,.14)'; g.lineWidth=2;
+      for(let i=0;i<=s;i+=64){ g.beginPath(); g.moveTo(i,0); g.lineTo(i,s); g.stroke(); } g.beginPath(); g.moveTo(0,s/2); g.lineTo(s,s/2); g.stroke(); }),
+  louvre: canvasTex(64,(g,s)=>{ g.fillStyle='#fff'; g.fillRect(0,0,s,s); for(let j=0;j<s;j+=6){ g.fillStyle='#9aa3a8'; g.fillRect(0,j,s,2.5); } }),
+};
+// surface classes: texture, tile (ft per repeat), roughness, metalness
+const SURF = {
+  clad:{map:TEX.clad, tile:24, r:.55, m:.25}, panel:{map:TEX.panel, tile:20, r:.7, m:.05},
+  concrete:{map:TEX.concrete, tile:30, r:.92, m:0}, gravel:{map:TEX.gravel, tile:18, r:1, m:0},
+  road:{map:TEX.road, tile:22, r:.95, m:0}, ground:{map:TEX.grass, tile:60, r:1, m:0},
+  grating:{map:TEX.grating, tile:6, r:.6, m:.4}, fins:{map:TEX.fins, tile:6, r:.55, m:.3},
+  louvre:{map:TEX.louvre, tile:4, r:.6, m:.3}, fence:{map:TEX.chain, tile:1.2, r:.45, m:.8, cut:true}, ductcase:{map:TEX.concrete, tile:30, r:.92, m:0, see:.38}, ductcap:{r:.9, m:0, see:.45},
+  metal:{r:.42, m:.55}, paint:{r:.55, m:.15}, ceramic:{r:.28, m:0}, copper:{r:.38, m:.7},
+  water:{r:.08, m:0}, glass:{r:.3, m:.1}, window:{r:.12, m:.65},
+};
+const CLASS = {hall:'glass', xray:'glass', building:'panel', ehouse:'clad', windwall:'clad', filter:'clad', hrsg:'clad', hrsg_b:'clad', roof:'clad', tower:'clad',
+  concrete:'concrete', pad:'concrete', basement:'concrete', partition:'panel', gravel:'gravel', gravel_yard:'ground', corridor:'ground', road:'road', ground:'ground',
+  grating:'grating', bundle:'fins', radiator:'fins', louvre:'louvre', water:'water', insulator:'ceramic', copper:'copper', copper_dark:'copper', hero_accent:'copper', hero_rail:'paint',
+  steel:'metal', rail:'paint', pipe:'metal', ipb:'metal', stack:'metal', duct:'metal', machine:'metal', xfmr:'paint', fan:'metal', fanhub:'metal', crane:'paint',
+  conductor:'metal', stair:'paint', door:'paint', rollup:'clad', motor:'paint', pump:'paint', tank:'paint', ccs:'clad', acc:'clad', bess:'paint',
+  cabinet:'paint', swgr:'paint', panel:'paint', battery:'paint', lamp:'paint', fence:'fence', barrier:'fence', safety:'paint', soil:'gravel', timber:'paint', ductcase:'ductcase', ductcap:'ductcap', pvc_grey:'paint', pvc_orange:'paint', window:'window',
+  hull:'paint', super:'paint', mosscover:'paint', lngpipe:'paint', sea:'water'};
+// phones / tablets: lighter geometry (the in-app viewer has a tight memory budget)
+const LITE = matchMedia('(pointer:coarse)').matches || innerWidth < 820;
+const mats = {};
+function surfMat(cls){
+  if(mats[cls]) return mats[cls];
+  const s = SURF[cls] || SURF.paint;
+  const o = {vertexColors:true, roughness:s.r, metalness:s.m, clippingPlanes:CLIP, clipShadows:true};
+  if(s.map) o.map = s.map;
+  if(cls==='glass') Object.assign(o,{transparent:true, opacity:.26, depthWrite:false, side:THREE.DoubleSide});
+  if(s.cut) Object.assign(o,{alphaTest:.35, side:THREE.DoubleSide});
+  if(s.see) Object.assign(o,{transparent:true, opacity:s.see, depthWrite:false});   // cast section: the conduits read through
+  if(cls==='water') o.envMapIntensity = 1;
+  return mats[cls] = new THREE.MeshStandardMaterial(o);
+}
+const matGlass = surfMat('glass');
+const matHi = new THREE.MeshStandardMaterial({color:0xd0874a, emissive:0x6a3208, roughness:.5, clippingPlanes:CLIP});
+const edgeMat = new THREE.LineBasicMaterial({color:0x27313a, transparent:true, opacity:.22, clippingPlanes:CLIP});
+
+// ---------- geometry ----------
+const col = {}; for(const k in PALETTE) col[k] = new THREE.Color(PALETTE[k].hex).convertSRGBToLinear();
+function paint(g, c){ g.deleteAttribute('uv'); if(!g.attributes.normal) g.computeVertexNormals();   // keep each part's own normals: round parts shade smooth, boxes stay crisp
+  const n=g.attributes.position.count, a=new Float32Array(n*3);
+  for(let i=0;i<n;i++){ a[i*3]=c.r; a[i*3+1]=c.g; a[i*3+2]=c.b; } g.setAttribute('color', new THREE.BufferAttribute(a,3)); return g; }
+function boxUV(g, tile){ // world-space box projection, per triangle, in model coordinates
+  const p=g.attributes.position, n=p.count, uv=new Float32Array(n*2), a=new THREE.Vector3(), b=new THREE.Vector3(), c=new THREE.Vector3(), nn=new THREE.Vector3();
+  for(let i=0;i<n;i+=3){ a.fromBufferAttribute(p,i); b.fromBufferAttribute(p,i+1); c.fromBufferAttribute(p,i+2);
+    nn.subVectors(c,b).cross(new THREE.Vector3().subVectors(a,b)); const ax=Math.abs(nn.x), ay=Math.abs(nn.y), az=Math.abs(nn.z);
+    for(let k=0;k<3;k++){ const x=p.getX(i+k), y=p.getY(i+k), z=p.getZ(i+k); let u,v;
+      if(az>=ax && az>=ay){ u=x; v=y; } else if(ax>=ay){ u=y; v=z; } else { u=x; v=z; }
+      uv[(i+k)*2]=u/tile; uv[(i+k)*2+1]=v/tile; } }
+  g.setAttribute('uv', new THREE.BufferAttribute(uv,2)); return g; }
+function toThree(g){ // model coords (x east, y north, z up) -> three (x, y up, -z north)
+  const p=g.attributes.position; for(let i=0;i<p.count;i++){ const x=p.getX(i),y=p.getY(i),z=p.getZ(i); p.setXYZ(i,x-CX,z,-(y-CY)); }
+  const nm=g.attributes.normal;
+  if(nm){ for(let i=0;i<nm.count;i++){ const x=nm.getX(i),y=nm.getY(i),z=nm.getZ(i); nm.setXYZ(i,x,z,-y); } nm.needsUpdate=true; }
+  else g.computeVertexNormals();
+  return g; }
+function fromTris(v, tris){ const pos=[]; for(const t of tris) for(const k of t) pos.push(...v[k]);
+  const g=new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos,3)); return g; }
+function quadsToTris(qs){ const t=[]; for(const q of qs){ t.push([q[0],q[1],q[2]]); if(q.length===4) t.push([q[0],q[2],q[3]]); } return t; }
+function partGeo(p){
+  let g;
+  if(p.kind==='box'){
+    const [x0,y0,z0]=p.min,[x1,y1,z1]=p.max;
+    g = new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0).toNonIndexed(); g.translate((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);
+  } else if(p.kind==='rod'){
+    const a=new THREE.Vector3(...p.a), b=new THREE.Vector3(...p.b), d=b.clone().sub(a), L=d.length();
+    let seg = p.seg || (Math.max(p.r,p.r2)>25?64:Math.max(p.r,p.r2)>10?36:16);
+    const rr=Math.max(p.r,p.r2); if(LITE) seg = Math.min(seg, rr>15 ? 48 : rr>3 ? 20 : 8);   // phones: fewer facets on small round parts, big vessels stay round
+    g = new THREE.CylinderGeometry(p.r2, p.r, L, seg).toNonIndexed(); // along +Y, r at -Y
+    const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), d.normalize());
+    g.applyQuaternion(q); g.translate((p.a[0]+p.b[0])/2,(p.a[1]+p.b[1])/2,(p.a[2]+p.b[2])/2);
+  } else if(p.kind==='prism'){
+    const [x0,y0,z0]=p.min,[x1,y1,z1]=p.max; let v;
+    if(p.ridge==='x'){ const ym=(y0+y1)/2; v=[[x0,y0,z0],[x0,y1,z0],[x0,ym,z1],[x1,y0,z0],[x1,y1,z0],[x1,ym,z1]]; }
+    else { const xm=(x0+x1)/2; v=[[x0,y0,z0],[x1,y0,z0],[xm,y0,z1],[x0,y1,z0],[x1,y1,z0],[xm,y1,z1]]; }
+    g = fromTris(v, quadsToTris([[0,2,1],[3,4,5],[0,3,5,2],[1,2,5,4],[0,1,4,3]]));
+  } else if(p.kind==='hex'){
+    g = fromTris(p.v, quadsToTris([[0,3,2,1],[4,5,6,7],[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]]));
+  }
+  return paint(g, col[p.color] || col.equip);
+}
+
+const layerGroups = {}, itemMeshes = {}, pickables = [], detailObjs = [], surfMeshes = [];
+function grp(l){ if(!layerGroups[l]){ const g=new THREE.Group(); g.name=l; scene.add(g); layerGroups[l]=g; } return layerGroups[l]; }
+const buckets = {}, PARTN = {};
+function tinyPart(p){
+  if(p.kind==='box'){ return Math.max(p.max[0]-p.min[0], p.max[1]-p.min[1], p.max[2]-p.min[2]) < .25; }
+  if(p.kind==='rod'){ const L=Math.hypot(p.b[0]-p.a[0], p.b[1]-p.a[1], p.b[2]-p.a[2]); return Math.max(L, 2*Math.max(p.r,p.r2)) < .25; }
+  return false;
+}
+for(const p of MODEL.parts){
+  PARTN[p.item] = (PARTN[p.item]||0) + 1;
+  if(LITE && tinyPart(p)) continue;   // phones: parts under 3 in (terminal blocks, wire ends, bolts) are skipped to stay inside the in-app GPU budget
+  let cls = CLASS[p.color] || 'paint';
+  if(p.kind==='rod' && ['clad','panel','concrete','fins','grating','louvre'].includes(cls)) cls = 'paint'; // box-projected textures only suit flat faces
+  const dd = !!p.d && !p.pipe;   // round pipes are dressing in the model but always shown
+  // flat surfacing at grade (yard gravel, slabs, pads): lifted away with the ground in the underground views
+  const surf = p.kind==='box' && p.max[2] <= .8 && p.min[2] >= -.35 && ['gravel','concrete','road','ground'].includes(cls);
+  const k = p.item+'|'+p.layer+'|'+cls+'|'+(dd?1:0)+'|'+(surf?1:0);
+  (buckets[k] ||= {item:p.item, layer:p.layer, cls, d:dd, surf, geos:[]}).geos.push(partGeo(p));
+}
+for(const b of Object.values(buckets)){
+  let merged = THREE.BufferGeometryUtils.mergeBufferGeometries(b.geos, false);
+  b.geos.forEach(g=>g.dispose()); b.geos = null;          // per-part geometry is no longer needed (phones run out of memory)
+  if(SURF[b.cls] && SURF[b.cls].map) boxUV(merged, SURF[b.cls].tile);
+  merged = toThree(merged);
+  const m = new THREE.Mesh(merged, surfMat(b.cls));
+  const site = items[b.item].layer === 'SITE';
+  m.castShadow = b.cls!=='glass' && (!site || b.d); m.receiveShadow = true;
+  m.userData.item = b.item; m.userData.surf = b.surf; grp(b.layer).add(m); if(b.surf) surfMeshes.push(m);
+  if(!site) pickables.push(m);
+  (itemMeshes[b.item] ||= []).push(m);
+  if(b.d){ detailObjs.push(m); continue; }
+  if(!LITE && b.cls!=='glass' && !site && merged.attributes.position.count < 60000){
+    const e = new THREE.LineSegments(new THREE.EdgesGeometry(merged, 35), edgeMat); grp(b.layer).add(e);
+  }
+}
+const NPARTS = MODEL.parts.length; MODEL.parts = null;                      // free the raw part list
+// printed panels (placards, reel stencils, truck livery): canvas textures on thin planes
+const decalMats = {};   // identical panels share one texture; resolution follows the panel's real size (phones run out of GPU memory otherwise)
+for(const d of (MODEL.decals||[])){
+  const key = d.img ? 'img:'+d.img : JSON.stringify([d.w, d.h, d.bg, d.lines]);
+  let mat = decalMats[key];
+  if(!mat && d.img){                 // control-room displays: rendered SCADA / CCTV images, self-lit
+    const tex = new THREE.TextureLoader().load((MODEL.screens||{})[d.img]||''); tex.encoding=THREE.sRGBEncoding; tex.anisotropy=4;
+    mat = decalMats[key] = d.print
+      ? new THREE.MeshLambertMaterial({map:tex, transparent:true, alphaTest:.4, clippingPlanes:CLIP, polygonOffset:true, polygonOffsetFactor:-2, polygonOffsetUnits:-2})  // printed wall graphic, lit like paint
+      : new THREE.MeshBasicMaterial({map:tex, clippingPlanes:CLIP, toneMapped:false, polygonOffset:true, polygonOffsetFactor:-2, polygonOffsetUnits:-2});
+  }
+  if(!mat){
+  const cw = Math.min(512, Math.max(128, Math.round(d.w*96))), ch = Math.min(256, Math.max(24, Math.round(cw*d.h/d.w)));
+  const cv = document.createElement('canvas'); cv.width=cw; cv.height=ch; const g=cv.getContext('2d');
+  if(d.bg){ g.fillStyle=d.bg; g.fillRect(0,0,cw,ch); }
+  const tot = d.lines.reduce((a,l)=>a+l.s*1.35,0); let y = Math.max(0,(1-tot)/2)*ch;
+  g.textAlign='center'; g.textBaseline='middle';
+  for(const l of d.lines){
+    const lh=l.s*1.35*ch; let px=l.s*ch;
+    if(l.band){ g.fillStyle=l.band; g.fillRect(0,y,cw,lh); }
+    const font = q => `${l.b?'700':'500'} ${q}px "Helvetica Neue",Arial,sans-serif`;
+    g.font=font(px); const w=g.measureText(l.t).width; if(w>cw*.92){ px*=cw*.92/w; g.font=font(px); }
+    g.fillStyle=l.c; g.fillText(l.t, cw/2, y+lh/2); y+=lh;
+  }
+  const tex=new THREE.CanvasTexture(cv); tex.encoding=THREE.sRGBEncoding; tex.anisotropy=4;
+  mat = decalMats[key] = new THREE.MeshStandardMaterial({map:tex, roughness:.55, clippingPlanes:CLIP, transparent:!d.bg, alphaTest:d.bg?0:.25,
+    depthWrite:!!d.bg, polygonOffset:true, polygonOffsetFactor:-2, polygonOffsetUnits:-2});
+  }
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(d.w,d.h), mat);
+  const nn=new THREE.Vector3(d.n[0], d.n[2], -d.n[1]);
+  m.position.copy(P(...d.c)).addScaledVector(nn,.04);
+  if(d.up) m.up.set(d.up[0], d.up[2], -d.up[1]); else if(Math.abs(nn.y)>.9) m.up.set(0,0,-1);
+  m.lookAt(m.position.clone().add(nn)); m.userData.item=d.item; m.receiveShadow=true;
+  grp(d.layer).add(m); pickables.push(m);
+}
+// routes: one mesh per route polyline
+const pathRoutes=[];
+const PIPE_TYPES=['hv_overhead','hmod','steam','condensate','feedwater','ccw','fuel_gas','fuel_oil','cw','chw','hydrogen','lng','mv_tray','lv_tray','control_tray','ipb','cable_trench','water','aux_steam'];
+const pickOnly=new THREE.MeshBasicMaterial({visible:false});
+MODEL.routes.forEach((r,ri)=>{
+  // buried routes are modelled as real geometry in the underground layers; the route itself stays an
+  // invisible pick target at its depth (no strip painted on grade)
+  const buried = r.z<0, z = buried ? r.z - r.h/2 : r.z, h = r.h, geos=[];
+  for(let i=0;i<r.points.length-1;i++){
+    const [ax,ay]=r.points[i],[bx,by]=r.points[i+1], len=Math.hypot(bx-ax,by-ay); if(len<0.5) continue;
+    const g = new THREE.BoxGeometry(len+r.w, r.w, h).toNonIndexed();
+    g.rotateZ(Math.atan2(by-ay,bx-ax)); g.translate((ax+bx)/2,(ay+by)/2,z); geos.push(paint(g, col[r.color]));
+  }
+  if(r.z>6 && !['ipb','hv_overhead','hmod'].includes(r.type)){
+    for(const [x,y] of [r.points[0], r.points[r.points.length-1]]){
+      const g=new THREE.BoxGeometry(r.w, r.w, z).toNonIndexed(); g.translate(x,y,z/2); geos.push(paint(g,col[r.color])); }
+  }
+  if(!geos.length) return;
+  const cls = CLASS[r.color] || 'paint';
+  // above-grade pipe routes are drawn as round pipes (parts); the box stays as an invisible pick target
+  const pipe = buried || r.surface || ((r.z>0 || r.type==='cable_trench') && PIPE_TYPES.includes(r.type));   // surface cables: drawn as parts
+  const m = new THREE.Mesh(toThree(THREE.BufferGeometryUtils.mergeBufferGeometries(geos,false)),
+                           pipe ? pickOnly : surfMat(cls==='copper'?'copper':cls));
+  m.castShadow = r.z>0 && !pipe; m.receiveShadow = !pipe; m.userData.route = ri; grp(r.layer).add(m); pickables.push(m);
+  if(r.path) pathRoutes.push([m, r.path]);
+});
+// surroundings: grass beyond the fence; with the coastal variant the land north of the shoreline
+// is a separate strip that gives way to the sea when the coastal layers are on
+let grassEast = null;
+{ const grassMat = new THREE.MeshStandardMaterial({color:new THREE.Color('#9fb07a').convertSRGBToLinear(), map:TEX.grass, roughness:1});
+  const strip = (x0, x1, y0, y1, z, mat) => { const g = new THREE.PlaneGeometry(x1-x0, y1-y0); g.rotateX(-Math.PI/2);
+    const uv=g.attributes.uv; for(let i=0;i<uv.count;i++) uv.setXY(i, uv.getX(i)*(x1-x0)/90, uv.getY(i)*(y1-y0)/90);
+    const m = new THREE.Mesh(g, mat); const c = P((x0+x1)/2, (y0+y1)/2, z); m.position.copy(c); m.receiveShadow = true; return m; };
+  const W0 = CX-8000, W1 = CX+8000, S0 = CY-8000, S1 = CY+8000;
+  // grass all round, but not under the compound: its own ground has the stormwater pond cut into it
+  const ring = (x0, x1, y0, y1) => { for(const [a,b,c,d] of [[x0,x1,y0,0],[x0,x1,1920,y1],[x0,0,0,1920],[2420,x1,0,1920]])
+    if(b>a && d>c) scene.add(strip(a,b,c,d,-0.7,grassMat)); };
+  if(MODEL.coastal){
+    // the coast runs east-west north of the plant; the sea is to the north
+    const sh = MODEL.coastal.shoreline_y, sea = MODEL.coastal.sea_level;
+    ring(W0, W1, S0, sh-30);
+    grassEast = strip(W0, W1, sh-30, S1+6000, -0.7, grassMat); scene.add(grassEast);
+    const g = grp('COASTAL_SEA');
+    g.add(strip(W0, W1, sh-30, sh, -0.8, new THREE.MeshStandardMaterial({color:new THREE.Color(PALETTE.sand.hex).convertSRGBToLinear(), map:TEX.gravel, roughness:1})));
+    const rev = new THREE.Mesh(toThree(paint(fromTris([[W0,sh,-0.9],[W1,sh,-0.9],[W1,sh+45,sea-7],[W0,sh+45,sea-7]], [[0,1,2],[0,2,3]]), col.rock)), surfMat('concrete'));
+    rev.receiveShadow = true; g.add(rev);
+    const water = strip(W0, W1, sh, S1+6000, sea, new THREE.MeshStandardMaterial({color:new THREE.Color(PALETTE.sea.hex).convertSRGBToLinear(), roughness:.12, metalness:.1}));
+    g.add(water);
+    g.add(strip(W0, W1, sh+45, S1+6000, sea-40, new THREE.MeshStandardMaterial({color:new THREE.Color('#5b6a60').convertSRGBToLinear(), roughness:1})));
+  } else ring(W0, W1, S0, S1); }
+// underground layer: a soil floor under the compound below the deepest services, so the buried systems
+// read against earth, not sky, when the ground is taken away (view U)
+if(MODEL.layers.UNDERGROUND){ const g = new THREE.PlaneGeometry(2420, 1920); g.rotateX(-Math.PI/2);
+  const soil = new THREE.Mesh(g, new THREE.MeshStandardMaterial({color:new THREE.Color('#6f5f4b').convertSRGBToLinear(), map:TEX.gravel, roughness:1}));
+  soil.position.copy(P(1210, 960, -13)); soil.receiveShadow = true; grp('UNDERGROUND').add(soil); }
+const gridH = new THREE.GridHelper(2400, 24, 0x000000, 0x000000); gridH.material.transparent=true; gridH.material.opacity=.04; gridH.position.y=.05; scene.add(gridH);
+document.getElementById('loading').hidden = true;
+
+// ---------- layers ----------
+const layersEl = document.getElementById('layers'), layerBoxes = {};
+const byGroup = {}; for(const [k,v] of Object.entries(MODEL.layers)) (byGroup[v.group] ||= []).push(k);
+for(const [g, ls] of Object.entries(byGroup)){
+  const h=document.createElement('div'); h.className='grp'; h.textContent=g; layersEl.appendChild(h);
+  for(const l of ls){ if(/^NO[A-Z]+_GROUND$/.test(l)) continue;
+    const lab=document.createElement('label'); if(OPT(l)) lab.className='opt';
+    const cb=document.createElement('input'); cb.type='checkbox'; cb.id='ly-'+l;
+    cb.addEventListener('change',()=>{ setLayer(l,cb.checked); syncOpt(); });
+    lab.append(cb, document.createTextNode(MODEL.layers[l].label)); layersEl.appendChild(lab); layerBoxes[l]=cb;
+  }
+}
+function setLayer(l,on){ if(layerGroups[l]) layerGroups[l].visible=on; if(layerBoxes[l]) layerBoxes[l].checked=on;
+  if(l==='COASTAL_SEA' && grassEast) grassEast.visible = !on;
+  for(const [pl, ol] of [['NOMOD_GROUND','OPT_MOD'],['NOBESS_GROUND','OPT_BESS'],['NOCCS_GROUND','OPT_CCS']]) if(layerGroups[pl]) layerGroups[pl].visible = !!(layerGroups[ol] && !layerGroups[ol].visible); }
+function setLayers(show){ const s=new Set(show); for(const l in MODEL.layers) setLayer(l, s.has(l)); syncOpt(); }
+const bOpt=document.getElementById('bOpt');
+function syncOpt(){ bOpt.setAttribute('aria-pressed', Object.keys(layerBoxes).filter(OPT).every(l=>layerBoxes[l].checked)); }
+bOpt.onclick=()=>{ const on=bOpt.getAttribute('aria-pressed')!=='true'; for(const l in layerBoxes) if(OPT(l)) setLayer(l,on); syncOpt(); };
+const toggle=(id,fn)=>{ const b=document.getElementById(id); b.onclick=()=>{ const on=b.getAttribute('aria-pressed')!=='true'; b.setAttribute('aria-pressed',on); fn(on); }; };
+toggle('bXray', on=>{ matGlass.opacity = on?.26:1; matGlass.transparent=on; matGlass.depthWrite=!on; matGlass.needsUpdate=true; });
+toggle('bDetail', on=>{ detailObjs.forEach(m=>m.visible=on); });
+// focus: the power block in full colour, everything else ghosted to a light grey
+const HERO_LAYERS = new Set(['BASE_POWER_BLOCK','BASE_INLET_AIR','HALL_ROOF','SITE']);
+const heroGhost = new THREE.MeshStandardMaterial({color:0xdfe2e1, roughness:1, transparent:true, opacity:.22, depthWrite:false, clippingPlanes:CLIP});
+toggle('bHero', on=>{
+  for(const [l,g] of Object.entries(layerGroups)){
+    if(HERO_LAYERS.has(l)) continue;
+    g.traverse(o=>{
+      if(o.isLineSegments){ o.visible = !on; return; }
+      if(!o.isMesh) return;
+      if(on){ if(!o.userData.mat0){ o.userData.mat0 = o.material; o.material = heroGhost; o.castShadow0 = o.castShadow; o.castShadow = false; } }
+      else if(o.userData.mat0){ o.material = o.userData.mat0; o.userData.mat0 = null; o.castShadow = o.castShadow0; }
+    });
+  }
+});
+toggle('bTags', on=>{ labelsEl.hidden=!on; });
+// BTM power paths: the data centre's three supply paths, tinted and labelled on demand (real finishes otherwise)
+const PATH_MAT = {}, PATH_NAME = {btm_island:'1  Islanded BTM power: campus gensets + battery', btm_mod:'2  From the modular yard: 13.8 kV to the step-ups',
+  btm_grid:'3  Grid tie 230 kV from the switchyard (normally open)'};
+for(const k of Object.keys(PATH_NAME)) PATH_MAT[k] = new THREE.MeshStandardMaterial({color:new THREE.Color(PALETTE[k].hex).convertSRGBToLinear(),
+  emissive:new THREE.Color(PALETTE[k].hex).convertSRGBToLinear().multiplyScalar(.35), roughness:.55, metalness:.05, clippingPlanes:CLIP});
+let pathsOn=false;
+toggle('bPaths', on=>{ pathsOn=on; clearSel();
+  if(on) for(const l of ['OPT_DC','OPT_DC_ROUTES','OPT_MOD','OPT_MOD_ROUTES']) setLayer(l,true);
+  for(const it of MODEL.items) if(it.path) (itemMeshes[it.id]||[]).forEach(m=>{ if(on){ m.userData.base=m.material; m.material=PATH_MAT[it.path]; } else if(m.userData.base){ m.material=m.userData.base; } });
+  for(const [m,k] of pathRoutes){ if(on){ m.userData.base=m.material; m.material=PATH_MAT[k]; m.scale.set(1,1,1); } else if(m.userData.base) m.material=m.userData.base; }
+  if(on) labelsEl.hidden=false; });
+toggle('bShadow', on=>{ renderer.shadowMap.enabled=on; scene.traverse(o=>{ if(o.material) o.material.needsUpdate=true; }); });
+const cut=document.getElementById('cut'), cutv=document.getElementById('cutv');
+cut.addEventListener('input',()=>{ const v=+cut.value; cutPlane.constant = v>=320?1e6:v; cutv.textContent = v>=320?'off':'EL '+v; });
+
+// ---------- views ----------
+const viewsEl=document.getElementById('views'); let anim=null;
+const now = () => (window.__clock ?? performance.now());   // recording sets window.__clock
+function goView(v, instant){
+  setLayers(v.show);
+  // underground view: surface pads (switchyard gravel, yard slabs) are lifted away with the ground
+  for(const m of surfMeshes) m.visible = !['U','U2'].includes(v.k);
+  [...viewsEl.children].forEach(b=>b.setAttribute('aria-pressed', b.dataset.k===v.k));
+  const t=P(...v.t), c=P(...v.c);
+  if(instant || matchMedia('(prefers-reduced-motion: reduce)').matches){ controls.target.copy(t); camera.position.copy(c); return; }
+  anim={t0:now(), ft:controls.target.clone(), fc:camera.position.clone(), t, c};
+}
+for(const v of [...MODEL.views].sort((a,b)=>(b.k==='ALL')-(a.k==='ALL'))){ const b=document.createElement('button'); b.textContent=v.n; b.dataset.k=v.k; b.onclick=()=>goView(v); viewsEl.appendChild(b); }
+function envelope(it){ return {c:[(it.fp[0]+it.fp[1])/2,(it.fp[2]+it.fp[3])/2,(it.z[0]+it.z[1])/2], s:Math.max(it.fp[1]-it.fp[0], it.fp[3]-it.fp[2], it.z[1]-it.z[0])}; }
+function flyTo(id){
+  const it=items[id], e=envelope(it); (itemMeshes[id]||[]).forEach(m=>{ m.parent.visible=true; if(layerBoxes[m.parent.name]) layerBoxes[m.parent.name].checked=true; });
+  const t=P(...e.c), dir=camera.position.clone().sub(controls.target).normalize();
+  anim={t0:now(), ft:controls.target.clone(), fc:camera.position.clone(), t, c:t.clone().add(dir.multiplyScalar(Math.max(e.s,30)*2.6+60))};
+}
+
+// ---------- labels ----------
+const labelsEl=document.getElementById('labels'), labelObjs=[];
+const LABEL = /^(GT\d|ST|HRSG-\d|STK-2|ACC|R1|R2[ABC]|R3|R4|RH|CR|GSU-\d|GSU-ST|FH-2|R-WT|EDG-1|ABS-[ABC]|STR-B|DCC-B|CCS T-1|BF-B|AUXC|CP-A\/B\/C|CRANE|BESS|RICE|SC-1|H2-EL|T-MOD-1|MOB-1|LNG-T4|Line-1|SWGR-13\.8-2|LCI-2|MCC-GT2|VFD-L2|T-H2|CCS-CT)$/;
+for(const it of MODEL.items){ if(!it.tag || !LABEL.test(it.tag)) continue;
+  const el=document.createElement('div'); el.className='tag'+(OPT(it.layer)?' o':''); el.textContent=it.tag; labelsEl.appendChild(el);
+  labelObjs.push({layer:it.layer, el, p:P((it.fp[0]+it.fp[1])/2,(it.fp[2]+it.fp[3])/2,it.z[1]+(INTERIOR.has(it.layer)?1.5:6)), near:INTERIOR.has(it.layer)?260:2600}); }
+for(const [k,x,y,z] of [['btm_island',3010,476,40],['btm_mod',2560,790,26],['btm_grid',2652,800,150],['btm_mod',1955,890,40]]){
+  const el=document.createElement('div'); el.className='tag call';
+  el.textContent = (x<2000) ? '2  Modular yard 13.8 kV collector (supplies the campus)' : PATH_NAME[k];
+  el.style.background=PALETTE[k].hex; labelsEl.appendChild(el); labelObjs.push({layer:'OPT_DC', el, p:P(x,y,z), near:6000, path:true}); }
+for(const [n,x,y,z,l] of [['Pipeline M&R',1680,1800,20,'BASE_UTILITIES'],['Gas yard',1650,1540,20,'BASE_UTILITIES'],['Switchyard',1250,160,52,'BASE_SWITCHYARD'],['Portable pad',2170,520,18,'OPT_TMP'],['Inlet chilling',180,1280,52,'OPT_IC']]){
+  const el=document.createElement('div'); el.className='tag'+(OPT(l)?' o':''); el.textContent=n; labelsEl.appendChild(el); labelObjs.push({layer:l, el, p:P(x,y,z), near:2600}); }
+
+// ---------- inspector ----------
+const insp=document.getElementById('insp');
+function dims(it){ const [x0,x1,y0,y1]=it.fp;
+  return it.shape==='circle' ? {xy:`${fmt((x0+x1)/2)} / ${fmt((y0+y1)/2)}`, plan:`${fmt(x1-x0)} dia`, el:`${fmt(it.z[0])}–${fmt(it.z[1])}`}
+   : {xy:`${fmt(x0)}–${fmt(x1)} / ${fmt(y0)}–${fmt(y1)}`, plan:`${fmt(x1-x0)} x ${fmt(y1-y0)}`, el:`${fmt(it.z[0])}–${fmt(it.z[1])}`}; }
+let selId=null, selRoute=null;
+function clearSel(){ if(selId) (itemMeshes[selId]||[]).forEach(m=>m.material = (XR.on||XR.fill) ? ghostMat : m.userData.mat); if(selRoute) { selRoute.material = matSolid; } selId=null; selRoute=null; }
+function selectItem(id){ clearSel(); if(!id){ showDefault(); return; } selId=id;
+  (itemMeshes[id]||[]).forEach(m=>{ m.userData.mat=m.material; m.material=matHi; }); showItem(items[id]); if(XR.on) xrayItem(id); }
+function selectRoute(mesh){ clearSel(); selRoute=mesh; mesh.material=matHi; showRoute(MODEL.routes[mesh.userData.route]); }
+function showItem(it){
+  const d=dims(it), nParts=PARTN[it.id]||0;
+  insp.innerHTML=`<p class="lbl">${esc(MODEL.areas[it.area]?`Area ${it.area} · ${MODEL.areas[it.area]}`:MODEL.layers[it.layer].label)}</p>
+   <h2>${it.tag?`<span class="tagbox">${esc(it.tag)}</span>`:''}${esc(it.name)}</h2>
+   <p style="margin:8px 0"><span class="pill b-${it.basis}">${esc(it.basis)}</span> <span class="muted" style="margin-left:6px">${esc(it.sheet)} · ${esc(it.layer)}</span></p>
+   <dl class="kv"><dt>Plan X / Y</dt><dd>${d.xy}</dd><dt>Size</dt><dd>${d.plan} ft</dd><dt>Elevation</dt><dd>EL ${d.el} ft</dd><dt>Parts</dt><dd>${nParts}</dd></dl>
+   ${it.info?`<p class="info" style="margin-top:10px">${esc(it.info)}</p>`:''}
+   ${it.wiring?`<p class="lbl" style="margin-top:10px">Wiring applications (typical)</p><ul class="muted" style="margin:4px 0 0 16px;padding:0">${it.wiring.map(c=>`<li style="margin-bottom:4px">${esc(c)}</li>`).join('')}</ul>`:''}
+   <div class="views" style="margin-top:10px"><button id="bFly">Fly to</button></div>`;
+  document.getElementById('bFly').onclick=()=>flyTo(it.id);
+}
+function showRoute(r){
+  const len=r.points.reduce((s,p,i,a)=>i?s+Math.hypot(p[0]-a[i-1][0],p[1]-a[i-1][1]):0,0);
+  insp.innerHTML=`<p class="lbl">${esc(MODEL.layers[r.layer].label)}</p><h2>${esc(r.label)}</h2>
+   <dl class="kv" style="margin-top:8px"><dt>Elevation</dt><dd>${r.z<0?'below grade':'EL '+r.z+' ft'}</dd><dt>Vertices</dt><dd>${r.points.length}</dd><dt>Plan length</dt><dd>${fmt(len)} ft</dd><dt>Source</dt><dd>${esc(r.sheet)}</dd></dl>
+   ${r.cables?`<p class="lbl" style="margin-top:10px">Cable schedule (typical)</p><ul class="muted" style="margin:4px 0 0 16px;padding:0">${r.cables.map(c=>`<li style="margin-bottom:4px">${esc(c)}</li>`).join('')}</ul>`:''}
+   <p class="muted" style="margin-top:8px">Route centreline taken from the drawing, not a conductor quantity.</p>`;
+}
+function showDefault(){
+  insp.innerHTML=`<p class="lbl">Inspector</p><h2>Select equipment</h2>
+   <p class="info" style="margin-top:6px">Click anything in the model, or a row in the register, to see its tag, drawn footprint, elevation, basis and sheet. Double-click to fly to it.</p>
+   <dl class="kv" style="margin-top:10px"><dt>Output</dt><dd>~1,622 MW (3x1 H-class)</dd><dt>Grid</dt><dd>230 kV, 2 lines</dd><dt>Cooling</dt><dd>ACC, 80 cells</dd><dt>Tallest base</dt><dd>HRSG stacks 180 ft</dd><dt>Tallest option</dt><dd>Absorber stack 313 ft</dd></dl>`;
+}
+showDefault();
+const ray=new THREE.Raycaster(), mouse=new THREE.Vector2();
+function hit(e){ const r=cv.getBoundingClientRect(); mouse.set(((e.clientX-r.left)/r.width)*2-1, -((e.clientY-r.top)/r.height)*2+1);
+  ray.setFromCamera(mouse,camera);
+  const hs=ray.intersectObjects(pickables.filter(m=>m.parent.visible),false).filter(h=>{
+    if(h.point.y > cutPlane.constant) return false;
+    return !(h.object.material===matGlass && matGlass.transparent); });
+  return hs[0]; }
+let down=null;
+cv.addEventListener('pointerdown',e=>{ down=[e.clientX,e.clientY]; });
+cv.addEventListener('pointerup',e=>{ if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>5) return; const h=hit(e);
+  if(!h) return selectItem(null); if(h.object.userData.item) selectItem(h.object.userData.item); else selectRoute(h.object); });
+cv.addEventListener('dblclick',e=>{ const h=hit(e); if(h && h.object.userData.item) flyTo(h.object.userData.item); });
+const read=document.getElementById('read'); let rq=0;
+cv.addEventListener('pointermove',e=>{ if(rq) return; rq=requestAnimationFrame(()=>{ rq=0; const h=hit(e);
+  if(h){ const x=h.point.x+CX, y=-h.point.z+CY, z=h.point.y; const n=h.object.userData.item?items[h.object.userData.item]:null;
+    read.innerHTML=`<span>X</span> ${fmt(x)} <span>Y</span> ${fmt(y)} <span>EL</span> ${fmt(z)}${n?` <span>·</span> ${esc(n.tag||n.name.slice(0,34))}`:''}`; } }); });
+
+// ---------- legend ----------
+const leg=document.getElementById('legend'), seenL=new Set();
+for(const r of MODEL.routes){ if(seenL.has(r.label)) continue; seenL.add(r.label);
+  const sw=document.createElement('div'); sw.className='sw'; const c=PALETTE[r.color].hex;
+  sw.style.background = r.z<0 ? `repeating-linear-gradient(90deg,${c} 0 3px,transparent 3px 5px)` : c;
+  const t=document.createElement('div'); t.textContent=r.label; leg.append(sw,t); }
+
+// ---------- stats ----------
+const reg = MODEL.items.filter(i=>i.register);
+const R = REPORT;
+document.getElementById('stats').innerHTML = [
+  [reg.length.toLocaleString('en-US'), `register items · ${NPARTS.toLocaleString('en-US')} modelled parts`],
+  [`${R.footprints.matched}/${R.footprints.checked}`, `drawn shapes matched within ${R.footprints.tolerance_ft} ft`, R.footprints.ok],
+  [`${R.heights.rows.filter(r=>r.ok).length}/${R.heights.rows.length}`, 'sheet-13 heights reproduced', R.heights.ok],
+  [`${R.sheet09.clearances.filter(r=>r.ok).length+R.sheet09.hook.filter(r=>r.ok).length}/${R.sheet09.clearances.length+R.sheet09.hook.length}`, 'sheet-09 crane checks reproduced', R.sheet09.ok],
+  [String(R.clashes.clashes.length), `clashes in ${R.clashes.pairs_tested.toLocaleString('en-US')} part pairs`, R.clashes.ok],
+].map(([b,s,ok])=>`<div class="stat"><b class="${ok?'ok':''}">${b}</b><span>${s}</span></div>`).join('');
+
+// ---------- register ----------
+const fa=document.getElementById('fa'), fb=document.getElementById('fb');
+fa.innerHTML = `<option value="">All areas (${reg.length})</option>`+Object.entries(MODEL.areas).map(([k,v])=>`<option value="${k}">${k} ${esc(v)} (${reg.filter(i=>i.area===k).length})</option>`).join('');
+const tb=document.getElementById('tb'), q=document.getElementById('q'), cnt=document.getElementById('cnt');
+function renderReg(){ const s=q.value.trim().toLowerCase();
+  const rows=reg.filter(i=>(!fa.value||i.area===fa.value)&&(!fb.value||i.basis===fb.value)&&(!s||(i.tag+' '+i.name+' '+i.info).toLowerCase().includes(s)));
+  cnt.textContent=`${rows.length} items`;
+  tb.innerHTML=rows.map(i=>{ const d=dims(i); return `<tr data-id="${i.id}"><td class="m">${esc(i.tag||'—')}</td><td>${esc(i.name)}</td><td>${esc(i.area)}</td><td class="m">${d.xy}</td><td class="m">${d.plan}</td><td class="m">${d.el}</td><td><span class="pill b-${i.basis}">${i.basis}</span></td><td class="m">${esc(i.sheet)}</td></tr>`; }).join(''); }
+[q,fa,fb].forEach(el=>el.addEventListener('input',renderReg)); renderReg();
+tb.addEventListener('click',e=>{ const tr=e.target.closest('tr'); if(!tr) return; selectItem(tr.dataset.id); flyTo(tr.dataset.id); stage.scrollIntoView({behavior:'smooth',block:'center'}); });
+
+// ---------- verification ----------
+const pill = ok => `<span class="pill ${ok?'p-ok':'p-bad'}">${ok?'pass':'fail'}</span>`;
+document.getElementById('ver').innerHTML = `
+ <p class="info" style="max-width:80ch;margin-bottom:12px">Result of <code>plant/verify.py</code> for this build: ${pill(R.summary.ok)} The model is compared against the drawing, not against itself. The reference geometry is extracted from the PDF by <code>extract_reference.py</code>.</p>
+ <div class="cols">
+  <div class="card"><h3>Footprints ${pill(R.footprints.ok)}</h3><p>${R.footprints.matched} of ${R.footprints.checked} filled shapes on sheets 01 and 05 match a model item or part within ${R.footprints.tolerance_ft} ft on all four edges. The dashed optional-reserve frames on sheet 01 are not counted; their contents come from sheet 02.</p></div>
+  <div class="card"><h3>Clashes ${pill(R.clashes.ok)}</h3><p>${R.clashes.pairs_tested.toLocaleString('en-US')} pairs of parts from different items tested as boxes; ${R.clashes.clashes.length} overlap. Contacts the drawings define (the plenum spool touching the GT lift column, ducts penetrating the gallery roof, bus on its dead-ends) are listed in the script.</p></div>
+  <div class="card"><h3>Bounds ${pill(R.bounds.ok)}</h3><p>All parts sit inside the 2,420 x 1,920 ft compound. Only the stormwater basin and the R1 cable basement go below grade.</p></div>
+ </div>
+ <h3 class="sec">Sheet 09 coordination screen, recomputed from the model</h3>
+ <div class="tw" style="max-height:none"><table><thead><tr><th>Check</th><th class="r">Model</th><th class="r">Sheet 09</th><th>Result</th></tr></thead><tbody>
+ ${R.sheet09.clearances.map(r=>`<tr><td>${esc(r.check)}</td><td class="m r">${r.model} ft</td><td class="m r">${r.sheet} ft</td><td>${pill(r.ok)}</td></tr>`).join('')}
+ ${R.sheet09.hook.map(r=>`<tr><td>Hook height: ${esc(r.check)}</td><td class="m r">+${r.model} ft</td><td class="m r">+${r.sheet} ft</td><td>${pill(r.ok)}</td></tr>`).join('')}
+ </tbody></table></div>
+ <p class="muted" style="margin-top:6px">Assumptions as on sheet 09: GT / generator / ST tops EL ${R.sheet09.assumptions.gt_top} / ${R.sheet09.assumptions.gen_top} / ${R.sheet09.assumptions.st_top}, lift gap ${R.sheet09.assumptions.lift_gap} ft, lifted heights 18 / 16 / 14 ft, rigging ${R.sheet09.assumptions.rigging} ft, hook max EL ${R.sheet09.assumptions.hook_max}, bridge travel EL ${R.sheet09.assumptions.bridge_travel.join('-')}. Clearance is the largest per-axis gap between boxes.</p>
+ <h3 class="sec">Sheet 13 heights</h3>
+ <div class="tw" style="max-height:none"><table><thead><tr><th>Class</th><th class="r">Model</th><th class="r">Sheet 13</th><th>Result</th></tr></thead><tbody>
+ ${R.heights.rows.map(r=>`<tr><td>${esc(r.item)}</td><td class="m r">${r.model} ft</td><td class="m r">${r.expected} ft</td><td>${pill(r.ok)}</td></tr>`).join('')}
+ </tbody></table></div>`;
+
+// ---------- electrical ----------
+const ROOMS=[['R1','Main electrical building','64 x 180 ft conventional building','UAT-1/2/3 via duct bank DB-S; EDG-1/2 emergency. 13.8 kV and 4.16 kV switchgear, 480 V load centres, GT and common MCCs, emergency MCC, static starters, UPS, station DC, protection, DCS and comms.'],
+ ['R2A-C','Unit / HRSG electrical rooms','32 x 40 ft e-houses, outdoor 13.8/0.48 kV transformer each','SWGR-13.8-1/2/3. 480 V switchgear, MCC and DCS remote I/O for SCR blowers, ammonia injection, HRSG valves and drains.'],
+ ['R3','ST auxiliary electrical room','40 x 65 ft e-house, outdoor transformer','SWGR-13.8-2. 480 V switchgear and MCC for ST lube oil, turning gear, EHC and air compressors.'],
+ ['R4','ACC electrical (VFD) building','60 x 120 ft e-house, four outdoor transformers','SWGR-13.8-1/2/2/3. 480 V switchgear, 92 VFDs (80 ACC fans, 12 aux cooler fans), MCC for vacuum pumps.'],
+ ['R-WT','Water-treatment electrical room','Room in the water-treatment building','SWGR-13.8-2 via DB-W. 480 V MCC for water treatment, wastewater and the fire-pump jockey pump.'],
+ ['RH','Switchyard relay / control house','52 x 70 ft prefabricated control house','Protection, SCADA and communications for the 230 kV yard; 125 V DC and fibre to R1 via DB-S.'],
+ ['CR','Main operator control room','Room in the control / administration building','Operator consoles only. DCS cabinets are distributed in R1, R2A-C, R3 and R4.']];
+document.getElementById('rooms').innerHTML=ROOMS.map(([t,n,s,d])=>`<div class="card"><h3><span class="tagbox">${t}</span>${n}</h3><p class="muted">${s}</p><p>${d}</p></div>`).join('');
+const MOTORS=[['BFP-1A/B, 2A/B, 3A/B','Boiler feed pumps, at each HRSG','6','13.8 kV','MV breaker, DOL','R1 SWGR-13.8-1/2/3','MV-BFP-1/2/3'],['CP-A/B/C','Condensate pumps, north of ACC','3','4.16 kV','MV contactor','R1 SWGR-4.16-A/B','MV-CP'],['CCW-A/B','Closed cooling water pumps','2','4.16 kV','MV contactor','R1 SWGR-4.16-A/B','MV-CCW'],['ACC-F01..F80','ACC fans, fan deck','80','480 V','VFD','R4','VFD-ACC'],['AUXC-F01..12','Aux dry cooler fans (CCW)','12','480 V','VFD','R4','LV-VAC tray'],['VAC-A/B','ACC air-removal vacuum pumps','2','480 V','MCC starter','R4','LV-VAC'],['AC-A/B/C','Air compressors','3','480 V','MCC soft starter','R3','LV-AIRC'],['SCRB-1..3 (A/B)','SCR dilution air blowers','6','480 V','MCC starter','R2A / R2B / R2C','LV-SCR-1/2/3'],['GT1-3 aux','GT lube oil, hydraulics, enclosure fans','sets','480 V','MCC-GT1/2/3','R1','LV-GTAUX-1/2/3'],['ST aux','ST lube oil, turning gear, EHC','set','480 V','MCC','R3','LV-ST'],['EOP-GT1..3, EOP-ST','DC emergency lube-oil pumps','4','125 V DC','DC starter','R1 DC-1 / DC-2','DC-EOP'],['LCI-1/2/3','GT static starters (start-up drive)','3','13.8 kV in','LCI cabinets','R1 SWGR-13.8-1/2/3','LCI-OUT-1/2/3'],['FS-GT1..3','GT CO2 fire suppression','3','480 V + 24 V DC','local panel','R1 MCC-GT / DC','hall control tray'],['WASH-GT1..3','GT compressor water-wash skids','3','480 V','MCC starter','R1 MCC-GT1/2/3','LV-GTAUX'],['HTP-1..4','Heat-trace panels (rack, gas, NH3, tanks)','4','480 V','panel breakers','R1 LC / R-WT','LV-HTP-1..4'],['CPR-1/2','Cathodic protection rectifiers','2','AC in / DC out','rectifier','local panels','DC-CP-1/2']];
+document.getElementById('motors').innerHTML=MOTORS.map(r=>`<tr>${r.map((c,i)=>`<td class="${i===0||i>=5?'m':''}">${esc(c)}</td>`).join('')}</tr>`).join('');
+
+// ---------- heights ----------
+const hmax=320;
+document.getElementById('hbars').innerHTML = R.heights.rows.map(r=>`<div class="hb"><span>${esc(r.item)}</span><div class="bar${r.expected>=180?' hi':''}" style="width:${r.model/hmax*100}%"></div><span class="v">${r.model} ft</span></div>`).join('')+
+ `<div class="axis"><span></span><div><span>0</span><span>80</span><span>160</span><span>240</span><span>320 ft</span></div><span></span></div>`;
+
+// ---------- optional ----------
+const OPTS=[['G','Carbon capture (SW-3X1-06)','O3','Three post-combustion amine trains, one per HRSG: diverter damper, ~16 MW booster fan, DCC, a 62 ft x 262 ft absorber with its stack to 313 ft, and a 207 ft stripper with reboiler. Shared reclaimer, solvent storage and 3 x ~19 MW CO2 compression. About 150 MWe from a future D5 diameter by 230 kV cable; LP steam from ST extraction; a ~30-cell cooling tower to the north.'],
+ ['H','BESS (SW-3X1-07)','O2','30 ISO 40 ft containers and 15 PCS / MV skids, a 34.5 kV collector e-house, a main power transformer to the D4 upper position, auxiliary transformers, EMS / SCADA and a conditional grounding transformer.'],
+ ['I','Modular and portable power (SW-3X1-07, -08)','O1','An 8-engine RICE hall with 40 radiators and 90 ft stacks, two aeroderivative simple-cycle units, four SOFC modules, three microturbines and proposed black-start gensets. A portable pad with a trailer genset, a commissioning load bank, a trailer gas turbine and the pad switchgear, and four modular gas blocks. The power park showcase (trailer fleet, stacked containers, paralleled gensets, gas engines with heat recovery, mid-size turbines, linear generators, fuel cells + microturbines, AX-1, IG-1) is its own layer; view O1C shows the yard without it. The 230 kV H-MOD tie runs in the reserved corridor COR-HMOD to D4 lower.'],
+ ['J','GT inlet chilling','O4','Six water-cooled chillers, pumps and a 12-cell tower (one option), plus a conditional TES tank. Air-cooled chillers or evaporative cooling are lower-water alternatives for an ACC plant.'],
+ ['K','Fuel supply: adjacent market (SW-3X1-14)','O5','Pipeline M&R by the pipeline operator; an LNG satellite with 8 Chart HS 50000 tanks (414,000 gal, about 9 h of one GT); 25 MW green hydrogen (5 x 5 MW PEM, 10.8 t/day) blended into GT-1 fuel at about 5% by volume, powered by renewable import through a future D6 diameter.']];
+document.getElementById('opts').innerHTML=OPTS.map(([k,n,v,d])=>`<div class="card"><h3><span class="tagbox">${k}</span>${n}</h3><p>${d}</p><button data-v="${v}">Show in 3D (view ${v})</button></div>`).join('');
+document.getElementById('opts').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; goView(MODEL.views.find(v=>v.k===b.dataset.v)); stage.scrollIntoView({behavior:'smooth',block:'center'}); });
+
+// ---------- tabs ----------
+const tabs=document.getElementById('tabs');
+tabs.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return;
+  [...tabs.children].forEach(x=>{ const on=x===b; x.setAttribute('aria-selected',on); document.getElementById('p-'+x.dataset.t).hidden=!on; });
+  try{ localStorage.setItem('sw3x1-tab',b.dataset.t); }catch(_){} });
+try{ const t=localStorage.getItem('sw3x1-tab'); if(t) tabs.querySelector(`[data-t="${t}"]`)?.click(); }catch(_){}
+
+// ---------- theme ----------
+function skyTex(top, mid, bottom){ const c=document.createElement('canvas'); c.width=4; c.height=256; const g=c.getContext('2d');
+  const grd=g.createLinearGradient(0,0,0,256); grd.addColorStop(0,top); grd.addColorStop(.62,mid); grd.addColorStop(1,bottom); g.fillStyle=grd; g.fillRect(0,0,4,256);
+  const t=new THREE.CanvasTexture(c); t.encoding=THREE.sRGBEncoding; return t; }
+function applyTheme(){ const cs=getComputedStyle(document.documentElement);
+  const dark = cs.getPropertyValue('color-scheme').includes('dark') || new THREE.Color(cs.getPropertyValue('--scene').trim()||'#e7ebe8').getHSL({}).l<.4;
+  scene.background = dark ? skyTex('#0e1822','#27384a','#4a5a63') : skyTex('#7fa7cf','#c9dcec','#e9eef0');
+  scene.fog = new THREE.Fog(dark ? 0x3d4c55 : 0xdfe7ec, MODEL.coastal ? 4200 : 2600, MODEL.coastal ? 15000 : 9000);
+  hemi.intensity = scene.environment ? (dark ? .35 : .6) : (dark ? .55 : .95); sun.intensity = dark ? 1.2 : 2.1; renderer.toneMappingExposure = dark ? .9 : 1.05;
+  edgeMat.color.set(dark?0x05080a:0x27313a); edgeMat.opacity=dark?.45:.22; gridH.material.color.set(dark?0xffffff:0x000000);
+  document.getElementById('north').style.color=cs.getPropertyValue('--ink'); }
+applyTheme(); matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme);
+new MutationObserver(applyTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+
+// ---------- cable X-ray: every cable of the cable schedule on its routed path ----------
+const CAB = /*CABLES_JSON*/null;
+const XCOL = {'HV 230 kV':'#9b59d0','MV 35 kV':'#c0392b','MV 25 kV':'#d35400','MV 15 kV':'#e8453c','MV 5 kV':'#ef8a2c',
+  'LV 600 V':'#f2c613','DC 2 kV':'#17a589','Portable MV':'#f7b733','Portable LV':'#a3b1b8','Control':'#3a8fd9',
+  'Instrumentation':'#36c26b','Fire alarm':'#ff3d7f','Fibre / data':'#ff9f1a'};
+const XR = {on:false, fill:false, built:false, groups:[], hi:null, fillObj:null, cls:new Set(CAB?CAB.classes:[]), sel:null};
+const ghostMat = new THREE.MeshBasicMaterial({color:0x9aa7b0, transparent:true, opacity:.06, depthWrite:false, clippingPlanes:CLIP});
+function xrayBuild(){
+  if(XR.built||!CAB) return; XR.built=true;
+  const per = CAB.classes.map(()=>({pos:[], idx:[]})), cnt = {};
+  CAB.cables.forEach((c,ci)=>{ const pi=c[12]; if(pi<0) return;
+    const j = cnt[pi] = (cnt[pi]||0)+1, ox=((j%7)-3)*.45, oz=(Math.floor(j/7)%6)*.35+.4;
+    const p=CAB.paths[pi], b=per[c[1]];
+    for(let k=0;k+5<p.length;k+=3){ const a=P(p[k]+ox,p[k+1]+ox*.6,p[k+2]+oz), d=P(p[k+3]+ox,p[k+4]+ox*.6,p[k+5]+oz);
+      b.pos.push(a.x,a.y,a.z,d.x,d.y,d.z); } });
+  per.forEach((b,i)=>{ const g=new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(b.pos,3));
+    const m=new THREE.LineSegments(g, new THREE.LineBasicMaterial({color:new THREE.Color(XCOL[CAB.classes[i]]), transparent:true, opacity:.7,
+      depthTest:false, clippingPlanes:CLIP}));
+    m.renderOrder=10; m.visible=false; m.userData.cls=CAB.classes[i]; scene.add(m); XR.groups.push(m); });
+  // tray fill: cables carried by each network segment, cool -> hot
+  const fp=[], fc=[], mx=Math.max(...CAB.fill.map(f=>f[6])), c=new THREE.Color();
+  for(const f of CAB.fill){ const a=P(f[0],f[1],f[2]+.2), d=P(f[3],f[4],f[5]+.2); fp.push(a.x,a.y,a.z,d.x,d.y,d.z);
+    const t=Math.min(1, Math.log(1+f[6])/Math.log(1+mx)); c.setHSL(.62-.62*t, .95, .42+.12*t); fc.push(c.r,c.g,c.b,c.r,c.g,c.b); }
+  const fg=new THREE.BufferGeometry(); fg.setAttribute('position', new THREE.Float32BufferAttribute(fp,3)); fg.setAttribute('color', new THREE.Float32BufferAttribute(fc,3));
+  XR.fillObj=new THREE.LineSegments(fg, new THREE.LineBasicMaterial({vertexColors:true, depthTest:false, clippingPlanes:CLIP}));
+  XR.fillObj.renderOrder=11; XR.fillObj.visible=false; scene.add(XR.fillObj); XR.fillMax=mx;
+}
+function ghost(on){ scene.traverse(o=>{ if(!o.isMesh || o.userData.xr) return;
+  if(on){ if(!o.userData.xmat){ o.userData.xmat=o.material; o.material=ghostMat; } }
+  else if(o.userData.xmat){ o.material=o.userData.xmat; o.userData.xmat=null; } }); }
+function xraySync(){ const show=XR.on||XR.fill; ghost(show); renderer.shadowMap.enabled=!show;
+  XR.groups.forEach(g=>{ g.visible = XR.on && XR.cls.has(g.userData.cls); g.material.opacity = XR.hi ? .1 : .7; });
+  if(XR.fillObj) XR.fillObj.visible = XR.fill;
+  if(XR.hi) XR.hi.visible = XR.on; }
+function xrayHighlight(list){ if(XR.hi){ scene.remove(XR.hi); XR.hi.geometry.dispose(); XR.hi=null; }
+  if(list && list.length){ const pos=[], col=[], c=new THREE.Color();
+    for(const ci of list){ const cb=CAB.cables[ci], pi=cb[12]; if(pi<0) continue; const p=CAB.paths[pi]; c.set(XCOL[CAB.classes[cb[1]]]);
+      for(let k=0;k+5<p.length;k+=3){ const a=P(p[k],p[k+1],p[k+2]+.6), d=P(p[k+3],p[k+4],p[k+5]+.6); pos.push(a.x,a.y,a.z,d.x,d.y,d.z); col.push(c.r,c.g,c.b,c.r,c.g,c.b); } }
+    const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
+    XR.hi=new THREE.LineSegments(g,new THREE.LineBasicMaterial({vertexColors:true, depthTest:false, clippingPlanes:CLIP})); XR.hi.renderOrder=12; XR.hi.userData.xr=true; scene.add(XR.hi); }
+  xraySync(); }
+const xrStats = () => { const n={}, L={}; for(const c of (CAB?CAB.cables:[])){ const k=CAB.classes[c[1]]; n[k]=(n[k]||0)+c[5]; L[k]=(L[k]||0)+c[6]*c[5]; } return {n,L}; };
+function xrayPanel(){
+  const st=xrStats(), tot=Object.values(st.n).reduce((a,b)=>a+b,0), totL=Object.values(st.L).reduce((a,b)=>a+b,0);
+  insp.innerHTML=`<p class="lbl">Cable X-ray</p><h2>${tot.toLocaleString('en-US')} cables · ${Math.round(totL/5280).toLocaleString('en-US')} mi</h2>
+   <p class="info" style="margin-top:6px">Every power, control, instrumentation, fire-alarm and fibre cable of the cable schedule on its routed path
+   (tray, duct bank, trench, surface). Click equipment to see its cables; filter by class; search a cable number or tag.</p>
+   <input id="xq" placeholder="Cable no. or tag, e.g. A-MV-0003, BFP-1" style="width:100%;margin:8px 0;padding:6px 8px;font:12px var(--mono)">
+   <div id="xcls" style="display:grid;grid-template-columns:auto 1fr auto;gap:4px 8px;font-size:12px">${CAB.classes.map((k,i)=>`
+     <input type="checkbox" data-c="${esc(k)}" ${XR.cls.has(k)?'checked':''} aria-label="${esc(k)}"><span><span style="display:inline-block;width:14px;height:3px;background:${XCOL[k]};vertical-align:middle;margin-right:6px"></span>${esc(k)}</span>
+     <span class="muted">${(st.n[k]||0).toLocaleString('en-US')}</span>`).join('')}</div>
+   <div id="xres" style="margin-top:8px"></div>
+   <p class="muted" style="margin-top:8px">Field cables from devices to their local junction boxes are counted, not drawn (they stay on the equipment).
+   Conceptual, from the model; see SW-3X1_Cable_Schedule_and_BOM.xlsx.</p>`;
+  document.getElementById('xcls').onchange=e=>{ const k=e.target.dataset.c; if(e.target.checked) XR.cls.add(k); else XR.cls.delete(k); xraySync(); };
+  const q=document.getElementById('xq'); q.oninput=()=>{ const s=q.value.trim().toLowerCase(); if(s.length<2){ document.getElementById('xres').innerHTML=''; xrayHighlight(null); return; }
+    const hits=[]; CAB.cables.forEach((c,i)=>{ if(c[0].toLowerCase().includes(s)||String(c[7]).toLowerCase().includes(s)||String(c[8]).toLowerCase().includes(s)) hits.push(i); });
+    xrayList(hits, `${hits.length} cables match`); xrayHighlight(hits.slice(0,800)); };
+}
+function xrayList(ids, title){
+  const el=document.getElementById('xres'); if(!el) return;
+  const rows=ids.slice(0,200).map(i=>{ const c=CAB.cables[i]; return `<tr data-i="${i}" style="cursor:pointer"><td style="white-space:nowrap"><span style="display:inline-block;width:8px;height:8px;border-radius:4px;background:${XCOL[CAB.classes[c[1]]]};margin-right:5px"></span>${esc(c[0])}</td>
+    <td>${esc(c[7])} → ${esc(c[8])}<br><span class="muted">${esc(c[11])}</span></td><td style="white-space:nowrap">${esc(c[5]>1?c[5]+' x ':'')}${esc(c[4])} ${esc(c[3])}<br><span class="muted">${c[6].toLocaleString('en-US')} ft</span></td></tr>`; }).join('');
+  el.innerHTML=`<p class="lbl">${esc(title)}</p><div style="max-height:340px;overflow:auto"><table style="width:100%;font-size:11px;border-collapse:collapse">${rows}</table></div>${ids.length>200?`<p class="muted">first 200 of ${ids.length}</p>`:''}`;
+  el.querySelector('table').onclick=e=>{ const tr=e.target.closest('tr'); if(!tr) return; const i=+tr.dataset.i, c=CAB.cables[i];
+    xrayHighlight([i]); const pi=c[12]; if(pi>=0){ const p=CAB.paths[pi], m=Math.floor(p.length/6)*3; const t=P(p[m],p[m+1],p[m+2]);
+      const dir=camera.position.clone().sub(controls.target).normalize(); anim={t0:now(), ft:controls.target.clone(), fc:camera.position.clone(), t, c:t.clone().add(dir.multiplyScalar(420))}; } };
+}
+function xrayItem(id){ if(!XR.on||!CAB) return;
+  const ids=[]; CAB.cables.forEach((c,i)=>{ if(c[9]===id||c[10]===id) ids.push(i); });
+  const box=document.createElement('div'); box.id='xres'; insp.appendChild(box);
+  xrayList(ids, `${ids.length} cable runs to / from this item (${ids.reduce((a,i)=>a+CAB.cables[i][5],0)} cables)`); xrayHighlight(ids); }
+toggle('bCab', on=>{ XR.on=on; if(on){ xrayBuild(); xrayPanel(); } else { xrayHighlight(null); showDefault(); } xraySync(); });
+toggle('bFill', on=>{ XR.fill=on; xrayBuild(); xraySync();
+  if(on && !XR.on) insp.innerHTML=`<p class="lbl">Tray fill</p><h2>Cables per tray / bank segment</h2><p class="info" style="margin-top:6px">Each segment of the cable network coloured by the number of schedule cables it carries: blue few, red most (max ${XR.fillMax}).</p>`; });
+
+// ---------- guided tour: the power path, the electrical systems and the cable ----------
+const TOUR = /*TOUR_JSON*/null;
+const TOUR2 = /*TOUR2_JSON*/null;
+const T = {on:false, i:-1, fly:null, arrive:0, base:null, saved:null, pending:null, tour:null, chaps:[]};
+const tourEl=document.getElementById('tour'), tcap=document.getElementById('tcap'), tprog=document.getElementById('tprog');
+const lensFov = lens => 2*Math.atan((18/lens)/camera.aspect)*180/Math.PI;
+const ease = k => k<.5 ? 4*k*k*k : 1-Math.pow(-2*k+2,3)/2;
+function tourLayers(s){
+  const v = MODEL.views.find(w=>w.k===(s.show||'ALL')) || MODEL.views.find(w=>w.k==='ALL');
+  const show = new Set(v.show); (s.add||[]).forEach(l=>show.add(l)); (s.hide||[]).forEach(l=>show.delete(l));
+  setLayers([...show]); for(const m of surfMeshes) m.visible = !['U','U2'].includes(s.show);
+  const bc=document.getElementById('bCab'); if(!!s.xray !== XR.on) bc.click();
+  const bp=document.getElementById('bPaths'); if(!!s.paths !== pathsOn) bp.click();
+  labelsEl.hidden = true;
+}
+function tourGo(i){
+  const TR=T.tour||TOUR; if(!TR) return; i=Math.max(0,Math.min(TR.stops.length-1,i)); const s=TR.stops[i]; T.i=i;
+  if(T.pending) tourLayers(T.pending); T.pending=s;            // the new stop's layers switch in mid-flight
+  const t0=now(), fc=camera.position.clone(), ft=T.base ? T.base.t.clone() : controls.target.clone(), c=P(...s.c), t=P(...s.t);
+  const d=fc.distanceTo(c), dur=Math.min(6500, Math.max(2600, 1800 + d*1.6));
+  camera.near = Math.min(camera.near, s.near||1); camera.updateProjectionMatrix();
+  T.fly={t0, dur, fc, ft, c, t, f0:camera.fov, f1:lensFov(s.lens||30), lift: d>160 ? Math.min(d*.28, 520) : 0, near:s.near||1};
+  T.base=null;
+  document.getElementById('tsec').textContent=s.sec; document.getElementById('ttl').textContent=s.title;
+  document.getElementById('teq').textContent=s.eq; document.getElementById('tsys').textContent=s.sys; document.getElementById('tcab').textContent=s.cab;
+  document.getElementById('tnum').textContent=`${i+1} / ${TR.stops.length}`;
+  tprog.style.width=((i+1)/TR.stops.length*100)+'%';
+  chapMark();
+  return dur;
+}
+function tourTick(now_){
+  if(T.fly){ const f=T.fly, k=Math.min((now_-f.t0)/f.dur,1), e=ease(k);
+    camera.position.lerpVectors(f.fc,f.c,e); camera.position.y += f.lift*Math.sin(Math.PI*e);
+    const tg=new THREE.Vector3().lerpVectors(f.ft,f.t,e); camera.fov=f.f0+(f.f1-f.f0)*e; camera.updateProjectionMatrix(); camera.lookAt(tg); controls.target.copy(tg);
+    tcap.style.opacity = Math.max(0, 1-k*4);
+    if(T.pending && k>=.45){ tourLayers(T.pending); T.pending=null; }
+    if(k>=1){ if(T.pending){ tourLayers(T.pending); T.pending=null; } T.fly=null; T.arrive=f.t0+f.dur; T.base={c:f.c.clone(), t:f.t.clone()}; camera.near=f.near; camera.updateProjectionMatrix(); } }
+  else if(T.base){ const s=(T.tour||TOUR).stops[T.i], sec=(now_-T.arrive)/1000, a=THREE.MathUtils.degToRad((s.drift??1)*sec);
+    const off=T.base.c.clone().sub(T.base.t).applyAxisAngle(new THREE.Vector3(0,1,0), a).multiplyScalar(1-Math.min(.06, .005*sec));
+    camera.position.copy(T.base.t).add(off); camera.lookAt(T.base.t); controls.target.copy(T.base.t);
+    tcap.style.opacity = Math.min(1, Math.max(0,(sec-.15)/.6)); }
+}
+function chapMark(){ const bs=[...document.getElementById('tchap').children]; let cur=-1;
+  T.chaps.forEach((c,k)=>{ if(T.i>=c.i) cur=k; }); bs.forEach((b,k)=>b.setAttribute('aria-current', k===cur)); }
+function chapBuild(){ const el=document.getElementById('tchap'); el.innerHTML=''; T.chaps=[];
+  if(T.tour!==TOUR2) return;                                   // chapter bar: the Nov 11 tour's seven stops
+  let last=null; T.tour.stops.forEach((s,i)=>{ const m=/^(\d+) · (.*)$/.exec(s.sec||''); if(m && s.sec!==last){ T.chaps.push({i, n:m[1], name:m[2]}); } last=s.sec; });
+  for(const c of T.chaps){ const b=document.createElement('button'); b.textContent=`${c.n} ${c.name}`; b.onclick=()=>tourGo(c.i); el.appendChild(b); } }
+function tourStart(i=0, tour=TOUR){
+  if(!tour) return; T.tour=tour; chapBuild(); T.on=true; T.saved={near:camera.near, fov:camera.fov, tags:labelsEl.hidden};
+  document.body.classList.add('tour'); tourEl.hidden=false; labelsEl.hidden=true; controls.enabled=false; T.base=null;
+  resize(); tourGo(i);
+}
+function tourExit(){
+  if(!T.on) return; T.on=false; T.fly=null; T.base=null; T.pending=null; document.body.classList.remove('tour'); tourEl.hidden=true;
+  if(XR.on) document.getElementById('bCab').click();
+  if(pathsOn) document.getElementById('bPaths').click();
+  camera.near=T.saved.near; camera.fov=T.saved.fov; camera.updateProjectionMatrix(); labelsEl.hidden=T.saved.tags; controls.enabled=true;
+  requestAnimationFrame(resize);
+}
+document.getElementById('tourGo').onclick=()=>tourStart(0, TOUR);
+document.getElementById('tourGo2').onclick=()=>tourStart(0, TOUR2);
+document.getElementById('tNext').onclick=()=>tourGo(T.i+1);
+document.getElementById('tPrev').onclick=()=>tourGo(T.i-1);
+document.getElementById('tExit').onclick=tourExit;
+addEventListener('keydown', e=>{ if(!T.on) return;
+  if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){ e.preventDefault(); tourGo(T.i+1); }
+  else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){ e.preventDefault(); tourGo(T.i-1); }
+  else if(e.key==='Escape') tourExit();
+  else if(/^[1-9]$/.test(e.key) && T.chaps.length){ const c=T.chaps.find(c=>c.n===e.key); if(c){ e.preventDefault(); tourGo(c.i); } } });
+if(!TOUR) document.getElementById('tourGo').hidden=true;
+if(!TOUR2) document.getElementById('tourGo2').hidden=true;
+window.tourAPI = {start:tourStart, go:tourGo, exit:tourExit, n:()=>TOUR?TOUR.stops.length:0, state:()=>({i:T.i, flying:!!T.fly, cam:camera.position.toArray().map(Math.round), tgt:controls.target.toArray().map(Math.round), fov:Math.round(camera.fov)}),
+  stop:i=>TOUR.stops[i], advance:t=>{ window.__rec=true; window.__clock=t; tourTick(t); },
+  // recording: one deterministic frame at clock t, read straight from the canvas (captions are composited afterwards)
+  frame:(t,q=.92)=>{ window.__rec=true; window.__clock=t; tourTick(t); fitShadow(); renderer.render(scene,camera); return cv.toDataURL('image/jpeg',q); }};
+
+// ---------- sky environment: metal, cladding and glass reflect the sky instead of reading flat ----------
+{
+  const pm = new THREE.PMREMGenerator(renderer), es = new THREE.Scene();
+  const dome = new THREE.Mesh(new THREE.SphereGeometry(100, 32, 16), new THREE.MeshBasicMaterial({map:skyTex('#6f9bc9','#c6d9ea','#eef1ef'), side:THREE.BackSide}));
+  es.add(dome);
+  const gnd = new THREE.Mesh(new THREE.CircleGeometry(99, 32), new THREE.MeshBasicMaterial({color:new THREE.Color('#7d8272').convertSRGBToLinear()}));
+  gnd.rotation.x = -Math.PI/2; gnd.position.y = -2; es.add(gnd);
+  const sunM = new THREE.MeshBasicMaterial(); sunM.color.setRGB(14, 12.5, 10.5);
+  const sd = new THREE.Mesh(new THREE.SphereGeometry(4, 16, 8), sunM); sd.position.copy(SUN_DIR).multiplyScalar(85); es.add(sd);
+  scene.environment = pm.fromScene(es, 0.02).texture; pm.dispose();
+  hemi.intensity = .6;
+  const REFL = {metal:.95, copper:.9, window:1, water:1, glass:.8, clad:.6, fins:.6, louvre:.6, grating:.6};   // metals and glazing reflect most
+  scene.traverse(o=>{ for(const m of [].concat(o.material||[])) if(m.isMeshStandardMaterial) m.envMapIntensity = .45; });
+  for(const k in REFL) if(mats[k]) mats[k].envMapIntensity = REFL[k];
+}
+// ---------- loop ----------
+function resize(){ const w=stage.clientWidth,h=stage.clientHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix(); }
+new ResizeObserver(resize).observe(stage); resize();
+const narrow=document.getElementById('narrow'), v3=new THREE.Vector3();
+function tick(){
+  if(window.__rec){ requestAnimationFrame(tick); return; }
+  const t_=now();
+  if(T.on) tourTick(t_);
+  else { if(anim){ const k=Math.min((t_-anim.t0)/900,1), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+    controls.target.lerpVectors(anim.ft,anim.t,e); camera.position.lerpVectors(anim.fc,anim.c,e); if(k>=1) anim=null; }
+    controls.update(); }
+  fitShadow(); renderer.render(scene,camera);
+  const az=Math.atan2(camera.position.x-controls.target.x, camera.position.z-controls.target.z);
+  narrow.setAttribute('transform',`rotate(${az*180/Math.PI})`);
+  if(!labelsEl.hidden){ const w=stage.clientWidth,h=stage.clientHeight;
+    for(const L of labelObjs){ const vis=layerGroups[L.layer]?.visible && L.p.y <= cutPlane.constant+6 && (!L.path || pathsOn); v3.copy(L.p).project(camera);
+      const on=vis && v3.z<1 && Math.abs(v3.x)<1.02 && Math.abs(v3.y)<1.02 && camera.position.distanceTo(L.p)<L.near;
+      L.el.hidden=!on; if(on){ L.el.style.left=((v3.x+1)/2*w)+'px'; L.el.style.top=((1-v3.y)/2*h)+'px'; } } }
+  requestAnimationFrame(tick);
+}
+goView(MODEL.views.find(v=>v.k==='ALL') || MODEL.views[0], true);   // open on the complete plant
+requestAnimationFrame(tick);
+document.getElementById('foot').textContent=`${MODEL.items.length} items · ${NPARTS} parts · ${MODEL.routes.length} routes`;
+</script>

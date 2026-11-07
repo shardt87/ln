@@ -1,0 +1,1513 @@
+"""Cable schedule and cable BOM for the SW-3X1 campus, derived from the 3D model (conceptual, not engineered).
+
+1. Load list: every powered item of the model (sw3x1_model.json, data-centre option excluded) is matched to an
+   equipment class that gives its power circuits (voltage, typical rating, number of circuits, source bus) and its
+   control / instrumentation / fire-alarm / fibre / thermocouple cables. Ratings are typical for the class unless
+   the drawing names one (e.g. "BF-A: booster fan (~16 MW)").
+2. Routing: the electrical routes of the model (cable trays, duct banks, buried and surface cable, trenches) form a
+   graph; each cable takes the shortest path from its source to its load along that graph, plus the drops from the
+   tray / bank to the equipment terminals. Run length = (route + vertical + terminations) x (1 + slack).
+3. Sizing: conductor size from ampacity (125 % of full-load current for motors and feeders) and, for 480 V, a 3 %
+   voltage-drop check; parallel sets above the largest practical size.
+4. Products: typical Southwire product families for each application (ARMOR-X MC-HL in Class I Div 2 and turbine
+   areas, MV-105 elsewhere, Type TC-ER, PLTC / ITC, FPLR, Type SHD-GC / W on the portable pad, HV XLPE at 230 kV).
+
+    python3 cable_schedule.py        -> brochure/SW-3X1_Cable_Schedule_and_BOM.xlsx
+"""
+import heapq
+import json
+import math
+import os
+import re
+from collections import defaultdict
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+M = json.load(open(os.path.join(HERE, "sw3x1_model.json")))
+# Boiler Row (OPT_BOILERS) is a showcase with its own typical take-off (tools/boiler_row_numbers.py), not plant scope
+ITEMS = [it for it in M["items"] if it.get("area") != "L" and not it["layer"].startswith("OPT_DC")
+         and it["layer"] not in ("OPT_BOILERS", "BOILER_ROW_ROOF")]
+BY_TAG = {it["tag"]: it for it in ITEMS if it.get("tag")}
+AREA = M["areas"]
+
+
+def find(pat):
+    r = re.compile(pat)
+    return [it for it in ITEMS if r.search(it["name"])]
+
+
+def one(pat):
+    f = find(pat)
+    return f[0] if f else None
+
+
+def centre(it):
+    f = it["fp"]
+    return ((f[0] + f[1]) / 2, (f[2] + f[3]) / 2)
+
+
+from network import ELEC, Graph  # noqa: E402  (route graph shared with build_model.py)
+
+
+G = Graph(M["routes"])
+_DCACHE = {}
+PATHS = {}                                            # (src id, dst id) -> routed polyline (ft), for the viewer X-ray
+
+
+def term(it):
+    c = centre(it)
+    z0, z1 = it["z"]
+    return (round(c[0], 1), round(c[1], 1), round(z0 + min(6, (z1 - z0) / 2), 1))
+
+
+BOXES = defaultdict(list)                               # item id -> solid part boxes (x0, x1, y0, y1, z0, z1)
+for _p in M["parts"]:
+    if _p["kind"] == "rod":
+        _r = max(_p["r"], _p.get("r2") or 0)
+        if _r < .3:
+            continue
+        _a, _b = _p["a"], _p["b"]
+        _bb = (min(_a[0], _b[0]) - _r, max(_a[0], _b[0]) + _r, min(_a[1], _b[1]) - _r, max(_a[1], _b[1]) + _r,
+               min(_a[2], _b[2]) - _r, max(_a[2], _b[2]) + _r)
+    elif "min" in _p:
+        _bb = (_p["min"][0], _p["max"][0], _p["min"][1], _p["max"][1], _p["min"][2], _p["max"][2])
+    else:
+        continue
+    if (_bb[1] - _bb[0]) * (_bb[3] - _bb[2]) < 1 or _bb[5] - _bb[4] < .5 or _bb[5] < 0:
+        continue
+    BOXES[_p.get("item")].append(_bb)
+
+
+def leg(it, v):
+    """Drop / stub-up from network node v onto the item's nearest solid part: along at route level, then vertical."""
+    best = None
+    for b in BOXES.get(it["id"], ()):
+        dx = max(b[0] - v[0], 0, v[0] - b[1])
+        dy = max(b[2] - v[1], 0, v[1] - b[3])
+        d = dx + dy + .2 * max(b[4] - v[2], 0, v[2] - b[5])
+        if best is None or d < best[0]:
+            best = (d, b)
+    if best is None:                                      # no solid part (yard / area item): square leg to its centre
+        t = term(it)
+        return [(t[0], v[1], v[2]), (t[0], t[1], v[2]), t]
+    b = best[1]
+    i = .3                                                # land just inside the part's face
+    x = min(max(v[0], b[0] + i), b[1] - i) if b[1] - b[0] > 2 * i else (b[0] + b[1]) / 2
+    y = min(max(v[1], b[2] + i), b[3] - i) if b[3] - b[2] > 2 * i else (b[2] + b[3]) / 2
+    z = b[5] if v[2] > b[5] else max(b[4], 0.0) if v[2] < b[4] else v[2]
+    pts = [(x, v[1], v[2]), (x, y, v[2]), (x, y, z)]                     # square: along x, along y, then vertical
+    return [tuple(round(q, 1) for q in p) for p in pts]
+
+
+def route_len(src, dst):
+    """(route length, vertical + drops, dominant route kind) from src item to dst item along the network."""
+    if src["id"] not in _DCACHE:
+        acc = G.access(src)
+        _DCACHE[src["id"]] = (G.dijkstra([(d, v) for d, v in acc]), acc)
+    (dist, prev), acc_s = _DCACHE[src["id"]]
+    best = None
+    for d0, v in G.access(dst):
+        if v in dist and (best is None or dist[v] + d0 < best[0]):
+            best = (dist[v] + d0, v, d0)
+    a, b = centre(src), centre(dst)
+    if best is None:                                     # not on the network: L-shaped estimate
+        PATHS[(src["id"], dst["id"])] = [term(src), (b[0], a[1], 0.0), term(dst)]
+        return abs(a[0] - b[0]) + abs(a[1] - b[1]), 40, "Estimated"
+    total, v, d_end = best
+    kinds = defaultdict(float)
+    vert = 0.0
+    cur = v
+    n = 0
+    chain = [v]
+    while cur in prev and n < 5000:
+        d, p = prev[cur]
+        chain.append(p)
+        k = G.kind.get((p, cur), "Tray")
+        seg = math.dist(p[:2], cur[:2])
+        if k == "Riser":
+            vert += abs(p[2] - cur[2])
+        kinds[k] += seg
+        cur = p
+        n += 1
+    ch = [tuple(round(q, 1) for q in c) for c in reversed(chain)]
+    PATHS[(src["id"], dst["id"])] = list(reversed(leg(src, ch[0]))) + ch + leg(dst, ch[-1])
+    d_start = min(d for d, w in acc_s)
+    route = max(0.0, total - d_end - d_start - vert)
+    kind = max(kinds, key=kinds.get) if kinds else "Tray"
+    return route, vert + d_end + d_start, kind
+
+
+# ------------------------------------------------------------------------------------------------ sizing data
+SIZES_LV = ["14", "12", "10", "8", "6", "4", "2", "1", "1/0", "2/0", "3/0", "4/0", "250", "350", "500", "750"]
+AMP_LV = dict(zip(SIZES_LV, [15, 20, 30, 50, 65, 85, 115, 130, 150, 175, 200, 230, 255, 310, 380, 475]))   # NEC 310.16 75 C Cu
+R_LV = dict(zip(SIZES_LV, [3.07, 1.93, 1.21, .764, .491, .308, .194, .154, .122, .0967, .0766, .0608, .0515, .0367,
+                           .0258, .0171]))                                                                  # ohm / kft
+SIZES_MV = ["2", "1/0", "2/0", "4/0", "250", "350", "500", "750", "1000"]
+AMP_MV = dict(zip(SIZES_MV, [165, 215, 245, 320, 355, 435, 525, 650, 750]))     # 15 kV MV-105 Cu triplexed (typ.)
+AMP_MV35 = dict(zip(SIZES_MV, [130, 170, 195, 255, 285, 350, 420, 520, 600]))   # 35 kV MV-105 Al 1/C (typ.)
+AWG = lambda s: s if "/" in s or len(s) < 3 else s + " kcmil"
+
+
+def size_lv(I, L, V=480, maxsize="500"):
+    for sets in (1, 2, 3, 4, 6, 8, 10, 12):
+        for s in SIZES_LV[2:]:
+            if AMP_LV[s] * sets >= I * 1.25:
+                vd = 1.732 * I * (L / 1000) * R_LV[s] / sets / V * 100
+                if vd <= 3.0:
+                    return s, sets, vd
+            if s == maxsize:
+                break
+    return maxsize, 12, 0
+
+
+def size_mv(I, table=AMP_MV, derate=.85):
+    for sets in (1, 2, 3, 4, 5, 6, 8, 10):
+        for s in SIZES_MV:
+            if table[s] * derate * sets >= I * 1.25:
+                return s, sets
+            if s == "1000":
+                break
+    return "1000", 10
+
+
+# ------------------------------------------------------------------------------------------------ products
+P = dict(
+    MV15="MV-105 15 kV 1/C Cu, EPR 133%, Cu tape shield, PVC jacket (triplexed)",
+    MV15AX="ARMOR-X MC-HL / MV-105 15 kV 3/C Cu, EPR 133%, tape shield, gnd, CWA, red PVC",
+    MV5="MV-105 5 kV 3/C Cu, EPR 133%, tape shield, gnd, PVC jacket",
+    MV5S="MV-105 5 kV 1/C Cu, EPR 133%, Cu tape shield, PVC jacket (triplexed)",
+    MV25="MV-105 25 kV 1/C Cu, EPR 133%, Cu tape shield, PVC jacket",
+    MV35="MV-105 35 kV 1/C Al, EPR 133%, 1/3 concentric neutral, LLDPE jacket",
+    HV230="HV XLPE 230 kV 1/C 2500 kcmil Cu, Cu wire shield, Al laminate, HDPE jacket",
+    LV="Type TC-ER 600 V 3/C Cu XHHW-2 + ground, PVC jacket",
+    LVAX="ARMOR-X MC-HL 600 V 3/C Cu XHHW-2 + ground, CWA, black PVC (Class I Div 2)",
+    VFD="VFD cable 600 V 3/C Cu XHHW-2, 3 symmetrical grounds, overall Cu tape shield, TC-ER",
+    LV1C="XHHW-2 600 V 1/C Cu (feeder sets in tray / duct)",
+    CT="Control cable 600 V Type TC-ER, Cu #14 AWG, PVC jacket",
+    CTAX="ARMOR-X MC-HL 600 V control, Cu #14 AWG (Class I Div 2)",
+    CTCT="Control cable 600 V Type TC-ER, Cu #10 AWG (CT / VT circuits)",
+    PLTC="Instrumentation PLTC / TC-ER 300 V, #18 twisted shielded pairs, overall shield",
+    ITC="Instrumentation ITC / PLTC, IS, #18 shielded pairs, blue jacket",
+    TCX="Thermocouple extension KX, #16 shielded pairs, PLTC",
+    RTD="RTD cable, #18 shielded triads, PLTC",
+    FA="Fire alarm FPLR 2/C #14 shielded, red jacket (NEC 760)",
+    FO="Fibre optic, single-mode, 12-fibre, armored, orange jacket",
+    PV="PV / RHW-2 2 kV 1/C Cu, XLPE (DC)",
+    SHD="Type SHD-GC 15 kV 3/C Cu, 2 grounds + GC, yellow CPE (portable)",
+    W="Type W 2 kV 1/C Cu, EPDM / CPE (portable, cam-lock)",
+    THHN="SIMpull THHN/THWN-2 600 V 1/C Cu (lighting, receptacles, small power)",
+    MC="Southwire MC 600 V, Cu THHN, Al interlocked armour (branch circuits)",
+    CAT6="Cat 6A U/FTP 4-pair 23 AWG, plenum CMP (data drops)",
+    BARE="Bare Cu 4/0 AWG, 19 strand (ground grid and equipment grounds)",
+    ACSR="Overhead conductor ACSR 1590 kcmil 'Falcon' (typ.)",
+)
+CLASS = dict(MV15="MV 15 kV", MV15AX="MV 15 kV", MV5="MV 5 kV", MV5S="MV 5 kV", MV25="MV 25 kV", MV35="MV 35 kV", HV230="HV 230 kV",
+             LV="LV 600 V", LVAX="LV 600 V", VFD="LV 600 V", LV1C="LV 600 V", CT="Control", CTAX="Control",
+             CTCT="Control", PLTC="Instrumentation", ITC="Instrumentation", TCX="Instrumentation", RTD="Instrumentation",
+             FA="Fire alarm", FO="Fibre / data", PV="DC 2 kV", SHD="Portable MV", W="Portable LV", THHN="Building wire",
+             MC="Building wire", CAT6="Fibre / data",
+             BARE="Grounding", ACSR="Overhead")
+REEL = dict(MV15=2500, MV15AX=2000, MV5=2500, MV5S=2500, MV25=2500, MV35=2500, HV230=1800, LV=2500, LVAX=2000, VFD=2500,
+            LV1C=2500, CT=5000, CTAX=3000, CTCT=5000, PLTC=5000, ITC=5000, TCX=5000, RTD=5000, FA=5000, FO=10000,
+            PV=2500, SHD=1000, W=1000, THHN=5000, BARE=5000, ACSR=7000, MC=1000, CAT6=1000)
+
+HAZ = re.compile(r"gas yard|metering|regulation|filter-separator|performance heater|M&R|ESD|fuel-gas|ULSD|LNG|H2 |"
+                 r"electroly|gas conditioning|^GT\d|GFM|GT\d aux|SOS-|fuel|blending|compressor", re.I)
+
+# ------------------------------------------------------------------------------------------------ circuits
+ROWS = []
+
+
+def src_of(pat):
+    it = one(pat)
+    assert it, pat
+    return it
+
+
+def add(src, dst, service, prod, cond, size, sets=1, cables_per_set=1, kw=None, volt=None, amps=None, note="",
+        length=None, desc=None):
+    if length is None:
+        route, vert, kind = route_len(src, dst)
+    else:
+        route, vert, kind = length
+    ROWS.append(dict(src=src, dst=dst, service=service, prod=prod, cond=cond, size=size, sets=sets,
+                     cps=cables_per_set, kw=kw, volt=volt, amps=amps, route=round(route), vert=round(vert), kind=kind,
+                     note=note, desc=desc, path=PATHS.get((src["id"], dst["id"]))))
+
+
+def mv_feeder(src, dst, kw, kv, service, armored=False, motor=True, n=1, note=""):
+    I = kw / (1.732 * kv * (.9 if motor else 1.0))
+    for _ in range(n):
+        if kv >= 30:
+            s, sets = size_mv(I, AMP_MV35)
+            add(src, dst, service, "MV35", "1/C", s, sets, 3, kw, kv * 1000, round(I), note)
+        elif kv > 20:
+            s, sets = size_mv(I)
+            add(src, dst, service, "MV25", "1/C", s, sets, 3, kw, kv * 1000, round(I), note)
+        elif kv > 6:
+            s, sets = size_mv(I)
+            if armored and s in ("2", "1/0", "2/0", "4/0", "250", "350", "500"):
+                add(src, dst, service, "MV15AX", "3/C", s, sets, 1, kw, kv * 1000, round(I), note)
+            else:
+                add(src, dst, service, "MV15", "1/C", s, sets, 3, kw, kv * 1000, round(I), note)
+        else:
+            s, sets = size_mv(I)
+            if s in ("750", "1000") or sets > 1:
+                add(src, dst, service, "MV5S", "1/C", s, sets, 3, kw, kv * 1000, round(I), note)
+            else:
+                add(src, dst, service, "MV5", "3/C", s, sets, 1, kw, kv * 1000, round(I), note)
+
+
+def lv_feeder(src, dst, kw, service, prod=None, n=1, note="", motor=True):
+    I = kw / (1.732 * .48 * (.85 if motor else .95))
+    route, vert, kind = route_len(src, dst)
+    L = (route + vert) * 1.1
+    s, sets, vd = size_lv(I, L)
+    pr = prod or ("LVAX" if HAZ.search(dst["name"]) else "LV")
+    for _ in range(n):
+        add(src, dst, service, pr, "3/C+G", s, sets, 1, kw, 480, round(I, 1), note or (f"VD {vd:.1f} %" if vd else ""),
+            length=(route, vert, kind))
+
+
+def ctrl(src, dst, n7=1, n12=0, nct=0, haz=None):
+    haz = HAZ.search(dst["name"]) if haz is None else haz
+    for _ in range(n7):
+        add(src, dst, "Control", "CTAX" if haz else "CT", "7/C", "14")
+    for _ in range(n12):
+        add(src, dst, "Control", "CTAX" if haz else "CT", "12/C", "14")
+    for _ in range(nct):
+        add(src, dst, "CT / VT", "CTCT", "4/C", "10")
+
+
+def inst(src, dst, n4=1, n12=0, ntcx=0, nrtd=0, haz=None):
+    haz = HAZ.search(dst["name"]) if haz is None else haz
+    for _ in range(n4):
+        add(src, dst, "Instrumentation", "ITC" if haz else "PLTC", "4 pr", "18")
+    for _ in range(n12):
+        add(src, dst, "Instrumentation", "ITC" if haz else "PLTC", "12 pr", "18")
+    for _ in range(ntcx):
+        add(src, dst, "Thermocouples", "TCX", "12 pr", "16")
+    for _ in range(nrtd):
+        add(src, dst, "RTDs", "RTD", "8 tri", "18")
+
+
+# sources ---------------------------------------------------------------------------------------------------
+S13 = [BY_TAG["SWGR-13.8-1"], BY_TAG["SWGR-13.8-2"], BY_TAG["SWGR-13.8-3"]]
+S4 = [BY_TAG["SWGR-4.16-A"], BY_TAG["SWGR-4.16-B"]]
+R1, RH, CR = BY_TAG["R1"], BY_TAG["RH"], BY_TAG["CR"]
+LVS = {"A": [BY_TAG["R2A"], BY_TAG["R2B"], BY_TAG["R2C"], BY_TAG["R3"], BY_TAG["LC-480-A"], BY_TAG["LC-480-B"]],
+       "B": [src_of(r"^R4 480 V switchgear")], "C": [RH], "D": [BY_TAG["MCC-C1"]], "E": [BY_TAG["MCC-C1"], BY_TAG["MCC-C2"]],
+       "F": [BY_TAG["MCC-C2"]], "G": [src_of(r"^CT MCC / VFD e-house"), src_of(r"^CCS MV switchgear building")], "H": [src_of(r"^BESS auxiliary transformer")],
+       "I": [src_of(r"^MOD-LV 480 V"), src_of(r"^PAD-LV"), src_of(r"^PCM: power control")], "J": [src_of(r"^Inlet-chilling e-house")],
+       "K": [src_of(r"^LNG 17"), src_of(r"^H2 20")]}
+CTRLS = {"A": [BY_TAG["R2A"], BY_TAG["R2B"], BY_TAG["R2C"], BY_TAG["R3"], R1], "B": [BY_TAG["R4"]], "C": [RH],
+         "D": [src_of(r"^Gas yard local control")], "E": [src_of(r"Water treatment building"), R1], "F": [CR],
+         "G": [src_of(r"^CCS F&G / control")], "H": [src_of(r"^BESS EMS")], "I": [src_of(r"^PCM: power control"), src_of(r"^PAD-EH")],
+         "J": [src_of(r"^Inlet-chilling e-house")], "K": [src_of(r"^LNG 17"), src_of(r"^H2 20")]}
+
+
+def nearest(cands, it):
+    c = centre(it)
+    return min(cands, key=lambda s: math.dist(centre(s), c))
+
+
+def gt_no(it):
+    m = re.search(r"(?:GT|GTG-|SOS-|FS-GT|WASH-GT|GFM-|TCP-|FH-|INL-|SFC-|EXC-|NGT-|SPC-|ET-|UAT-|GCB-|GSU-|BFP-|HRSG[- ]|SCRB-|CEMS-)(\d)",
+                  it["name"] + " " + (it.get("tag") or ""))
+    return int(m.group(1)) if m else None
+
+
+UNIT_EH = {1: BY_TAG["R2A"], 2: BY_TAG["R2B"], 3: BY_TAG["R2C"]}
+
+
+def unit_eh(it):
+    """Power-block equipment belongs to its own unit's e-house (R2A / R2B / R2C for units 1-3, R3 for the steam
+    turbine), never to the nearest one: a unit outage then never reaches another unit's controls or auxiliaries."""
+    if it["area"] != "A":
+        return None
+    n = gt_no(it)
+    if n in UNIT_EH:
+        return UNIT_EH[n]
+    if re.search(r"\bST\b|STG|steam turbine|GSU-ST|GCB-ST|EHC-ST|ST aux", it["name"] + " " + (it.get("tag") or "")):
+        return BY_TAG["R3"]
+    return None
+
+
+def sc_pcm(it):
+    """SC-1 / SC-2 equipment takes its 480 V, control and I/O from its own PCM (MCC, unit control panel, marshalling),
+    never from the RICE plant's PCM-1 that happens to stand nearer (cable audit, Oct 21)."""
+    m = re.match(r"(?:CONDITIONAL: )?SC-(\d)[: ]", it["name"])
+    if it["area"] == "I" and m and not it["name"].startswith(f"SC-{m.group(1)} PCM"):
+        return one(rf"^SC-{m.group(1)} PCM")
+    # the shared systems that serve SC-1 / SC-2 (NOx water injection and its demin water, aqueous ammonia, fuel-gas
+    # compression) belong to the nearer SC unit's control and MCC too, not to the RICE plant (audit, Oct 21)
+    if it["area"] == "I" and re.match(r"Water-injection skid|Demin tank|Aqueous ammonia \(SC|Fuel-gas compressors 3", it["name"]):
+        return nearest([one(r"^SC-1 PCM"), one(r"^SC-2 PCM")], it)
+    return None
+
+
+def lv_src(it):
+    a = it["area"]
+    n = gt_no(it)
+    if a == "A" and n and re.search(r"GT\d|GTG|SOS|FS-GT|WASH|GFM|FH-|TCP|INL", it["name"]):
+        return BY_TAG[f"MCC-GT{n}"]
+    return unit_eh(it) or sc_pcm(it) or nearest(LVS.get(a, [BY_TAG["MCC-C1"]]), it)
+
+
+def ctl_src(it):
+    if re.search(r"230 kV breaker|entrance|terminal tower", it["name"]):
+        return RH
+    return unit_eh(it) or sc_pcm(it) or nearest(CTRLS.get(it["area"], [R1]), it)
+
+
+# MV distribution and large drives ---------------------------------------------------------------------------
+for n in (1, 2, 3):
+    uat = BY_TAG[f"UAT-{n}"]
+    mv_feeder(uat, S13[n - 1], 40000, 13.8, f"UAT-{n} secondary to SWGR-13.8-{n} incomer", motor=False,
+              note="40 MVA UAT (typ.); often non-segregated bus duct instead of cable")
+    mv_feeder(S13[n - 1], BY_TAG[f"TX-LCI-{n}"], 9000, 13.8, f"Static starter LCI-{n} input transformer", motor=False)
+    et = BY_TAG[f"ET-{n}"]
+    mv_feeder(BY_TAG[f"GSU-{n}"], et, 3000, 21, f"Excitation transformer ET-{n} from the IPB tap", motor=False,
+              note="21 kV from the generator terminals (IPB tap)")
+    bfp = BY_TAG[f"BFP-{n}"]
+    mv_feeder(S13[n - 1], bfp, 5000, 13.8, f"Boiler feed pump BFP-{n}A / {n}B", n=2, note="2 x 100 %, ~5 MW each (typ.)")
+    # turbine-hall power audit, Oct 21: the generator circuits between the IPB-fed equipment and the machine
+    gtg, exc, sfc = BY_TAG[f"GTG-{n}"], BY_TAG[f"EXC-{n}"], BY_TAG[f"SFC-{n}"]
+    add(et, exc, f"ET-{n} secondary to the static exciter EXC-{n} (3-phase AC)", "MV5S", "1/C", "750", 5, 3, 3000, 800,
+        2200, "~800 V AC, 5 kV insulated 1/C (typ. for exciter power)")
+    add(exc, gtg, f"EXC-{n} DC field leads to the GTG-{n} collector (+ / -)", "PV", "1/C", "1000", 8, 2, None, 600, 4500,
+        "~4,500 A DC field current (typ.); up the collector end through the deck plate")
+    add(BY_TAG[f"TX-LCI-{n}"], sfc, f"TX-LCI-{n} secondary to the static starter LCI-{n}", "MV5S", "1/C", "750", 3, 3, 9000,
+        4160, 1250)
+    add(sfc, gtg, f"LCI-{n} output to the GTG-{n} terminals (start sequence, through the starting disconnect)", "MV5S",
+        "1/C", "750", 3, 3, 9000, 4160, 1250, "variable frequency during the start; into the IPB at the starting switch")
+    add(gtg, BY_TAG[f"NGT-{n}"], f"GTG-{n} neutral to the grounding cubicle NGT-{n}", "MV25", "1/C", "4/0", 1, 1, None, 21000,
+        None, "generator neutral, 25 kV class")
+# turbine-hall "all cables" audit, Oct 21: networks, UPS, fire detection / release, breaker DC the passes above missed
+for u in ("1", "2", "3", "ST"):
+    eh = BY_TAG["R3"] if u == "ST" else BY_TAG[f"R2{'ABC'[int(u) - 1]}"]
+    ctrl_it = BY_TAG["EHC-ST"] if u == "ST" else BY_TAG[f"TCP-{u}"]
+    add(CR, ctrl_it, f"{ctrl_it['tag']} unit control network to the DCS (redundant fibre pair)", "FO", "12 SM", "-", 2, 1)
+    add(eh, ctrl_it, f"{ctrl_it['tag']} 120 V AC UPS feeds (redundant A / B)", "LV1C", "1/C", "6", 2, 2, 5, 120)
+    lube = BY_TAG["ST aux"] if u == "ST" else BY_TAG[f"GT{u} aux"]
+    add(eh, lube, f"{lube['tag']} lube-oil skid fire detection loop", "FA", "2/C", "14")
+    for t in ((f"GSU-{u}", f"UAT-{u}") if u != "ST" else ("GSU-ST",)):
+        add(eh, BY_TAG[t], f"{t} transformer fire detection and deluge-valve release", "FA", "2/C", "14", 2, 1)
+    gcb = BY_TAG["GCB-ST" if u == "ST" else f"GCB-{u}"]
+    add(eh, gcb, f"{gcb['tag']} 125 V DC closing / trip and spring-charging motor", "LV1C", "1/C", "6", 1, 2, 2, 125)
+    lv_feeder(eh, gcb, 3, f"{gcb['tag']} enclosure heaters and lighting", motor=False)
+    if u != "ST":
+        add(eh, BY_TAG[f"FS-GT{u}"], f"FS-GT{u} fire detection loop and CO2 release circuits", "FA", "2/C", "14", 3, 1)
+        add(eh, BY_TAG[f"GFM-{u}"], f"GFM-{u} gas detection (F&G) to the unit F&G node", "FA", "2/C", "14", 2, 1)
+stg = BY_TAG["STG"]                                   # STG: field and neutral (power audit, Oct 21)
+add(BY_TAG["EXC-ST"], stg, "EXC-ST DC field leads to the STG collector (+ / -)", "PV", "1/C", "1000", 6, 2, None, 500, 3500,
+    "~3,500 A DC field current (typ.)")
+add(stg, BY_TAG["NGT-ST"], "STG neutral to the grounding cubicle NGT-ST", "MV25", "1/C", "4/0", 1, 1, None, 21000, None,
+    "generator neutral, 25 kV class")
+for t, s in (("T-R2A", 0), ("T-R2B", 1), ("T-R2C", 2), ("T-R3", 1), ("LCT-A", 0), ("LCT-B", 2)):
+    it = one(rf"^{t}:") or BY_TAG.get(t)
+    mv_feeder(S13[s], it, 2500 if t.startswith("T-R2") else 3000, 13.8, f"{t} unit / load-centre transformer primary",
+              motor=False)
+    kva = 2500 if t.startswith("T-R2") else 3000                     # 480 V secondary into its load centre (audit, Oct 22)
+    I = kva / (1.732 * .48)
+    sets = -(-int(1.25 * I) // AMP_LV["500"])
+    lc = BY_TAG[{"T-R2A": "R2A", "T-R2B": "R2B", "T-R2C": "R2C", "T-R3": "R3", "LCT-A": "LC-480-A", "LCT-B": "LC-480-B"}[t]]
+    add(it, lc, f"{t} 480 V secondary to the {lc['tag']} incomer", "LV1C", "1/C", "500", sets, 4, kva, 480, round(I),
+        f"{sets} sets of 4 x 1/C 500 kcmil (3 phases + neutral) at 125 %")
+for k, t in enumerate(("T4-A", "T4-B")):
+    mv_feeder(S13[0 if k == 0 else 2], BY_TAG[t], 10000, 13.8, f"{t} station transformer primary", motor=False)
+    mv_feeder(BY_TAG[t], S4[k], 10000, 4.16, f"{t} secondary to SWGR-4.16-{'AB'[k]} incomer", motor=False)
+for k in range(4):
+    tr = one(rf"^T-R4-{k + 1}:")
+    mv_feeder(S13[k % 3], tr, 3750, 13.8, f"T-R4-{k + 1} ACC VFD transformer primary", motor=False)
+cp = BY_TAG["CP-A/B/C"]
+for k in range(3):
+    mv_feeder(S4[k % 2], cp, 900, 4.16, f"Condensate pump CP-{'ABC'[k]}")
+# ACC fans: 80 cells, VFD in R4 to each fan motor (motor positions spread over the ACC footprint)
+acc = BY_TAG["ACC"]
+r4 = BY_TAG["R4"]
+fa = acc["fp"]
+for k in range(80):
+    i, j = k % 10, k // 10
+    x = fa[0] + (fa[1] - fa[0]) * (i + .5) / 10
+    y = fa[2] + (fa[3] - fa[2]) * (j + .5) / 8
+    cell = dict(acc, fp=[x - 2, x + 2, y - 2, y + 2], name=f"ACC fan motor F{k + 1:02d}", tag=f"ACC-F{k + 1:02d}", id=f"accf{k}")
+    route, vert, kind = route_len(r4, acc)
+    extra = abs(x - (fa[0] + fa[1]) / 2) + abs(y - (fa[2] + fa[3]) / 2) + 70          # along the fan deck, up the column
+    I = 150 / (1.732 * .48 * .85)
+    s, sets, vd = size_lv(I, (route + vert + extra) * 1.1)
+    add(r4, cell, f"ACC fan F{k + 1:02d} motor (VFD output)", "VFD", "3/C+3G", s, sets, 1, 150, 480, round(I),
+        f"VD {vd:.1f} %", length=(route + extra, vert, kind))
+    add(r4, cell, f"ACC fan F{k + 1:02d} vibration / RTD / local station", "CT", "7/C", "14", length=(route + extra, vert, kind))
+    pa = PATHS.get((r4["id"], acc["id"]))
+    if pa:
+        fan = pa[:-1] + [(pa[-1][0], pa[-1][1], 70.0), (pa[-1][0], round(y, 1), 70.0), (round(x, 1), round(y, 1), 70.0)]
+        ROWS[-1]["path"] = ROWS[-2]["path"] = fan
+
+# carbon capture
+ccs_sw = src_of(r"^CCS MV switchgear building")
+for k, t in enumerate(find(r"^CCS T-\d: ")):
+    mv_feeder(t, ccs_sw, 60000, 13.8, f"{t['tag']} secondary to CCS 13.8 kV switchgear", motor=False, note="60 MVA (typ.)")
+for bf in find(r"^BF-[ABC]"):
+    mv_feeder(ccs_sw, bf, 16000, 13.8, f"Booster fan {bf['tag']} (MV VFD output)", armored=True, note="~16 MW per drawing")
+for k in range(3):
+    mv_feeder(ccs_sw, one(r"^CO2 compression"), 19000, 13.8, f"CO2 compressor train {k + 1}", note="~19 MW per drawing")
+mv_feeder(ccs_sw, one(r"HP export compressor"), 8000, 13.8, "HP CO2 export compressor (conditional)")
+for k in range(4):
+    mv_feeder(ccs_sw, one(r"^CCS circulating-water pumps"), 1200, 4.16, f"CCS circulating-water pump {k + 1}")
+for it in find(r"^Rich/lean pumps"):
+    mv_feeder(ccs_sw, it, 450, 4.16, f"Rich / lean amine pumps ({it['name'][-1]})", n=2, armored=True)
+mv_feeder(ccs_sw, src_of(r"^CT MCC / VFD e-house"), 3000, 13.8, "CT MCC / VFD e-house transformer", motor=False, n=2)
+# fuel, utilities and options
+fg = one(r"^CONDITIONAL: fuel-gas compressors")
+if fg:
+    mv_feeder(S13[2], fg, 3000, 13.8, "Fuel-gas compressor (conditional)", armored=True, n=3)
+icx = src_of(r"^Inlet-chilling e-house")
+mv_feeder(S13[0], icx, 12000, 13.8, "Inlet-chilling e-house / transformer", motor=False)
+for k in range(6):
+    mv_feeder(icx, one(r"^Chillers x6"), 1500, 4.16, f"Water-cooled chiller CH-{k + 1}")
+for k in range(4):
+    mv_feeder(icx, one(r"^CW pumps \(inlet"), 450, 4.16, f"Inlet-chilling CW pump {k + 1}")
+for pat, kw, nm in ((r"^LNG 17", 5000, "LNG e-house"), (r"^H2 20", 20000, "H2 13.8 kV e-house (electrolyzers)")):
+    it = one(pat)
+    if it:
+        mv_feeder(S13[2], it, kw, 13.8, nm, motor=False)
+# BESS: DC from containers to PCS skids, 35 kV collection, MPT
+pcs = find(r"^BESS PCS / MV skid")
+coll = src_of(r"^34.5 kV collector e-house")
+for c in find(r"^BESS container"):
+    sk = nearest(pcs, c)
+    add(c, sk, "DC 1,500 V: container to PCS (2 x 1/C per pole pair)", "PV", "1/C", "500", 4, 2, 4000, 1500,
+        None, "4 sets of +/- per container (typ.)")
+    ctrl(sk, c, n7=1)
+    inst(sk, c, n4=1)
+    lv_feeder(sk, c, 60, "Container auxiliary 480 V", motor=False)
+pcs_sorted = sorted(pcs, key=lambda s: centre(s))
+for loop in range(3):
+    chain = [coll] + pcs_sorted[loop * 5:(loop + 1) * 5] + [coll]
+    for a, b in zip(chain, chain[1:]):
+        mv_feeder(a, b, 25000, 34.5, f"34.5 kV collection loop {loop + 1}", motor=False)
+mpt = one(r"^BESS main power transformer")
+mv_feeder(coll, mpt, 100000, 34.5, "BESS MPT 34.5 kV side", motor=False, note="100 MVA (typ.)")
+def gen_feeder(src, dst, kw, kv, service, note="", length=None):
+    """Generator / collector circuit at 0.9 pf, sized for 125 % (MV-105 at 13.8 kV, MV-105 35 kV at 34.5 kV)."""
+    I = kw / (1.732 * kv * .9)
+    s_, sets = size_mv(I, AMP_MV35) if kv >= 30 else size_mv(I)
+    add(src, dst, service, "MV35" if kv >= 30 else "MV15", "1/C", s_, sets, 3, kw, kv * 1000, round(I),
+        note or f"{sets} set{'s' if sets > 1 else ''} per phase", length=length)
+
+
+def xf_wiring(swg, tx, name):
+    """Transformer protection (CT / trip) and monitoring (winding / oil temperature, gas relay, level)."""
+    add(swg, tx, f"{name} protection / trip / cooling control", "CT", "12/C", "14")
+    add(swg, tx, f"{name} monitoring: temperatures, gas relay, oil level", "ITC", "4 pr", "18")
+
+
+# modular yard
+mod_eh = BY_TAG["MOD-EH"]
+pad_eh = BY_TAG["PAD-EH"]
+pcm = src_of(r"^PCM: power control")
+for k in range(8):
+    eg = one(rf"^RICE engine-generator {k + 1}$")
+    gen_feeder(eg, pcm, 18400, 13.8, f"RICE-{k + 1} generator leads to the PCM", note="18-cylinder ~18 MW class (typ.), 0.9 pf")
+# regroup (electrical review, Oct 28): PCM bus sections A-D (2 engines each) -> group step-ups -> MOD-EH 34.5 kV
+for k, g in enumerate("ABCD"):
+    gsu = BY_TAG[f"RICE-GSU-{g}"]
+    gen_feeder(pcm, gsu, 36800, 13.8, f"PCM section {g} (RICE {2 * k + 1}-{2 * k + 2}) to RICE-GSU-{g}")
+    xf_wiring(pcm, gsu, f"RICE-GSU-{g}")
+    gen_feeder(gsu, mod_eh, 36800, 34.5, f"RICE-GSU-{g} 34.5 kV to MOD-EH bus {1 if k < 2 else 2}")
+for k in (1, 2):
+    sc = one(rf"^SC-{k}: aeroderivative")
+    gen_feeder(sc, one(rf"^SC-{k} PCM"), 50000, 13.8, f"SC-{k} (50 MW class) generator leads to its PCM / GCB")
+    gsu = BY_TAG[f"SC-GSU-{k}"]
+    gen_feeder(one(rf"^SC-{k} PCM"), gsu, 50000, 13.8, f"SC-{k} PCM (GCB) to SC-GSU-{k}")
+    xf_wiring(one(rf"^SC-{k} PCM"), gsu, f"SC-GSU-{k}")
+    gen_feeder(gsu, mod_eh, 50000, 34.5, f"SC-GSU-{k} 34.5 kV to MOD-EH bus {k}",
+               length=((460, 20, "Duct bank"), (540, 20, "Duct bank"))[k - 1])           # as drawn
+    # cable audit, Oct 21: what the second detail pass added round the unit
+    pcm_k = one(rf"^SC-{k} PCM")
+    add(sc, pcm_k, f"SC-{k} generator neutral to the NGR (in the terminal-box enclosure)", "MV15", "1/C", "2", 1, 1, None,
+        13800, None, "neutral grounding resistor beside the generator enclosure", length=(15, 10, "Conduit"))
+    add(sc, pcm_k, f"SC-{k} generator CT / VT secondaries to the PCM protection", "CTCT", "12/C", "10", 2, 1,
+        note="line-side and neutral CTs, VTs in the terminal box")
+    lv_feeder(pcm_k, one(rf"^SC-{k} ammonia flow-control"), 45, f"SC-{k} ammonia vaporiser electric heater", motor=False)
+    lv_feeder(pcm_k, one(rf"^SC-{k} auxiliary skids"), 6, f"SC-{k} water-wash tank heater", motor=False)
+    cems_k = one(rf"^SC-{k} CEMS shelter")
+    lv_feeder(pcm_k, cems_k, 15, f"SC-{k} CEMS shelter panel: analysers, heated sample line, lighting", motor=False)
+    add(pcm_k, cems_k, f"SC-{k} CEMS data to the unit control (Modbus TCP)", "FO", "12 SM", "-")
+    add(pcm_k, cems_k, f"SC-{k} CEMS shelter fire alarm loop", "FA", "2/C", "14")
+    # electrical system review, Oct 21: what the PCM holds and the package needs that was not counted
+    mv_feeder(pcm_k, pcm_k, 2000, 13.8, f"SC-{k} PCM auxiliary transformer primary, 2 MVA 13.8 kV / 480 V (from the GCB bus)",
+              motor=False, note="internal to the PCM; ~1.0-1.1 MW connected 480 V load + 0.5 MW conditional inlet chiller")
+    add(pcm_k, pcm_k, f"SC-{k} 125 V DC battery to charger / DC panel", "LV1C", "1/C", "4/0", 1, 2, None, 125, None,
+        "battery rack inside the PCM", length=(15, 5, "Tray"))
+    add(pcm_k, sc, f"SC-{k} emergency DC lube-oil pump (125 V DC, coast-down)", "LV1C", "1/C", "2", 1, 2, 7.5, 125, 65,
+        "Aeroderivative: DC pump keeps the bearings fed on loss of AC")
+    add(pcm_k, sc, f"SC-{k} 120 V AC UPS to the unit control and protection", "LV1C", "1/C", "6", 1, 2, 5, 120, None)
+    lv_feeder(pcm_k, sc, 225, f"SC-{k} hydraulic starter pump motor (start sequence only)",
+              note="typical aeroderivative hydraulic start; verify starter type / rating with the OEM")
+    for w_ in range(2):
+        lv_feeder(pcm_k, sc, 60, f"SC-{k} 480 V welding receptacle {w_ + 1}", motor=False)
+    # the PCM's own building services (it is register-free, so the generic building pass never reached it)
+    f_ = pcm_k["fp"]
+    add(pcm_k, pcm_k, f"SC-{k} PCM lighting, receptacles and HVAC (from its own 480 V board)", "LV", "3/C+G", "2", 1, 1,
+        40, 480, None, "internal to the PCM; aux transformer 13.8 kV / 480 V inside", length=((f_[1] - f_[0]) * 2, 10, "Tray"))
+    add(CR, pcm_k, f"SC-{k} unit control panel: plant network / DCS fibre", "FO", "12 SM", "-")
+    add(CR, pcm_k, f"SC-{k} PCM fire alarm / F&G node to the plant FACP", "FA", "2/C", "14")
+# MOD-EH 34.5 kV (Oct 28 regroup): one main per bus section to T-MOD-1 / -2 (the 13.8 kV, 6,300 A bus ducts are gone)
+for n in (1, 2):
+    tm = BY_TAG[f"T-MOD-{n}"]
+    gen_feeder(mod_eh, tm, 123600, 34.5, f"MOD-EH bus {n} main to T-MOD-{n} 34.5 kV",
+               length=((50, 20, "Duct bank"), (153, 20, "Duct bank"))[n - 1])           # as drawn (the graph detours)
+    xf_wiring(mod_eh, tm, f"T-MOD-{n}")
+    gt = BY_TAG[f"MOD-GT{n}"]
+    mv_feeder(mod_eh, gt, 300, 34.5, f"MOD-GT{n} zigzag grounding transformer, bus {n}", motor=False)
+    xf_wiring(mod_eh, gt, f"MOD-GT{n}")
+sst = BY_TAG["MOD-SST"]
+gen_feeder(mod_eh, sst, 9000, 34.5, "MOD-SST 34.5 kV primary", length=(46, 20, "Duct bank"))
+gen_feeder(sst, mod_eh, 9000, 13.8, "MOD-SST 13.8 kV secondary to the MOD-EH station-service section",
+           length=(40, 20, "Duct bank"))
+xf_wiring(mod_eh, sst, "MOD-SST")
+for n in (1, 2):
+    gt = BY_TAG[f"PK-GT{n}"]
+    mv_feeder(BY_TAG["SWG-PK"], gt, 300, 34.5, f"PK-GT{n} zigzag grounding transformer, SWG-PK bus {'AB'[n - 1]}", motor=False)
+    xf_wiring(BY_TAG["SWG-PK"], gt, f"PK-GT{n}")
+BUS_DUCT = [("Generator terminals to GSU / UAT / ET (isolated-phase bus)", "21 kV, as modelled (IPB routes)"),
+            ("T-R4-1..4 secondaries to the ACC VFD lineups", "480 V, ~4,500 A each")]
+mv_feeder(mod_eh, one(r"^MOD-LV 480 V"), 3000, 13.8, "MOD-LV supply from the MOD-EH 13.8 kV station-service section",
+          motor=False)
+for it in find(r"^Fuel-gas compressors 3 x 100"):
+    mv_feeder(mod_eh, it, 1500, 13.8, "Modular-yard fuel-gas compressor", armored=True, n=3)
+for k in range(1, 9):
+    g = BY_TAG.get(f"CONT-{k}")
+    if not g:
+        continue
+    dst = pad_eh if k > 2 else BY_TAG.get(f"GSP-{k}")
+    if k <= 2:
+        add(g, dst, f"CONT-{k} 13.8 kV leads to GSP-{k}", "SHD", "3/C", "2", 1, 1, 2000, 13800, 93, "portable, on grade")
+        add(dst, pad_eh, f"GSP-{k} to PAD-EH", "SHD", "3/C", "2", 1, 1, 2000, 13800, 93, "portable, on grade")
+    else:
+        add(g, dst, f"CONT-{k} 13.8 kV to PAD-EH (extension section, ground tray)", "MV15", "1/C", "2", 1, 3, 2000, 13800, 93)
+for k in (1,):
+    tm = BY_TAG[f"TM-{k}"]
+    add(tm, pad_eh, f"TM-{k} (trailer GT) generator leads to PAD-EH", "MV15", "1/C", "1000", 3, 3, 35000, 13800, 1464,
+        "3 per phase for 125 % (nine cables in the model)")
+mob = BY_TAG["MOB-1"]
+add(mob, BY_TAG["PIC"], "MOB-1 13.8 kV to PIC through the C-L01 ramp", "SHD", "3/C", "2", 1, 1, 2000, 13800, 93, "portable")
+add(BY_TAG["PIC"], pad_eh, "PIC to PAD-EH (MOB-1 trailer genset onto the pad bus)", "SHD", "3/C", "2", 1, 1, 2000, 13800, 93,
+    "portable")
+add(BY_TAG["PIC"], BY_TAG["LB"], "PIC to commissioning load bank", "SHD", "3/C", "2", 1, 1, 2000, 13800, 93, "portable")
+add(BY_TAG["PAD-LV"], BY_TAG["PAD-TX"] if "PAD-TX" in BY_TAG else one(r"^PAD-TX"), "PAD-LV to PAD-TX", "LV1C", "1/C", "500",
+    8, 4, 2000, 480, 2400, "8 sets of 4 x 1/C (fuel-cell and linear-generator outputs)")
+# modular gas blocks GB-1..4 (owner, Oct 26) on the modular-gas-campus logic from the ERock call, by cable layer:
+# L1 480 V generator leads unit -> GBC (2 sets, count TO VERIFY); L2 GBC -> GBT 480 V block feed (8 sets or bus, TO VERIFY);
+# L3 the 35 kV collector loop SWG-MY G1 -> GBT-1 -> ... -> GBT-6 -> SWG-MY (750 kcmil Al, 133 %, WA); L4 ties: none (one
+# lineup); L5 SWG-MY feeder to the data centre's BTM-SWGR (scope owner TO VERIFY); L6 block ground rings + taps; L7 unit
+# control / instrumentation to the GBC and the fibre ring per group to SWG-MY
+swg_my = BY_TAG.get("SWG-MY")
+if swg_my:
+    loop = [swg_my]
+    for n in range(1, 5):
+        gbc, gbt = BY_TAG[f"GBC-{n}"], BY_TAG[f"GBT-{n}"]
+        for m in range(1, 6):
+            g = BY_TAG[f"GB-{n}.{m}"]
+            add(g, gbc, f"L1 GB-{n}.{m} 480 V generator leads to GBC-{n}", "LV1C", "1/C", "500", 2, 4, 500, 480, 601,
+                "2 sets of 3 x 500 kcmil + ground (count TO VERIFY)")
+            add(gbc, g, f"L7 GB-{n}.{m} control / sync / protection", "CTAX", "12/C", "14")
+            add(gbc, g, f"L7 GB-{n}.{m} instrumentation: gas pressure, temperatures", "ITC", "4 pr", "18")
+            lv_feeder(gbc, g, 15, f"GB-{n}.{m} aux power: jacket-water heater, battery charger, enclosure", motor=False)
+        add(gbc, gbt, f"L2 GBC-{n} to GBT-{n} 480 V block feed", "LV1C", "1/C", "600", 8, 4, 2500, 480, 3007,
+            "8 sets of 4 x 1/C (or bus duct, TO VERIFY)")
+        add(gbt, gbt, f"L6 GB-{n} block ground ring (4/0 bare Cu) + 7 taps", "BARE", "1/C", "4/0", 1, 1, None, None, None,
+            "ring 2 x (74 + 23) ft + 7 taps x 6 ft", length=(2 * (74 + 23) + 7 * 6, 0, "Buried"))
+        loop.append(gbt)
+    loop.append(swg_my)
+    for q, (a_, b_) in enumerate(zip(loop, loop[1:]), 1):
+        add(a_, b_, f"L3 35 kV collector loop, segment {q} of {len(loop) - 1} ({a_['tag']} to {b_['tag']})", "MV35", "1/C", "750",
+            1, 3, 10000, 34500, 167, "loop conductor 750 kcmil Al, 133 % (WORKING ASSUMPTION)")
+        add(a_, b_, f"L7 fibre ring, segment {q} ({a_['tag']} to {b_['tag']})", "FO", "12 SM", "-")
+    # the data-centre option is outside this schedule: the feeder is taken to the fence (the ownership line); the
+    # ~120 ft beyond it to BTM-SWGR is data-centre scope until confirmed
+    add(swg_my, swg_my, "L5 SWG-MY feeder to the data centre 34.5 kV switchgear BTM-SWGR, to the fence (scope owner TO VERIFY)",
+        "MV35", "1/C", "750", 1, 3, 10000, 34500, 167, "to the fence 585 ft; + ~120 ft beyond to BTM-SWGR (data-centre scope)",
+        length=(585, 20, "Buried"))
+# modular power park (Oct 27): each class from its units to its collector, the collector to the yard switchgear
+# power park (Oct 27 classes; electrical review Oct 28): units -> site collector -> site step-up 13.8 / 34.5 kV ->
+# SWG-PK (bus A: TGF, CGE, PGS, PAD-EH; bus B: MTG, AX-1, IG-1) -> T-MOD-3 (230 / 34.5 / 34.5 kV) -> T-MOD gantry.
+swg_pk, tmod3 = BY_TAG["SWG-PK"], BY_TAG["T-MOD-3"]
+tgf_swg, tgf_gsu = BY_TAG["TGF-SWG"], BY_TAG["TGF-GSU"]
+for k in range(1, 7):
+    t = BY_TAG[f"TGF-{k}"]
+    add(t, tgf_swg, f"TGF-{k} 13.8 kV leads to the switchgear trailer", "SHD", "3/C", "2", 1, 1, 2500, 13800, 105,
+        "portable, on grade, cam-lock")
+    add(tgf_swg, t, f"TGF-{k} control / sync", "CTAX", "12/C", "14")
+    add(tgf_swg, t, f"TGF-{k} instrumentation", "ITC", "4 pr", "18")
+gen_feeder(tgf_swg, tgf_gsu, 15000, 13.8, "TGF-SWG 13.8 kV to TGF-GSU")
+xf_wiring(tgf_swg, tgf_gsu, "TGF-GSU")
+gen_feeder(tgf_gsu, swg_pk, 15000, 34.5, "TGF-GSU 34.5 kV collector feeder to SWG-PK (bus A)")
+cge_swg, cge_gsu, cge_aux = BY_TAG["CGE-SWG"], BY_TAG["CGE-GSU"], BY_TAG["CGE-AUX"]
+for k in range(1, 5):
+    c = BY_TAG[f"CGE-{k}"]
+    gen_feeder(c, cge_swg, 4400, 13.8, f"CGE-{k} 13.8 kV generator leads to the switchgear container")
+    add(cge_swg, c, f"CGE-{k} control / sync / protection", "CTAX", "12/C", "14")
+    add(cge_swg, c, f"CGE-{k} instrumentation", "ITC", "4 pr", "18")
+gen_feeder(cge_swg, cge_gsu, 17600, 13.8, "CGE-SWG 13.8 kV to CGE-GSU")
+xf_wiring(cge_swg, cge_gsu, "CGE-GSU")
+gen_feeder(cge_gsu, swg_pk, 17600, 34.5, "CGE-GSU 34.5 kV collector feeder to SWG-PK (bus A)")
+mv_feeder(cge_swg, cge_aux, 600, 13.8, "CGE-AUX 13.8 kV primary", motor=False)
+xf_wiring(cge_swg, cge_aux, "CGE-AUX")
+for k in range(1, 5):
+    lv_feeder(cge_aux, BY_TAG["CGE-DECK"], 110, f"CGE-{k} cooling container: radiator fans, jacket-water pumps (deck)")
+pgs_swg = BY_TAG["PGS-SWG"]
+for k in range(1, 9):
+    g = BY_TAG[f"PGS-{k}"]
+    add(g, pgs_swg, f"PGS-{k} 480 V generator leads to the paralleling switchgear", "LV1C", "1/C", "500", 4, 4, 1000, 480,
+        1203, "4 sets of 4 x 1/C")
+    add(pgs_swg, g, f"PGS-{k} control / sync", "CTAX", "12/C", "14")
+    add(pgs_swg, g, f"PGS-{k} instrumentation", "ITC", "4 pr", "18")
+add(pgs_swg, pgs_swg, "PGS-SWG bus / breaker monitoring (internal)", "ITC", "4 pr", "18", length=(60, 10, "Tray"))
+for n in (1, 2):
+    tx = BY_TAG[f"PGS-TX{n}"]
+    add(pgs_swg, tx, f"PGS-SWG main {n} to PGS-TX{n} 480 V secondary", "LV1C", "1/C", "600", 12, 4, 4000, 480, 4811,
+        "12 sets of 4 x 1/C")
+    xf_wiring(pgs_swg, tx, f"PGS-TX{n}")
+gen_feeder(BY_TAG["PGS-TX1"], BY_TAG["PGS-TX2"], 4000, 34.5, "PGS-TX1 to PGS-TX2 34.5 kV loop feed")
+gen_feeder(BY_TAG["PGS-TX2"], swg_pk, 8000, 34.5, "PGS-TX2 34.5 kV collector feeder to SWG-PK (bus A)")
+lgn_inv = BY_TAG["LGN-INV"]
+for k in range(1, 5):
+    add(BY_TAG[f"LGN-{k}"], lgn_inv, f"LGN-{k} DC output to the inverter", "LV1C", "1/C", "500", 2, 2, 250, 800, 320,
+        "DC, 2 sets of 2 x 1/C")
+lv_feeder(lgn_inv, BY_TAG["PAD-LV"], 1000, "LGN-INV 480 V AC to PAD-LV", motor=False)
+mtg_swg, mtg_gsu, mtg_aux = BY_TAG["MTG-SWG"], BY_TAG["MTG-GSU"], BY_TAG["MTG-AUX"]
+for k in (1, 2):
+    m = BY_TAG[f"MTG-{k}"]
+    gen_feeder(m, mtg_swg, 16000, 13.8, f"MTG-{k} 13.8 kV generator leads to the switchgear e-house")
+    add(mtg_swg, m, f"MTG-{k} control / sync / protection", "CTAX", "12/C", "14")
+    add(mtg_swg, m, f"MTG-{k} instrumentation", "ITC", "4 pr", "18")
+    add(BY_TAG["MTG-CB"], m, f"MTG-{k} 480 V auxiliaries (lube-oil pumps, cooler fans, enclosure ventilation)", "LV",
+        "3/C+G", "250", 1, 1, 120, 480, 170)
+    add(BY_TAG["MTG-FG"], m, f"MTG-{k} fuel-gas valves, Class I Div 2", "CTAX", "12/C", "14")
+gen_feeder(mtg_swg, mtg_gsu, 32000, 13.8, "MTG-SWG 13.8 kV to MTG-GSU")
+xf_wiring(mtg_swg, mtg_gsu, "MTG-GSU")
+gen_feeder(mtg_gsu, swg_pk, 32000, 34.5, "MTG-GSU 34.5 kV collector feeder to SWG-PK (bus B)")
+add(mtg_swg, mtg_aux, "MTG-AUX 13.8 kV primary", "MV15", "1/C", "2", 1, 3, 750, 13800, 31)
+xf_wiring(mtg_swg, mtg_aux, "MTG-AUX")
+lv_feeder(mtg_aux, BY_TAG["MTG-CB"], 600, "MTG-CB 480 V MCC from MTG-AUX", motor=False)
+lv_feeder(BY_TAG["MTG-CB"], BY_TAG["MTG-FG"], 60, "MTG-FG gas heater and skid power (Class I Div 2)", prod="LVAX")
+add(BY_TAG["MTG-CB"], BY_TAG["MTG-FG"], "MTG-FG skid instrumentation (IS)", "ITC", "4 pr", "18")
+chp_swg, chp_aux = BY_TAG["CHP-SWG"], BY_TAG["CHP-AUX"]
+for k in range(1, 5):
+    c = BY_TAG[f"CHP-{k}"]
+    gen_feeder(c, chp_swg, 2500, 13.8, f"CHP-{k} 13.8 kV generator leads to the switchgear container")
+    add(chp_swg, c, f"CHP-{k} control / sync / protection", "CTAX", "12/C", "14")
+    add(chp_swg, c, f"CHP-{k} instrumentation (incl. heat-recovery temperatures)", "ITC", "4 pr", "18")
+    lv_feeder(chp_aux, c, 60, f"CHP-{k} auxiliaries (jacket-water pump, enclosure ventilation)")
+gen_feeder(chp_swg, pad_eh, 10000, 13.8, "CHP-SWG 13.8 kV site feeder to PAD-EH")
+add(chp_swg, chp_aux, "CHP-AUX 13.8 kV primary", "MV15", "1/C", "2", 1, 3, 750, 13800, 31)
+xf_wiring(chp_swg, chp_aux, "CHP-AUX")
+lv_feeder(chp_aux, BY_TAG["CHP-HR"], 160, "CHP-HR dump-cooler fans and hot-water circulation pumps")
+add(chp_swg, BY_TAG["CHP-HR"], "CHP-HR heat-recovery instrumentation (flows, temperatures, valves)", "ITC", "4 pr", "18")
+# PAD-EH (TM-1 35 MW + CHP site 10 MW + MT-TX 3 MW + MOB-1 2 MW + PAD-TX 2 MW, ~2,420 A on its 3,000 A bus) steps up to the park collector
+pad_gsu = BY_TAG["PAD-GSU"]
+gen_feeder(pad_eh, pad_gsu, 52000, 13.8, "PAD-EH 13.8 kV to PAD-GSU")
+xf_wiring(pad_eh, pad_gsu, "PAD-GSU")
+gen_feeder(pad_gsu, swg_pk, 52000, 34.5, "PAD-GSU 34.5 kV collector feeder to SWG-PK (bus A)")
+# AX-1 / IG-1 unit step-ups (were on MOD-EH, which stays at the reviewed ~255 MW)
+for t, gsu, kw in (("AX-1", "AX-GSU", 35000), ("IG-1", "IG-GSU", 50000)):
+    u, g_ = BY_TAG[t], BY_TAG[gsu]
+    gen_feeder(u, g_, kw, 13.8, f"{t} 13.8 kV generator leads to {gsu}")
+    xf_wiring(u, g_, gsu)
+    gen_feeder(g_, swg_pk, kw, 34.5, f"{gsu} 34.5 kV collector feeder to SWG-PK (bus B)")
+    add(u, u, f"{t} package auxiliaries 480 V (from the unit auxiliary transformer in the control module)", "LV", "3/C+G",
+        "500", 2, 1, 400, 480, 510, "internal to the package", length=(120, 10, "Tray"))
+    add(swg_pk, u, f"{t} unit control / sync / protection", "CTAX", "12/C", "14")
+    add(CR, u, f"{t} unit control: plant network / DCS fibre", "FO", "12 SM", "-")
+# SWG-PK to T-MOD-3: one main per bus section / LV winding
+gen_feeder(swg_pk, tmod3, 92600, 34.5, "SWG-PK bus A main to T-MOD-3 LV winding 1")
+gen_feeder(swg_pk, tmod3, 117000, 34.5, "SWG-PK bus B main to T-MOD-3 LV winding 2")
+xf_wiring(swg_pk, tmod3, "T-MOD-3")
+add(swg_pk, swg_pk, "SWG-PK station service, HVAC, lighting, DC charger (station-service transformer inside)", "LV",
+    "3/C+G", "2", 1, 1, 60, 480, 85, "internal to the e-house", length=(100, 10, "Tray"))
+add(CR, swg_pk, "SWG-PK SCADA / protection: plant network fibre", "FO", "12 SM", "-")
+# switchgear station service (charger, heaters, HVAC, lighting) and generator neutral grounding (review, Oct 28)
+lv_feeder(cge_aux, cge_swg, 45, "CGE-SWG station service: DC charger, heaters, HVAC, lighting", motor=False)
+lv_feeder(chp_aux, chp_swg, 45, "CHP-SWG station service: DC charger, heaters, HVAC, lighting", motor=False)
+lv_feeder(BY_TAG["PAD-LV"], pad_eh, 60, "PAD-EH station service: DC charger, heaters, HVAC, lighting", motor=False)
+lv_feeder(BY_TAG["MTG-CB"], mtg_swg, 45, "MTG-SWG station service: DC charger, heaters, HVAC, lighting", motor=False)
+for sw in ("TGF-SWG", "SWG-MY"):
+    add(BY_TAG[sw], BY_TAG[sw], f"{sw} station service from its internal 480 V aux transformer: charger, heaters, HVAC",
+        "LV", "3/C+G", "2", 1, 1, 45, 480, 60, "internal to the lineup", length=(40, 10, "Tray"))
+for t, sw in ([(f"TGF-{k}", "TGF-SWG") for k in range(1, 7)] + [(f"CGE-{k}", "CGE-SWG") for k in range(1, 5)] +
+              [(f"CHP-{k}", "CHP-SWG") for k in range(1, 5)] + [("MTG-1", "MTG-SWG"), ("MTG-2", "MTG-SWG"),
+                                                                ("AX-1", "SWG-PK"), ("IG-1", "SWG-PK")]):
+    add(BY_TAG[t], BY_TAG[t], f"{t} generator neutral to its high-resistance grounding resistor (in the package)", "MV15",
+        "1/C", "2", 1, 1, None, 13800, None, "NGR in the generator / terminal-box enclosure", length=(15, 5, "Conduit"))
+    add(BY_TAG[t], BY_TAG[sw], f"{t} generator CT / VT secondaries to the protection", "CTCT", "12/C", "10")
+for sw in ("TGF-SWG", "CGE-SWG", "PGS-SWG", "MTG-SWG", "CHP-SWG"):
+    add(swg_pk, BY_TAG[sw], f"{sw} SCADA / dispatch fibre", "FO", "12 SM", "-")
+mt_tx = BY_TAG["MT-TX"]
+fc_inv = [one(r"^FC-5..8 inverter")]                     # FC-1..4 / MT-1..3 taken out Oct 20 (one set, in the yard)
+for k in range(5, 9):
+    fc = one(rf"^FC-{k}: SOFC")
+    lv_feeder(fc, fc_inv[0], 250, f"FC-{k} SOFC output to inverter / AC cabinet", motor=False)
+for it in fc_inv:
+    lv_feeder(it, BY_TAG["PAD-LV"], 1000, "Fuel-cell AC cabinet to PAD-LV", motor=False)
+mt_sb = one(r"^MT-4..6 480 V switchboard")
+for k in range(4, 7):
+    mt = one(rf"^MT-{k}: microturbine")
+    lv_feeder(mt, mt_sb, 1000, f"MT-{k} microturbine output to the site switchboard", motor=False)
+add(mt_sb, mt_tx, "Microturbine site switchboard to MT-TX 480 V secondary", "LV1C", "1/C", "750", 11, 4, 3000, 480, 3798,
+    "11 sets of 4 x 1/C, short run")
+xf_wiring(mt_sb, mt_tx, "MT-TX")
+gen_feeder(mt_tx, pad_eh, 3000, 13.8, "MT-TX 13.8 kV to PAD-EH")
+for it in find(r"^Black-start genset"):
+    lv_feeder(it, src_of(r"^BS black-start switchgear"), 2000, "Black-start genset output", motor=False)
+
+
+# audit additions: circuits found missing by the first audit
+emcc = BY_TAG["EMCC"]
+for t in ("EDG-1", "EDG-2"):
+    I = 3000 / (1.732 * .48)
+    add(BY_TAG[t], emcc, f"{t} 480 V output to EMCC", "LV1C", "1/C", "500", 15, 4, 3000, 480, round(I),
+        "15 sets of 4 x 1/C 500 kcmil for 3 % VD (or bus duct)")
+lv_feeder(BY_TAG["LC-480-A"], emcc, 400, "EMCC normal supply from LC-480-A", motor=False)
+lv_feeder(LVS["A"][4], BY_TAG["CRANE"], 150, "Bridge crane conductor-bar feeder (fused disconnect, north wall)")
+for t in ("CPR-1", "CPR-2"):
+    lv_feeder(lv_src(BY_TAG[t]), BY_TAG[t], 10, "Cathodic-protection rectifier supply", motor=False)
+    add(BY_TAG[t], BY_TAG[t], "CP anode / structure leads (allowance)", "LV", "1/C", "8", 1, 1, length=(1500, 0, "Buried"),
+        note="HMWPE anode lead cable by CP vendor; allowance")
+gt = one(r"^CONDITIONAL: grounding transformer")
+if gt:
+    mv_feeder(src_of(r"^34.5 kV collector e-house"), gt, 2000, 34.5, "Grounding transformer connection (34.5 kV)", motor=False)
+the = one(r"^Turbine hall exterior electrical")
+if the:
+    lv_feeder(BY_TAG["LC-480-A"], the, 120, "Turbine hall roof exhausters / louvres / exterior lighting panel", motor=False)
+for pat, n in ((r"^230 kV switchyard \(gravel", 40), (r"^BESS yard: surfacing", 24)):
+    it = one(pat)
+    if it:
+        src = RH if "switchyard" in it["name"] else LVS["H"][0]
+        for c in range(math.ceil(n / 10)):
+            add(src, it, f"Yard lighting circuit {c + 1} ({min(10, n - c * 10)} floodlights)", "LV", "3/C+G", "8", 1, 1, 4,
+                480, 6, "pole to pole, buried", length=(10 * 90, 30, "Buried"))
+
+# 230 kV underground circuits and overhead conductors (from the routes) ---------------------------------------
+dummy = lambda name, tag: dict(name=name, tag=tag, area="C", id=tag, fp=[0, 1, 0, 1], layer="ROUTES")
+for k, r in enumerate([r for r in M["routes"] if r["type"] == "hv_cable" and not r["layer"].startswith("OPT_DC")]):
+    L = sum(math.dist(a, b) for a, b in zip(r["points"], r["points"][1:]))
+    nm = r["layer"].replace("_ROUTES", "").replace("OPT_", "")
+    add(dummy(f"230 kV {nm} tie: switchyard end", f"{nm}-230-A"), dummy(f"230 kV {nm} tie: plant end", f"{nm}-230-B"),
+        f"230 kV underground circuit ({nm})", "HV230", "1/C", "2500", 1, 3, None, 230000, None,
+        "route length from the model + 2 x 40 ft risers", length=(L, 80, "HV duct bank"))
+for k, r in enumerate([r for r in M["routes"] if r["type"] in ("hv_overhead", "hmod")]):
+    L = sum(math.dist(a, b) for a, b in zip(r["points"], r["points"][1:]))
+    add(dummy("230 kV overhead span start", f"OH-{k + 1}-A"), dummy("230 kV overhead span end", f"OH-{k + 1}-B"),
+        f"230 kV overhead {'H-MOD tie' if r['type'] == 'hmod' else 'GSU / line'} conductors", "ACSR", "1/C", "1590", 1, 3,
+        None, 230000, None, "plus 3 % sag", length=(L * 1.03, 0, "Overhead"))
+
+
+# Device-level wiring: each item's field devices (typical counts for the equipment class): motors, motor-operated
+# valves, analog instruments, discrete devices, solenoids, thermocouples, RTDs. Every device gets its own cable to a
+# local junction box (or its MCC for motors / MOVs); junction boxes home-run to the control building on multipair.
+# m = [(motors, kW each, VFD)], mov = MOVs, ai / di = analog / discrete instruments, sol, tc, rtd.
+DEV = [
+    (r"^GT\d: H-class", dict(ai=120, di=80, sol=30, tc=60)),
+    (r"^GTG-\d", dict(m=[(4, 2, 0)], ai=20, di=20, rtd=24)),
+    (r"^GT\d aux", dict(m=[(12, 45, 0)], ai=40, di=40, sol=10)),
+    (r"^SOS-", dict(m=[(3, 15, 0)], ai=15, di=15, sol=4)),
+    (r"^FS-GT", dict(ai=4, di=20, sol=8)),
+    (r"^WASH-GT", dict(m=[(2, 22, 0)], ai=4, di=6, sol=4)),
+    (r"^GFM-", dict(ai=15, di=15, sol=6)),
+    (r"^FH-\d:", dict(m=[(2, 15, 0)], ai=10, di=30, sol=60)),
+    (r"^INL-|inlet duct", dict(ai=6, tc=4)),
+    (r"^SFC-|^EXC-|^NGT-|^SPC-", dict(ai=10, di=20)),
+    (r"^GSU-|^UAT-|^T4-|^LCT-|^T-R\d|^T-R4|^CCS T-\d:|main power transformer|^T-MOD", dict(m=[(6, 2, 0)], ai=8, di=16)),
+    (r"^GCB-", dict(di=20)),
+    (r"^HRSG \d \+", dict(m=[(4, 15, 0)], mov=45, ai=160, di=80, sol=20, tc=80)),
+    (r"^BFP-", dict(m=[(4, 15, 0)], ai=30, di=20, rtd=24)),
+    (r"^SCRB-", dict(m=[(2, 110, 0)], ai=6, di=6)),
+    (r"^CEMS shelter|^SC-\d CEMS shelter", dict(m=[(2, 5, 0)], ai=12, di=10)),
+    (r"blowdown tank", dict(mov=4, ai=6, di=4)),
+    (r"chemical feed|^Chemical feed", dict(m=[(6, 2, 0)], ai=8, di=12)),
+    (r"^SWAS", dict(ai=24, di=8)),
+    (r"^ST: steam", dict(mov=20, ai=150, di=100, sol=20, tc=40)),
+    (r"^STG", dict(m=[(4, 2, 0)], ai=20, di=20, rtd=30)),
+    (r"^ST aux", dict(m=[(10, 40, 0)], ai=30, di=30)),
+    (r"^EHC-ST", dict(m=[(2, 37, 0)], ai=10, di=10, sol=10)),
+    (r"^GSC-ST", dict(m=[(2, 30, 0)], ai=6, di=6)),
+    (r"^Air-cooled condenser", dict(mov=30, ai=100, di=160)),
+    (r"^Aux dry coolers", dict(m=[(12, 22, 1)], ai=12, di=24)),
+    (r"^CCW-A/B", dict(m=[(2, 150, 0)], ai=10, di=10)),
+    (r"^CP-A/B/C", dict(ai=15, di=15, rtd=18)),
+    (r"^VAC-A/B", dict(m=[(2, 75, 0)], ai=10, di=10)),
+    (r"^Air compressors", dict(m=[(3, 250, 0)], ai=15, di=15)),
+    (r"tank|Tank", dict(ai=4, di=4)),
+    (r"230 kV breaker", dict(ai=2, di=20)),
+    (r"entrance: surge|terminal tower", dict(di=4)),
+    (r"filter-separator", dict(ai=8, di=12, sol=4)),
+    (r"Gas metering|M&R 5|gas quality", dict(ai=20, di=8)),
+    (r"regulation", dict(ai=12, di=12, sol=6)),
+    (r"performance heater", dict(ai=10, di=10)),
+    (r"ESD valve|insulating joint", dict(di=8, sol=4)),
+    (r"^HRSG \d duct burner", dict(ai=8, di=24, sol=6)),        # boiler section: 8 runners, scanners, igniters, skid valves
+    (r"Auxiliary boiler", dict(m=[(1, 150, 0), (2, 75, 0), (2, 4, 0)], ai=30, di=30, sol=6)),   # FD fan, BFPs, chem
+    (r"Ammonia storage", dict(m=[(2, 7, 0)], ai=8, di=10)),
+    (r"Fire pump house", dict(m=[(1, 250, 0), (1, 15, 0)], ai=10, di=30)),
+    (r"^Wastewater treatment", dict(m=[(8, 15, 0)], ai=20, di=30)),
+    (r"Oil-water", dict(m=[(2, 7, 0)], ai=4, di=4)),
+    (r"Water treatment building", dict(m=[(20, 15, 0)], ai=60, di=80)),
+    (r"H2 / CO2 storage", dict(ai=8, di=8)),
+    (r"Stormwater pump", dict(m=[(2, 75, 0)], ai=4, di=6)),
+    (r"LS-1", dict(m=[(2, 7, 0)], ai=2, di=4)),
+    (r"^Absorber [ABC] \(", dict(mov=10, ai=60, di=40)),
+    (r"intercooler", dict(m=[(2, 150, 0)], ai=15, di=15)),
+    (r"^DCC-[ABC]:", dict(ai=20, di=10)),
+    (r"^DCC-[ABC] pumps", dict(m=[(2, 200, 0)], ai=10, di=10)),
+    (r"^Water-wash pumps", dict(m=[(2, 110, 0)], ai=8, di=8)),
+    (r"^STR-", dict(mov=6, ai=50, di=30)),
+    (r"^RB-", dict(mov=4, ai=15, di=10)),
+    (r"^Rich/lean", dict(ai=20, di=20, rtd=12)),
+    (r"^DMP-", dict(m=[(2, 15, 0)], ai=8, di=16)),
+    (r"^BF-[ABC]", dict(m=[(4, 15, 0)], ai=30, di=20, rtd=18)),
+    (r"^CO2 compression", dict(m=[(10, 30, 0)], ai=150, di=100, rtd=36)),
+    (r"^CO2 dehydration", dict(m=[(2, 20, 0), (1, 200, 0)], mov=12, ai=30, di=30)),
+    (r"^CCS-CT|CCS cooling tower", dict(m=[(30, 110, 1)], ai=30, di=60)),
+    (r"^CCS circulating", dict(ai=20, di=20)),
+    (r"instrument air", dict(m=[(2, 250, 0)], ai=10, di=10)),
+    (r"^Reclaimer", dict(m=[(2, 15, 0)], ai=15, di=10)),
+    (r"Solvent", dict(m=[(4, 15, 0)], ai=10, di=10)),
+    (r"^CCS wastewater", dict(m=[(6, 15, 0)], ai=15, di=15)),
+    (r"Activated-carbon", dict(ai=6, di=6)),
+    (r"HP export compressor", dict(m=[(4, 30, 0)], ai=60, di=40, rtd=12)),
+    (r"^BESS container", dict(di=8)),
+    (r"^BESS PCS", dict(m=[(2, 7, 0)], ai=6, di=10)),
+    (r"^RICE engine-generator", dict(m=[(6, 22, 0)], ai=80, di=60, tc=30, rtd=12)),
+    (r"^RICE \d radiators", dict(m=[(5, 30, 1)], ai=5, di=10)),
+    (r"^RICE \d SCR", dict(m=[(1, 15, 0)], ai=10, di=6)),
+    (r"^SC-\d: aeroderivative", dict(m=[(10, 30, 0)], ai=150, di=100, tc=40)),
+    (r"^SC-\d lube-oil fin-fan", dict(m=[(4, 15, 0)], ai=4, di=8)),
+    (r"^SC-\d SCR", dict(ai=16, di=8)),               # catalyst temps / dP, NOx in / out; the fans are their own items
+    (r"^SC-\d tempering-air fans", dict(m=[(2, 185, 0)], ai=8, di=8)),       # 2 x 250 hp, vibration, damper limits
+    (r"^SC-\d ammonia flow-control", dict(m=[(2, 7.5, 0)], ai=8, di=8, sol=4)),   # dilution-air blowers, flow control
+    (r"^SC-\d auxiliary skids", dict(m=[(1, 7.5, 0)], ai=14, di=12, sol=4)),     # fuel-gas module I/O, ESD; water-wash pump
+    (r"^Water-injection skid", dict(m=[(2, 75, 0)], ai=10, di=10, sol=2)),      # 2 x 100 % HP NOx water-injection pumps
+    (r"^Aqueous ammonia \(SC", dict(m=[(2, 3.7, 0)], ai=6, di=6)),               # unloading / forwarding pumps, level
+    (r"^TM-\d", dict(m=[(6, 22, 0)], ai=100, di=60, tc=20)),
+    (r"^CONT-\d|^MOB-1|^GEN-[EO]", dict(ai=20, di=20)),
+    (r"^Black-start genset", dict(ai=20, di=20)),
+    (r"^FC-\d+:", dict(ai=10, di=10)),
+    (r"^MT-\d", dict(ai=6, di=6)),
+    (r"^Fuel-gas compressors 3|CONDITIONAL: fuel-gas compressors", dict(m=[(6, 15, 0)], ai=30, di=20, rtd=12)),
+    (r"^Chillers x6", dict(m=[(6, 7, 0)], ai=120, di=120)),
+    (r"^CW pumps \(inlet", dict(ai=24, di=24)),
+    (r"^Inlet-chilling tower", dict(m=[(12, 75, 1)], ai=12, di=24)),
+    (r"^CHW pumps", dict(m=[(4, 150, 0)], ai=12, di=12)),
+    (r"^LNG \d+:|^H2 \d+:", dict(m=[(1, 15, 0)], ai=12, di=12, sol=2)),
+]
+DEVRX = [(re.compile(p), d) for p, d in DEV]
+JB_PAIRS = 24
+FIELD = dict(ai=("PLTC", "1 pr", "16", "Analog instrument to JB"), di=("PLTC", "1 pr", "16", "Discrete device to JB"),
+             sol=("CT", "2/C", "14", "Solenoid to JB"), tc=("TCX", "1 pr", "16", "Thermocouple to TC JB"),
+             rtd=("RTD", "1 tri", "18", "RTD to JB"))
+N_DEV = defaultdict(int)
+
+
+def dev_of(it):
+    for rx, d in DEVRX:
+        if rx.search(it["name"]):
+            return d
+    return None
+
+
+def device_wiring(it, d):
+    f = it["fp"]
+    span = (f[1] - f[0]) + (f[3] - f[2])
+    h = it["z"][1]
+    field = min(250, max(40, span * .5 + h * .4 + 25))           # average device-to-JB run on the equipment
+    haz = bool(HAZ.search(it["name"]))
+    src_lv = lv_src(it)
+    src_ct = ctl_src(it)
+    tag = it.get("tag") or it["name"][:18]
+    for (n, kw, vfd) in d.get("m", []):
+        for k in range(n):
+            N_DEV["motors"] += 1
+            if vfd:
+                route, vert, kind = route_len(src_lv, it)
+                I = kw / (1.732 * .48 * .85)
+                s, sets, vd = size_lv(I, (route + vert + field) * 1.1)
+                add(src_lv, it, f"Motor {k + 1} of {n}, {kw} kW (VFD output)", "VFD", "3/C+3G", s, sets, 1, kw, 480, round(I),
+                    f"VD {vd:.1f} %", length=(route + field, vert, kind))
+            else:
+                lv_feeder(src_lv, it, kw, f"Motor {k + 1} of {n}, {kw} kW")
+            add(src_lv, it, f"Motor {k + 1} of {n}: control / local station", "CTAX" if haz else "CT", "7/C", "14")
+    for k in range(d.get("mov", 0)):
+        N_DEV["MOVs"] += 1
+        lv_feeder(src_lv, it, 2.5, f"MOV {k + 1}: power", prod="LVAX" if haz else "LV")
+        add(src_lv, it, f"MOV {k + 1}: control", "CTAX" if haz else "CT", "12/C", "14")
+    for key in ("ai", "di", "sol", "tc", "rtd"):
+        n = d.get(key, 0)
+        if not n:
+            continue
+        N_DEV[key] += n
+        prod, cond, size, what = FIELD[key]
+        if key in ("ai", "di") and haz:
+            prod = "ITC"
+        if key == "sol" and haz:
+            prod = "CTAX"
+        per = 10 if key in ("sol", "rtd") else 20
+        for j in range(math.ceil(n / per)):
+            m_ = min(per, n - j * per)
+            jb = f"JB-{tag}-{key.upper()}{j + 1:02d}"
+            add(it, dict(it, tag=jb), f"{what} {jb}: {m_} x {cond} (field cables)", prod, cond, size, m_, 1,
+                note="device-to-JB field wiring, one cable per device", length=(field, 10, "Tray / conduit"))
+            hp = {"ai": ("ITC" if haz else "PLTC", "24 pr", "18"), "di": ("ITC" if haz else "PLTC", "24 pr", "18"),
+                  "tc": ("TCX", "24 pr", "16"), "rtd": ("RTD", "12 tri", "18"),
+                  "sol": ("CTAX" if haz else "CT", "25/C", "14")}[key]
+            add(src_ct, dict(it, tag=jb), f"Home run {jb} to the control / marshalling room", hp[0], hp[1], hp[2])
+
+# LV power, control, instrumentation, FA, fibre per item, from its wiring applications --------------------------
+DEF_KW = [(r"GT\d aux", 400), (r"GT1:|GT2:|GT3:", 150), (r"HRSG \d \+", 150), (r"FH-\d:", 40), (r"SOS-", 30),
+          (r"FS-GT", 10), (r"WASH-GT", 30), (r"GFM-", 15), (r"TCP-", 15), (r"SCRB-", 2 * 110), (r"AC-A/B/C|Air compressor", 3 * 250),
+          (r"CCW-A/B", 2 * 150), (r"AUXC", 12 * 22), (r"VAC-A/B", 2 * 75), (r"ST aux", 250), (r"EHC", 45), (r"GSC-ST", 45),
+          (r"chemical feed|Chemical feed", 15), (r"blowdown tank", 10), (r"CEMS", 30), (r"SWAS", 15), (r"EXC-", 60),
+          (r"CRANE|Bridge crane", 150), (r"intercooler", 2 * 150), (r"Water-wash pumps", 2 * 110), (r"DCC-[ABC] pumps", 2 * 200),
+          (r"CCS-CT|cooling tower", 30 * 110), (r"DMP-", 20), (r"RB-", 10), (r"STR-", 30), (r"ABS-|Absorber [ABC] \(", 40),
+          (r"instrument air", 2 * 250), (r"dehydration", 150), (r"Reclaimer", 75), (r"Activated-carbon", 15),
+          (r"Solvent|NaOH", 20), (r"wastewater|Wastewater", 60), (r"Fire pump house", 60), (r"Auxiliary boiler", 330), (r"duct burner", 15),
+          (r"Ammonia storage", 15), (r"Oil-water", 15), (r"tank", 10), (r"HTP-", 120), (r"LS-1|lift station", 30),
+          (r"Stormwater pump", 2 * 75), (r"ULSD unloading and forwarding pumps", 2 * 55), (r"ULSD truck", 15),
+          (r"performance heater", 60), (r"Gas metering|regulation|filter-separators|ESD valve", 10),
+          (r"local control enclosure", 15), (r"CPR-", 10), (r"Gas conditioning", 30), (r"Aqueous ammonia", 10),
+          (r"inlet chiller", 500), (r"LB:", 0), (r"Comms tower", 10), (r"Main gate", 5), (r"fence.*CCTV|CCTV", 20),
+          (r"Site lighting", 60), (r"Gas yard", 10)]
+BLD = re.compile(r"building|house|Gatehouse|Warehouse|workshop|e-house|R1:|R2[ABC]:|R3:|R4:|RH:|shelter|control room|"
+                 r"control / admin|PCM|MOD-EH|PAD-EH|CONT paralleling|collector e-house|EMS|F&G", re.I)
+SKIP_LV = re.compile(r"^R1 |SWGR|LC-480|MCC|EMCC|transformer|T-R\d|T-R4|LCT-|T4-|UAT|GSU|ET-\d|TX-LCI|VFD lineup|"
+                     r"BFP|CP-A/B/C|BF-[ABC]|CO2 compression|export compressor|circulating-water|Rich/lean|CONDITIONAL: fuel-gas|"
+                     r"Chillers x6|CW pumps \(inlet|BESS container|BESS PCS|BESS blocks|RICE engine-generator|SC-\d:|CONT-\d|"
+                     r"TM-\d|MOB-1|GEN-[EO]|FC-\d|MT-\d|Black-start genset|Fuel-cell inverter|FC-5..8 inverter|MT-4..6 480 V switchboard|^PAD-|^PIC|^GSP|"
+                     r"Fuel-gas compressors 3|Air-cooled condenser|GCB-|NGT-|SPC-|breaker|entrance|terminal tower|"
+                     r"cable termination structure|GTG-|STG|230 kV switchyard|BESS yard|INL-|stair tower|Turbine hall exterior")
+done_bld = set()
+GB_OWN = re.compile(r"^(GB-\d|GBC-\d|GBT-\d|SWG-MY|TGF-|CGE-|PGS-|LGN-|MTG-|CHP-|SWG-PK|T-MOD-3|PAD-GSU|AX-|IG-|MT-TX|RICE-GSU-|SC-GSU-|MOD-SST|MOD-GT|PK-GT)")     # modular gas blocks carry their own L1-L7 circuits (above)
+for it in ITEMS:
+    apps = " ".join(it.get("wiring", []))
+    if GB_OWN.match(it.get("tag") or ""):
+        continue
+    d = dev_of(it)
+    if d and it["area"] != "L":
+        device_wiring(it, d)
+    if not apps:
+        continue
+    nm = it["name"]
+    a = it["area"]
+    if a in ("L",):
+        continue
+    is_bld = bool(BLD.search(nm)) and not re.search(r"skid|pump|^R1 ", nm)
+    # LV power
+    if not SKIP_LV.search(nm) and re.search(r"LV power|LV 480", apps) and not (d and d.get("m")):
+        kw = next((k for p, k in DEF_KW if re.search(p, nm)), None)
+        if kw is None and is_bld:
+            f = it["fp"]
+            kw = max(30, round((f[1] - f[0]) * (f[3] - f[2]) * .012))          # ~12 W / ft2 lighting, HVAC, small power
+        if kw is None:
+            kw = 15
+        if kw > 0:
+            lv_feeder(lv_src(it), it, kw, "LV power feeder" if not is_bld else "LV panel / distribution feeder")
+    # control and instrumentation
+    big = re.search(r"GT\d:|STG|GTG|HRSG \d \+|ST: steam|ACC|CO2 compression|BF-|SC-\d:|RICE engine|TM-\d", nm)
+    if ("Control" in apps or "CT" in apps) and (not d or re.search(r"230 kV breaker|GCB-|GSU|UAT|transformer", nm)):
+        if re.search(r"230 kV breaker", nm):
+            ctrl(RH, it, n7=0, n12=4, nct=3)
+        elif re.search(r"GCB-|GSP-", nm):
+            ctrl(ctl_src(it), it, n7=0, n12=3, nct=4)
+        elif re.search(r"GSU|UAT|T-|transformer|T4-|LCT", nm):
+            ctrl(ctl_src(it), it, n7=1, n12=1, nct=2)
+        elif big:
+            ctrl(ctl_src(it), it, n7=2, n12=6)
+        elif not re.search(r"^R1 |SWGR|LC-480|MCC", nm):
+            ctrl(ctl_src(it), it, n7=1, n12=0)
+    if "Instrumentation" in apps and not d:
+        if big:
+            inst(ctl_src(it), it, n4=2, n12=8)
+        elif re.search(r"skid|pumps|compressor|tank|heater|separator|absorber|stripper|DCC|reboiler|module", nm, re.I):
+            inst(ctl_src(it), it, n4=1, n12=1)
+        else:
+            inst(ctl_src(it), it, n4=1)
+    if "Thermocouple" in apps and not d:
+        inst(ctl_src(it), it, n4=0, ntcx=6 if big else 2)
+    if "RTD" in apps and not d:
+        inst(ctl_src(it), it, n4=0, nrtd=4)
+    if "Vibration" in apps:
+        add(ctl_src(it), it, "Vibration monitoring", "PLTC", "4 pr", "18")
+    if "Fire alarm" in apps or "Fire and gas" in apps:
+        add(ctl_src(it), it, "Fire alarm / F&G loop (to the local FACP / F&G node)", "FA", "2/C", "14")
+    if "Data" in apps and (is_bld or big):
+        add(CR, it, "Plant network / DCS fibre", "FO", "12 SM", "-")
+
+
+# outdoor and structure lighting, 480 V welding receptacles, heat-trace circuits (allowances counted from the model)
+LIGHT_STRUCT = [(r"^HRSG \d \+", 40), (r"^Air-cooled condenser", 80), (r"^Absorber [ABC] \(", 30), (r"^STR-", 20),
+                (r"^FH-\d:", 12), (r"stair tower", 8), (r"^DCC-[ABC]:", 8), (r"CCS cooling tower", 30),
+                (r"Inlet-chilling tower", 12), (r"^HRSG \d stack|HRSG \d stack", 6), (r"RICE \d SCR", 6), (r"^SC-\d stack", 4),
+                (r"^SC-\d SCR", 10), (r"^SC-\d: aeroderivative", 8), (r"^SC-\d tempering-air", 4)]   # SC platforms / enclosure
+for it in ITEMS:
+    for p_, n in LIGHT_STRUCT:
+        if re.search(p_, it["name"]):
+            src = lv_src(it)
+            for c in range(math.ceil(n / 12)):
+                rl, rv, rk = route_len(src, it)
+                sz, st_, vd = size_lv(5, (rl + rv + 300) * 1.1)
+                add(src, it, f"Area / platform lighting circuit {c + 1} ({min(12, n - c * 12)} fixtures)", "LV", "3/C+G",
+                    max(sz, "10", key=SIZES_LV.index), st_, 1, 3, 480, 5, "fixture-to-fixture run included",
+                    length=(rl + 300, rv, rk))
+            break
+# stack aviation obstruction lights (owner, Oct 23: "the top of the stack and the lighting"): their own feed (two
+# tiers of red obstruction lights, photocell) and the light-failure alarm to the DCS, separate from the platform lighting
+for it in ITEMS:
+    if re.match(r"^HRSG \d stack", it["name"]):
+        src = lv_src(it)
+        rl, rv, rk = route_len(src, it)
+        add(src, it, f"{it['tag'] or it['name']} aviation obstruction lights (2 tiers x 3 red, photocell)", "LV", "3/C+G",
+            "10", 1, 1, 1.5, 480, 3, "up the stack conduit to EL 177", length=(rl, rv + 180, rk))
+        add(src, it, f"{it['tag'] or it['name']} obstruction-light failure alarm to the DCS (outage reporting)", "CT", "7/C",
+            "14", 1, 1, length=(rl, rv + 180, rk))
+site_l = next((it for it in ITEMS if it["name"].startswith("Site lighting")), None)
+if site_l:
+    poles = sum(1 for p_ in M["parts"] if p_["item"] == site_l["id"] and p_["kind"] == "rod" and abs(p_["a"][2] - p_["b"][2]) > 20)
+    poles = poles or 120
+    add(site_l, site_l, f"Site / road lighting: {poles} poles, buried circuits pole to pole", "LV", "3/C+G", "8", poles, 1,
+        None, 480, None, "~120 ft between poles + riser", length=(120, 30, "Buried"))
+welds = 0
+for it in ITEMS:
+    if re.search(r"^HRSG \d \+|^GT\d: H-class|^ST: steam|^Air-cooled condenser|^Absorber [ABC] \(|^STR-|"
+                 r"^CO2 compression|^RICE engine-generator|^BF-", it["name"]):
+        for k in range(4):
+            welds += 1
+            lv_feeder(lv_src(it), it, 60, f"480 V welding receptacle {k + 1}", motor=False)
+for it in ITEMS:
+    if it["name"].startswith("HTP-"):
+        for k in range(24):
+            add(it, it, f"Heat-trace circuit {k + 1} (power to the trace junction box)", "LV", "3/C+G", "10", 1, 1, 4, 480, 6,
+                "heat-trace cable itself by others", length=(180, 20, "Tray"))
+
+# control / admin building: the circuits drawn in admin_wiring.py, lengths from its geometry (replaces the floor-area
+# allowance for this building). Electrical room at (243, 389), MDF at (217, 392); runs go up 8 ft into the ceiling
+# space, along the corridor (y 381), into the room and down again.
+ADM = one(r"^Control / admin building \(main")
+if ADM:
+    done_bld.add(ADM["name"])
+    def _hr(x, y, fx, fy, up=16.0):
+        return abs(x - fx) + abs(381.0 - fy) + abs(y - 381.0) + up
+    EL, MDF = (243.0, 389.0), (217.0, 392.0)
+    nb = lambda t: dict(ADM, name=f"Control / admin building: {t}", tag=t)
+    add(nb("service duct bank, north wall x 262"), nb("MDP 480 V"), "Building service 480 V, 800 A: 3 sets in 4 in PVC",
+        "LV1C", "1/C", "500", 3, 4, 480, 480, 800, "from the north-wall duct bank; 3 sets 500 kcmil for 125 % (audit, Oct 21)", length=(30.0, 32.0, "Conduit"))
+    for dst, size, n, v, a, d in (("T-1 75 kVA", "3", 3, 480, 90, "MDP to T-1 primary"),
+                                  ("LP-1", "1", 4, 480, 100, "MDP to LP-1 277/480 V lighting"),
+                                  ("UPS-1", "4", 3, 480, 60, "MDP to UPS-1 (feeds EP-1)")):
+        add(nb("MDP 480 V"), nb(dst), d + ", THHN in EMT", "THHN", "1/C", size, 1, n, None, v, a, "", length=(12.0, 16.0, "Conduit"))
+    for dst in ("RP-1", "RP-2"):
+        add(nb("T-1 75 kVA"), nb(dst), f"T-1 to {dst} 120/208 V, THHN in EMT", "THHN", "1/C", "4/0", 1, 4, None, 208, 200, "",
+            length=(10.0, 16.0, "Conduit"))
+    add(nb("UPS-1"), nb("EP-1"), "UPS-1 to EP-1 (control-room critical loads), THHN in EMT", "THHN", "1/C", "2", 1, 4, None,
+        208, 110, "", length=(30.0, 16.0, "Conduit"))
+    south = ((155, "break room"), (179, "conference"), (206, "lobby"), (230, "server room"), (249, "ops meeting"),
+             (267, "supervisor"))
+    north = ((94, "lockers M"), (114, "lockers W"), (134, "restrooms"), (154, "permit office"), (174, "print room"),
+             (198, "training"))
+    rooms = [(x, 362.0, t) for x, t in south] + [(x, 389.5, t) for x, t in north]
+    L_light = sum(_hr(x, y, *EL) for x, y, _ in rooms) + 6 * 4 * 40           # + office / MCR fixture loops
+    L_rec = sum(_hr(x, y, *EL) for x, y, _ in rooms) + 7 * _hr(85, 360, *EL) + 6 * _hr(298, 370, *EL)
+    add(nb("LP-1"), nb("lighting, all rooms"), f"Lighting branch circuits, {len(rooms) + 6} home runs + fixture whips",
+        "MC", "2/C+G", "12", 1, 1, None, 277, 16, "MC 12/2, measured home runs", length=(L_light, 0, "Above ceiling"))
+    add(nb("RP-1 / RP-2"), nb("receptacles, all rooms"), f"Receptacle branch circuits, {len(rooms) + 7} home runs",
+        "MC", "3/C+G", "12", 1, 1, None, 120, 16, "MC 12/3, measured home runs", length=(L_rec, 0, "Above ceiling"))
+    add(nb("EP-1"), nb("MCR console floor boxes"), "Console power whips (6 positions, 2 circuits each)", "MC", "3/C+G", "12",
+        1, 1, None, 120, 16, "", length=(12 * _hr(298, 370, *EL), 0, "Under floor"))
+    drops = 9 * 4 + 12 * 2 + 6 * 4 + 16 * 2                                     # office, rooms, consoles, video wall
+    L_cat = 9 * 4 * _hr(112, 360, *MDF) + 12 * 2 * _hr(190, 370, *MDF) + 6 * 4 * _hr(298, 370, *MDF) \
+        + 16 * 2 * _hr(316, 370, *MDF) + 48 * _hr(228, 356, *MDF)
+    add(nb("MDF"), nb("data drops"), f"Cat 6A data drops ({drops} + 48 server-room links)", "CAT6", "4-pr", "23", 1, 1, None,
+        None, None, "basket tray + J-hooks, measured", length=(L_cat, 0, "Basket tray"))
+    for dst, x, y in (("MCR consoles / video wall", 300, 370), ("server room", 228, 356)):
+        add(nb("MDF"), nb(dst), f"Single-mode fibre MDF to {dst}", "FO", "12 SM", "-", 1, 1, None, None, None, "in innerduct",
+            length=(_hr(x, y, *MDF), 0, "Basket tray"))
+    L_fa = 2 * (IX := 233.0) + 12 * 18 + 9 * 12 + 40
+    add(nb("FACP (MCR)"), nb("fire-alarm loop"), "Fire-alarm SLC / NAC loop: detectors, horn / strobes, pull stations",
+        "FA", "2/C", "14", 1, 1, None, 24, None, "FPLR on J-hooks, measured", length=(L_fa, 0, "J-hooks"))
+
+# lighting / small power branch circuits (allowance per building by floor area)
+for it in ITEMS:
+    if "Lighting" in " ".join(it.get("wiring", [])) and BLD.search(it["name"]) and it["name"] not in done_bld:
+        done_bld.add(it["name"])
+        f = it["fp"]
+        area = (f[1] - f[0]) * (f[3] - f[2])
+        add(it, it, "Lighting, receptacles and small power branch circuits (allowance)", "THHN", "1/C", "12", 1, 1,
+            None, 277, None, "allowance: 1.6 ft of conductor per ft2 of floor", length=(area * 1.6, 0, "Conduit"))
+# grounding: the modelled ground grid + equipment ground leads
+gg = next(it for it in M["items"] if "station ground grid" in it["name"])
+L = sum(math.dist(p["a"], p["b"]) for p in M["parts"] if p["item"] == gg["id"] and p["kind"] == "rod")
+add(dict(gg, area="C"), dict(gg, area="C"), "Station ground grid, rods and risers (from the model)", "BARE", "1/C", "4/0", 1, 1,
+    None, None, None, "measured from the modelled grid", length=(L, 0, "Buried"))
+n_eq = sum(1 for it in ITEMS if "Grounding" in " ".join(it.get("wiring", []))) + N_DEV["motors"]
+add(dict(gg, area="C", name="Equipment grounding"), dict(gg, area="C", name="Equipment grounding"),
+    f"Equipment ground leads: {n_eq} items x 2 leads x 30 ft", "BARE", "1/C", "4/0", 1, 1, None, None, None, "allowance",
+    length=(n_eq * 60, 0, "Buried"))
+
+
+
+def audit():
+    """Independent checks on the schedule; returns [(check, result, count, examples)]."""
+    out = []
+    by_dst = defaultdict(list)
+    for r in ROWS:
+        by_dst[r["dst"]["id"]].append(r)
+    srcs = {r["src"]["id"] for r in ROWS}
+    power = ("LV", "LVAX", "VFD", "LV1C", "MV15", "MV15AX", "MV5", "MV5S", "MV25", "MV35", "W", "SHD", "PV")
+    miss = [it["name"][:50] for it in ITEMS if re.search(r"LV power|MV power|LV 480", " ".join(it.get("wiring", [])))
+            and not any(r["prod"] in power for r in by_dst.get(it["id"], [])) and it["id"] not in srcs
+            and not re.search(r"VFD lineup|BESS blocks", it["name"])]
+    out.append(("Every powered item has a power circuit (VFD lineups: bus duct; BESS blocks: per container)",
+                "PASS" if not miss else "CHECK", len(miss), "; ".join(miss[:4])))
+    miss = [it["name"][:50] for it in ITEMS if "Instrumentation" in " ".join(it.get("wiring", []))
+            and not any(r["prod"] in ("PLTC", "ITC", "TCX", "RTD") for r in by_dst.get(it["id"], []))]
+    out.append(("Every instrumented item has instrument cables", "PASS" if not miss else "CHECK", len(miss), "; ".join(miss[:4])))
+    dbl = [rows[0]["dst"]["name"][:40] for rows in by_dst.values()
+           if any(r["service"].startswith("LV power feeder") for r in rows) and any(r["service"].startswith("Motor ") for r in rows)]
+    out.append(("No lump feeder where motors are fed individually (double count)", "PASS" if not dbl else "FAIL", len(dbl),
+                "; ".join(dbl[:4])))
+    bad = []
+    for r in ROWS:
+        I = r["amps"]
+        if not I:
+            continue
+        if r["prod"] in ("LV", "LVAX", "VFD", "LV1C") and r["size"] in AMP_LV and AMP_LV[r["size"]] * r["sets"] < 1.25 * I * .999:
+            bad.append(r["service"][:40])
+        if r["prod"] in ("MV15", "MV15AX", "MV5", "MV5S", "MV25") and AMP_MV[r["size"]] * .85 * r["sets"] < 1.25 * I * .999:
+            bad.append(r["service"][:40])
+        if r["prod"] == "MV35" and AMP_MV35[r["size"]] * .85 * r["sets"] < 1.25 * I * .999:
+            bad.append(r["service"][:40])
+    out.append(("Ampacity >= 125 % of full-load current (recomputed)", "PASS" if not bad else "FAIL", len(bad), "; ".join(bad[:4])))
+    vdb = []
+    for r in ROWS:
+        if r["prod"] in ("LV", "LVAX", "VFD", "LV1C") and r["amps"] and r["size"] in R_LV:
+            L = (r["route"] + r["vert"]) * 1.1
+            vd = 1.732 * r["amps"] * L / 1000 * R_LV[r["size"]] / r["sets"] / 480 * 100
+            if vd > 3.05:
+                vdb.append(f"{r['service'][:30]} {vd:.1f}%")
+    out.append(("480 V voltage drop <= 3 % (recomputed)", "PASS" if not vdb else "CHECK", len(vdb), "; ".join(vdb[:4])))
+    haz = [r["dst"]["name"][:40] for r in ROWS if HAZ.search(r["dst"]["name"]) and r["prod"] in ("LV", "CT", "PLTC")
+           and not re.match(r"GT\d:", r["dst"]["name"])]
+    out.append(("Class I Div 2 loads on ARMOR-X / IS cable", "PASS" if not haz else "FAIL", len(haz), "; ".join(haz[:4])))
+    est = [r for r in ROWS if r["kind"] == "Estimated"]
+    out.append(("Runs that follow a modelled route", "INFO", len(ROWS) - len(est),
+                f"{len(est)} estimated (build-out bays D4-D6 and utilities without drawn trench / bank)"))
+    lng = [r for r in ROWS if r["route"] + r["vert"] > 3000 and r["prod"] not in ("FO", "THHN", "BARE", "ACSR")]
+    out.append(("Copper runs > 3,000 ft", "INFO", len(lng), "; ".join(f"{r['service'][:30]}" for r in lng[:4])))
+    many = [r for r in ROWS if r["sets"] >= 6 and r["prod"] in ("LV", "LVAX", "LV1C", "MV15", "MV5S", "MV25", "MV35")]
+    out.append(("Feeders with >= 6 parallel sets (bus-duct candidates)", "INFO", len(many),
+                "; ".join(f"{r['service'][:30]} x{r['sets']}" for r in many[:4])))
+    out.append(("Excluded as bus duct", "INFO", len(BUS_DUCT), "; ".join(a for a, b in BUS_DUCT)))
+    return out
+
+
+XCLS = ["HV 230 kV", "MV 35 kV", "MV 25 kV", "MV 15 kV", "MV 5 kV", "LV 600 V", "DC 2 kV", "Portable MV", "Portable LV",
+        "Control", "Instrumentation", "Fire alarm", "Fibre / data"]
+
+
+def export_xray():
+    """Compact cable data for the viewer's cable X-ray: unique paths (ints, ft) + one record per schedule row."""
+    paths, pidx, recs = [], {}, []
+    seg = defaultdict(int)
+    for r in ROWS:
+        cl = CLASS[r["prod"]]
+        if cl not in XCLS:
+            continue
+        pi = -1
+        if r.get("path") and len(r["path"]) >= 2:
+            key = tuple(r["path"])
+            if key not in pidx:
+                pidx[key] = len(paths)
+                paths.append([int(round(v)) for q in r["path"] for v in q])
+            pi = pidx[key]
+            n = r["sets"] * r["cps"]
+            for a_, b_ in zip(r["path"], r["path"][1:]):
+                k = (tuple(int(round(v)) for v in a_), tuple(int(round(v)) for v in b_))
+                seg[tuple(sorted(k))] += n
+        run = math.ceil((r["route"] + r["vert"] + 20) * 1.1 / 10) * 10
+        recs.append([r["no"], XCLS.index(cl), r["prod"], AWG(r["size"]) if r["size"] != "-" else "", r["cond"],
+                     r["sets"] * r["cps"], run, (r["src"].get("tag") or r["src"]["name"][:40]),
+                     (r["dst"].get("tag") or r["dst"]["name"][:40]), r["src"]["id"], r["dst"]["id"],
+                     (r["service"] if not r["desc"] else r["desc"])[:80], pi])
+    fill = [[*a, *b, n] for (a, b), n in seg.items() if a != b]
+    data = dict(classes=XCLS, products={k: P[k] for k in P}, paths=paths, cables=recs, fill=fill)
+    json.dump(data, open(os.path.join(HERE, "brochure", "cables_xray.json"), "w"), separators=(",", ":"))
+    return len(recs), len(paths)
+
+# ------------------------------------------------------------------------------------------------ workbook
+def write():
+    from openpyxl import Workbook
+    from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+    from openpyxl.utils import get_column_letter
+    from openpyxl.worksheet.table import Table, TableStyleInfo
+    wb = Workbook()
+    F = "Arial"
+    hdr_fill = PatternFill("solid", fgColor="1F2A33")
+    hdr_font = Font(name=F, bold=True, color="FFFFFF", size=9)
+    inp = Font(name=F, color="0000FF", size=9)
+    blk = Font(name=F, size=9)
+    grn = Font(name=F, color="008000", size=9)
+    yel = PatternFill("solid", fgColor="FFFF00")
+    thin = Border(bottom=Side(style="thin", color="D0D0D0"))
+
+    # Read Me / assumptions
+    ws = wb.active
+    ws.title = "Read Me"
+    lines = [
+        ("SW-3X1 Rev 14 gas power campus: cable schedule and cable bill of materials", True),
+        ("Conceptual, derived from the SW-3X1 3D model. Not engineered, not for construction or procurement.", False),
+        ("", False),
+        ("How it was built", True),
+        ("1. Every powered item of the model (BTM data-centre option excluded) is matched to an equipment class that gives "
+         "its power circuits (voltage, typical rating, source bus) and its field devices (motors, MOVs, analog and discrete "
+         "instruments, solenoids, thermocouples, RTDs; typical counts for the class). Each device has its own cable to its "
+         "MCC or to a local junction box; junction boxes home-run on 24-pair / 12-triad / 25-conductor cables. Device-to-JB "
+         "cables are grouped per JB (Sets = number of device cables). Ratings are typical unless the drawing states one.",
+         False),
+        ("2. Lengths follow the model's electrical routes (trays, duct banks, buried / surface cable, trenches) as a graph: "
+         "shortest path source to load, plus drops and vertical transitions. 230 kV circuits, overhead conductors and the "
+         "ground grid are measured directly from the model.", False),
+        ("3. Sizes: ampacity at 125 % of full-load current (NEC 310.16 75 C Cu for 600 V; typical ICEA values for MV-105), "
+         "3 % voltage drop at 480 V, parallel sets above 500 kcmil (LV) / 1000 kcmil (MV).", False),
+        ("4. Products are typical Southwire families for each application; confirm constructions, sizes and listings "
+         "against current Southwire specifications.", False),
+        ("", False),
+        (f"5. {sum(1 for r in ROWS if r['kind'] == 'Estimated')} of {len(ROWS)} runs could not follow a modelled route "
+         "(Route type 'Estimated'): L-shaped length between the items plus 40 ft.", False),
+        ("Inputs (blue, yellow cells; every length and quantity recalculates)", True),
+    ]
+    for r, (t, b) in enumerate(lines, 1):
+        ws.cell(r, 1, t).font = Font(name=F, bold=b, size=12 if r == 1 else 10)
+    ws["A12"], ws["B12"] = "Routing slack (training, sag, cutting)", .10
+    ws["A13"], ws["B13"] = "Termination allowance per run end (ft)", 10
+    ws["A14"], ws["B14"] = "BOM waste / cut allowance", .05
+    for c in ("B12", "B13", "B14"):
+        ws[c].font = Font(name=F, color="0000FF", bold=True)
+        ws[c].fill = yel
+    ws["B12"].number_format = ws["B14"].number_format = "0%"
+    ws["C12"] = "Source: typical industry allowance (assumption)"
+    ws["C13"] = "Source: typical (assumption)"
+    ws["C14"] = "Source: typical (assumption)"
+    ws["A23"] = "Excluded from the cable BOM (bus duct, by others)"
+    ws["A23"].font = Font(name=F, bold=True)
+    for k_, (a_, b_) in enumerate(BUS_DUCT, 24):
+        ws.cell(k_, 1, f"{a_}: {b_}").font = Font(name=F, size=10)
+    ws["A16"] = "Sheets"
+    ws["A16"].font = Font(name=F, bold=True)
+    for r, t in enumerate(["Cable Schedule: one row per cable run (from / to, service, product, size, sets, length)",
+                           "Cable BOM: totals per product and size, waste, order length, reels (SUMIFS on the schedule)",
+                           "Accessories: terminations, glands, lugs, splices (from the schedule)",
+                           "Summary: cable length by zone and voltage class",
+                           "Load List: the equipment, assumed ratings and sources behind the power circuits"], 17):
+        ws.cell(r, 1, t).font = Font(name=F, size=10)
+    ws.column_dimensions["A"].width = 120
+    ws.column_dimensions["B"].width = 10
+    ws.column_dimensions["C"].width = 45
+    for r in range(1, 25):
+        ws.cell(r, 1).alignment = Alignment(wrap_text=True, vertical="top")
+
+    # Cable Schedule
+    sc = wb.create_sheet("Cable Schedule")
+    cols = ["Cable No.", "Zone", "Area", "Service / circuit", "From (tag)", "From (description)", "To (tag)",
+            "To (description)", "Class", "Product", "Product key", "Conductors", "Size (AWG/kcmil)", "Sets", "Cables / set",
+            "Voltage (V)", "Load (kW)", "Current (A)", "Route type", "Route (ft)", "Drops + vertical (ft)",
+            "Run length (ft)", "Total cable (ft)", "MV term. kits", "Glands / connectors", "Notes", "Cables (count)"]
+    for c, h in enumerate(cols, 1):
+        x = sc.cell(1, c, h)
+        x.font, x.fill = hdr_font, hdr_fill
+        x.alignment = Alignment(wrap_text=True, vertical="center")
+    ROWS.sort(key=lambda r: (r["dst"]["area"] or "Z", CLASS[r["prod"]], r["dst"]["name"]))
+    cnt = defaultdict(int)
+    code = dict(MV15="MV", MV15AX="MV", MV5="MV", MV5S="MV", MV25="MV", MV35="MV", HV230="HV", LV="P", LVAX="P", VFD="P", LV1C="P",
+                CT="C", CTAX="C", CTCT="C", PLTC="I", ITC="I", TCX="I", RTD="I", FA="FA", FO="F", PV="DC", SHD="PP", W="PP",
+                THHN="L", BARE="G", ACSR="OH", MC="L", CAT6="F")
+    for i, r in enumerate(ROWS, 2):
+        a = r["dst"]["area"] or "C"
+        cnt[(a, code[r["prod"]])] += 1
+        no = f"{a}-{code[r['prod']]}-{cnt[(a, code[r['prod']])]:04d}"
+        r["no"] = no
+        key = f"{r['prod']}|{r['cond']}|{r['size']}"
+        vals = [no, a, AREA.get(a, ""), r["service"] if not r["desc"] else r["desc"], r["src"].get("tag") or "",
+                r["src"]["name"][:70], r["dst"].get("tag") or "", r["dst"]["name"][:70], CLASS[r["prod"]],
+                P[r["prod"]], key, r["cond"], AWG(r["size"]) if r["size"] != "-" else "-", r["sets"], r["cps"],
+                r["volt"], r["kw"], r["amps"], r["kind"], r["route"], r["vert"]]
+        for c, v in enumerate(vals, 1):
+            x = sc.cell(i, c, v)
+            x.font = blk
+        sc.cell(i, 22, f"=ROUNDUP((T{i}+U{i}+2*'Read Me'!$B$13)*(1+'Read Me'!$B$12),-1)").font = blk
+        sc.cell(i, 23, f"=V{i}*N{i}*O{i}").font = blk
+        sc.cell(i, 24, f'=IF(LEFT(I{i},2)="MV",2*N{i}*IF(L{i}="1/C",O{i},1),0)').font = blk
+        sc.cell(i, 25, f'=IF(OR(LEFT(K{i},4)="LVAX",LEFT(K{i},6)="MV15AX",LEFT(K{i},4)="CTAX",LEFT(K{i},2)="W|"),'
+                       f'2*N{i}*O{i},0)').font = blk
+        sc.cell(i, 26, r["note"]).font = blk
+        sc.cell(i, 27, f"=N{i}*O{i}").font = blk
+        for c in (20, 21, 22, 23):
+            sc.cell(i, c).number_format = "#,##0"
+    last = len(ROWS) + 1
+    widths = [12, 6, 20, 46, 12, 34, 12, 34, 14, 52, 22, 10, 12, 6, 7, 9, 9, 9, 13, 9, 10, 10, 12, 8, 9, 30, 9]
+    for c, w in enumerate(widths, 1):
+        sc.column_dimensions[get_column_letter(c)].width = w
+    sc.freeze_panes = "E2"
+    sc.auto_filter.ref = f"A1:AA{last}"
+
+    # Cable BOM
+    bm = wb.create_sheet("Cable BOM")
+    bcols = ["Product key", "Class", "Product (typical Southwire family)", "Conductors", "Size", "Cables", "Total length (ft)",
+             "Waste", "Order length (ft)", "Standard reel (ft)", "Reels", "Order length (km)"]
+    for c, h in enumerate(bcols, 1):
+        x = bm.cell(1, c, h)
+        x.font, x.fill = hdr_font, hdr_fill
+        x.alignment = Alignment(wrap_text=True, vertical="center")
+    keys = sorted({(r["prod"], r["cond"], r["size"]) for r in ROWS},
+                  key=lambda k: (list(CLASS.values()).index(CLASS[k[0]]), k[0], SIZES_LV.index(k[2]) if k[2] in SIZES_LV else 99,
+                                 k[1]))
+    for i, (p, cnd, s) in enumerate(keys, 2):
+        key = f"{p}|{cnd}|{s}"
+        vals = [key, CLASS[p], P[p], cnd, AWG(s) if s != "-" else "-"]
+        for c, v in enumerate(vals, 1):
+            bm.cell(i, c, v).font = blk
+        bm.cell(i, 6, f"=SUMIFS('Cable Schedule'!$AA$2:$AA${last},'Cable Schedule'!$K$2:$K${last},A{i})").font = grn
+        bm.cell(i, 7, f"=SUMIFS('Cable Schedule'!$W$2:$W${last},'Cable Schedule'!$K$2:$K${last},A{i})").font = grn
+        bm.cell(i, 8, "='Read Me'!$B$14").font = grn
+        bm.cell(i, 9, f"=ROUNDUP(G{i}*(1+H{i}),-2)").font = blk
+        x = bm.cell(i, 10, REEL[p])
+        x.font = inp
+        bm.cell(i, 11, f"=IF(J{i}>0,ROUNDUP(I{i}/J{i},0),0)").font = blk
+        bm.cell(i, 12, f"=I{i}*0.3048/1000").font = blk
+        for c in (7, 9, 10):
+            bm.cell(i, c).number_format = "#,##0"
+        bm.cell(i, 8).number_format = "0%"
+        bm.cell(i, 12).number_format = "#,##0.0"
+    n = len(keys) + 1
+    bm.cell(n + 1, 3, "Total").font = Font(name=F, bold=True)
+    for c, col in ((6, "F"), (7, "G"), (9, "I"), (11, "K"), (12, "L")):
+        x = bm.cell(n + 1, c, f"=SUM({col}2:{col}{n})")
+        x.font = Font(name=F, bold=True)
+        x.number_format = "#,##0" if c != 12 else "#,##0.0"
+    bm.cell(n + 3, 1, "Standard reel lengths are typical inputs (blue); edit to the actual reel / SIMpull reel sizes.").font = Font(
+        name=F, italic=True, size=9)
+    for c, w in enumerate([24, 15, 70, 10, 12, 7, 15, 7, 15, 12, 7, 12], 1):
+        bm.column_dimensions[get_column_letter(c)].width = w
+    bm.freeze_panes = "B2"
+
+    # Accessories
+    ac = wb.create_sheet("Accessories")
+    rows = [("MV termination kits (outdoor / indoor, per conductor or per 3/C end)", f"=SUM('Cable Schedule'!X2:X{last})"),
+            ("ARMOR-X / Type W connectors and glands", f"=SUM('Cable Schedule'!Y2:Y{last})"),
+            ("MV splice kits (allowance: 1 per 2,500 ft of MV 1/C)",
+             f"=ROUNDUP(SUMIFS('Cable Schedule'!W2:W{last},'Cable Schedule'!I2:I{last},\"MV*\",'Cable Schedule'!L2:L{last},\"1/C\")/2500,0)"),
+            ("230 kV outdoor terminations", f"=2*SUMIFS('Cable Schedule'!O2:O{last},'Cable Schedule'!I2:I{last},\"HV 230 kV\")"),
+            ("600 V compression lugs (power, 4 per end)",
+             f"=2*4*SUMIFS('Cable Schedule'!N2:N{last},'Cable Schedule'!I2:I{last},\"LV 600 V\")"),
+            ("Instrument / control cable glands (2 per run)",
+             f"=2*(COUNTIF('Cable Schedule'!I2:I{last},\"Control\")+COUNTIF('Cable Schedule'!I2:I{last},\"Instrumentation\"))"),
+            ("Fibre patch / termination (2 per link)", f"=2*COUNTIF('Cable Schedule'!I2:I{last},\"Fibre / data\")"),
+            ("Ground connections: exothermic welds (allowance 1 per 25 ft of grid)",
+             f"=ROUNDUP(SUMIFS('Cable Schedule'!W2:W{last},'Cable Schedule'!I2:I{last},\"Grounding\")/25,0)")]
+    for c, h in enumerate(["Accessory", "Quantity"], 1):
+        x = ac.cell(1, c, h)
+        x.font, x.fill = hdr_font, hdr_fill
+    for i, (t, f) in enumerate(rows, 2):
+        ac.cell(i, 1, t).font = blk
+        x = ac.cell(i, 2, f)
+        x.font = grn
+        x.number_format = "#,##0"
+    ac.column_dimensions["A"].width = 80
+    ac.column_dimensions["B"].width = 14
+
+    # Summary by zone x class
+    sm = wb.create_sheet("Summary")
+    classes = list(dict.fromkeys(CLASS.values()))
+    zones = sorted({(r["dst"]["area"] or "C") for r in ROWS})
+    sm.cell(1, 1, "Total cable length (ft) by zone and class").font = Font(name=F, bold=True, size=11)
+    sm.cell(2, 1, "Zone").font = hdr_font
+    sm.cell(2, 1).fill = hdr_fill
+    for c, k in enumerate(classes, 2):
+        x = sm.cell(2, c, k)
+        x.font, x.fill = hdr_font, hdr_fill
+        x.alignment = Alignment(wrap_text=True)
+    x = sm.cell(2, len(classes) + 2, "Total")
+    x.font, x.fill = hdr_font, hdr_fill
+    for r, z in enumerate(zones, 3):
+        sm.cell(r, 1, f"{z}  {AREA.get(z, '')}").font = blk
+        for c, k in enumerate(classes, 2):
+            x = sm.cell(r, c, f"=SUMIFS('Cable Schedule'!$W$2:$W${last},'Cable Schedule'!$B$2:$B${last},\"{z}\","
+                              f"'Cable Schedule'!$I$2:$I${last},\"{k}\")")
+            x.font, x.number_format = grn, "#,##0"
+        x = sm.cell(r, len(classes) + 2, f"=SUM(B{r}:{get_column_letter(len(classes) + 1)}{r})")
+        x.font, x.number_format = Font(name=F, bold=True, size=9), "#,##0"
+    tr = len(zones) + 3
+    sm.cell(tr, 1, "Total").font = Font(name=F, bold=True)
+    for c in range(2, len(classes) + 3):
+        L_ = get_column_letter(c)
+        x = sm.cell(tr, c, f"=SUM({L_}3:{L_}{tr - 1})")
+        x.font, x.number_format = Font(name=F, bold=True, size=9), "#,##0"
+    sm.cell(tr + 1, 1, "Total (miles)").font = Font(name=F, bold=True)
+    x = sm.cell(tr + 1, len(classes) + 2, f"={get_column_letter(len(classes) + 2)}{tr}/5280")
+    x.font, x.number_format = Font(name=F, bold=True, size=9), "#,##0.0"
+    sm.cell(tr + 3, 1, "Schedule rows").font = Font(name=F, bold=True)
+    sm.cell(tr + 3, 2, f"=COUNTIF('Cable Schedule'!B2:B{last},\"?\")").font = grn
+    sm.cell(tr + 4, 1, "Cables (count)").font = Font(name=F, bold=True)
+    sm.cell(tr + 4, 2, f"=SUM('Cable Schedule'!AA2:AA{last})").font = grn
+    sm.cell(tr + 4, 2).number_format = "#,##0"
+    sm.cell(tr + 6, 1, "Device count behind the schedule (typical for each equipment class)").font = Font(name=F, bold=True)
+    for k_, (nm_, v_) in enumerate([("Analog instruments", N_DEV["ai"]), ("Discrete devices", N_DEV["di"]),
+                                    ("Thermocouples", N_DEV["tc"]), ("RTDs", N_DEV["rtd"]), ("Solenoids", N_DEV["sol"]),
+                                    ("LV motors", N_DEV["motors"]), ("Motor-operated valves", N_DEV["MOVs"])]):
+        sm.cell(tr + 7 + k_, 1, nm_).font = blk
+        sm.cell(tr + 7 + k_, 2, v_).font = inp
+    sm.column_dimensions["A"].width = 34
+    for c in range(2, len(classes) + 3):
+        sm.column_dimensions[get_column_letter(c)].width = 13
+
+    # Load list
+    ll = wb.create_sheet("Load List")
+    lcols = ["Load (to)", "Tag", "Zone", "Service", "Voltage (V)", "Load (kW)", "Current (A)", "Source (from)", "Product",
+             "Size", "Sets"]
+    for c, h in enumerate(lcols, 1):
+        x = ll.cell(1, c, h)
+        x.font, x.fill = hdr_font, hdr_fill
+    pw = [r for r in ROWS if r["kw"]]
+    for i, r in enumerate(pw, 2):
+        vals = [r["dst"]["name"][:70], r["dst"].get("tag") or "", r["dst"]["area"], r["service"], r["volt"], r["kw"], r["amps"],
+                r["src"]["name"][:60], CLASS[r["prod"]], AWG(r["size"]), r["sets"]]
+        for c, v in enumerate(vals, 1):
+            ll.cell(i, c, v).font = blk
+    for c, w in enumerate([50, 12, 6, 46, 10, 10, 10, 44, 14, 12, 6], 1):
+        ll.column_dimensions[get_column_letter(c)].width = w
+    ll.freeze_panes = "A2"
+
+    au = wb.create_sheet("Audit", 1)
+    for c, h in enumerate(["Check", "Result", "Count", "Notes / examples"], 1):
+        x = au.cell(1, c, h)
+        x.font, x.fill = hdr_font, hdr_fill
+    colr = {"PASS": "008000", "FAIL": "C00000", "CHECK": "B07000", "INFO": "404040"}
+    for i, (a_, b_, c_, d_) in enumerate(audit(), 2):
+        au.cell(i, 1, a_).font = blk
+        au.cell(i, 2, b_).font = Font(name=F, bold=True, size=9, color=colr[b_])
+        au.cell(i, 3, c_).font = blk
+        au.cell(i, 4, d_).font = blk
+        for c in (1, 4):
+            au.cell(i, c).alignment = Alignment(wrap_text=True, vertical="top")
+    for c, w in enumerate([62, 9, 9, 110], 1):
+        au.column_dimensions[get_column_letter(c)].width = w
+    from openpyxl.workbook.properties import CalcProperties
+    wb.calculation = CalcProperties(fullCalcOnLoad=True)
+    export_xray()
+    out = os.path.join(HERE, "brochure", "SW-3X1_Cable_Schedule_and_BOM.xlsx")
+    wb.save(out)
+    return out, last - 1, len(keys)
+
+
+if __name__ == "__main__":
+    out, n, k = write()
+    print("wrote", out, n, "cable runs,", k, "BOM lines")

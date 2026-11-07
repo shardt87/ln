@@ -1,3 +1,38 @@
 *.png
 *.svg
 
+# Blender render outputs: commit the annotated JPEGs, CI publishes the PNGs
+plant/renders/blender/*.png
+plant/renders/blender/*.json
+__pycache__/
+plant/renders/pro/*.png
+plant/renders/pro/*.json
+plant/renders/pro/*_clean.jpg
+plant/renders/coastal/*.png
+plant/renders/coastal/*.json
+plant/renders/coastal/*_clean.jpg
+plant/renders/epic/*.png
+plant/renders/epic/*.json
+plant/renders/epic/*_clean.jpg
+plant/model/*.zip
+
+# guided-tour video clips (~25 MB each, ~1 GB in all): delivered as files, rebuilt by plant/presentation/record_tour.js + compose_tour.py
+plant/renders/tour/*.mp4
+plant/presentation/dist/
+
+# X-ray capture tool workspace
+plant/tools/xray_capture/node_modules/
+plant/tools/xray_capture/capture.html
+plant/tools/xray_capture/xw_*.jpg
+
+# assets the builds need: always tracked (the *.png rule above would drop them)
+!plant/blender/deck/*.png
+!plant/screens/*.png
+!plant/renders/deck/*.png
+!plant/renders/deck/**/*.png
+!plant/renders/cover/*.png
+plant/renders/cover/_decals/
+
+plant/renders/nextgen/_src/
+plant/renders/nextgen/_img/
+plant/renders/nextgen/next_gen.html
